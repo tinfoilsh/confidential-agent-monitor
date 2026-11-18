@@ -433,6 +433,1164 @@
       "gitignore.templates.read": {
         "title": "Read"
       },
+      "graphql": {
+        "title": "GraphQL"
+      },
+      "graphql.access_user_namespace_repository": {
+        "title": "Access user namespace repository"
+      },
+      "graphql.access_user_namespace_repository.admin": {
+        "title": "Manage"
+      },
+      "graphql.apply_pending_issue_suggestions": {
+        "title": "Apply pending issue suggestions"
+      },
+      "graphql.apply_pending_issue_suggestions.write": {
+        "title": "Create and edit"
+      },
+      "graphql.assignees_from_assignable": {
+        "title": "Assignees from assignable"
+      },
+      "graphql.assignees_from_assignable.delete": {
+        "title": "Delete"
+      },
+      "graphql.assignees_to_assignable": {
+        "title": "Assignees to assignable"
+      },
+      "graphql.assignees_to_assignable.write": {
+        "title": "Create and edit"
+      },
+      "graphql.attribution_invitation": {
+        "title": "Attribution invitation"
+      },
+      "graphql.attribution_invitation.admin": {
+        "title": "Manage"
+      },
+      "graphql.blocked_by": {
+        "title": "Blocked by"
+      },
+      "graphql.blocked_by.delete": {
+        "title": "Delete"
+      },
+      "graphql.blocked_by.write": {
+        "title": "Create and edit"
+      },
+      "graphql.branch": {
+        "title": "Branch"
+      },
+      "graphql.branch.write": {
+        "title": "Create and edit"
+      },
+      "graphql.branch_protection_rule": {
+        "title": "Branch protection rule"
+      },
+      "graphql.branch_protection_rule.admin": {
+        "title": "Manage"
+      },
+      "graphql.change_user_status": {
+        "title": "Change user status"
+      },
+      "graphql.change_user_status.write": {
+        "title": "Create and edit"
+      },
+      "graphql.clear_labels_from_labelable": {
+        "title": "Clear labels from labelable"
+      },
+      "graphql.clear_labels_from_labelable.delete": {
+        "title": "Delete"
+      },
+      "graphql.clear_project_v2_item_field_value": {
+        "title": "Clear project v2 item field value"
+      },
+      "graphql.clear_project_v2_item_field_value.delete": {
+        "title": "Delete"
+      },
+      "graphql.commit_on_branch": {
+        "title": "Commit on branch"
+      },
+      "graphql.commit_on_branch.write": {
+        "title": "Create and edit"
+      },
+      "graphql.convert_project_card_note_to_issue": {
+        "title": "Convert project card note to issue"
+      },
+      "graphql.convert_project_card_note_to_issue.write": {
+        "title": "Create and edit"
+      },
+      "graphql.convert_project_v2_draft_issue_item_to_issue": {
+        "title": "Convert project v2 draft issue item to issue"
+      },
+      "graphql.convert_project_v2_draft_issue_item_to_issue.write": {
+        "title": "Create and edit"
+      },
+      "graphql.convert_pull_request_to_draft": {
+        "title": "Convert pull request to draft"
+      },
+      "graphql.convert_pull_request_to_draft.write": {
+        "title": "Create and edit"
+      },
+      "graphql.decline_topic_suggestion": {
+        "title": "Decline topic suggestion"
+      },
+      "graphql.decline_topic_suggestion.write": {
+        "title": "Create and edit"
+      },
+      "graphql.deployment": {
+        "title": "Deployment"
+      },
+      "graphql.deployment.delete": {
+        "title": "Delete"
+      },
+      "graphql.deployment.execute": {
+        "title": "Run"
+      },
+      "graphql.deployment_status": {
+        "title": "Deployment status"
+      },
+      "graphql.deployment_status.write": {
+        "title": "Create and edit"
+      },
+      "graphql.deployments": {
+        "title": "Deployments"
+      },
+      "graphql.deployments.execute": {
+        "title": "Run"
+      },
+      "graphql.dequeue_pull_request": {
+        "title": "Dequeue pull request"
+      },
+      "graphql.dequeue_pull_request.write": {
+        "title": "Create and edit"
+      },
+      "graphql.discussion": {
+        "title": "Discussion"
+      },
+      "graphql.discussion.delete": {
+        "title": "Delete"
+      },
+      "graphql.discussion.write": {
+        "title": "Create and edit"
+      },
+      "graphql.discussion_comment": {
+        "title": "Discussion comment"
+      },
+      "graphql.discussion_comment.delete": {
+        "title": "Delete"
+      },
+      "graphql.discussion_comment.write": {
+        "title": "Create and edit"
+      },
+      "graphql.discussion_poll_vote": {
+        "title": "Discussion poll vote"
+      },
+      "graphql.discussion_poll_vote.write": {
+        "title": "Create and edit"
+      },
+      "graphql.dismiss_pull_request_review": {
+        "title": "Dismiss pull request review"
+      },
+      "graphql.dismiss_pull_request_review.write": {
+        "title": "Create and edit"
+      },
+      "graphql.dismiss_repository_vulnerability_alert": {
+        "title": "Dismiss repository vulnerability alert"
+      },
+      "graphql.dismiss_repository_vulnerability_alert.write": {
+        "title": "Create and edit"
+      },
+      "graphql.enqueue_pull_request": {
+        "title": "Enqueue pull request"
+      },
+      "graphql.enqueue_pull_request.write": {
+        "title": "Create and edit"
+      },
+      "graphql.enterprise_admin": {
+        "title": "Enterprise admin"
+      },
+      "graphql.enterprise_admin.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_admin_invitation": {
+        "title": "Enterprise admin invitation"
+      },
+      "graphql.enterprise_admin_invitation.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_administrator_invitation": {
+        "title": "Enterprise administrator invitation"
+      },
+      "graphql.enterprise_administrator_invitation.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_administrator_role": {
+        "title": "Enterprise administrator role"
+      },
+      "graphql.enterprise_administrator_role.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_allow_private_repository_forking_setting": {
+        "title": "Enterprise allow private repository forking setting"
+      },
+      "graphql.enterprise_allow_private_repository_forking_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_copilot_code_review_policy": {
+        "title": "Enterprise copilot code review policy"
+      },
+      "graphql.enterprise_copilot_code_review_policy.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_default_repository_permission_setting": {
+        "title": "Enterprise default repository permission setting"
+      },
+      "graphql.enterprise_default_repository_permission_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_deploy_key_setting": {
+        "title": "Enterprise deploy key setting"
+      },
+      "graphql.enterprise_deploy_key_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_identity_provider": {
+        "title": "Enterprise identity provider"
+      },
+      "graphql.enterprise_identity_provider.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_identity_provider_recovery_codes": {
+        "title": "Enterprise identity provider recovery codes"
+      },
+      "graphql.enterprise_identity_provider_recovery_codes.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_member": {
+        "title": "Enterprise member"
+      },
+      "graphql.enterprise_member.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_member_invitation": {
+        "title": "Enterprise member invitation"
+      },
+      "graphql.enterprise_member_invitation.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_members_can_change_repository_visibility_setting": {
+        "title": "Enterprise members can change repository visibility setting"
+      },
+      "graphql.enterprise_members_can_change_repository_visibility_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_members_can_create_repositories_setting": {
+        "title": "Enterprise members can create repositories setting"
+      },
+      "graphql.enterprise_members_can_create_repositories_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_members_can_delete_issues_setting": {
+        "title": "Enterprise members can delete issues setting"
+      },
+      "graphql.enterprise_members_can_delete_issues_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_members_can_delete_repositories_setting": {
+        "title": "Enterprise members can delete repositories setting"
+      },
+      "graphql.enterprise_members_can_delete_repositories_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_members_can_invite_collaborators_setting": {
+        "title": "Enterprise members can invite collaborators setting"
+      },
+      "graphql.enterprise_members_can_invite_collaborators_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_members_can_make_purchases_setting": {
+        "title": "Enterprise members can make purchases setting"
+      },
+      "graphql.enterprise_members_can_make_purchases_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_members_can_update_protected_branches_setting": {
+        "title": "Enterprise members can update protected branches setting"
+      },
+      "graphql.enterprise_members_can_update_protected_branches_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_members_can_view_dependency_insights_setting": {
+        "title": "Enterprise members can view dependency insights setting"
+      },
+      "graphql.enterprise_members_can_view_dependency_insights_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_organization": {
+        "title": "Enterprise organization"
+      },
+      "graphql.enterprise_organization.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_organization_member": {
+        "title": "Enterprise organization member"
+      },
+      "graphql.enterprise_organization_member.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_organization_projects_setting": {
+        "title": "Enterprise organization projects setting"
+      },
+      "graphql.enterprise_organization_projects_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_organizations_migrator_role": {
+        "title": "Enterprise organizations migrator role"
+      },
+      "graphql.enterprise_organizations_migrator_role.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_owner_organization_role": {
+        "title": "Enterprise owner organization role"
+      },
+      "graphql.enterprise_owner_organization_role.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_profile": {
+        "title": "Enterprise profile"
+      },
+      "graphql.enterprise_profile.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_repository_projects_setting": {
+        "title": "Enterprise repository projects setting"
+      },
+      "graphql.enterprise_repository_projects_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_support_entitlement": {
+        "title": "Enterprise support entitlement"
+      },
+      "graphql.enterprise_support_entitlement.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_two_factor_authentication_disallowed_methods_setting": {
+        "title": "Enterprise two factor authentication disallowed methods setting"
+      },
+      "graphql.enterprise_two_factor_authentication_disallowed_methods_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.enterprise_two_factor_authentication_required_setting": {
+        "title": "Enterprise two factor authentication required setting"
+      },
+      "graphql.enterprise_two_factor_authentication_required_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.environment": {
+        "title": "Environment"
+      },
+      "graphql.environment.admin": {
+        "title": "Manage"
+      },
+      "graphql.environment.write": {
+        "title": "Create and edit"
+      },
+      "graphql.ip_allow_list_enabled_setting": {
+        "title": "Ip allow list enabled setting"
+      },
+      "graphql.ip_allow_list_enabled_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.ip_allow_list_entry": {
+        "title": "Ip allow list entry"
+      },
+      "graphql.ip_allow_list_entry.admin": {
+        "title": "Manage"
+      },
+      "graphql.ip_allow_list_for_installed_apps_enabled_setting": {
+        "title": "Ip allow list for installed apps enabled setting"
+      },
+      "graphql.ip_allow_list_for_installed_apps_enabled_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.ip_allow_list_user_level_enforcement_enabled_setting": {
+        "title": "Ip allow list user level enforcement enabled setting"
+      },
+      "graphql.ip_allow_list_user_level_enforcement_enabled_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.issue": {
+        "title": "Issue"
+      },
+      "graphql.issue.delete": {
+        "title": "Delete"
+      },
+      "graphql.issue.write": {
+        "title": "Create and edit"
+      },
+      "graphql.issue_comment": {
+        "title": "Issue comment"
+      },
+      "graphql.issue_comment.delete": {
+        "title": "Delete"
+      },
+      "graphql.issue_comment.write": {
+        "title": "Create and edit"
+      },
+      "graphql.issue_field": {
+        "title": "Issue field"
+      },
+      "graphql.issue_field.admin": {
+        "title": "Manage"
+      },
+      "graphql.issue_field_value": {
+        "title": "Issue field value"
+      },
+      "graphql.issue_field_value.delete": {
+        "title": "Delete"
+      },
+      "graphql.issue_field_value.write": {
+        "title": "Create and edit"
+      },
+      "graphql.issue_issue_type": {
+        "title": "Issue issue type"
+      },
+      "graphql.issue_issue_type.write": {
+        "title": "Create and edit"
+      },
+      "graphql.issue_references": {
+        "title": "Issue references"
+      },
+      "graphql.issue_references.delete": {
+        "title": "Delete"
+      },
+      "graphql.issue_references.write": {
+        "title": "Create and edit"
+      },
+      "graphql.issue_status": {
+        "title": "Issue status"
+      },
+      "graphql.issue_status.write": {
+        "title": "Create and edit"
+      },
+      "graphql.issue_type": {
+        "title": "Issue type"
+      },
+      "graphql.issue_type.admin": {
+        "title": "Manage"
+      },
+      "graphql.label": {
+        "title": "Label"
+      },
+      "graphql.label.delete": {
+        "title": "Delete"
+      },
+      "graphql.label.write": {
+        "title": "Create and edit"
+      },
+      "graphql.labels_from_labelable": {
+        "title": "Labels from labelable"
+      },
+      "graphql.labels_from_labelable.delete": {
+        "title": "Delete"
+      },
+      "graphql.labels_to_labelable": {
+        "title": "Labels to labelable"
+      },
+      "graphql.labels_to_labelable.write": {
+        "title": "Create and edit"
+      },
+      "graphql.link_project_v2_to_repository": {
+        "title": "Link project v2 to repository"
+      },
+      "graphql.link_project_v2_to_repository.write": {
+        "title": "Create and edit"
+      },
+      "graphql.link_project_v2_to_team": {
+        "title": "Link project v2 to team"
+      },
+      "graphql.link_project_v2_to_team.write": {
+        "title": "Create and edit"
+      },
+      "graphql.link_repository_to_project": {
+        "title": "Link repository to project"
+      },
+      "graphql.link_repository_to_project.write": {
+        "title": "Create and edit"
+      },
+      "graphql.linked_branch": {
+        "title": "Linked branch"
+      },
+      "graphql.linked_branch.delete": {
+        "title": "Delete"
+      },
+      "graphql.linked_branch.write": {
+        "title": "Create and edit"
+      },
+      "graphql.lockable": {
+        "title": "Lockable"
+      },
+      "graphql.lockable.write": {
+        "title": "Create and edit"
+      },
+      "graphql.mark_discussion_comment_as_answer": {
+        "title": "Mark discussion comment as answer"
+      },
+      "graphql.mark_discussion_comment_as_answer.write": {
+        "title": "Create and edit"
+      },
+      "graphql.mark_file_as_viewed": {
+        "title": "Mark file as viewed"
+      },
+      "graphql.mark_file_as_viewed.write": {
+        "title": "Create and edit"
+      },
+      "graphql.mark_project_v2_as_template": {
+        "title": "Mark project v2 as template"
+      },
+      "graphql.mark_project_v2_as_template.write": {
+        "title": "Create and edit"
+      },
+      "graphql.mark_pull_request_ready_for_review": {
+        "title": "Mark pull request ready for review"
+      },
+      "graphql.mark_pull_request_ready_for_review.write": {
+        "title": "Create and edit"
+      },
+      "graphql.migration_source": {
+        "title": "Migration source"
+      },
+      "graphql.migration_source.admin": {
+        "title": "Manage"
+      },
+      "graphql.migrator_role": {
+        "title": "Migrator role"
+      },
+      "graphql.migrator_role.admin": {
+        "title": "Manage"
+      },
+      "graphql.minimize_comment": {
+        "title": "Minimize comment"
+      },
+      "graphql.minimize_comment.write": {
+        "title": "Create and edit"
+      },
+      "graphql.notification_restriction_setting": {
+        "title": "Notification restriction setting"
+      },
+      "graphql.notification_restriction_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.organization": {
+        "title": "Organization"
+      },
+      "graphql.organization.write": {
+        "title": "Create and edit"
+      },
+      "graphql.organization_allow_private_repository_forking_setting": {
+        "title": "Organization allow private repository forking setting"
+      },
+      "graphql.organization_allow_private_repository_forking_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.organization_copilot_code_review_policy": {
+        "title": "Organization copilot code review policy"
+      },
+      "graphql.organization_copilot_code_review_policy.admin": {
+        "title": "Manage"
+      },
+      "graphql.organization_copilot_code_review_runner_configuration": {
+        "title": "Organization copilot code review runner configuration"
+      },
+      "graphql.organization_copilot_code_review_runner_configuration.admin": {
+        "title": "Manage"
+      },
+      "graphql.organization_copilot_code_review_settings": {
+        "title": "Organization copilot code review settings"
+      },
+      "graphql.organization_copilot_code_review_settings.admin": {
+        "title": "Manage"
+      },
+      "graphql.organization_interaction_limit": {
+        "title": "Organization interaction limit"
+      },
+      "graphql.organization_interaction_limit.admin": {
+        "title": "Manage"
+      },
+      "graphql.organization_migration": {
+        "title": "Organization migration"
+      },
+      "graphql.organization_migration.admin": {
+        "title": "Manage"
+      },
+      "graphql.organization_web_commit_signoff_setting": {
+        "title": "Organization web commit signoff setting"
+      },
+      "graphql.organization_web_commit_signoff_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.outside_collaborator": {
+        "title": "Outside collaborator"
+      },
+      "graphql.outside_collaborator.admin": {
+        "title": "Manage"
+      },
+      "graphql.package_version": {
+        "title": "Package version"
+      },
+      "graphql.package_version.delete": {
+        "title": "Delete"
+      },
+      "graphql.patreon_sponsorability": {
+        "title": "Patreon sponsorability"
+      },
+      "graphql.patreon_sponsorability.admin": {
+        "title": "Manage"
+      },
+      "graphql.pending_issue_suggestions": {
+        "title": "Pending issue suggestions"
+      },
+      "graphql.pending_issue_suggestions.write": {
+        "title": "Create and edit"
+      },
+      "graphql.project": {
+        "title": "Project"
+      },
+      "graphql.project.delete": {
+        "title": "Delete"
+      },
+      "graphql.project.write": {
+        "title": "Create and edit"
+      },
+      "graphql.project_card": {
+        "title": "Project card"
+      },
+      "graphql.project_card.delete": {
+        "title": "Delete"
+      },
+      "graphql.project_card.write": {
+        "title": "Create and edit"
+      },
+      "graphql.project_column": {
+        "title": "Project column"
+      },
+      "graphql.project_column.delete": {
+        "title": "Delete"
+      },
+      "graphql.project_column.write": {
+        "title": "Create and edit"
+      },
+      "graphql.project_v2": {
+        "title": "Project v2"
+      },
+      "graphql.project_v2.delete": {
+        "title": "Delete"
+      },
+      "graphql.project_v2.write": {
+        "title": "Create and edit"
+      },
+      "graphql.project_v2_collaborators": {
+        "title": "Project v2 collaborators"
+      },
+      "graphql.project_v2_collaborators.share": {
+        "title": "Share"
+      },
+      "graphql.project_v2_draft_issue": {
+        "title": "Project v2 draft issue"
+      },
+      "graphql.project_v2_draft_issue.write": {
+        "title": "Create and edit"
+      },
+      "graphql.project_v2_field": {
+        "title": "Project v2 field"
+      },
+      "graphql.project_v2_field.delete": {
+        "title": "Delete"
+      },
+      "graphql.project_v2_field.write": {
+        "title": "Create and edit"
+      },
+      "graphql.project_v2_issue_field": {
+        "title": "Project v2 issue field"
+      },
+      "graphql.project_v2_issue_field.write": {
+        "title": "Create and edit"
+      },
+      "graphql.project_v2_item": {
+        "title": "Project v2 item"
+      },
+      "graphql.project_v2_item.delete": {
+        "title": "Delete"
+      },
+      "graphql.project_v2_item.write": {
+        "title": "Create and edit"
+      },
+      "graphql.project_v2_item_by_id": {
+        "title": "Project v2 item by id"
+      },
+      "graphql.project_v2_item_by_id.write": {
+        "title": "Create and edit"
+      },
+      "graphql.project_v2_item_field_value": {
+        "title": "Project v2 item field value"
+      },
+      "graphql.project_v2_item_field_value.write": {
+        "title": "Create and edit"
+      },
+      "graphql.project_v2_item_position": {
+        "title": "Project v2 item position"
+      },
+      "graphql.project_v2_item_position.write": {
+        "title": "Create and edit"
+      },
+      "graphql.project_v2_status": {
+        "title": "Project v2 status"
+      },
+      "graphql.project_v2_status.delete": {
+        "title": "Delete"
+      },
+      "graphql.project_v2_status.write": {
+        "title": "Create and edit"
+      },
+      "graphql.project_v2_view": {
+        "title": "Project v2 view"
+      },
+      "graphql.project_v2_view.delete": {
+        "title": "Delete"
+      },
+      "graphql.project_v2_view.write": {
+        "title": "Create and edit"
+      },
+      "graphql.project_v2_workflow": {
+        "title": "Project v2 workflow"
+      },
+      "graphql.project_v2_workflow.delete": {
+        "title": "Delete"
+      },
+      "graphql.promote_repository_custom_property": {
+        "title": "Promote repository custom property"
+      },
+      "graphql.promote_repository_custom_property.admin": {
+        "title": "Manage"
+      },
+      "graphql.pull_request": {
+        "title": "Pull request"
+      },
+      "graphql.pull_request.write": {
+        "title": "Create and edit"
+      },
+      "graphql.pull_request_auto": {
+        "title": "Pull request auto"
+      },
+      "graphql.pull_request_auto.write": {
+        "title": "Create and edit"
+      },
+      "graphql.pull_request_branch": {
+        "title": "Pull request branch"
+      },
+      "graphql.pull_request_branch.write": {
+        "title": "Create and edit"
+      },
+      "graphql.pull_request_creation_cap_bypass_users": {
+        "title": "Pull request creation cap bypass users"
+      },
+      "graphql.pull_request_creation_cap_bypass_users.admin": {
+        "title": "Manage"
+      },
+      "graphql.pull_request_review": {
+        "title": "Pull request review"
+      },
+      "graphql.pull_request_review.delete": {
+        "title": "Delete"
+      },
+      "graphql.pull_request_review.write": {
+        "title": "Create and edit"
+      },
+      "graphql.pull_request_review_comment": {
+        "title": "Pull request review comment"
+      },
+      "graphql.pull_request_review_comment.delete": {
+        "title": "Delete"
+      },
+      "graphql.pull_request_review_comment.write": {
+        "title": "Create and edit"
+      },
+      "graphql.pull_request_review_thread": {
+        "title": "Pull request review thread"
+      },
+      "graphql.pull_request_review_thread.write": {
+        "title": "Create and edit"
+      },
+      "graphql.pull_request_review_thread_reply": {
+        "title": "Pull request review thread reply"
+      },
+      "graphql.pull_request_review_thread_reply.write": {
+        "title": "Create and edit"
+      },
+      "graphql.queued_migrations": {
+        "title": "Queued migrations"
+      },
+      "graphql.queued_migrations.admin": {
+        "title": "Manage"
+      },
+      "graphql.reaction": {
+        "title": "Reaction"
+      },
+      "graphql.reaction.delete": {
+        "title": "Delete"
+      },
+      "graphql.reaction.write": {
+        "title": "Create and edit"
+      },
+      "graphql.ref": {
+        "title": "Ref"
+      },
+      "graphql.ref.delete": {
+        "title": "Delete"
+      },
+      "graphql.ref.write": {
+        "title": "Create and edit"
+      },
+      "graphql.refs": {
+        "title": "Refs"
+      },
+      "graphql.refs.write": {
+        "title": "Create and edit"
+      },
+      "graphql.relates_to": {
+        "title": "Relates to"
+      },
+      "graphql.relates_to.delete": {
+        "title": "Delete"
+      },
+      "graphql.relates_to.write": {
+        "title": "Create and edit"
+      },
+      "graphql.reorder_environment": {
+        "title": "Reorder environment"
+      },
+      "graphql.reorder_environment.write": {
+        "title": "Create and edit"
+      },
+      "graphql.replace_actors_for_assignable": {
+        "title": "Replace actors for assignable"
+      },
+      "graphql.replace_actors_for_assignable.write": {
+        "title": "Create and edit"
+      },
+      "graphql.repository": {
+        "title": "Repository"
+      },
+      "graphql.repository.admin": {
+        "title": "Manage"
+      },
+      "graphql.repository.write": {
+        "title": "Create and edit"
+      },
+      "graphql.repository_copilot_code_review_settings": {
+        "title": "Repository copilot code review settings"
+      },
+      "graphql.repository_copilot_code_review_settings.admin": {
+        "title": "Manage"
+      },
+      "graphql.repository_custom_property": {
+        "title": "Repository custom property"
+      },
+      "graphql.repository_custom_property.admin": {
+        "title": "Manage"
+      },
+      "graphql.repository_custom_property_values": {
+        "title": "Repository custom property values"
+      },
+      "graphql.repository_custom_property_values.admin": {
+        "title": "Manage"
+      },
+      "graphql.repository_interaction_limit": {
+        "title": "Repository interaction limit"
+      },
+      "graphql.repository_interaction_limit.admin": {
+        "title": "Manage"
+      },
+      "graphql.repository_migration": {
+        "title": "Repository migration"
+      },
+      "graphql.repository_migration.admin": {
+        "title": "Manage"
+      },
+      "graphql.repository_ruleset": {
+        "title": "Repository ruleset"
+      },
+      "graphql.repository_ruleset.admin": {
+        "title": "Manage"
+      },
+      "graphql.repository_web_commit_signoff_setting": {
+        "title": "Repository web commit signoff setting"
+      },
+      "graphql.repository_web_commit_signoff_setting.admin": {
+        "title": "Manage"
+      },
+      "graphql.reprioritize_sub_issue": {
+        "title": "Reprioritize sub issue"
+      },
+      "graphql.reprioritize_sub_issue.write": {
+        "title": "Create and edit"
+      },
+      "graphql.request_copilot_code_review": {
+        "title": "Request copilot code review"
+      },
+      "graphql.request_copilot_code_review.write": {
+        "title": "Create and edit"
+      },
+      "graphql.request_reviews": {
+        "title": "Request reviews"
+      },
+      "graphql.request_reviews.write": {
+        "title": "Create and edit"
+      },
+      "graphql.request_reviews_by_login": {
+        "title": "Request reviews by login"
+      },
+      "graphql.request_reviews_by_login.write": {
+        "title": "Create and edit"
+      },
+      "graphql.rerequest_check_suite": {
+        "title": "Rerequest check suite"
+      },
+      "graphql.rerequest_check_suite.execute": {
+        "title": "Run"
+      },
+      "graphql.rerequest_reviews": {
+        "title": "Rerequest reviews"
+      },
+      "graphql.rerequest_reviews.write": {
+        "title": "Create and edit"
+      },
+      "graphql.resolve_review_thread": {
+        "title": "Resolve review thread"
+      },
+      "graphql.resolve_review_thread.write": {
+        "title": "Create and edit"
+      },
+      "graphql.retire_sponsors_tier": {
+        "title": "Retire sponsors tier"
+      },
+      "graphql.retire_sponsors_tier.admin": {
+        "title": "Manage"
+      },
+      "graphql.revert_pull_request": {
+        "title": "Revert pull request"
+      },
+      "graphql.revert_pull_request.write": {
+        "title": "Create and edit"
+      },
+      "graphql.run": {
+        "title": "Run"
+      },
+      "graphql.run.write": {
+        "title": "Create and edit"
+      },
+      "graphql.sponsors_listing": {
+        "title": "Sponsors listing"
+      },
+      "graphql.sponsors_listing.admin": {
+        "title": "Manage"
+      },
+      "graphql.sponsors_tier": {
+        "title": "Sponsors tier"
+      },
+      "graphql.sponsors_tier.admin": {
+        "title": "Manage"
+      },
+      "graphql.sponsors_tier.publish": {
+        "title": "Publish"
+      },
+      "graphql.sponsorship": {
+        "title": "Sponsorship"
+      },
+      "graphql.sponsorship.pay": {
+        "title": "Make payments"
+      },
+      "graphql.sponsorship.write": {
+        "title": "Create and edit"
+      },
+      "graphql.sponsorship_preferences": {
+        "title": "Sponsorship preferences"
+      },
+      "graphql.sponsorship_preferences.write": {
+        "title": "Create and edit"
+      },
+      "graphql.sponsorships": {
+        "title": "Sponsorships"
+      },
+      "graphql.sponsorships.pay": {
+        "title": "Make payments"
+      },
+      "graphql.star": {
+        "title": "Star"
+      },
+      "graphql.star.delete": {
+        "title": "Delete"
+      },
+      "graphql.star.write": {
+        "title": "Create and edit"
+      },
+      "graphql.sub_issue": {
+        "title": "Sub issue"
+      },
+      "graphql.sub_issue.delete": {
+        "title": "Delete"
+      },
+      "graphql.sub_issue.write": {
+        "title": "Create and edit"
+      },
+      "graphql.submit_pull_request_review": {
+        "title": "Submit pull request review"
+      },
+      "graphql.submit_pull_request_review.write": {
+        "title": "Create and edit"
+      },
+      "graphql.subscription": {
+        "title": "Subscription"
+      },
+      "graphql.subscription.write": {
+        "title": "Create and edit"
+      },
+      "graphql.suite": {
+        "title": "Suite"
+      },
+      "graphql.suite.write": {
+        "title": "Create and edit"
+      },
+      "graphql.suite_preferences": {
+        "title": "Suite preferences"
+      },
+      "graphql.suite_preferences.admin": {
+        "title": "Manage"
+      },
+      "graphql.team_review_assignment": {
+        "title": "Team review assignment"
+      },
+      "graphql.team_review_assignment.admin": {
+        "title": "Manage"
+      },
+      "graphql.teams_repository": {
+        "title": "Teams repository"
+      },
+      "graphql.teams_repository.admin": {
+        "title": "Manage"
+      },
+      "graphql.template_repository": {
+        "title": "Template repository"
+      },
+      "graphql.template_repository.write": {
+        "title": "Create and edit"
+      },
+      "graphql.topic_suggestion": {
+        "title": "Topic suggestion"
+      },
+      "graphql.topic_suggestion.write": {
+        "title": "Create and edit"
+      },
+      "graphql.topics": {
+        "title": "Topics"
+      },
+      "graphql.topics.write": {
+        "title": "Create and edit"
+      },
+      "graphql.unlink_project_v2_from_repository": {
+        "title": "Unlink project v2 from repository"
+      },
+      "graphql.unlink_project_v2_from_repository.write": {
+        "title": "Create and edit"
+      },
+      "graphql.unlink_project_v2_from_team": {
+        "title": "Unlink project v2 from team"
+      },
+      "graphql.unlink_project_v2_from_team.write": {
+        "title": "Create and edit"
+      },
+      "graphql.unlink_repository_from_project": {
+        "title": "Unlink repository from project"
+      },
+      "graphql.unlink_repository_from_project.write": {
+        "title": "Create and edit"
+      },
+      "graphql.unmark_discussion_comment_as_answer": {
+        "title": "Unmark discussion comment as answer"
+      },
+      "graphql.unmark_discussion_comment_as_answer.write": {
+        "title": "Create and edit"
+      },
+      "graphql.unmark_file_as_viewed": {
+        "title": "Unmark file as viewed"
+      },
+      "graphql.unmark_file_as_viewed.write": {
+        "title": "Create and edit"
+      },
+      "graphql.unmark_issue_as": {
+        "title": "Unmark issue as"
+      },
+      "graphql.unmark_issue_as.write": {
+        "title": "Create and edit"
+      },
+      "graphql.unmark_project_v2_as_template": {
+        "title": "Unmark project v2 as template"
+      },
+      "graphql.unmark_project_v2_as_template.write": {
+        "title": "Create and edit"
+      },
+      "graphql.unminimize_comment": {
+        "title": "Unminimize comment"
+      },
+      "graphql.unminimize_comment.write": {
+        "title": "Create and edit"
+      },
+      "graphql.unresolve_review_thread": {
+        "title": "Unresolve review thread"
+      },
+      "graphql.unresolve_review_thread.write": {
+        "title": "Create and edit"
+      },
+      "graphql.upvote": {
+        "title": "Upvote"
+      },
+      "graphql.upvote.delete": {
+        "title": "Delete"
+      },
+      "graphql.upvote.write": {
+        "title": "Create and edit"
+      },
+      "graphql.user": {
+        "title": "Account"
+      },
+      "graphql.user.delete": {
+        "title": "Delete"
+      },
+      "graphql.user.write": {
+        "title": "Create and edit"
+      },
+      "graphql.user_interaction_limit": {
+        "title": "User interaction limit"
+      },
+      "graphql.user_interaction_limit.admin": {
+        "title": "Manage"
+      },
+      "graphql.user_lists_for_item": {
+        "title": "User lists for item"
+      },
+      "graphql.user_lists_for_item.write": {
+        "title": "Create and edit"
+      },
+      "graphql.verifiable_domain": {
+        "title": "Verifiable domain"
+      },
+      "graphql.verifiable_domain.admin": {
+        "title": "Manage"
+      },
+      "graphql.verifiable_domain_token": {
+        "title": "Verifiable domain token"
+      },
+      "graphql.verifiable_domain_token.admin": {
+        "title": "Manage"
+      },
       "installation": {
         "title": "Installation"
       },
@@ -5120,18 +6278,22 @@
     },
     "fields": [
       {
+        "credential": true,
+        "hint": "GitHub will ask you to authorize GitHub CLI.",
         "key": "GITHUB_TOKEN",
         "label": "GitHub account",
-        "hint": "GitHub will ask you to authorize GitHub CLI.",
         "oauth": {
-          "device_auth_url": "https://github.com/login/device/code",
-          "token_url": "https://github.com/login/oauth/access_token",
-          "client_id": "178c6fc778ccc68e1d6a",
           "auth_style": "params",
+          "client_id": "178c6fc778ccc68e1d6a",
+          "device_auth_url": "https://github.com/login/device/code",
+          "required_scopes": [
+            "repo",
+            "read:org",
+            "gist"
+          ],
           "scope": "repo read:org gist",
-          "required_scopes": ["repo", "read:org", "gist"]
+          "token_url": "https://github.com/login/oauth/access_token"
         },
-        "credential": true,
         "secret": true
       },
       {
@@ -5147,10 +6309,19 @@
     ],
     "group": "api"
   },
+  "public_scope": [
+    "owner",
+    "repo"
+  ],
   "title": "GitHub",
-  "public_scope": ["owner", "repo"],
   "http": {
     "operations": {
+      "abortQueuedMigrations": {"action":"graphql.queued_migrations.admin","body":"graphql","effects":["admin"],"graphql":{"field":"abortQueuedMigrations","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "abortRepositoryMigration": {"action":"graphql.repository_migration.admin","body":"graphql","effects":["admin"],"graphql":{"field":"abortRepositoryMigration","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "acceptEnterpriseAdministratorInvitation": {"action":"graphql.enterprise_administrator_invitation.admin","body":"graphql","effects":["admin"],"graphql":{"field":"acceptEnterpriseAdministratorInvitation","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "acceptEnterpriseMemberInvitation": {"action":"graphql.enterprise_member_invitation.admin","body":"graphql","effects":["admin"],"graphql":{"field":"acceptEnterpriseMemberInvitation","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "acceptTopicSuggestion": {"action":"graphql.topic_suggestion.write","body":"graphql","effects":["write"],"graphql":{"field":"acceptTopicSuggestion","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "accessUserNamespaceRepository": {"action":"graphql.access_user_namespace_repository.admin","body":"graphql","effects":["admin"],"graphql":{"field":"accessUserNamespaceRepository","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "actions/add-custom-labels-to-self-hosted-runner-for-org": {"action":"orgs.actions.runners.labels.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/orgs/{org}/actions/runners/{runner_id}/labels","scope":{"org":{"at":"org","from":"path"},"request":{"at":"","from":"body","type":"object"},"runner_id":{"at":"runner_id","from":"path"}}},
       "actions/add-custom-labels-to-self-hosted-runner-for-repo": {"action":"repos.actions.runners.labels.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/actions/runners/{runner_id}/labels","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"request":{"at":"","from":"body","type":"object"},"runner_id":{"at":"runner_id","from":"path"}}},
       "actions/add-repo-access-to-self-hosted-runner-group-in-org": {"action":"orgs.actions.runner_groups.repositories.write","effects":["write"],"method":"PUT","origin":"https://api.github.com","path":"/orgs/{org}/actions/runner-groups/{runner_group_id}/repositories/{repository_id}","scope":{"org":{"at":"org","from":"path"},"repository_id":{"at":"repository_id","from":"path"},"runner_group_id":{"at":"runner_group_id","from":"path"}}},
@@ -5395,6 +6566,28 @@
       "activity/set-thread-subscription.json.10796d8b16ac": {"action":"notifications.threads.subscription.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.github.com","path":"/notifications/threads/{thread_id}/subscription","scope":{"request":{"at":"","from":"body","type":"object"},"thread_id":{"at":"thread_id","from":"path"}}},
       "activity/star-repo-for-authenticated-user": {"action":"user.starred.write","effects":["write"],"method":"PUT","origin":"https://api.github.com","path":"/user/starred/{owner}/{repo}","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"}}},
       "activity/unstar-repo-for-authenticated-user": {"action":"user.starred.delete","effects":["delete"],"method":"DELETE","origin":"https://api.github.com","path":"/user/starred/{owner}/{repo}","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"}}},
+      "addAssigneesToAssignable": {"action":"graphql.assignees_to_assignable.write","body":"graphql","effects":["write"],"graphql":{"field":"addAssigneesToAssignable","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addBlockedBy": {"action":"graphql.blocked_by.write","body":"graphql","effects":["write"],"graphql":{"field":"addBlockedBy","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addCloseIssueReferences": {"action":"graphql.issue_references.write","body":"graphql","effects":["write"],"graphql":{"field":"addCloseIssueReferences","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addDiscussionComment": {"action":"graphql.discussion_comment.write","body":"graphql","effects":["write"],"graphql":{"field":"addDiscussionComment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addDiscussionPollVote": {"action":"graphql.discussion_poll_vote.write","body":"graphql","effects":["write"],"graphql":{"field":"addDiscussionPollVote","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addEnterpriseOrganizationMember": {"action":"graphql.enterprise_organization_member.admin","body":"graphql","effects":["admin","share"],"graphql":{"field":"addEnterpriseOrganizationMember","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addEnterpriseSupportEntitlement": {"action":"graphql.enterprise_support_entitlement.admin","body":"graphql","effects":["admin"],"graphql":{"field":"addEnterpriseSupportEntitlement","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addLabelsToLabelable": {"action":"graphql.labels_to_labelable.write","body":"graphql","effects":["write"],"graphql":{"field":"addLabelsToLabelable","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addProjectCard": {"action":"graphql.project_card.write","body":"graphql","effects":["write"],"graphql":{"field":"addProjectCard","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addProjectColumn": {"action":"graphql.project_column.write","body":"graphql","effects":["write"],"graphql":{"field":"addProjectColumn","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addProjectV2DraftIssue": {"action":"graphql.project_v2_draft_issue.write","body":"graphql","effects":["write"],"graphql":{"field":"addProjectV2DraftIssue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addProjectV2ItemById": {"action":"graphql.project_v2_item_by_id.write","body":"graphql","effects":["write"],"graphql":{"field":"addProjectV2ItemById","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addPullRequestCreationCapBypassUsers": {"action":"graphql.pull_request_creation_cap_bypass_users.admin","body":"graphql","effects":["admin"],"graphql":{"field":"addPullRequestCreationCapBypassUsers","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addPullRequestReviewComment": {"action":"graphql.pull_request_review_comment.write","body":"graphql","effects":["write"],"graphql":{"field":"addPullRequestReviewComment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addPullRequestReviewThread": {"action":"graphql.pull_request_review_thread.write","body":"graphql","effects":["write"],"graphql":{"field":"addPullRequestReviewThread","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addPullRequestReviewThreadReply": {"action":"graphql.pull_request_review_thread_reply.write","body":"graphql","effects":["write"],"graphql":{"field":"addPullRequestReviewThreadReply","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addReaction": {"action":"graphql.reaction.write","body":"graphql","effects":["write"],"graphql":{"field":"addReaction","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addRelatesTo": {"action":"graphql.relates_to.write","body":"graphql","effects":["write"],"graphql":{"field":"addRelatesTo","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addStar": {"action":"graphql.star.write","body":"graphql","effects":["write"],"graphql":{"field":"addStar","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addSubIssue": {"action":"graphql.sub_issue.write","body":"graphql","effects":["write"],"graphql":{"field":"addSubIssue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addUpvote": {"action":"graphql.upvote.write","body":"graphql","effects":["write"],"graphql":{"field":"addUpvote","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "addVerifiableDomain": {"action":"graphql.verifiable_domain.admin","body":"graphql","effects":["admin"],"graphql":{"field":"addVerifiableDomain","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "agent-tasks/create-task-in-repo": {"action":"agents.repos.tasks.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/agents/repos/{owner}/{repo}/tasks","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "agent-tasks/get-task-by-id": {"action":"agents.tasks.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/agents/tasks/{task_id}","scope":{"task_id":{"at":"task_id","from":"path"}}},
       "agent-tasks/get-task-by-repo-and-id": {"action":"agents.repos.tasks.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/agents/repos/{owner}/{repo}/tasks/{task_id}","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"task_id":{"at":"task_id","from":"path"}}},
@@ -5439,6 +6632,9 @@
       "api-insights/get-time-stats-by-actor": {"action":"orgs.insights.time_stats.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["min_timestamp","max_timestamp","timestamp_increment"],"path":"/orgs/{org}/insights/api/time-stats/{actor_type}/{actor_id}","scope":{"actor_id":{"at":"actor_id","from":"path"},"actor_type":{"at":"actor_type","from":"path"},"org":{"at":"org","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "api-insights/get-time-stats-by-user": {"action":"orgs.insights.time_stats.users.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["min_timestamp","max_timestamp","timestamp_increment"],"path":"/orgs/{org}/insights/api/time-stats/users/{user_id}","scope":{"org":{"at":"org","from":"path"},"query":{"at":"","from":"query","type":"object"},"user_id":{"at":"user_id","from":"path"}}},
       "api-insights/get-user-stats": {"action":"orgs.insights.user_stats.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["min_timestamp","max_timestamp","page","per_page","direction","sort","actor_name_substring"],"path":"/orgs/{org}/insights/api/user-stats/{user_id}","scope":{"org":{"at":"org","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"user_id":{"at":"user_id","from":"path"}}},
+      "applyPendingIssueSuggestions": {"action":"graphql.apply_pending_issue_suggestions.write","body":"graphql","effects":["write"],"graphql":{"field":"applyPendingIssueSuggestions","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "approveDeployments": {"action":"graphql.deployments.execute","body":"graphql","effects":["execute"],"graphql":{"field":"approveDeployments","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "approveVerifiableDomain": {"action":"graphql.verifiable_domain.admin","body":"graphql","effects":["admin"],"graphql":{"field":"approveVerifiableDomain","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "apps/add-repo-to-installation-for-authenticated-user": {"action":"user.installations.repositories.write","effects":["write"],"method":"PUT","origin":"https://api.github.com","path":"/user/installations/{installation_id}/repositories/{repository_id}","scope":{"installation_id":{"at":"installation_id","from":"path"},"repository_id":{"at":"repository_id","from":"path"}}},
       "apps/check-token": {"action":"applications.token.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.github.com","path":"/applications/{client_id}/token","scope":{"client_id":{"at":"client_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "apps/create-from-manifest": {"action":"app_manifests.conversions.write","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/app-manifests/{code}/conversions","scope":{"code":{"at":"code","from":"path"}}},
@@ -5477,6 +6673,9 @@
       "apps/suspend-installation": {"action":"app.installations.suspended.write","effects":["write"],"method":"PUT","origin":"https://api.github.com","path":"/app/installations/{installation_id}/suspended","scope":{"installation_id":{"at":"installation_id","from":"path"}}},
       "apps/unsuspend-installation": {"action":"app.installations.suspended.delete","effects":["delete"],"method":"DELETE","origin":"https://api.github.com","path":"/app/installations/{installation_id}/suspended","scope":{"installation_id":{"at":"installation_id","from":"path"}}},
       "apps/update-webhook-config-for-app": {"action":"app.hook.config.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api.github.com","path":"/app/hook/config","scope":{"request":{"at":"","from":"body","type":"object"},"url":{"at":"/url","from":"body","optional":true}}},
+      "archiveProjectV2Item": {"action":"graphql.project_v2_item.write","body":"graphql","effects":["write"],"graphql":{"field":"archiveProjectV2Item","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "archivePullRequest": {"action":"graphql.pull_request.write","body":"graphql","effects":["write"],"graphql":{"field":"archivePullRequest","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "archiveRepository": {"action":"graphql.repository.admin","body":"graphql","effects":["admin"],"graphql":{"field":"archiveRepository","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "billing/create-organization-budget": {"action":"organizations.settings.billing.budgets.write","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/organizations/{org}/settings/billing/budgets","scope":{"org":{"at":"org","from":"path"}}},
       "billing/create-organization-budget.json.ecce8518b0c7": {"action":"organizations.settings.billing.budgets.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/organizations/{org}/settings/billing/budgets","scope":{"budget_entity_name":{"at":"/budget_entity_name","from":"body","optional":true},"org":{"at":"org","from":"path"},"request":{"at":"","from":"body","type":"object"},"user":{"at":"/user","from":"body","optional":true}}},
       "billing/delete-budget-org": {"action":"organizations.settings.billing.budgets.delete","effects":["delete"],"method":"DELETE","origin":"https://api.github.com","path":"/organizations/{org}/settings/billing/budgets/{budget_id}","scope":{"budget_id":{"at":"budget_id","from":"path"},"org":{"at":"org","from":"path"}}},
@@ -5496,6 +6695,10 @@
       "campaigns/get-campaign-summary": {"action":"orgs.campaigns.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/orgs/{org}/campaigns/{campaign_number}","scope":{"campaign_number":{"at":"campaign_number","from":"path"},"org":{"at":"org","from":"path"}}},
       "campaigns/list-org-campaigns": {"action":"orgs.campaigns.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["page","per_page","direction","state","sort"],"path":"/orgs/{org}/campaigns","scope":{"org":{"at":"org","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
       "campaigns/update-campaign": {"action":"orgs.campaigns.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.github.com","path":"/orgs/{org}/campaigns/{campaign_number}","scope":{"campaign_number":{"at":"campaign_number","from":"path"},"name":{"at":"/name","from":"body","optional":true},"org":{"at":"org","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "cancelEnterpriseAdminInvitation": {"action":"graphql.enterprise_admin_invitation.admin","body":"graphql","effects":["admin"],"graphql":{"field":"cancelEnterpriseAdminInvitation","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "cancelEnterpriseMemberInvitation": {"action":"graphql.enterprise_member_invitation.admin","body":"graphql","effects":["admin"],"graphql":{"field":"cancelEnterpriseMemberInvitation","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "cancelSponsorship": {"action":"graphql.sponsorship.write","body":"graphql","effects":["write"],"graphql":{"field":"cancelSponsorship","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "changeUserStatus": {"action":"graphql.change_user_status.write","body":"graphql","effects":["write"],"graphql":{"field":"changeUserStatus","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "checks/create": {"action":"repos.runs.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/check-runs","scope":{"details_url":{"at":"/details_url","from":"body","optional":true},"external_id":{"at":"/external_id","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "checks/create-suite": {"action":"repos.suites.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/check-suites","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "checks/get": {"action":"repos.check_runs.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/check-runs/{check_run_id}","scope":{"check_run_id":{"at":"check_run_id","from":"path"},"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"}}},
@@ -5514,6 +6717,13 @@
       "classroom/list-accepted-assignments-for-an-assignment": {"action":"assignments.accepted_assignments.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/assignments/{assignment_id}/accepted_assignments","scope":{"assignment_id":{"at":"assignment_id","from":"path"}}},
       "classroom/list-assignments-for-a-classroom": {"action":"classrooms.assignments.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/classrooms/{classroom_id}/assignments","scope":{"classroom_id":{"at":"classroom_id","from":"path"}}},
       "classroom/list-classrooms": {"action":"classrooms.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/classrooms","scope":{}},
+      "clearLabelsFromLabelable": {"action":"graphql.clear_labels_from_labelable.delete","body":"graphql","effects":["delete"],"graphql":{"field":"clearLabelsFromLabelable","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "clearProjectV2ItemFieldValue": {"action":"graphql.clear_project_v2_item_field_value.delete","body":"graphql","effects":["delete"],"graphql":{"field":"clearProjectV2ItemFieldValue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "cloneProject": {"action":"graphql.project.write","body":"graphql","effects":["write"],"graphql":{"field":"cloneProject","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "cloneTemplateRepository": {"action":"graphql.template_repository.write","body":"graphql","effects":["write"],"graphql":{"field":"cloneTemplateRepository","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "closeDiscussion": {"action":"graphql.discussion.write","body":"graphql","effects":["write"],"graphql":{"field":"closeDiscussion","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "closeIssue": {"action":"graphql.issue.write","body":"graphql","effects":["write"],"graphql":{"field":"closeIssue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "closePullRequest": {"action":"graphql.pull_request.write","body":"graphql","effects":["write"],"graphql":{"field":"closePullRequest","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "code-quality/get-finding": {"action":"repos.code_quality.findings.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/code-quality/findings/{finding_number}","scope":{"finding_number":{"at":"finding_number","from":"path"},"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"}}},
       "code-quality/get-setup": {"action":"repos.code_quality.setup.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/code-quality/setup","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"}}},
       "code-quality/list-findings-for-repo": {"action":"repos.code_quality.findings.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["per_page","direction","before","after","state"],"path":"/repos/{owner}/{repo}/code-quality/findings","scope":{"owner":{"at":"owner","from":"path"},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"repo":{"at":"repo","from":"path"}}},
@@ -5617,6 +6827,9 @@
       "codespaces/update-for-authenticated-user.json.ef75c98d2afa": {"action":"user.codespaces.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.github.com","path":"/user/codespaces/{codespace_name}","scope":{"codespace_name":{"at":"codespace_name","from":"path"},"display_name":{"at":"/display_name","from":"body","optional":true},"recent_folders":{"at":"/recent_folders","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
       "contents.get": {"action":"repos.contents.read","effects":["read"],"headers":{"X-Github-Api-Version":"2022-11-28"},"method":"GET","origin":"https://api.github.com","params":["ref"],"path":"/repos/{owner}/{repo}/contents/{path*}","scope":{"owner":{"at":"owner","from":"path"},"path":{"at":"path","from":"path"},"repo":{"at":"repo","from":"path"}}},
       "contents.put": {"action":"repos.contents.push","body":"json","effects":["write"],"headers":{"X-Github-Api-Version":"2022-11-28"},"method":"PUT","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/contents/{path*}","scope":{"change":{"at":"","from":"body","type":"object"},"owner":{"at":"owner","from":"path"},"path":{"at":"path","from":"path"},"repo":{"at":"repo","from":"path"}}},
+      "convertProjectCardNoteToIssue": {"action":"graphql.convert_project_card_note_to_issue.write","body":"graphql","effects":["write"],"graphql":{"field":"convertProjectCardNoteToIssue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "convertProjectV2DraftIssueItemToIssue": {"action":"graphql.convert_project_v2_draft_issue_item_to_issue.write","body":"graphql","effects":["write"],"graphql":{"field":"convertProjectV2DraftIssueItemToIssue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "convertPullRequestToDraft": {"action":"graphql.convert_pull_request_to_draft.write","body":"graphql","effects":["write"],"graphql":{"field":"convertPullRequestToDraft","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "copilot-spaces/add-collaborator-for-org": {"action":"orgs.copilot_spaces.collaborators.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.github.com","path":"/orgs/{org}/copilot-spaces/{space_number}/collaborators","scope":{"org":{"at":"org","from":"path"},"request":{"at":"","from":"body","type":"object"},"space_number":{"at":"space_number","from":"path"}}},
       "copilot-spaces/add-collaborator-for-user": {"action":"users.copilot_spaces.collaborators.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.github.com","path":"/users/{username}/copilot-spaces/{space_number}/collaborators","scope":{"request":{"at":"","from":"body","type":"object"},"space_number":{"at":"space_number","from":"path"},"username":{"at":"username","from":"path"}}},
       "copilot-spaces/create-for-org": {"action":"orgs.copilot_spaces.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/orgs/{org}/copilot-spaces","scope":{"name":{"at":"/name","from":"body"},"org":{"at":"org","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
@@ -5676,7 +6889,71 @@
       "copilot/set-copilot-coding-agent-selected-repositories-for-organization": {"action":"orgs.copilot.coding_agent.permissions.repositories.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.github.com","path":"/orgs/{org}/copilot/coding-agent/permissions/repositories","scope":{"org":{"at":"org","from":"path"},"request":{"at":"","from":"body","type":"object"},"selected_repository_ids":{"at":"/selected_repository_ids","from":"body","type":"array"}}},
       "copilot/set-copilot-content-exclusion-for-organization": {"action":"orgs.copilot.content_exclusion.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.github.com","path":"/orgs/{org}/copilot/content_exclusion","scope":{"org":{"at":"org","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "copilot/set-enterprise-coding-agent-policy": {"action":"enterprises.copilot.policies.coding_agent.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.github.com","path":"/enterprises/{enterprise}/copilot/policies/coding_agent","scope":{"enterprise":{"at":"enterprise","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "copyProjectV2": {"action":"graphql.project_v2.write","body":"graphql","effects":["write"],"graphql":{"field":"copyProjectV2","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createAttributionInvitation": {"action":"graphql.attribution_invitation.admin","body":"graphql","effects":["admin","share"],"graphql":{"field":"createAttributionInvitation","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createBranchProtectionRule": {"action":"graphql.branch_protection_rule.admin","body":"graphql","effects":["admin"],"graphql":{"field":"createBranchProtectionRule","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createCheckRun": {"action":"graphql.run.write","body":"graphql","effects":["write"],"graphql":{"field":"createCheckRun","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createCheckSuite": {"action":"graphql.suite.write","body":"graphql","effects":["write"],"graphql":{"field":"createCheckSuite","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createCommitOnBranch": {"action":"graphql.commit_on_branch.write","body":"graphql","effects":["write"],"graphql":{"field":"createCommitOnBranch","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createDeployment": {"action":"graphql.deployment.execute","body":"graphql","effects":["execute"],"graphql":{"field":"createDeployment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createDeploymentStatus": {"action":"graphql.deployment_status.write","body":"graphql","effects":["write"],"graphql":{"field":"createDeploymentStatus","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createDiscussion": {"action":"graphql.discussion.write","body":"graphql","effects":["write"],"graphql":{"field":"createDiscussion","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createEnterpriseOrganization": {"action":"graphql.enterprise_organization.admin","body":"graphql","effects":["admin"],"graphql":{"field":"createEnterpriseOrganization","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createEnvironment": {"action":"graphql.environment.admin","body":"graphql","effects":["admin"],"graphql":{"field":"createEnvironment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createIpAllowListEntry": {"action":"graphql.ip_allow_list_entry.admin","body":"graphql","effects":["admin"],"graphql":{"field":"createIpAllowListEntry","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createIssueField": {"action":"graphql.issue_field.admin","body":"graphql","effects":["admin"],"graphql":{"field":"createIssueField","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createIssueFieldValue": {"action":"graphql.issue_field_value.write","body":"graphql","effects":["write"],"graphql":{"field":"createIssueFieldValue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createIssueType": {"action":"graphql.issue_type.admin","body":"graphql","effects":["admin"],"graphql":{"field":"createIssueType","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createLabel": {"action":"graphql.label.write","body":"graphql","effects":["write"],"graphql":{"field":"createLabel","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createLinkedBranch": {"action":"graphql.linked_branch.write","body":"graphql","effects":["write"],"graphql":{"field":"createLinkedBranch","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createMigrationSource": {"action":"graphql.migration_source.admin","body":"graphql","effects":["admin"],"graphql":{"field":"createMigrationSource","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createProject": {"action":"graphql.project.write","body":"graphql","effects":["write"],"graphql":{"field":"createProject","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createProjectV2": {"action":"graphql.project_v2.write","body":"graphql","effects":["write"],"graphql":{"field":"createProjectV2","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createProjectV2Field": {"action":"graphql.project_v2_field.write","body":"graphql","effects":["write"],"graphql":{"field":"createProjectV2Field","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createProjectV2IssueField": {"action":"graphql.project_v2_issue_field.write","body":"graphql","effects":["write"],"graphql":{"field":"createProjectV2IssueField","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createProjectV2StatusUpdate": {"action":"graphql.project_v2_status.write","body":"graphql","effects":["write"],"graphql":{"field":"createProjectV2StatusUpdate","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createProjectV2View": {"action":"graphql.project_v2_view.write","body":"graphql","effects":["write"],"graphql":{"field":"createProjectV2View","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createRef": {"action":"graphql.ref.write","body":"graphql","effects":["write"],"graphql":{"field":"createRef","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createRepository": {"action":"graphql.repository.write","body":"graphql","effects":["write"],"graphql":{"field":"createRepository","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createRepositoryCustomProperty": {"action":"graphql.repository_custom_property.admin","body":"graphql","effects":["admin"],"graphql":{"field":"createRepositoryCustomProperty","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createRepositoryRuleset": {"action":"graphql.repository_ruleset.admin","body":"graphql","effects":["admin"],"graphql":{"field":"createRepositoryRuleset","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createSponsorsListing": {"action":"graphql.sponsors_listing.admin","body":"graphql","effects":["admin"],"graphql":{"field":"createSponsorsListing","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createSponsorsTier": {"action":"graphql.sponsors_tier.admin","body":"graphql","effects":["admin"],"graphql":{"field":"createSponsorsTier","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createSponsorship": {"action":"graphql.sponsorship.pay","body":"graphql","effects":["pay"],"graphql":{"field":"createSponsorship","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createSponsorships": {"action":"graphql.sponsorships.pay","body":"graphql","effects":["pay"],"graphql":{"field":"createSponsorships","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "createUserList": {"action":"graphql.user.write","body":"graphql","effects":["write"],"graphql":{"field":"createUserList","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "credentials/revoke": {"action":"credentials.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.github.com","path":"/credentials/revoke","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "declineTopicSuggestion": {"action":"graphql.decline_topic_suggestion.write","body":"graphql","effects":["write"],"graphql":{"field":"declineTopicSuggestion","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteBranchProtectionRule": {"action":"graphql.branch_protection_rule.admin","body":"graphql","effects":["admin","delete"],"graphql":{"field":"deleteBranchProtectionRule","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteDeployment": {"action":"graphql.deployment.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteDeployment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteDiscussion": {"action":"graphql.discussion.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteDiscussion","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteDiscussionComment": {"action":"graphql.discussion_comment.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteDiscussionComment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteEnvironment": {"action":"graphql.environment.admin","body":"graphql","effects":["admin","delete"],"graphql":{"field":"deleteEnvironment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteIpAllowListEntry": {"action":"graphql.ip_allow_list_entry.admin","body":"graphql","effects":["admin","delete"],"graphql":{"field":"deleteIpAllowListEntry","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteIssue": {"action":"graphql.issue.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteIssue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteIssueComment": {"action":"graphql.issue_comment.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteIssueComment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteIssueField": {"action":"graphql.issue_field.admin","body":"graphql","effects":["admin","delete"],"graphql":{"field":"deleteIssueField","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteIssueFieldValue": {"action":"graphql.issue_field_value.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteIssueFieldValue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteIssueType": {"action":"graphql.issue_type.admin","body":"graphql","effects":["admin","delete"],"graphql":{"field":"deleteIssueType","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteLabel": {"action":"graphql.label.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteLabel","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteLinkedBranch": {"action":"graphql.linked_branch.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteLinkedBranch","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deletePackageVersion": {"action":"graphql.package_version.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deletePackageVersion","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteProject": {"action":"graphql.project.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteProject","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteProjectCard": {"action":"graphql.project_card.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteProjectCard","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteProjectColumn": {"action":"graphql.project_column.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteProjectColumn","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteProjectV2": {"action":"graphql.project_v2.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteProjectV2","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteProjectV2Field": {"action":"graphql.project_v2_field.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteProjectV2Field","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteProjectV2Item": {"action":"graphql.project_v2_item.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteProjectV2Item","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteProjectV2StatusUpdate": {"action":"graphql.project_v2_status.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteProjectV2StatusUpdate","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteProjectV2View": {"action":"graphql.project_v2_view.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteProjectV2View","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteProjectV2Workflow": {"action":"graphql.project_v2_workflow.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteProjectV2Workflow","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deletePullRequestReview": {"action":"graphql.pull_request_review.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deletePullRequestReview","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deletePullRequestReviewComment": {"action":"graphql.pull_request_review_comment.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deletePullRequestReviewComment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteRef": {"action":"graphql.ref.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteRef","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteRepositoryCustomProperty": {"action":"graphql.repository_custom_property.admin","body":"graphql","effects":["admin","delete"],"graphql":{"field":"deleteRepositoryCustomProperty","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteRepositoryRuleset": {"action":"graphql.repository_ruleset.admin","body":"graphql","effects":["admin","delete"],"graphql":{"field":"deleteRepositoryRuleset","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteUserList": {"action":"graphql.user.delete","body":"graphql","effects":["delete"],"graphql":{"field":"deleteUserList","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "deleteVerifiableDomain": {"action":"graphql.verifiable_domain.admin","body":"graphql","effects":["admin","delete"],"graphql":{"field":"deleteVerifiableDomain","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "dependabot/add-selected-repo-to-org-secret": {"action":"orgs.dependabot.secrets.repositories.write","effects":["write"],"method":"PUT","origin":"https://api.github.com","path":"/orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}","scope":{"org":{"at":"org","from":"path"},"repository_id":{"at":"repository_id","from":"path"},"secret_name":{"at":"secret_name","from":"path"}}},
       "dependabot/create-or-update-org-secret": {"action":"orgs.dependabot.secrets.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.github.com","path":"/orgs/{org}/dependabot/secrets/{secret_name}","scope":{"key_id":{"at":"/key_id","from":"body","optional":true},"org":{"at":"org","from":"path"},"request":{"at":"","from":"body","type":"object"},"secret_name":{"at":"secret_name","from":"path"},"selected_repository_ids":{"at":"/selected_repository_ids","from":"body","optional":true,"type":"array"}}},
       "dependabot/create-or-update-repo-secret": {"action":"repos.dependabot.secrets.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/dependabot/secrets/{secret_name}","scope":{"key_id":{"at":"/key_id","from":"body","optional":true},"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"request":{"at":"","from":"body","type":"object"},"secret_name":{"at":"secret_name","from":"path"}}},
@@ -5707,7 +6984,15 @@
       "dependency-graph/export-sbom": {"action":"repos.dependency_graph.sbom.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/dependency-graph/sbom","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"}}},
       "dependency-graph/fetch-sbom-report": {"action":"repos.dependency_graph.sbom.fetch_report.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/dependency-graph/sbom/fetch-report/{sbom_uuid}","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"sbom_uuid":{"at":"sbom_uuid","from":"path"}}},
       "dependency-graph/generate-sbom-report": {"action":"repos.dependency_graph.sbom.generate_report.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/dependency-graph/sbom/generate-report","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"}}},
+      "dequeuePullRequest": {"action":"graphql.dequeue_pull_request.write","body":"graphql","effects":["write"],"graphql":{"field":"dequeuePullRequest","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "disablePullRequestAutoMerge": {"action":"graphql.pull_request_auto.write","body":"graphql","effects":["write"],"graphql":{"field":"disablePullRequestAutoMerge","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "dismissPullRequestReview": {"action":"graphql.dismiss_pull_request_review.write","body":"graphql","effects":["write"],"graphql":{"field":"dismissPullRequestReview","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "dismissRepositoryVulnerabilityAlert": {"action":"graphql.dismiss_repository_vulnerability_alert.write","body":"graphql","effects":["write"],"graphql":{"field":"dismissRepositoryVulnerabilityAlert","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "emojis/get": {"action":"emojis.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/emojis","scope":{}},
+      "enablePullRequestAutoMerge": {"action":"graphql.pull_request_auto.write","body":"graphql","effects":["write"],"graphql":{"field":"enablePullRequestAutoMerge","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "enqueuePullRequest": {"action":"graphql.enqueue_pull_request.write","body":"graphql","effects":["write"],"graphql":{"field":"enqueuePullRequest","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "followOrganization": {"action":"graphql.organization.write","body":"graphql","effects":["write"],"graphql":{"field":"followOrganization","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "followUser": {"action":"graphql.user.write","body":"graphql","effects":["write"],"graphql":{"field":"followUser","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "gists/check-is-starred": {"action":"gists.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/gists/{gist_id}/star","scope":{"gist_id":{"at":"gist_id","from":"path"}}},
       "gists/create": {"action":"gists.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/gists","scope":{"request":{"at":"","from":"body","type":"object"}}},
       "gists/create-comment": {"action":"gists.comments.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.github.com","path":"/gists/{gist_id}/comments","scope":{"gist_id":{"at":"gist_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
@@ -5728,10 +7013,10 @@
       "gists/unstar": {"action":"gists.delete","effects":["delete"],"method":"DELETE","origin":"https://api.github.com","path":"/gists/{gist_id}/star","scope":{"gist_id":{"at":"gist_id","from":"path"}}},
       "gists/update": {"action":"gists.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.github.com","path":"/gists/{gist_id}","scope":{"gist_id":{"at":"gist_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "gists/update-comment": {"action":"gists.comments.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.github.com","path":"/gists/{gist_id}/comments/{comment_id}","scope":{"comment_id":{"at":"comment_id","from":"path"},"gist_id":{"at":"gist_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "git.discover.fetch": {"action":"read","effects":["read"],"method":"GET","origin":"https://github.com","path":"/{owner}/{repo}/info/refs","query":{"service":"git-upload-pack"},"scope":{"owner":{"from":"path","at":"owner"},"repo":{"from":"path","at":"repo","trim_suffix":".git"}}},
-      "git.discover.push": {"action":"read","effects":["read"],"method":"GET","origin":"https://github.com","path":"/{owner}/{repo}/info/refs","query":{"service":"git-receive-pack"},"scope":{"owner":{"from":"path","at":"owner"},"repo":{"from":"path","at":"repo","trim_suffix":".git"}}},
-      "git.fetch": {"action":"read","effects":["read"],"method":"POST","origin":"https://github.com","path":"/{owner}/{repo}/git-upload-pack","body":"any","scope":{"owner":{"from":"path","at":"owner"},"repo":{"from":"path","at":"repo","trim_suffix":".git"}}},
-      "git.push": {"action":"push","effects":["write"],"method":"POST","origin":"https://github.com","path":"/{owner}/{repo}/git-receive-pack","body":"any","scope":{"owner":{"from":"path","at":"owner"},"repo":{"from":"path","at":"repo","trim_suffix":".git"}}},
+      "git.discover.fetch": {"action":"read","effects":["read"],"method":"GET","origin":"https://github.com","path":"/{owner}/{repo}/info/refs","query":{"service":"git-upload-pack"},"scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path","trim_suffix":".git"}}},
+      "git.discover.push": {"action":"read","effects":["read"],"method":"GET","origin":"https://github.com","path":"/{owner}/{repo}/info/refs","query":{"service":"git-receive-pack"},"scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path","trim_suffix":".git"}}},
+      "git.fetch": {"action":"read","body":"any","effects":["read"],"method":"POST","origin":"https://github.com","path":"/{owner}/{repo}/git-upload-pack","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path","trim_suffix":".git"}}},
+      "git.push": {"action":"push","body":"any","effects":["write"],"method":"POST","origin":"https://github.com","path":"/{owner}/{repo}/git-receive-pack","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path","trim_suffix":".git"}}},
       "git/create-blob": {"action":"repos.git.blobs.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/git/blobs","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "git/create-commit": {"action":"repos.git.commits.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/git/commits","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "git/create-ref": {"action":"repos.git.refs.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/git/refs","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
@@ -5747,18 +7032,21 @@
       "git/update-ref": {"action":"repos.git.refs.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/git/refs/{ref}","scope":{"owner":{"at":"owner","from":"path"},"ref":{"at":"ref","from":"path"},"repo":{"at":"repo","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "gitignore/get-all-templates": {"action":"gitignore.templates.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/gitignore/templates","scope":{}},
       "gitignore/get-template": {"action":"gitignore.templates.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/gitignore/templates/{name}","scope":{"name":{"at":"name","from":"path"}}},
-      "graphql.comment": {"action":"comment","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/graphql","body":"graphql","graphql":{"operation":"mutation","fields":["addComment"]},"scope":{}},
-      "graphql.comment.reviews": {"action":"comment.reviews","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/graphql","body":"graphql","graphql":{"operation":"mutation","fields":["addPullRequestReview"]},"scope":{}},
-      "graphql.merge": {"action":"merge","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/graphql","body":"graphql","graphql":{"operation":"mutation","fields":["mergePullRequest"]},"scope":{}},
-      "graphql.open.issues": {"action":"open.issues","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/graphql","body":"graphql","graphql":{"operation":"mutation","fields":["createIssue","updateIssue"]},"scope":{}},
-      "graphql.open.pulls": {"action":"open.pulls","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/graphql","body":"graphql","graphql":{"operation":"mutation","fields":["createPullRequest","updatePullRequest"]},"scope":{}},
-      "graphql.read": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.github.com","path":"/graphql","body":"graphql","graphql":{"operation":"query","field":"*"},"scope":{}},
+      "grantEnterpriseOrganizationsMigratorRole": {"action":"graphql.enterprise_organizations_migrator_role.admin","body":"graphql","effects":["admin","share"],"graphql":{"field":"grantEnterpriseOrganizationsMigratorRole","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "grantMigratorRole": {"action":"graphql.migrator_role.admin","body":"graphql","effects":["admin","share"],"graphql":{"field":"grantMigratorRole","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "graphql.comment": {"action":"comment","body":"graphql","effects":["write"],"graphql":{"fields":["addComment"],"operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{}},
+      "graphql.comment.reviews": {"action":"comment.reviews","body":"graphql","effects":["write"],"graphql":{"fields":["addPullRequestReview"],"operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{}},
+      "graphql.merge": {"action":"merge","body":"graphql","effects":["write"],"graphql":{"fields":["mergePullRequest"],"operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{}},
+      "graphql.open.issues": {"action":"open.issues","body":"graphql","effects":["write"],"graphql":{"fields":["createIssue","updateIssue"],"operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{}},
+      "graphql.open.pulls": {"action":"open.pulls","body":"graphql","effects":["write"],"graphql":{"fields":["createPullRequest","updatePullRequest"],"operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{}},
+      "graphql.read": {"action":"read","body":"graphql","effects":["read"],"graphql":{"field":"*","operation":"query"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{}},
       "hosted-compute/create-network-configuration-for-org": {"action":"orgs.settings.network_configurations.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/orgs/{org}/settings/network-configurations","scope":{"failover_network_settings_ids":{"at":"/failover_network_settings_ids","from":"body","optional":true,"type":"array"},"name":{"at":"/name","from":"body"},"network_settings_ids":{"at":"/network_settings_ids","from":"body","type":"array"},"org":{"at":"org","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "hosted-compute/delete-network-configuration-from-org": {"action":"orgs.settings.network_configurations.delete","effects":["delete"],"method":"DELETE","origin":"https://api.github.com","path":"/orgs/{org}/settings/network-configurations/{network_configuration_id}","scope":{"network_configuration_id":{"at":"network_configuration_id","from":"path"},"org":{"at":"org","from":"path"}}},
       "hosted-compute/get-network-configuration-for-org": {"action":"orgs.settings.network_configurations.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/orgs/{org}/settings/network-configurations/{network_configuration_id}","scope":{"network_configuration_id":{"at":"network_configuration_id","from":"path"},"org":{"at":"org","from":"path"}}},
       "hosted-compute/get-network-settings-for-org": {"action":"orgs.settings.network_settings.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/orgs/{org}/settings/network-settings/{network_settings_id}","scope":{"network_settings_id":{"at":"network_settings_id","from":"path"},"org":{"at":"org","from":"path"}}},
       "hosted-compute/list-network-configurations-for-org": {"action":"orgs.settings.network_configurations.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["per_page","page"],"path":"/orgs/{org}/settings/network-configurations","scope":{"org":{"at":"org","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
       "hosted-compute/update-network-configuration-for-org": {"action":"orgs.settings.network_configurations.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.github.com","path":"/orgs/{org}/settings/network-configurations/{network_configuration_id}","scope":{"failover_network_settings_ids":{"at":"/failover_network_settings_ids","from":"body","optional":true,"type":"array"},"name":{"at":"/name","from":"body","optional":true},"network_configuration_id":{"at":"network_configuration_id","from":"path"},"network_settings_ids":{"at":"/network_settings_ids","from":"body","optional":true,"type":"array"},"org":{"at":"org","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "importProject": {"action":"graphql.project.write","body":"graphql","effects":["write"],"graphql":{"field":"importProject","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "interactions/get-pull-request-bypass-list-for-repo": {"action":"repos.interaction_limits.pulls.bypass.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/interaction-limits/pulls/bypass-list","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"}}},
       "interactions/get-pull-request-creation-cap-for-org": {"action":"orgs.interaction_limits.pulls.creation_cap.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/orgs/{org}/interaction-limits/pulls/creation-cap","scope":{"org":{"at":"org","from":"path"}}},
       "interactions/get-pull-request-creation-cap-for-repo": {"action":"repos.interaction_limits.pulls.creation_cap.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/interaction-limits/pulls/creation-cap","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"}}},
@@ -5775,6 +7063,8 @@
       "interactions/set-restrictions-for-repo": {"action":"repos.interaction_limits.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/interaction-limits","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "interactions/update-pull-request-creation-cap-for-org": {"action":"orgs.interaction_limits.pulls.creation_cap.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.github.com","path":"/orgs/{org}/interaction-limits/pulls/creation-cap","scope":{"org":{"at":"org","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "interactions/update-pull-request-creation-cap-for-repo": {"action":"repos.interaction_limits.pulls.creation_cap.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/interaction-limits/pulls/creation-cap","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "inviteEnterpriseAdmin": {"action":"graphql.enterprise_admin.admin","body":"graphql","effects":["admin","share"],"graphql":{"field":"inviteEnterpriseAdmin","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "inviteEnterpriseMember": {"action":"graphql.enterprise_member.admin","body":"graphql","effects":["admin","share"],"graphql":{"field":"inviteEnterpriseMember","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "issues.comments.create": {"action":"repos.issues.comments.comment","body":"json","effects":["send"],"headers":{"X-Github-Api-Version":"2022-11-28"},"method":"POST","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/issues/{issue}/comments","scope":{"comment":{"at":"/body","from":"body"},"issue":{"at":"issue","from":"path"},"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"}}},
       "issues.create": {"action":"repos.issues.open","body":"json","effects":["write"],"headers":{"X-Github-Api-Version":"2022-11-28"},"method":"POST","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/issues","scope":{"issue":{"at":"","from":"body","type":"object"},"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"}}},
       "issues.get": {"action":"repos.issues.read","effects":["read"],"headers":{"X-Github-Api-Version":"2022-11-28"},"method":"GET","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/issues/{issue}","scope":{"issue":{"at":"issue","from":"path"},"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"}}},
@@ -5847,8 +7137,17 @@
       "licenses/get": {"action":"licenses.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/licenses/{license}","scope":{"license":{"at":"license","from":"path"}}},
       "licenses/get-all-commonly-used": {"action":"licenses.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["featured","per_page","page"],"path":"/licenses","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
       "licenses/get-for-repo": {"action":"repos.license.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["ref"],"path":"/repos/{owner}/{repo}/license","scope":{"owner":{"at":"owner","from":"path"},"query":{"at":"","from":"query","type":"object"},"repo":{"at":"repo","from":"path"}}},
+      "linkProjectV2ToRepository": {"action":"graphql.link_project_v2_to_repository.write","body":"graphql","effects":["write"],"graphql":{"field":"linkProjectV2ToRepository","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "linkProjectV2ToTeam": {"action":"graphql.link_project_v2_to_team.write","body":"graphql","effects":["write"],"graphql":{"field":"linkProjectV2ToTeam","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "linkRepositoryToProject": {"action":"graphql.link_repository_to_project.write","body":"graphql","effects":["write"],"graphql":{"field":"linkRepositoryToProject","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "lockLockable": {"action":"graphql.lockable.write","body":"graphql","effects":["write"],"graphql":{"field":"lockLockable","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "markDiscussionCommentAsAnswer": {"action":"graphql.mark_discussion_comment_as_answer.write","body":"graphql","effects":["write"],"graphql":{"field":"markDiscussionCommentAsAnswer","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "markFileAsViewed": {"action":"graphql.mark_file_as_viewed.write","body":"graphql","effects":["write"],"graphql":{"field":"markFileAsViewed","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "markProjectV2AsTemplate": {"action":"graphql.mark_project_v2_as_template.write","body":"graphql","effects":["write"],"graphql":{"field":"markProjectV2AsTemplate","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "markPullRequestReadyForReview": {"action":"graphql.mark_pull_request_ready_for_review.write","body":"graphql","effects":["write"],"graphql":{"field":"markPullRequestReadyForReview","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "markdown/render": {"action":"markdown.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/markdown","scope":{"request":{"at":"","from":"body","type":"object"}}},
       "markdown/render-raw": {"action":"markdown.raw.write","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/markdown/raw","scope":{}},
+      "mergeBranch": {"action":"graphql.branch.write","body":"graphql","effects":["write"],"graphql":{"field":"mergeBranch","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "meta/get": {"action":"meta.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/meta","scope":{}},
       "meta/get-all-versions": {"action":"versions.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/versions","scope":{}},
       "meta/get-octocat": {"action":"octocat.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["s"],"path":"/octocat","scope":{"query":{"at":"","from":"query","type":"object"}}},
@@ -5878,6 +7177,9 @@
       "migrations/unlock-repo-for-org": {"action":"orgs.migrations.repos.delete","effects":["delete"],"method":"DELETE","origin":"https://api.github.com","path":"/orgs/{org}/migrations/{migration_id}/repos/{repo_name}/lock","scope":{"migration_id":{"at":"migration_id","from":"path"},"org":{"at":"org","from":"path"},"repo_name":{"at":"repo_name","from":"path"}}},
       "migrations/update-import": {"action":"repos.write","effects":["write"],"method":"PATCH","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/import","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"}}},
       "migrations/update-import.json.18c93ae49f52": {"action":"repos.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/import","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"request":{"at":"","from":"body","type":"object"},"tfvc_project":{"at":"/tfvc_project","from":"body","optional":true},"vcs_username":{"at":"/vcs_username","from":"body","optional":true}}},
+      "minimizeComment": {"action":"graphql.minimize_comment.write","body":"graphql","effects":["write"],"graphql":{"field":"minimizeComment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "moveProjectCard": {"action":"graphql.project_card.write","body":"graphql","effects":["write"],"graphql":{"field":"moveProjectCard","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "moveProjectColumn": {"action":"graphql.project_column.write","body":"graphql","effects":["write"],"graphql":{"field":"moveProjectColumn","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "oidc/create-oidc-custom-property-inclusion-for-enterprise": {"action":"enterprises.actions.oidc.customization.properties.repo.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/enterprises/{enterprise}/actions/oidc/customization/properties/repo","scope":{"custom_property_name":{"at":"/custom_property_name","from":"body"},"enterprise":{"at":"enterprise","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "oidc/create-oidc-custom-property-inclusion-for-org": {"action":"orgs.actions.oidc.customization.properties.repo.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/orgs/{org}/actions/oidc/customization/properties/repo","scope":{"custom_property_name":{"at":"/custom_property_name","from":"body"},"org":{"at":"org","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "oidc/delete-oidc-custom-property-inclusion-for-enterprise": {"action":"enterprises.actions.oidc.customization.properties.repo.delete","effects":["delete"],"method":"DELETE","origin":"https://api.github.com","path":"/enterprises/{enterprise}/actions/oidc/customization/properties/repo/{custom_property_name}","scope":{"custom_property_name":{"at":"custom_property_name","from":"path"},"enterprise":{"at":"enterprise","from":"path"}}},
@@ -6027,6 +7329,9 @@
       "packages/restore-package-version-for-authenticated-user": {"action":"user.packages.versions.write","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/user/packages/{package_type}/{package_name}/versions/{package_version_id}/restore","scope":{"package_name":{"at":"package_name","from":"path"},"package_type":{"at":"package_type","from":"path"},"package_version_id":{"at":"package_version_id","from":"path"}}},
       "packages/restore-package-version-for-org": {"action":"orgs.packages.versions.write","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore","scope":{"org":{"at":"org","from":"path"},"package_name":{"at":"package_name","from":"path"},"package_type":{"at":"package_type","from":"path"},"package_version_id":{"at":"package_version_id","from":"path"}}},
       "packages/restore-package-version-for-user": {"action":"users.packages.versions.write","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore","scope":{"package_name":{"at":"package_name","from":"path"},"package_type":{"at":"package_type","from":"path"},"package_version_id":{"at":"package_version_id","from":"path"},"username":{"at":"username","from":"path"}}},
+      "pinEnvironment": {"action":"graphql.environment.write","body":"graphql","effects":["write"],"graphql":{"field":"pinEnvironment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "pinIssue": {"action":"graphql.issue.write","body":"graphql","effects":["write"],"graphql":{"field":"pinIssue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "pinIssueComment": {"action":"graphql.issue_comment.write","body":"graphql","effects":["write"],"graphql":{"field":"pinIssueComment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "private-registries/create-org-private-registry": {"action":"orgs.private_registries.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/orgs/{org}/private-registries","scope":{"account_id":{"at":"/account_id","from":"body","optional":true},"client_id":{"at":"/client_id","from":"body","optional":true},"domain_owner":{"at":"/domain_owner","from":"body","optional":true},"identity_mapping_name":{"at":"/identity_mapping_name","from":"body","optional":true},"jfrog_oidc_provider_name":{"at":"/jfrog_oidc_provider_name","from":"body","optional":true},"key_id":{"at":"/key_id","from":"body","optional":true},"org":{"at":"org","from":"path"},"request":{"at":"","from":"body","type":"object"},"role_name":{"at":"/role_name","from":"body","optional":true},"selected_repository_ids":{"at":"/selected_repository_ids","from":"body","optional":true,"type":"array"},"service_account":{"at":"/service_account","from":"body","optional":true},"service_slug":{"at":"/service_slug","from":"body","optional":true},"tenant_id":{"at":"/tenant_id","from":"body","optional":true},"url":{"at":"/url","from":"body"},"username":{"at":"/username","from":"body","optional":true}}},
       "private-registries/delete-org-private-registry": {"action":"orgs.private_registries.delete","effects":["delete"],"method":"DELETE","origin":"https://api.github.com","path":"/orgs/{org}/private-registries/{secret_name}","scope":{"org":{"at":"org","from":"path"},"secret_name":{"at":"secret_name","from":"path"}}},
       "private-registries/get-org-private-registry": {"action":"orgs.private_registries.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/orgs/{org}/private-registries/{secret_name}","scope":{"org":{"at":"org","from":"path"},"secret_name":{"at":"secret_name","from":"path"}}},
@@ -6059,6 +7364,8 @@
       "projects/list-view-items-for-user": {"action":"users.projects_v2.views.items.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["fields","before","after","per_page"],"path":"/users/{username}/projectsV2/{project_number}/views/{view_number}/items","scope":{"per_page":{"at":"per_page","from":"query","optional":true},"project_number":{"at":"project_number","from":"path"},"query":{"at":"","from":"query","type":"object"},"username":{"at":"username","from":"path"},"view_number":{"at":"view_number","from":"path"}}},
       "projects/update-item-for-org": {"action":"orgs.projects_v2.items.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.github.com","path":"/orgs/{org}/projectsV2/{project_number}/items/{item_id}","scope":{"item_id":{"at":"item_id","from":"path"},"org":{"at":"org","from":"path"},"project_number":{"at":"project_number","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "projects/update-item-for-user": {"action":"users.projects_v2.items.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.github.com","path":"/users/{username}/projectsV2/{project_number}/items/{item_id}","scope":{"item_id":{"at":"item_id","from":"path"},"project_number":{"at":"project_number","from":"path"},"request":{"at":"","from":"body","type":"object"},"username":{"at":"username","from":"path"}}},
+      "promoteRepositoryCustomProperty": {"action":"graphql.promote_repository_custom_property.admin","body":"graphql","effects":["admin"],"graphql":{"field":"promoteRepositoryCustomProperty","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "publishSponsorsTier": {"action":"graphql.sponsors_tier.publish","body":"graphql","effects":["publish"],"graphql":{"field":"publishSponsorsTier","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "pull-request-stacks/add": {"action":"repos.stacks.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/stacks/{stack_number}/add","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"request":{"at":"","from":"body","type":"object"},"stack_number":{"at":"stack_number","from":"path"}}},
       "pull-request-stacks/create": {"action":"repos.stacks.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/stacks","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "pull-request-stacks/get": {"action":"repos.stacks.read","effects":["read"],"method":"GET","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/stacks/{stack_number}","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"stack_number":{"at":"stack_number","from":"path"}}},
@@ -6117,6 +7424,31 @@
       "reactions/list-for-issue-comment": {"action":"repos.issues.comments.reactions.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["content","per_page","page"],"path":"/repos/{owner}/{repo}/issues/comments/{comment_id}/reactions","scope":{"comment_id":{"at":"comment_id","from":"path"},"owner":{"at":"owner","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"repo":{"at":"repo","from":"path"}}},
       "reactions/list-for-pull-request-review-comment": {"action":"repos.pulls.comments.reactions.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["content","per_page","page"],"path":"/repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions","scope":{"comment_id":{"at":"comment_id","from":"path"},"owner":{"at":"owner","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"repo":{"at":"repo","from":"path"}}},
       "reactions/list-for-release": {"action":"repos.releases.reactions.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["content","per_page","page"],"path":"/repos/{owner}/{repo}/releases/{release_id}/reactions","scope":{"owner":{"at":"owner","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"release_id":{"at":"release_id","from":"path"},"repo":{"at":"repo","from":"path"}}},
+      "regenerateEnterpriseIdentityProviderRecoveryCodes": {"action":"graphql.enterprise_identity_provider_recovery_codes.admin","body":"graphql","effects":["admin"],"graphql":{"field":"regenerateEnterpriseIdentityProviderRecoveryCodes","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "regenerateVerifiableDomainToken": {"action":"graphql.verifiable_domain_token.admin","body":"graphql","effects":["admin"],"graphql":{"field":"regenerateVerifiableDomainToken","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "rejectDeployments": {"action":"graphql.deployments.execute","body":"graphql","effects":["execute"],"graphql":{"field":"rejectDeployments","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "rejectPendingIssueSuggestions": {"action":"graphql.pending_issue_suggestions.write","body":"graphql","effects":["write"],"graphql":{"field":"rejectPendingIssueSuggestions","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "removeAssigneesFromAssignable": {"action":"graphql.assignees_from_assignable.delete","body":"graphql","effects":["delete"],"graphql":{"field":"removeAssigneesFromAssignable","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "removeBlockedBy": {"action":"graphql.blocked_by.delete","body":"graphql","effects":["delete"],"graphql":{"field":"removeBlockedBy","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "removeCloseIssueReferences": {"action":"graphql.issue_references.delete","body":"graphql","effects":["delete"],"graphql":{"field":"removeCloseIssueReferences","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "removeEnterpriseAdmin": {"action":"graphql.enterprise_admin.admin","body":"graphql","effects":["admin","delete"],"graphql":{"field":"removeEnterpriseAdmin","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "removeEnterpriseIdentityProvider": {"action":"graphql.enterprise_identity_provider.admin","body":"graphql","effects":["admin","delete"],"graphql":{"field":"removeEnterpriseIdentityProvider","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "removeEnterpriseMember": {"action":"graphql.enterprise_member.admin","body":"graphql","effects":["admin","delete"],"graphql":{"field":"removeEnterpriseMember","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "removeEnterpriseOrganization": {"action":"graphql.enterprise_organization.admin","body":"graphql","effects":["admin","delete"],"graphql":{"field":"removeEnterpriseOrganization","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "removeEnterpriseSupportEntitlement": {"action":"graphql.enterprise_support_entitlement.admin","body":"graphql","effects":["admin","delete"],"graphql":{"field":"removeEnterpriseSupportEntitlement","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "removeLabelsFromLabelable": {"action":"graphql.labels_from_labelable.delete","body":"graphql","effects":["delete"],"graphql":{"field":"removeLabelsFromLabelable","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "removeOutsideCollaborator": {"action":"graphql.outside_collaborator.admin","body":"graphql","effects":["admin","delete"],"graphql":{"field":"removeOutsideCollaborator","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "removePullRequestCreationCapBypassUsers": {"action":"graphql.pull_request_creation_cap_bypass_users.admin","body":"graphql","effects":["admin","delete"],"graphql":{"field":"removePullRequestCreationCapBypassUsers","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "removeReaction": {"action":"graphql.reaction.delete","body":"graphql","effects":["delete"],"graphql":{"field":"removeReaction","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "removeRelatesTo": {"action":"graphql.relates_to.delete","body":"graphql","effects":["delete"],"graphql":{"field":"removeRelatesTo","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "removeStar": {"action":"graphql.star.delete","body":"graphql","effects":["delete"],"graphql":{"field":"removeStar","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "removeSubIssue": {"action":"graphql.sub_issue.delete","body":"graphql","effects":["delete"],"graphql":{"field":"removeSubIssue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "removeUpvote": {"action":"graphql.upvote.delete","body":"graphql","effects":["delete"],"graphql":{"field":"removeUpvote","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "reopenDiscussion": {"action":"graphql.discussion.write","body":"graphql","effects":["write"],"graphql":{"field":"reopenDiscussion","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "reopenIssue": {"action":"graphql.issue.write","body":"graphql","effects":["write"],"graphql":{"field":"reopenIssue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "reopenPullRequest": {"action":"graphql.pull_request.write","body":"graphql","effects":["write"],"graphql":{"field":"reopenPullRequest","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "reorderEnvironment": {"action":"graphql.reorder_environment.write","body":"graphql","effects":["write"],"graphql":{"field":"reorderEnvironment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "replaceActorsForAssignable": {"action":"graphql.replace_actors_for_assignable.write","body":"graphql","effects":["write"],"graphql":{"field":"replaceActorsForAssignable","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "repos.get": {"action":"repos.read","effects":["read"],"headers":{"X-Github-Api-Version":"2022-11-28"},"method":"GET","origin":"https://api.github.com","path":"/repos/{owner}/{repo}","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"}}},
       "repos.list.mine": {"action":"user.repos.read","effects":["read"],"headers":{"X-Github-Api-Version":"2022-11-28"},"method":"GET","origin":"https://api.github.com","params":["visibility","affiliation","sort","per_page","page"],"path":"/user/repos","scope":{}},
       "repos/accept-invitation-for-authenticated-user": {"action":"user.repository_invitations.write","effects":["write"],"method":"PATCH","origin":"https://api.github.com","path":"/user/repository_invitations/{invitation_id}","scope":{"invitation_id":{"at":"invitation_id","from":"path"}}},
@@ -6338,6 +7670,17 @@
       "repos/update-webhook-config-for-repo.json.567ac7a6f38e": {"action":"repos.hooks.config.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/hooks/{hook_id}/config","scope":{"hook_id":{"at":"hook_id","from":"path"},"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"request":{"at":"","from":"body","type":"object"},"url":{"at":"/url","from":"body","optional":true}}},
       "repos/update.json.503a542a7843": {"action":"repos.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.github.com","path":"/repos/{owner}/{repo}","scope":{"name":{"at":"/name","from":"body","optional":true},"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "repos/upload-release-asset": {"action":"repos.releases.assets.publish","effects":["publish"],"method":"POST","origin":"https://api.github.com","params":["name","label"],"path":"/repos/{owner}/{repo}/releases/{release_id}/assets","scope":{"name":{"at":"name","from":"query"},"owner":{"at":"owner","from":"path"},"query":{"at":"","from":"query","type":"object"},"release_id":{"at":"release_id","from":"path"},"repo":{"at":"repo","from":"path"}}},
+      "reprioritizeSubIssue": {"action":"graphql.reprioritize_sub_issue.write","body":"graphql","effects":["write"],"graphql":{"field":"reprioritizeSubIssue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "requestCopilotCodeReview": {"action":"graphql.request_copilot_code_review.write","body":"graphql","effects":["write"],"graphql":{"field":"requestCopilotCodeReview","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "requestReviews": {"action":"graphql.request_reviews.write","body":"graphql","effects":["write"],"graphql":{"field":"requestReviews","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "requestReviewsByLogin": {"action":"graphql.request_reviews_by_login.write","body":"graphql","effects":["write"],"graphql":{"field":"requestReviewsByLogin","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "rerequestCheckSuite": {"action":"graphql.rerequest_check_suite.execute","body":"graphql","effects":["execute"],"graphql":{"field":"rerequestCheckSuite","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "rerequestReviews": {"action":"graphql.rerequest_reviews.write","body":"graphql","effects":["write"],"graphql":{"field":"rerequestReviews","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "resolveReviewThread": {"action":"graphql.resolve_review_thread.write","body":"graphql","effects":["write"],"graphql":{"field":"resolveReviewThread","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "retireSponsorsTier": {"action":"graphql.retire_sponsors_tier.admin","body":"graphql","effects":["admin"],"graphql":{"field":"retireSponsorsTier","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "revertPullRequest": {"action":"graphql.revert_pull_request.write","body":"graphql","effects":["write"],"graphql":{"field":"revertPullRequest","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "revokeEnterpriseOrganizationsMigratorRole": {"action":"graphql.enterprise_organizations_migrator_role.admin","body":"graphql","effects":["admin"],"graphql":{"field":"revokeEnterpriseOrganizationsMigratorRole","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "revokeMigratorRole": {"action":"graphql.migrator_role.admin","body":"graphql","effects":["admin"],"graphql":{"field":"revokeMigratorRole","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "search/code": {"action":"search.code.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["q","sort","order","per_page","page"],"path":"/search/code","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
       "search/commits": {"action":"search.commits.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["q","sort","order","per_page","page"],"path":"/search/commits","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
       "search/issues-and-pull-requests": {"action":"search.issues.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["q","sort","order","per_page","page","advanced_search","search_type"],"path":"/search/issues","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
@@ -6372,6 +7715,16 @@
       "security-advisories/list-org-repository-advisories": {"action":"orgs.security_advisories.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["direction","sort","before","after","per_page","state"],"path":"/orgs/{org}/security-advisories","scope":{"org":{"at":"org","from":"path"},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
       "security-advisories/list-repository-advisories": {"action":"repos.security_advisories.read","effects":["read"],"method":"GET","origin":"https://api.github.com","params":["direction","sort","before","after","per_page","state"],"path":"/repos/{owner}/{repo}/security-advisories","scope":{"owner":{"at":"owner","from":"path"},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"repo":{"at":"repo","from":"path"}}},
       "security-advisories/update-repository-advisory": {"action":"repos.security_advisories.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.github.com","path":"/repos/{owner}/{repo}/security-advisories/{ghsa_id}","scope":{"collaborating_teams":{"at":"/collaborating_teams","from":"body","optional":true,"type":"array"},"collaborating_users":{"at":"/collaborating_users","from":"body","optional":true,"type":"array"},"cve_id":{"at":"/cve_id","from":"body","optional":true},"cwe_ids":{"at":"/cwe_ids","from":"body","optional":true,"type":"array"},"ghsa_id":{"at":"ghsa_id","from":"path"},"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "setEnterpriseIdentityProvider": {"action":"graphql.enterprise_identity_provider.admin","body":"graphql","effects":["admin"],"graphql":{"field":"setEnterpriseIdentityProvider","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "setIssueFieldValue": {"action":"graphql.issue_field_value.write","body":"graphql","effects":["write"],"graphql":{"field":"setIssueFieldValue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "setIssueStatus": {"action":"graphql.issue_status.write","body":"graphql","effects":["write"],"graphql":{"field":"setIssueStatus","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "setOrganizationInteractionLimit": {"action":"graphql.organization_interaction_limit.admin","body":"graphql","effects":["admin"],"graphql":{"field":"setOrganizationInteractionLimit","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "setRepositoryCustomPropertyValues": {"action":"graphql.repository_custom_property_values.admin","body":"graphql","effects":["admin"],"graphql":{"field":"setRepositoryCustomPropertyValues","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "setRepositoryInteractionLimit": {"action":"graphql.repository_interaction_limit.admin","body":"graphql","effects":["admin"],"graphql":{"field":"setRepositoryInteractionLimit","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "setUserInteractionLimit": {"action":"graphql.user_interaction_limit.admin","body":"graphql","effects":["admin"],"graphql":{"field":"setUserInteractionLimit","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "startOrganizationMigration": {"action":"graphql.organization_migration.admin","body":"graphql","effects":["admin"],"graphql":{"field":"startOrganizationMigration","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "startRepositoryMigration": {"action":"graphql.repository_migration.admin","body":"graphql","effects":["admin"],"graphql":{"field":"startRepositoryMigration","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "submitPullRequestReview": {"action":"graphql.submit_pull_request_review.write","body":"graphql","effects":["write"],"graphql":{"field":"submitPullRequestReview","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "teams/add-member-legacy": {"action":"teams.members.admin","effects":["admin"],"method":"PUT","origin":"https://api.github.com","path":"/teams/{team_id}/members/{username}","scope":{"team_id":{"at":"team_id","from":"path"},"username":{"at":"username","from":"path"}}},
       "teams/add-or-update-membership-for-user-in-org": {"action":"orgs.teams.memberships.admin","effects":["admin"],"method":"PUT","origin":"https://api.github.com","path":"/orgs/{org}/teams/{team_slug}/memberships/{username}","scope":{"org":{"at":"org","from":"path"},"team_slug":{"at":"team_slug","from":"path"},"username":{"at":"username","from":"path"}}},
       "teams/add-or-update-membership-for-user-in-org.json.097f7534cb2d": {"action":"orgs.teams.memberships.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.github.com","path":"/orgs/{org}/teams/{team_slug}/memberships/{username}","scope":{"org":{"at":"org","from":"path"},"request":{"at":"","from":"body","type":"object"},"team_slug":{"at":"team_slug","from":"path"},"username":{"at":"username","from":"path"}}},
@@ -6409,6 +7762,95 @@
       "teams/update-in-org": {"action":"orgs.teams.admin","effects":["admin"],"method":"PATCH","origin":"https://api.github.com","path":"/orgs/{org}/teams/{team_slug}","scope":{"org":{"at":"org","from":"path"},"team_slug":{"at":"team_slug","from":"path"}}},
       "teams/update-in-org.json.880f92277cfc": {"action":"orgs.teams.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api.github.com","path":"/orgs/{org}/teams/{team_slug}","scope":{"name":{"at":"/name","from":"body","optional":true},"org":{"at":"org","from":"path"},"parent_team_id":{"at":"/parent_team_id","from":"body","optional":true,"type":"number"},"parent_team_slug":{"at":"/parent_team_slug","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"team_slug":{"at":"team_slug","from":"path"}}},
       "teams/update-legacy": {"action":"teams.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api.github.com","path":"/teams/{team_id}","scope":{"name":{"at":"/name","from":"body"},"parent_team_id":{"at":"/parent_team_id","from":"body","optional":true,"type":"number"},"parent_team_slug":{"at":"/parent_team_slug","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+      "transferEnterpriseOrganization": {"action":"graphql.enterprise_organization.admin","body":"graphql","effects":["admin"],"graphql":{"field":"transferEnterpriseOrganization","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "transferIssue": {"action":"graphql.issue.write","body":"graphql","effects":["write"],"graphql":{"field":"transferIssue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "unarchiveProjectV2Item": {"action":"graphql.project_v2_item.write","body":"graphql","effects":["write"],"graphql":{"field":"unarchiveProjectV2Item","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "unarchivePullRequest": {"action":"graphql.pull_request.write","body":"graphql","effects":["write"],"graphql":{"field":"unarchivePullRequest","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "unarchiveRepository": {"action":"graphql.repository.admin","body":"graphql","effects":["admin"],"graphql":{"field":"unarchiveRepository","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "unfollowOrganization": {"action":"graphql.organization.write","body":"graphql","effects":["write"],"graphql":{"field":"unfollowOrganization","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "unfollowUser": {"action":"graphql.user.write","body":"graphql","effects":["write"],"graphql":{"field":"unfollowUser","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "unlinkProjectV2FromRepository": {"action":"graphql.unlink_project_v2_from_repository.write","body":"graphql","effects":["write"],"graphql":{"field":"unlinkProjectV2FromRepository","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "unlinkProjectV2FromTeam": {"action":"graphql.unlink_project_v2_from_team.write","body":"graphql","effects":["write"],"graphql":{"field":"unlinkProjectV2FromTeam","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "unlinkRepositoryFromProject": {"action":"graphql.unlink_repository_from_project.write","body":"graphql","effects":["write"],"graphql":{"field":"unlinkRepositoryFromProject","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "unlockLockable": {"action":"graphql.lockable.write","body":"graphql","effects":["write"],"graphql":{"field":"unlockLockable","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "unmarkDiscussionCommentAsAnswer": {"action":"graphql.unmark_discussion_comment_as_answer.write","body":"graphql","effects":["write"],"graphql":{"field":"unmarkDiscussionCommentAsAnswer","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "unmarkFileAsViewed": {"action":"graphql.unmark_file_as_viewed.write","body":"graphql","effects":["write"],"graphql":{"field":"unmarkFileAsViewed","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "unmarkIssueAsDuplicate": {"action":"graphql.unmark_issue_as.write","body":"graphql","effects":["write"],"graphql":{"field":"unmarkIssueAsDuplicate","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "unmarkProjectV2AsTemplate": {"action":"graphql.unmark_project_v2_as_template.write","body":"graphql","effects":["write"],"graphql":{"field":"unmarkProjectV2AsTemplate","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "unminimizeComment": {"action":"graphql.unminimize_comment.write","body":"graphql","effects":["write"],"graphql":{"field":"unminimizeComment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "unpinIssue": {"action":"graphql.issue.write","body":"graphql","effects":["write"],"graphql":{"field":"unpinIssue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "unpinIssueComment": {"action":"graphql.issue_comment.write","body":"graphql","effects":["write"],"graphql":{"field":"unpinIssueComment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "unresolveReviewThread": {"action":"graphql.unresolve_review_thread.write","body":"graphql","effects":["write"],"graphql":{"field":"unresolveReviewThread","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateBranchProtectionRule": {"action":"graphql.branch_protection_rule.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateBranchProtectionRule","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateCheckRun": {"action":"graphql.run.write","body":"graphql","effects":["write"],"graphql":{"field":"updateCheckRun","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateCheckSuitePreferences": {"action":"graphql.suite_preferences.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateCheckSuitePreferences","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateDiscussion": {"action":"graphql.discussion.write","body":"graphql","effects":["write"],"graphql":{"field":"updateDiscussion","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateDiscussionComment": {"action":"graphql.discussion_comment.write","body":"graphql","effects":["write"],"graphql":{"field":"updateDiscussionComment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseAdministratorRole": {"action":"graphql.enterprise_administrator_role.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseAdministratorRole","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseAllowPrivateRepositoryForkingSetting": {"action":"graphql.enterprise_allow_private_repository_forking_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseAllowPrivateRepositoryForkingSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseCopilotCodeReviewPolicy": {"action":"graphql.enterprise_copilot_code_review_policy.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseCopilotCodeReviewPolicy","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseDefaultRepositoryPermissionSetting": {"action":"graphql.enterprise_default_repository_permission_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseDefaultRepositoryPermissionSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseDeployKeySetting": {"action":"graphql.enterprise_deploy_key_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseDeployKeySetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseMembersCanChangeRepositoryVisibilitySetting": {"action":"graphql.enterprise_members_can_change_repository_visibility_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseMembersCanChangeRepositoryVisibilitySetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseMembersCanCreateRepositoriesSetting": {"action":"graphql.enterprise_members_can_create_repositories_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseMembersCanCreateRepositoriesSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseMembersCanDeleteIssuesSetting": {"action":"graphql.enterprise_members_can_delete_issues_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseMembersCanDeleteIssuesSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseMembersCanDeleteRepositoriesSetting": {"action":"graphql.enterprise_members_can_delete_repositories_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseMembersCanDeleteRepositoriesSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseMembersCanInviteCollaboratorsSetting": {"action":"graphql.enterprise_members_can_invite_collaborators_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseMembersCanInviteCollaboratorsSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseMembersCanMakePurchasesSetting": {"action":"graphql.enterprise_members_can_make_purchases_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseMembersCanMakePurchasesSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseMembersCanUpdateProtectedBranchesSetting": {"action":"graphql.enterprise_members_can_update_protected_branches_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseMembersCanUpdateProtectedBranchesSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseMembersCanViewDependencyInsightsSetting": {"action":"graphql.enterprise_members_can_view_dependency_insights_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseMembersCanViewDependencyInsightsSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseOrganizationProjectsSetting": {"action":"graphql.enterprise_organization_projects_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseOrganizationProjectsSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseOwnerOrganizationRole": {"action":"graphql.enterprise_owner_organization_role.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseOwnerOrganizationRole","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseProfile": {"action":"graphql.enterprise_profile.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseProfile","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseRepositoryProjectsSetting": {"action":"graphql.enterprise_repository_projects_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseRepositoryProjectsSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseTwoFactorAuthenticationDisallowedMethodsSetting": {"action":"graphql.enterprise_two_factor_authentication_disallowed_methods_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseTwoFactorAuthenticationDisallowedMethodsSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnterpriseTwoFactorAuthenticationRequiredSetting": {"action":"graphql.enterprise_two_factor_authentication_required_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnterpriseTwoFactorAuthenticationRequiredSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateEnvironment": {"action":"graphql.environment.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateEnvironment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateIpAllowListEnabledSetting": {"action":"graphql.ip_allow_list_enabled_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateIpAllowListEnabledSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateIpAllowListEntry": {"action":"graphql.ip_allow_list_entry.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateIpAllowListEntry","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateIpAllowListForInstalledAppsEnabledSetting": {"action":"graphql.ip_allow_list_for_installed_apps_enabled_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateIpAllowListForInstalledAppsEnabledSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateIpAllowListUserLevelEnforcementEnabledSetting": {"action":"graphql.ip_allow_list_user_level_enforcement_enabled_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateIpAllowListUserLevelEnforcementEnabledSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateIssueComment": {"action":"graphql.issue_comment.write","body":"graphql","effects":["write"],"graphql":{"field":"updateIssueComment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateIssueField": {"action":"graphql.issue_field.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateIssueField","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateIssueFieldValue": {"action":"graphql.issue_field_value.write","body":"graphql","effects":["write"],"graphql":{"field":"updateIssueFieldValue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateIssueIssueType": {"action":"graphql.issue_issue_type.write","body":"graphql","effects":["write"],"graphql":{"field":"updateIssueIssueType","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateIssueType": {"action":"graphql.issue_type.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateIssueType","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateLabel": {"action":"graphql.label.write","body":"graphql","effects":["write"],"graphql":{"field":"updateLabel","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateNotificationRestrictionSetting": {"action":"graphql.notification_restriction_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateNotificationRestrictionSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateOrganizationAllowPrivateRepositoryForkingSetting": {"action":"graphql.organization_allow_private_repository_forking_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateOrganizationAllowPrivateRepositoryForkingSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateOrganizationCopilotCodeReviewPolicy": {"action":"graphql.organization_copilot_code_review_policy.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateOrganizationCopilotCodeReviewPolicy","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateOrganizationCopilotCodeReviewRunnerConfiguration": {"action":"graphql.organization_copilot_code_review_runner_configuration.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateOrganizationCopilotCodeReviewRunnerConfiguration","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateOrganizationCopilotCodeReviewSettings": {"action":"graphql.organization_copilot_code_review_settings.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateOrganizationCopilotCodeReviewSettings","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateOrganizationWebCommitSignoffSetting": {"action":"graphql.organization_web_commit_signoff_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateOrganizationWebCommitSignoffSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updatePatreonSponsorability": {"action":"graphql.patreon_sponsorability.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updatePatreonSponsorability","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateProject": {"action":"graphql.project.write","body":"graphql","effects":["write"],"graphql":{"field":"updateProject","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateProjectCard": {"action":"graphql.project_card.write","body":"graphql","effects":["write"],"graphql":{"field":"updateProjectCard","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateProjectColumn": {"action":"graphql.project_column.write","body":"graphql","effects":["write"],"graphql":{"field":"updateProjectColumn","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateProjectV2": {"action":"graphql.project_v2.write","body":"graphql","effects":["write"],"graphql":{"field":"updateProjectV2","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateProjectV2Collaborators": {"action":"graphql.project_v2_collaborators.share","body":"graphql","effects":["share"],"graphql":{"field":"updateProjectV2Collaborators","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateProjectV2DraftIssue": {"action":"graphql.project_v2_draft_issue.write","body":"graphql","effects":["write"],"graphql":{"field":"updateProjectV2DraftIssue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateProjectV2Field": {"action":"graphql.project_v2_field.write","body":"graphql","effects":["write"],"graphql":{"field":"updateProjectV2Field","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateProjectV2ItemFieldValue": {"action":"graphql.project_v2_item_field_value.write","body":"graphql","effects":["write"],"graphql":{"field":"updateProjectV2ItemFieldValue","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateProjectV2ItemPosition": {"action":"graphql.project_v2_item_position.write","body":"graphql","effects":["write"],"graphql":{"field":"updateProjectV2ItemPosition","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateProjectV2StatusUpdate": {"action":"graphql.project_v2_status.write","body":"graphql","effects":["write"],"graphql":{"field":"updateProjectV2StatusUpdate","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateProjectV2View": {"action":"graphql.project_v2_view.write","body":"graphql","effects":["write"],"graphql":{"field":"updateProjectV2View","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updatePullRequestBranch": {"action":"graphql.pull_request_branch.write","body":"graphql","effects":["write"],"graphql":{"field":"updatePullRequestBranch","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updatePullRequestReview": {"action":"graphql.pull_request_review.write","body":"graphql","effects":["write"],"graphql":{"field":"updatePullRequestReview","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updatePullRequestReviewComment": {"action":"graphql.pull_request_review_comment.write","body":"graphql","effects":["write"],"graphql":{"field":"updatePullRequestReviewComment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateRef": {"action":"graphql.ref.write","body":"graphql","effects":["write"],"graphql":{"field":"updateRef","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateRefs": {"action":"graphql.refs.write","body":"graphql","effects":["write"],"graphql":{"field":"updateRefs","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateRepository": {"action":"graphql.repository.write","body":"graphql","effects":["write"],"graphql":{"field":"updateRepository","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateRepositoryCopilotCodeReviewSettings": {"action":"graphql.repository_copilot_code_review_settings.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateRepositoryCopilotCodeReviewSettings","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateRepositoryCustomProperty": {"action":"graphql.repository_custom_property.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateRepositoryCustomProperty","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateRepositoryRuleset": {"action":"graphql.repository_ruleset.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateRepositoryRuleset","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateRepositoryWebCommitSignoffSetting": {"action":"graphql.repository_web_commit_signoff_setting.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateRepositoryWebCommitSignoffSetting","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateSponsorshipPreferences": {"action":"graphql.sponsorship_preferences.write","body":"graphql","effects":["write"],"graphql":{"field":"updateSponsorshipPreferences","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateSubscription": {"action":"graphql.subscription.write","body":"graphql","effects":["write"],"graphql":{"field":"updateSubscription","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateTeamReviewAssignment": {"action":"graphql.team_review_assignment.admin","body":"graphql","effects":["admin"],"graphql":{"field":"updateTeamReviewAssignment","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateTeamsRepository": {"action":"graphql.teams_repository.admin","body":"graphql","effects":["admin","share"],"graphql":{"field":"updateTeamsRepository","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateTopics": {"action":"graphql.topics.write","body":"graphql","effects":["write"],"graphql":{"field":"updateTopics","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateUserList": {"action":"graphql.user.write","body":"graphql","effects":["write"],"graphql":{"field":"updateUserList","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
+      "updateUserListsForItem": {"action":"graphql.user_lists_for_item.write","body":"graphql","effects":["write"],"graphql":{"field":"updateUserListsForItem","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}},
       "users/add-email-for-authenticated-user": {"action":"user.emails.send","effects":["send"],"method":"POST","origin":"https://api.github.com","path":"/user/emails","scope":{}},
       "users/add-email-for-authenticated-user.json.77c39823581f": {"action":"user.emails.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.github.com","path":"/user/emails","scope":{"request":{"at":"","from":"body","type":"object"}}},
       "users/add-social-account-for-authenticated-user": {"action":"user.social_accounts.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/user/social_accounts","scope":{"request":{"at":"","from":"body","type":"object"}}},
@@ -6458,7 +7900,8 @@
       "users/unblock": {"action":"user.blocks.delete","effects":["delete"],"method":"DELETE","origin":"https://api.github.com","path":"/user/blocks/{username}","scope":{"username":{"at":"username","from":"path"}}},
       "users/unfollow": {"action":"user.following.delete","effects":["delete"],"method":"DELETE","origin":"https://api.github.com","path":"/user/following/{username}","scope":{"username":{"at":"username","from":"path"}}},
       "users/update-authenticated": {"action":"user.admin","effects":["admin"],"method":"PATCH","origin":"https://api.github.com","path":"/user","scope":{}},
-      "users/update-authenticated.json.d6d76fd0e81f": {"action":"user.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api.github.com","path":"/user","scope":{"email":{"at":"/email","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"twitter_username":{"at":"/twitter_username","from":"body","optional":true}}}
+      "users/update-authenticated.json.d6d76fd0e81f": {"action":"user.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api.github.com","path":"/user","scope":{"email":{"at":"/email","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"twitter_username":{"at":"/twitter_username","from":"body","optional":true}}},
+      "verifyVerifiableDomain": {"action":"graphql.verifiable_domain.admin","body":"graphql","effects":["admin"],"graphql":{"field":"verifyVerifiableDomain","operation":"mutation"},"method":"POST","origin":"https://api.github.com","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}}
     }
   }
 }
