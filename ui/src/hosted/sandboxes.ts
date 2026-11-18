@@ -113,11 +113,15 @@ export async function sandboxClient(
   const target = registryTarget(row, config, route.registry);
   await verifyImage("sandbox", digest, { signal });
   signal.throwIfAborted();
-  const secure = await EnclaveHTTPClient.create(row.domain, target.reference, {
-    verifier: await Verifier.create({ configRegistryIDs: [target.registry] }),
-    attestationFetch: route.attestationFetch,
-    signal,
-  });
+  const secure = await EnclaveHTTPClient.create(
+    row.domain,
+    { project: target.reference },
+    {
+      verifier: await Verifier.create({ configRegistryIDs: [target.registry] }),
+      attestationFetch: route.attestationFetch,
+      signal,
+    },
+  );
   const connect = async (hello: object, signal?: AbortSignal) => {
     await secure.ensureVerified({ signal });
     const serverKey = attestedKey(secure, "owner-session");

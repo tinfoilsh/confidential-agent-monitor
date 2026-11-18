@@ -42,17 +42,21 @@ export async function attestMonitor(
     import.meta.env.DEV && location.origin === "https://local.tinfoil.sh"
       ? location.origin
       : undefined;
-  const client = await EnclaveHTTPClient.create(new URL(url).host, reference, {
-    verifier: await Verifier.create({ configRegistryIDs: [registry] }),
-    attestationFetch: relay
-      ? (input, init) => {
-          const doc = new URL(String(input));
-          doc.searchParams.set("enclave", doc.host);
-          return fetch(relay + doc.pathname + doc.search, init);
-        }
-      : undefined,
-    signal,
-  });
+  const client = await EnclaveHTTPClient.create(
+    new URL(url).host,
+    { project: reference },
+    {
+      verifier: await Verifier.create({ configRegistryIDs: [registry] }),
+      attestationFetch: relay
+        ? (input, init) => {
+            const doc = new URL(String(input));
+            doc.searchParams.set("enclave", doc.host);
+            return fetch(relay + doc.pathname + doc.search, init);
+          }
+        : undefined,
+      signal,
+    },
+  );
   signal.throwIfAborted();
   const hostKey = () =>
     sshPublicKey(attestedKey(client, "host-ssh", ED25519_SPKI));
