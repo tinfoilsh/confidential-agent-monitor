@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "api_secret", "label": "Kit account", "secret": true, "credential": true, "oauth": {"issuer": "https://api.kit.com", "scope": "public"}}
+      {"key": "api_secret", "label": "API Secret", "secret": true, "credential": true}
     ],
-    "connection": {"http": {"slots": [{"value": "api_secret", "origin": "https://api.kit.com", "path": "/v4", "header": "Authorization", "prefix": "Bearer "}]}},
+    "connection": {"http": {"slots": [{"value": "api_secret", "origin": "https://api.kit.com", "path": "/v4", "header": "X-Kit-Api-Key"}]}},
     "actions": {
       "admin.webhooks": {"title": "Admin: webhooks"},
       "delete.broadcasts": {"title": "Delete: broadcasts"},
