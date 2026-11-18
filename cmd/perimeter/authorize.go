@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"cmp"
 	"context"
 	"encoding/json"
@@ -212,11 +213,14 @@ func (s held) authorize(ctx context.Context, a *admitted, gr *grant) (r *record,
 }
 
 func (s held) awaitAnswer(ctx context.Context, r *record) error {
-	if r.State != statePending {
+	fresh := r.State != statePending
+	if fresh {
 		r.State, r.Expires = statePending, time.Now().Add(approvalWait)
-		if err := s.queue(ctx, r, true); err != nil {
-			return err
-		}
+	}
+	if err := s.queue(ctx, r, true); err != nil {
+		return err
+	}
+	if fresh {
 		s.announce(r)
 	}
 	expired := s.records.Wait(ctx, r.Expires)
@@ -235,7 +239,14 @@ func (s held) awaitAnswer(ctx context.Context, r *record) error {
 
 // A record stays in the stored document while it awaits an answer, so the next unlock settles it.
 func (s held) queue(ctx context.Context, r *record, pending bool) error {
-	if _, queued := s.doc.Pending[r.ID]; queued == pending {
+	var raw json.RawMessage
+	if pending {
+		var err error
+		if raw, err = json.Marshal(r); err != nil {
+			return err
+		}
+	}
+	if stored, queued := s.doc.Pending[r.ID]; queued == pending && bytes.Equal(stored, raw) {
 		return nil
 	}
 	next := s.doc
@@ -243,10 +254,6 @@ func (s held) queue(ctx context.Context, r *record, pending bool) error {
 	maps.Copy(next.Pending, s.doc.Pending)
 	delete(next.Pending, r.ID)
 	if pending {
-		raw, err := json.Marshal(r)
-		if err != nil {
-			return err
-		}
 		next.Pending[r.ID] = raw
 	}
 	return s.commit(ctx, next)
