@@ -67,9 +67,10 @@
     "fields": [
       {
         "key": "token",
-        "label": "OAuth2 access token",
+        "label": "Dropbox account",
         "credential": true,
-        "secret": true
+        "secret": true,
+        "oauth": {"auth_url": "https://www.dropbox.com/oauth2/authorize", "token_url": "https://api.dropboxapi.com/oauth2/token", "client_id": "gajvr5hi10w0m66", "auth_style": "params", "loopback": true, "authorize_params": {"token_access_type": "offline"}}
       }
     ],
     "group": "api"
