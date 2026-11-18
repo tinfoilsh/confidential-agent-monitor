@@ -235,16 +235,12 @@ func (s Set) Bind(r *http.Request, origin string, placeholder func(string) strin
 			if err := streaming(header); err != nil {
 				return nil, nil, err
 			}
-			if sig := *slot.SigV4; sig.Service == "" || sig.Region == "" {
-				credential, _, _ := strings.Cut(strings.TrimPrefix(header.Get(authorization), sigV4Credential+want+"/"), ",")
-				scope := sigV4Scope.FindStringSubmatch(credential)
-				if scope == nil {
-					return nil, nil, errors.New("the SigV4 credential scope is malformed")
-				}
-				sig.Region, sig.Service = cmp.Or(sig.Region, scope[1]), cmp.Or(sig.Service, scope[2])
-				bound := *slot
-				bound.SigV4, slot = &sig, &bound
+			sig, err := slot.SigV4.scoped(strings.TrimPrefix(header.Get(authorization), sigV4Credential+want+"/"))
+			if err != nil {
+				return nil, nil, err
 			}
+			bound := *slot
+			bound.SigV4, slot = sig, &bound
 			header.Del(authorization)
 			header.Del("X-Amz-Security-Token")
 		default:
@@ -394,20 +390,10 @@ func place(r *http.Request, slots []*Slot, value func(context.Context, string) (
 		case s.Basic == "password":
 			pass = secret
 			r.SetBasicAuth(user, pass)
-		case s.SigV4.Secret == "":
-			signer = s
-			if json.Unmarshal([]byte(secret), &keys) != nil || !keys.HasKeys() {
-				return nil, fmt.Errorf("credential %s does not hold AWS keys", s.Value)
-			}
 		default:
-			signer, keys.AccessKeyID = s, secret
-			if keys.SecretAccessKey, err = resolve(s.SigV4.Secret); err != nil {
+			signer = s
+			if keys, err = s.awsKeys(secret, resolve); err != nil {
 				return nil, err
-			}
-			if s.SigV4.Session != "" {
-				if keys.SessionToken, err = resolve(s.SigV4.Session); err != nil {
-					return nil, err
-				}
 			}
 		}
 	}
