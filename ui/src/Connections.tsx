@@ -1175,11 +1175,19 @@ function Connection(props: { name: string }) {
                 <Show when={url()}>
                   {(url) => (
                     <CopyField
-                      label="Bunker connection URL"
+                      label="Connection URL"
                       value={url()}
                       copyLabel={`Copy ${props.name} URL`}
                     />
                   )}
+                </Show>
+                <Show when={owner.kindOf(connection()) === "mcp"}>
+                  <p class="muted field-help">
+                    Add this URL as an HTTP MCP server in the agent running in
+                    your bunker; it needs no token. On your own computer, run{" "}
+                    <code>perimeter mcp serve</code> and use the address it
+                    prints.
+                  </p>
                 </Show>
                 <Show when={tinfoil()}>
                   {(setup) => (

@@ -713,7 +713,7 @@ export const onboarded = (view: View) =>
   (view.config.data?.onboarding as { completed?: Json } | undefined)
     ?.completed === true;
 const connections = (view: View) => view.config.connections ?? {};
-const kindOf = (c?: Connection) =>
+export const kindOf = (c?: Connection) =>
   Object.keys(c ?? {}).find((key) => !SETTINGS.includes(key));
 export const setupOf = (c?: Connection) =>
   c?.[kindOf(c)!] as { [key: string]: Json } | undefined;
@@ -1542,6 +1542,7 @@ export function serviceURL(view: View, name: string) {
   const c = connections(view)[name];
   const kind = kindOf(c);
   if (kind === "ssh" || kind === "sftp") return `${kind}://${name}.perimeter`;
+  if (kind === "mcp") return `https://${name}.perimeter/mcp`;
   const url = setupOf(c)?.url;
   if (typeof url !== "string" || !URL.canParse(url)) return;
   const u = new URL(url);
