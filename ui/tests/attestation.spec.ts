@@ -2,13 +2,13 @@ import { afterEach, expect, mock, spyOn, test } from "bun:test";
 import { Verifier } from "@tinfoilsh/verifier";
 
 const create = spyOn(Verifier, "create");
-let created: string[];
+let created: [string, { project?: string }];
 let allowed = true;
 let ownerKey = "01".repeat(32);
 mock.module("tinfoil", () => ({
   EnclaveHTTPClient: class {
-    static async create(host: string, repo: string) {
-      created = [host, repo];
+    static async create(host: string, pin: { project?: string }) {
+      created = [host, pin];
       return new this();
     }
     async ensureVerified({ signal }: { signal?: AbortSignal } = {}) {
@@ -40,7 +40,7 @@ afterEach(() => {
 
 test("uses registry trust and exact config pins for Monitor attestation", async () => {
   await attestMonitor(target, new AbortController().signal);
-  expect(created).toEqual(["monitor.example", target.reference]);
+  expect(created).toEqual(["monitor.example", { project: target.reference }]);
   expect(create).toHaveBeenCalledWith({ configRegistryIDs: [target.registry] });
 });
 
