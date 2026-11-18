@@ -20,6 +20,7 @@ type Request struct {
 	GraphQL *GraphQLFacts `json:"graphql,omitempty"`
 	Invalid string        `json:"invalid,omitempty"`
 	place   func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error)
+	answer  http.HandlerFunc
 	gqlErr  error
 }
 
@@ -51,6 +52,11 @@ func (r *Request) describe(config *Setup) (facts.Observation, error) {
 	f.Title = h.Method + " " + h.Host + h.Path
 	if r.Invalid != "" {
 		return f, errors.New(r.Invalid)
+	}
+	if r.answer != nil {
+		f.Operation = &facts.Operation{Action: SignInAction, Effects: []string{"session"}}
+		f.Title = config.title + ": sign in"
+		return f, nil
 	}
 	if p := config.Preset; p != nil {
 		return p.Match(r, config, f)

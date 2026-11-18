@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"net/url"
 	"path"
 	"strings"
 
@@ -15,6 +16,7 @@ type Slots interface {
 	Claim(connector.Target) int
 	Covers(origin, path string) bool
 	Bind(r *http.Request, origin string, placeholder func(string) string) (names []string, place func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error), err error)
+	Answer(r *http.Request, origin string, form url.Values, placeholder func(string) string) http.HandlerFunc
 }
 
 func Parse(config, definition, options json.RawMessage, slots func(json.RawMessage) (Slots, error)) (*Setup, error) {
