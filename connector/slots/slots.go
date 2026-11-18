@@ -150,8 +150,8 @@ func (s *Slot) validate() error {
 	if !ValidOrigin(s.Origin) {
 		return fmt.Errorf("slot origin %s must be https://host[:port] in lowercase without the default port", s.Origin)
 	}
-	if suffix, wildcard := strings.CutPrefix(s.Origin, wildcardOrigin); wildcard && (s.Form != "" || !wildcardSuffix.MatchString(suffix)) || !wildcard && strings.Contains(s.Origin, "*") {
-		return fmt.Errorf("slot origin %s may only use * as the first label of a domain with at least two more, without a port or form field", s.Origin)
+	if suffix, wildcard := strings.CutPrefix(s.Origin, wildcardOrigin); wildcard && (s.Form != "" || s.OAuth != "" || !wildcardSuffix.MatchString(suffix)) || !wildcard && strings.Contains(s.Origin, "*") {
+		return fmt.Errorf("slot origin %s may only use * as the first label of a domain with at least two more, without a port, form field or OAuth endpoint", s.Origin)
 	}
 	u, _ := url.Parse(s.Origin)
 	s.host, s.port = u.Hostname(), httpsPort
