@@ -265,7 +265,7 @@ func (s *state) admit(ctx context.Context, p facts.Principal, req core.Request) 
 		Operation:  &catalog.Operation{Action: "session.admit", Effects: []string{"session"}},
 		Title:      "Open " + req.Connection,
 		Parameters: map[string]any{"host": req.Target.Host, "port": req.Target.Port},
-		Details:    map[string]any{"tcp": map[string]any{"host": req.Target.Host, "port": req.Target.Port}},
+		Details:    map[string]any{req.Target.Network: map[string]any{"host": req.Target.Host, "port": req.Target.Port}},
 		Context:    connections.RequestContext{Observes: config.InitialLabel},
 	}}
 	var err error
