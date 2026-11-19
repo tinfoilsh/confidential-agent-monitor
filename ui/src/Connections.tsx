@@ -35,27 +35,33 @@ import { AgentConnectionAccess } from "./Agents";
 import { SavedRules, ToolReview } from "./Approvals";
 
 // Slack's create-app flow opens with this bot's name and scopes filled in.
-const SLACK_APP = `https://api.slack.com/apps?new_app=1&manifest_json=${encodeURIComponent(
+const SLACK_APP = `/apps?new_app=1&manifest_json=${encodeURIComponent(
   JSON.stringify({
     display_information: { name: "Perimeter agent" },
     features: { bot_user: { display_name: "Perimeter agent" } },
     oauth_config: {
       scopes: {
         bot: [
+          "bookmarks:read",
           "channels:history",
           "channels:join",
           "channels:read",
           "chat:write",
+          "emoji:read",
           "files:read",
           "files:write",
           "groups:history",
           "groups:read",
           "im:history",
           "im:read",
+          "im:write",
           "mpim:history",
           "mpim:read",
+          "pins:read",
           "reactions:read",
           "reactions:write",
+          "team:read",
+          "usergroups:read",
           "users:read",
         ],
       },
@@ -736,7 +742,12 @@ export function AddConnection(props: { preset: string }) {
         <Show when={props.preset === "slack"}>
           <p class="muted field-help">
             No Slack app yet?{" "}
-            <a href={SLACK_APP} target="_blank" rel="noopener noreferrer">
+            {/* GovSlack's create-app flow is on api.slack-gov.com. */}
+            <a
+              href={values.origin.replace("://", "://api.") + SLACK_APP}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Create one with these permissions
             </a>
             , install it to your workspace, then paste its Bot User OAuth Token
