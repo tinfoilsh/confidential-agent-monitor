@@ -34,6 +34,40 @@ import { useMonitor } from "./monitor";
 import { AgentConnectionAccess } from "./Agents";
 import { SavedRules, ToolReview } from "./Approvals";
 
+// Slack's create-app flow opens with this bot's name and scopes filled in.
+const SLACK_APP = `/apps?new_app=1&manifest_json=${encodeURIComponent(
+  JSON.stringify({
+    display_information: { name: "Perimeter agent" },
+    features: { bot_user: { display_name: "Perimeter agent" } },
+    oauth_config: {
+      scopes: {
+        bot: [
+          "bookmarks:read",
+          "channels:history",
+          "channels:join",
+          "channels:read",
+          "chat:write",
+          "emoji:read",
+          "files:read",
+          "files:write",
+          "groups:history",
+          "groups:read",
+          "im:history",
+          "im:read",
+          "im:write",
+          "mpim:history",
+          "mpim:read",
+          "pins:read",
+          "reactions:read",
+          "reactions:write",
+          "team:read",
+          "usergroups:read",
+          "users:read",
+        ],
+      },
+    },
+  }),
+)}`;
 const inCatalog =
   (search: string, group: { title: string }) =>
   (p: { name: string; title: string; aliases: string }) =>
@@ -244,6 +278,11 @@ function MyConnections(props: { expanded?: string }) {
                         </span>
                       </Show>
                       <span class="resource-meta">
+                        <Show when={owner.matchOnly(m.view()!, name)}>
+                          <span class="service-status" data-state="match-only">
+                            Match-only
+                          </span>
+                        </Show>
                         <Show when={status()}>
                           {(status) => (
                             <span
@@ -699,6 +738,21 @@ export function AddConnection(props: { preset: string }) {
         <ConnectionWarning warning={preset?.warning} />
         <Show when={fields.some((f) => f.oauth && !tokens[f.key] && local(f))}>
           <LocalSignIn />
+        </Show>
+        <Show when={props.preset === "slack"}>
+          <p class="muted field-help">
+            No Slack app yet?{" "}
+            {/* GovSlack's create-app flow is on api.slack-gov.com. */}
+            <a
+              href={values.origin.replace("://", "://api.") + SLACK_APP}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Create one with these permissions
+            </a>
+            , install it to your workspace, then paste its Bot User OAuth Token
+            below.
+          </p>
         </Show>
         <label>
           Name
@@ -1218,6 +1272,7 @@ function Connection(props: { name: string }) {
             </For>
           </div>
         </section>
+        <MatchOnlySetting name={props.name} />
         <ConnectionForm
           name={props.name}
           setup={
@@ -1347,6 +1402,64 @@ function Connection(props: { name: string }) {
         />
       </Show>
     </div>
+  );
+}
+// Match-only mode lets requests the service does not recognize through instead of failing closed,
+// so the owner confirms turning it on.
+function MatchOnlySetting(props: { name: string }) {
+  const m = useMonitor();
+  return (
+    <section class="connection-section" aria-label="Request matching">
+      <SectionHeading title="Request matching" />
+      <div class="settings-group">
+        <label class="settings-card setting-toggle">
+          <span>
+            <span class="setting-title">Match-only mode</span>
+            <small>
+              Only match this service's hosts and substitute its credentials.
+              Requests it does not recognize are treated like Custom API
+              requests.
+            </small>
+          </span>
+          <input
+            type="checkbox"
+            role="switch"
+            aria-label={`Match-only mode for ${props.name}`}
+            checked={owner.matchOnly(m.view()!, props.name)}
+            disabled={m.busy()}
+            onChange={async (e) => {
+              const toggle = e.currentTarget,
+                on = toggle.checked;
+              if (
+                on &&
+                !(await askConfirm({
+                  title: `Use match-only mode for ${props.name}?`,
+                  description:
+                    "The Perimeter will still limit this service to its hosts and substitute its credentials, " +
+                    "but it will no longer fail closed. Requests it does not recognize, including endpoints " +
+                    "its API definition does not know, are treated like Custom API requests (execute and send): " +
+                    "a bunker with Allow access can make them without asking. Recognized operations keep their permissions.",
+                  confirmLabel: "Use match-only mode",
+                  destructive: true,
+                }))
+              ) {
+                toggle.checked = false;
+                return;
+              }
+              if (!(await m.edit(owner.edits.setMatchOnly(props.name, on))))
+                toggle.checked = owner.matchOnly(m.view()!, props.name);
+            }}
+          />
+        </label>
+        <Show when={owner.matchOnly(m.view()!, props.name)}>
+          <p class="connection-warning" role="note">
+            Match-only mode is on. Requests this service does not recognize are
+            treated like Custom API requests, so access and effect settings
+            still apply.
+          </p>
+        </Show>
+      </div>
+    </section>
   );
 }
 function ServiceMenu(props: { name: string }) {
