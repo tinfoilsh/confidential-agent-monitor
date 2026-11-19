@@ -10,6 +10,8 @@ import {
   type JSX,
 } from "solid-js";
 import { createStore } from "solid-js/store";
+import gear from "@phosphor-icons/core/regular/gear.svg?raw";
+import gearOpen from "@phosphor-icons/core/fill/gear-fill.svg?raw";
 import * as owner from "./owner.js";
 import {
   askConfirm,
@@ -506,11 +508,154 @@ function CatalogDialog(props: { preset?: string; onClose: () => void }) {
     </Modal>
   );
 }
+const PIN_SHOWN = 12;
+// The Catalog workflow publishes each catalog as <SHA-256>.json.
+const PIN_IN_URL = /\/([0-9a-f]{64})\.json$/;
+function CatalogSources() {
+  const m = useMonitor();
+  const [adding, setAdding] = createSignal(false);
+  const [draft, setDraft] = createStore({ url: "", pin: "" });
+  const catalogs = () => m.view()!.config.catalogs ?? {};
+  return (
+    <div class="resource-list collection-list">
+      <div class="resource-heading">
+        <h2>
+          Sources <span class="count">{Object.keys(catalogs()).length}</span>
+        </h2>
+        <button
+          class="button"
+          disabled={adding()}
+          onClick={() => setAdding(true)}
+        >
+          <Icon name="plus" />
+          Add source
+        </button>
+      </div>
+      <Show when={adding()}>
+        <form
+          class="agent-inline form-fields"
+          onSubmit={async (event) => {
+            event.preventDefault();
+            const added = await m.edit([
+              { path: ["catalogs", draft.pin], value: draft.url },
+            ]);
+            if (!added) return;
+            setAdding(false);
+            setDraft({ url: "", pin: "" });
+          }}
+        >
+          <label>
+            Catalog URL
+            <input
+              type="url"
+              required
+              placeholder="https://github.com/acme/presets/releases/download/catalog/<SHA-256>.json"
+              value={draft.url}
+              onInput={(e) =>
+                setDraft({
+                  url: e.currentTarget.value,
+                  pin: PIN_IN_URL.exec(e.currentTarget.value)?.[1] ?? draft.pin,
+                })
+              }
+            />
+          </label>
+          <label>
+            SHA-256
+            <input
+              class="mono"
+              required
+              pattern="[0-9a-f]{64}"
+              title="64 lowercase hexadecimal characters"
+              value={draft.pin}
+              onInput={(e) => setDraft("pin", e.currentTarget.value)}
+            />
+          </label>
+          <div class="form-actions">
+            <button class="primary" disabled={m.busy()}>
+              Add source
+            </button>
+            <button type="button" onClick={() => setAdding(false)}>
+              Cancel
+            </button>
+          </div>
+        </form>
+      </Show>
+      <For
+        each={Object.keys(catalogs())}
+        fallback={
+          <Show when={!adding()}>
+            <Empty title="No sources">
+              The catalog lists the services this Perimeter ships with. Add a
+              catalog file by its URL and SHA-256 to list that file's services
+              instead.
+            </Empty>
+          </Show>
+        }
+      >
+        {(pin) => (
+          <div class="menu-row">
+            <ResourceDisclosure
+              class="connection-item"
+              summary={
+                <>
+                  <Icon name="globe" />
+                  <strong class="collection-name" title={catalogs()[pin]}>
+                    {catalogs()[pin]}
+                  </strong>
+                  <span class="resource-meta">
+                    <code>{pin.slice(0, PIN_SHOWN)}</code>
+                  </span>
+                  <span class="collection-chevron">
+                    <Icon name="arrow" />
+                  </span>
+                </>
+              }
+            >
+              {() => (
+                <div class="agent-inline form-fields">
+                  <CopyField
+                    label="URL"
+                    value={catalogs()[pin]}
+                    copyLabel="Copy URL"
+                  />
+                  <CopyField
+                    label="SHA-256"
+                    value={pin}
+                    copyLabel="Copy SHA-256"
+                  />
+                </div>
+              )}
+            </ResourceDisclosure>
+            <RowMenu name={catalogs()[pin]}>
+              <button
+                class="danger"
+                disabled={m.busy()}
+                onClick={async () =>
+                  (await askConfirm({
+                    title: "Remove this source?",
+                    description:
+                      "Its services leave the catalog. With no sources left, the catalog lists the services this Perimeter ships with.",
+                    confirmLabel: "Remove source",
+                    destructive: true,
+                  })) &&
+                  void m.edit([{ path: ["catalogs", pin], delete: true }])
+                }
+              >
+                Remove source
+              </button>
+            </RowMenu>
+          </div>
+        )}
+      </For>
+    </div>
+  );
+}
 function Catalog() {
   let catalog!: HTMLDivElement;
   const m = useMonitor(),
     [query, setQuery] = m.search("connections");
   const [chosen, setChosen] = createSignal<string>();
+  const [sources, setSources] = createSignal(false);
   const groups = createMemo(() => owner.catalog(m.view()!));
   const filtered = createMemo(() => {
     const search = query().toLowerCase();
@@ -538,7 +683,23 @@ function Catalog() {
               ?.click()
           }
         />
+        <button
+          class="icon-button"
+          aria-label="Catalog sources"
+          title="Catalog sources"
+          aria-expanded={sources()}
+          onClick={() => setSources(!sources())}
+        >
+          <span
+            class="icon"
+            aria-hidden="true"
+            innerHTML={sources() ? gearOpen : gear}
+          />
+        </button>
       </div>
+      <Show when={sources()}>
+        <CatalogSources />
+      </Show>
       <For each={groups().map((g) => g.group)}>
         {(id) => {
           const group = () => filtered().get(id)!;

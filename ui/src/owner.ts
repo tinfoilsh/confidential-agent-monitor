@@ -125,6 +125,7 @@ export type View = {
     policies?: Record<string, string> | null;
     lattices?: { confidentiality?: boolean; integrity?: boolean };
     allow_networks?: string[] | null;
+    catalogs?: Record<string, string> | null;
   };
   labels: Record<string, Label>;
   status: Record<string, ConnectionStatus>;
