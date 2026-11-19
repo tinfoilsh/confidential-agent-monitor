@@ -21,6 +21,7 @@
     "connection": {"mcp": {"url": "https://api.motherduck.com/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://api.motherduck.com/mcp"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

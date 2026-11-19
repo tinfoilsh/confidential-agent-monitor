@@ -9,6 +9,7 @@
     "connection": {"mcp": {"url": "https://mcp.atlassian.com/v2/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.atlassian.com/v2/mcp"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

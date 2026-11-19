@@ -15,6 +15,7 @@
     "connection": {"mcp": {"url": "https://mcp.tavily.com/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.tavily.com/mcp"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

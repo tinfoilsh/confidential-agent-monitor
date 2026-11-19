@@ -9,6 +9,7 @@
     "connection": {"mcp": {"url": "https://services.leadconnectorhq.com/mcp/openai/v2/"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://services.leadconnectorhq.com/mcp/openai/v2/"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

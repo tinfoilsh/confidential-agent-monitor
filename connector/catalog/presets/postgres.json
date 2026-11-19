@@ -10,6 +10,7 @@
     "fields": [
       {"hint": "postgres://user@host/db", "key": "url", "label": "Connection URL", "path": ["postgres", "url"]},
       {"default": "", "key": "password", "label": "Password", "credential": true, "secret": true}
-    ]
+    ],
+    "defaults": {"contents": "me", "sends": "me", "strangers": true}
   }
 }

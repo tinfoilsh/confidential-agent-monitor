@@ -11,6 +11,7 @@
     "connection": {"mcp": {"url": "https://mcp.surveymonkey.com/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.surveymonkey.com/mcp"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

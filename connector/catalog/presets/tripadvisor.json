@@ -7,6 +7,7 @@
       "use": {"title": "Use tools that change things", "effects": ["write"]}
     },
     "connection": {"mcp": {"url": "https://production.ai-mcp-extensibility-prd.tamg.cloud/ogMvjY4De1G7CiHanMOAgddl/mcp"}},
-    "fields": []
+    "fields": [],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

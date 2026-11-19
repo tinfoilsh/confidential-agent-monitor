@@ -17,6 +17,7 @@
       {"key": "url", "label": "Broker URL", "hint": "tls://user@broker.example.com:4222", "path": ["nats", "url"]},
       {"key": "password", "label": "Password", "default": "", "secret": true, "credential": true},
       {"key": "token", "label": "Token, instead of user and password", "default": "", "secret": true, "credential": true}
-    ]
+    ],
+    "defaults": {"contents": "me", "sends": "me", "strangers": true}
   }
 }

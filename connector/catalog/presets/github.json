@@ -6297,6 +6297,11 @@
         ]
       }
     },
+    "defaults": {
+      "contents": "team",
+      "sends": "me",
+      "strangers": true
+    },
     "fields": [
       {
         "credential": true,

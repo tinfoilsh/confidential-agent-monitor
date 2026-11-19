@@ -14,6 +14,7 @@
     "connection": {"mcp": {"url": "https://mcp2.readwise.io/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp2.readwise.io/mcp"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

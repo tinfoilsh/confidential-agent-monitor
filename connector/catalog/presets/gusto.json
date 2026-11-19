@@ -10,6 +10,7 @@
     "fields": [
       {"key": "url", "label": "Server URL", "default": "https://mcp.api.gusto.com", "help": "Use https://mcp.api.gusto-demo.com for the demo environment.", "path": ["mcp", "url"]},
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

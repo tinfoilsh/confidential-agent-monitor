@@ -35,7 +35,8 @@
         "secret": true,
         "credential": true
       }
-    ]
+    ],
+    "defaults": { "contents": "team", "sends": "team", "strangers": true }
   },
   "http": {
     "sensitive_query": ["ticket"],

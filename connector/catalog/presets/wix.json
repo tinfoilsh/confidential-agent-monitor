@@ -13,7 +13,8 @@
     "connection": {"mcp": {"url": "https://mcp.wix.com/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.wix.com/mcp"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   },
   "mcp": {"token": {"header": "Authorization"}}
 }

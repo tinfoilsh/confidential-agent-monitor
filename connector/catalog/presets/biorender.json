@@ -9,6 +9,7 @@
     "connection": {"mcp": {"url": "https://mcp.services.biorender.com/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.services.biorender.com/mcp"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

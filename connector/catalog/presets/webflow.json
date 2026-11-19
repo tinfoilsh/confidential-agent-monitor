@@ -11,6 +11,7 @@
     "fields": [
       {"key": "url", "label": "Server URL", "default": "https://mcp.webflow.com/mcp", "hint": "Use https://mcp.eu.webflow.com/mcp for EU workspaces.", "path": ["mcp", "url"]},
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

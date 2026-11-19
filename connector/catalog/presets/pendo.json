@@ -16,6 +16,7 @@
     "fields": [
       {"key": "url", "label": "Server URL", "default": "https://app.pendo.io/mcp/v0/shttp", "hint": "Use https://us1.app.pendo.io/mcp/v0/shttp, https://app.eu.pendo.io/mcp/v0/shttp, https://app.jpn.pendo.io/mcp/v0/shttp or https://app.au.pendo.io/mcp/v0/shttp for those regions.", "path": ["mcp", "url"]},
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

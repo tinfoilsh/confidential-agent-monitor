@@ -13,6 +13,7 @@
     "fields": [
       {"key": "url", "label": "Broker URL", "hint": "mqtts://user@broker.example.com:8883", "path": ["mqtt", "url"]},
       {"key": "password", "label": "Password", "default": "", "secret": true, "credential": true}
-    ]
+    ],
+    "defaults": {"contents": "me", "sends": "me", "strangers": true}
   }
 }

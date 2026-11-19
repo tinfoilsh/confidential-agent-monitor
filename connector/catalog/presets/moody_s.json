@@ -9,6 +9,7 @@
     "connection": {"mcp": {"url": "https://api.moodys.com/genai-ready-data/m1/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://api.moodys.com/genai-ready-data/m1/mcp"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

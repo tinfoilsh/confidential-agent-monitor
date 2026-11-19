@@ -13,6 +13,7 @@
     "connection": {"mcp": {"url": "https://ai.todoist.net/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://ai.todoist.net/mcp"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

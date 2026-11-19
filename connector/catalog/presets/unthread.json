@@ -10,7 +10,8 @@
     "fields": [
       {"key": "url", "label": "Server URL", "default": "https://app.unthread.io/api/mcp", "help": "With a service account API key, use https://api.unthread.io/api/mcp instead.", "path": ["mcp", "url"]},
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://app.unthread.io/api/mcp"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   },
   "mcp": {"token": {"header": "X-Api-Key"}}
 }

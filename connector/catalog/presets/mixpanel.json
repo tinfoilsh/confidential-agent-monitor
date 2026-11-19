@@ -14,6 +14,7 @@
     "fields": [
       {"key": "url", "label": "Server URL", "default": "https://mcp.mixpanel.com/mcp", "hint": "Use https://mcp-eu.mixpanel.com/mcp for EU or https://mcp-in.mixpanel.com/mcp for India data residency.", "path": ["mcp", "url"]},
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

@@ -24,6 +24,11 @@
         ]
       }
     },
+    "defaults": {
+      "contents": "team",
+      "sends": "anyone",
+      "strangers": true
+    },
     "fields": [
       {
         "key": "client_id",

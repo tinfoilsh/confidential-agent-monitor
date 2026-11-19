@@ -7830,6 +7830,11 @@
         ]
       }
     },
+    "defaults": {
+      "contents": "me",
+      "sends": "anyone",
+      "strangers": true
+    },
     "fields": [
       {
         "default": "organizations",

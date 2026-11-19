@@ -29,6 +29,7 @@
         "help": "Leave empty to allow all ports.",
         "path": ["tcp", "ports"]
       }
-    ]
+    ],
+    "defaults": { "contents": "anyone", "sends": "anyone", "strangers": true }
   }
 }

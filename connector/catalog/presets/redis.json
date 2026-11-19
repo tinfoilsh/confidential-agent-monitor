@@ -11,6 +11,7 @@
     "fields": [
       {"hint": "rediss://user@host:6379", "key": "url", "label": "Connection URL", "path": ["redis", "url"]},
       {"default": "", "key": "password", "label": "Password", "credential": true, "secret": true}
-    ]
+    ],
+    "defaults": {"contents": "me", "sends": "me", "strangers": true}
   }
 }

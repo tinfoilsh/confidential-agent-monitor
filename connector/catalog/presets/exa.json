@@ -9,7 +9,8 @@
     "connection": {"mcp": {"url": "https://mcp.exa.ai/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.exa.ai/mcp"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   },
   "mcp": {"token": {"header": "x-api-key"}}
 }

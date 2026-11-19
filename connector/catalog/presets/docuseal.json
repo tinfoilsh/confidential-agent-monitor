@@ -10,6 +10,7 @@
     "fields": [
       {"key": "url", "label": "Server URL", "default": "https://{domain}/mcp", "path": ["mcp", "url"]},
       {"key": "token", "label": "API key", "credential": true, "secret": true}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

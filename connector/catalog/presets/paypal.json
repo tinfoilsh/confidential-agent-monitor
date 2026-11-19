@@ -35,6 +35,7 @@
     "fields": [
       {"key": "url", "label": "Server URL", "default": "https://mcp.paypal.com/mcp", "hint": "Use https://mcp.sandbox.paypal.com/mcp for the PayPal sandbox.", "path": ["mcp", "url"]},
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

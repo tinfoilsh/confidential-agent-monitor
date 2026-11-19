@@ -7,7 +7,8 @@
       "use.fetch": {"title": "Fetch web pages", "effects": ["read", "pay", "send"]}
     },
     "connection": {"tinfoil-mcp": {"url": "https://websearch.tinfoil.sh/mcp", "repo": "tinfoilsh/confidential-websearch"}},
-    "fields": [{"key": "token", "label": "Tinfoil API key", "credential": true, "secret": true}]
+    "fields": [{"key": "token", "label": "Tinfoil API key", "credential": true, "secret": true}],
+    "defaults": {"contents": "me", "sends": "me", "strangers": true}
   },
   "mcp": {
     "sends": "anyone",

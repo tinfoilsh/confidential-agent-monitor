@@ -68,7 +68,8 @@
       "write.interns": {"title": "Write: interns"},
       "write.pricing": {"title": "Write: pricing"},
       "write.private_endpoints": {"title": "Write: private endpoints"}
-    }
+    },
+    "defaults": {"contents": "team", "sends": "anyone", "strangers": true}
   },
   "http": {
     "operations": {

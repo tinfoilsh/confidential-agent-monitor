@@ -853,6 +853,11 @@
         ]
       }
     },
+    "defaults": {
+      "contents": "me",
+      "sends": "anyone",
+      "strangers": true
+    },
     "fields": [
       {
         "credential": true,

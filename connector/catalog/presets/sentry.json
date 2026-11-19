@@ -22,7 +22,8 @@
     "connection": {"mcp": {"url": "https://mcp.sentry.dev/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.sentry.dev/mcp"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   },
   "mcp": {"token": {"header": "Authorization", "prefix": "Sentry-Bearer "}}
 }

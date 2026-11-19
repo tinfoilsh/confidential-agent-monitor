@@ -60,6 +60,11 @@
         ]
       }
     },
+    "defaults": {
+      "contents": "team",
+      "sends": "anyone",
+      "strangers": true
+    },
     "fields": [
       {
         "hint": "Leave empty to use Tinfoil's app",

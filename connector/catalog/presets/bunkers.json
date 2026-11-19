@@ -9,6 +9,7 @@
         "effects": ["read", "send"]
       }
     },
-    "connection": { "tcp": { "hosts": ["*.sandbox"] } }
+    "connection": { "tcp": { "hosts": ["*.sandbox"] } },
+    "defaults": { "contents": "me", "sends": "me", "strangers": true }
   }
 }

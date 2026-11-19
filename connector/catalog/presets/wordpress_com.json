@@ -14,6 +14,7 @@
     "connection": {"mcp": {"url": "https://public-api.wordpress.com/wpcom/v2/mcp/v1"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://public-api.wordpress.com/wpcom/v2/mcp/v1"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

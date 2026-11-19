@@ -13,6 +13,7 @@
     "connection": {"mcp": {"url": "https://mcp.stripe.com"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.stripe.com"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

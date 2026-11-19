@@ -9,6 +9,7 @@
     "connection": {"mcp": {"url": "https://mcp.ramp.com/ramp-data/mcp"}},
     "fields": [
       {"key": "token", "label": "API key", "credential": true, "secret": true}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

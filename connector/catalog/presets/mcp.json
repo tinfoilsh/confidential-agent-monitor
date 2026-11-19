@@ -21,6 +21,7 @@
         "credential": true,
         "secret": true
       }
-    ]
+    ],
+    "defaults": { "contents": "team", "sends": "me", "strangers": true }
   }
 }

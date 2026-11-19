@@ -3516,6 +3516,11 @@
         ]
       }
     },
+    "defaults": {
+      "contents": "team",
+      "sends": "anyone",
+      "strangers": true
+    },
     "fields": [
       {
         "hint": "Your org or custom domain, not the -admin address",

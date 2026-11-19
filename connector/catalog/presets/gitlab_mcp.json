@@ -10,6 +10,7 @@
     "fields": [
       {"key": "url", "label": "Server URL", "default": "https://gitlab.com/api/v4/mcp", "help": "For GitLab Self-Managed or Dedicated, use https://YOUR-GITLAB-HOST/api/v4/mcp.", "path": ["mcp", "url"]},
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

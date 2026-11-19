@@ -23,6 +23,7 @@
     "connection": {"mcp": {"url": "https://mcp.zapier.com/api/v1/connect"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.zapier.com/api/v1/connect"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

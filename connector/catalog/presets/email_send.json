@@ -11,6 +11,7 @@
       {"key": "password", "label": "App password", "credential": true, "secret": true},
       {"default": "smtps://smtp.gmail.com", "key": "smtp_url", "label": "SMTP URL", "path": ["smtp", "url"]},
       {"edit_only": true, "key": "smtp_user", "label": "SMTP user", "path": ["smtp", "user"]}
-    ]
+    ],
+    "defaults": {"contents": "me", "sends": "me", "strangers": true}
   }
 }

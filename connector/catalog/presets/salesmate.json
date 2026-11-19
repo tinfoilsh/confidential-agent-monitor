@@ -44,7 +44,8 @@
       "sequences.send": {"title": "Send"},
       "users": {"title": "Users"},
       "users.read": {"title": "Read"}
-    }
+    },
+    "defaults": {"contents": "team", "sends": "anyone", "strangers": true}
   },
   "http": {
     "operations": {

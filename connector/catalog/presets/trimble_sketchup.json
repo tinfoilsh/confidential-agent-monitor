@@ -11,6 +11,7 @@
     "connection": {"mcp": {"url": "https://api.sketchup.com/mcp/v1/sketchup/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://api.sketchup.com/mcp/v1/sketchup/mcp"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

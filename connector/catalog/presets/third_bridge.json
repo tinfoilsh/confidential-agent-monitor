@@ -9,6 +9,7 @@
     "connection": {"mcp": {"url": "https://ai.thirdbridge.com/mcp/sse"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://ai.thirdbridge.com/mcp/sse"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

@@ -132,6 +132,11 @@
         ]
       }
     },
+    "defaults": {
+      "contents": "team",
+      "sends": "anyone",
+      "strangers": true
+    },
     "fields": [
       {
         "default": "https://bigquery.googleapis.com",

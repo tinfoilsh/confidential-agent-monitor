@@ -1050,6 +1050,11 @@
         ]
       }
     },
+    "defaults": {
+      "contents": "team",
+      "sends": "anyone",
+      "strangers": true
+    },
     "fields": [
       {
         "hint": "For a non-default space, add its path, such as https://kibana.example.com/s/marketing.",

@@ -9,6 +9,7 @@
     "connection": {"mcp": {"url": "https://mcp.uber.com/claude/rides-3p/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.uber.com/claude/rides-3p/mcp"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

@@ -9,6 +9,7 @@
     "connection": {"mcp": {"url": "https://ai-inc.mailchimp.com/claude/mcp/v2"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://ai-inc.mailchimp.com/claude/mcp/v2"}}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

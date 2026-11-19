@@ -10,6 +10,7 @@
     "fields": [
       {"key": "url", "label": "Server URL", "default": "https://cloud.umami.is/mcp", "hint": "Use https://<your-umami-host>/mcp for a self-hosted instance.", "path": ["mcp", "url"]},
       {"key": "token", "label": "API key", "credential": true, "secret": true}
-    ]
+    ],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }

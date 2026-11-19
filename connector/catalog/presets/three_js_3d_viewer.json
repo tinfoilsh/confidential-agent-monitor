@@ -9,6 +9,7 @@
       "use.show_threejs_scene": {"title": "Show threejs scene", "effects": ["read"]}
     },
     "connection": {"mcp": {"url": "https://example-server.modelcontextprotocol.io/threejs/mcp"}},
-    "fields": []
+    "fields": [],
+    "defaults": {"contents": "team", "sends": "me", "strangers": true}
   }
 }
