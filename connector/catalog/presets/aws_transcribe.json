@@ -1,67 +1,137 @@
 {
-  "title": "AWS Transcribe",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["http", "slots", 0, "sigv4", "region"]},
-      {"key": "access_key", "label": "Access key ID", "secret": true, "credential": true},
-      {"key": "secret_key", "label": "Secret access key", "secret": true, "credential": true},
-      {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/", "sigv4": {"service": "transcribe", "region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}},
     "actions": {
-      "read": {"title": "Read everything the account can see"},
-      "send.transcribe": {"title": "Send: transcribe"},
-      "write.transcribe": {"title": "Write: transcribe"}
-    }
+      "transcribe": {
+        "title": "Transcribe"
+      },
+      "transcribe.delete": {
+        "title": "Delete"
+      },
+      "transcribe.generate": {
+        "title": "Generate"
+      },
+      "transcribe.read": {
+        "title": "Read"
+      },
+      "transcribe.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "origin": "https://example.com",
+            "path": "/",
+            "sigv4": {
+              "region": "us-east-1",
+              "secret": "secret_key",
+              "service": "transcribe",
+              "session": "session_token"
+            },
+            "value": "access_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Service endpoint (https://service.region.amazonaws.com)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "key": "region",
+        "label": "Region (e.g. us-east-1)",
+        "path": [
+          "http",
+          "slots",
+          0,
+          "sigv4",
+          "region"
+        ]
+      },
+      {
+        "credential": true,
+        "key": "access_key",
+        "label": "Access key ID",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "secret_key",
+        "label": "Secret access key",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "session_token",
+        "label": "Session token (temporary credentials only)",
+        "secret": true
+      }
+    ],
+    "group": "api",
+    "replaced_by": "aws"
   },
+  "title": "AWS Transcribe",
   "http": {
+    "origins": {"origin":["https://fips.transcribe.{region}.amazonaws.com","https://transcribe.{region}.amazonaws.com"]},
     "operations": {
-      "CreateCallAnalyticsCategory": {"action":"send.transcribe","effects":["send"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.CreateCallAnalyticsCategory"},"body":"any","scope":{}},
-      "CreateLanguageModel": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.CreateLanguageModel"},"body":"any","scope":{}},
-      "CreateMedicalVocabulary": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.CreateMedicalVocabulary"},"body":"any","scope":{}},
-      "CreateVocabulary": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.CreateVocabulary"},"body":"any","scope":{}},
-      "CreateVocabularyFilter": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.CreateVocabularyFilter"},"body":"any","scope":{}},
-      "DeleteCallAnalyticsCategory": {"action":"send.transcribe","effects":["send"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.DeleteCallAnalyticsCategory"},"body":"any","scope":{}},
-      "DeleteCallAnalyticsJob": {"action":"send.transcribe","effects":["send"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.DeleteCallAnalyticsJob"},"body":"any","scope":{}},
-      "DeleteLanguageModel": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.DeleteLanguageModel"},"body":"any","scope":{}},
-      "DeleteMedicalScribeJob": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.DeleteMedicalScribeJob"},"body":"any","scope":{}},
-      "DeleteMedicalTranscriptionJob": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.DeleteMedicalTranscriptionJob"},"body":"any","scope":{}},
-      "DeleteMedicalVocabulary": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.DeleteMedicalVocabulary"},"body":"any","scope":{}},
-      "DeleteTranscriptionJob": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.DeleteTranscriptionJob"},"body":"any","scope":{}},
-      "DeleteVocabulary": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.DeleteVocabulary"},"body":"any","scope":{}},
-      "DeleteVocabularyFilter": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.DeleteVocabularyFilter"},"body":"any","scope":{}},
-      "DescribeLanguageModel": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.DescribeLanguageModel"},"body":"any","scope":{}},
-      "GetCallAnalyticsCategory": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.GetCallAnalyticsCategory"},"body":"any","scope":{}},
-      "GetCallAnalyticsJob": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.GetCallAnalyticsJob"},"body":"any","scope":{}},
-      "GetMedicalScribeJob": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.GetMedicalScribeJob"},"body":"any","scope":{}},
-      "GetMedicalTranscriptionJob": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.GetMedicalTranscriptionJob"},"body":"any","scope":{}},
-      "GetMedicalVocabulary": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.GetMedicalVocabulary"},"body":"any","scope":{}},
-      "GetTranscriptionJob": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.GetTranscriptionJob"},"body":"any","scope":{}},
-      "GetVocabulary": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.GetVocabulary"},"body":"any","scope":{}},
-      "GetVocabularyFilter": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.GetVocabularyFilter"},"body":"any","scope":{}},
-      "ListCallAnalyticsCategories": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.ListCallAnalyticsCategories"},"body":"any","scope":{}},
-      "ListCallAnalyticsJobs": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.ListCallAnalyticsJobs"},"body":"any","scope":{}},
-      "ListLanguageModels": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.ListLanguageModels"},"body":"any","scope":{}},
-      "ListMedicalScribeJobs": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.ListMedicalScribeJobs"},"body":"any","scope":{}},
-      "ListMedicalTranscriptionJobs": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.ListMedicalTranscriptionJobs"},"body":"any","scope":{}},
-      "ListMedicalVocabularies": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.ListMedicalVocabularies"},"body":"any","scope":{}},
-      "ListTagsForResource": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.ListTagsForResource"},"body":"any","scope":{}},
-      "ListTranscriptionJobs": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.ListTranscriptionJobs"},"body":"any","scope":{}},
-      "ListVocabularies": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.ListVocabularies"},"body":"any","scope":{}},
-      "ListVocabularyFilters": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.ListVocabularyFilters"},"body":"any","scope":{}},
-      "StartCallAnalyticsJob": {"action":"send.transcribe","effects":["send"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.StartCallAnalyticsJob"},"body":"any","scope":{}},
-      "StartMedicalScribeJob": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.StartMedicalScribeJob"},"body":"any","scope":{}},
-      "StartMedicalTranscriptionJob": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.StartMedicalTranscriptionJob"},"body":"any","scope":{}},
-      "StartTranscriptionJob": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.StartTranscriptionJob"},"body":"any","scope":{}},
-      "TagResource": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.TagResource"},"body":"any","scope":{}},
-      "UntagResource": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.UntagResource"},"body":"any","scope":{}},
-      "UpdateCallAnalyticsCategory": {"action":"send.transcribe","effects":["send"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.UpdateCallAnalyticsCategory"},"body":"any","scope":{}},
-      "UpdateLanguageModel": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.UpdateLanguageModel"},"body":"any","scope":{}},
-      "UpdateMedicalVocabulary": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.UpdateMedicalVocabulary"},"body":"any","scope":{}},
-      "UpdateVocabulary": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.UpdateVocabulary"},"body":"any","scope":{}},
-      "UpdateVocabularyFilter": {"action":"write.transcribe","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Transcribe.UpdateVocabularyFilter"},"body":"any","scope":{}}
+      "CreateCallAnalyticsCategory": {"action":"transcribe.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Transcribe.CreateCallAnalyticsCategory"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateLanguageModel": {"action":"transcribe.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Transcribe.CreateLanguageModel"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateMedicalVocabulary": {"action":"transcribe.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Transcribe.CreateMedicalVocabulary"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateVocabulary": {"action":"transcribe.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Transcribe.CreateVocabulary"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateVocabularyFilter": {"action":"transcribe.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Transcribe.CreateVocabularyFilter"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteCallAnalyticsCategory": {"action":"transcribe.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"Transcribe.DeleteCallAnalyticsCategory"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteCallAnalyticsJob": {"action":"transcribe.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"Transcribe.DeleteCallAnalyticsJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteLanguageModel": {"action":"transcribe.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"Transcribe.DeleteLanguageModel"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteMedicalScribeJob": {"action":"transcribe.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"Transcribe.DeleteMedicalScribeJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteMedicalTranscriptionJob": {"action":"transcribe.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"Transcribe.DeleteMedicalTranscriptionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteMedicalVocabulary": {"action":"transcribe.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"Transcribe.DeleteMedicalVocabulary"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteTranscriptionJob": {"action":"transcribe.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"Transcribe.DeleteTranscriptionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteVocabulary": {"action":"transcribe.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"Transcribe.DeleteVocabulary"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteVocabularyFilter": {"action":"transcribe.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"Transcribe.DeleteVocabularyFilter"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeLanguageModel": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.DescribeLanguageModel"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetCallAnalyticsCategory": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.GetCallAnalyticsCategory"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetCallAnalyticsJob": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.GetCallAnalyticsJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetMedicalScribeJob": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.GetMedicalScribeJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetMedicalTranscriptionJob": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.GetMedicalTranscriptionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetMedicalVocabulary": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.GetMedicalVocabulary"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetTranscriptionJob": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.GetTranscriptionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetVocabulary": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.GetVocabulary"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetVocabularyFilter": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.GetVocabularyFilter"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListCallAnalyticsCategories": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.ListCallAnalyticsCategories"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListCallAnalyticsJobs": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.ListCallAnalyticsJobs"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListLanguageModels": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.ListLanguageModels"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListMedicalScribeJobs": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.ListMedicalScribeJobs"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListMedicalTranscriptionJobs": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.ListMedicalTranscriptionJobs"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListMedicalVocabularies": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.ListMedicalVocabularies"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListTagsForResource": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.ListTagsForResource"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListTranscriptionJobs": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.ListTranscriptionJobs"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListVocabularies": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.ListVocabularies"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListVocabularyFilters": {"action":"transcribe.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Transcribe.ListVocabularyFilters"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartCallAnalyticsJob": {"action":"transcribe.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Transcribe.StartCallAnalyticsJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartMedicalScribeJob": {"action":"transcribe.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Transcribe.StartMedicalScribeJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartMedicalTranscriptionJob": {"action":"transcribe.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Transcribe.StartMedicalTranscriptionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartTranscriptionJob": {"action":"transcribe.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Transcribe.StartTranscriptionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "TagResource": {"action":"transcribe.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Transcribe.TagResource"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UntagResource": {"action":"transcribe.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Transcribe.UntagResource"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UpdateCallAnalyticsCategory": {"action":"transcribe.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Transcribe.UpdateCallAnalyticsCategory"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UpdateLanguageModel": {"action":"transcribe.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Transcribe.UpdateLanguageModel"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UpdateMedicalVocabulary": {"action":"transcribe.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Transcribe.UpdateMedicalVocabulary"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UpdateVocabulary": {"action":"transcribe.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Transcribe.UpdateVocabulary"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UpdateVocabularyFilter": {"action":"transcribe.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Transcribe.UpdateVocabularyFilter"},"method":"POST","origin":"{origin}","path":"/","scope":{}}
     }
   }
 }

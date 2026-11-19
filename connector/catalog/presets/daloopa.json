@@ -10,5 +10,6 @@
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.daloopa.com/server/mcp"}}
     ]
-  }
+  },
+  "mcp": {"token": {"header": "X-API-KEY"}}
 }

@@ -4,7 +4,11 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.add-comments": {"title": "Add comments", "effects": ["send", "write"]},
+      "use.delete-object": {"title": "Delete object", "effects": ["delete"]},
+      "use.export-project-template": {"title": "Export project template", "effects": ["share"]},
+      "use.manage-assignments": {"title": "Manage assignments", "effects": ["send", "write"]}
     },
     "connection": {"mcp": {"url": "https://ai.todoist.net/mcp"}},
     "fields": [

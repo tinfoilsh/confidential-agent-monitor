@@ -17,12 +17,14 @@ import (
 	"time"
 	"unicode"
 
-	oauthauth "github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/modelcontextprotocol/go-sdk/oauthex"
 	"golang.org/x/oauth2"
 )
 
-const httpsPort = "443"
+const (
+	httpsPort         = "443"
+	initializeRequest = `{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"perimeter","version":"0"}}}`
+)
 
 var (
 	prompts    = []string{"", "none", "login", "consent", "select_account"}
@@ -274,18 +276,26 @@ func protectedResource(ctx context.Context, client *http.Client, resource string
 	if err != nil {
 		return nil, Scrub(ctx, "discovery", err)
 	}
+	initialize, _ := http.NewRequestWithContext(ctx, http.MethodPost, resource, strings.NewReader(initializeRequest))
+	initialize.Header.Set("Content-Type", "application/json")
+	initialize.Header.Set("Accept", "application/json, text/event-stream")
 	u := req.URL
 	origin := u.Scheme + "://" + u.Host
 	var metadata []string
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, Scrub(ctx, "discovery", err)
-	}
-	resp.Body.Close()
-	challenges, _ := oauthex.ParseWWWAuthenticate(resp.Header.Values("WWW-Authenticate"))
-	for _, c := range challenges {
-		if m := c.Params["resource_metadata"]; m != "" {
-			metadata = append(metadata, m)
+	for _, probe := range []*http.Request{req, initialize} {
+		if len(metadata) > 0 {
+			break
+		}
+		resp, err := client.Do(probe)
+		if err != nil {
+			return nil, Scrub(ctx, "discovery", err)
+		}
+		resp.Body.Close()
+		challenges, _ := oauthex.ParseWWWAuthenticate(resp.Header.Values("WWW-Authenticate"))
+		for _, c := range challenges {
+			if m := c.Params["resource_metadata"]; m != "" {
+				metadata = append(metadata, m)
+			}
 		}
 	}
 	metadata = append(metadata, origin+"/.well-known/oauth-protected-resource"+u.Path, origin+"/.well-known/oauth-protected-resource")
@@ -303,18 +313,18 @@ func protectedResource(ctx context.Context, client *http.Client, resource string
 	return nil, nil
 }
 
-func publishedIssuer(ctx context.Context, client *http.Client, server string, maxBytes int64) string {
+func authServerMeta(ctx context.Context, client *http.Client, server string, maxBytes int64) *oauthex.AuthServerMeta {
 	a, _ := url.Parse(server)
 	if CheckEndpoints(server) != nil {
-		return ""
+		return nil
 	}
 	for _, m := range []string{"/.well-known/oauth-authorization-server" + a.Path, "/.well-known/openid-configuration" + a.Path, a.Path + "/.well-known/openid-configuration"} {
 		var other oauthex.AuthServerMeta
 		if getJSON(ctx, client, a.Scheme+"://"+a.Host+m, maxBytes, &other) && other.Issuer != "" && CheckEndpoints(other.Issuer) == nil {
-			return other.Issuer
+			return &other
 		}
 	}
-	return ""
+	return nil
 }
 
 func isLoopback(redirect string) bool {
@@ -512,17 +522,15 @@ func (s *SignIns) discover(ctx context.Context, client *http.Client, g *Grant, r
 		return err
 	}
 
-	asm, err := oauthauth.GetAuthServerMetadata(ctx, server, client)
-	if err != nil {
-		if issuer := publishedIssuer(ctx, client, server, s.limits.MaxResponseBytes); issuer != "" {
-			server = strings.TrimSuffix(issuer, "/")
-			asm, err = oauthauth.GetAuthServerMetadata(ctx, server, client)
-		}
+	asm := authServerMeta(ctx, client, server, s.limits.MaxResponseBytes)
+	if asm != nil && strings.TrimSuffix(asm.Issuer, "/") != strings.TrimSuffix(server, "/") {
+		server = strings.TrimSuffix(asm.Issuer, "/")
+		asm = authServerMeta(ctx, client, server, s.limits.MaxResponseBytes)
 	}
-	if err != nil {
-		return err
+	if asm == nil || strings.TrimSuffix(asm.Issuer, "/") != strings.TrimSuffix(server, "/") || len(asm.CodeChallengeMethodsSupported) == 0 {
+		return fmt.Errorf("%s publishes no matching authorization server metadata with PKCE", server)
 	}
-	if asm == nil || asm.AuthorizationEndpoint == "" || asm.TokenEndpoint == "" {
+	if asm.AuthorizationEndpoint == "" || asm.TokenEndpoint == "" {
 		return fmt.Errorf("%s names no authorization or token endpoint", server)
 	}
 	if err := CheckEndpoints(asm.AuthorizationEndpoint, asm.TokenEndpoint, asm.RegistrationEndpoint); err != nil {

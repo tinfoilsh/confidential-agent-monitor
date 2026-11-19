@@ -9,6 +9,7 @@
     },
     "connection": {"mcp": {"url": "https://api.githubcopilot.com/mcp/"}},
     "fields": [
+      {"key": "url", "label": "Server URL", "default": "https://api.githubcopilot.com/mcp/", "help": "For GitHub Enterprise Cloud with data residency, use https://copilot-api.SUBDOMAIN.ghe.com/mcp with a personal access token.", "path": ["mcp", "url"]},
       {
         "key": "token",
         "label": "GitHub account",

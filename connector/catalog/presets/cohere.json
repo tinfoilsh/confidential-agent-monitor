@@ -1,79 +1,281 @@
 {
-  "title": "Embeddings Cohere",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.cohere.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "delete.connectors": {"title": "Delete: connectors"},
-      "delete.datasets": {"title": "Delete: datasets"},
-      "delete.finetuned_models": {"title": "Delete: finetuned models"},
-      "generate.authorize": {"title": "Generate: authorize"},
-      "generate.batches": {"title": "Generate: batches"},
-      "generate.classify": {"title": "Generate: classify"},
-      "generate.connectors": {"title": "Generate: connectors"},
-      "generate.datasets": {"title": "Generate: datasets"},
-      "generate.detokenize": {"title": "Generate: detokenize"},
-      "generate.embed": {"title": "Generate: embed"},
-      "generate.embed_jobs": {"title": "Generate: embed jobs"},
-      "generate.finetuned_models": {"title": "Generate: finetuned models"},
-      "generate.generate": {"title": "Generate: generate"},
-      "generate.parse": {"title": "Generate: parse"},
-      "generate.rerank": {"title": "Generate: rerank"},
-      "generate.summarize": {"title": "Generate: summarize"},
-      "generate.tokenize": {"title": "Generate: tokenize"},
-      "generate.transcriptions": {"title": "Generate: transcriptions"},
-      "read": {"title": "Read everything the account can see"},
-      "send.chat": {"title": "Send: chat"},
-      "write.connectors": {"title": "Write: connectors"},
-      "write.finetuned_models": {"title": "Write: finetuned models"}
-    }
+      "api_key": {
+        "title": "Api key"
+      },
+      "api_key.read": {
+        "title": "Read"
+      },
+      "audio": {
+        "title": "Audio"
+      },
+      "audio.transcriptions": {
+        "title": "Transcriptions"
+      },
+      "audio.transcriptions.generate": {
+        "title": "Generate"
+      },
+      "batches": {
+        "title": "Batches"
+      },
+      "batches.generate": {
+        "title": "Generate"
+      },
+      "batches.read": {
+        "title": "Read"
+      },
+      "batches.write": {
+        "title": "Create and edit"
+      },
+      "chat": {
+        "title": "Chat"
+      },
+      "chat.generate": {
+        "title": "Generate"
+      },
+      "classify": {
+        "title": "Classify"
+      },
+      "classify.generate": {
+        "title": "Generate"
+      },
+      "compatibility": {
+        "title": "Compatibility"
+      },
+      "compatibility.audio": {
+        "title": "Audio"
+      },
+      "compatibility.audio.transcriptions": {
+        "title": "Transcriptions"
+      },
+      "compatibility.audio.transcriptions.generate": {
+        "title": "Generate"
+      },
+      "compatibility.chat": {
+        "title": "Chat"
+      },
+      "compatibility.chat.completions": {
+        "title": "Completions"
+      },
+      "compatibility.chat.completions.generate": {
+        "title": "Generate"
+      },
+      "compatibility.embeddings": {
+        "title": "Embeddings"
+      },
+      "compatibility.embeddings.generate": {
+        "title": "Generate"
+      },
+      "connectors": {
+        "title": "Connectors"
+      },
+      "connectors.admin": {
+        "title": "Manage"
+      },
+      "connectors.delete": {
+        "title": "Delete"
+      },
+      "connectors.oauth": {
+        "title": "Oauth"
+      },
+      "connectors.oauth.authorize": {
+        "title": "Authorize"
+      },
+      "connectors.oauth.authorize.admin": {
+        "title": "Manage"
+      },
+      "connectors.read": {
+        "title": "Read"
+      },
+      "datasets": {
+        "title": "Datasets"
+      },
+      "datasets.delete": {
+        "title": "Delete"
+      },
+      "datasets.read": {
+        "title": "Read"
+      },
+      "datasets.usage": {
+        "title": "Usage"
+      },
+      "datasets.usage.read": {
+        "title": "Read"
+      },
+      "datasets.write": {
+        "title": "Create and edit"
+      },
+      "detokenize": {
+        "title": "Detokenize"
+      },
+      "detokenize.read": {
+        "title": "Read"
+      },
+      "embed": {
+        "title": "Embed"
+      },
+      "embed.generate": {
+        "title": "Generate"
+      },
+      "embed_jobs": {
+        "title": "Embed jobs"
+      },
+      "embed_jobs.generate": {
+        "title": "Generate"
+      },
+      "embed_jobs.read": {
+        "title": "Read"
+      },
+      "embed_jobs.write": {
+        "title": "Create and edit"
+      },
+      "finetuning": {
+        "title": "Finetuning"
+      },
+      "finetuning.finetuned_models": {
+        "title": "Finetuned models"
+      },
+      "finetuning.finetuned_models.delete": {
+        "title": "Delete"
+      },
+      "finetuning.finetuned_models.events": {
+        "title": "Events"
+      },
+      "finetuning.finetuned_models.events.read": {
+        "title": "Read"
+      },
+      "finetuning.finetuned_models.execute": {
+        "title": "Run"
+      },
+      "finetuning.finetuned_models.read": {
+        "title": "Read"
+      },
+      "finetuning.finetuned_models.training_step_metrics": {
+        "title": "Training step metrics"
+      },
+      "finetuning.finetuned_models.training_step_metrics.read": {
+        "title": "Read"
+      },
+      "finetuning.finetuned_models.write": {
+        "title": "Create and edit"
+      },
+      "generate": {
+        "title": "Generate"
+      },
+      "generate.generate": {
+        "title": "Generate: generate"
+      },
+      "models": {
+        "title": "Models"
+      },
+      "models.read": {
+        "title": "Read"
+      },
+      "parse": {
+        "title": "Parse"
+      },
+      "parse.generate": {
+        "title": "Generate"
+      },
+      "rerank": {
+        "title": "Rerank"
+      },
+      "rerank.generate": {
+        "title": "Generate"
+      },
+      "summarize": {
+        "title": "Summarize"
+      },
+      "summarize.generate": {
+        "title": "Generate"
+      },
+      "tokenize": {
+        "title": "Tokenize"
+      },
+      "tokenize.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.cohere.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api.cohere.ai",
+            "path": "/compatibility/v1",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Embeddings Cohere",
   "http": {
+    "origins": {"compat":["https://api.cohere.com","https://api.cohere.ai"]},
     "operations": {
-      "CancelBatch": {"action":"generate.batches","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v2/batches/{id}:cancel","scope":{"id":{"from":"path","at":"id"}}},
-      "CreateBatch": {"action":"generate.batches","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v2/batches","body":"json","scope":{"name":{"from":"body","at":"/name"},"input_dataset_id":{"from":"body","at":"/input_dataset_id"}}},
-      "CreateFinetunedModel": {"action":"generate.finetuned_models","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/finetuning/finetuned-models","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "DeleteFinetunedModel": {"action":"delete.finetuned_models","effects":["delete"],"method":"DELETE","origin":"https://api.cohere.com","path":"/v1/finetuning/finetuned-models/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GetBatch": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v2/batches/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GetFinetunedModel": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/finetuning/finetuned-models/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "ListBatches": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v2/batches","params":["page_size","page_token","order_by"],"scope":{}},
-      "ListEvents": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/finetuning/finetuned-models/{finetuned_model_id}/events","params":["page_size","page_token","order_by"],"scope":{"finetuned_model_id":{"from":"path","at":"finetuned_model_id"}}},
-      "ListFinetunedModels": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/finetuning/finetuned-models","params":["page_size","page_token","order_by"],"scope":{}},
-      "ListTrainingStepMetrics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/finetuning/finetuned-models/{finetuned_model_id}/training-step-metrics","params":["page_size","page_token"],"scope":{"finetuned_model_id":{"from":"path","at":"finetuned_model_id"}}},
-      "UpdateFinetunedModel": {"action":"write.finetuned_models","effects":["write"],"method":"PATCH","origin":"https://api.cohere.com","path":"/v1/finetuning/finetuned-models/{id}","body":"json","scope":{"id":{"from":"path","at":"id"},"name":{"from":"body","at":"/name"}}},
-      "cancel-embed-job": {"action":"generate.embed_jobs","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/embed-jobs/{id}/cancel","scope":{"id":{"from":"path","at":"id"}}},
-      "chat": {"action":"send.chat","effects":["send"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/chat","body":"any","scope":{}},
-      "chatv2": {"action":"send.chat","effects":["send"],"method":"POST","origin":"https://api.cohere.com","path":"/v2/chat","body":"any","scope":{}},
-      "checkAPIKey": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/check-api-key","scope":{}},
-      "classify": {"action":"generate.classify","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/classify","body":"any","scope":{}},
-      "create-connector": {"action":"generate.connectors","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/connectors","body":"json","scope":{"name":{"from":"body","at":"/name"},"url":{"from":"body","at":"/url"}}},
-      "create-dataset": {"action":"generate.datasets","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/datasets","params":["name","type","keep_original_file","skip_malformed_input","keep_fields","optional_fields","text_separator","csv_delimiter"],"body":"any","scope":{"name":{"from":"query","at":"name"}}},
-      "create-embed-job": {"action":"generate.embed_jobs","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/embed-jobs","body":"any","scope":{}},
-      "create-transcription": {"action":"generate.transcriptions","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v2/audio/transcriptions","body":"any","scope":{}},
-      "delete-connector": {"action":"delete.connectors","effects":["delete"],"method":"DELETE","origin":"https://api.cohere.com","path":"/v1/connectors/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "delete-dataset": {"action":"delete.datasets","effects":["delete"],"method":"DELETE","origin":"https://api.cohere.com","path":"/v1/datasets/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "detokenize": {"action":"generate.detokenize","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/detokenize","body":"any","scope":{}},
-      "embed": {"action":"generate.embed","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/embed","body":"any","scope":{}},
-      "embedv2": {"action":"generate.embed","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v2/embed","body":"any","scope":{}},
-      "generate": {"action":"generate.generate","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/generate","body":"any","scope":{}},
-      "get-connector": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/connectors/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "get-dataset": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/datasets/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "get-embed-job": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/embed-jobs/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "get-model": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/models/{model}","scope":{"model":{"from":"path","at":"model"}}},
-      "list-connectors": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/connectors","params":["limit","offset"],"scope":{}},
-      "list-datasets": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/datasets","params":["datasetType","before","after","limit","offset","validationStatus"],"scope":{}},
-      "list-embed-jobs": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/embed-jobs","scope":{}},
-      "list-models": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/models","params":["page_size","page_token","endpoint","default_only"],"scope":{}},
-      "oAuthAuthorize-connector": {"action":"generate.authorize","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/connectors/{id}/oauth/authorize","params":["after_token_redirect"],"scope":{"id":{"from":"path","at":"id"}}},
-      "parsev2": {"action":"generate.parse","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v2/parse","body":"json","scope":{}},
-      "rerank": {"action":"generate.rerank","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/rerank","body":"any","scope":{}},
-      "rerankv2": {"action":"generate.rerank","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v2/rerank","body":"any","scope":{}},
-      "summarize": {"action":"generate.summarize","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/summarize","body":"any","scope":{}},
-      "tokenize": {"action":"generate.tokenize","effects":["generate"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/tokenize","body":"any","scope":{}},
-      "update-connector": {"action":"write.connectors","effects":["write"],"method":"PATCH","origin":"https://api.cohere.com","path":"/v1/connectors/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}}
+      "CancelBatch": {"action":"batches.write","effects":["write"],"method":"POST","origin":"https://api.cohere.com","path":"/v2/batches/{id}:cancel","scope":{"id":{"at":"id","from":"path"}}},
+      "CreateBatch": {"action":"batches.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.cohere.com","path":"/v2/batches","scope":{"creator_id":{"at":"/creator_id","from":"body","optional":true},"id":{"at":"/id","from":"body","optional":true},"input_dataset_id":{"at":"/input_dataset_id","from":"body"},"name":{"at":"/name","from":"body"},"num_failed_records":{"at":"/num_failed_records","from":"body","optional":true,"type":"number"},"num_records":{"at":"/num_records","from":"body","optional":true,"type":"number"},"num_successful_records":{"at":"/num_successful_records","from":"body","optional":true,"type":"number"},"org_id":{"at":"/org_id","from":"body","optional":true},"output_dataset_id":{"at":"/output_dataset_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "CreateFinetunedModel": {"action":"finetuning.finetuned_models.execute","body":"json","effects":["execute","pay"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/finetuning/finetuned-models","scope":{"creator_id":{"at":"/creator_id","from":"body","optional":true},"id":{"at":"/id","from":"body","optional":true},"name":{"at":"/name","from":"body"},"organization_id":{"at":"/organization_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "DeleteFinetunedModel": {"action":"finetuning.finetuned_models.delete","effects":["delete"],"method":"DELETE","origin":"https://api.cohere.com","path":"/v1/finetuning/finetuned-models/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GetBatch": {"action":"batches.read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v2/batches/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GetFinetunedModel": {"action":"finetuning.finetuned_models.read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/finetuning/finetuned-models/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "ListBatches": {"action":"batches.read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","params":["page_size","page_token","order_by"],"path":"/v2/batches","scope":{}},
+      "ListEvents": {"action":"finetuning.finetuned_models.events.read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","params":["page_size","page_token","order_by"],"path":"/v1/finetuning/finetuned-models/{finetuned_model_id}/events","scope":{"finetuned_model_id":{"at":"finetuned_model_id","from":"path"}}},
+      "ListFinetunedModels": {"action":"finetuning.finetuned_models.read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","params":["page_size","page_token","order_by"],"path":"/v1/finetuning/finetuned-models","scope":{}},
+      "ListTrainingStepMetrics": {"action":"finetuning.finetuned_models.training_step_metrics.read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","params":["page_size","page_token"],"path":"/v1/finetuning/finetuned-models/{finetuned_model_id}/training-step-metrics","scope":{"finetuned_model_id":{"at":"finetuned_model_id","from":"path"}}},
+      "UpdateFinetunedModel": {"action":"finetuning.finetuned_models.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.cohere.com","path":"/v1/finetuning/finetuned-models/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body"}}},
+      "cancel-embed-job": {"action":"embed_jobs.write","effects":["write"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/embed-jobs/{id}/cancel","scope":{"id":{"at":"id","from":"path"}}},
+      "chat": {"action":"chat.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/chat","scope":{}},
+      "chatv2": {"action":"chat.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"https://api.cohere.com","path":"/v2/chat","scope":{}},
+      "checkAPIKey": {"action":"api_key.read","effects":["read"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/check-api-key","scope":{}},
+      "classify": {"action":"classify.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/classify","scope":{}},
+      "compatibility.audio.transcriptions": {"action":"compatibility.audio.transcriptions.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"{compat}","path":"/compatibility/v1/audio/transcriptions","scope":{}},
+      "compatibility.chat.completions": {"action":"compatibility.chat.completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{compat}","path":"/compatibility/v1/chat/completions","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "compatibility.embeddings": {"action":"compatibility.embeddings.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{compat}","path":"/compatibility/v1/embeddings","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "create-connector": {"action":"connectors.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/connectors","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"url":{"at":"/url","from":"body"}}},
+      "create-dataset": {"action":"datasets.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.cohere.com","params":["name","type","keep_original_file","skip_malformed_input","keep_fields","optional_fields","text_separator","csv_delimiter"],"path":"/v1/datasets","scope":{"keep_original_file":{"at":"keep_original_file","from":"query","optional":true},"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "create-embed-job": {"action":"embed_jobs.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/embed-jobs","scope":{}},
+      "create-transcription": {"action":"audio.transcriptions.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"https://api.cohere.com","path":"/v2/audio/transcriptions","scope":{}},
+      "delete-connector": {"action":"connectors.delete","effects":["delete"],"method":"DELETE","origin":"https://api.cohere.com","path":"/v1/connectors/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "delete-dataset": {"action":"datasets.delete","effects":["delete"],"method":"DELETE","origin":"https://api.cohere.com","path":"/v1/datasets/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "detokenize": {"action":"detokenize.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/detokenize","scope":{}},
+      "embed": {"action":"embed.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/embed","scope":{}},
+      "embedv2": {"action":"embed.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"https://api.cohere.com","path":"/v2/embed","scope":{}},
+      "generate": {"action":"generate.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/generate","scope":{}},
+      "get-connector": {"action":"connectors.read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/connectors/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "get-dataset": {"action":"datasets.read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/datasets/{id}","path_patterns":{"id":"[^u].*|u(?:|[^s].*|s(?:|[^a].*|a(?:|[^g].*|g(?:|[^e].*|e.+))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "get-dataset-usage": {"action":"datasets.usage.read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/datasets/usage","scope":{}},
+      "get-embed-job": {"action":"embed_jobs.read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/embed-jobs/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "get-model": {"action":"models.read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/models/{model}","scope":{"model":{"at":"model","from":"path"}}},
+      "list-connectors": {"action":"connectors.read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","params":["limit","offset"],"path":"/v1/connectors","scope":{}},
+      "list-datasets": {"action":"datasets.read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","params":["datasetType","before","after","limit","offset","validationStatus"],"path":"/v1/datasets","scope":{}},
+      "list-embed-jobs": {"action":"embed_jobs.read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","path":"/v1/embed-jobs","scope":{}},
+      "list-models": {"action":"models.read","effects":["read"],"method":"GET","origin":"https://api.cohere.com","params":["page_size","page_token","endpoint","default_only"],"path":"/v1/models","scope":{}},
+      "oAuthAuthorize-connector": {"action":"connectors.oauth.authorize.admin","effects":["admin"],"method":"POST","origin":"https://api.cohere.com","params":["after_token_redirect"],"path":"/v1/connectors/{id}/oauth/authorize","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "parsev2": {"action":"parse.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.cohere.com","path":"/v2/parse","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "rerank": {"action":"rerank.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/rerank","scope":{}},
+      "rerankv2": {"action":"rerank.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"https://api.cohere.com","path":"/v2/rerank","scope":{}},
+      "summarize": {"action":"summarize.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/summarize","scope":{}},
+      "tokenize": {"action":"tokenize.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.cohere.com","path":"/v1/tokenize","scope":{}},
+      "update-connector": {"action":"connectors.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api.cohere.com","path":"/v1/connectors/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"url":{"at":"/url","from":"body","optional":true}}}
     }
   }
 }

@@ -1,224 +1,1468 @@
 {
-  "title": "MISP",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your MISP origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://example.com", "path": "/", "header": "Authorization"}]}},
     "actions": {
-      "delete.delete": {"title": "Delete: delete"},
-      "delete.remove_org": {"title": "Delete: remove org"},
-      "delete.remove_server": {"title": "Delete: remove server"},
-      "delete.totp_delete": {"title": "Delete: totp delete"},
-      "execute.execute": {"title": "Execute: execute"},
-      "publish.publish": {"title": "Publish: publish"},
-      "publish.unpublish": {"title": "Publish: unpublish"},
-      "read": {"title": "Read everything the account can see"},
-      "write.add": {"title": "Write: add"},
-      "write.add_org": {"title": "Write: add org"},
-      "write.add_server": {"title": "Write: add server"},
-      "write.add_tag": {"title": "Write: add tag"},
-      "write.attach_cluster": {"title": "Write: attach cluster"},
-      "write.cache": {"title": "Write: cache"},
-      "write.cache_feeds": {"title": "Write: cache feeds"},
-      "write.create_sync": {"title": "Write: create sync"},
-      "write.delete": {"title": "Write: delete"},
-      "write.detach": {"title": "Write: detach"},
-      "write.disable": {"title": "Write: disable"},
-      "write.edit": {"title": "Write: edit"},
-      "write.enable": {"title": "Write: enable"},
-      "write.enrich": {"title": "Write: enrich"},
-      "write.enrich_event": {"title": "Write: enrich event"},
-      "write.import": {"title": "Write: import"},
-      "write.import_report_from_url": {"title": "Write: import report from url"},
-      "write.index_minimal": {"title": "Write: index minimal"},
-      "write.initiate_password_reset": {"title": "Write: initiate password reset"},
-      "write.kill_all_workers": {"title": "Write: kill all workers"},
-      "write.remove_tag": {"title": "Write: remove tag"},
-      "write.rest_search": {"title": "Write: rest search"},
-      "write.restart_dead_workers": {"title": "Write: restart dead workers"},
-      "write.restart_workers": {"title": "Write: restart workers"},
-      "write.restore": {"title": "Write: restore"},
-      "write.restsearch": {"title": "Write: restsearch"},
-      "write.server_settings_edit": {"title": "Write: server settings edit"},
-      "write.set_setting": {"title": "Write: set setting"},
-      "write.start_worker": {"title": "Write: start worker"},
-      "write.stop_worker": {"title": "Write: stop worker"},
-      "write.toggle_enable": {"title": "Write: toggle enable"},
-      "write.update": {"title": "Write: update"},
-      "write.update_json": {"title": "Write: update json"}
-    }
+      "admin": {
+        "title": "Manage"
+      },
+      "admin.logs": {
+        "title": "Logs"
+      },
+      "admin.logs.index": {
+        "title": "Index"
+      },
+      "admin.logs.index.read": {
+        "title": "Read"
+      },
+      "admin.logs.read": {
+        "title": "Read"
+      },
+      "admin.organisations": {
+        "title": "Organisations"
+      },
+      "admin.organisations.admin": {
+        "title": "Manage"
+      },
+      "admin.organisations.delete": {
+        "title": "Delete"
+      },
+      "admin.organisations.delete.delete": {
+        "title": "Delete"
+      },
+      "admin.organisations.edit": {
+        "title": "Edit"
+      },
+      "admin.organisations.edit.admin": {
+        "title": "Manage"
+      },
+      "admin.users": {
+        "title": "Users"
+      },
+      "admin.users.admin": {
+        "title": "Manage"
+      },
+      "admin.users.delete": {
+        "title": "Delete"
+      },
+      "admin.users.delete.delete": {
+        "title": "Delete"
+      },
+      "admin.users.edit": {
+        "title": "Edit"
+      },
+      "admin.users.edit.admin": {
+        "title": "Manage"
+      },
+      "admin.users.index": {
+        "title": "Index"
+      },
+      "admin.users.index.read": {
+        "title": "Read"
+      },
+      "admin.users.read": {
+        "title": "Read"
+      },
+      "admin.users.view": {
+        "title": "View"
+      },
+      "admin.users.view.read": {
+        "title": "Read"
+      },
+      "analyst_data": {
+        "title": "Analyst data"
+      },
+      "analyst_data.add": {
+        "title": "Add"
+      },
+      "analyst_data.add.write": {
+        "title": "Create and edit"
+      },
+      "analyst_data.delete": {
+        "title": "Delete"
+      },
+      "analyst_data.delete.delete": {
+        "title": "Delete"
+      },
+      "analyst_data.edit": {
+        "title": "Edit"
+      },
+      "analyst_data.edit.write": {
+        "title": "Create and edit"
+      },
+      "analyst_data.index": {
+        "title": "Index"
+      },
+      "analyst_data.index.read": {
+        "title": "Read"
+      },
+      "analyst_data.index_minimal": {
+        "title": "Index minimal"
+      },
+      "analyst_data.index_minimal.read": {
+        "title": "Read"
+      },
+      "analyst_data.view": {
+        "title": "View"
+      },
+      "analyst_data.view.read": {
+        "title": "Read"
+      },
+      "attributes": {
+        "title": "Attributes"
+      },
+      "attributes.add": {
+        "title": "Add"
+      },
+      "attributes.add.write": {
+        "title": "Create and edit"
+      },
+      "attributes.add_tag": {
+        "title": "Add tag"
+      },
+      "attributes.add_tag.write": {
+        "title": "Create and edit"
+      },
+      "attributes.attribute_statistics": {
+        "title": "Attribute statistics"
+      },
+      "attributes.attribute_statistics.read": {
+        "title": "Read"
+      },
+      "attributes.delete": {
+        "title": "Delete"
+      },
+      "attributes.delete.delete": {
+        "title": "Delete"
+      },
+      "attributes.describe_types": {
+        "title": "Describe types"
+      },
+      "attributes.describe_types.read": {
+        "title": "Read"
+      },
+      "attributes.edit": {
+        "title": "Edit"
+      },
+      "attributes.edit.write": {
+        "title": "Create and edit"
+      },
+      "attributes.enrich": {
+        "title": "Enrich"
+      },
+      "attributes.enrich.send": {
+        "title": "Send"
+      },
+      "attributes.get_attribute_by_b64_value": {
+        "title": "Get attribute by b64 value"
+      },
+      "attributes.get_attribute_by_b64_value.read": {
+        "title": "Read"
+      },
+      "attributes.index": {
+        "title": "Index"
+      },
+      "attributes.index.read": {
+        "title": "Read"
+      },
+      "attributes.read": {
+        "title": "Read"
+      },
+      "attributes.remove_tag": {
+        "title": "Remove tag"
+      },
+      "attributes.remove_tag.write": {
+        "title": "Create and edit"
+      },
+      "attributes.rest_search": {
+        "title": "Rest search"
+      },
+      "attributes.rest_search.read": {
+        "title": "Read"
+      },
+      "attributes.restore": {
+        "title": "Restore"
+      },
+      "attributes.restore.write": {
+        "title": "Create and edit"
+      },
+      "attributes.view": {
+        "title": "View"
+      },
+      "attributes.view.read": {
+        "title": "Read"
+      },
+      "auth_keys": {
+        "title": "Auth keys"
+      },
+      "auth_keys.add": {
+        "title": "Add"
+      },
+      "auth_keys.add.admin": {
+        "title": "Manage"
+      },
+      "auth_keys.delete": {
+        "title": "Delete"
+      },
+      "auth_keys.delete.delete": {
+        "title": "Delete"
+      },
+      "auth_keys.edit": {
+        "title": "Edit"
+      },
+      "auth_keys.edit.admin": {
+        "title": "Manage"
+      },
+      "auth_keys.read": {
+        "title": "Read"
+      },
+      "auth_keys.view": {
+        "title": "View"
+      },
+      "auth_keys.view.read": {
+        "title": "Read"
+      },
+      "collections": {
+        "title": "Collections"
+      },
+      "collections.delete": {
+        "title": "Delete"
+      },
+      "collections.delete.delete": {
+        "title": "Delete"
+      },
+      "collections.edit": {
+        "title": "Edit"
+      },
+      "collections.edit.write": {
+        "title": "Create and edit"
+      },
+      "collections.index": {
+        "title": "Index"
+      },
+      "collections.index.read": {
+        "title": "Read"
+      },
+      "collections.view": {
+        "title": "View"
+      },
+      "collections.view.read": {
+        "title": "Read"
+      },
+      "collections.write": {
+        "title": "Create and edit"
+      },
+      "event_reports": {
+        "title": "Event reports"
+      },
+      "event_reports.add": {
+        "title": "Add"
+      },
+      "event_reports.add.write": {
+        "title": "Create and edit"
+      },
+      "event_reports.delete": {
+        "title": "Delete"
+      },
+      "event_reports.delete.delete": {
+        "title": "Delete"
+      },
+      "event_reports.edit": {
+        "title": "Edit"
+      },
+      "event_reports.edit.write": {
+        "title": "Create and edit"
+      },
+      "event_reports.import_report_from_url": {
+        "title": "Import report from url"
+      },
+      "event_reports.import_report_from_url.write": {
+        "title": "Create and edit"
+      },
+      "event_reports.index": {
+        "title": "Index"
+      },
+      "event_reports.index.read": {
+        "title": "Read"
+      },
+      "event_reports.restore": {
+        "title": "Restore"
+      },
+      "event_reports.restore.write": {
+        "title": "Create and edit"
+      },
+      "event_reports.view": {
+        "title": "View"
+      },
+      "event_reports.view.read": {
+        "title": "Read"
+      },
+      "events": {
+        "title": "Events"
+      },
+      "events.add_tag": {
+        "title": "Add tag"
+      },
+      "events.add_tag.write": {
+        "title": "Create and edit"
+      },
+      "events.alert": {
+        "title": "Alert"
+      },
+      "events.alert.send": {
+        "title": "Send"
+      },
+      "events.contact": {
+        "title": "Contact"
+      },
+      "events.contact.send": {
+        "title": "Send"
+      },
+      "events.delete": {
+        "title": "Delete"
+      },
+      "events.delete.delete": {
+        "title": "Delete"
+      },
+      "events.edit": {
+        "title": "Edit"
+      },
+      "events.edit.write": {
+        "title": "Create and edit"
+      },
+      "events.enrich_event": {
+        "title": "Enrich event"
+      },
+      "events.enrich_event.send": {
+        "title": "Send"
+      },
+      "events.free_text_import": {
+        "title": "Free text import"
+      },
+      "events.free_text_import.write": {
+        "title": "Create and edit"
+      },
+      "events.index": {
+        "title": "Index"
+      },
+      "events.index.read": {
+        "title": "Read"
+      },
+      "events.publish": {
+        "title": "Publish"
+      },
+      "events.publish.publish": {
+        "title": "Publish"
+      },
+      "events.read": {
+        "title": "Read"
+      },
+      "events.remove_tag": {
+        "title": "Remove tag"
+      },
+      "events.remove_tag.write": {
+        "title": "Create and edit"
+      },
+      "events.rest_search": {
+        "title": "Rest search"
+      },
+      "events.rest_search.read": {
+        "title": "Read"
+      },
+      "events.unpublish": {
+        "title": "Unpublish"
+      },
+      "events.unpublish.publish": {
+        "title": "Publish"
+      },
+      "events.view": {
+        "title": "View"
+      },
+      "events.view.read": {
+        "title": "Read"
+      },
+      "events.write": {
+        "title": "Create and edit"
+      },
+      "feeds": {
+        "title": "Feeds"
+      },
+      "feeds.cache_feeds": {
+        "title": "Cache feeds"
+      },
+      "feeds.cache_feeds.write": {
+        "title": "Create and edit"
+      },
+      "feeds.delete": {
+        "title": "Delete"
+      },
+      "feeds.delete.delete": {
+        "title": "Delete"
+      },
+      "feeds.disable": {
+        "title": "Disable"
+      },
+      "feeds.disable.write": {
+        "title": "Create and edit"
+      },
+      "feeds.edit": {
+        "title": "Edit"
+      },
+      "feeds.edit.write": {
+        "title": "Create and edit"
+      },
+      "feeds.enable": {
+        "title": "Enable"
+      },
+      "feeds.enable.write": {
+        "title": "Create and edit"
+      },
+      "feeds.fetch_from_all_feeds": {
+        "title": "Fetch from all feeds"
+      },
+      "feeds.fetch_from_all_feeds.write": {
+        "title": "Create and edit"
+      },
+      "feeds.fetch_from_feed": {
+        "title": "Fetch from feed"
+      },
+      "feeds.fetch_from_feed.write": {
+        "title": "Create and edit"
+      },
+      "feeds.index": {
+        "title": "Index"
+      },
+      "feeds.index.read": {
+        "title": "Read"
+      },
+      "feeds.read": {
+        "title": "Read"
+      },
+      "feeds.view": {
+        "title": "View"
+      },
+      "feeds.view.read": {
+        "title": "Read"
+      },
+      "feeds.write": {
+        "title": "Create and edit"
+      },
+      "galaxies": {
+        "title": "Galaxies"
+      },
+      "galaxies.attach_cluster": {
+        "title": "Attach cluster"
+      },
+      "galaxies.attach_cluster.write": {
+        "title": "Create and edit"
+      },
+      "galaxies.delete": {
+        "title": "Delete"
+      },
+      "galaxies.delete.delete": {
+        "title": "Delete"
+      },
+      "galaxies.export": {
+        "title": "Export"
+      },
+      "galaxies.export.read": {
+        "title": "Read"
+      },
+      "galaxies.index": {
+        "title": "Index"
+      },
+      "galaxies.index.read": {
+        "title": "Read"
+      },
+      "galaxies.read": {
+        "title": "Read"
+      },
+      "galaxies.view": {
+        "title": "View"
+      },
+      "galaxies.view.read": {
+        "title": "Read"
+      },
+      "galaxies.write": {
+        "title": "Create and edit"
+      },
+      "galaxy_clusters": {
+        "title": "Galaxy clusters"
+      },
+      "galaxy_clusters.add": {
+        "title": "Add"
+      },
+      "galaxy_clusters.add.write": {
+        "title": "Create and edit"
+      },
+      "galaxy_clusters.delete": {
+        "title": "Delete"
+      },
+      "galaxy_clusters.delete.delete": {
+        "title": "Delete"
+      },
+      "galaxy_clusters.edit": {
+        "title": "Edit"
+      },
+      "galaxy_clusters.edit.write": {
+        "title": "Create and edit"
+      },
+      "galaxy_clusters.index": {
+        "title": "Index"
+      },
+      "galaxy_clusters.index.read": {
+        "title": "Read"
+      },
+      "galaxy_clusters.publish": {
+        "title": "Publish"
+      },
+      "galaxy_clusters.publish.publish": {
+        "title": "Publish"
+      },
+      "galaxy_clusters.restore": {
+        "title": "Restore"
+      },
+      "galaxy_clusters.restore.write": {
+        "title": "Create and edit"
+      },
+      "galaxy_clusters.unpublish": {
+        "title": "Unpublish"
+      },
+      "galaxy_clusters.unpublish.publish": {
+        "title": "Publish"
+      },
+      "galaxy_clusters.view": {
+        "title": "View"
+      },
+      "galaxy_clusters.view.read": {
+        "title": "Read"
+      },
+      "noticelists": {
+        "title": "Noticelists"
+      },
+      "noticelists.index": {
+        "title": "Index"
+      },
+      "noticelists.index.read": {
+        "title": "Read"
+      },
+      "noticelists.read": {
+        "title": "Read"
+      },
+      "noticelists.toggle_enable": {
+        "title": "Toggle enable"
+      },
+      "noticelists.toggle_enable.write": {
+        "title": "Create and edit"
+      },
+      "noticelists.view": {
+        "title": "View"
+      },
+      "noticelists.view.read": {
+        "title": "Read"
+      },
+      "noticelists.write": {
+        "title": "Create and edit"
+      },
+      "object_references": {
+        "title": "Object references"
+      },
+      "object_references.write": {
+        "title": "Create and edit"
+      },
+      "object_templates": {
+        "title": "Object templates"
+      },
+      "object_templates.get_raw": {
+        "title": "Get raw"
+      },
+      "object_templates.get_raw.read": {
+        "title": "Read"
+      },
+      "object_templates.index": {
+        "title": "Index"
+      },
+      "object_templates.index.read": {
+        "title": "Read"
+      },
+      "object_templates.view": {
+        "title": "View"
+      },
+      "object_templates.view.read": {
+        "title": "Read"
+      },
+      "objects": {
+        "title": "Objects"
+      },
+      "objects.add": {
+        "title": "Add"
+      },
+      "objects.add.write": {
+        "title": "Create and edit"
+      },
+      "objects.delete": {
+        "title": "Delete"
+      },
+      "objects.delete.delete": {
+        "title": "Delete"
+      },
+      "objects.edit": {
+        "title": "Edit"
+      },
+      "objects.edit.write": {
+        "title": "Create and edit"
+      },
+      "objects.rest_search": {
+        "title": "Rest search"
+      },
+      "objects.rest_search.read": {
+        "title": "Read"
+      },
+      "objects.restsearch": {
+        "title": "Restsearch"
+      },
+      "objects.restsearch.read": {
+        "title": "Read"
+      },
+      "objects.view": {
+        "title": "View"
+      },
+      "objects.view.read": {
+        "title": "Read"
+      },
+      "organisations": {
+        "title": "Organisations"
+      },
+      "organisations.index": {
+        "title": "Index"
+      },
+      "organisations.index.read": {
+        "title": "Read"
+      },
+      "organisations.read": {
+        "title": "Read"
+      },
+      "organisations.view": {
+        "title": "View"
+      },
+      "organisations.view.read": {
+        "title": "Read"
+      },
+      "roles": {
+        "title": "Roles"
+      },
+      "roles.index": {
+        "title": "Index"
+      },
+      "roles.index.read": {
+        "title": "Read"
+      },
+      "servers": {
+        "title": "Servers"
+      },
+      "servers.admin": {
+        "title": "Manage"
+      },
+      "servers.cache": {
+        "title": "Cache"
+      },
+      "servers.cache.write": {
+        "title": "Create and edit"
+      },
+      "servers.dead_workers": {
+        "title": "Dead workers"
+      },
+      "servers.dead_workers.write": {
+        "title": "Create and edit"
+      },
+      "servers.delete": {
+        "title": "Delete"
+      },
+      "servers.delete.delete": {
+        "title": "Delete"
+      },
+      "servers.edit": {
+        "title": "Edit"
+      },
+      "servers.edit.admin": {
+        "title": "Manage"
+      },
+      "servers.get_setting": {
+        "title": "Get setting"
+      },
+      "servers.get_setting.read": {
+        "title": "Read"
+      },
+      "servers.index": {
+        "title": "Index"
+      },
+      "servers.index.read": {
+        "title": "Read"
+      },
+      "servers.instance_uuid": {
+        "title": "Instance uuid"
+      },
+      "servers.instance_uuid.read": {
+        "title": "Read"
+      },
+      "servers.json": {
+        "title": "Json"
+      },
+      "servers.json.write": {
+        "title": "Create and edit"
+      },
+      "servers.kill_all_workers": {
+        "title": "Kill all workers"
+      },
+      "servers.kill_all_workers.write": {
+        "title": "Create and edit"
+      },
+      "servers.pull": {
+        "title": "Pull"
+      },
+      "servers.pull.write": {
+        "title": "Create and edit"
+      },
+      "servers.push": {
+        "title": "Push commits"
+      },
+      "servers.push.send": {
+        "title": "Send"
+      },
+      "servers.py_mispversion": {
+        "title": "Py mispversion"
+      },
+      "servers.py_mispversion.read": {
+        "title": "Read"
+      },
+      "servers.read": {
+        "title": "Read"
+      },
+      "servers.server_settings": {
+        "title": "Server settings"
+      },
+      "servers.server_settings.read": {
+        "title": "Read"
+      },
+      "servers.server_settings_edit": {
+        "title": "Server settings edit"
+      },
+      "servers.server_settings_edit.admin": {
+        "title": "Manage"
+      },
+      "servers.start_worker": {
+        "title": "Start worker"
+      },
+      "servers.start_worker.write": {
+        "title": "Create and edit"
+      },
+      "servers.stop_worker": {
+        "title": "Stop worker"
+      },
+      "servers.stop_worker.write": {
+        "title": "Create and edit"
+      },
+      "servers.sync": {
+        "title": "Sync"
+      },
+      "servers.sync.admin": {
+        "title": "Manage"
+      },
+      "servers.version": {
+        "title": "Version"
+      },
+      "servers.version.read": {
+        "title": "Read"
+      },
+      "servers.workers": {
+        "title": "Workers"
+      },
+      "servers.workers.read": {
+        "title": "Read"
+      },
+      "servers.workers.write": {
+        "title": "Create and edit"
+      },
+      "shadow_attributes": {
+        "title": "Shadow attributes"
+      },
+      "shadow_attributes.accept": {
+        "title": "Accept"
+      },
+      "shadow_attributes.accept.write": {
+        "title": "Create and edit"
+      },
+      "shadow_attributes.add": {
+        "title": "Add"
+      },
+      "shadow_attributes.add.write": {
+        "title": "Create and edit"
+      },
+      "shadow_attributes.delete": {
+        "title": "Delete"
+      },
+      "shadow_attributes.delete.delete": {
+        "title": "Delete"
+      },
+      "shadow_attributes.discard": {
+        "title": "Discard"
+      },
+      "shadow_attributes.discard.delete": {
+        "title": "Delete"
+      },
+      "shadow_attributes.edit": {
+        "title": "Edit"
+      },
+      "shadow_attributes.edit.write": {
+        "title": "Create and edit"
+      },
+      "shadow_attributes.index": {
+        "title": "Index"
+      },
+      "shadow_attributes.index.read": {
+        "title": "Read"
+      },
+      "shadow_attributes.view": {
+        "title": "View"
+      },
+      "shadow_attributes.view.read": {
+        "title": "Read"
+      },
+      "sharing_group_blueprints": {
+        "title": "Sharing group blueprints"
+      },
+      "sharing_group_blueprints.delete": {
+        "title": "Delete"
+      },
+      "sharing_group_blueprints.delete.delete": {
+        "title": "Delete"
+      },
+      "sharing_group_blueprints.detach": {
+        "title": "Detach"
+      },
+      "sharing_group_blueprints.detach.write": {
+        "title": "Create and edit"
+      },
+      "sharing_group_blueprints.edit": {
+        "title": "Edit"
+      },
+      "sharing_group_blueprints.edit.write": {
+        "title": "Create and edit"
+      },
+      "sharing_group_blueprints.execute": {
+        "title": "Run"
+      },
+      "sharing_group_blueprints.execute.share": {
+        "title": "Share"
+      },
+      "sharing_group_blueprints.index": {
+        "title": "Index"
+      },
+      "sharing_group_blueprints.index.read": {
+        "title": "Read"
+      },
+      "sharing_group_blueprints.view": {
+        "title": "View"
+      },
+      "sharing_group_blueprints.view.read": {
+        "title": "Read"
+      },
+      "sharing_group_blueprints.view_orgs": {
+        "title": "View orgs"
+      },
+      "sharing_group_blueprints.view_orgs.read": {
+        "title": "Read"
+      },
+      "sharing_group_blueprints.write": {
+        "title": "Create and edit"
+      },
+      "sharing_groups": {
+        "title": "Sharing groups"
+      },
+      "sharing_groups.add_org": {
+        "title": "Add org"
+      },
+      "sharing_groups.add_org.share": {
+        "title": "Share"
+      },
+      "sharing_groups.add_server": {
+        "title": "Add server"
+      },
+      "sharing_groups.add_server.share": {
+        "title": "Share"
+      },
+      "sharing_groups.delete": {
+        "title": "Delete"
+      },
+      "sharing_groups.delete.delete": {
+        "title": "Delete"
+      },
+      "sharing_groups.edit": {
+        "title": "Edit"
+      },
+      "sharing_groups.edit.share": {
+        "title": "Share"
+      },
+      "sharing_groups.index": {
+        "title": "Index"
+      },
+      "sharing_groups.index.read": {
+        "title": "Read"
+      },
+      "sharing_groups.org": {
+        "title": "Org"
+      },
+      "sharing_groups.org.share": {
+        "title": "Share"
+      },
+      "sharing_groups.read": {
+        "title": "Read"
+      },
+      "sharing_groups.remove_org": {
+        "title": "Remove org"
+      },
+      "sharing_groups.remove_org.share": {
+        "title": "Share"
+      },
+      "sharing_groups.remove_server": {
+        "title": "Remove server"
+      },
+      "sharing_groups.remove_server.share": {
+        "title": "Share"
+      },
+      "sharing_groups.server": {
+        "title": "Server"
+      },
+      "sharing_groups.server.share": {
+        "title": "Share"
+      },
+      "sharing_groups.share": {
+        "title": "Share"
+      },
+      "sharing_groups.view": {
+        "title": "View"
+      },
+      "sharing_groups.view.read": {
+        "title": "Read"
+      },
+      "sightings": {
+        "title": "Sightings"
+      },
+      "sightings.add": {
+        "title": "Add"
+      },
+      "sightings.add.write": {
+        "title": "Create and edit"
+      },
+      "sightings.delete": {
+        "title": "Delete"
+      },
+      "sightings.delete.delete": {
+        "title": "Delete"
+      },
+      "sightings.index": {
+        "title": "Index"
+      },
+      "sightings.index.read": {
+        "title": "Read"
+      },
+      "sightings.rest_search": {
+        "title": "Rest search"
+      },
+      "sightings.rest_search.read": {
+        "title": "Read"
+      },
+      "tags": {
+        "title": "Tags"
+      },
+      "tags.delete": {
+        "title": "Delete"
+      },
+      "tags.delete.delete": {
+        "title": "Delete"
+      },
+      "tags.edit": {
+        "title": "Edit"
+      },
+      "tags.edit.write": {
+        "title": "Create and edit"
+      },
+      "tags.index": {
+        "title": "Index"
+      },
+      "tags.index.read": {
+        "title": "Read"
+      },
+      "tags.read": {
+        "title": "Read"
+      },
+      "tags.search": {
+        "title": "Search"
+      },
+      "tags.search.read": {
+        "title": "Read"
+      },
+      "tags.tag_from_object": {
+        "title": "Tag from object"
+      },
+      "tags.tag_from_object.write": {
+        "title": "Create and edit"
+      },
+      "tags.tag_to_object": {
+        "title": "Tag to object"
+      },
+      "tags.tag_to_object.write": {
+        "title": "Create and edit"
+      },
+      "tags.view": {
+        "title": "View"
+      },
+      "tags.view.read": {
+        "title": "Read"
+      },
+      "tags.write": {
+        "title": "Create and edit"
+      },
+      "taxonomies": {
+        "title": "Taxonomies"
+      },
+      "taxonomies.disable": {
+        "title": "Disable"
+      },
+      "taxonomies.disable.write": {
+        "title": "Create and edit"
+      },
+      "taxonomies.enable": {
+        "title": "Enable"
+      },
+      "taxonomies.enable.write": {
+        "title": "Create and edit"
+      },
+      "taxonomies.export": {
+        "title": "Export"
+      },
+      "taxonomies.export.read": {
+        "title": "Read"
+      },
+      "taxonomies.index": {
+        "title": "Index"
+      },
+      "taxonomies.index.read": {
+        "title": "Read"
+      },
+      "taxonomies.read": {
+        "title": "Read"
+      },
+      "taxonomies.taxonomy_tags": {
+        "title": "Taxonomy tags"
+      },
+      "taxonomies.taxonomy_tags.read": {
+        "title": "Read"
+      },
+      "taxonomies.view": {
+        "title": "View"
+      },
+      "taxonomies.view.read": {
+        "title": "Read"
+      },
+      "taxonomies.write": {
+        "title": "Create and edit"
+      },
+      "user_settings": {
+        "title": "User settings"
+      },
+      "user_settings.delete": {
+        "title": "Delete"
+      },
+      "user_settings.delete.delete": {
+        "title": "Delete"
+      },
+      "user_settings.get_setting": {
+        "title": "Get setting"
+      },
+      "user_settings.get_setting.read": {
+        "title": "Read"
+      },
+      "user_settings.index": {
+        "title": "Index"
+      },
+      "user_settings.index.read": {
+        "title": "Read"
+      },
+      "user_settings.read": {
+        "title": "Read"
+      },
+      "user_settings.set_setting": {
+        "title": "Set setting"
+      },
+      "user_settings.set_setting.write": {
+        "title": "Create and edit"
+      },
+      "user_settings.setting": {
+        "title": "Setting"
+      },
+      "user_settings.setting.read": {
+        "title": "Read"
+      },
+      "user_settings.setting.write": {
+        "title": "Create and edit"
+      },
+      "user_settings.view": {
+        "title": "View"
+      },
+      "user_settings.view.read": {
+        "title": "Read"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.change_pw": {
+        "title": "Change pw"
+      },
+      "users.change_pw.admin": {
+        "title": "Manage"
+      },
+      "users.edit": {
+        "title": "Edit"
+      },
+      "users.edit.admin": {
+        "title": "Manage"
+      },
+      "users.initiate_password_reset": {
+        "title": "Initiate password reset"
+      },
+      "users.initiate_password_reset.send": {
+        "title": "Send"
+      },
+      "users.totp_delete": {
+        "title": "Totp delete"
+      },
+      "users.totp_delete.delete": {
+        "title": "Delete"
+      },
+      "users.view": {
+        "title": "View"
+      },
+      "users.view.read": {
+        "title": "Read"
+      },
+      "warninglists": {
+        "title": "Warninglists"
+      },
+      "warninglists.index": {
+        "title": "Index"
+      },
+      "warninglists.index.read": {
+        "title": "Read"
+      },
+      "warninglists.read": {
+        "title": "Read"
+      },
+      "warninglists.toggle_enable": {
+        "title": "Toggle enable"
+      },
+      "warninglists.toggle_enable.write": {
+        "title": "Create and edit"
+      },
+      "warninglists.value": {
+        "title": "Value"
+      },
+      "warninglists.value.read": {
+        "title": "Read"
+      },
+      "warninglists.view": {
+        "title": "View"
+      },
+      "warninglists.view.read": {
+        "title": "Read"
+      },
+      "warninglists.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://example.com",
+            "path": "/",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Your MISP origin (https://host)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "MISP",
   "http": {
     "operations": {
-      "addAnalystData": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/analystData/add/{analystType}/{analystObjectUUID}/{analystObjectType}","body":"json","scope":{"analystType":{"from":"path","at":"analystType"},"analystObjectUUID":{"from":"path","at":"analystObjectUUID"},"analystObjectType":{"from":"path","at":"analystObjectType"}}},
-      "addAttribute": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/attributes/add/{eventId}","body":"json","scope":{"eventId":{"from":"path","at":"eventId"}}},
-      "addAuthKey": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/auth_keys/add/{userId}","body":"any","scope":{"userId":{"from":"path","at":"userId"}}},
-      "addCollection": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/collections/add","body":"json","scope":{}},
-      "addEvent": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/events/add","body":"json","scope":{}},
-      "addEventReport": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/eventReports/add/{eventId}","body":"json","scope":{"eventId":{"from":"path","at":"eventId"}}},
-      "addFeed": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/feeds/add","body":"any","scope":{}},
-      "addGalaxyCluster": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/galaxy_clusters/add/{galaxyId}","body":"any","scope":{"galaxyId":{"from":"path","at":"galaxyId"}}},
-      "addObject": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/objects/add/{eventId}/{objectTemplateId}","body":"any","scope":{"eventId":{"from":"path","at":"eventId"},"objectTemplateId":{"from":"path","at":"objectTemplateId"}}},
-      "addOrganisation": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/admin/organisations/add","body":"any","scope":{}},
-      "addOrganisationToSharingGroup": {"action":"write.add_org","effects":["write"],"method":"POST","origin":"{origin}","path":"/sharing_groups/addOrg/{sharingGroupId}/{organisationId}","scope":{"sharingGroupId":{"from":"path","at":"sharingGroupId"},"organisationId":{"from":"path","at":"organisationId"}}},
-      "addServer": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/add","body":"any","scope":{}},
-      "addServerToSharingGroup": {"action":"write.add_server","effects":["write"],"method":"POST","origin":"{origin}","path":"/sharing_groups/addServer/{sharingGroupId}/{serverId}","scope":{"sharingGroupId":{"from":"path","at":"sharingGroupId"},"serverId":{"from":"path","at":"serverId"}}},
-      "addSharingGroup": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/sharing_groups/add","body":"any","scope":{}},
-      "addSharingGroupBlueprint": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/sharing_group_blueprints/add","body":"json","scope":{}},
-      "addSighting": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/sightings/add/{attributeId}","scope":{"attributeId":{"from":"path","at":"attributeId"}}},
-      "addSightingByValue": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/sightings/add","body":"any","scope":{}},
-      "addTag": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/tags/add","body":"any","scope":{}},
-      "addUser": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/admin/users/add","body":"any","scope":{}},
-      "attachGalaxyCluster": {"action":"write.attach_cluster","effects":["write"],"method":"POST","origin":"{origin}","path":"/galaxies/attachCluster/{attachTargetId}/{attachTargetType}/local:{local}","body":"any","scope":{"attachTargetId":{"from":"path","at":"attachTargetId"},"attachTargetType":{"from":"path","at":"attachTargetType"},"local":{"from":"path","at":"local"}}},
-      "cacheFeeds": {"action":"write.cache_feeds","effects":["write"],"method":"POST","origin":"{origin}","path":"/feeds/cacheFeeds/{cacheFeedsScope}","scope":{"cacheFeedsScope":{"from":"path","at":"cacheFeedsScope"}}},
-      "cacheServer": {"action":"write.cache","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/cache","scope":{}},
-      "checkValueWarninglistsMatches": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/warninglists/checkValue","body":"any","scope":{}},
-      "createSync": {"action":"write.create_sync","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/createSync","scope":{}},
-      "deleteAnalystData": {"action":"delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/analystData/delete/{analystType}/{analystDataID}","scope":{"analystType":{"from":"path","at":"analystType"},"analystDataID":{"from":"path","at":"analystDataID"}}},
-      "deleteAttribute": {"action":"delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/attributes/delete/{attributeId}","scope":{"attributeId":{"from":"path","at":"attributeId"}}},
-      "deleteAuthKey": {"action":"delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/auth_keys/delete/{authKeyId}","scope":{"authKeyId":{"from":"path","at":"authKeyId"}}},
-      "deleteCollection": {"action":"delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/collections/delete/{collectionId}","scope":{"collectionId":{"from":"path","at":"collectionId"}}},
-      "deleteEvent": {"action":"delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/events/delete/{eventId}","scope":{"eventId":{"from":"path","at":"eventId"}}},
-      "deleteEventReport": {"action":"write.delete","effects":["write"],"method":"POST","origin":"{origin}","path":"/eventReports/delete/{eventReportId}","scope":{"eventReportId":{"from":"path","at":"eventReportId"}}},
-      "deleteGalaxy": {"action":"delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/galaxies/delete/{galaxyId}","scope":{"galaxyId":{"from":"path","at":"galaxyId"}}},
-      "deleteGalaxyCluster": {"action":"write.delete","effects":["write"],"method":"POST","origin":"{origin}","path":"/galaxy_clusters/delete/{galaxyClusterId}","scope":{"galaxyClusterId":{"from":"path","at":"galaxyClusterId"}}},
-      "deleteObject": {"action":"delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/objects/delete/{objectId}/{hardDelete}","scope":{"objectId":{"from":"path","at":"objectId"},"hardDelete":{"from":"path","at":"hardDelete"}}},
-      "deleteOrganisation": {"action":"delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/admin/organisations/delete/{organisationId}","scope":{"organisationId":{"from":"path","at":"organisationId"}}},
-      "deleteServer": {"action":"write.delete","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/delete/{serverId}","scope":{"serverId":{"from":"path","at":"serverId"}}},
-      "deleteSharingGroup": {"action":"delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/sharing_groups/delete/{sharingGroupId}","scope":{"sharingGroupId":{"from":"path","at":"sharingGroupId"}}},
-      "deleteSharingGroupBlueprint": {"action":"delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/sharing_group_blueprints/delete/{sharingGroupBlueprintId}","scope":{"sharingGroupBlueprintId":{"from":"path","at":"sharingGroupBlueprintId"}}},
-      "deleteSighting": {"action":"write.delete","effects":["write"],"method":"POST","origin":"{origin}","path":"/sightings/delete/{sightingId}","scope":{"sightingId":{"from":"path","at":"sightingId"}}},
-      "deleteTag": {"action":"write.delete","effects":["write"],"method":"POST","origin":"{origin}","path":"/tags/delete/{tagId}","scope":{"tagId":{"from":"path","at":"tagId"}}},
-      "deleteUser": {"action":"delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/admin/users/delete/{userId}","scope":{"userId":{"from":"path","at":"userId"}}},
-      "deleteUserSettingById": {"action":"delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/user_settings/delete/{userSettingId}","scope":{"userSettingId":{"from":"path","at":"userSettingId"}}},
-      "deleteUserTotp": {"action":"delete.totp_delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/users/totp_delete/{userId}","scope":{"userId":{"from":"path","at":"userId"}}},
-      "describeAttributeTypes": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/attributes/describeTypes","scope":{}},
-      "detachSharingGroupBlueprint": {"action":"write.detach","effects":["write"],"method":"POST","origin":"{origin}","path":"/sharing_group_blueprints/detach/{sharingGroupBlueprintId}","scope":{"sharingGroupBlueprintId":{"from":"path","at":"sharingGroupBlueprintId"}}},
-      "disableFeed": {"action":"write.disable","effects":["write"],"method":"POST","origin":"{origin}","path":"/feeds/disable/{feedId}","scope":{"feedId":{"from":"path","at":"feedId"}}},
-      "disableTaxonomy": {"action":"write.disable","effects":["write"],"method":"POST","origin":"{origin}","path":"/taxonomies/disable/{taxonomyId}","scope":{"taxonomyId":{"from":"path","at":"taxonomyId"}}},
-      "editAnalystData": {"action":"write.edit","effects":["write"],"method":"POST","origin":"{origin}","path":"/analystData/edit/{analystType}/{analystDataID}","body":"json","scope":{"analystType":{"from":"path","at":"analystType"},"analystDataID":{"from":"path","at":"analystDataID"}}},
-      "editAttribute": {"action":"write.edit","effects":["write"],"method":"PUT","origin":"{origin}","path":"/attributes/edit/{attributeId}","body":"json","scope":{"attributeId":{"from":"path","at":"attributeId"}}},
-      "editAuthKey": {"action":"write.edit","effects":["write"],"method":"POST","origin":"{origin}","path":"/auth_keys/edit/{authKeyId}","body":"any","scope":{"authKeyId":{"from":"path","at":"authKeyId"}}},
-      "editCollection": {"action":"write.edit","effects":["write"],"method":"POST","origin":"{origin}","path":"/collections/edit/{collectionId}","body":"json","scope":{"collectionId":{"from":"path","at":"collectionId"}}},
-      "editEvent": {"action":"write.edit","effects":["write"],"method":"PUT","origin":"{origin}","path":"/events/edit/{eventId}","body":"json","scope":{"eventId":{"from":"path","at":"eventId"}}},
-      "editEventReport": {"action":"write.edit","effects":["write"],"method":"POST","origin":"{origin}","path":"/eventReports/edit/{eventReportId}","scope":{"eventReportId":{"from":"path","at":"eventReportId"}}},
-      "editFeed": {"action":"write.edit","effects":["write"],"method":"PUT","origin":"{origin}","path":"/feeds/edit/{feedId}","body":"any","scope":{"feedId":{"from":"path","at":"feedId"}}},
-      "editGalaxyCluster": {"action":"write.edit","effects":["write"],"method":"PUT","origin":"{origin}","path":"/galaxy_clusters/edit/{galaxyClusterId}","body":"any","scope":{"galaxyClusterId":{"from":"path","at":"galaxyClusterId"}}},
-      "editOrganisation": {"action":"write.edit","effects":["write"],"method":"PUT","origin":"{origin}","path":"/admin/organisations/edit/{organisationId}","body":"any","scope":{"organisationId":{"from":"path","at":"organisationId"}}},
-      "editServer": {"action":"write.edit","effects":["write"],"method":"PUT","origin":"{origin}","path":"/servers/edit/{serverId}","body":"any","scope":{"serverId":{"from":"path","at":"serverId"}}},
-      "editServerSetting": {"action":"write.server_settings_edit","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/serverSettingsEdit/{settingName}","body":"any","scope":{"settingName":{"from":"path","at":"settingName"}}},
-      "editSharingGroup": {"action":"write.edit","effects":["write"],"method":"POST","origin":"{origin}","path":"/sharing_groups/edit/{sharingGroupId}","body":"any","scope":{"sharingGroupId":{"from":"path","at":"sharingGroupId"}}},
-      "editSharingGroupBlueprint": {"action":"write.edit","effects":["write"],"method":"POST","origin":"{origin}","path":"/sharing_group_blueprints/edit/{sharingGroupBlueprintId}","body":"json","scope":{"sharingGroupBlueprintId":{"from":"path","at":"sharingGroupBlueprintId"}}},
-      "editTag": {"action":"write.edit","effects":["write"],"method":"POST","origin":"{origin}","path":"/tags/edit/{tagId}","body":"any","scope":{"tagId":{"from":"path","at":"tagId"}}},
-      "editUser": {"action":"write.edit","effects":["write"],"method":"PUT","origin":"{origin}","path":"/admin/users/edit/{userId}","body":"any","scope":{"userId":{"from":"path","at":"userId"}}},
-      "enableFeed": {"action":"write.enable","effects":["write"],"method":"POST","origin":"{origin}","path":"/feeds/enable/{feedId}","scope":{"feedId":{"from":"path","at":"feedId"}}},
-      "enableTaxonomy": {"action":"write.enable","effects":["write"],"method":"POST","origin":"{origin}","path":"/taxonomies/enable/{taxonomyId}","scope":{"taxonomyId":{"from":"path","at":"taxonomyId"}}},
-      "enrichAttribute": {"action":"write.enrich","effects":["write"],"method":"POST","origin":"{origin}","path":"/attributes/enrich/{attributeId}","body":"json","scope":{"attributeId":{"from":"path","at":"attributeId"}}},
-      "enrichEvent": {"action":"write.enrich_event","effects":["write"],"method":"POST","origin":"{origin}","path":"/events/enrichEvent/{eventId}","body":"json","scope":{"eventId":{"from":"path","at":"eventId"}}},
-      "executeSharingGroupBlueprint": {"action":"execute.execute","effects":["execute"],"method":"POST","origin":"{origin}","path":"/sharing_group_blueprints/execute/{sharingGroupBlueprintId}","scope":{"sharingGroupBlueprintId":{"from":"path","at":"sharingGroupBlueprintId"}}},
-      "exportGalaxyClusters": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/galaxies/export/{galaxyId}","body":"any","scope":{"galaxyId":{"from":"path","at":"galaxyId"}}},
-      "exportTaxonomy": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/taxonomies/export/{taxonomyId}","scope":{"taxonomyId":{"from":"path","at":"taxonomyId"}}},
-      "fetchFromAllFeeds": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/feeds/fetchFromAllFeeds","scope":{}},
-      "fetchFromFeed": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/feeds/fetchFromFeed/{feedId}","scope":{"feedId":{"from":"path","at":"feedId"}}},
-      "getAnalystDataById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/analystData/view/{analystType}/{analystDataID}","scope":{"analystType":{"from":"path","at":"analystType"},"analystDataID":{"from":"path","at":"analystDataID"}}},
-      "getAttributeByB64Value": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/attributes/getAttributeByB64Value/{base64Value}","scope":{"base64Value":{"from":"path","at":"base64Value"}}},
-      "getAttributeById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/attributes/view/{attributeId}","scope":{"attributeId":{"from":"path","at":"attributeId"}}},
-      "getAttributeStatistics": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/attributes/attributeStatistics/{context}/{percentage}","scope":{"context":{"from":"path","at":"context"},"percentage":{"from":"path","at":"percentage"}}},
-      "getAttributes": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/attributes","scope":{}},
-      "getAuthKeyById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/auth_keys/view/{authKeyId}","scope":{"authKeyId":{"from":"path","at":"authKeyId"}}},
-      "getAuthKeys": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/auth_keys","scope":{}},
-      "getCollectionById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/view/{collectionId}","scope":{"collectionId":{"from":"path","at":"collectionId"}}},
-      "getCollections": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/collections/index/{filter}","body":"any","scope":{"filter":{"from":"path","at":"filter"}}},
-      "getEventById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/events/view/{eventId}","scope":{"eventId":{"from":"path","at":"eventId"}}},
-      "getEvents": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/events","scope":{}},
-      "getFeedById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/feeds/view/{feedId}","scope":{"feedId":{"from":"path","at":"feedId"}}},
-      "getFeeds": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/feeds","scope":{}},
-      "getGalaxies": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/galaxies","scope":{}},
-      "getGalaxyById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/galaxies/view/{galaxyId}","scope":{"galaxyId":{"from":"path","at":"galaxyId"}}},
-      "getGalaxyClusterById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/galaxy_clusters/view/{galaxyClusterId}","scope":{"galaxyClusterId":{"from":"path","at":"galaxyClusterId"}}},
-      "getGalaxyClusters": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/galaxy_clusters/index/{galaxyId}","scope":{"galaxyId":{"from":"path","at":"galaxyId"}}},
-      "getLogs": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/admin/logs","body":"any","scope":{}},
-      "getNoticelistById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/noticelists/view/{noticelistId}","scope":{"noticelistId":{"from":"path","at":"noticelistId"}}},
-      "getNoticelists": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/noticelists","scope":{}},
-      "getObjectById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/objects/view/{objectId}","scope":{"objectId":{"from":"path","at":"objectId"}}},
-      "getOrganisationById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/organisations/view/{organisationId}","scope":{"organisationId":{"from":"path","at":"organisationId"}}},
-      "getOrganisations": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/organisations","scope":{}},
-      "getPyMISPVersion": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers/getPyMISPVersion","scope":{}},
-      "getServerSetting": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers/getSetting/{settingName}","scope":{"settingName":{"from":"path","at":"settingName"}}},
-      "getServerSettings": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers/serverSettings","scope":{}},
-      "getServerUuid": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers/getInstanceUUID","scope":{}},
-      "getServerVersion": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers/getVersion","scope":{}},
-      "getServers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers","scope":{}},
-      "getSharingGroup": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/sharing_groups","scope":{}},
-      "getSharingGroupById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/sharing_groups/view/{sharingGroupId}","scope":{"sharingGroupId":{"from":"path","at":"sharingGroupId"}}},
-      "getSightingsByEventId": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/sightings/index/{eventId}","scope":{"eventId":{"from":"path","at":"eventId"}}},
-      "getTagById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tags/view/{tagId}","scope":{"tagId":{"from":"path","at":"tagId"}}},
-      "getTags": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tags","scope":{}},
-      "getTaxonomies": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/taxonomies","scope":{}},
-      "getTaxonomyById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/taxonomies/view/{taxonomyId}","scope":{"taxonomyId":{"from":"path","at":"taxonomyId"}}},
-      "getTaxonomyTags": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/taxonomies/taxonomy_tags/{taxonomyId}","scope":{"taxonomyId":{"from":"path","at":"taxonomyId"}}},
-      "getUserById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/admin/users/view/{userId}","scope":{"userId":{"from":"path","at":"userId"}}},
-      "getUserSettingById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/user_settings/view/{userSettingId}","scope":{"userSettingId":{"from":"path","at":"userSettingId"}}},
-      "getUserSettingByName": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/user_settings/getSetting/{userId}/{userSettingName}","scope":{"userId":{"from":"path","at":"userId"},"userSettingName":{"from":"path","at":"userSettingName"}}},
-      "getUserSettings": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/user_settings","scope":{}},
-      "getUsers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/admin/users","scope":{}},
-      "getWarninglistById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/warninglists/view/{warninglistId}","scope":{"warninglistId":{"from":"path","at":"warninglistId"}}},
-      "getWarninglists": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/warninglists","scope":{}},
-      "getWorkers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers/getWorkers","scope":{}},
-      "hardDeleteEventReport": {"action":"write.delete","effects":["write"],"method":"POST","origin":"{origin}","path":"/eventReports/delete/{eventReportId}/{hardDelete}","scope":{"eventReportId":{"from":"path","at":"eventReportId"},"hardDelete":{"from":"path","at":"hardDelete"}}},
-      "importFromURLEventReport": {"action":"write.import_report_from_url","effects":["write"],"method":"POST","origin":"{origin}","path":"/eventReports/importReportFromUrl/{eventId}","body":"json","scope":{"eventId":{"from":"path","at":"eventId"}}},
-      "importGalaxyCluster": {"action":"write.import","effects":["write"],"method":"POST","origin":"{origin}","path":"/galaxies/import","body":"json","scope":{}},
-      "importServer": {"action":"write.import","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/import","body":"any","scope":{}},
-      "indexAnalystData": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/analystData/index/{analystType}","scope":{"analystType":{"from":"path","at":"analystType"}}},
-      "indexEventReport": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/eventReports/index","scope":{}},
-      "indexMinimalAnalystData": {"action":"write.index_minimal","effects":["write"],"method":"POST","origin":"{origin}","path":"/analystData/indexMinimal","body":"any","scope":{}},
-      "killAllWorkers": {"action":"write.kill_all_workers","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/killAllWorkers","scope":{}},
-      "publishEvent": {"action":"publish.publish","effects":["publish"],"method":"POST","origin":"{origin}","path":"/events/publish/{eventId}","scope":{"eventId":{"from":"path","at":"eventId"}}},
-      "publishGalaxyCluster": {"action":"publish.publish","effects":["publish"],"method":"POST","origin":"{origin}","path":"/galaxy_clusters/publish/{galaxyClusterId}","scope":{"galaxyClusterId":{"from":"path","at":"galaxyClusterId"}}},
-      "pullServer": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers/pull/{serverId}/{pullTechnique}","scope":{"serverId":{"from":"path","at":"serverId"},"pullTechnique":{"from":"path","at":"pullTechnique"}}},
-      "pushServer": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers/push/{serverId}/{pushTechnique}","scope":{"serverId":{"from":"path","at":"serverId"},"pushTechnique":{"from":"path","at":"pushTechnique"}}},
-      "removeOrganisationFromSharingGroup": {"action":"delete.remove_org","effects":["delete"],"method":"POST","origin":"{origin}","path":"/sharing_groups/removeOrg/{sharingGroupId}/{organisationId}","scope":{"sharingGroupId":{"from":"path","at":"sharingGroupId"},"organisationId":{"from":"path","at":"organisationId"}}},
-      "removeServerFromSharingGroup": {"action":"delete.remove_server","effects":["delete"],"method":"POST","origin":"{origin}","path":"/sharing_groups/removeServer/{sharingGroupServerId}/{serverId}","scope":{"sharingGroupServerId":{"from":"path","at":"sharingGroupServerId"},"serverId":{"from":"path","at":"serverId"}}},
-      "resetUserPassword": {"action":"write.initiate_password_reset","effects":["write"],"method":"POST","origin":"{origin}","path":"/users/initiatePasswordReset/{userId}/{firstTimeReset}","scope":{"userId":{"from":"path","at":"userId"},"firstTimeReset":{"from":"path","at":"firstTimeReset"}}},
-      "restSearchAttributes": {"action":"write.rest_search","effects":["write"],"method":"POST","origin":"{origin}","path":"/attributes/restSearch","body":"json","scope":{}},
-      "restSearchEvents": {"action":"write.rest_search","effects":["write"],"method":"POST","origin":"{origin}","path":"/events/restSearch","body":"json","scope":{}},
-      "restSearchObjects": {"action":"write.restsearch","effects":["write"],"method":"POST","origin":"{origin}","path":"/objects/restsearch","body":"json","scope":{}},
-      "restartDeadWorkers": {"action":"write.restart_dead_workers","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/restartDeadWorkers","scope":{}},
-      "restartWorkers": {"action":"write.restart_workers","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/restartWorkers","scope":{}},
-      "restoreAttribute": {"action":"write.restore","effects":["write"],"method":"POST","origin":"{origin}","path":"/attributes/restore/{attributeId}","scope":{"attributeId":{"from":"path","at":"attributeId"}}},
-      "restoreEventReport": {"action":"write.restore","effects":["write"],"method":"POST","origin":"{origin}","path":"/eventReports/restore/{eventReportId}","scope":{"eventReportId":{"from":"path","at":"eventReportId"}}},
-      "restoreGalaxyCluster": {"action":"write.restore","effects":["write"],"method":"POST","origin":"{origin}","path":"/galaxy_clusters/restore/{galaxyClusterId}","scope":{"galaxyClusterId":{"from":"path","at":"galaxyClusterId"}}},
-      "searchAuthKeys": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/auth_keys","body":"any","scope":{}},
-      "searchEvents": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/events/index","body":"json","scope":{}},
-      "searchGalaxies": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/galaxies","body":"json","scope":{}},
-      "searchGalaxyClusters": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/galaxy_clusters/index/{galaxyId}","body":"any","scope":{"galaxyId":{"from":"path","at":"galaxyId"}}},
-      "searchTag": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tags/search/{tagSearchTerm}","scope":{"tagSearchTerm":{"from":"path","at":"tagSearchTerm"}}},
-      "searchUserSettings": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/user_settings","body":"any","scope":{}},
-      "searchWarninglists": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/warninglists","body":"any","scope":{}},
-      "setUserSetting": {"action":"write.set_setting","effects":["write"],"method":"POST","origin":"{origin}","path":"/user_settings/setSetting/{userId}/{userSettingName}","body":"any","scope":{"userId":{"from":"path","at":"userId"},"userSettingName":{"from":"path","at":"userSettingName"}}},
-      "startWorker": {"action":"write.start_worker","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/startWorker/{workerType}","scope":{"workerType":{"from":"path","at":"workerType"}}},
-      "stopWorker": {"action":"write.stop_worker","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/stopWorker/{workerPid}","scope":{"workerPid":{"from":"path","at":"workerPid"}}},
-      "tagAttribute": {"action":"write.add_tag","effects":["write"],"method":"POST","origin":"{origin}","path":"/attributes/addTag/{attributeId}/{tagId}/local:{local}","body":"any","scope":{"attributeId":{"from":"path","at":"attributeId"},"tagId":{"from":"path","at":"tagId"},"local":{"from":"path","at":"local"}}},
-      "tagEvent": {"action":"write.add_tag","effects":["write"],"method":"POST","origin":"{origin}","path":"/events/addTag/{eventId}/{tagId}/local:{local}","scope":{"eventId":{"from":"path","at":"eventId"},"tagId":{"from":"path","at":"tagId"},"local":{"from":"path","at":"local"}}},
-      "toggleEnableNoticelist": {"action":"write.toggle_enable","effects":["write"],"method":"POST","origin":"{origin}","path":"/noticelists/toggleEnable/{noticelistId}","scope":{"noticelistId":{"from":"path","at":"noticelistId"}}},
-      "toggleEnableWarninglist": {"action":"write.toggle_enable","effects":["write"],"method":"POST","origin":"{origin}","path":"/warninglists/toggleEnable","body":"any","scope":{}},
-      "unpublishEvent": {"action":"publish.unpublish","effects":["publish"],"method":"POST","origin":"{origin}","path":"/events/unpublish/{eventId}","scope":{"eventId":{"from":"path","at":"eventId"}}},
-      "unpublishGalaxyCluster": {"action":"publish.unpublish","effects":["publish"],"method":"POST","origin":"{origin}","path":"/galaxy_clusters/unpublish/{galaxyClusterId}","scope":{"galaxyClusterId":{"from":"path","at":"galaxyClusterId"}}},
-      "untagAttribute": {"action":"write.remove_tag","effects":["write"],"method":"POST","origin":"{origin}","path":"/attributes/removeTag/{attributeId}/{tagId}","scope":{"attributeId":{"from":"path","at":"attributeId"},"tagId":{"from":"path","at":"tagId"}}},
-      "untagEvent": {"action":"write.remove_tag","effects":["write"],"method":"POST","origin":"{origin}","path":"/events/removeTag/{eventId}/{tagId}","scope":{"eventId":{"from":"path","at":"eventId"},"tagId":{"from":"path","at":"tagId"}}},
-      "updateGalaxies": {"action":"write.update","effects":["write"],"method":"POST","origin":"{origin}","path":"/galaxies/update","scope":{}},
-      "updateNoticelists": {"action":"write.update","effects":["write"],"method":"POST","origin":"{origin}","path":"/noticelists/update","scope":{}},
-      "updateServer": {"action":"write.update","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/update","scope":{}},
-      "updateServerJSON": {"action":"write.update_json","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/updateJSON","scope":{}},
-      "updateTaxonomies": {"action":"write.update","effects":["write"],"method":"POST","origin":"{origin}","path":"/taxonomies/update","scope":{}},
-      "updateWarninglists": {"action":"write.update","effects":["write"],"method":"POST","origin":"{origin}","path":"/warninglists/update","scope":{}},
-      "viewEventReport": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/eventReports/view/{eventReportId}","scope":{"eventReportId":{"from":"path","at":"eventReportId"}}},
-      "viewOrgsSharingGroupBlueprint": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/sharing_group_blueprints/viewOrgs/{sharingGroupBlueprintId}","scope":{"sharingGroupBlueprintId":{"from":"path","at":"sharingGroupBlueprintId"}}},
-      "viewSharingGroupBlueprint": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/sharing_group_blueprints/view/{sharingGroupBlueprintId}","scope":{"sharingGroupBlueprintId":{"from":"path","at":"sharingGroupBlueprintId"}}},
-      "viewSharingGroupBlueprints": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/sharing_group_blueprints/index","scope":{}}
+      "acceptProposal": {"action":"shadow_attributes.accept.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/shadowAttributes/accept/{proposalId}","scope":{"proposalId":{"at":"proposalId","from":"path"}}},
+      "addAnalystData": {"action":"analyst_data.add.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/analystData/add/{analystType}/{analystObjectUUID}/{analystObjectType}","scope":{"analystObjectType":{"at":"analystObjectType","from":"path"},"analystObjectUUID":{"at":"analystObjectUUID","from":"path"},"analystType":{"at":"analystType","from":"path"}}},
+      "addAttribute": {"action":"attributes.add.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/attributes/add/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "addAuthKey": {"action":"auth_keys.add.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth_keys/add/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "addCollection": {"action":"collections.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/collections/add","scope":{}},
+      "addEvent": {"action":"events.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/events/add","scope":{}},
+      "addEventReport": {"action":"event_reports.add.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/eventReports/add/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "addFeed": {"action":"feeds.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/feeds/add","scope":{}},
+      "addGalaxyCluster": {"action":"galaxy_clusters.add.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/galaxy_clusters/add/{galaxyId}","scope":{"galaxyId":{"at":"galaxyId","from":"path"}}},
+      "addObject": {"action":"objects.add.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/objects/add/{eventId}/{objectTemplateId}","scope":{"eventId":{"at":"eventId","from":"path"},"objectTemplateId":{"at":"objectTemplateId","from":"path"}}},
+      "addObjectReference": {"action":"object_references.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/objectReferences/add","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "addObjectWithoutTemplateId": {"action":"objects.add.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/objects/add/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "addOrganisation": {"action":"admin.organisations.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/admin/organisations/add","scope":{}},
+      "addOrganisationToSharingGroup": {"action":"sharing_groups.add_org.share","effects":["share"],"method":"POST","origin":"{origin}","path":"/sharing_groups/addOrg/{sharingGroupId}/{organisationId}","scope":{"organisationId":{"at":"organisationId","from":"path"},"sharingGroupId":{"at":"sharingGroupId","from":"path"}}},
+      "addOrganisationToSharingGroupByBody": {"action":"sharing_groups.org.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","path":"/sharingGroups/addOrg","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "addProposal": {"action":"shadow_attributes.add.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/shadowAttributes/add/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "addServer": {"action":"servers.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/servers/add","scope":{}},
+      "addServerToSharingGroup": {"action":"sharing_groups.add_server.share","effects":["share"],"method":"POST","origin":"{origin}","path":"/sharing_groups/addServer/{sharingGroupId}/{serverId}","scope":{"serverId":{"at":"serverId","from":"path"},"sharingGroupId":{"at":"sharingGroupId","from":"path"}}},
+      "addServerToSharingGroupByBody": {"action":"sharing_groups.server.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","path":"/sharingGroups/addServer","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "addSharingGroup": {"action":"sharing_groups.share","body":"any","effects":["share"],"method":"POST","origin":"{origin}","path":"/sharing_groups/add","scope":{}},
+      "addSharingGroupBlueprint": {"action":"sharing_group_blueprints.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/sharing_group_blueprints/add","scope":{}},
+      "addSharingGroupCamelCase": {"action":"sharing_groups.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","path":"/sharingGroups/add","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "addSighting": {"action":"sightings.add.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/sightings/add/{attributeId}","scope":{"attributeId":{"at":"attributeId","from":"path"}}},
+      "addSightingByValue": {"action":"sightings.add.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/sightings/add","scope":{}},
+      "addSightingWithBody": {"action":"sightings.add.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/sightings/add/{attributeId}","scope":{"attributeId":{"at":"attributeId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "addTag": {"action":"tags.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/tags/add","scope":{}},
+      "addUser": {"action":"admin.users.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/admin/users/add","scope":{}},
+      "alertEvent": {"action":"events.alert.send","effects":["send"],"method":"POST","origin":"{origin}","path":"/events/alert/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "attachGalaxyCluster": {"action":"galaxies.attach_cluster.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/galaxies/attachCluster/{attachTargetId}/{attachTargetType}/local:{local}","scope":{"attachTargetId":{"at":"attachTargetId","from":"path"},"attachTargetType":{"at":"attachTargetType","from":"path"},"local":{"at":"local","from":"path"}}},
+      "attachTagToObject": {"action":"tags.tag_to_object.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/tags/attachTagToObject","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "attributeExists": {"action":"attributes.view.read","effects":["read"],"method":"HEAD","origin":"{origin}","path":"/attributes/view/{attributeId}","scope":{"attributeId":{"at":"attributeId","from":"path"}}},
+      "cacheFeeds": {"action":"feeds.cache_feeds.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/feeds/cacheFeeds/{cacheFeedsScope}","scope":{"cacheFeedsScope":{"at":"cacheFeedsScope","from":"path"}}},
+      "cacheServer": {"action":"servers.cache.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/cache","scope":{}},
+      "changeOwnPassword": {"action":"users.change_pw.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/users/change_pw","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "checkValueWarninglistsMatches": {"action":"warninglists.value.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/warninglists/checkValue","scope":{}},
+      "contactEventReporter": {"action":"events.contact.send","body":"json","effects":["send"],"method":"POST","origin":"{origin}","path":"/events/contact/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createSync": {"action":"servers.sync.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/servers/createSync","scope":{}},
+      "deleteAnalystData": {"action":"analyst_data.delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/analystData/delete/{analystType}/{analystDataID}","scope":{"analystDataID":{"at":"analystDataID","from":"path"},"analystType":{"at":"analystType","from":"path"}}},
+      "deleteAttribute": {"action":"attributes.delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/attributes/delete/{attributeId}","scope":{"attributeId":{"at":"attributeId","from":"path"}}},
+      "deleteAttributeByPost": {"action":"attributes.delete.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","path":"/attributes/delete/{attributeId}","scope":{"attributeId":{"at":"attributeId","from":"path"}}},
+      "deleteAuthKey": {"action":"auth_keys.delete.delete","effects":["delete","admin"],"method":"DELETE","origin":"{origin}","path":"/auth_keys/delete/{authKeyId}","scope":{"authKeyId":{"at":"authKeyId","from":"path"}}},
+      "deleteCollection": {"action":"collections.delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/collections/delete/{collectionId}","scope":{"collectionId":{"at":"collectionId","from":"path"}}},
+      "deleteEvent": {"action":"events.delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/events/delete/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "deleteEventByPost": {"action":"events.delete.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","path":"/events/delete/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "deleteEventReport": {"action":"event_reports.delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/eventReports/delete/{eventReportId}","scope":{"eventReportId":{"at":"eventReportId","from":"path"}}},
+      "deleteEventReportWithBody": {"action":"event_reports.delete.delete","body":"json","effects":["delete"],"method":"POST","origin":"{origin}","path":"/eventReports/delete/{eventReportId}","scope":{"eventReportId":{"at":"eventReportId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "deleteFeed": {"action":"feeds.delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/feeds/delete/{feedId}","scope":{"feedId":{"at":"feedId","from":"path"}}},
+      "deleteGalaxy": {"action":"galaxies.delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/galaxies/delete/{galaxyId}","scope":{"galaxyId":{"at":"galaxyId","from":"path"}}},
+      "deleteGalaxyCluster": {"action":"galaxy_clusters.delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/galaxy_clusters/delete/{galaxyClusterId}","scope":{"galaxyClusterId":{"at":"galaxyClusterId","from":"path"}}},
+      "deleteGalaxyClusterWithBody": {"action":"galaxy_clusters.delete.delete","body":"json","effects":["delete"],"method":"POST","origin":"{origin}","path":"/galaxy_clusters/delete/{galaxyClusterId}","scope":{"galaxyClusterId":{"at":"galaxyClusterId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "deleteObject": {"action":"objects.delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/objects/delete/{objectId}/{hardDelete}","scope":{"hardDelete":{"at":"hardDelete","from":"path"},"objectId":{"at":"objectId","from":"path"}}},
+      "deleteObjectByPost": {"action":"objects.delete.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","path":"/objects/delete/{objectId}","scope":{"objectId":{"at":"objectId","from":"path"}}},
+      "deleteOrganisation": {"action":"admin.organisations.delete.delete","effects":["delete","admin"],"method":"DELETE","origin":"{origin}","path":"/admin/organisations/delete/{organisationId}","scope":{"organisationId":{"at":"organisationId","from":"path"}}},
+      "deleteOrganisationByPost": {"action":"admin.organisations.delete.delete","effects":["delete","admin"],"method":"POST","origin":"{origin}","path":"/admin/organisations/delete/{organisationId}","scope":{"organisationId":{"at":"organisationId","from":"path"}}},
+      "deleteProposal": {"action":"shadow_attributes.delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/shadowAttributes/delete/{attributeId}","scope":{"attributeId":{"at":"attributeId","from":"path"}}},
+      "deleteServer": {"action":"servers.delete.delete","effects":["delete","admin"],"method":"POST","origin":"{origin}","path":"/servers/delete/{serverId}","scope":{"serverId":{"at":"serverId","from":"path"}}},
+      "deleteSharingGroup": {"action":"sharing_groups.delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/sharing_groups/delete/{sharingGroupId}","scope":{"sharingGroupId":{"at":"sharingGroupId","from":"path"}}},
+      "deleteSharingGroupBlueprint": {"action":"sharing_group_blueprints.delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/sharing_group_blueprints/delete/{sharingGroupBlueprintId}","scope":{"sharingGroupBlueprintId":{"at":"sharingGroupBlueprintId","from":"path"}}},
+      "deleteSharingGroupByPost": {"action":"sharing_groups.delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/sharingGroups/delete/{sharingGroupId}","scope":{"sharingGroupId":{"at":"sharingGroupId","from":"path"}}},
+      "deleteSighting": {"action":"sightings.delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/sightings/delete/{sightingId}","scope":{"sightingId":{"at":"sightingId","from":"path"}}},
+      "deleteTag": {"action":"tags.delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/tags/delete/{tagId}","scope":{"tagId":{"at":"tagId","from":"path"}}},
+      "deleteUser": {"action":"admin.users.delete.delete","effects":["delete","admin"],"method":"DELETE","origin":"{origin}","path":"/admin/users/delete/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "deleteUserByPost": {"action":"admin.users.delete.delete","effects":["delete","admin"],"method":"POST","origin":"{origin}","path":"/admin/users/delete/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "deleteUserSettingByBody": {"action":"user_settings.delete","body":"json","effects":["delete"],"method":"POST","origin":"{origin}","path":"/userSettings/delete","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "deleteUserSettingById": {"action":"user_settings.delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/user_settings/delete/{userSettingId}","scope":{"userSettingId":{"at":"userSettingId","from":"path"}}},
+      "deleteUserTotp": {"action":"users.totp_delete.delete","effects":["delete","admin"],"method":"DELETE","origin":"{origin}","path":"/users/totp_delete/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "describeAttributeTypes": {"action":"attributes.describe_types.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/attributes/describeTypes","scope":{}},
+      "describeAttributeTypesJson": {"action":"attributes.describe_types.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/attributes/describeTypes.json","scope":{}},
+      "detachSharingGroupBlueprint": {"action":"sharing_group_blueprints.detach.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/sharing_group_blueprints/detach/{sharingGroupBlueprintId}","scope":{"sharingGroupBlueprintId":{"at":"sharingGroupBlueprintId","from":"path"}}},
+      "disableFeed": {"action":"feeds.disable.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/feeds/disable/{feedId}","scope":{"feedId":{"at":"feedId","from":"path"}}},
+      "disableTaxonomy": {"action":"taxonomies.disable.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/taxonomies/disable/{taxonomyId}","scope":{"taxonomyId":{"at":"taxonomyId","from":"path"}}},
+      "discardProposal": {"action":"shadow_attributes.discard.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/shadowAttributes/discard/{proposalId}","scope":{"proposalId":{"at":"proposalId","from":"path"}}},
+      "editAnalystData": {"action":"analyst_data.edit.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/analystData/edit/{analystType}/{analystDataID}","scope":{"analystDataID":{"at":"analystDataID","from":"path"},"analystType":{"at":"analystType","from":"path"}}},
+      "editAttribute": {"action":"attributes.edit.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/attributes/edit/{attributeId}","scope":{"attributeId":{"at":"attributeId","from":"path"}}},
+      "editAttributeByPost": {"action":"attributes.edit.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/attributes/edit/{attributeId}","scope":{"attributeId":{"at":"attributeId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "editAuthKey": {"action":"auth_keys.edit.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth_keys/edit/{authKeyId}","scope":{"authKeyId":{"at":"authKeyId","from":"path"}}},
+      "editCollection": {"action":"collections.edit.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/collections/edit/{collectionId}","scope":{"collectionId":{"at":"collectionId","from":"path"}}},
+      "editEvent": {"action":"events.edit.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/events/edit/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "editEventByPost": {"action":"events.edit.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/events/edit/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "editEventReport": {"action":"event_reports.edit.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/eventReports/edit/{eventReportId}","scope":{"eventReportId":{"at":"eventReportId","from":"path"}}},
+      "editEventReportWithBody": {"action":"event_reports.edit.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/eventReports/edit/{eventReportId}","scope":{"eventReportId":{"at":"eventReportId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "editFeed": {"action":"feeds.edit.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/feeds/edit/{feedId}","scope":{"feedId":{"at":"feedId","from":"path"}}},
+      "editFeedByPost": {"action":"feeds.edit.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/feeds/edit/{feedId}","scope":{"feedId":{"at":"feedId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "editGalaxyCluster": {"action":"galaxy_clusters.edit.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/galaxy_clusters/edit/{galaxyClusterId}","scope":{"galaxyClusterId":{"at":"galaxyClusterId","from":"path"}}},
+      "editGalaxyClusterByPost": {"action":"galaxy_clusters.edit.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/galaxy_clusters/edit/{galaxyClusterId}","scope":{"galaxyClusterId":{"at":"galaxyClusterId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "editObjectByPost": {"action":"objects.edit.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/objects/edit/{objectId}","scope":{"objectId":{"at":"objectId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "editOrganisation": {"action":"admin.organisations.edit.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/admin/organisations/edit/{organisationId}","scope":{"organisationId":{"at":"organisationId","from":"path"}}},
+      "editOrganisationByPost": {"action":"admin.organisations.edit.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/admin/organisations/edit/{organisationId}","scope":{"organisationId":{"at":"organisationId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "editOwnUser": {"action":"users.edit.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/users/edit/{userId}","scope":{"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "editProposal": {"action":"shadow_attributes.edit.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/shadowAttributes/edit/{attributeId}","scope":{"attributeId":{"at":"attributeId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "editServer": {"action":"servers.edit.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/servers/edit/{serverId}","scope":{"serverId":{"at":"serverId","from":"path"}}},
+      "editServerByPost": {"action":"servers.edit.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/servers/edit/{serverId}","scope":{"request":{"at":"","from":"body","type":"object"},"serverId":{"at":"serverId","from":"path"}}},
+      "editServerSetting": {"action":"servers.server_settings_edit.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/servers/serverSettingsEdit/{settingName}","scope":{"settingName":{"at":"settingName","from":"path"}}},
+      "editSharingGroup": {"action":"sharing_groups.edit.share","body":"any","effects":["share"],"method":"POST","origin":"{origin}","path":"/sharing_groups/edit/{sharingGroupId}","scope":{"sharingGroupId":{"at":"sharingGroupId","from":"path"}}},
+      "editSharingGroupBlueprint": {"action":"sharing_group_blueprints.edit.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/sharing_group_blueprints/edit/{sharingGroupBlueprintId}","scope":{"sharingGroupBlueprintId":{"at":"sharingGroupBlueprintId","from":"path"}}},
+      "editTag": {"action":"tags.edit.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/tags/edit/{tagId}","scope":{"tagId":{"at":"tagId","from":"path"}}},
+      "editUser": {"action":"admin.users.edit.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/admin/users/edit/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "editUserByPost": {"action":"admin.users.edit.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/admin/users/edit/{userId}","scope":{"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "enableFeed": {"action":"feeds.enable.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/feeds/enable/{feedId}","scope":{"feedId":{"at":"feedId","from":"path"}}},
+      "enableTaxonomy": {"action":"taxonomies.enable.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/taxonomies/enable/{taxonomyId}","scope":{"taxonomyId":{"at":"taxonomyId","from":"path"}}},
+      "enrichAttribute": {"action":"attributes.enrich.send","body":"json","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/attributes/enrich/{attributeId}","scope":{"attributeId":{"at":"attributeId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "enrichEvent": {"action":"events.enrich_event.send","body":"json","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/events/enrichEvent/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "eventExists": {"action":"events.view.read","effects":["read"],"method":"HEAD","origin":"{origin}","path":"/events/view/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "executeSharingGroupBlueprint": {"action":"sharing_group_blueprints.execute.share","effects":["share"],"method":"POST","origin":"{origin}","path":"/sharing_group_blueprints/execute/{sharingGroupBlueprintId}","scope":{"sharingGroupBlueprintId":{"at":"sharingGroupBlueprintId","from":"path"}}},
+      "exportGalaxyClusters": {"action":"galaxies.export.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/galaxies/export/{galaxyId}","scope":{"galaxyId":{"at":"galaxyId","from":"path"}}},
+      "exportTaxonomy": {"action":"taxonomies.export.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/taxonomies/export/{taxonomyId}","scope":{"taxonomyId":{"at":"taxonomyId","from":"path"}}},
+      "fetchFromAllFeeds": {"action":"feeds.fetch_from_all_feeds.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/feeds/fetchFromAllFeeds","scope":{}},
+      "fetchFromFeed": {"action":"feeds.fetch_from_feed.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/feeds/fetchFromFeed/{feedId}","scope":{"feedId":{"at":"feedId","from":"path"}}},
+      "freeTextImport": {"action":"events.free_text_import.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/events/freeTextImport/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "getAnalystDataById": {"action":"analyst_data.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/analystData/view/{analystType}/{analystDataID}","scope":{"analystDataID":{"at":"analystDataID","from":"path"},"analystType":{"at":"analystType","from":"path"}}},
+      "getAttributeByB64Value": {"action":"attributes.get_attribute_by_b64_value.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/attributes/getAttributeByB64Value/{base64Value}","scope":{"base64Value":{"at":"base64Value","from":"path"}}},
+      "getAttributeById": {"action":"attributes.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/attributes/view/{attributeId}","scope":{"attributeId":{"at":"attributeId","from":"path"}}},
+      "getAttributeStatistics": {"action":"attributes.attribute_statistics.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/attributes/attributeStatistics/{context}/{percentage}","scope":{"context":{"at":"context","from":"path"},"percentage":{"at":"percentage","from":"path"}}},
+      "getAttributes": {"action":"attributes.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/attributes","scope":{}},
+      "getAttributesIndex": {"action":"attributes.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/attributes/index","scope":{}},
+      "getAuthKeyById": {"action":"auth_keys.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/auth_keys/view/{authKeyId}","scope":{"authKeyId":{"at":"authKeyId","from":"path"}}},
+      "getAuthKeys": {"action":"auth_keys.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/auth_keys","scope":{}},
+      "getCollectionById": {"action":"collections.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/view/{collectionId}","scope":{"collectionId":{"at":"collectionId","from":"path"}}},
+      "getCollections": {"action":"collections.index.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/collections/index/{filter}","scope":{"filter":{"at":"filter","from":"path"}}},
+      "getEventById": {"action":"events.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/events/view/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "getEventByIdWithOptions": {"action":"events.view.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/events/view/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "getEventReportsByEvent": {"action":"event_reports.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/eventReports/index/event_id:{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "getEvents": {"action":"events.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/events","scope":{}},
+      "getEventsIndex": {"action":"events.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/events/index","scope":{}},
+      "getFeedById": {"action":"feeds.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/feeds/view/{feedId}","scope":{"feedId":{"at":"feedId","from":"path"}}},
+      "getFeeds": {"action":"feeds.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/feeds","scope":{}},
+      "getFeedsIndex": {"action":"feeds.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/feeds/index","scope":{}},
+      "getGalaxies": {"action":"galaxies.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/galaxies","scope":{}},
+      "getGalaxiesIndex": {"action":"galaxies.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/galaxies/index","scope":{}},
+      "getGalaxyById": {"action":"galaxies.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/galaxies/view/{galaxyId}","scope":{"galaxyId":{"at":"galaxyId","from":"path"}}},
+      "getGalaxyClusterById": {"action":"galaxy_clusters.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/galaxy_clusters/view/{galaxyClusterId}","scope":{"galaxyClusterId":{"at":"galaxyClusterId","from":"path"}}},
+      "getGalaxyClusters": {"action":"galaxy_clusters.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/galaxy_clusters/index/{galaxyId}","scope":{"galaxyId":{"at":"galaxyId","from":"path"}}},
+      "getLogs": {"action":"admin.logs.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/admin/logs","scope":{}},
+      "getNoticelistById": {"action":"noticelists.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/noticelists/view/{noticelistId}","scope":{"noticelistId":{"at":"noticelistId","from":"path"}}},
+      "getNoticelists": {"action":"noticelists.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/noticelists","scope":{}},
+      "getNoticelistsIndex": {"action":"noticelists.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/noticelists/index","scope":{}},
+      "getObjectById": {"action":"objects.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/objects/view/{objectId}","scope":{"objectId":{"at":"objectId","from":"path"}}},
+      "getObjectTemplateById": {"action":"object_templates.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/objectTemplates/view/{objectTemplateId}","scope":{"objectTemplateId":{"at":"objectTemplateId","from":"path"}}},
+      "getObjectTemplates": {"action":"object_templates.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/objectTemplates/index","scope":{}},
+      "getOrganisationById": {"action":"organisations.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/organisations/view/{organisationId}","scope":{"organisationId":{"at":"organisationId","from":"path"}}},
+      "getOrganisations": {"action":"organisations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/organisations","scope":{}},
+      "getOrganisationsByScope": {"action":"organisations.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/organisations/index/scope:{scope}","scope":{"scope":{"at":"scope","from":"path"}}},
+      "getProposalById": {"action":"shadow_attributes.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/shadowAttributes/view/{proposalId}","scope":{"proposalId":{"at":"proposalId","from":"path"}}},
+      "getProposals": {"action":"shadow_attributes.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/shadowAttributes/index","scope":{}},
+      "getProposalsByEvent": {"action":"shadow_attributes.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/shadowAttributes/index/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "getPyMISPVersion": {"action":"servers.py_mispversion.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers/getPyMISPVersion","scope":{}},
+      "getPyMISPVersionJson": {"action":"servers.py_mispversion.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers/getPyMISPVersion.json","scope":{}},
+      "getRawObjectTemplate": {"action":"object_templates.get_raw.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/objectTemplates/getRaw/{objectTemplate}","scope":{"objectTemplate":{"at":"objectTemplate","from":"path"}}},
+      "getRolesIndex": {"action":"roles.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/roles/index","scope":{}},
+      "getServerSetting": {"action":"servers.get_setting.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers/getSetting/{settingName}","scope":{"settingName":{"at":"settingName","from":"path"}}},
+      "getServerSettings": {"action":"servers.server_settings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers/serverSettings","scope":{}},
+      "getServerUuid": {"action":"servers.instance_uuid.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers/getInstanceUUID","scope":{}},
+      "getServerVersion": {"action":"servers.version.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers/getVersion","scope":{}},
+      "getServers": {"action":"servers.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers","scope":{}},
+      "getServersIndex": {"action":"servers.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers/index","scope":{}},
+      "getSharingGroup": {"action":"sharing_groups.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/sharing_groups","scope":{}},
+      "getSharingGroupById": {"action":"sharing_groups.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/sharing_groups/view/{sharingGroupId}","scope":{"sharingGroupId":{"at":"sharingGroupId","from":"path"}}},
+      "getSharingGroupsIndex": {"action":"sharing_groups.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/sharingGroups/index","scope":{}},
+      "getSightingsByEventId": {"action":"sightings.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/sightings/index/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "getTagById": {"action":"tags.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tags/view/{tagId}","scope":{"tagId":{"at":"tagId","from":"path"}}},
+      "getTags": {"action":"tags.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tags","scope":{}},
+      "getTagsIndex": {"action":"tags.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tags/index","scope":{}},
+      "getTaxonomies": {"action":"taxonomies.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/taxonomies","scope":{}},
+      "getTaxonomiesIndex": {"action":"taxonomies.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/taxonomies/index","scope":{}},
+      "getTaxonomyById": {"action":"taxonomies.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/taxonomies/view/{taxonomyId}","scope":{"taxonomyId":{"at":"taxonomyId","from":"path"}}},
+      "getTaxonomyTags": {"action":"taxonomies.taxonomy_tags.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/taxonomies/taxonomy_tags/{taxonomyId}","scope":{"taxonomyId":{"at":"taxonomyId","from":"path"}}},
+      "getUserById": {"action":"admin.users.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/admin/users/view/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "getUserProfile": {"action":"users.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/users/view/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "getUserSettingByBody": {"action":"user_settings.setting.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/userSettings/getSetting","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "getUserSettingById": {"action":"user_settings.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/user_settings/view/{userSettingId}","scope":{"userSettingId":{"at":"userSettingId","from":"path"}}},
+      "getUserSettingByName": {"action":"user_settings.get_setting.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/user_settings/getSetting/{userId}/{userSettingName}","scope":{"userId":{"at":"userId","from":"path"},"userSettingName":{"at":"userSettingName","from":"path"}}},
+      "getUserSettings": {"action":"user_settings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/user_settings","scope":{}},
+      "getUserSettingsIndex": {"action":"user_settings.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/userSettings/index","scope":{}},
+      "getUsers": {"action":"admin.users.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/admin/users","scope":{}},
+      "getUsersIndex": {"action":"admin.users.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/admin/users/index","scope":{}},
+      "getWarninglistById": {"action":"warninglists.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/warninglists/view/{warninglistId}","scope":{"warninglistId":{"at":"warninglistId","from":"path"}}},
+      "getWarninglists": {"action":"warninglists.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/warninglists","scope":{}},
+      "getWarninglistsIndex": {"action":"warninglists.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/warninglists/index","scope":{}},
+      "getWorkers": {"action":"servers.workers.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/servers/getWorkers","scope":{}},
+      "hardDeleteEventReport": {"action":"event_reports.delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/eventReports/delete/{eventReportId}/{hardDelete}","scope":{"eventReportId":{"at":"eventReportId","from":"path"},"hardDelete":{"at":"hardDelete","from":"path"}}},
+      "importFromURLEventReport": {"action":"event_reports.import_report_from_url.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/eventReports/importReportFromUrl/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "importGalaxyCluster": {"action":"galaxies.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/galaxies/import","scope":{}},
+      "importServer": {"action":"servers.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/servers/import","scope":{}},
+      "indexAnalystData": {"action":"analyst_data.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/analystData/index/{analystType}","scope":{"analystType":{"at":"analystType","from":"path"}}},
+      "indexEventReport": {"action":"event_reports.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/eventReports/index","scope":{}},
+      "indexMinimalAnalystData": {"action":"analyst_data.index_minimal.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/analystData/indexMinimal","scope":{}},
+      "killAllWorkers": {"action":"servers.kill_all_workers.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/killAllWorkers","scope":{}},
+      "objectExists": {"action":"objects.view.read","effects":["read"],"method":"HEAD","origin":"{origin}","path":"/objects/view/{objectId}","scope":{"objectId":{"at":"objectId","from":"path"}}},
+      "organisationExists": {"action":"organisations.view.read","effects":["read"],"method":"HEAD","origin":"{origin}","path":"/organisations/view/{organisationId}","scope":{"organisationId":{"at":"organisationId","from":"path"}}},
+      "publishEvent": {"action":"events.publish.publish","effects":["publish"],"method":"POST","origin":"{origin}","path":"/events/publish/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "publishGalaxyCluster": {"action":"galaxy_clusters.publish.publish","effects":["publish"],"method":"POST","origin":"{origin}","path":"/galaxy_clusters/publish/{galaxyClusterId}","scope":{"galaxyClusterId":{"at":"galaxyClusterId","from":"path"}}},
+      "pullAllFromServer": {"action":"servers.pull.write","effects":["write"],"method":"GET","origin":"{origin}","path":"/servers/pull/{serverId}","scope":{"serverId":{"at":"serverId","from":"path"}}},
+      "pullServer": {"action":"servers.pull.write","effects":["write"],"method":"GET","origin":"{origin}","path":"/servers/pull/{serverId}/{pullTechnique}","scope":{"pullTechnique":{"at":"pullTechnique","from":"path"},"serverId":{"at":"serverId","from":"path"}}},
+      "pushAllToServer": {"action":"servers.push.send","effects":["send"],"method":"GET","origin":"{origin}","path":"/servers/push/{serverId}","scope":{"serverId":{"at":"serverId","from":"path"}}},
+      "pushServer": {"action":"servers.push.send","effects":["send"],"method":"GET","origin":"{origin}","path":"/servers/push/{serverId}/{pushTechnique}","scope":{"pushTechnique":{"at":"pushTechnique","from":"path"},"serverId":{"at":"serverId","from":"path"}}},
+      "removeOrganisationFromSharingGroup": {"action":"sharing_groups.remove_org.share","effects":["share"],"method":"POST","origin":"{origin}","path":"/sharing_groups/removeOrg/{sharingGroupId}/{organisationId}","scope":{"organisationId":{"at":"organisationId","from":"path"},"sharingGroupId":{"at":"sharingGroupId","from":"path"}}},
+      "removeOrganisationFromSharingGroupByBody": {"action":"sharing_groups.org.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","path":"/sharingGroups/removeOrg","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "removeServerFromSharingGroup": {"action":"sharing_groups.remove_server.share","effects":["share"],"method":"POST","origin":"{origin}","path":"/sharing_groups/removeServer/{sharingGroupServerId}/{serverId}","scope":{"serverId":{"at":"serverId","from":"path"},"sharingGroupServerId":{"at":"sharingGroupServerId","from":"path"}}},
+      "removeServerFromSharingGroupByBody": {"action":"sharing_groups.server.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","path":"/sharingGroups/removeServer","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "removeTagFromObject": {"action":"tags.tag_from_object.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/tags/removeTagFromObject","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "resetUserPassword": {"action":"users.initiate_password_reset.send","effects":["send","admin"],"method":"POST","origin":"{origin}","path":"/users/initiatePasswordReset/{userId}/{firstTimeReset}","scope":{"firstTimeReset":{"at":"firstTimeReset","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "restSearchAttributes": {"action":"attributes.rest_search.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/attributes/restSearch","scope":{"eventid":{"at":"/eventid","from":"body","optional":true},"page":{"at":"/page","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"threat_level_id":{"at":"/threat_level_id","from":"body","optional":true},"uuid":{"at":"/uuid","from":"body","optional":true}}},
+      "restSearchEvents": {"action":"events.rest_search.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/events/restSearch","scope":{"eventid":{"at":"/eventid","from":"body","optional":true},"page":{"at":"/page","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"threat_level_id":{"at":"/threat_level_id","from":"body","optional":true},"uuid":{"at":"/uuid","from":"body","optional":true}}},
+      "restSearchObjects": {"action":"objects.restsearch.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/objects/restsearch","scope":{"eventid":{"at":"/eventid","from":"body","optional":true},"object_name":{"at":"/object_name","from":"body","optional":true},"object_template_uuid":{"at":"/object_template_uuid","from":"body","optional":true},"page":{"at":"/page","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"uuid":{"at":"/uuid","from":"body","optional":true}}},
+      "restSearchObjectsCamelCase": {"action":"objects.rest_search.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/objects/restSearch","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "restSearchSightings": {"action":"sightings.rest_search.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/sightings/restSearch","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "restSearchSightingsByContext": {"action":"sightings.rest_search.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/sightings/restSearch/{context}","scope":{"context":{"at":"context","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "restartDeadWorkers": {"action":"servers.dead_workers.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/restartDeadWorkers","scope":{}},
+      "restartWorkers": {"action":"servers.workers.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/restartWorkers","scope":{}},
+      "restoreAttribute": {"action":"attributes.restore.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/attributes/restore/{attributeId}","scope":{"attributeId":{"at":"attributeId","from":"path"}}},
+      "restoreEventReport": {"action":"event_reports.restore.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/eventReports/restore/{eventReportId}","scope":{"eventReportId":{"at":"eventReportId","from":"path"}}},
+      "restoreGalaxyCluster": {"action":"galaxy_clusters.restore.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/galaxy_clusters/restore/{galaxyClusterId}","scope":{"galaxyClusterId":{"at":"galaxyClusterId","from":"path"}}},
+      "searchAuthKeys": {"action":"auth_keys.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/auth_keys","scope":{}},
+      "searchEvents": {"action":"events.index.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/events/index","scope":{}},
+      "searchGalaxies": {"action":"galaxies.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/galaxies","scope":{}},
+      "searchGalaxyClusters": {"action":"galaxy_clusters.index.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/galaxy_clusters/index/{galaxyId}","scope":{"galaxyId":{"at":"galaxyId","from":"path"}}},
+      "searchLogs": {"action":"admin.logs.index.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/admin/logs/index","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "searchTag": {"action":"tags.search.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tags/search/{tagSearchTerm}","scope":{"tagSearchTerm":{"at":"tagSearchTerm","from":"path"}}},
+      "searchTagsByBody": {"action":"tags.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/tags/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "searchUserSettings": {"action":"user_settings.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/user_settings","scope":{}},
+      "searchWarninglists": {"action":"warninglists.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/warninglists","scope":{}},
+      "setUserSetting": {"action":"user_settings.set_setting.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/user_settings/setSetting/{userId}/{userSettingName}","scope":{"userId":{"at":"userId","from":"path"},"userSettingName":{"at":"userSettingName","from":"path"}}},
+      "setUserSettingByBody": {"action":"user_settings.setting.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/userSettings/setSetting","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "sharingGroupExists": {"action":"sharing_groups.view.read","effects":["read"],"method":"HEAD","origin":"{origin}","path":"/sharing_groups/view/{sharingGroupId}","scope":{"sharingGroupId":{"at":"sharingGroupId","from":"path"}}},
+      "startWorker": {"action":"servers.start_worker.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/startWorker/{workerType}","scope":{"workerType":{"at":"workerType","from":"path"}}},
+      "stopWorker": {"action":"servers.stop_worker.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/stopWorker/{workerPid}","scope":{"workerPid":{"at":"workerPid","from":"path"}}},
+      "tagAttribute": {"action":"attributes.add_tag.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/attributes/addTag/{attributeId}/{tagId}/local:{local}","scope":{"attributeId":{"at":"attributeId","from":"path"},"local":{"at":"local","from":"path"},"tagId":{"at":"tagId","from":"path"}}},
+      "tagEvent": {"action":"events.add_tag.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/events/addTag/{eventId}/{tagId}/local:{local}","scope":{"eventId":{"at":"eventId","from":"path"},"local":{"at":"local","from":"path"},"tagId":{"at":"tagId","from":"path"}}},
+      "toggleEnableNoticelist": {"action":"noticelists.toggle_enable.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/noticelists/toggleEnable/{noticelistId}","scope":{"noticelistId":{"at":"noticelistId","from":"path"}}},
+      "toggleEnableWarninglist": {"action":"warninglists.toggle_enable.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/warninglists/toggleEnable","scope":{}},
+      "unpublishEvent": {"action":"events.unpublish.publish","effects":["publish"],"method":"POST","origin":"{origin}","path":"/events/unpublish/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "unpublishGalaxyCluster": {"action":"galaxy_clusters.unpublish.publish","effects":["publish"],"method":"POST","origin":"{origin}","path":"/galaxy_clusters/unpublish/{galaxyClusterId}","scope":{"galaxyClusterId":{"at":"galaxyClusterId","from":"path"}}},
+      "untagAttribute": {"action":"attributes.remove_tag.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/attributes/removeTag/{attributeId}/{tagId}","scope":{"attributeId":{"at":"attributeId","from":"path"},"tagId":{"at":"tagId","from":"path"}}},
+      "untagEvent": {"action":"events.remove_tag.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/events/removeTag/{eventId}/{tagId}","scope":{"eventId":{"at":"eventId","from":"path"},"tagId":{"at":"tagId","from":"path"}}},
+      "updateGalaxies": {"action":"galaxies.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/galaxies/update","scope":{}},
+      "updateNoticelists": {"action":"noticelists.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/noticelists/update","scope":{}},
+      "updateServer": {"action":"servers.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/servers/update","scope":{}},
+      "updateServerJSON": {"action":"servers.json.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/servers/updateJSON","scope":{}},
+      "updateTaxonomies": {"action":"taxonomies.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/taxonomies/update","scope":{}},
+      "updateWarninglists": {"action":"warninglists.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/warninglists/update","scope":{}},
+      "viewEventReport": {"action":"event_reports.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/eventReports/view/{eventReportId}","scope":{"eventReportId":{"at":"eventReportId","from":"path"}}},
+      "viewOrgsSharingGroupBlueprint": {"action":"sharing_group_blueprints.view_orgs.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/sharing_group_blueprints/viewOrgs/{sharingGroupBlueprintId}","scope":{"sharingGroupBlueprintId":{"at":"sharingGroupBlueprintId","from":"path"}}},
+      "viewSharingGroupBlueprint": {"action":"sharing_group_blueprints.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/sharing_group_blueprints/view/{sharingGroupBlueprintId}","scope":{"sharingGroupBlueprintId":{"at":"sharingGroupBlueprintId","from":"path"}}},
+      "viewSharingGroupBlueprints": {"action":"sharing_group_blueprints.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/sharing_group_blueprints/index","scope":{}}
     }
   }
 }

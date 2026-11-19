@@ -467,14 +467,33 @@ func (v *NATSFacts) Describe() facts.Observation {
 	if (action == "subscribe" || action == "receive") && v.Queue != "" {
 		action = "consume"
 	}
-	control := strings.HasPrefix(v.Subject, "$")
-	for k := range v.Headers {
-		control = control || strings.HasPrefix(strings.ToLower(k), "nats-")
+	if action == "publish" && strings.HasPrefix(v.Subject, "$") {
+		action = "admin"
+		for prefix, subjectAction := range natsSubjectActions {
+			if strings.HasPrefix(v.Subject, prefix) {
+				action = subjectAction
+			}
+		}
 	}
-	if action == "publish" && control {
+	control := strings.HasPrefix(v.Reply, "$")
+	for k := range v.Headers {
+		k = strings.ToLower(k)
+		control = control || strings.HasPrefix(k, "nats-") && !slices.Contains(natsPublishHeaders, k)
+	}
+	if v.Command == "publish" && control {
 		action = "admin"
 	}
 	op := &facts.Operation{ID: v.Command, Action: action}
 	parameters, _ := facts.JSON[map[string]any](v)
 	return facts.Observation{Operation: op, Title: "NATS " + v.Command + " " + v.Subject, Parameters: parameters, Details: details}
 }
+
+var (
+	natsPublishHeaders = strings.Fields("nats-msg-id nats-expected-stream nats-expected-last-sequence nats-expected-last-subject-sequence nats-expected-last-subject-sequence-subject nats-expected-last-msg-id")
+	natsSubjectActions = map[string]string{
+		"$JS.API.INFO": "inspect", "$JS.API.STREAM.NAMES": "inspect", "$JS.API.STREAM.LIST": "inspect",
+		"$JS.API.STREAM.INFO.": "inspect", "$JS.API.STREAM.MSG.GET.": "inspect", "$JS.API.DIRECT.GET.": "inspect",
+		"$JS.API.CONSUMER.NAMES.": "inspect", "$JS.API.CONSUMER.LIST.": "inspect", "$JS.API.CONSUMER.INFO.": "inspect",
+		"$JS.API.CONSUMER.MSG.NEXT.": "consume", "$JS.ACK.": "consume", "$KV.": "store",
+	}
+)

@@ -1,108 +1,181 @@
 {
-  "title": "AWS Comprehend",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["http", "slots", 0, "sigv4", "region"]},
-      {"key": "access_key", "label": "Access key ID", "secret": true, "credential": true},
-      {"key": "secret_key", "label": "Secret access key", "secret": true, "credential": true},
-      {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/", "sigv4": {"service": "comprehend", "region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}},
     "actions": {
-      "generate.comprehend": {"title": "Generate: comprehend"},
-      "read": {"title": "Read everything the account can see"},
-      "write.comprehend": {"title": "Write: comprehend"}
-    }
+      "comprehend": {
+        "title": "Comprehend"
+      },
+      "comprehend.delete": {
+        "title": "Delete"
+      },
+      "comprehend.generate": {
+        "title": "Generate"
+      },
+      "comprehend.read": {
+        "title": "Read"
+      },
+      "comprehend.share": {
+        "title": "Share"
+      },
+      "comprehend.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "origin": "https://example.com",
+            "path": "/",
+            "sigv4": {
+              "region": "us-east-1",
+              "secret": "secret_key",
+              "service": "comprehend",
+              "session": "session_token"
+            },
+            "value": "access_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Service endpoint (https://service.region.amazonaws.com)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "key": "region",
+        "label": "Region (e.g. us-east-1)",
+        "path": [
+          "http",
+          "slots",
+          0,
+          "sigv4",
+          "region"
+        ]
+      },
+      {
+        "credential": true,
+        "key": "access_key",
+        "label": "Access key ID",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "secret_key",
+        "label": "Secret access key",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "session_token",
+        "label": "Session token (temporary credentials only)",
+        "secret": true
+      }
+    ],
+    "group": "api",
+    "replaced_by": "aws"
   },
+  "title": "AWS Comprehend",
   "http": {
+    "origins": {"origin":["https://comprehend-fips.{region}.amazonaws.com","https://comprehend.{region}.amazonaws.com"]},
     "operations": {
-      "BatchDetectDominantLanguage": {"action":"generate.comprehend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.BatchDetectDominantLanguage"},"body":"any","scope":{}},
-      "BatchDetectEntities": {"action":"generate.comprehend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.BatchDetectEntities"},"body":"any","scope":{}},
-      "BatchDetectKeyPhrases": {"action":"generate.comprehend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.BatchDetectKeyPhrases"},"body":"any","scope":{}},
-      "BatchDetectSentiment": {"action":"generate.comprehend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.BatchDetectSentiment"},"body":"any","scope":{}},
-      "BatchDetectSyntax": {"action":"generate.comprehend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.BatchDetectSyntax"},"body":"any","scope":{}},
-      "BatchDetectTargetedSentiment": {"action":"generate.comprehend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.BatchDetectTargetedSentiment"},"body":"any","scope":{}},
-      "ClassifyDocument": {"action":"generate.comprehend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ClassifyDocument"},"body":"any","scope":{}},
-      "ContainsPiiEntities": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ContainsPiiEntities"},"body":"any","scope":{}},
-      "CreateDataset": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.CreateDataset"},"body":"any","scope":{}},
-      "CreateDocumentClassifier": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.CreateDocumentClassifier"},"body":"any","scope":{}},
-      "CreateEndpoint": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.CreateEndpoint"},"body":"any","scope":{}},
-      "CreateEntityRecognizer": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.CreateEntityRecognizer"},"body":"any","scope":{}},
-      "CreateFlywheel": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.CreateFlywheel"},"body":"any","scope":{}},
-      "DeleteDocumentClassifier": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DeleteDocumentClassifier"},"body":"any","scope":{}},
-      "DeleteEndpoint": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DeleteEndpoint"},"body":"any","scope":{}},
-      "DeleteEntityRecognizer": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DeleteEntityRecognizer"},"body":"any","scope":{}},
-      "DeleteFlywheel": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DeleteFlywheel"},"body":"any","scope":{}},
-      "DeleteResourcePolicy": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DeleteResourcePolicy"},"body":"any","scope":{}},
-      "DescribeDataset": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DescribeDataset"},"body":"any","scope":{}},
-      "DescribeDocumentClassificationJob": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DescribeDocumentClassificationJob"},"body":"any","scope":{}},
-      "DescribeDocumentClassifier": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DescribeDocumentClassifier"},"body":"any","scope":{}},
-      "DescribeDominantLanguageDetectionJob": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DescribeDominantLanguageDetectionJob"},"body":"any","scope":{}},
-      "DescribeEndpoint": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DescribeEndpoint"},"body":"any","scope":{}},
-      "DescribeEntitiesDetectionJob": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DescribeEntitiesDetectionJob"},"body":"any","scope":{}},
-      "DescribeEntityRecognizer": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DescribeEntityRecognizer"},"body":"any","scope":{}},
-      "DescribeEventsDetectionJob": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DescribeEventsDetectionJob"},"body":"any","scope":{}},
-      "DescribeFlywheel": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DescribeFlywheel"},"body":"any","scope":{}},
-      "DescribeFlywheelIteration": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DescribeFlywheelIteration"},"body":"any","scope":{}},
-      "DescribeKeyPhrasesDetectionJob": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DescribeKeyPhrasesDetectionJob"},"body":"any","scope":{}},
-      "DescribePiiEntitiesDetectionJob": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DescribePiiEntitiesDetectionJob"},"body":"any","scope":{}},
-      "DescribeResourcePolicy": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DescribeResourcePolicy"},"body":"any","scope":{}},
-      "DescribeSentimentDetectionJob": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DescribeSentimentDetectionJob"},"body":"any","scope":{}},
-      "DescribeTargetedSentimentDetectionJob": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DescribeTargetedSentimentDetectionJob"},"body":"any","scope":{}},
-      "DescribeTopicsDetectionJob": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DescribeTopicsDetectionJob"},"body":"any","scope":{}},
-      "DetectDominantLanguage": {"action":"generate.comprehend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DetectDominantLanguage"},"body":"any","scope":{}},
-      "DetectEntities": {"action":"generate.comprehend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DetectEntities"},"body":"any","scope":{}},
-      "DetectKeyPhrases": {"action":"generate.comprehend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DetectKeyPhrases"},"body":"any","scope":{}},
-      "DetectPiiEntities": {"action":"generate.comprehend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DetectPiiEntities"},"body":"any","scope":{}},
-      "DetectSentiment": {"action":"generate.comprehend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DetectSentiment"},"body":"any","scope":{}},
-      "DetectSyntax": {"action":"generate.comprehend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DetectSyntax"},"body":"any","scope":{}},
-      "DetectTargetedSentiment": {"action":"generate.comprehend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DetectTargetedSentiment"},"body":"any","scope":{}},
-      "DetectToxicContent": {"action":"generate.comprehend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.DetectToxicContent"},"body":"any","scope":{}},
-      "ImportModel": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ImportModel"},"body":"any","scope":{}},
-      "ListDatasets": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListDatasets"},"body":"any","scope":{}},
-      "ListDocumentClassificationJobs": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListDocumentClassificationJobs"},"body":"any","scope":{}},
-      "ListDocumentClassifierSummaries": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListDocumentClassifierSummaries"},"body":"any","scope":{}},
-      "ListDocumentClassifiers": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListDocumentClassifiers"},"body":"any","scope":{}},
-      "ListDominantLanguageDetectionJobs": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListDominantLanguageDetectionJobs"},"body":"any","scope":{}},
-      "ListEndpoints": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListEndpoints"},"body":"any","scope":{}},
-      "ListEntitiesDetectionJobs": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListEntitiesDetectionJobs"},"body":"any","scope":{}},
-      "ListEntityRecognizerSummaries": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListEntityRecognizerSummaries"},"body":"any","scope":{}},
-      "ListEntityRecognizers": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListEntityRecognizers"},"body":"any","scope":{}},
-      "ListEventsDetectionJobs": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListEventsDetectionJobs"},"body":"any","scope":{}},
-      "ListFlywheelIterationHistory": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListFlywheelIterationHistory"},"body":"any","scope":{}},
-      "ListFlywheels": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListFlywheels"},"body":"any","scope":{}},
-      "ListKeyPhrasesDetectionJobs": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListKeyPhrasesDetectionJobs"},"body":"any","scope":{}},
-      "ListPiiEntitiesDetectionJobs": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListPiiEntitiesDetectionJobs"},"body":"any","scope":{}},
-      "ListSentimentDetectionJobs": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListSentimentDetectionJobs"},"body":"any","scope":{}},
-      "ListTagsForResource": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListTagsForResource"},"body":"any","scope":{}},
-      "ListTargetedSentimentDetectionJobs": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListTargetedSentimentDetectionJobs"},"body":"any","scope":{}},
-      "ListTopicsDetectionJobs": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.ListTopicsDetectionJobs"},"body":"any","scope":{}},
-      "PutResourcePolicy": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.PutResourcePolicy"},"body":"any","scope":{}},
-      "StartDocumentClassificationJob": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StartDocumentClassificationJob"},"body":"any","scope":{}},
-      "StartDominantLanguageDetectionJob": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StartDominantLanguageDetectionJob"},"body":"any","scope":{}},
-      "StartEntitiesDetectionJob": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StartEntitiesDetectionJob"},"body":"any","scope":{}},
-      "StartEventsDetectionJob": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StartEventsDetectionJob"},"body":"any","scope":{}},
-      "StartFlywheelIteration": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StartFlywheelIteration"},"body":"any","scope":{}},
-      "StartKeyPhrasesDetectionJob": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StartKeyPhrasesDetectionJob"},"body":"any","scope":{}},
-      "StartPiiEntitiesDetectionJob": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StartPiiEntitiesDetectionJob"},"body":"any","scope":{}},
-      "StartSentimentDetectionJob": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StartSentimentDetectionJob"},"body":"any","scope":{}},
-      "StartTargetedSentimentDetectionJob": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StartTargetedSentimentDetectionJob"},"body":"any","scope":{}},
-      "StartTopicsDetectionJob": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StartTopicsDetectionJob"},"body":"any","scope":{}},
-      "StopDominantLanguageDetectionJob": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StopDominantLanguageDetectionJob"},"body":"any","scope":{}},
-      "StopEntitiesDetectionJob": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StopEntitiesDetectionJob"},"body":"any","scope":{}},
-      "StopEventsDetectionJob": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StopEventsDetectionJob"},"body":"any","scope":{}},
-      "StopKeyPhrasesDetectionJob": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StopKeyPhrasesDetectionJob"},"body":"any","scope":{}},
-      "StopPiiEntitiesDetectionJob": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StopPiiEntitiesDetectionJob"},"body":"any","scope":{}},
-      "StopSentimentDetectionJob": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StopSentimentDetectionJob"},"body":"any","scope":{}},
-      "StopTargetedSentimentDetectionJob": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StopTargetedSentimentDetectionJob"},"body":"any","scope":{}},
-      "StopTrainingDocumentClassifier": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StopTrainingDocumentClassifier"},"body":"any","scope":{}},
-      "StopTrainingEntityRecognizer": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.StopTrainingEntityRecognizer"},"body":"any","scope":{}},
-      "TagResource": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.TagResource"},"body":"any","scope":{}},
-      "UntagResource": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.UntagResource"},"body":"any","scope":{}},
-      "UpdateEndpoint": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.UpdateEndpoint"},"body":"any","scope":{}},
-      "UpdateFlywheel": {"action":"write.comprehend","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.UpdateFlywheel"},"body":"any","scope":{}}
+      "BatchDetectDominantLanguage": {"action":"comprehend.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Comprehend_20171127.BatchDetectDominantLanguage"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "BatchDetectEntities": {"action":"comprehend.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Comprehend_20171127.BatchDetectEntities"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "BatchDetectKeyPhrases": {"action":"comprehend.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Comprehend_20171127.BatchDetectKeyPhrases"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "BatchDetectSentiment": {"action":"comprehend.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Comprehend_20171127.BatchDetectSentiment"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "BatchDetectSyntax": {"action":"comprehend.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Comprehend_20171127.BatchDetectSyntax"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "BatchDetectTargetedSentiment": {"action":"comprehend.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Comprehend_20171127.BatchDetectTargetedSentiment"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ClassifyDocument": {"action":"comprehend.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Comprehend_20171127.ClassifyDocument"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ContainsPiiEntities": {"action":"comprehend.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Comprehend_20171127.ContainsPiiEntities"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateDataset": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.CreateDataset"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateDocumentClassifier": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.CreateDocumentClassifier"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateEndpoint": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.CreateEndpoint"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateEntityRecognizer": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.CreateEntityRecognizer"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateFlywheel": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.CreateFlywheel"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteDocumentClassifier": {"action":"comprehend.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"Comprehend_20171127.DeleteDocumentClassifier"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteEndpoint": {"action":"comprehend.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"Comprehend_20171127.DeleteEndpoint"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteEntityRecognizer": {"action":"comprehend.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"Comprehend_20171127.DeleteEntityRecognizer"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteFlywheel": {"action":"comprehend.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"Comprehend_20171127.DeleteFlywheel"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteResourcePolicy": {"action":"comprehend.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"Comprehend_20171127.DeleteResourcePolicy"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeDataset": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.DescribeDataset"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeDocumentClassificationJob": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.DescribeDocumentClassificationJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeDocumentClassifier": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.DescribeDocumentClassifier"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeDominantLanguageDetectionJob": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.DescribeDominantLanguageDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeEndpoint": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.DescribeEndpoint"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeEntitiesDetectionJob": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.DescribeEntitiesDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeEntityRecognizer": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.DescribeEntityRecognizer"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeEventsDetectionJob": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.DescribeEventsDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeFlywheel": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.DescribeFlywheel"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeFlywheelIteration": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.DescribeFlywheelIteration"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeKeyPhrasesDetectionJob": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.DescribeKeyPhrasesDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribePiiEntitiesDetectionJob": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.DescribePiiEntitiesDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeResourcePolicy": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.DescribeResourcePolicy"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeSentimentDetectionJob": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.DescribeSentimentDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeTargetedSentimentDetectionJob": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.DescribeTargetedSentimentDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeTopicsDetectionJob": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.DescribeTopicsDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DetectDominantLanguage": {"action":"comprehend.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Comprehend_20171127.DetectDominantLanguage"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DetectEntities": {"action":"comprehend.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Comprehend_20171127.DetectEntities"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DetectKeyPhrases": {"action":"comprehend.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Comprehend_20171127.DetectKeyPhrases"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DetectPiiEntities": {"action":"comprehend.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Comprehend_20171127.DetectPiiEntities"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DetectSentiment": {"action":"comprehend.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Comprehend_20171127.DetectSentiment"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DetectSyntax": {"action":"comprehend.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Comprehend_20171127.DetectSyntax"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DetectTargetedSentiment": {"action":"comprehend.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Comprehend_20171127.DetectTargetedSentiment"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DetectToxicContent": {"action":"comprehend.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Comprehend_20171127.DetectToxicContent"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ImportModel": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.ImportModel"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListDatasets": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListDatasets"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListDocumentClassificationJobs": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListDocumentClassificationJobs"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListDocumentClassifierSummaries": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListDocumentClassifierSummaries"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListDocumentClassifiers": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListDocumentClassifiers"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListDominantLanguageDetectionJobs": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListDominantLanguageDetectionJobs"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListEndpoints": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListEndpoints"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListEntitiesDetectionJobs": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListEntitiesDetectionJobs"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListEntityRecognizerSummaries": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListEntityRecognizerSummaries"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListEntityRecognizers": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListEntityRecognizers"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListEventsDetectionJobs": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListEventsDetectionJobs"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListFlywheelIterationHistory": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListFlywheelIterationHistory"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListFlywheels": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListFlywheels"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListKeyPhrasesDetectionJobs": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListKeyPhrasesDetectionJobs"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListPiiEntitiesDetectionJobs": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListPiiEntitiesDetectionJobs"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListSentimentDetectionJobs": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListSentimentDetectionJobs"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListTagsForResource": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListTagsForResource"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListTargetedSentimentDetectionJobs": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListTargetedSentimentDetectionJobs"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListTopicsDetectionJobs": {"action":"comprehend.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Comprehend_20171127.ListTopicsDetectionJobs"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "PutResourcePolicy": {"action":"comprehend.share","body":"any","effects":["share"],"headers":{"X-Amz-Target":"Comprehend_20171127.PutResourcePolicy"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartDocumentClassificationJob": {"action":"comprehend.generate","body":"any","effects":["generate","write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StartDocumentClassificationJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartDominantLanguageDetectionJob": {"action":"comprehend.generate","body":"any","effects":["generate","write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StartDominantLanguageDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartEntitiesDetectionJob": {"action":"comprehend.generate","body":"any","effects":["generate","write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StartEntitiesDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartEventsDetectionJob": {"action":"comprehend.generate","body":"any","effects":["generate","write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StartEventsDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartFlywheelIteration": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StartFlywheelIteration"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartKeyPhrasesDetectionJob": {"action":"comprehend.generate","body":"any","effects":["generate","write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StartKeyPhrasesDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartPiiEntitiesDetectionJob": {"action":"comprehend.generate","body":"any","effects":["generate","write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StartPiiEntitiesDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartSentimentDetectionJob": {"action":"comprehend.generate","body":"any","effects":["generate","write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StartSentimentDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartTargetedSentimentDetectionJob": {"action":"comprehend.generate","body":"any","effects":["generate","write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StartTargetedSentimentDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartTopicsDetectionJob": {"action":"comprehend.generate","body":"any","effects":["generate","write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StartTopicsDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StopDominantLanguageDetectionJob": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StopDominantLanguageDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StopEntitiesDetectionJob": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StopEntitiesDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StopEventsDetectionJob": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StopEventsDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StopKeyPhrasesDetectionJob": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StopKeyPhrasesDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StopPiiEntitiesDetectionJob": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StopPiiEntitiesDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StopSentimentDetectionJob": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StopSentimentDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StopTargetedSentimentDetectionJob": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StopTargetedSentimentDetectionJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StopTrainingDocumentClassifier": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StopTrainingDocumentClassifier"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StopTrainingEntityRecognizer": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.StopTrainingEntityRecognizer"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "TagResource": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.TagResource"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UntagResource": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.UntagResource"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UpdateEndpoint": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.UpdateEndpoint"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UpdateFlywheel": {"action":"comprehend.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Comprehend_20171127.UpdateFlywheel"},"method":"POST","origin":"{origin}","path":"/","scope":{}}
     }
   }
 }

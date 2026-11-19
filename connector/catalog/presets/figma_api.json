@@ -1,80 +1,428 @@
 {
-  "title": "Figma Trigger (Beta)",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "access_token", "label": "Access Token", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_token", "origin": "https://api.figma.com", "path": "/", "header": "X-Figma-Token"}]}},
     "actions": {
-      "admin.webhooks": {"title": "Admin: webhooks"},
-      "delete.comments": {"title": "Delete: comments"},
-      "delete.dev_resources": {"title": "Delete: dev resources"},
-      "delete.reactions": {"title": "Delete: reactions"},
-      "delete.webhooks": {"title": "Delete: webhooks"},
-      "read": {"title": "Read everything the account can see"},
-      "send.comments": {"title": "Send: comments"},
-      "send.reactions": {"title": "Send: reactions"},
-      "write.dev_resources": {"title": "Write: dev resources"},
-      "write.variables": {"title": "Write: variables"}
-    }
+      "activity_logs": {
+        "title": "Activity logs"
+      },
+      "activity_logs.read": {
+        "title": "Read"
+      },
+      "ai_usage": {
+        "title": "Ai usage"
+      },
+      "ai_usage.daily": {
+        "title": "Daily"
+      },
+      "ai_usage.daily.read": {
+        "title": "Read"
+      },
+      "analytics": {
+        "title": "Analytics"
+      },
+      "analytics.libraries": {
+        "title": "Libraries"
+      },
+      "analytics.libraries.component": {
+        "title": "Component"
+      },
+      "analytics.libraries.component.actions": {
+        "title": "Actions"
+      },
+      "analytics.libraries.component.actions.read": {
+        "title": "Read"
+      },
+      "analytics.libraries.component.usages": {
+        "title": "Usages"
+      },
+      "analytics.libraries.component.usages.read": {
+        "title": "Read"
+      },
+      "analytics.libraries.style": {
+        "title": "Style"
+      },
+      "analytics.libraries.style.actions": {
+        "title": "Actions"
+      },
+      "analytics.libraries.style.actions.read": {
+        "title": "Read"
+      },
+      "analytics.libraries.style.usages": {
+        "title": "Usages"
+      },
+      "analytics.libraries.style.usages.read": {
+        "title": "Read"
+      },
+      "analytics.libraries.variable": {
+        "title": "Variable"
+      },
+      "analytics.libraries.variable.actions": {
+        "title": "Actions"
+      },
+      "analytics.libraries.variable.actions.read": {
+        "title": "Read"
+      },
+      "analytics.libraries.variable.usages": {
+        "title": "Usages"
+      },
+      "analytics.libraries.variable.usages.read": {
+        "title": "Read"
+      },
+      "component_sets": {
+        "title": "Component sets"
+      },
+      "component_sets.read": {
+        "title": "Read"
+      },
+      "components": {
+        "title": "Components"
+      },
+      "components.read": {
+        "title": "Read"
+      },
+      "dev_resources": {
+        "title": "Dev resources"
+      },
+      "dev_resources.write": {
+        "title": "Create and edit"
+      },
+      "developer_logs": {
+        "title": "Developer logs"
+      },
+      "developer_logs.read": {
+        "title": "Read"
+      },
+      "files": {
+        "title": "Files"
+      },
+      "files.comments": {
+        "title": "Comments"
+      },
+      "files.comments.delete": {
+        "title": "Delete"
+      },
+      "files.comments.reactions": {
+        "title": "Reactions"
+      },
+      "files.comments.reactions.delete": {
+        "title": "Delete"
+      },
+      "files.comments.reactions.read": {
+        "title": "Read"
+      },
+      "files.comments.reactions.send": {
+        "title": "Send"
+      },
+      "files.comments.read": {
+        "title": "Read"
+      },
+      "files.comments.send": {
+        "title": "Send"
+      },
+      "files.component_sets": {
+        "title": "Component sets"
+      },
+      "files.component_sets.read": {
+        "title": "Read"
+      },
+      "files.components": {
+        "title": "Components"
+      },
+      "files.components.read": {
+        "title": "Read"
+      },
+      "files.dev_resources": {
+        "title": "Dev resources"
+      },
+      "files.dev_resources.delete": {
+        "title": "Delete"
+      },
+      "files.dev_resources.read": {
+        "title": "Read"
+      },
+      "files.images": {
+        "title": "Images"
+      },
+      "files.images.read": {
+        "title": "Read"
+      },
+      "files.meta": {
+        "title": "Meta"
+      },
+      "files.meta.read": {
+        "title": "Read"
+      },
+      "files.nodes": {
+        "title": "Nodes"
+      },
+      "files.nodes.read": {
+        "title": "Read"
+      },
+      "files.read": {
+        "title": "Read"
+      },
+      "files.styles": {
+        "title": "Styles"
+      },
+      "files.styles.read": {
+        "title": "Read"
+      },
+      "files.variables": {
+        "title": "Variables"
+      },
+      "files.variables.local": {
+        "title": "Local"
+      },
+      "files.variables.local.read": {
+        "title": "Read"
+      },
+      "files.variables.published": {
+        "title": "Published"
+      },
+      "files.variables.published.read": {
+        "title": "Read"
+      },
+      "files.variables.write": {
+        "title": "Create and edit"
+      },
+      "files.versions": {
+        "title": "Versions"
+      },
+      "files.versions.read": {
+        "title": "Read"
+      },
+      "files.write": {
+        "title": "Create and edit"
+      },
+      "folders": {
+        "title": "Folders"
+      },
+      "folders.files": {
+        "title": "Files"
+      },
+      "folders.files.read": {
+        "title": "Read"
+      },
+      "folders.folders": {
+        "title": "Folders"
+      },
+      "folders.folders.read": {
+        "title": "Read"
+      },
+      "folders.meta": {
+        "title": "Meta"
+      },
+      "folders.meta.read": {
+        "title": "Read"
+      },
+      "images": {
+        "title": "Images"
+      },
+      "images.read": {
+        "title": "Read"
+      },
+      "me": {
+        "title": "Me"
+      },
+      "me.read": {
+        "title": "Read"
+      },
+      "oembed": {
+        "title": "Oembed"
+      },
+      "oembed.read": {
+        "title": "Read"
+      },
+      "payments": {
+        "title": "Payments"
+      },
+      "payments.read": {
+        "title": "Read"
+      },
+      "projects": {
+        "title": "Projects"
+      },
+      "projects.files": {
+        "title": "Files"
+      },
+      "projects.files.read": {
+        "title": "Read"
+      },
+      "projects.meta": {
+        "title": "Meta"
+      },
+      "projects.meta.read": {
+        "title": "Read"
+      },
+      "styles": {
+        "title": "Styles"
+      },
+      "styles.read": {
+        "title": "Read"
+      },
+      "teams": {
+        "title": "Teams"
+      },
+      "teams.admin": {
+        "title": "Manage"
+      },
+      "teams.component_sets": {
+        "title": "Component sets"
+      },
+      "teams.component_sets.read": {
+        "title": "Read"
+      },
+      "teams.components": {
+        "title": "Components"
+      },
+      "teams.components.read": {
+        "title": "Read"
+      },
+      "teams.folders": {
+        "title": "Folders"
+      },
+      "teams.folders.read": {
+        "title": "Read"
+      },
+      "teams.folders.write": {
+        "title": "Create and edit"
+      },
+      "teams.invites": {
+        "title": "Invites"
+      },
+      "teams.invites.admin": {
+        "title": "Manage"
+      },
+      "teams.projects": {
+        "title": "Projects"
+      },
+      "teams.projects.read": {
+        "title": "Read"
+      },
+      "teams.read": {
+        "title": "Read"
+      },
+      "teams.styles": {
+        "title": "Styles"
+      },
+      "teams.styles.read": {
+        "title": "Read"
+      },
+      "teams.webhooks": {
+        "title": "Webhooks"
+      },
+      "teams.webhooks.read": {
+        "title": "Read"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.delete": {
+        "title": "Delete"
+      },
+      "webhooks.read": {
+        "title": "Read"
+      },
+      "webhooks.requests": {
+        "title": "Requests"
+      },
+      "webhooks.requests.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "X-Figma-Token",
+            "origin": "https://api.figma.com",
+            "path": "/",
+            "value": "access_token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api.figma.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "access_token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "access_token",
+        "label": "Access Token",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Figma Trigger (Beta)",
   "http": {
     "operations": {
-      "deleteComment": {"action":"delete.comments","effects":["delete"],"method":"DELETE","origin":"https://api.figma.com","path":"/v1/files/{file_key}/comments/{comment_id}","scope":{"file_key":{"from":"path","at":"file_key"},"comment_id":{"from":"path","at":"comment_id"}}},
-      "deleteCommentReaction": {"action":"delete.reactions","effects":["delete"],"method":"DELETE","origin":"https://api.figma.com","path":"/v1/files/{file_key}/comments/{comment_id}/reactions","params":["emoji"],"scope":{"file_key":{"from":"path","at":"file_key"},"comment_id":{"from":"path","at":"comment_id"}}},
-      "deleteDevResource": {"action":"delete.dev_resources","effects":["delete"],"method":"DELETE","origin":"https://api.figma.com","path":"/v1/files/{file_key}/dev_resources/{dev_resource_id}","scope":{"file_key":{"from":"path","at":"file_key"},"dev_resource_id":{"from":"path","at":"dev_resource_id"}}},
-      "deleteWebhook": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.figma.com","path":"/v2/webhooks/{webhook_id}","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "getActivityLogs": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/activity_logs","params":["events","start_time","end_time","limit","order"],"scope":{}},
-      "getAiUsageDaily": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/ai_usage/daily","params":["start_date","end_date","user_email","limit","cursor"],"scope":{}},
-      "getCommentReactions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/comments/{comment_id}/reactions","params":["cursor"],"scope":{"file_key":{"from":"path","at":"file_key"},"comment_id":{"from":"path","at":"comment_id"}}},
-      "getComments": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/comments","params":["as_md"],"scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "getComponent": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/components/{key}","scope":{"key":{"from":"path","at":"key"}}},
-      "getComponentSet": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/component_sets/{key}","scope":{"key":{"from":"path","at":"key"}}},
-      "getDevResources": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/dev_resources","params":["node_ids"],"scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "getDeveloperLogs": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.figma.com","path":"/v1/developer_logs","body":"any","scope":{}},
-      "getFile": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}","params":["version","ids","depth","geometry","plugin_data","branch_data"],"scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "getFileComponentSets": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/component_sets","scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "getFileComponents": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/components","scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "getFileMeta": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/meta","scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "getFileNodes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/nodes","params":["ids","version","depth","geometry","plugin_data"],"scope":{"file_key":{"from":"path","at":"file_key"},"ids":{"from":"query","at":"ids"}}},
-      "getFileStyles": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/styles","scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "getFileVersions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/versions","params":["page_size","before","after"],"scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "getFolderFiles": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v2/folders/{folder_id}/files","params":["branch_data"],"scope":{"folder_id":{"from":"path","at":"folder_id"}}},
-      "getFolderFolders": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v2/folders/{folder_id}/folders","scope":{"folder_id":{"from":"path","at":"folder_id"}}},
-      "getFolderMeta": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v2/folders/{folder_id}/meta","scope":{"folder_id":{"from":"path","at":"folder_id"}}},
-      "getImageFills": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/images","scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "getImages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/images/{file_key}","params":["ids","version","scale","format","svg_outline_text","svg_include_id","svg_include_node_id","svg_simplify_stroke","contents_only","use_absolute_bounds"],"scope":{"file_key":{"from":"path","at":"file_key"},"ids":{"from":"query","at":"ids"}}},
-      "getLibraryAnalyticsComponentActions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/analytics/libraries/{file_key}/component/actions","params":["cursor","group_by","start_date","end_date"],"scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "getLibraryAnalyticsComponentUsages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/analytics/libraries/{file_key}/component/usages","params":["cursor","group_by"],"scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "getLibraryAnalyticsStyleActions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/analytics/libraries/{file_key}/style/actions","params":["cursor","group_by","start_date","end_date"],"scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "getLibraryAnalyticsStyleUsages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/analytics/libraries/{file_key}/style/usages","params":["cursor","group_by"],"scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "getLibraryAnalyticsVariableActions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/analytics/libraries/{file_key}/variable/actions","params":["cursor","group_by","start_date","end_date"],"scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "getLibraryAnalyticsVariableUsages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/analytics/libraries/{file_key}/variable/usages","params":["cursor","group_by"],"scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "getLocalVariables": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/variables/local","scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "getMe": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/me","scope":{}},
-      "getOEmbed": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/oembed","params":["url","maxwidth","maxheight"],"scope":{"url":{"from":"query","at":"url"}}},
-      "getPayments": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/payments","params":["plugin_payment_token","user_id","community_file_id","plugin_id","widget_id"],"scope":{}},
-      "getProjectFiles": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/projects/{project_id}/files","params":["branch_data"],"scope":{"project_id":{"from":"path","at":"project_id"}}},
-      "getProjectMeta": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/projects/{project_id}/meta","scope":{"project_id":{"from":"path","at":"project_id"}}},
-      "getPublishedVariables": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/variables/published","scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "getStyle": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/styles/{key}","scope":{"key":{"from":"path","at":"key"}}},
-      "getTeamComponentSets": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/teams/{team_id}/component_sets","params":["page_size","after","before"],"scope":{"team_id":{"from":"path","at":"team_id"}}},
-      "getTeamComponents": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/teams/{team_id}/components","params":["page_size","after","before"],"scope":{"team_id":{"from":"path","at":"team_id"}}},
-      "getTeamFolders": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v2/teams/{team_id}/folders","scope":{"team_id":{"from":"path","at":"team_id"}}},
-      "getTeamProjects": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/teams/{team_id}/projects","scope":{"team_id":{"from":"path","at":"team_id"}}},
-      "getTeamStyles": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/teams/{team_id}/styles","params":["page_size","after","before"],"scope":{"team_id":{"from":"path","at":"team_id"}}},
-      "getTeamWebhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v2/teams/{team_id}/webhooks","scope":{"team_id":{"from":"path","at":"team_id"}}},
-      "getWebhook": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v2/webhooks/{webhook_id}","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "getWebhookRequests": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v2/webhooks/{webhook_id}/requests","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "getWebhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v2/webhooks","params":["context","context_id","plan_api_id","cursor"],"scope":{}},
-      "postComment": {"action":"send.comments","effects":["send"],"method":"POST","origin":"https://api.figma.com","path":"/v1/files/{file_key}/comments","body":"json","scope":{"file_key":{"from":"path","at":"file_key"},"request":{"from":"body","at":"","type":"object"}},"grant":["file_key"]},
-      "postCommentReaction": {"action":"send.reactions","effects":["send"],"method":"POST","origin":"https://api.figma.com","path":"/v1/files/{file_key}/comments/{comment_id}/reactions","body":"json","scope":{"file_key":{"from":"path","at":"file_key"},"comment_id":{"from":"path","at":"comment_id"},"request":{"from":"body","at":"","type":"object"}},"grant":["file_key","comment_id"]},
-      "postDevResources": {"action":"write.dev_resources","effects":["write"],"method":"POST","origin":"https://api.figma.com","path":"/v1/dev_resources","body":"json","scope":{}},
-      "postVariables": {"action":"write.variables","effects":["write"],"method":"POST","origin":"https://api.figma.com","path":"/v1/files/{file_key}/variables","body":"json","scope":{"file_key":{"from":"path","at":"file_key"}}},
-      "postWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.figma.com","path":"/v2/webhooks","body":"json","scope":{"context_id":{"from":"body","at":"/context_id"}}},
-      "putDevResources": {"action":"write.dev_resources","effects":["write"],"method":"PUT","origin":"https://api.figma.com","path":"/v1/dev_resources","body":"json","scope":{}},
-      "putWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"PUT","origin":"https://api.figma.com","path":"/v2/webhooks/{webhook_id}","body":"json","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}}
+      "deleteComment": {"action":"files.comments.delete","effects":["delete"],"method":"DELETE","origin":"https://api.figma.com","path":"/v1/files/{file_key}/comments/{comment_id}","scope":{"comment_id":{"at":"comment_id","from":"path"},"file_key":{"at":"file_key","from":"path"}}},
+      "deleteCommentReaction": {"action":"files.comments.reactions.delete","effects":["delete"],"method":"DELETE","origin":"https://api.figma.com","params":["emoji"],"path":"/v1/files/{file_key}/comments/{comment_id}/reactions","scope":{"comment_id":{"at":"comment_id","from":"path"},"file_key":{"at":"file_key","from":"path"}}},
+      "deleteDevResource": {"action":"files.dev_resources.delete","effects":["delete"],"method":"DELETE","origin":"https://api.figma.com","path":"/v1/files/{file_key}/dev_resources/{dev_resource_id}","scope":{"dev_resource_id":{"at":"dev_resource_id","from":"path"},"file_key":{"at":"file_key","from":"path"}}},
+      "deleteWebhook": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"https://api.figma.com","path":"/v2/webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "getActivityLogs": {"action":"activity_logs.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["events","start_time","end_time","limit","order"],"path":"/v1/activity_logs","scope":{}},
+      "getAiUsageDaily": {"action":"ai_usage.daily.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["start_date","end_date","user_email","limit","cursor"],"path":"/v1/ai_usage/daily","scope":{}},
+      "getCommentReactions": {"action":"files.comments.reactions.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["cursor"],"path":"/v1/files/{file_key}/comments/{comment_id}/reactions","scope":{"comment_id":{"at":"comment_id","from":"path"},"file_key":{"at":"file_key","from":"path"}}},
+      "getComments": {"action":"files.comments.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["as_md"],"path":"/v1/files/{file_key}/comments","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "getComponent": {"action":"components.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/components/{key}","scope":{"key":{"at":"key","from":"path"}}},
+      "getComponentSet": {"action":"component_sets.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/component_sets/{key}","scope":{"key":{"at":"key","from":"path"}}},
+      "getDevResources": {"action":"files.dev_resources.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["node_ids"],"path":"/v1/files/{file_key}/dev_resources","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "getDeveloperLogs": {"action":"developer_logs.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.figma.com","path":"/v1/developer_logs","scope":{}},
+      "getFile": {"action":"files.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["version","ids","depth","geometry","plugin_data","branch_data"],"path":"/v1/files/{file_key}","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "getFileComponentSets": {"action":"files.component_sets.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/component_sets","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "getFileComponents": {"action":"files.components.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/components","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "getFileMeta": {"action":"files.meta.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/meta","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "getFileNodes": {"action":"files.nodes.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["ids","version","depth","geometry","plugin_data"],"path":"/v1/files/{file_key}/nodes","scope":{"file_key":{"at":"file_key","from":"path"},"ids":{"at":"ids","from":"query"}}},
+      "getFileStyles": {"action":"files.styles.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/styles","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "getFileVersions": {"action":"files.versions.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["page_size","before","after"],"path":"/v1/files/{file_key}/versions","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "getFolderFiles": {"action":"folders.files.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["branch_data"],"path":"/v2/folders/{folder_id}/files","scope":{"folder_id":{"at":"folder_id","from":"path"}}},
+      "getFolderFolders": {"action":"folders.folders.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v2/folders/{folder_id}/folders","scope":{"folder_id":{"at":"folder_id","from":"path"}}},
+      "getFolderMeta": {"action":"folders.meta.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v2/folders/{folder_id}/meta","scope":{"folder_id":{"at":"folder_id","from":"path"}}},
+      "getImageFills": {"action":"files.images.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/images","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "getImages": {"action":"images.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["ids","version","scale","format","svg_outline_text","svg_include_id","svg_include_node_id","svg_simplify_stroke","contents_only","use_absolute_bounds"],"path":"/v1/images/{file_key}","scope":{"file_key":{"at":"file_key","from":"path"},"ids":{"at":"ids","from":"query"}}},
+      "getLibraryAnalyticsComponentActions": {"action":"analytics.libraries.component.actions.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["cursor","group_by","start_date","end_date"],"path":"/v1/analytics/libraries/{file_key}/component/actions","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "getLibraryAnalyticsComponentUsages": {"action":"analytics.libraries.component.usages.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["cursor","group_by"],"path":"/v1/analytics/libraries/{file_key}/component/usages","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "getLibraryAnalyticsStyleActions": {"action":"analytics.libraries.style.actions.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["cursor","group_by","start_date","end_date"],"path":"/v1/analytics/libraries/{file_key}/style/actions","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "getLibraryAnalyticsStyleUsages": {"action":"analytics.libraries.style.usages.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["cursor","group_by"],"path":"/v1/analytics/libraries/{file_key}/style/usages","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "getLibraryAnalyticsVariableActions": {"action":"analytics.libraries.variable.actions.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["cursor","group_by","start_date","end_date"],"path":"/v1/analytics/libraries/{file_key}/variable/actions","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "getLibraryAnalyticsVariableUsages": {"action":"analytics.libraries.variable.usages.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["cursor","group_by"],"path":"/v1/analytics/libraries/{file_key}/variable/usages","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "getLocalVariables": {"action":"files.variables.local.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/variables/local","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "getMe": {"action":"me.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/me","scope":{}},
+      "getOEmbed": {"action":"oembed.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["url","maxwidth","maxheight"],"path":"/v1/oembed","scope":{"url":{"at":"url","from":"query"}}},
+      "getPayments": {"action":"payments.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["plugin_payment_token","user_id","community_file_id","plugin_id","widget_id"],"path":"/v1/payments","scope":{}},
+      "getProjectFiles": {"action":"projects.files.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["branch_data"],"path":"/v1/projects/{project_id}/files","scope":{"project_id":{"at":"project_id","from":"path"}}},
+      "getProjectMeta": {"action":"projects.meta.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/projects/{project_id}/meta","scope":{"project_id":{"at":"project_id","from":"path"}}},
+      "getPublishedVariables": {"action":"files.variables.published.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/files/{file_key}/variables/published","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "getStyle": {"action":"styles.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/styles/{key}","scope":{"key":{"at":"key","from":"path"}}},
+      "getTeam": {"action":"teams.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/teams/{team_id}","scope":{"team_id":{"at":"team_id","from":"path"}}},
+      "getTeamComponentSets": {"action":"teams.component_sets.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["page_size","after","before"],"path":"/v1/teams/{team_id}/component_sets","scope":{"team_id":{"at":"team_id","from":"path"}}},
+      "getTeamComponents": {"action":"teams.components.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["page_size","after","before"],"path":"/v1/teams/{team_id}/components","scope":{"team_id":{"at":"team_id","from":"path"}}},
+      "getTeamFolders": {"action":"teams.folders.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v2/teams/{team_id}/folders","scope":{"team_id":{"at":"team_id","from":"path"}}},
+      "getTeamProjects": {"action":"teams.projects.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v1/teams/{team_id}/projects","scope":{"team_id":{"at":"team_id","from":"path"}}},
+      "getTeamStyles": {"action":"teams.styles.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["page_size","after","before"],"path":"/v1/teams/{team_id}/styles","scope":{"team_id":{"at":"team_id","from":"path"}}},
+      "getTeamWebhooks": {"action":"teams.webhooks.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v2/teams/{team_id}/webhooks","scope":{"team_id":{"at":"team_id","from":"path"}}},
+      "getWebhook": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v2/webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "getWebhookRequests": {"action":"webhooks.requests.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","path":"/v2/webhooks/{webhook_id}/requests","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "getWebhooks": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://api.figma.com","params":["context","context_id","plan_api_id","cursor"],"path":"/v2/webhooks","scope":{}},
+      "postComment": {"action":"files.comments.send","body":"json","effects":["send"],"grant":["file_key"],"method":"POST","origin":"https://api.figma.com","path":"/v1/files/{file_key}/comments","scope":{"file_key":{"at":"file_key","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "postCommentReaction": {"action":"files.comments.reactions.send","body":"json","effects":["send"],"grant":["file_key","comment_id"],"method":"POST","origin":"https://api.figma.com","path":"/v1/files/{file_key}/comments/{comment_id}/reactions","scope":{"comment_id":{"at":"comment_id","from":"path"},"file_key":{"at":"file_key","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "postDevResources": {"action":"dev_resources.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.figma.com","path":"/v1/dev_resources","scope":{}},
+      "postFileDuplicate": {"action":"files.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.figma.com","path":"/v1/files/{file_key}/duplicate","scope":{"file_key":{"at":"file_key","from":"path"},"folder_id":{"at":"/folder_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "postTeam": {"action":"teams.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.figma.com","path":"/v1/teams","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "postTeamFolder": {"action":"teams.folders.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.figma.com","path":"/v1/teams/{team_id}/folders","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+      "postTeamInvites": {"action":"teams.invites.admin","body":"json","effects":["admin","send","share"],"method":"POST","origin":"https://api.figma.com","path":"/v1/teams/{team_id}/invites","scope":{"emails":{"at":"/emails","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+      "postVariables": {"action":"files.variables.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.figma.com","path":"/v1/files/{file_key}/variables","scope":{"file_key":{"at":"file_key","from":"path"}}},
+      "postWebhook": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.figma.com","path":"/v2/webhooks","scope":{"context_id":{"at":"/context_id","from":"body"}}},
+      "putDevResources": {"action":"dev_resources.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.figma.com","path":"/v1/dev_resources","scope":{}},
+      "putWebhook": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.figma.com","path":"/v2/webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}}
     }
   }
 }

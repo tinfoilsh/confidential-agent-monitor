@@ -1,47 +1,119 @@
 {
-  "title": "AWS SQS",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["http", "slots", 0, "sigv4", "region"]},
-      {"key": "access_key", "label": "Access key ID", "secret": true, "credential": true},
-      {"key": "secret_key", "label": "Secret access key", "secret": true, "credential": true},
-      {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/", "sigv4": {"service": "sqs", "region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}},
     "actions": {
-      "delete.sqs": {"title": "Delete: sqs"},
-      "read": {"title": "Read everything the account can see"},
-      "send.sqs": {"title": "Send: sqs"},
-      "write.sqs": {"title": "Write: sqs"}
-    }
+      "sqs": {
+        "title": "Sqs"
+      },
+      "sqs.delete": {
+        "title": "Delete"
+      },
+      "sqs.read": {
+        "title": "Read"
+      },
+      "sqs.send": {
+        "title": "Send"
+      },
+      "sqs.share": {
+        "title": "Share"
+      },
+      "sqs.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "origin": "https://example.com",
+            "path": "/",
+            "sigv4": {
+              "region": "us-east-1",
+              "secret": "secret_key",
+              "service": "sqs",
+              "session": "session_token"
+            },
+            "value": "access_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Service endpoint (https://service.region.amazonaws.com)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "key": "region",
+        "label": "Region (e.g. us-east-1)",
+        "path": [
+          "http",
+          "slots",
+          0,
+          "sigv4",
+          "region"
+        ]
+      },
+      {
+        "credential": true,
+        "key": "access_key",
+        "label": "Access key ID",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "secret_key",
+        "label": "Secret access key",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "session_token",
+        "label": "Session token (temporary credentials only)",
+        "secret": true
+      }
+    ],
+    "group": "api",
+    "replaced_by": "aws"
   },
+  "title": "AWS SQS",
   "http": {
+    "origins": {"origin":["https://sqs-fips.{region}.amazonaws.com","https://sqs.{region}.amazonaws.com"]},
     "operations": {
-      "AddPermission": {"action":"write.sqs","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.AddPermission"},"body":"any","scope":{}},
-      "CancelMessageMoveTask": {"action":"write.sqs","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.CancelMessageMoveTask"},"body":"any","scope":{}},
-      "ChangeMessageVisibility": {"action":"write.sqs","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.ChangeMessageVisibility"},"body":"any","scope":{}},
-      "ChangeMessageVisibilityBatch": {"action":"write.sqs","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.ChangeMessageVisibilityBatch"},"body":"any","scope":{}},
-      "CreateQueue": {"action":"write.sqs","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.CreateQueue"},"body":"any","scope":{}},
-      "DeleteMessage": {"action":"write.sqs","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.DeleteMessage"},"body":"any","scope":{}},
-      "DeleteMessageBatch": {"action":"write.sqs","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.DeleteMessageBatch"},"body":"any","scope":{}},
-      "DeleteQueue": {"action":"write.sqs","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.DeleteQueue"},"body":"any","scope":{}},
-      "GetQueueAttributes": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.GetQueueAttributes"},"body":"any","scope":{}},
-      "GetQueueUrl": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.GetQueueUrl"},"body":"any","scope":{}},
-      "ListDeadLetterSourceQueues": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.ListDeadLetterSourceQueues"},"body":"any","scope":{}},
-      "ListMessageMoveTasks": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.ListMessageMoveTasks"},"body":"any","scope":{}},
-      "ListQueueTags": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.ListQueueTags"},"body":"any","scope":{}},
-      "ListQueues": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.ListQueues"},"body":"any","scope":{}},
-      "PurgeQueue": {"action":"delete.sqs","effects":["delete"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.PurgeQueue"},"body":"any","scope":{}},
-      "ReceiveMessage": {"action":"write.sqs","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.ReceiveMessage"},"body":"any","scope":{}},
-      "RemovePermission": {"action":"delete.sqs","effects":["delete"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.RemovePermission"},"body":"any","scope":{}},
-      "SendMessage": {"action":"send.sqs","effects":["send"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.SendMessage"},"body":"any","scope":{}},
-      "SendMessageBatch": {"action":"send.sqs","effects":["send"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.SendMessageBatch"},"body":"any","scope":{}},
-      "SetQueueAttributes": {"action":"write.sqs","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.SetQueueAttributes"},"body":"any","scope":{}},
-      "StartMessageMoveTask": {"action":"write.sqs","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.StartMessageMoveTask"},"body":"any","scope":{}},
-      "TagQueue": {"action":"write.sqs","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.TagQueue"},"body":"any","scope":{}},
-      "UntagQueue": {"action":"write.sqs","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.UntagQueue"},"body":"any","scope":{}}
+      "AddPermission": {"action":"sqs.share","body":"any","effects":["share"],"headers":{"X-Amz-Target":"AmazonSQS.AddPermission"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CancelMessageMoveTask": {"action":"sqs.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"AmazonSQS.CancelMessageMoveTask"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ChangeMessageVisibility": {"action":"sqs.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"AmazonSQS.ChangeMessageVisibility"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ChangeMessageVisibilityBatch": {"action":"sqs.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"AmazonSQS.ChangeMessageVisibilityBatch"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateQueue": {"action":"sqs.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"AmazonSQS.CreateQueue"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteMessage": {"action":"sqs.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"AmazonSQS.DeleteMessage"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteMessageBatch": {"action":"sqs.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"AmazonSQS.DeleteMessageBatch"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteQueue": {"action":"sqs.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"AmazonSQS.DeleteQueue"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetQueueAttributes": {"action":"sqs.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"AmazonSQS.GetQueueAttributes"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetQueueUrl": {"action":"sqs.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"AmazonSQS.GetQueueUrl"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListDeadLetterSourceQueues": {"action":"sqs.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"AmazonSQS.ListDeadLetterSourceQueues"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListMessageMoveTasks": {"action":"sqs.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"AmazonSQS.ListMessageMoveTasks"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListQueueTags": {"action":"sqs.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"AmazonSQS.ListQueueTags"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListQueues": {"action":"sqs.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"AmazonSQS.ListQueues"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "PurgeQueue": {"action":"sqs.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"AmazonSQS.PurgeQueue"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ReceiveMessage": {"action":"sqs.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"AmazonSQS.ReceiveMessage"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "RemovePermission": {"action":"sqs.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"AmazonSQS.RemovePermission"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "SendMessage": {"action":"sqs.send","body":"any","effects":["send"],"headers":{"X-Amz-Target":"AmazonSQS.SendMessage"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "SendMessageBatch": {"action":"sqs.send","body":"any","effects":["send"],"headers":{"X-Amz-Target":"AmazonSQS.SendMessageBatch"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "SetQueueAttributes": {"action":"sqs.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"AmazonSQS.SetQueueAttributes"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartMessageMoveTask": {"action":"sqs.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"AmazonSQS.StartMessageMoveTask"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "TagQueue": {"action":"sqs.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"AmazonSQS.TagQueue"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UntagQueue": {"action":"sqs.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"AmazonSQS.UntagQueue"},"method":"POST","origin":"{origin}","path":"/","scope":{}}
     }
   }
 }

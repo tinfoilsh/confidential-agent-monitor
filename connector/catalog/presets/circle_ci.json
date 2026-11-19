@@ -1,166 +1,674 @@
 {
-  "title": "CircleCI",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "Personal API Token", "secret": true, "credential": true, "oauth": {"resource": "https://circleci.com/api/v2", "loopback": true}}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://circleci.com", "path": "/api/v2", "header": "Circle-Token"}]}},
     "actions": {
-      "admin.groups": {"title": "Admin: groups"},
-      "admin.organization": {"title": "Admin: organization"},
-      "admin.settings": {"title": "Admin: settings"},
-      "admin.webhook": {"title": "Admin: webhook"},
-      "delete.checkout_key": {"title": "Delete: checkout key"},
-      "delete.context": {"title": "Delete: context"},
-      "delete.environment_variable": {"title": "Delete: environment variable"},
-      "delete.envvar": {"title": "Delete: envvar"},
-      "delete.exporters": {"title": "Delete: exporters"},
-      "delete.groups": {"title": "Delete: groups"},
-      "delete.oidc_custom_claims": {"title": "Delete: oidc custom claims"},
-      "delete.organization": {"title": "Delete: organization"},
-      "delete.pipeline_definitions": {"title": "Delete: pipeline definitions"},
-      "delete.project": {"title": "Delete: project"},
-      "delete.restrictions": {"title": "Delete: restrictions"},
-      "delete.schedule": {"title": "Delete: schedule"},
-      "delete.triggers": {"title": "Delete: triggers"},
-      "delete.url_orb_allow_list": {"title": "Delete: url orb allow list"},
-      "delete.webhook": {"title": "Delete: webhook"},
-      "execute.job": {"title": "Execute: job"},
-      "execute.jobs": {"title": "Execute: jobs"},
-      "execute.pipeline": {"title": "Execute: pipeline"},
-      "execute.pipeline_definitions": {"title": "Execute: pipeline definitions"},
-      "execute.triggers": {"title": "Execute: triggers"},
-      "execute.workflow": {"title": "Execute: workflow"},
-      "read": {"title": "Read everything the account can see"},
-      "write.approve": {"title": "Write: approve"},
-      "write.context": {"title": "Write: context"},
-      "write.continue": {"title": "Write: continue"},
-      "write.decision": {"title": "Write: decision"},
-      "write.environment_variable": {"title": "Write: environment variable"},
-      "write.envvar": {"title": "Write: envvar"},
-      "write.exporters": {"title": "Write: exporters"},
-      "write.oidc_custom_claims": {"title": "Write: oidc custom claims"},
-      "write.pipeline_definitions": {"title": "Write: pipeline definitions"},
-      "write.policy_bundle": {"title": "Write: policy bundle"},
-      "write.project": {"title": "Write: project"},
-      "write.restrictions": {"title": "Write: restrictions"},
-      "write.rollback": {"title": "Write: rollback"},
-      "write.schedule": {"title": "Write: schedule"},
-      "write.url_orb_allow_list": {"title": "Write: url orb allow list"},
-      "write.usage_export_job": {"title": "Write: usage export job"}
-    }
+      "context": {
+        "title": "Context"
+      },
+      "context.delete": {
+        "title": "Delete"
+      },
+      "context.environment_variable": {
+        "title": "Environment variable"
+      },
+      "context.environment_variable.admin": {
+        "title": "Manage"
+      },
+      "context.environment_variable.delete": {
+        "title": "Delete"
+      },
+      "context.environment_variable.read": {
+        "title": "Read"
+      },
+      "context.read": {
+        "title": "Read"
+      },
+      "context.restrictions": {
+        "title": "Restrictions"
+      },
+      "context.restrictions.admin": {
+        "title": "Manage"
+      },
+      "context.restrictions.delete": {
+        "title": "Delete"
+      },
+      "context.restrictions.read": {
+        "title": "Read"
+      },
+      "context.write": {
+        "title": "Create and edit"
+      },
+      "deploy": {
+        "title": "Deploy"
+      },
+      "deploy.components": {
+        "title": "Components"
+      },
+      "deploy.components.read": {
+        "title": "Read"
+      },
+      "deploy.components.versions": {
+        "title": "Versions"
+      },
+      "deploy.components.versions.read": {
+        "title": "Read"
+      },
+      "deploy.environments": {
+        "title": "Environments"
+      },
+      "deploy.environments.read": {
+        "title": "Read"
+      },
+      "insights": {
+        "title": "Insights"
+      },
+      "insights.branches": {
+        "title": "Branches"
+      },
+      "insights.branches.read": {
+        "title": "Read"
+      },
+      "insights.flaky_tests": {
+        "title": "Flaky tests"
+      },
+      "insights.flaky_tests.read": {
+        "title": "Read"
+      },
+      "insights.pages": {
+        "title": "Pages"
+      },
+      "insights.pages.summary": {
+        "title": "Summary"
+      },
+      "insights.pages.summary.read": {
+        "title": "Read"
+      },
+      "insights.summary": {
+        "title": "Summary"
+      },
+      "insights.summary.read": {
+        "title": "Read"
+      },
+      "insights.time_series": {
+        "title": "Time series"
+      },
+      "insights.time_series.workflows": {
+        "title": "Workflows"
+      },
+      "insights.time_series.workflows.jobs": {
+        "title": "Jobs"
+      },
+      "insights.time_series.workflows.jobs.read": {
+        "title": "Read"
+      },
+      "insights.workflows": {
+        "title": "Workflows"
+      },
+      "insights.workflows.jobs": {
+        "title": "Jobs"
+      },
+      "insights.workflows.jobs.read": {
+        "title": "Read"
+      },
+      "insights.workflows.metrics": {
+        "title": "Metrics"
+      },
+      "insights.workflows.metrics.read": {
+        "title": "Read"
+      },
+      "insights.workflows.read": {
+        "title": "Read"
+      },
+      "insights.workflows.summary": {
+        "title": "Summary"
+      },
+      "insights.workflows.summary.read": {
+        "title": "Read"
+      },
+      "insights.workflows.test_metrics": {
+        "title": "Test metrics"
+      },
+      "insights.workflows.test_metrics.read": {
+        "title": "Read"
+      },
+      "jobs": {
+        "title": "Jobs"
+      },
+      "jobs.execute": {
+        "title": "Run"
+      },
+      "jobs.read": {
+        "title": "Read"
+      },
+      "me": {
+        "title": "Me"
+      },
+      "me.collaborations": {
+        "title": "Collaborations"
+      },
+      "me.collaborations.read": {
+        "title": "Read"
+      },
+      "me.read": {
+        "title": "Read"
+      },
+      "org": {
+        "title": "Org"
+      },
+      "org.oidc_custom_claims": {
+        "title": "Oidc custom claims"
+      },
+      "org.oidc_custom_claims.admin": {
+        "title": "Manage"
+      },
+      "org.oidc_custom_claims.delete": {
+        "title": "Delete"
+      },
+      "org.oidc_custom_claims.read": {
+        "title": "Read"
+      },
+      "org.project": {
+        "title": "Project"
+      },
+      "org.project.oidc_custom_claims": {
+        "title": "Oidc custom claims"
+      },
+      "org.project.oidc_custom_claims.admin": {
+        "title": "Manage"
+      },
+      "org.project.oidc_custom_claims.delete": {
+        "title": "Delete"
+      },
+      "org.project.oidc_custom_claims.read": {
+        "title": "Read"
+      },
+      "organization": {
+        "title": "Organization"
+      },
+      "organization.admin": {
+        "title": "Manage"
+      },
+      "organization.delete": {
+        "title": "Delete"
+      },
+      "organization.project": {
+        "title": "Project"
+      },
+      "organization.project.write": {
+        "title": "Create and edit"
+      },
+      "organization.read": {
+        "title": "Read"
+      },
+      "organization.url_orb_allow_list": {
+        "title": "Url orb allow list"
+      },
+      "organization.url_orb_allow_list.delete": {
+        "title": "Delete"
+      },
+      "organization.url_orb_allow_list.read": {
+        "title": "Read"
+      },
+      "organization.url_orb_allow_list.write": {
+        "title": "Create and edit"
+      },
+      "organizations": {
+        "title": "Organizations"
+      },
+      "organizations.groups": {
+        "title": "Groups"
+      },
+      "organizations.groups.admin": {
+        "title": "Manage"
+      },
+      "organizations.groups.delete": {
+        "title": "Delete"
+      },
+      "organizations.groups.read": {
+        "title": "Read"
+      },
+      "organizations.usage_export_job": {
+        "title": "Usage export job"
+      },
+      "organizations.usage_export_job.read": {
+        "title": "Read"
+      },
+      "organizations.usage_export_job.write": {
+        "title": "Create and edit"
+      },
+      "otel": {
+        "title": "Otel"
+      },
+      "otel.exporters": {
+        "title": "Exporters"
+      },
+      "otel.exporters.admin": {
+        "title": "Manage"
+      },
+      "otel.exporters.delete": {
+        "title": "Delete"
+      },
+      "otel.exporters.read": {
+        "title": "Read"
+      },
+      "owner": {
+        "title": "Owner"
+      },
+      "owner.context": {
+        "title": "Context"
+      },
+      "owner.context.decision": {
+        "title": "Decision"
+      },
+      "owner.context.decision.policy_bundle": {
+        "title": "Policy bundle"
+      },
+      "owner.context.decision.policy_bundle.read": {
+        "title": "Read"
+      },
+      "owner.context.decision.read": {
+        "title": "Read"
+      },
+      "owner.context.decision.settings": {
+        "title": "Settings"
+      },
+      "owner.context.decision.settings.admin": {
+        "title": "Manage"
+      },
+      "owner.context.decision.settings.read": {
+        "title": "Read"
+      },
+      "owner.context.policy_bundle": {
+        "title": "Policy bundle"
+      },
+      "owner.context.policy_bundle.admin": {
+        "title": "Manage"
+      },
+      "owner.context.policy_bundle.read": {
+        "title": "Read"
+      },
+      "pipeline": {
+        "title": "Pipeline"
+      },
+      "pipeline.config": {
+        "title": "Config"
+      },
+      "pipeline.config.read": {
+        "title": "Read"
+      },
+      "pipeline.continue": {
+        "title": "Continue"
+      },
+      "pipeline.continue.execute": {
+        "title": "Run"
+      },
+      "pipeline.read": {
+        "title": "Read"
+      },
+      "pipeline.values": {
+        "title": "Values"
+      },
+      "pipeline.values.read": {
+        "title": "Read"
+      },
+      "pipeline.workflow": {
+        "title": "Workflow"
+      },
+      "pipeline.workflow.read": {
+        "title": "Read"
+      },
+      "project": {
+        "title": "Project"
+      },
+      "project.checkout_key": {
+        "title": "Checkout key"
+      },
+      "project.checkout_key.admin": {
+        "title": "Manage"
+      },
+      "project.checkout_key.delete": {
+        "title": "Delete"
+      },
+      "project.checkout_key.read": {
+        "title": "Read"
+      },
+      "project.delete": {
+        "title": "Delete"
+      },
+      "project.envvar": {
+        "title": "Envvar"
+      },
+      "project.envvar.admin": {
+        "title": "Manage"
+      },
+      "project.envvar.delete": {
+        "title": "Delete"
+      },
+      "project.envvar.read": {
+        "title": "Read"
+      },
+      "project.job": {
+        "title": "Job"
+      },
+      "project.job.execute": {
+        "title": "Run"
+      },
+      "project.pipeline": {
+        "title": "Pipeline"
+      },
+      "project.pipeline.execute": {
+        "title": "Run"
+      },
+      "project.pipeline.mine": {
+        "title": "Mine"
+      },
+      "project.pipeline.mine.read": {
+        "title": "Read"
+      },
+      "project.pipeline.read": {
+        "title": "Read"
+      },
+      "project.read": {
+        "title": "Read"
+      },
+      "project.schedule": {
+        "title": "Schedule"
+      },
+      "project.schedule.read": {
+        "title": "Read"
+      },
+      "project.schedule.write": {
+        "title": "Create and edit"
+      },
+      "project.settings": {
+        "title": "Settings"
+      },
+      "project.settings.admin": {
+        "title": "Manage"
+      },
+      "project.settings.read": {
+        "title": "Read"
+      },
+      "projects": {
+        "title": "Projects"
+      },
+      "projects.pipeline_definitions": {
+        "title": "Pipeline definitions"
+      },
+      "projects.pipeline_definitions.delete": {
+        "title": "Delete"
+      },
+      "projects.pipeline_definitions.read": {
+        "title": "Read"
+      },
+      "projects.pipeline_definitions.triggers": {
+        "title": "Triggers"
+      },
+      "projects.pipeline_definitions.triggers.execute": {
+        "title": "Run"
+      },
+      "projects.pipeline_definitions.triggers.read": {
+        "title": "Read"
+      },
+      "projects.pipeline_definitions.write": {
+        "title": "Create and edit"
+      },
+      "projects.rollback": {
+        "title": "Rollback"
+      },
+      "projects.rollback.execute": {
+        "title": "Run"
+      },
+      "projects.triggers": {
+        "title": "Triggers"
+      },
+      "projects.triggers.delete": {
+        "title": "Delete"
+      },
+      "projects.triggers.read": {
+        "title": "Read"
+      },
+      "projects.triggers.write": {
+        "title": "Create and edit"
+      },
+      "schedule": {
+        "title": "Schedule"
+      },
+      "schedule.delete": {
+        "title": "Delete"
+      },
+      "schedule.read": {
+        "title": "Read"
+      },
+      "schedule.write": {
+        "title": "Create and edit"
+      },
+      "user": {
+        "title": "Account"
+      },
+      "user.read": {
+        "title": "Read"
+      },
+      "webhook": {
+        "title": "Webhook"
+      },
+      "webhook.admin": {
+        "title": "Manage"
+      },
+      "webhook.delete": {
+        "title": "Delete"
+      },
+      "webhook.read": {
+        "title": "Read"
+      },
+      "workflow": {
+        "title": "Workflow"
+      },
+      "workflow.approve": {
+        "title": "Approve"
+      },
+      "workflow.approve.execute": {
+        "title": "Run"
+      },
+      "workflow.execute": {
+        "title": "Run"
+      },
+      "workflow.job": {
+        "title": "Job"
+      },
+      "workflow.job.read": {
+        "title": "Read"
+      },
+      "workflow.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Circle-Token",
+            "origin": "https://circleci.com",
+            "path": "/api",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "default": "https://circleci.com",
+        "key": "origin",
+        "label": "Your CircleCI origin (https://circleci.com or a CircleCI server URL)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "Personal API Token",
+        "oauth": {
+          "loopback": true,
+          "resource": "https://circleci.com/api/v2"
+        },
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "CircleCI",
   "http": {
     "operations": {
-      "CreatePolicyBundle": {"action":"write.policy_bundle","effects":["write"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/owner/{ownerID}/context/{context}/policy-bundle","params":["dry"],"body":"any","scope":{"ownerID":{"from":"path","at":"ownerID"},"context":{"from":"path","at":"context"}}},
-      "DeleteOrgClaims": {"action":"delete.oidc_custom_claims","effects":["delete"],"method":"DELETE","origin":"https://circleci.com","path":"/api/v2/org/{orgID}/oidc-custom-claims","params":["claims"],"scope":{"orgID":{"from":"path","at":"orgID"}}},
-      "DeleteProjectClaims": {"action":"delete.oidc_custom_claims","effects":["delete"],"method":"DELETE","origin":"https://circleci.com","path":"/api/v2/org/{orgID}/project/{projectID}/oidc-custom-claims","params":["claims"],"scope":{"orgID":{"from":"path","at":"orgID"},"projectID":{"from":"path","at":"projectID"}}},
-      "GetDecisionLog": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/owner/{ownerID}/context/{context}/decision/{decisionID}","scope":{"ownerID":{"from":"path","at":"ownerID"},"context":{"from":"path","at":"context"},"decisionID":{"from":"path","at":"decisionID"}}},
-      "GetDecisionLogPolicyBundle": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/owner/{ownerID}/context/{context}/decision/{decisionID}/policy-bundle","scope":{"ownerID":{"from":"path","at":"ownerID"},"context":{"from":"path","at":"context"},"decisionID":{"from":"path","at":"decisionID"}}},
-      "GetDecisionLogs": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/owner/{ownerID}/context/{context}/decision","params":["status","after","before","branch","project_id","build_number","offset"],"scope":{"ownerID":{"from":"path","at":"ownerID"},"context":{"from":"path","at":"context"}}},
-      "GetOrgClaims": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/org/{orgID}/oidc-custom-claims","scope":{"orgID":{"from":"path","at":"orgID"}}},
-      "GetPolicyBundle": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/owner/{ownerID}/context/{context}/policy-bundle","scope":{"ownerID":{"from":"path","at":"ownerID"},"context":{"from":"path","at":"context"}}},
-      "GetPolicyDocument": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/owner/{ownerID}/context/{context}/policy-bundle/{policyName}","scope":{"ownerID":{"from":"path","at":"ownerID"},"context":{"from":"path","at":"context"},"policyName":{"from":"path","at":"policyName"}}},
-      "GetProjectClaims": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/org/{orgID}/project/{projectID}/oidc-custom-claims","scope":{"orgID":{"from":"path","at":"orgID"},"projectID":{"from":"path","at":"projectID"}}},
-      "MakeDecision": {"action":"write.decision","effects":["write"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/owner/{ownerID}/context/{context}/decision","body":"any","scope":{"ownerID":{"from":"path","at":"ownerID"},"context":{"from":"path","at":"context"}}},
-      "PatchOrgClaims": {"action":"write.oidc_custom_claims","effects":["write"],"method":"PATCH","origin":"https://circleci.com","path":"/api/v2/org/{orgID}/oidc-custom-claims","body":"any","scope":{"orgID":{"from":"path","at":"orgID"}}},
-      "PatchProjectClaims": {"action":"write.oidc_custom_claims","effects":["write"],"method":"PATCH","origin":"https://circleci.com","path":"/api/v2/org/{orgID}/project/{projectID}/oidc-custom-claims","body":"any","scope":{"orgID":{"from":"path","at":"orgID"},"projectID":{"from":"path","at":"projectID"}}},
-      "SetDecisionSettings": {"action":"admin.settings","effects":["admin"],"method":"PATCH","origin":"https://circleci.com","path":"/api/v2/owner/{ownerID}/context/{context}/decision/settings","body":"any","scope":{"ownerID":{"from":"path","at":"ownerID"},"context":{"from":"path","at":"context"}}},
-      "addEnvironmentVariableToContext": {"action":"write.environment_variable","effects":["write"],"method":"PUT","origin":"https://circleci.com","path":"/api/v2/context/{context_id}/environment-variable/{env_var_name}","body":"any","scope":{"context_id":{"from":"path","at":"context_id"},"env_var_name":{"from":"path","at":"env_var_name"}}},
-      "approvePendingApprovalJobById": {"action":"write.approve","effects":["write"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/workflow/{id}/approve/{approval_request_id}","scope":{"id":{"from":"path","at":"id"},"approval_request_id":{"from":"path","at":"approval_request_id"}}},
-      "cancelJobByJobID": {"action":"execute.jobs","effects":["execute"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/jobs/{job-id}/cancel","scope":{"job-id":{"from":"path","at":"job-id"}}},
-      "cancelJobByJobNumber": {"action":"execute.job","effects":["execute"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/project/{project-slug}/job/{job-number}/cancel","scope":{"project-slug":{"from":"path","at":"project-slug"},"job-number":{"from":"path","at":"job-number"}}},
-      "cancelWorkflow": {"action":"execute.workflow","effects":["execute"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/workflow/{id}/cancel","scope":{"id":{"from":"path","at":"id"}}},
-      "continuePipeline": {"action":"write.continue","effects":["write"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/pipeline/continue","body":"any","scope":{}},
-      "createCheckoutKey": {"action":"write.project","effects":["write"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/project/{project-slug}/checkout-key","body":"any","scope":{"project-slug":{"from":"path","at":"project-slug"}}},
-      "createContext": {"action":"write.context","effects":["write"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/context","body":"any","scope":{}},
-      "createContextRestriction": {"action":"write.restrictions","effects":["write"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/context/{context_id}/restrictions","body":"json","scope":{"context_id":{"from":"path","at":"context_id"}}},
-      "createEnvVar": {"action":"write.envvar","effects":["write"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/project/{project-slug}/envvar","body":"any","scope":{"project-slug":{"from":"path","at":"project-slug"}}},
-      "createOrganization": {"action":"admin.organization","effects":["admin"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/organization","body":"any","scope":{}},
-      "createOrganizationGroup": {"action":"admin.groups","effects":["admin"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/organizations/{org_id}/groups","body":"json","scope":{"org_id":{"from":"path","at":"org_id"},"name":{"from":"body","at":"/name"}}},
-      "createOtelExporter": {"action":"write.exporters","effects":["write"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/otel/exporters","body":"json","scope":{"org_id":{"from":"body","at":"/org_id"}}},
-      "createPipelineDefinition": {"action":"write.pipeline_definitions","effects":["write"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/projects/{project_id}/pipeline-definitions","body":"any","scope":{"project_id":{"from":"path","at":"project_id"}}},
-      "createProject": {"action":"write.project","effects":["write"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/organization/{org-slug-or-id}/project","body":"any","scope":{"org-slug-or-id":{"from":"path","at":"org-slug-or-id"}}},
-      "createSchedule": {"action":"write.schedule","effects":["write"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/project/{project-slug}/schedule","body":"any","scope":{"project-slug":{"from":"path","at":"project-slug"}}},
-      "createTrigger": {"action":"execute.pipeline_definitions","effects":["execute"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/projects/{project_id}/pipeline-definitions/{pipeline_definition_id}/triggers","body":"any","scope":{"project_id":{"from":"path","at":"project_id"},"pipeline_definition_id":{"from":"path","at":"pipeline_definition_id"}}},
-      "createURLOrbAllowListEntry": {"action":"write.url_orb_allow_list","effects":["write"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/organization/{org-slug-or-id}/url-orb-allow-list","body":"any","scope":{"org-slug-or-id":{"from":"path","at":"org-slug-or-id"}}},
-      "createUsageExport": {"action":"write.usage_export_job","effects":["write"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/organizations/{org_id}/usage_export_job","body":"json","scope":{"org_id":{"from":"path","at":"org_id"}}},
-      "createWebhook": {"action":"admin.webhook","effects":["admin"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/webhook","body":"json","scope":{"name":{"from":"body","at":"/name"},"url":{"from":"body","at":"/url"}}},
-      "deleteCheckoutKey": {"action":"delete.checkout_key","effects":["delete"],"method":"DELETE","origin":"https://circleci.com","path":"/api/v2/project/{project-slug}/checkout-key/{fingerprint}","scope":{"project-slug":{"from":"path","at":"project-slug"},"fingerprint":{"from":"path","at":"fingerprint"}}},
-      "deleteContext": {"action":"delete.context","effects":["delete"],"method":"DELETE","origin":"https://circleci.com","path":"/api/v2/context/{context_id}","scope":{"context_id":{"from":"path","at":"context_id"}}},
-      "deleteContextRestriction": {"action":"delete.restrictions","effects":["delete"],"method":"DELETE","origin":"https://circleci.com","path":"/api/v2/context/{context_id}/restrictions/{restriction_id}","scope":{"context_id":{"from":"path","at":"context_id"},"restriction_id":{"from":"path","at":"restriction_id"}}},
-      "deleteEnvVar": {"action":"delete.envvar","effects":["delete"],"method":"DELETE","origin":"https://circleci.com","path":"/api/v2/project/{project-slug}/envvar/{name}","scope":{"project-slug":{"from":"path","at":"project-slug"},"name":{"from":"path","at":"name"}}},
-      "deleteEnvironmentVariableFromContext": {"action":"delete.environment_variable","effects":["delete"],"method":"DELETE","origin":"https://circleci.com","path":"/api/v2/context/{context_id}/environment-variable/{env_var_name}","scope":{"context_id":{"from":"path","at":"context_id"},"env_var_name":{"from":"path","at":"env_var_name"}}},
-      "deleteGroup": {"action":"delete.groups","effects":["delete"],"method":"DELETE","origin":"https://circleci.com","path":"/api/v2/organizations/{org_id}/groups/{group_id}","scope":{"org_id":{"from":"path","at":"org_id"},"group_id":{"from":"path","at":"group_id"}}},
-      "deleteOrganization": {"action":"delete.organization","effects":["delete"],"method":"DELETE","origin":"https://circleci.com","path":"/api/v2/organization/{org-slug-or-id}","scope":{"org-slug-or-id":{"from":"path","at":"org-slug-or-id"}}},
-      "deleteOtelExporter": {"action":"delete.exporters","effects":["delete"],"method":"DELETE","origin":"https://circleci.com","path":"/api/v2/otel/exporters/{otel_exporter_id}","scope":{"otel_exporter_id":{"from":"path","at":"otel_exporter_id"}}},
-      "deletePipelineDefinition": {"action":"delete.pipeline_definitions","effects":["delete"],"method":"DELETE","origin":"https://circleci.com","path":"/api/v2/projects/{project_id}/pipeline-definitions/{pipeline_definition_id}","scope":{"project_id":{"from":"path","at":"project_id"},"pipeline_definition_id":{"from":"path","at":"pipeline_definition_id"}}},
-      "deleteProjectBySlug": {"action":"delete.project","effects":["delete"],"method":"DELETE","origin":"https://circleci.com","path":"/api/v2/project/{project-slug}","scope":{"project-slug":{"from":"path","at":"project-slug"}}},
-      "deleteScheduleById": {"action":"delete.schedule","effects":["delete"],"method":"DELETE","origin":"https://circleci.com","path":"/api/v2/schedule/{schedule-id}","scope":{"schedule-id":{"from":"path","at":"schedule-id"}}},
-      "deleteTrigger": {"action":"delete.triggers","effects":["delete"],"method":"DELETE","origin":"https://circleci.com","path":"/api/v2/projects/{project_id}/triggers/{trigger_id}","scope":{"project_id":{"from":"path","at":"project_id"},"trigger_id":{"from":"path","at":"trigger_id"}}},
-      "deleteWebhook": {"action":"delete.webhook","effects":["delete"],"method":"DELETE","origin":"https://circleci.com","path":"/api/v2/webhook/{webhook_id}","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "getAllInsightsBranches": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/insights/{project-slug}/branches","params":["workflow-name"],"scope":{"project-slug":{"from":"path","at":"project-slug"}}},
-      "getCheckoutKey": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/project/{project-slug}/checkout-key/{fingerprint}","scope":{"project-slug":{"from":"path","at":"project-slug"},"fingerprint":{"from":"path","at":"fingerprint"}}},
-      "getCollaborations": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/me/collaborations","scope":{}},
-      "getComponent": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/deploy/components/{component_id}","scope":{"component_id":{"from":"path","at":"component_id"}}},
-      "getContext": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/context/{context_id}","scope":{"context_id":{"from":"path","at":"context_id"}}},
-      "getContextRestrictions": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/context/{context_id}/restrictions","scope":{"context_id":{"from":"path","at":"context_id"}}},
-      "getCurrentUser": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/me","scope":{}},
-      "getEnvVar": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/project/{project-slug}/envvar/{name}","scope":{"project-slug":{"from":"path","at":"project-slug"},"name":{"from":"path","at":"name"}}},
-      "getEnvironment": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/deploy/environments/{environment_id}","scope":{"environment_id":{"from":"path","at":"environment_id"}}},
-      "getFlakyTests": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/insights/{project-slug}/flaky-tests","scope":{"project-slug":{"from":"path","at":"project-slug"}}},
-      "getGroup": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/organizations/{org_id}/groups/{group_id}","scope":{"org_id":{"from":"path","at":"org_id"},"group_id":{"from":"path","at":"group_id"}}},
-      "getJob": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/jobs/{job_id}","scope":{"job_id":{"from":"path","at":"job_id"}}},
-      "getJobTimeseries": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/insights/time-series/{project-slug}/workflows/{workflow-name}/jobs","params":["branch","granularity","start-date","end-date"],"scope":{"project-slug":{"from":"path","at":"project-slug"},"workflow-name":{"from":"path","at":"workflow-name"}}},
-      "getOrgSummaryData": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/insights/{org-slug}/summary","params":["reporting-window","project-names"],"scope":{"org-slug":{"from":"path","at":"org-slug"}}},
-      "getOrganization": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/organization/{org-slug-or-id}","scope":{"org-slug-or-id":{"from":"path","at":"org-slug-or-id"}}},
-      "getOrganizationGroups": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/organizations/{org_id}/groups","params":["limit","page-token"],"scope":{"org_id":{"from":"path","at":"org_id"}}},
-      "getPipelineById": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/pipeline/{pipeline-id}","scope":{"pipeline-id":{"from":"path","at":"pipeline-id"}}},
-      "getPipelineByNumber": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/project/{project-slug}/pipeline/{pipeline-number}","params":["page-token"],"scope":{"project-slug":{"from":"path","at":"project-slug"},"pipeline-number":{"from":"path","at":"pipeline-number"}}},
-      "getPipelineConfigById": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/pipeline/{pipeline-id}/config","scope":{"pipeline-id":{"from":"path","at":"pipeline-id"}}},
-      "getPipelineDefinition": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/projects/{project_id}/pipeline-definitions/{pipeline_definition_id}","scope":{"project_id":{"from":"path","at":"project_id"},"pipeline_definition_id":{"from":"path","at":"pipeline_definition_id"}}},
-      "getPipelineValuesById": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/pipeline/{pipeline_id}/values","scope":{"pipeline_id":{"from":"path","at":"pipeline_id"}}},
-      "getProjectBySlug": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/project/{project-slug}","scope":{"project-slug":{"from":"path","at":"project-slug"}}},
-      "getProjectSettings": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/project/{provider}/{organization}/{project}/settings","scope":{"provider":{"from":"path","at":"provider"},"organization":{"from":"path","at":"organization"},"project":{"from":"path","at":"project"}}},
-      "getProjectWorkflowJobMetrics": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/insights/{project-slug}/workflows/{workflow-name}/jobs","params":["page-token","all-branches","branch","reporting-window","job-name"],"scope":{"project-slug":{"from":"path","at":"project-slug"},"workflow-name":{"from":"path","at":"workflow-name"}}},
-      "getProjectWorkflowMetrics": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/insights/{project-slug}/workflows","params":["page-token","all-branches","branch","reporting-window"],"scope":{"project-slug":{"from":"path","at":"project-slug"}}},
-      "getProjectWorkflowRuns": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/insights/{project-slug}/workflows/{workflow-name}","params":["all-branches","branch","page-token","start-date","end-date","reporting-window","branches","workflow-names"],"scope":{"project-slug":{"from":"path","at":"project-slug"},"workflow-name":{"from":"path","at":"workflow-name"}}},
-      "getProjectWorkflowTestMetrics": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/insights/{project-slug}/workflows/{workflow-name}/test-metrics","params":["branch","all-branches"],"scope":{"project-slug":{"from":"path","at":"project-slug"},"workflow-name":{"from":"path","at":"workflow-name"}}},
-      "getScheduleById": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/schedule/{schedule-id}","scope":{"schedule-id":{"from":"path","at":"schedule-id"}}},
-      "getTrigger": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/projects/{project_id}/triggers/{trigger_id}","scope":{"project_id":{"from":"path","at":"project_id"},"trigger_id":{"from":"path","at":"trigger_id"}}},
-      "getUsageExport": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/organizations/{org_id}/usage_export_job/{usage_export_job_id}","scope":{"org_id":{"from":"path","at":"org_id"},"usage_export_job_id":{"from":"path","at":"usage_export_job_id"}}},
-      "getUser": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/user/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getWebhookById": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/webhook/{webhook_id}","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "getWebhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/webhook","params":["scope-id","scope-type"],"scope":{}},
-      "getWorkflowById": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/workflow/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getWorkflowSummary": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/insights/{project-slug}/workflows/{workflow-name}/summary","params":["all-branches","branch"],"scope":{"project-slug":{"from":"path","at":"project-slug"},"workflow-name":{"from":"path","at":"workflow-name"}}},
-      "listCheckoutKeys": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/project/{project-slug}/checkout-key","params":["digest"],"scope":{"project-slug":{"from":"path","at":"project-slug"}}},
-      "listComponentVersions": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/deploy/components/{component_id}/versions","params":["environment-id"],"scope":{"component_id":{"from":"path","at":"component_id"}}},
-      "listComponents": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/deploy/components","params":["org-id","project-id","page-size","page-token"],"scope":{}},
-      "listContexts": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/context","params":["owner-id","owner-slug","owner-type","page-token"],"scope":{}},
-      "listEnvVars": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/project/{project-slug}/envvar","scope":{"project-slug":{"from":"path","at":"project-slug"}}},
-      "listEnvironmentVariablesFromContext": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/context/{context_id}/environment-variable","params":["page-token"],"scope":{"context_id":{"from":"path","at":"context_id"}}},
-      "listEnvironments": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/deploy/environments","params":["org-id","page-size","page-token"],"scope":{}},
-      "listOtelExporters": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/otel/exporters","params":["org-id"],"scope":{}},
-      "listPipelineDefinitionTriggers": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/projects/{project_id}/pipeline-definitions/{pipeline_definition_id}/triggers","scope":{"project_id":{"from":"path","at":"project_id"},"pipeline_definition_id":{"from":"path","at":"pipeline_definition_id"}}},
-      "listPipelineDefinitions": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/projects/{project_id}/pipeline-definitions","scope":{"project_id":{"from":"path","at":"project_id"}}},
-      "listPipelines": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/pipeline","params":["org-slug","page-token","mine"],"scope":{}},
-      "listPipelinesForProject": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/project/{project-slug}/pipeline","params":["branch","page-token"],"scope":{"project-slug":{"from":"path","at":"project-slug"}}},
-      "listSchedulesForProject": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/project/{project-slug}/schedule","params":["page-token"],"scope":{"project-slug":{"from":"path","at":"project-slug"}}},
-      "listURLOrbAllowListEntries": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/organization/{org-slug-or-id}/url-orb-allow-list","scope":{"org-slug-or-id":{"from":"path","at":"org-slug-or-id"}}},
-      "listWorkflowJobs": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/workflow/{id}/job","scope":{"id":{"from":"path","at":"id"}}},
-      "listWorkflowsByPipelineId": {"action":"read","effects":["read"],"method":"GET","origin":"https://circleci.com","path":"/api/v2/pipeline/{pipeline-id}/workflow","params":["page-token"],"scope":{"pipeline-id":{"from":"path","at":"pipeline-id"}}},
-      "patchProjectSettings": {"action":"admin.settings","effects":["admin"],"method":"PATCH","origin":"https://circleci.com","path":"/api/v2/project/{provider}/{organization}/{project}/settings","body":"json","scope":{"provider":{"from":"path","at":"provider"},"organization":{"from":"path","at":"organization"},"project":{"from":"path","at":"project"}}},
-      "removeURLOrbAllowListEntry": {"action":"delete.url_orb_allow_list","effects":["delete"],"method":"DELETE","origin":"https://circleci.com","path":"/api/v2/organization/{org-slug-or-id}/url-orb-allow-list/{allow-list-entry-id}","scope":{"org-slug-or-id":{"from":"path","at":"org-slug-or-id"},"allow-list-entry-id":{"from":"path","at":"allow-list-entry-id"}}},
-      "rerunWorkflow": {"action":"execute.workflow","effects":["execute"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/workflow/{id}/rerun","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "rollbackProject": {"action":"write.rollback","effects":["write"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/projects/{project_id}/rollback","body":"json","scope":{"project_id":{"from":"path","at":"project_id"},"environment_name":{"from":"body","at":"/environment_name"},"component_name":{"from":"body","at":"/component_name"}}},
-      "triggerPipeline": {"action":"execute.pipeline","effects":["execute"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/project/{project-slug}/pipeline","body":"any","scope":{"project-slug":{"from":"path","at":"project-slug"}}},
-      "triggerPipelineRun": {"action":"execute.pipeline","effects":["execute"],"method":"POST","origin":"https://circleci.com","path":"/api/v2/project/{provider}/{organization}/{project}/pipeline/run","body":"any","scope":{"provider":{"from":"path","at":"provider"},"organization":{"from":"path","at":"organization"},"project":{"from":"path","at":"project"}}},
-      "updatePipelineDefinition": {"action":"write.pipeline_definitions","effects":["write"],"method":"PATCH","origin":"https://circleci.com","path":"/api/v2/projects/{project_id}/pipeline-definitions/{pipeline_definition_id}","body":"any","scope":{"project_id":{"from":"path","at":"project_id"},"pipeline_definition_id":{"from":"path","at":"pipeline_definition_id"}}},
-      "updateSchedule": {"action":"write.schedule","effects":["write"],"method":"PATCH","origin":"https://circleci.com","path":"/api/v2/schedule/{schedule-id}","body":"any","scope":{"schedule-id":{"from":"path","at":"schedule-id"}}},
-      "updateTrigger": {"action":"execute.triggers","effects":["execute"],"method":"PATCH","origin":"https://circleci.com","path":"/api/v2/projects/{project_id}/triggers/{trigger_id}","body":"any","scope":{"project_id":{"from":"path","at":"project_id"},"trigger_id":{"from":"path","at":"trigger_id"}}},
-      "updateWebhook": {"action":"admin.webhook","effects":["admin"],"method":"PUT","origin":"https://circleci.com","path":"/api/v2/webhook/{webhook_id}","body":"json","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}}
+      "CreatePolicyBundle": {"action":"owner.context.policy_bundle.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","params":["dry"],"path":"/api/v2/owner/{ownerID}/context/{context}/policy-bundle","scope":{"context":{"at":"context","from":"path"},"ownerID":{"at":"ownerID","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "DeleteOrgClaims": {"action":"org.oidc_custom_claims.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["claims"],"path":"/api/v2/org/{orgID}/oidc-custom-claims","scope":{"orgID":{"at":"orgID","from":"path"}}},
+      "DeleteProjectClaims": {"action":"org.project.oidc_custom_claims.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["claims"],"path":"/api/v2/org/{orgID}/project/{projectID}/oidc-custom-claims","scope":{"orgID":{"at":"orgID","from":"path"},"projectID":{"at":"projectID","from":"path"}}},
+      "GetDecisionLog": {"action":"owner.context.decision.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/owner/{ownerID}/context/{context}/decision/{decisionID}","path_patterns":{"decisionID":"[^s].*|s(?:|[^e].*|e(?:|[^t].*|t(?:|[^t].*|t(?:|[^i].*|i(?:|[^n].*|n(?:|[^g].*|g(?:|[^s].*|s.+)))))))"},"scope":{"context":{"at":"context","from":"path"},"decisionID":{"at":"decisionID","from":"path"},"ownerID":{"at":"ownerID","from":"path"}}},
+      "GetDecisionLogPolicyBundle": {"action":"owner.context.decision.policy_bundle.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/owner/{ownerID}/context/{context}/decision/{decisionID}/policy-bundle","scope":{"context":{"at":"context","from":"path"},"decisionID":{"at":"decisionID","from":"path"},"ownerID":{"at":"ownerID","from":"path"}}},
+      "GetDecisionLogs": {"action":"owner.context.decision.read","effects":["read"],"method":"GET","origin":"{origin}","params":["status","after","before","branch","project_id","build_number","offset"],"path":"/api/v2/owner/{ownerID}/context/{context}/decision","scope":{"context":{"at":"context","from":"path"},"ownerID":{"at":"ownerID","from":"path"}}},
+      "GetDecisionSettings": {"action":"owner.context.decision.settings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/owner/{ownerID}/context/{context}/decision/settings","scope":{"context":{"at":"context","from":"path"},"ownerID":{"at":"ownerID","from":"path"}}},
+      "GetOrgClaims": {"action":"org.oidc_custom_claims.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/org/{orgID}/oidc-custom-claims","scope":{"orgID":{"at":"orgID","from":"path"}}},
+      "GetPolicyBundle": {"action":"owner.context.policy_bundle.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/owner/{ownerID}/context/{context}/policy-bundle","scope":{"context":{"at":"context","from":"path"},"ownerID":{"at":"ownerID","from":"path"}}},
+      "GetPolicyDocument": {"action":"owner.context.policy_bundle.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/owner/{ownerID}/context/{context}/policy-bundle/{policyName}","scope":{"context":{"at":"context","from":"path"},"ownerID":{"at":"ownerID","from":"path"},"policyName":{"at":"policyName","from":"path"}}},
+      "GetProjectClaims": {"action":"org.project.oidc_custom_claims.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/org/{orgID}/project/{projectID}/oidc-custom-claims","scope":{"orgID":{"at":"orgID","from":"path"},"projectID":{"at":"projectID","from":"path"}}},
+      "MakeDecision": {"action":"owner.context.decision.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v2/owner/{ownerID}/context/{context}/decision","scope":{"context":{"at":"context","from":"path"},"ownerID":{"at":"ownerID","from":"path"}}},
+      "PatchOrgClaims": {"action":"org.oidc_custom_claims.admin","body":"any","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/v2/org/{orgID}/oidc-custom-claims","scope":{"orgID":{"at":"orgID","from":"path"}}},
+      "PatchProjectClaims": {"action":"org.project.oidc_custom_claims.admin","body":"any","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/v2/org/{orgID}/project/{projectID}/oidc-custom-claims","scope":{"orgID":{"at":"orgID","from":"path"},"projectID":{"at":"projectID","from":"path"}}},
+      "SetDecisionSettings": {"action":"owner.context.decision.settings.admin","body":"any","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/v2/owner/{ownerID}/context/{context}/decision/settings","scope":{"context":{"at":"context","from":"path"},"ownerID":{"at":"ownerID","from":"path"}}},
+      "addEnvironmentVariableToContext": {"action":"context.environment_variable.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/v2/context/{context_id}/environment-variable/{env_var_name}","scope":{"context_id":{"at":"context_id","from":"path"},"env_var_name":{"at":"env_var_name","from":"path"}}},
+      "approvePendingApprovalJobById": {"action":"workflow.approve.execute","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/workflow/{id}/approve/{approval_request_id}","scope":{"approval_request_id":{"at":"approval_request_id","from":"path"},"id":{"at":"id","from":"path"}}},
+      "cancelJobByJobID": {"action":"jobs.execute","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/jobs/{job-id}/cancel","scope":{"job-id":{"at":"job-id","from":"path"}}},
+      "cancelJobByJobNumber": {"action":"project.job.execute","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/project/{project-slug}/job/{job-number}/cancel","scope":{"job-number":{"at":"job-number","from":"path"},"project-slug":{"at":"project-slug","from":"path"}}},
+      "cancelJobByJobNumber.slug": {"action":"project.job.execute","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/project/{provider}/{organization}/{project}/job/{job-number}/cancel","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"job-number":{"at":"job-number","from":"path"},"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "cancelWorkflow": {"action":"workflow.execute","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/workflow/{id}/cancel","scope":{"id":{"at":"id","from":"path"}}},
+      "continuePipeline": {"action":"pipeline.continue.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/pipeline/continue","scope":{}},
+      "createCheckoutKey": {"action":"project.checkout_key.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/project/{project-slug}/checkout-key","scope":{"project-slug":{"at":"project-slug","from":"path"}}},
+      "createCheckoutKey.slug": {"action":"project.checkout_key.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/project/{provider}/{organization}/{project}/checkout-key","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "createContext": {"action":"context.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/context","scope":{}},
+      "createContextRestriction": {"action":"context.restrictions.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/context/{context_id}/restrictions","scope":{"context_id":{"at":"context_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createEnvVar": {"action":"project.envvar.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/project/{project-slug}/envvar","scope":{"project-slug":{"at":"project-slug","from":"path"}}},
+      "createEnvVar.slug": {"action":"project.envvar.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/project/{provider}/{organization}/{project}/envvar","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "createOrganization": {"action":"organization.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/organization","scope":{}},
+      "createOrganizationGroup": {"action":"organizations.groups.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/organizations/{org_id}/groups","scope":{"name":{"at":"/name","from":"body"},"org_id":{"at":"org_id","from":"path"}}},
+      "createOtelExporter": {"action":"otel.exporters.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/otel/exporters","scope":{"org_id":{"at":"/org_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createPipelineDefinition": {"action":"projects.pipeline_definitions.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/projects/{project_id}/pipeline-definitions","scope":{"project_id":{"at":"project_id","from":"path"}}},
+      "createProject": {"action":"organization.project.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/organization/{org-slug-or-id}/project","scope":{"org-slug-or-id":{"at":"org-slug-or-id","from":"path"}}},
+      "createSchedule": {"action":"project.schedule.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/project/{project-slug}/schedule","scope":{"project-slug":{"at":"project-slug","from":"path"}}},
+      "createSchedule.slug": {"action":"project.schedule.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/project/{provider}/{organization}/{project}/schedule","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "createTrigger": {"action":"projects.pipeline_definitions.triggers.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/projects/{project_id}/pipeline-definitions/{pipeline_definition_id}/triggers","scope":{"pipeline_definition_id":{"at":"pipeline_definition_id","from":"path"},"project_id":{"at":"project_id","from":"path"}}},
+      "createURLOrbAllowListEntry": {"action":"organization.url_orb_allow_list.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/organization/{org-slug-or-id}/url-orb-allow-list","scope":{"org-slug-or-id":{"at":"org-slug-or-id","from":"path"}}},
+      "createUsageExport": {"action":"organizations.usage_export_job.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/organizations/{org_id}/usage_export_job","scope":{"org_id":{"at":"org_id","from":"path"}}},
+      "createWebhook": {"action":"webhook.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/webhook","scope":{"name":{"at":"/name","from":"body"},"url":{"at":"/url","from":"body"}}},
+      "deleteCheckoutKey": {"action":"project.checkout_key.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/project/{project-slug}/checkout-key/{fingerprint}","scope":{"fingerprint":{"at":"fingerprint","from":"path"},"project-slug":{"at":"project-slug","from":"path"}}},
+      "deleteCheckoutKey.slug": {"action":"project.checkout_key.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/project/{provider}/{organization}/{project}/checkout-key/{fingerprint}","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"fingerprint":{"at":"fingerprint","from":"path"},"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "deleteContext": {"action":"context.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/context/{context_id}","scope":{"context_id":{"at":"context_id","from":"path"}}},
+      "deleteContextRestriction": {"action":"context.restrictions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/context/{context_id}/restrictions/{restriction_id}","scope":{"context_id":{"at":"context_id","from":"path"},"restriction_id":{"at":"restriction_id","from":"path"}}},
+      "deleteEnvVar": {"action":"project.envvar.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/project/{project-slug}/envvar/{name}","scope":{"name":{"at":"name","from":"path"},"project-slug":{"at":"project-slug","from":"path"}}},
+      "deleteEnvVar.slug": {"action":"project.envvar.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/project/{provider}/{organization}/{project}/envvar/{name}","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"name":{"at":"name","from":"path"},"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "deleteEnvironmentVariableFromContext": {"action":"context.environment_variable.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/context/{context_id}/environment-variable/{env_var_name}","scope":{"context_id":{"at":"context_id","from":"path"},"env_var_name":{"at":"env_var_name","from":"path"}}},
+      "deleteGroup": {"action":"organizations.groups.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/organizations/{org_id}/groups/{group_id}","scope":{"group_id":{"at":"group_id","from":"path"},"org_id":{"at":"org_id","from":"path"}}},
+      "deleteOrganization": {"action":"organization.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/organization/{org-slug-or-id}","scope":{"org-slug-or-id":{"at":"org-slug-or-id","from":"path"}}},
+      "deleteOtelExporter": {"action":"otel.exporters.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/otel/exporters/{otel_exporter_id}","scope":{"otel_exporter_id":{"at":"otel_exporter_id","from":"path"}}},
+      "deletePipelineDefinition": {"action":"projects.pipeline_definitions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/projects/{project_id}/pipeline-definitions/{pipeline_definition_id}","scope":{"pipeline_definition_id":{"at":"pipeline_definition_id","from":"path"},"project_id":{"at":"project_id","from":"path"}}},
+      "deleteProjectBySlug": {"action":"project.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/project/{project-slug}","scope":{"project-slug":{"at":"project-slug","from":"path"}}},
+      "deleteProjectBySlug.slug": {"action":"project.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/project/{provider}/{organization}/{project}","path_patterns":{"organization":"[^ce].*|c(?:|[^h].*|h(?:|[^e].*|e(?:|[^c].*|c(?:|[^k].*|k(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^\\-].*|-(?:|[^k].*|k(?:|[^e].*|e(?:|[^y].*|y.+)))))))))))|e(?:|[^n].*|n(?:|[^v].*|v(?:|[^v].*|v(?:|[^a].*|a(?:|[^r].*|r.+)))))","provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "deleteScheduleById": {"action":"schedule.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/schedule/{schedule-id}","scope":{"schedule-id":{"at":"schedule-id","from":"path"}}},
+      "deleteTrigger": {"action":"projects.triggers.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/projects/{project_id}/triggers/{trigger_id}","scope":{"project_id":{"at":"project_id","from":"path"},"trigger_id":{"at":"trigger_id","from":"path"}}},
+      "deleteWebhook": {"action":"webhook.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/webhook/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "getAllInsightsBranches": {"action":"insights.branches.read","effects":["read"],"method":"GET","origin":"{origin}","params":["workflow-name"],"path":"/api/v2/insights/{project-slug}/branches","scope":{"project-slug":{"at":"project-slug","from":"path"}}},
+      "getAllInsightsBranches.slug": {"action":"insights.branches.read","effects":["read"],"method":"GET","origin":"{origin}","params":["workflow-name"],"path":"/api/v2/insights/{provider}/{organization}/{project}/branches","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "getCheckoutKey": {"action":"project.checkout_key.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/project/{project-slug}/checkout-key/{fingerprint}","scope":{"fingerprint":{"at":"fingerprint","from":"path"},"project-slug":{"at":"project-slug","from":"path"}}},
+      "getCheckoutKey.slug": {"action":"project.checkout_key.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/project/{provider}/{organization}/{project}/checkout-key/{fingerprint}","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"fingerprint":{"at":"fingerprint","from":"path"},"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "getCollaborations": {"action":"me.collaborations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/me/collaborations","scope":{}},
+      "getComponent": {"action":"deploy.components.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/deploy/components/{component_id}","scope":{"component_id":{"at":"component_id","from":"path"}}},
+      "getContext": {"action":"context.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/context/{context_id}","scope":{"context_id":{"at":"context_id","from":"path"}}},
+      "getContextRestrictions": {"action":"context.restrictions.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/context/{context_id}/restrictions","scope":{"context_id":{"at":"context_id","from":"path"}}},
+      "getCurrentUser": {"action":"me.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/me","scope":{}},
+      "getEnvVar": {"action":"project.envvar.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/project/{project-slug}/envvar/{name}","scope":{"name":{"at":"name","from":"path"},"project-slug":{"at":"project-slug","from":"path"}}},
+      "getEnvVar.slug": {"action":"project.envvar.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/project/{provider}/{organization}/{project}/envvar/{name}","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"name":{"at":"name","from":"path"},"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "getEnvironment": {"action":"deploy.environments.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/deploy/environments/{environment_id}","scope":{"environment_id":{"at":"environment_id","from":"path"}}},
+      "getFlakyTests": {"action":"insights.flaky_tests.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/insights/{project-slug}/flaky-tests","scope":{"project-slug":{"at":"project-slug","from":"path"}}},
+      "getFlakyTests.slug": {"action":"insights.flaky_tests.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/insights/{provider}/{organization}/{project}/flaky-tests","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "getGroup": {"action":"organizations.groups.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/organizations/{org_id}/groups/{group_id}","scope":{"group_id":{"at":"group_id","from":"path"},"org_id":{"at":"org_id","from":"path"}}},
+      "getJob": {"action":"jobs.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/jobs/{job_id}","scope":{"job_id":{"at":"job_id","from":"path"}}},
+      "getJobTimeseries": {"action":"insights.time_series.workflows.jobs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["branch","granularity","start-date","end-date"],"path":"/api/v2/insights/time-series/{project-slug}/workflows/{workflow-name}/jobs","scope":{"project-slug":{"at":"project-slug","from":"path"},"workflow-name":{"at":"workflow-name","from":"path"}}},
+      "getJobTimeseries.slug": {"action":"insights.time_series.workflows.jobs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["branch","granularity","start-date","end-date"],"path":"/api/v2/insights/time-series/{provider}/{organization}/{project}/workflows/{workflow-name}/jobs","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"},"workflow-name":{"at":"workflow-name","from":"path"}}},
+      "getOrgSummaryData": {"action":"insights.summary.read","effects":["read"],"method":"GET","origin":"{origin}","params":["reporting-window","project-names"],"path":"/api/v2/insights/{org-slug}/summary","scope":{"org-slug":{"at":"org-slug","from":"path"}}},
+      "getOrganization": {"action":"organization.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/organization/{org-slug-or-id}","scope":{"org-slug-or-id":{"at":"org-slug-or-id","from":"path"}}},
+      "getOrganizationGroups": {"action":"organizations.groups.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","page-token"],"path":"/api/v2/organizations/{org_id}/groups","scope":{"org_id":{"at":"org_id","from":"path"}}},
+      "getPipelineById": {"action":"pipeline.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/pipeline/{pipeline-id}","scope":{"pipeline-id":{"at":"pipeline-id","from":"path"}}},
+      "getPipelineByNumber": {"action":"project.pipeline.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page-token"],"path":"/api/v2/project/{project-slug}/pipeline/{pipeline-number}","path_patterns":{"pipeline-number":"[^m].*|m(?:|[^i].*|i(?:|[^n].*|n(?:|[^e].*|e.+)))","project-slug":".*%2[Ff].*"},"scope":{"pipeline-number":{"at":"pipeline-number","from":"path"},"project-slug":{"at":"project-slug","from":"path"}}},
+      "getPipelineByNumber.slug": {"action":"project.pipeline.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page-token"],"path":"/api/v2/project/{provider}/{organization}/{project}/pipeline/{pipeline-number}","path_patterns":{"pipeline-number":"[^m].*|m(?:|[^i].*|i(?:|[^n].*|n(?:|[^e].*|e.+)))","provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"pipeline-number":{"at":"pipeline-number","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "getPipelineConfigById": {"action":"pipeline.config.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/pipeline/{pipeline-id}/config","scope":{"pipeline-id":{"at":"pipeline-id","from":"path"}}},
+      "getPipelineDefinition": {"action":"projects.pipeline_definitions.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/projects/{project_id}/pipeline-definitions/{pipeline_definition_id}","scope":{"pipeline_definition_id":{"at":"pipeline_definition_id","from":"path"},"project_id":{"at":"project_id","from":"path"}}},
+      "getPipelineValuesById": {"action":"pipeline.values.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/pipeline/{pipeline_id}/values","scope":{"pipeline_id":{"at":"pipeline_id","from":"path"}}},
+      "getProjectBySlug": {"action":"project.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/project/{project-slug}","scope":{"project-slug":{"at":"project-slug","from":"path"}}},
+      "getProjectBySlug.slug": {"action":"project.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/project/{provider}/{organization}/{project}","path_patterns":{"organization":"[^ce].*|c(?:|[^h].*|h(?:|[^e].*|e(?:|[^c].*|c(?:|[^k].*|k(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^\\-].*|-(?:|[^k].*|k(?:|[^e].*|e(?:|[^y].*|y.+)))))))))))|e(?:|[^n].*|n(?:|[^v].*|v(?:|[^v].*|v(?:|[^a].*|a(?:|[^r].*|r.+)))))","provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "getProjectSettings": {"action":"project.settings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/project/{provider}/{organization}/{project}/settings","scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "getProjectWorkflowJobMetrics": {"action":"insights.workflows.jobs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page-token","all-branches","branch","reporting-window","job-name"],"path":"/api/v2/insights/{project-slug}/workflows/{workflow-name}/jobs","scope":{"project-slug":{"at":"project-slug","from":"path"},"workflow-name":{"at":"workflow-name","from":"path"}}},
+      "getProjectWorkflowJobMetrics.slug": {"action":"insights.workflows.jobs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page-token","all-branches","branch","reporting-window","job-name"],"path":"/api/v2/insights/{provider}/{organization}/{project}/workflows/{workflow-name}/jobs","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"},"workflow-name":{"at":"workflow-name","from":"path"}}},
+      "getProjectWorkflowMetrics": {"action":"insights.workflows.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page-token","all-branches","branch","reporting-window"],"path":"/api/v2/insights/{project-slug}/workflows","scope":{"project-slug":{"at":"project-slug","from":"path"}}},
+      "getProjectWorkflowMetrics.slug": {"action":"insights.workflows.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page-token","all-branches","branch","reporting-window"],"path":"/api/v2/insights/{provider}/{organization}/{project}/workflows","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "getProjectWorkflowRuns": {"action":"insights.workflows.read","effects":["read"],"method":"GET","origin":"{origin}","params":["all-branches","branch","page-token","start-date","end-date","reporting-window","branches","workflow-names"],"path":"/api/v2/insights/{project-slug}/workflows/{workflow-name}","scope":{"project-slug":{"at":"project-slug","from":"path"},"workflow-name":{"at":"workflow-name","from":"path"}}},
+      "getProjectWorkflowRuns.slug": {"action":"insights.workflows.read","effects":["read"],"method":"GET","origin":"{origin}","params":["all-branches","branch","page-token","start-date","end-date","reporting-window","branches","workflow-names"],"path":"/api/v2/insights/{provider}/{organization}/{project}/workflows/{workflow-name}","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"},"workflow-name":{"at":"workflow-name","from":"path"}}},
+      "getProjectWorkflowTestMetrics": {"action":"insights.workflows.test_metrics.read","effects":["read"],"method":"GET","origin":"{origin}","params":["branch","all-branches"],"path":"/api/v2/insights/{project-slug}/workflows/{workflow-name}/test-metrics","scope":{"project-slug":{"at":"project-slug","from":"path"},"workflow-name":{"at":"workflow-name","from":"path"}}},
+      "getProjectWorkflowTestMetrics.slug": {"action":"insights.workflows.metrics.read","effects":["read"],"method":"GET","origin":"{origin}","params":["branch","all-branches"],"path":"/api/v2/insights/{provider}/{organization}/{project}/workflows/{workflow-name}/test-metrics","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"},"workflow-name":{"at":"workflow-name","from":"path"}}},
+      "getProjectWorkflowsPageData": {"action":"insights.pages.summary.read","effects":["read"],"method":"GET","origin":"{origin}","params":["reporting-window","branches","workflow-names"],"path":"/api/v2/insights/pages/{project-slug}/summary","path_patterns":{"project-slug":"[^w].*|w(?:|[^o].*|o(?:|[^r].*|r(?:|[^k].*|k(?:|[^f].*|f(?:|[^l].*|l(?:|[^o].*|o(?:|[^w].*|w(?:|[^s].*|s.+))))))))"},"scope":{"project-slug":{"at":"project-slug","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getProjectWorkflowsPageData.slug": {"action":"insights.pages.summary.read","effects":["read"],"method":"GET","origin":"{origin}","params":["reporting-window","branches","workflow-names"],"path":"/api/v2/insights/pages/{provider}/{organization}/{project}/summary","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getProjectWorkflowsPageDataByFilters": {"action":"insights.pages.summary.read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v2/insights/pages/{project-slug}/summary","scope":{"project-slug":{"at":"project-slug","from":"path"}}},
+      "getProjectWorkflowsPageDataByFilters.json.057b648239c6": {"action":"insights.pages.summary.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v2/insights/pages/{project-slug}/summary","scope":{"project-slug":{"at":"project-slug","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "getProjectWorkflowsPageDataByFilters.slug": {"action":"insights.pages.summary.read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v2/insights/pages/{provider}/{organization}/{project}/summary","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "getProjectWorkflowsPageDataByFilters.slug.json.057b648239c6": {"action":"insights.pages.summary.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v2/insights/pages/{provider}/{organization}/{project}/summary","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "getScheduleById": {"action":"schedule.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/schedule/{schedule-id}","scope":{"schedule-id":{"at":"schedule-id","from":"path"}}},
+      "getTrigger": {"action":"projects.triggers.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/projects/{project_id}/triggers/{trigger_id}","scope":{"project_id":{"at":"project_id","from":"path"},"trigger_id":{"at":"trigger_id","from":"path"}}},
+      "getUsageExport": {"action":"organizations.usage_export_job.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/organizations/{org_id}/usage_export_job/{usage_export_job_id}","scope":{"org_id":{"at":"org_id","from":"path"},"usage_export_job_id":{"at":"usage_export_job_id","from":"path"}}},
+      "getUser": {"action":"user.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/user/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getWebhookById": {"action":"webhook.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/webhook/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "getWebhooks": {"action":"webhook.read","effects":["read"],"method":"GET","origin":"{origin}","params":["scope-id","scope-type","is-enabled"],"path":"/api/v2/webhook","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getWorkflowById": {"action":"workflow.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/workflow/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getWorkflowSummary": {"action":"insights.workflows.summary.read","effects":["read"],"method":"GET","origin":"{origin}","params":["all-branches","branch"],"path":"/api/v2/insights/{project-slug}/workflows/{workflow-name}/summary","scope":{"project-slug":{"at":"project-slug","from":"path"},"workflow-name":{"at":"workflow-name","from":"path"}}},
+      "getWorkflowSummary.slug": {"action":"insights.workflows.summary.read","effects":["read"],"method":"GET","origin":"{origin}","params":["all-branches","branch"],"path":"/api/v2/insights/{provider}/{organization}/{project}/workflows/{workflow-name}/summary","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"},"workflow-name":{"at":"workflow-name","from":"path"}}},
+      "listCheckoutKeys": {"action":"project.checkout_key.read","effects":["read"],"method":"GET","origin":"{origin}","params":["digest"],"path":"/api/v2/project/{project-slug}/checkout-key","scope":{"project-slug":{"at":"project-slug","from":"path"}}},
+      "listCheckoutKeys.slug": {"action":"project.checkout_key.read","effects":["read"],"method":"GET","origin":"{origin}","params":["digest"],"path":"/api/v2/project/{provider}/{organization}/{project}/checkout-key","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "listComponentVersions": {"action":"deploy.components.versions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["environment-id"],"path":"/api/v2/deploy/components/{component_id}/versions","scope":{"component_id":{"at":"component_id","from":"path"}}},
+      "listComponents": {"action":"deploy.components.read","effects":["read"],"method":"GET","origin":"{origin}","params":["org-id","project-id","page-size","page-token"],"path":"/api/v2/deploy/components","scope":{}},
+      "listContexts": {"action":"context.read","effects":["read"],"method":"GET","origin":"{origin}","params":["owner-id","owner-slug","owner-type","page-token"],"path":"/api/v2/context","scope":{}},
+      "listEnvVars": {"action":"project.envvar.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/project/{project-slug}/envvar","scope":{"project-slug":{"at":"project-slug","from":"path"}}},
+      "listEnvVars.slug": {"action":"project.envvar.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/project/{provider}/{organization}/{project}/envvar","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "listEnvironmentVariablesFromContext": {"action":"context.environment_variable.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page-token"],"path":"/api/v2/context/{context_id}/environment-variable","scope":{"context_id":{"at":"context_id","from":"path"}}},
+      "listEnvironments": {"action":"deploy.environments.read","effects":["read"],"method":"GET","origin":"{origin}","params":["org-id","page-size","page-token"],"path":"/api/v2/deploy/environments","scope":{}},
+      "listMyPipelines": {"action":"project.pipeline.mine.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page-token"],"path":"/api/v2/project/{project-slug}/pipeline/mine","path_patterns":{"project-slug":".*%2[Ff].*"},"scope":{"project-slug":{"at":"project-slug","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listMyPipelines.slug": {"action":"project.pipeline.mine.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page-token"],"path":"/api/v2/project/{provider}/{organization}/{project}/pipeline/mine","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listOtelExporters": {"action":"otel.exporters.read","effects":["read"],"method":"GET","origin":"{origin}","params":["org-id"],"path":"/api/v2/otel/exporters","scope":{}},
+      "listPipelineDefinitionTriggers": {"action":"projects.pipeline_definitions.triggers.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/projects/{project_id}/pipeline-definitions/{pipeline_definition_id}/triggers","scope":{"pipeline_definition_id":{"at":"pipeline_definition_id","from":"path"},"project_id":{"at":"project_id","from":"path"}}},
+      "listPipelineDefinitions": {"action":"projects.pipeline_definitions.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/projects/{project_id}/pipeline-definitions","scope":{"project_id":{"at":"project_id","from":"path"}}},
+      "listPipelines": {"action":"pipeline.read","effects":["read"],"method":"GET","origin":"{origin}","params":["org-slug","page-token","mine"],"path":"/api/v2/pipeline","scope":{}},
+      "listPipelinesForProject": {"action":"project.pipeline.read","effects":["read"],"method":"GET","origin":"{origin}","params":["branch","page-token"],"path":"/api/v2/project/{project-slug}/pipeline","scope":{"project-slug":{"at":"project-slug","from":"path"}}},
+      "listPipelinesForProject.slug": {"action":"project.pipeline.read","effects":["read"],"method":"GET","origin":"{origin}","params":["branch","page-token"],"path":"/api/v2/project/{provider}/{organization}/{project}/pipeline","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "listSchedulesForProject": {"action":"project.schedule.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page-token"],"path":"/api/v2/project/{project-slug}/schedule","scope":{"project-slug":{"at":"project-slug","from":"path"}}},
+      "listSchedulesForProject.slug": {"action":"project.schedule.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page-token"],"path":"/api/v2/project/{provider}/{organization}/{project}/schedule","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "listURLOrbAllowListEntries": {"action":"organization.url_orb_allow_list.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/organization/{org-slug-or-id}/url-orb-allow-list","scope":{"org-slug-or-id":{"at":"org-slug-or-id","from":"path"}}},
+      "listWorkflowJobs": {"action":"workflow.job.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/workflow/{id}/job","scope":{"id":{"at":"id","from":"path"}}},
+      "listWorkflowsByPipelineId": {"action":"pipeline.workflow.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page-token"],"path":"/api/v2/pipeline/{pipeline-id}/workflow","scope":{"pipeline-id":{"at":"pipeline-id","from":"path"}}},
+      "patchProjectSettings": {"action":"project.settings.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/v2/project/{provider}/{organization}/{project}/settings","scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "removeURLOrbAllowListEntry": {"action":"organization.url_orb_allow_list.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/organization/{org-slug-or-id}/url-orb-allow-list/{allow-list-entry-id}","scope":{"allow-list-entry-id":{"at":"allow-list-entry-id","from":"path"},"org-slug-or-id":{"at":"org-slug-or-id","from":"path"}}},
+      "rerunWorkflow": {"action":"workflow.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/workflow/{id}/rerun","scope":{"id":{"at":"id","from":"path"}}},
+      "rollbackProject": {"action":"projects.rollback.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/projects/{project_id}/rollback","scope":{"component_name":{"at":"/component_name","from":"body"},"environment_name":{"at":"/environment_name","from":"body"},"project_id":{"at":"project_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "triggerPipeline": {"action":"project.pipeline.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/project/{project-slug}/pipeline","scope":{"project-slug":{"at":"project-slug","from":"path"}}},
+      "triggerPipeline.slug": {"action":"project.pipeline.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/project/{provider}/{organization}/{project}/pipeline","path_patterns":{"provider":"gh|github|bb|bitbucket|circleci"},"scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "triggerPipelineRun": {"action":"project.pipeline.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/project/{provider}/{organization}/{project}/pipeline/run","scope":{"organization":{"at":"organization","from":"path"},"project":{"at":"project","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "updatePipelineDefinition": {"action":"projects.pipeline_definitions.write","body":"any","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v2/projects/{project_id}/pipeline-definitions/{pipeline_definition_id}","scope":{"pipeline_definition_id":{"at":"pipeline_definition_id","from":"path"},"project_id":{"at":"project_id","from":"path"}}},
+      "updateSchedule": {"action":"schedule.write","body":"any","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v2/schedule/{schedule-id}","scope":{"schedule-id":{"at":"schedule-id","from":"path"}}},
+      "updateTrigger": {"action":"projects.triggers.write","body":"any","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v2/projects/{project_id}/triggers/{trigger_id}","scope":{"project_id":{"at":"project_id","from":"path"},"trigger_id":{"at":"trigger_id","from":"path"}}},
+      "updateWebhook": {"action":"webhook.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/v2/webhook/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}}
     }
   }
 }

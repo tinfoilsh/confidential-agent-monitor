@@ -1,7 +1,191 @@
 {
-  "title": "Google Chat",
   "catalog": {
-    "group": "api",
+    "actions": {
+      "custom_emojis": {
+        "title": "Custom emojis"
+      },
+      "custom_emojis.delete": {
+        "title": "Delete"
+      },
+      "custom_emojis.read": {
+        "title": "Read"
+      },
+      "custom_emojis.write": {
+        "title": "Create and edit"
+      },
+      "media": {
+        "title": "Media"
+      },
+      "media.read": {
+        "title": "Read"
+      },
+      "spaces": {
+        "title": "Spaces"
+      },
+      "spaces.attachments": {
+        "title": "Attachments"
+      },
+      "spaces.attachments.write": {
+        "title": "Create and edit"
+      },
+      "spaces.delete": {
+        "title": "Delete"
+      },
+      "spaces.members": {
+        "title": "Members"
+      },
+      "spaces.members.admin": {
+        "title": "Manage"
+      },
+      "spaces.members.delete": {
+        "title": "Delete"
+      },
+      "spaces.members.read": {
+        "title": "Read"
+      },
+      "spaces.members.share": {
+        "title": "Share"
+      },
+      "spaces.message_pins": {
+        "title": "Message pins"
+      },
+      "spaces.message_pins.delete": {
+        "title": "Delete"
+      },
+      "spaces.message_pins.read": {
+        "title": "Read"
+      },
+      "spaces.message_pins.write": {
+        "title": "Create and edit"
+      },
+      "spaces.messages": {
+        "title": "Messages"
+      },
+      "spaces.messages.attachments": {
+        "title": "Attachments"
+      },
+      "spaces.messages.attachments.read": {
+        "title": "Read"
+      },
+      "spaces.messages.delete": {
+        "title": "Delete"
+      },
+      "spaces.messages.reactions": {
+        "title": "Reactions"
+      },
+      "spaces.messages.reactions.delete": {
+        "title": "Delete"
+      },
+      "spaces.messages.reactions.read": {
+        "title": "Read"
+      },
+      "spaces.messages.reactions.send": {
+        "title": "Send"
+      },
+      "spaces.messages.read": {
+        "title": "Read"
+      },
+      "spaces.messages.send": {
+        "title": "Send"
+      },
+      "spaces.messages.write": {
+        "title": "Create and edit"
+      },
+      "spaces.read": {
+        "title": "Read"
+      },
+      "spaces.share": {
+        "title": "Share"
+      },
+      "spaces.space_events": {
+        "title": "Space events"
+      },
+      "spaces.space_events.read": {
+        "title": "Read"
+      },
+      "spaces.write": {
+        "title": "Create and edit"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.availability": {
+        "title": "Availability"
+      },
+      "users.availability.read": {
+        "title": "Read"
+      },
+      "users.availability.write": {
+        "title": "Create and edit"
+      },
+      "users.sections": {
+        "title": "Sections"
+      },
+      "users.sections.delete": {
+        "title": "Delete"
+      },
+      "users.sections.items": {
+        "title": "Items"
+      },
+      "users.sections.items.read": {
+        "title": "Read"
+      },
+      "users.sections.items.write": {
+        "title": "Create and edit"
+      },
+      "users.sections.read": {
+        "title": "Read"
+      },
+      "users.sections.write": {
+        "title": "Create and edit"
+      },
+      "users.spaces": {
+        "title": "Spaces"
+      },
+      "users.spaces.space_notification_setting": {
+        "title": "Space notification setting"
+      },
+      "users.spaces.space_notification_setting.read": {
+        "title": "Read"
+      },
+      "users.spaces.space_notification_setting.write": {
+        "title": "Create and edit"
+      },
+      "users.spaces.space_read_state": {
+        "title": "Space read state"
+      },
+      "users.spaces.space_read_state.read": {
+        "title": "Read"
+      },
+      "users.spaces.space_read_state.write": {
+        "title": "Create and edit"
+      },
+      "users.spaces.threads": {
+        "title": "Threads"
+      },
+      "users.spaces.threads.thread_read_state": {
+        "title": "Thread read state"
+      },
+      "users.spaces.threads.thread_read_state.read": {
+        "title": "Read"
+      },
+      "users.spaces.threads.thread_read_state.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://chat.googleapis.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
     "fields": [
       {
         "key": "client_id",
@@ -14,91 +198,84 @@
         "paths": [],
         "secret": true
       },
-      {"key": "token", "label": "Google Chat account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/chat.spaces https://www.googleapis.com/auth/chat.messages https://www.googleapis.com/auth/chat.memberships"}}
+      {
+        "credential": true,
+        "key": "token",
+        "label": "Google Chat account",
+        "oauth": {
+          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
+          "client_id": "{client_id}",
+          "client_secret": "{client_secret}",
+          "scope": "https://www.googleapis.com/auth/chat.spaces https://www.googleapis.com/auth/chat.messages https://www.googleapis.com/auth/chat.memberships",
+          "token_url": "https://oauth2.googleapis.com/token"
+        },
+        "secret": true
+      }
     ],
-    "connection": {"http": {"slots": [{"value": "token", "origin": "https://chat.googleapis.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
-    "actions": {
-      "admin.members": {"title": "Admin: members"},
-      "delete.custom_emojis": {"title": "Delete: custom emojis"},
-      "delete.members": {"title": "Delete: members"},
-      "delete.message_pins": {"title": "Delete: message pins"},
-      "delete.messages": {"title": "Delete: messages"},
-      "delete.reactions": {"title": "Delete: reactions"},
-      "delete.sections": {"title": "Delete: sections"},
-      "delete.spaces": {"title": "Delete: spaces"},
-      "generate.spaces": {"title": "Generate: spaces"},
-      "read": {"title": "Read everything the account can see"},
-      "send.messages": {"title": "Send: messages"},
-      "send.reactions": {"title": "Send: reactions"},
-      "write.attachments": {"title": "Write: attachments"},
-      "write.availability": {"title": "Write: availability"},
-      "write.custom_emojis": {"title": "Write: custom emojis"},
-      "write.items": {"title": "Write: items"},
-      "write.message_pins": {"title": "Write: message pins"},
-      "write.messages": {"title": "Write: messages"},
-      "write.sections": {"title": "Write: sections"},
-      "write.space_notification_setting": {"title": "Write: space notification setting"},
-      "write.space_read_state": {"title": "Write: space read state"},
-      "write.spaces": {"title": "Write: spaces"}
-    }
+    "group": "api"
   },
+  "title": "Google Chat",
   "http": {
     "operations": {
-      "customEmojis.create": {"action":"write.custom_emojis","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","path":"/v1/customEmojis","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}},
-      "customEmojis.delete": {"action":"delete.custom_emojis","effects":["delete"],"method":"DELETE","origin":"https://chat.googleapis.com","path":"/v1/customEmojis/{customEmojisId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customEmojisId":{"from":"path","at":"customEmojisId"}}},
-      "customEmojis.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/customEmojis/{customEmojisId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customEmojisId":{"from":"path","at":"customEmojisId"}}},
-      "customEmojis.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/customEmojis","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"scope":{}},
-      "media.download": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/media/{mediaId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"mediaId":{"from":"path","at":"mediaId"}}},
-      "media.upload": {"action":"write.attachments","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/attachments:upload","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"spacesId":{"from":"path","at":"spacesId"}}},
-      "media.upload.upload": {"action":"write.attachments","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","path":"/upload/v1/{parent}/attachments:upload","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","uploadType"],"body":"any","scope":{"parent":{"from":"path","at":"parent"}}},
-      "spaces.completeImport": {"action":"generate.spaces","effects":["generate"],"method":"POST","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}:completeImport","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"spacesId":{"from":"path","at":"spacesId"}}},
-      "spaces.create": {"action":"write.spaces","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","path":"/v1/spaces","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","requestId"],"body":"json","scope":{}},
-      "spaces.delete": {"action":"delete.spaces","effects":["delete"],"method":"DELETE","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useAdminAccess"],"scope":{"spacesId":{"from":"path","at":"spacesId"}}},
-      "spaces.findDirectMessage": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/spaces:findDirectMessage","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","name"],"scope":{}},
-      "spaces.findGroupChats": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/spaces:findGroupChats","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken","spaceView","users"],"scope":{}},
-      "spaces.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useAdminAccess"],"scope":{"spacesId":{"from":"path","at":"spacesId"}}},
-      "spaces.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/spaces","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"scope":{}},
-      "spaces.members.create": {"action":"admin.members","effects":["admin"],"method":"POST","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/members","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useAdminAccess"],"body":"json","scope":{"spacesId":{"from":"path","at":"spacesId"}}},
-      "spaces.members.delete": {"action":"delete.members","effects":["delete"],"method":"DELETE","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/members/{membersId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useAdminAccess"],"scope":{"spacesId":{"from":"path","at":"spacesId"},"membersId":{"from":"path","at":"membersId"}}},
-      "spaces.members.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/members/{membersId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useAdminAccess"],"scope":{"spacesId":{"from":"path","at":"spacesId"},"membersId":{"from":"path","at":"membersId"}}},
-      "spaces.members.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/members","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken","showGroups","showInvited","useAdminAccess"],"scope":{"spacesId":{"from":"path","at":"spacesId"}}},
-      "spaces.members.patch": {"action":"admin.members","effects":["admin"],"method":"PATCH","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/members/{membersId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask","useAdminAccess"],"body":"json","scope":{"spacesId":{"from":"path","at":"spacesId"},"membersId":{"from":"path","at":"membersId"}}},
-      "spaces.messagePins.create": {"action":"write.message_pins","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/messagePins","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"spacesId":{"from":"path","at":"spacesId"}}},
-      "spaces.messagePins.delete": {"action":"delete.message_pins","effects":["delete"],"method":"DELETE","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/messagePins/{messagePinsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"spacesId":{"from":"path","at":"spacesId"},"messagePinsId":{"from":"path","at":"messagePinsId"}}},
-      "spaces.messagePins.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/messagePins","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{"spacesId":{"from":"path","at":"spacesId"}}},
-      "spaces.messages.attachments.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/messages/{messagesId}/attachments/{attachmentsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"spacesId":{"from":"path","at":"spacesId"},"messagesId":{"from":"path","at":"messagesId"},"attachmentsId":{"from":"path","at":"attachmentsId"}}},
-      "spaces.messages.create": {"action":"send.messages","effects":["send"],"method":"POST","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/messages","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","createMessageNotificationOptions.notificationType","messageId","messageReplyOption","requestId","threadKey"],"body":"json","scope":{"spacesId":{"from":"path","at":"spacesId"},"request":{"from":"body","at":"","type":"object"}},"grant":["spacesId"]},
-      "spaces.messages.delete": {"action":"delete.messages","effects":["delete"],"method":"DELETE","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/messages/{messagesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","force"],"scope":{"spacesId":{"from":"path","at":"spacesId"},"messagesId":{"from":"path","at":"messagesId"}}},
-      "spaces.messages.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/messages/{messagesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","markupSyntax"],"scope":{"spacesId":{"from":"path","at":"spacesId"},"messagesId":{"from":"path","at":"messagesId"}}},
-      "spaces.messages.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/messages","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","markupSyntax","orderBy","pageSize","pageToken","showDeleted"],"scope":{"spacesId":{"from":"path","at":"spacesId"}}},
-      "spaces.messages.patch": {"action":"write.messages","effects":["write"],"method":"PATCH","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/messages/{messagesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","allowMissing","updateMask"],"body":"json","scope":{"spacesId":{"from":"path","at":"spacesId"},"messagesId":{"from":"path","at":"messagesId"}}},
-      "spaces.messages.reactions.create": {"action":"send.reactions","effects":["send"],"method":"POST","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/messages/{messagesId}/reactions","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"spacesId":{"from":"path","at":"spacesId"},"messagesId":{"from":"path","at":"messagesId"},"request":{"from":"body","at":"","type":"object"}},"grant":["spacesId","messagesId"]},
-      "spaces.messages.reactions.delete": {"action":"delete.reactions","effects":["delete"],"method":"DELETE","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/messages/{messagesId}/reactions/{reactionsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"spacesId":{"from":"path","at":"spacesId"},"messagesId":{"from":"path","at":"messagesId"},"reactionsId":{"from":"path","at":"reactionsId"}}},
-      "spaces.messages.reactions.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/messages/{messagesId}/reactions","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"scope":{"spacesId":{"from":"path","at":"spacesId"},"messagesId":{"from":"path","at":"messagesId"}}},
-      "spaces.messages.search": {"action":"read","effects":["read"],"method":"POST","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/messages:search","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"spacesId":{"from":"path","at":"spacesId"}}},
-      "spaces.messages.update": {"action":"write.messages","effects":["write"],"method":"PUT","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/messages/{messagesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","allowMissing","updateMask"],"body":"json","scope":{"spacesId":{"from":"path","at":"spacesId"},"messagesId":{"from":"path","at":"messagesId"}}},
-      "spaces.patch": {"action":"write.spaces","effects":["write"],"method":"PATCH","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask","useAdminAccess"],"body":"json","scope":{"spacesId":{"from":"path","at":"spacesId"}}},
-      "spaces.search": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/spaces:search","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","orderBy","pageSize","pageToken","query","useAdminAccess"],"scope":{}},
-      "spaces.setup": {"action":"write.spaces","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","path":"/v1/spaces:setup","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}},
-      "spaces.spaceEvents.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/spaceEvents/{spaceEventsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"spacesId":{"from":"path","at":"spacesId"},"spaceEventsId":{"from":"path","at":"spaceEventsId"}}},
-      "spaces.spaceEvents.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/spaces/{spacesId}/spaceEvents","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"scope":{"spacesId":{"from":"path","at":"spacesId"}}},
-      "users.availability.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/users/{usersId}/availability","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"usersId":{"from":"path","at":"usersId"}}},
-      "users.availability.markAsActive": {"action":"write.availability","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","path":"/v1/users/{usersId}/availability:markAsActive","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"usersId":{"from":"path","at":"usersId"}}},
-      "users.availability.markAsAway": {"action":"write.availability","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","path":"/v1/users/{usersId}/availability:markAsAway","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"usersId":{"from":"path","at":"usersId"}}},
-      "users.availability.markAsDoNotDisturb": {"action":"write.availability","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","path":"/v1/users/{usersId}/availability:markAsDoNotDisturb","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"usersId":{"from":"path","at":"usersId"}}},
-      "users.availability.patch": {"action":"write.availability","effects":["write"],"method":"PATCH","origin":"https://chat.googleapis.com","path":"/v1/users/{usersId}/availability","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"usersId":{"from":"path","at":"usersId"}}},
-      "users.sections.create": {"action":"write.sections","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","path":"/v1/users/{usersId}/sections","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"usersId":{"from":"path","at":"usersId"}}},
-      "users.sections.delete": {"action":"delete.sections","effects":["delete"],"method":"DELETE","origin":"https://chat.googleapis.com","path":"/v1/users/{usersId}/sections/{sectionsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"usersId":{"from":"path","at":"usersId"},"sectionsId":{"from":"path","at":"sectionsId"}}},
-      "users.sections.items.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/users/{usersId}/sections/{sectionsId}/items","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"scope":{"usersId":{"from":"path","at":"usersId"},"sectionsId":{"from":"path","at":"sectionsId"}}},
-      "users.sections.items.move": {"action":"write.items","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","path":"/v1/users/{usersId}/sections/{sectionsId}/items/{itemsId}:move","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"usersId":{"from":"path","at":"usersId"},"sectionsId":{"from":"path","at":"sectionsId"},"itemsId":{"from":"path","at":"itemsId"}}},
-      "users.sections.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/users/{usersId}/sections","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{"usersId":{"from":"path","at":"usersId"}}},
-      "users.sections.patch": {"action":"write.sections","effects":["write"],"method":"PATCH","origin":"https://chat.googleapis.com","path":"/v1/users/{usersId}/sections/{sectionsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"usersId":{"from":"path","at":"usersId"},"sectionsId":{"from":"path","at":"sectionsId"}}},
-      "users.sections.position": {"action":"write.sections","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","path":"/v1/users/{usersId}/sections/{sectionsId}:position","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"usersId":{"from":"path","at":"usersId"},"sectionsId":{"from":"path","at":"sectionsId"}}},
-      "users.spaces.getSpaceReadState": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/users/{usersId}/spaces/{spacesId}/spaceReadState","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"usersId":{"from":"path","at":"usersId"},"spacesId":{"from":"path","at":"spacesId"}}},
-      "users.spaces.spaceNotificationSetting.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/users/{usersId}/spaces/{spacesId}/spaceNotificationSetting","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"usersId":{"from":"path","at":"usersId"},"spacesId":{"from":"path","at":"spacesId"}}},
-      "users.spaces.spaceNotificationSetting.patch": {"action":"write.space_notification_setting","effects":["write"],"method":"PATCH","origin":"https://chat.googleapis.com","path":"/v1/users/{usersId}/spaces/{spacesId}/spaceNotificationSetting","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"usersId":{"from":"path","at":"usersId"},"spacesId":{"from":"path","at":"spacesId"}}},
-      "users.spaces.threads.getThreadReadState": {"action":"read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","path":"/v1/users/{usersId}/spaces/{spacesId}/threads/{threadsId}/threadReadState","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"usersId":{"from":"path","at":"usersId"},"spacesId":{"from":"path","at":"spacesId"},"threadsId":{"from":"path","at":"threadsId"}}},
-      "users.spaces.updateSpaceReadState": {"action":"write.space_read_state","effects":["write"],"method":"PATCH","origin":"https://chat.googleapis.com","path":"/v1/users/{usersId}/spaces/{spacesId}/spaceReadState","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"usersId":{"from":"path","at":"usersId"},"spacesId":{"from":"path","at":"spacesId"}}}
+      "customEmojis.create": {"action":"custom_emojis.write","body":"json","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/customEmojis","scope":{}},
+      "customEmojis.delete": {"action":"custom_emojis.delete","effects":["delete"],"method":"DELETE","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/customEmojis/{customEmojisId}","scope":{"customEmojisId":{"at":"customEmojisId","from":"path"}}},
+      "customEmojis.get": {"action":"custom_emojis.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/customEmojis/{customEmojisId}","scope":{"customEmojisId":{"at":"customEmojisId","from":"path"}}},
+      "customEmojis.list": {"action":"custom_emojis.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"path":"/v1/customEmojis","scope":{}},
+      "media.download": {"action":"media.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/media/{mediaId}","scope":{"mediaId":{"at":"mediaId","from":"path"}}},
+      "media.download.nested": {"action":"media.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/media/{resourceName*}","path_patterns":{"resourceName":".+/.+"},"scope":{"resourceName":{"at":"resourceName","from":"path"}}},
+      "media.upload": {"action":"spaces.attachments.write","body":"json","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/spaces/{spacesId}/attachments:upload","scope":{"spacesId":{"at":"spacesId","from":"path"}}},
+      "media.upload.upload": {"action":"spaces.attachments.write","body":"any","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","upload_id"],"path":"/upload/v1/spaces/{spacesId}/attachments:upload","scope":{"query":{"at":"","from":"query","type":"object"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "media.upload.upload.session": {"action":"spaces.attachments.write","body":"any","effects":["write"],"method":"PUT","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/upload/v1/spaces/{spacesId}/attachments:upload","query":{"upload_id":true},"scope":{"query":{"at":"","from":"query","type":"object"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.completeImport": {"action":"spaces.write","body":"json","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/spaces/{spacesId}:completeImport","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.create": {"action":"spaces.write","body":"json","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","requestId"],"path":"/v1/spaces","scope":{}},
+      "spaces.delete": {"action":"spaces.delete","effects":["delete"],"method":"DELETE","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useAdminAccess"],"path":"/v1/spaces/{spacesId}","scope":{"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.findDirectMessage": {"action":"spaces.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","name"],"path":"/v1/spaces:findDirectMessage","scope":{}},
+      "spaces.findGroupChats": {"action":"spaces.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken","spaceView","users"],"path":"/v1/spaces:findGroupChats","scope":{}},
+      "spaces.get": {"action":"spaces.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useAdminAccess"],"path":"/v1/spaces/{spacesId}","scope":{"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.list": {"action":"spaces.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"path":"/v1/spaces","scope":{}},
+      "spaces.members.create": {"action":"spaces.members.share","body":"json","effects":["share"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useAdminAccess"],"path":"/v1/spaces/{spacesId}/members","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.members.delete": {"action":"spaces.members.delete","effects":["delete","share"],"method":"DELETE","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useAdminAccess"],"path":"/v1/spaces/{spacesId}/members/{membersId}","scope":{"membersId":{"at":"membersId","from":"path"},"query":{"at":"","from":"query","type":"object"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.members.get": {"action":"spaces.members.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useAdminAccess"],"path":"/v1/spaces/{spacesId}/members/{membersId}","scope":{"membersId":{"at":"membersId","from":"path"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.members.list": {"action":"spaces.members.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken","showGroups","showInvited","useAdminAccess"],"path":"/v1/spaces/{spacesId}/members","scope":{"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.members.patch": {"action":"spaces.members.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask","useAdminAccess"],"path":"/v1/spaces/{spacesId}/members/{membersId}","scope":{"membersId":{"at":"membersId","from":"path"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.messagePins.create": {"action":"spaces.message_pins.write","body":"json","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/spaces/{spacesId}/messagePins","scope":{"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.messagePins.delete": {"action":"spaces.message_pins.delete","effects":["delete"],"method":"DELETE","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/spaces/{spacesId}/messagePins/{messagePinsId}","scope":{"messagePinsId":{"at":"messagePinsId","from":"path"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.messagePins.list": {"action":"spaces.message_pins.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1/spaces/{spacesId}/messagePins","scope":{"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.messages.attachments.get": {"action":"spaces.messages.attachments.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/spaces/{spacesId}/messages/{messagesId}/attachments/{attachmentsId}","scope":{"attachmentsId":{"at":"attachmentsId","from":"path"},"messagesId":{"at":"messagesId","from":"path"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.messages.create": {"action":"spaces.messages.send","body":"json","effects":["send"],"grant":["spacesId"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","createMessageNotificationOptions.notificationType","messageId","messageReplyOption","requestId","threadKey"],"path":"/v1/spaces/{spacesId}/messages","scope":{"request":{"at":"","from":"body","type":"object"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.messages.delete": {"action":"spaces.messages.delete","effects":["delete"],"method":"DELETE","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","force"],"path":"/v1/spaces/{spacesId}/messages/{messagesId}","scope":{"messagesId":{"at":"messagesId","from":"path"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.messages.get": {"action":"spaces.messages.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","markupSyntax"],"path":"/v1/spaces/{spacesId}/messages/{messagesId}","scope":{"messagesId":{"at":"messagesId","from":"path"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.messages.list": {"action":"spaces.messages.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","markupSyntax","orderBy","pageSize","pageToken","showDeleted"],"path":"/v1/spaces/{spacesId}/messages","scope":{"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.messages.patch": {"action":"spaces.messages.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","allowMissing","updateMask"],"path":"/v1/spaces/{spacesId}/messages/{messagesId}","scope":{"messagesId":{"at":"messagesId","from":"path"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.messages.reactions.create": {"action":"spaces.messages.reactions.send","body":"json","effects":["send"],"grant":["spacesId","messagesId"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/spaces/{spacesId}/messages/{messagesId}/reactions","scope":{"messagesId":{"at":"messagesId","from":"path"},"request":{"at":"","from":"body","type":"object"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.messages.reactions.delete": {"action":"spaces.messages.reactions.delete","effects":["delete"],"method":"DELETE","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/spaces/{spacesId}/messages/{messagesId}/reactions/{reactionsId}","scope":{"messagesId":{"at":"messagesId","from":"path"},"reactionsId":{"at":"reactionsId","from":"path"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.messages.reactions.list": {"action":"spaces.messages.reactions.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"path":"/v1/spaces/{spacesId}/messages/{messagesId}/reactions","scope":{"messagesId":{"at":"messagesId","from":"path"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.messages.replaceCards": {"action":"spaces.messages.write","body":"json","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/spaces/{spacesId}/messages/{messagesId}:replaceCards","scope":{"messagesId":{"at":"messagesId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.messages.search": {"action":"spaces.messages.read","body":"json","effects":["read"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/spaces/{spacesId}/messages:search","scope":{"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.messages.update": {"action":"spaces.messages.write","body":"json","effects":["write"],"method":"PUT","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","allowMissing","updateMask"],"path":"/v1/spaces/{spacesId}/messages/{messagesId}","scope":{"messagesId":{"at":"messagesId","from":"path"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.patch": {"action":"spaces.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask","useAdminAccess"],"path":"/v1/spaces/{spacesId}","scope":{"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.search": {"action":"spaces.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","orderBy","pageSize","pageToken","query","useAdminAccess"],"path":"/v1/spaces:search","scope":{}},
+      "spaces.setup": {"action":"spaces.share","body":"json","effects":["share"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/spaces:setup","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "spaces.spaceEvents.get": {"action":"spaces.space_events.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/spaces/{spacesId}/spaceEvents/{spaceEventsId}","scope":{"spaceEventsId":{"at":"spaceEventsId","from":"path"},"spacesId":{"at":"spacesId","from":"path"}}},
+      "spaces.spaceEvents.list": {"action":"spaces.space_events.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"path":"/v1/spaces/{spacesId}/spaceEvents","scope":{"spacesId":{"at":"spacesId","from":"path"}}},
+      "users.availability.get": {"action":"users.availability.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/users/{usersId}/availability","scope":{"usersId":{"at":"usersId","from":"path"}}},
+      "users.availability.markAsActive": {"action":"users.availability.write","body":"json","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/users/{usersId}/availability:markAsActive","scope":{"usersId":{"at":"usersId","from":"path"}}},
+      "users.availability.markAsAway": {"action":"users.availability.write","body":"json","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/users/{usersId}/availability:markAsAway","scope":{"usersId":{"at":"usersId","from":"path"}}},
+      "users.availability.markAsDoNotDisturb": {"action":"users.availability.write","body":"json","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/users/{usersId}/availability:markAsDoNotDisturb","scope":{"usersId":{"at":"usersId","from":"path"}}},
+      "users.availability.patch": {"action":"users.availability.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1/users/{usersId}/availability","scope":{"usersId":{"at":"usersId","from":"path"}}},
+      "users.sections.create": {"action":"users.sections.write","body":"json","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/users/{usersId}/sections","scope":{"usersId":{"at":"usersId","from":"path"}}},
+      "users.sections.delete": {"action":"users.sections.delete","effects":["delete"],"method":"DELETE","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/users/{usersId}/sections/{sectionsId}","scope":{"sectionsId":{"at":"sectionsId","from":"path"},"usersId":{"at":"usersId","from":"path"}}},
+      "users.sections.items.list": {"action":"users.sections.items.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"path":"/v1/users/{usersId}/sections/{sectionsId}/items","scope":{"sectionsId":{"at":"sectionsId","from":"path"},"usersId":{"at":"usersId","from":"path"}}},
+      "users.sections.items.move": {"action":"users.sections.items.write","body":"json","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/users/{usersId}/sections/{sectionsId}/items/{itemsId}:move","scope":{"itemsId":{"at":"itemsId","from":"path"},"sectionsId":{"at":"sectionsId","from":"path"},"usersId":{"at":"usersId","from":"path"}}},
+      "users.sections.list": {"action":"users.sections.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1/users/{usersId}/sections","scope":{"usersId":{"at":"usersId","from":"path"}}},
+      "users.sections.patch": {"action":"users.sections.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1/users/{usersId}/sections/{sectionsId}","scope":{"sectionsId":{"at":"sectionsId","from":"path"},"usersId":{"at":"usersId","from":"path"}}},
+      "users.sections.position": {"action":"users.sections.write","body":"json","effects":["write"],"method":"POST","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/users/{usersId}/sections/{sectionsId}:position","scope":{"sectionsId":{"at":"sectionsId","from":"path"},"usersId":{"at":"usersId","from":"path"}}},
+      "users.spaces.getSpaceReadState": {"action":"users.spaces.space_read_state.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/users/{usersId}/spaces/{spacesId}/spaceReadState","scope":{"spacesId":{"at":"spacesId","from":"path"},"usersId":{"at":"usersId","from":"path"}}},
+      "users.spaces.spaceNotificationSetting.get": {"action":"users.spaces.space_notification_setting.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/users/{usersId}/spaces/{spacesId}/spaceNotificationSetting","scope":{"spacesId":{"at":"spacesId","from":"path"},"usersId":{"at":"usersId","from":"path"}}},
+      "users.spaces.spaceNotificationSetting.patch": {"action":"users.spaces.space_notification_setting.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1/users/{usersId}/spaces/{spacesId}/spaceNotificationSetting","scope":{"spacesId":{"at":"spacesId","from":"path"},"usersId":{"at":"usersId","from":"path"}}},
+      "users.spaces.threads.getThreadReadState": {"action":"users.spaces.threads.thread_read_state.read","effects":["read"],"method":"GET","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/users/{usersId}/spaces/{spacesId}/threads/{threadsId}/threadReadState","scope":{"spacesId":{"at":"spacesId","from":"path"},"threadsId":{"at":"threadsId","from":"path"},"usersId":{"at":"usersId","from":"path"}}},
+      "users.spaces.threads.updateThreadReadState": {"action":"users.spaces.threads.thread_read_state.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1/users/{usersId}/spaces/{spacesId}/threads/{threadsId}/threadReadState","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"spacesId":{"at":"spacesId","from":"path"},"threadsId":{"at":"threadsId","from":"path"},"usersId":{"at":"usersId","from":"path"}}},
+      "users.spaces.updateSpaceReadState": {"action":"users.spaces.space_read_state.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://chat.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1/users/{usersId}/spaces/{spacesId}/spaceReadState","scope":{"spacesId":{"at":"spacesId","from":"path"},"usersId":{"at":"usersId","from":"path"}}}
     }
   }
 }

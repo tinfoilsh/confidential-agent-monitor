@@ -1,5 +1,5 @@
 {
-  "title": "GraphOS MCP Tools",
+  "title": "GraphOS MCP Server",
   "catalog": {
     "group": "mcp",
     "actions": {
@@ -10,5 +10,6 @@
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.apollographql.com"}}
     ]
-  }
+  },
+  "mcp": {"token": {"header": "x-api-key"}}
 }

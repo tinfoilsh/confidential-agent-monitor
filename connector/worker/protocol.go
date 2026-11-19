@@ -49,6 +49,7 @@ type bootstrap struct {
 
 type secretHandle struct {
 	Configured  bool   `json:"configured"`
+	OAuth       bool   `json:"oauth,omitempty"`
 	Placeholder string `json:"placeholder"`
 }
 

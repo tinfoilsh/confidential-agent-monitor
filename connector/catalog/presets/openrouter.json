@@ -4,7 +4,11 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.generate-image": {"title": "Generate image", "effects": ["generate", "pay", "send"]},
+      "use.generate-video": {"title": "Generate video", "effects": ["generate", "pay", "send"]},
+      "use.send-feedback": {"title": "Send feedback", "effects": ["send"]},
+      "use.send-message": {"title": "Send message", "effects": ["generate", "pay", "send"]}
     },
     "connection": {"mcp": {"url": "https://mcp.openrouter.ai/mcp"}},
     "fields": [

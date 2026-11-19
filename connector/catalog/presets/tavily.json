@@ -4,7 +4,13 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.tavily_crawl": {"title": "Tavily crawl", "effects": ["read"]},
+      "use.tavily_extract": {"title": "Tavily extract", "effects": ["read"]},
+      "use.tavily_feedback": {"title": "Tavily feedback", "effects": ["send"]},
+      "use.tavily_map": {"title": "Tavily map", "effects": ["read"]},
+      "use.tavily_research": {"title": "Tavily research", "effects": ["generate"]},
+      "use.tavily_search": {"title": "Tavily search", "effects": ["read"]}
     },
     "connection": {"mcp": {"url": "https://mcp.tavily.com/mcp"}},
     "fields": [

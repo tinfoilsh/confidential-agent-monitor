@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"cmp"
 	"compress/gzip"
 	"crypto/sha256"
 	"encoding/hex"
@@ -10,19 +11,27 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"regexp/syntax"
 	"slices"
 	"strings"
 	"sync"
 	"time"
+	"unicode"
+
+	"sigs.k8s.io/yaml"
 )
 
 const (
 	userAgent     = "Mozilla/5.0 (X11; Linux x86_64) presets-importer"
+	acceptAny     = "*/*"
 	updateWorkers = 16
+	segmentValue  = "[^/]+"
+	restValue     = ".+"
 )
 
 var (
@@ -31,13 +40,14 @@ var (
 )
 
 type lockEntry struct {
-	Source    string `json:"source"`
-	URL       string `json:"url"`
-	Commit    string `json:"commit,omitempty"`
-	Revision  string `json:"revision,omitempty"`
-	SHA256    string `json:"sha256"`
-	Bytes     int    `json:"bytes"`
-	CheckedAt string `json:"checked_at,omitempty"`
+	Source    string          `json:"source"`
+	URL       string          `json:"url"`
+	Commit    string          `json:"commit,omitempty"`
+	Revision  string          `json:"revision,omitempty"`
+	SHA256    string          `json:"sha256"`
+	Bytes     int             `json:"bytes"`
+	CheckedAt string          `json:"checked_at,omitempty"`
+	Files     []documentStamp `json:"files,omitempty"`
 }
 
 type lockFile map[string][]lockEntry
@@ -53,12 +63,16 @@ func (l lockFile) entry(service string, ref specRef) (lockEntry, error) {
 
 func cached(sum string) string { return filepath.Join(cacheDir, sum) }
 
-func download(url string) ([]byte, error) {
+func download(url string, headers map[string]string) ([]byte, error) {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("User-Agent", userAgent)
+	req.Header.Set("Accept", acceptAny)
+	for key, value := range headers {
+		req.Header.Set(key, value)
+	}
 	resp, err := (&http.Client{Timeout: 45 * time.Second}).Do(req)
 	if err != nil {
 		return nil, err
@@ -112,9 +126,10 @@ func resolve(ref specRef, old lockEntry) (lockEntry, []byte, error) {
 		}
 		e.URL = fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/%s", ref.GitHub, e.Commit, ref.File)
 		if old.Commit == e.Commit {
-			if _, err := os.Stat(cached(old.SHA256)); err == nil {
+			if src, err := os.ReadFile(cached(old.SHA256)); err == nil {
 				old.CheckedAt = time.Now().UTC().Format(time.RFC3339)
-				return old, nil, nil
+				old.Files, err = referencedFiles(ref, old.URL, src)
+				return old, nil, err
 			}
 		}
 	}
@@ -130,6 +145,14 @@ func resolve(ref specRef, old lockEntry) (lockEntry, []byte, error) {
 	e.SHA256, err = store(src)
 	e.Bytes = len(src)
 	e.CheckedAt = time.Now().UTC().Format(time.RFC3339)
+	if err == nil {
+		e.Files, err = referencedFiles(ref, e.URL, src)
+	}
+	if err == nil {
+		if _, err = parseSpec(ref, src, e, nil); err != nil {
+			err = fmt.Errorf("%s does not parse as %s: %w", e.URL, ref.Format, err)
+		}
+	}
 	if err == nil && (ref.Format == "slack" || ref.Format == "airtable") {
 		err = os.MkdirAll("snapshots", 0o755)
 		if err == nil {
@@ -137,6 +160,112 @@ func resolve(ref specRef, old lockEntry) (lockEntry, []byte, error) {
 		}
 	}
 	return e, src, err
+}
+
+func referencedFiles(ref specRef, location string, src []byte) ([]documentStamp, error) {
+	if ref.Format != "openapi" {
+		return nil, nil
+	}
+	var files []documentStamp
+	seen := map[string]bool{location: true}
+	var visit func(location string, src []byte) error
+	visit = func(location string, src []byte) error {
+		src, err := inflate(src)
+		var doc any
+		if err == nil && json.Unmarshal(src, &doc) != nil {
+			err = yaml.Unmarshal(src, &doc)
+		}
+		if err != nil {
+			return fmt.Errorf("%s: %w", location, err)
+		}
+		base, err := url.Parse(location)
+		if err != nil {
+			return err
+		}
+		for _, target := range relativeRefs(doc, "") {
+			u, err := base.Parse(target)
+			if err != nil {
+				return err
+			}
+			u.Fragment = ""
+			if seen[u.String()] {
+				continue
+			}
+			seen[u.String()] = true
+			b, err := download(u.String(), ref.Headers)
+			if err != nil {
+				return err
+			}
+			sum, err := store(b)
+			if err != nil {
+				return err
+			}
+			files = append(files, documentStamp{u.String(), sum})
+			if err := visit(u.String(), b); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	err := visit(location, src)
+	slices.SortFunc(files, func(a, b documentStamp) int { return strings.Compare(a.URL, b.URL) })
+	return files, err
+}
+
+func relativeRefs(v any, name string) []string {
+	var refs []string
+	switch x := v.(type) {
+	case map[string]any:
+		if ref, ok := x["$ref"].(string); ok && !strings.HasPrefix(ref, "#") && !strings.Contains(ref, "://") {
+			refs = append(refs, ref)
+		}
+		for key, child := range x {
+			if !annotation(name, key) {
+				refs = append(refs, relativeRefs(child, key)...)
+			}
+		}
+	case []any:
+		for _, child := range x {
+			refs = append(refs, relativeRefs(child, "")...)
+		}
+	}
+	return refs
+}
+
+func fetchFiles(files []documentStamp, headers map[string]string) error {
+	for _, f := range files {
+		if _, err := os.Stat(cached(f.SHA256)); err == nil {
+			continue
+		}
+		src, err := download(f.URL, headers)
+		if err != nil {
+			return err
+		}
+		sum, err := store(src)
+		if err != nil {
+			return err
+		}
+		if sum != f.SHA256 {
+			os.Remove(cached(sum))
+			return fmt.Errorf("%s no longer serves the locked content; run update", f.URL)
+		}
+	}
+	return nil
+}
+
+func lockedFiles(e lockEntry) (map[string][]byte, error) {
+	files := map[string][]byte{}
+	for _, f := range e.Files {
+		src, err := os.ReadFile(cached(f.SHA256))
+		if err != nil {
+			return nil, fmt.Errorf("%s is not cached; run fetch", f.URL)
+		}
+		if h := sha256.Sum256(src); hex.EncodeToString(h[:]) != f.SHA256 {
+			return nil, fmt.Errorf("cached %s does not match the lock", f.URL)
+		}
+		files[f.URL] = src
+	}
+	return files, nil
 }
 
 func fetch(sources map[string]source, lock lockFile) error {
@@ -147,6 +276,9 @@ func fetch(sources map[string]source, lock lockFile) error {
 	for _, name := range sortedKeys(sources) {
 		for _, ref := range sources[name].Specs {
 			e, err := lock.entry(name, ref)
+			if err == nil {
+				err = fetchFiles(e.Files, ref.Headers)
+			}
 			if err == nil {
 				if _, statErr := os.Stat(cached(e.SHA256)); statErr == nil {
 					continue
@@ -285,9 +417,9 @@ func short(e lockEntry) string {
 }
 
 func routeDiff(ref specRef, old, e lockEntry, before, after []byte) (added, removed []string) {
-	routes := func(src []byte, location string) []string {
+	routes := func(src []byte, e lockEntry) []string {
 		var out []string
-		p, err := parseSpec(ref, src, location)
+		p, err := parseSpec(ref, src, e, nil)
 		if err != nil {
 			return nil
 		}
@@ -299,7 +431,7 @@ func routeDiff(ref specRef, old, e lockEntry, before, after []byte) (added, remo
 		}
 		return out
 	}
-	b, a := routes(before, old.URL), routes(after, e.URL)
+	b, a := routes(before, old), routes(after, e)
 	for _, r := range a {
 		if !slices.Contains(b, r) {
 			added = append(added, r)
@@ -332,8 +464,8 @@ func sortedKeys[V any](m map[string]V) []string {
 
 var parsedCache = map[string]parsed{}
 
-func read(ref specRef, e lockEntry) (parsed, error) {
-	key := strings.Join([]string{e.SHA256, ref.Format, ref.Origin, ref.Path, e.URL}, "\x00")
+func read(ref specRef, e lockEntry, encodings []string) (parsed, error) {
+	key := strings.Join([]string{e.SHA256, ref.Format, ref.Origin, ref.Path, e.URL, strings.Join(encodings, ","), fmt.Sprint(ref.Variables, ref.Captures)}, "\x00")
 	if p, ok := parsedCache[key]; ok {
 		return p, nil
 	}
@@ -347,28 +479,36 @@ func read(ref specRef, e lockEntry) (parsed, error) {
 	if h := sha256.Sum256(src); hex.EncodeToString(h[:]) != e.SHA256 {
 		return parsed{}, fmt.Errorf("cached %s does not match the lock", ref.source())
 	}
-	p, err := parseSpec(ref, src, e.URL)
+	p, err := parseSpec(ref, src, e, encodings)
 	if err == nil {
 		parsedCache[key] = p
 	}
 	return p, err
 }
 
-func parseSpec(ref specRef, src []byte, location string) (parsed, error) {
-	if bytes.HasPrefix(src, gzipMagic) {
-		r, err := gzip.NewReader(bytes.NewReader(src))
+func inflate(src []byte) ([]byte, error) {
+	if !bytes.HasPrefix(src, gzipMagic) {
+		return src, nil
+	}
+	r, err := gzip.NewReader(bytes.NewReader(src))
+	if err != nil {
+		return nil, err
+	}
+	return io.ReadAll(r)
+}
+
+func parseSpec(ref specRef, src []byte, e lockEntry, encodings []string) (parsed, error) {
+	src, err := inflate(src)
+	if err != nil {
+		return parsed{}, err
+	}
+	switch ref.Format {
+	case "openapi", "swagger", "airtable":
+		files, err := lockedFiles(e)
 		if err != nil {
 			return parsed{}, err
 		}
-		if src, err = io.ReadAll(r); err != nil {
-			return parsed{}, err
-		}
-	}
-	switch ref.Format {
-	case "openapi", "swagger":
-		return parseOpenAPI(src, ref.Format == "swagger", location)
-	case "airtable":
-		return parseOpenAPI(src, false, location)
+		return parseOpenAPI(src, ref.Format == "swagger", e.URL, ref.Path, files, encodings)
 	case "slack":
 		return parseDocumentation(src)
 	case "discovery":
@@ -378,15 +518,16 @@ func parseSpec(ref specRef, src []byte, location string) (parsed, error) {
 	case "botocore":
 		return parseBotocore(src)
 	case "postman":
-		return parsePostman(src)
+		return parsePostman(src, ref)
 	}
 	return parsed{}, fmt.Errorf("unknown format %s", ref.Format)
 }
 
-func specOps(name string, src source, lock lockFile) (parsed, error) {
+func specOps(name string, src source, lock lockFile, origins map[string]any) (parsed, error) {
 	var out parsed
-	usedGroups, usedEffects := map[string]bool{}, map[string]bool{}
-	reviewed := map[string][]string{}
+	usedGroups, usedEffects, usedOpaque, usedExclusions, usedWildcards := map[string]bool{}, map[string]bool{}, map[string]bool{}, map[string]bool{}, map[string]bool{}
+	reviewed, opaque := map[string][]string{}, map[string]bool{}
+	known := map[string]bool{}
 	for list, ids := range src.Effects {
 		effects := strings.Split(list, ",")
 		for _, id := range ids {
@@ -396,26 +537,62 @@ func specOps(name string, src source, lock lockFile) (parsed, error) {
 			reviewed[id] = effects
 		}
 	}
+	for _, id := range src.Opaque {
+		opaque[id] = true
+	}
+	for i, param := range src.Params {
+		if param == "" || slices.Contains(src.Params[:i], param) {
+			return out, fmt.Errorf("%s: params name an empty or repeated query parameter %q", name, param)
+		}
+	}
+	for i, body := range src.Encodings {
+		if body != "json" && body != "form" || slices.Contains(src.Encodings[:i], body) {
+			return out, fmt.Errorf("%s: encodings name an unknown or repeated body encoding %q", name, body)
+		}
+	}
 	for _, ref := range src.Specs {
 		e, err := lock.entry(name, ref)
 		if err != nil {
 			return out, err
 		}
-		p, err := read(ref, e)
+		p, err := read(ref, e, src.Encodings)
 		if err != nil {
 			return out, err
 		}
+		markRoutes(p.Ops)
 		out.Warnings = append(out.Warnings, p.Warnings...)
 		if ref.Group != "" && !groupPath.MatchString(ref.Group) {
 			return out, fmt.Errorf("%s: invalid resource group %q for %s", name, ref.Group, ref.source())
 		}
-		include := regexp.MustCompile(ref.Include)
-		for _, o := range p.Ops {
-			if !include.MatchString(o.Path) {
-				continue
+		if p.EndpointPrefix != "" && ref.Origin == "" {
+			if len(lock[awsEndpoints]) == 0 {
+				return out, fmt.Errorf("%s has no lock entry; run update %s", awsEndpoints, awsEndpoints)
 			}
-			if ref.Origin != "" {
+			endpoints, err := read(specRef{Format: ref.Format, URL: lock[awsEndpoints][0].Source}, lock[awsEndpoints][0], nil)
+			if err != nil {
+				return out, err
+			}
+			if out.Origins == nil {
+				out.Origins = map[string][]string{}
+			}
+			for set, hosts := range endpoints.Partition.origins(p.EndpointPrefix) {
+				out.Origins[set] = append(out.Origins[set], hosts...)
+			}
+		}
+		include := regexp.MustCompile(ref.Include)
+		var ids []string
+		for _, o := range p.Ops {
+			if known[o.ID] && p.Version != "" {
+				o.ID = p.Version + "." + o.ID
+			}
+			ids = append(ids, o.ID)
+			if ref.Origin != "" && !o.Server {
 				o.Origin = ref.Origin
+			}
+			last := o.Path[strings.LastIndex(o.Path, "/")+1:]
+			if wildcard := strings.Trim(last, "{}"); "{"+wildcard+"}" == last && slices.Contains(src.Wildcards, wildcard) {
+				o.Path = strings.TrimSuffix(o.Path, "}") + "*}"
+				usedWildcards[wildcard] = true
 			}
 			if o.SourceID == "" {
 				o.SourceID = o.ID
@@ -427,29 +604,69 @@ func specOps(name string, src source, lock lockFile) (parsed, error) {
 				o.SourceURL = e.URL
 				o.SourceHash = e.SHA256
 			}
+			if key, ok := sourceKey(src.Exclusions, o); ok {
+				usedExclusions[key] = true
+				if include.MatchString(o.Path) {
+					out.Excluded = append(out.Excluded, o)
+				}
+				continue
+			}
+			if !include.MatchString(o.Path) {
+				continue
+			}
+			for _, param := range src.Params {
+				if !slices.Contains(o.Params, param) {
+					o.Params = slices.Concat(o.Params, []string{param})
+				}
+			}
 			if ref.Group != "" {
 				o.Resource = ref.Group + "." + actionResource(o)
 			}
-			if group, ok := src.Groups[o.SourceID]; ok {
-				if !groupPath.MatchString(group) {
-					return out, fmt.Errorf("%s: invalid resource group %q for %s", name, group, o.SourceID)
-				}
+			if key, ok := sourceKey(src.Groups, o); ok {
+				group := src.Groups[key]
 				o.Resource = group
-				usedGroups[o.SourceID] = true
+				usedGroups[key] = true
 			}
-			if effects, ok := reviewed[o.SourceID]; ok {
-				o.Effects, o.Reviewed = effects, true
-				usedEffects[o.SourceID] = true
+			if key, ok := sourceKey(reviewed, o); ok {
+				o.Effects, o.Reviewed = reviewed[key], true
+				usedEffects[key] = true
+			}
+			if key, ok := sourceKey(opaque, o); ok {
+				o.Body, o.Unsupported, o.Opaque = "any", "", true
+				usedOpaque[key] = true
+			}
+			if o.Server && strings.HasPrefix(o.Origin, "https://") {
+				if set := originSet(origins, o.Origin); set != "" {
+					o.Origin = set
+				} else if strings.Contains(o.Origin, "{") {
+					o.Unsupported = "no origin set of the preset covers " + o.Origin
+				}
 			}
 			out.Ops = append(out.Ops, o)
+		}
+		for _, id := range ids {
+			known[id] = true
 		}
 		if out.Auth == nil {
 			out.Auth = p.Auth
 		}
 	}
-	for id := range src.Groups {
-		if !usedGroups[id] {
-			return out, fmt.Errorf("%s: resource group names unknown or excluded source operation %q", name, id)
+	for id := range src.Exclusions {
+		if !usedExclusions[id] {
+			return out, fmt.Errorf("%s: exclusions name unknown source operation %q", name, id)
+		}
+	}
+	for id, group := range src.Groups {
+		if !groupPath.MatchString(group) {
+			return out, fmt.Errorf("%s: invalid resource group %q for %s", name, group, id)
+		}
+		if !usedGroups[id] && !slices.ContainsFunc(strings.Split(src.Preset, ","), func(preset string) bool {
+			record, _ := load[map[string]any](filepath.Join(shippedDir, preset+".json"))
+			spec, _ := record["http"].(map[string]any)
+			ops, _ := spec["operations"].(map[string]any)
+			return ops[id] != nil
+		}) {
+			return out, fmt.Errorf("%s: resource group names unknown or excluded source operation or shipped descriptor %q", name, id)
 		}
 	}
 	for id := range reviewed {
@@ -457,7 +674,46 @@ func specOps(name string, src source, lock lockFile) (parsed, error) {
 			return out, fmt.Errorf("%s: effects name unknown or excluded source operation %q", name, id)
 		}
 	}
+	for i, id := range src.Opaque {
+		if !usedOpaque[id] || slices.Contains(src.Opaque[:i], id) {
+			return out, fmt.Errorf("%s: opaque names unknown, excluded, or repeated source operation %q", name, id)
+		}
+	}
+	for i, wildcard := range src.Wildcards {
+		if !usedWildcards[wildcard] || slices.Contains(src.Wildcards[:i], wildcard) {
+			return out, fmt.Errorf("%s: wildcards name an unknown or repeated final path parameter %q", name, wildcard)
+		}
+	}
 	return out, nil
+}
+
+// sourceKey returns the key naming the operation in a review table: its method and path, or else its source operation ID.
+func sourceKey[V any](table map[string]V, o specOp) (string, bool) {
+	for _, key := range []string{o.Method + " " + o.Path, o.SourceID} {
+		if _, ok := table[key]; ok {
+			return key, true
+		}
+	}
+	return "", false
+}
+
+func originSet(origins map[string]any, origin string) string {
+	labels := strings.Split(strings.TrimPrefix(origin, "https://"), ".")
+	for _, name := range sortedKeys(origins) {
+		templates, _ := origins[name].([]any)
+		for _, value := range templates {
+			template, _ := value.(string)
+			parts := strings.Split(strings.TrimPrefix(template, "https://"), ".")
+			covers := strings.HasPrefix(template, "https://") && len(parts) == len(labels)
+			for i := 0; covers && i < len(parts); i++ {
+				covers, _ = regexp.MatchString(`\A`+segmentExpr(parts[i], nil)+`\z`, labels[i])
+			}
+			if covers {
+				return "{" + name + "}"
+			}
+		}
+	}
+	return ""
 }
 
 type drafted struct {
@@ -468,8 +724,8 @@ type drafted struct {
 	scope   map[string]any
 }
 
-func segmentsOverlap(a, b string) bool {
-	as, bs := strings.Split(a, "/"), strings.Split(b, "/")
+func segmentsOverlap(a, b specOp) bool {
+	as, bs := strings.Split(a.Path, "/"), strings.Split(b.Path, "/")
 	star := func(s []string) bool { return strings.HasSuffix(s[len(s)-1], "*}") }
 	if len(as) != len(bs) && !(star(as) && len(bs) >= len(as)) && !(star(bs) && len(as) >= len(bs)) {
 		return false
@@ -477,9 +733,12 @@ func segmentsOverlap(a, b string) bool {
 	for i := 0; i < min(len(as), len(bs)); i++ {
 		x, y := as[i], bs[i]
 		if strings.HasSuffix(x, "*}") || strings.HasSuffix(y, "*}") {
-			return true
+			return intersect(pathExpr(as[i:], a.PathPatterns), pathExpr(bs[i:], b.PathPatterns))
 		}
 		if !segmentOverlap(x, y) {
+			return false
+		}
+		if len(a.PathPatterns)+len(b.PathPatterns) > 0 && !intersect(segmentExpr(x, a.PathPatterns), segmentExpr(y, b.PathPatterns)) {
 			return false
 		}
 	}
@@ -487,8 +746,8 @@ func segmentsOverlap(a, b string) bool {
 }
 
 func segmentOverlap(x, y string) bool {
-	px, sx, okx := paramParts(x)
-	py, sy, oky := paramParts(y)
+	px, _, sx, okx := paramParts(x)
+	py, _, sy, oky := paramParts(y)
 	switch {
 	case !okx && !oky:
 		return x == y
@@ -500,12 +759,143 @@ func segmentOverlap(x, y string) bool {
 	return (strings.HasPrefix(px, py) || strings.HasPrefix(py, px)) && (strings.HasSuffix(sx, sy) || strings.HasSuffix(sy, sx))
 }
 
-func paramParts(s string) (prefix, suffix string, ok bool) {
+func paramParts(s string) (prefix, name, suffix string, ok bool) {
 	i, j := strings.Index(s, "{"), strings.Index(s, "}")
 	if i < 0 || j < i {
-		return "", "", false
+		return "", "", "", false
 	}
-	return s[:i], s[j+1:], true
+	return s[:i], s[i+1 : j], s[j+1:], true
+}
+
+func segmentExpr(s string, patterns map[string]string) string {
+	prefix, name, suffix, ok := paramParts(s)
+	if !ok {
+		return regexp.QuoteMeta(s)
+	}
+	value := segmentValue
+	if name, ok = strings.CutSuffix(name, "*"); ok {
+		value = restValue
+	}
+	return regexp.QuoteMeta(prefix) + "(?:" + cmp.Or(patterns[name], value) + ")" + regexp.QuoteMeta(suffix)
+}
+
+func pathExpr(segments []string, patterns map[string]string) string {
+	exprs := make([]string, len(segments))
+	for i, s := range segments {
+		exprs[i] = segmentExpr(s, patterns)
+	}
+	return strings.Join(exprs, "/")
+}
+
+func literalPrefix(pattern string) string {
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return ""
+	}
+	prefix, _ := re.LiteralPrefix()
+	return prefix
+}
+
+// within reports whether every value of segment s, known to overlap segment t, also matches t.
+func within(s, t string, sPatterns, tPatterns map[string]string) bool {
+	tPrefix, tName, tSuffix, capture := paramParts(t)
+	prefix, _, suffix, ok := paramParts(s)
+	if !capture || !ok {
+		return s == t || capture
+	}
+	return strings.HasPrefix(prefix, tPrefix) && strings.HasSuffix(suffix, tSuffix) && (tPatterns[tName] == "" || segmentExpr(s, sPatterns) == segmentExpr(t, tPatterns))
+}
+
+var programs = map[string]*syntax.Prog{}
+
+// intersect reports whether some string matches both expressions entirely. It treats assertions and case folding as matching anything.
+func intersect(x, y string) bool {
+	if x == y {
+		return true
+	}
+	var progs [2]*syntax.Prog
+	for i, expr := range []string{x, y} {
+		p, ok := programs[expr]
+		if !ok {
+			re, err := syntax.Parse(expr, syntax.Perl)
+			if err == nil {
+				p, _ = syntax.Compile(re.Simplify())
+			}
+			programs[expr] = p
+		}
+		if p == nil {
+			return true
+		}
+		progs[i] = p
+	}
+	a, b := progs[0], progs[1]
+	closure := func(p *syntax.Prog, pc uint32) []uint32 {
+		var out []uint32
+		seen := make([]bool, len(p.Inst))
+		var visit func(uint32)
+		visit = func(pc uint32) {
+			if seen[pc] {
+				return
+			}
+			seen[pc] = true
+			switch i := p.Inst[pc]; i.Op {
+			case syntax.InstAlt, syntax.InstAltMatch:
+				visit(i.Out)
+				visit(i.Arg)
+			case syntax.InstCapture, syntax.InstEmptyWidth, syntax.InstNop:
+				visit(i.Out)
+			case syntax.InstMatch, syntax.InstRune, syntax.InstRune1, syntax.InstRuneAny, syntax.InstRuneAnyNotNL:
+				out = append(out, pc)
+			}
+		}
+		visit(pc)
+		return out
+	}
+	runes := func(i syntax.Inst) []rune {
+		switch {
+		case i.Op == syntax.InstRuneAny || i.Op == syntax.InstRuneAnyNotNL || syntax.Flags(i.Arg)&syntax.FoldCase != 0:
+			return []rune{0, unicode.MaxRune}
+		case len(i.Rune) == 1:
+			return []rune{i.Rune[0], i.Rune[0]}
+		}
+		return i.Rune
+	}
+	type state struct{ a, b uint32 }
+	seen := map[state]bool{}
+	var pending []state
+	follow := func(pa, pb uint32) {
+		for _, i := range closure(a, pa) {
+			for _, j := range closure(b, pb) {
+				if s := (state{i, j}); !seen[s] {
+					seen[s] = true
+					pending = append(pending, s)
+				}
+			}
+		}
+	}
+	follow(uint32(a.Start), uint32(b.Start))
+	for len(pending) > 0 {
+		s := pending[len(pending)-1]
+		pending = pending[:len(pending)-1]
+		i, j := a.Inst[s.a], b.Inst[s.b]
+		if i.Op == syntax.InstMatch || j.Op == syntax.InstMatch {
+			if i.Op == j.Op {
+				return true
+			}
+			continue
+		}
+		r, t := runes(i), runes(j)
+	shared:
+		for m := 0; m < len(r); m += 2 {
+			for n := 0; n < len(t); n += 2 {
+				if r[m] <= t[n+1] && t[n] <= r[m+1] {
+					follow(i.Out, j.Out)
+					break shared
+				}
+			}
+		}
+	}
+	return false
 }
 
 func bodiesOverlap(a, b string) bool {
@@ -537,7 +927,7 @@ func draftOps(p parsed, ai bool) []drafted {
 			}
 		}
 		for _, r := range o.Required {
-			if r.From == "body" && o.Body != "json" {
+			if r.From == "body" && o.Body != "json" || r.From == "form" && o.Body != "form" {
 				continue
 			}
 			name := r.Name
@@ -548,10 +938,13 @@ func draftOps(p parsed, ai bool) []drafted {
 				continue
 			}
 			at := r.Name
-			if r.From == "body" || r.From == "argument" {
+			if r.From == "body" || r.From == "argument" || r.From == "header_json" {
 				at = "/" + r.Name
 			}
 			spec := map[string]any{"from": r.From, "at": at}
+			if r.From == "header_json" {
+				spec["header"] = o.ArgHeader
+			}
 			if r.Type != "string" {
 				spec["type"] = r.Type
 			}
@@ -560,33 +953,37 @@ func draftOps(p parsed, ai bool) []drafted {
 			}
 			d.scope[name] = spec
 		}
-		bind := func(name string, spec map[string]any) {
-			for d.scope[name] != nil {
-				name = "request." + name
-			}
-			d.scope[name] = spec
-		}
 		if len(o.Params) > 0 || len(o.Query) > 0 {
-			bind("query", map[string]any{"from": "query", "at": "", "type": "object"})
+			bind(d.scope, "query", map[string]any{"from": "query", "at": "", "type": "object"})
 		}
 		if o.Body == "json" {
 			typ := o.BodyType
 			if typ == "" {
 				typ = "object"
 			}
-			bind("request", map[string]any{"from": "body", "at": "", "type": typ})
+			bind(d.scope, "request", map[string]any{"from": "body", "at": "", "type": typ})
 		}
 		if o.Body == "form" {
-			bind("request", map[string]any{"from": "form", "at": "", "type": "object"})
+			bind(d.scope, "request", map[string]any{"from": "form", "at": "", "type": "object"})
 		}
 		if o.Body == "graphql" {
-			bind("arguments", map[string]any{"from": "argument", "at": "", "type": "object"})
+			bind(d.scope, "arguments", map[string]any{"from": "argument", "at": "", "type": "object"})
+		}
+		if o.ArgHeader != "" {
+			bind(d.scope, "arguments", map[string]any{"from": "header_json", "header": o.ArgHeader, "at": "", "type": "object"})
 		}
 		o.Params = slices.DeleteFunc(o.Params, func(q string) bool { _, ok := o.Query[q]; return ok })
 		d.op = o
 		out = append(out, d)
 	}
 	return out
+}
+
+func bind(scope map[string]any, name string, spec map[string]any) {
+	for scope[name] != nil {
+		name = "request." + name
+	}
+	scope[name] = spec
 }
 
 func operationObj(d drafted, id string) map[string]any {
@@ -596,11 +993,7 @@ func operationObj(d drafted, id string) map[string]any {
 		op["query"] = o.Query
 	}
 	if len(o.Headers) > 0 {
-		headers := map[string]any{}
-		for key, value := range o.Headers {
-			headers[key] = value
-		}
-		op["headers"] = headers
+		op["headers"] = o.Headers
 	}
 	if len(o.Fields) > 0 {
 		op["fields"] = o.Fields
@@ -613,6 +1006,12 @@ func operationObj(d drafted, id string) map[string]any {
 	}
 	if o.GraphQL != nil {
 		op["graphql"] = map[string]any{"operation": o.GraphQL[0], "field": o.GraphQL[1]}
+	}
+	// Route separation does not narrow rest captures, so they keep their source pattern.
+	for name, pattern := range o.PathPatterns {
+		if strings.Contains(o.Path, "{"+name+"*}") {
+			op["path_patterns"] = map[string]any{name: pattern}
+		}
 	}
 	scope := d.scope
 	if scope == nil {

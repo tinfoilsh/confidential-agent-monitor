@@ -8,9 +8,10 @@
     },
     "connection": {"mcp": {"url": "https://api.everlaw.com/v1/mcp"}},
     "fields": [
+      {"key": "url", "label": "Server URL", "default": "https://api.everlaw.com/v1/mcp", "help": "Use https://api.everlaw.co.uk/v1/mcp, https://api.everlaw.ca/v1/mcp, https://api.everlaw.eu/v1/mcp or https://api.everlaw.com.au/v1/mcp for other regions.", "path": ["mcp", "url"]},
       {"key": "client_id", "label": "OAuth client ID", "paths": []},
       {"key": "client_secret", "label": "OAuth client secret", "paths": [], "secret": true},
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://api.everlaw.com/v1/mcp", "client_id": "{client_id}", "client_secret": "{client_secret}"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}", "client_id": "{client_id}", "client_secret": "{client_secret}"}}
     ]
   }
 }

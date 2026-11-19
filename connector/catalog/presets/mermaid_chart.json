@@ -10,5 +10,6 @@
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.mermaid.ai/mcp"}}
     ]
-  }
+  },
+  "mcp": {"token": {"header": "Authorization"}}
 }

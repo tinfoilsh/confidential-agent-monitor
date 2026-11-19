@@ -1,83 +1,270 @@
 {
-  "title": "Airtop",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.airtop.ai", "path": "/api/v1", "header": "Authorization", "prefix": "Bearer "}, {"value": "api_key", "origin": "https://api.airtop.ai", "path": "/api/v1", "header": "api-key"}]}},
     "actions": {
-      "delete.automations": {"title": "Delete: automations"},
-      "delete.files": {"title": "Delete: files"},
-      "delete.profiles": {"title": "Delete: profiles"},
-      "delete.sessions": {"title": "Delete: sessions"},
-      "delete.windows": {"title": "Delete: windows"},
-      "execute.windows": {"title": "Execute: windows"},
-      "generate.summarize_content": {"title": "Generate: summarize content"},
-      "read": {"title": "Read everything the account can see"},
-      "write.click": {"title": "Write: click"},
-      "write.create_automation": {"title": "Write: create automation"},
-      "write.create_form_filler": {"title": "Write: create form filler"},
-      "write.description": {"title": "Write: description"},
-      "write.file_input": {"title": "Write: file input"},
-      "write.files": {"title": "Write: files"},
-      "write.fill_form": {"title": "Write: fill form"},
-      "write.hover": {"title": "Write: hover"},
-      "write.monitor": {"title": "Write: monitor"},
-      "write.page_query": {"title": "Write: page query"},
-      "write.paginated_extraction": {"title": "Write: paginated extraction"},
-      "write.prompt_content": {"title": "Write: prompt content"},
-      "write.push": {"title": "Write: push"},
-      "write.save_profile_on_termination": {"title": "Write: save profile on termination"},
-      "write.scrape_content": {"title": "Write: scrape content"},
-      "write.screenshot": {"title": "Write: screenshot"},
-      "write.scroll": {"title": "Write: scroll"},
-      "write.sessions": {"title": "Write: sessions"},
-      "write.type": {"title": "Write: type"},
-      "write.windows": {"title": "Write: windows"}
-    }
+      "async": {
+        "title": "Async"
+      },
+      "async.sessions": {
+        "title": "Sessions"
+      },
+      "async.sessions.windows": {
+        "title": "Windows"
+      },
+      "async.sessions.windows.automation": {
+        "title": "Automation"
+      },
+      "async.sessions.windows.automation.execute": {
+        "title": "Run"
+      },
+      "async.sessions.windows.automation.write": {
+        "title": "Create and edit"
+      },
+      "async.sessions.windows.fill_form": {
+        "title": "Fill form"
+      },
+      "async.sessions.windows.fill_form.write": {
+        "title": "Create and edit"
+      },
+      "async.sessions.windows.form_filler": {
+        "title": "Form filler"
+      },
+      "async.sessions.windows.form_filler.write": {
+        "title": "Create and edit"
+      },
+      "automations": {
+        "title": "Automations"
+      },
+      "automations.delete": {
+        "title": "Delete"
+      },
+      "automations.description": {
+        "title": "Description"
+      },
+      "automations.description.write": {
+        "title": "Create and edit"
+      },
+      "automations.read": {
+        "title": "Read"
+      },
+      "files": {
+        "title": "Files"
+      },
+      "files.delete": {
+        "title": "Delete"
+      },
+      "files.push": {
+        "title": "Push commits"
+      },
+      "files.push.write": {
+        "title": "Create and edit"
+      },
+      "files.read": {
+        "title": "Read"
+      },
+      "files.write": {
+        "title": "Create and edit"
+      },
+      "profiles": {
+        "title": "Profiles"
+      },
+      "profiles.delete": {
+        "title": "Delete"
+      },
+      "requests": {
+        "title": "Requests"
+      },
+      "requests.status": {
+        "title": "Status"
+      },
+      "requests.status.read": {
+        "title": "Read"
+      },
+      "sessions": {
+        "title": "Sessions"
+      },
+      "sessions.delete": {
+        "title": "Delete"
+      },
+      "sessions.read": {
+        "title": "Read"
+      },
+      "sessions.save_profile_on_termination": {
+        "title": "Save profile on termination"
+      },
+      "sessions.save_profile_on_termination.write": {
+        "title": "Create and edit"
+      },
+      "sessions.windows": {
+        "title": "Windows"
+      },
+      "sessions.windows.click": {
+        "title": "Click"
+      },
+      "sessions.windows.click.write": {
+        "title": "Create and edit"
+      },
+      "sessions.windows.delete": {
+        "title": "Delete"
+      },
+      "sessions.windows.file_input": {
+        "title": "File input"
+      },
+      "sessions.windows.file_input.write": {
+        "title": "Create and edit"
+      },
+      "sessions.windows.fill_form": {
+        "title": "Fill form"
+      },
+      "sessions.windows.fill_form.write": {
+        "title": "Create and edit"
+      },
+      "sessions.windows.form_filler": {
+        "title": "Form filler"
+      },
+      "sessions.windows.form_filler.write": {
+        "title": "Create and edit"
+      },
+      "sessions.windows.hover": {
+        "title": "Hover"
+      },
+      "sessions.windows.hover.write": {
+        "title": "Create and edit"
+      },
+      "sessions.windows.monitor": {
+        "title": "Monitor"
+      },
+      "sessions.windows.monitor.generate": {
+        "title": "Generate"
+      },
+      "sessions.windows.page": {
+        "title": "Page"
+      },
+      "sessions.windows.page.generate": {
+        "title": "Generate"
+      },
+      "sessions.windows.paginated_extraction": {
+        "title": "Paginated extraction"
+      },
+      "sessions.windows.paginated_extraction.generate": {
+        "title": "Generate"
+      },
+      "sessions.windows.prompt_content": {
+        "title": "Prompt content"
+      },
+      "sessions.windows.prompt_content.generate": {
+        "title": "Generate"
+      },
+      "sessions.windows.read": {
+        "title": "Read"
+      },
+      "sessions.windows.scrape_content": {
+        "title": "Scrape content"
+      },
+      "sessions.windows.scrape_content.read": {
+        "title": "Read"
+      },
+      "sessions.windows.screenshot": {
+        "title": "Screenshot"
+      },
+      "sessions.windows.screenshot.read": {
+        "title": "Read"
+      },
+      "sessions.windows.scroll": {
+        "title": "Scroll"
+      },
+      "sessions.windows.scroll.write": {
+        "title": "Create and edit"
+      },
+      "sessions.windows.summarize_content": {
+        "title": "Summarize content"
+      },
+      "sessions.windows.summarize_content.generate": {
+        "title": "Generate"
+      },
+      "sessions.windows.type": {
+        "title": "Type"
+      },
+      "sessions.windows.type.write": {
+        "title": "Create and edit"
+      },
+      "sessions.windows.write": {
+        "title": "Create and edit"
+      },
+      "sessions.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.airtop.ai",
+            "path": "/api/v1",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          },
+          {
+            "header": "api-key",
+            "origin": "https://api.airtop.ai",
+            "path": "/api/v1",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Airtop",
   "http": {
     "operations": {
-      "automations_delete": {"action":"delete.automations","effects":["delete"],"method":"DELETE","origin":"https://api.airtop.ai","path":"/api/v1/automations/{automationId}","scope":{"automationId":{"from":"path","at":"automationId"}}},
-      "automations_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","path":"/api/v1/automations/{automationId}","scope":{"automationId":{"from":"path","at":"automationId"}}},
-      "automations_list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","path":"/api/v1/automations","scope":{}},
-      "automations_update": {"action":"write.description","effects":["write"],"method":"PUT","origin":"https://api.airtop.ai","path":"/api/v1/automations/description","body":"any","scope":{}},
-      "files_create": {"action":"write.files","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/files","body":"any","scope":{}},
-      "files_delete": {"action":"delete.files","effects":["delete"],"method":"DELETE","origin":"https://api.airtop.ai","path":"/api/v1/files/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "files_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","path":"/api/v1/files/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "files_list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","path":"/api/v1/files","params":["sessionIds","offset","limit"],"scope":{}},
-      "files_push": {"action":"write.push","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/files/{id}/push","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "profiles_delete": {"action":"delete.profiles","effects":["delete"],"method":"DELETE","origin":"https://api.airtop.ai","path":"/api/v1/profiles","params":["profileIds","profileNames"],"scope":{}},
-      "requests_get-request-status": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","path":"/api/v1/requests/{requestId}/status","scope":{"requestId":{"from":"path","at":"requestId"}}},
-      "sessions_create": {"action":"write.sessions","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions","body":"any","scope":{}},
-      "sessions_getInfo": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "sessions_list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","path":"/api/v1/sessions","params":["sessionIds","status","offset","limit"],"scope":{}},
-      "sessions_save-profile-on-termination": {"action":"write.save_profile_on_termination","effects":["write"],"method":"PUT","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/save-profile-on-termination/{profileName}","scope":{"sessionId":{"from":"path","at":"sessionId"},"profileName":{"from":"path","at":"profileName"}}},
-      "sessions_terminate": {"action":"delete.sessions","effects":["delete"],"method":"DELETE","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "windows_async-create-automation": {"action":"write.create_automation","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/async/sessions/{sessionId}/windows/{windowId}/create-automation","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_async-create-form-filler": {"action":"write.create_form_filler","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/async/sessions/{sessionId}/windows/{windowId}/create-form-filler","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_async-execute-automation": {"action":"execute.windows","effects":["execute"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/async/sessions/{sessionId}/windows/{windowId}/execute-automation","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_async-fill-form": {"action":"write.fill_form","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/async/sessions/{sessionId}/windows/{windowId}/fill-form","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_click": {"action":"write.click","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/click","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_close": {"action":"delete.windows","effects":["delete"],"method":"DELETE","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_create": {"action":"write.windows","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"}}},
-      "windows_create-form-filler": {"action":"write.create_form_filler","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/create-form-filler","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_file-input": {"action":"write.file_input","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/file-input","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_fill-form": {"action":"write.fill_form","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/fill-form","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_get-window-info": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}","params":["includeNavigationBar","disableResize","screenResolution"],"scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_hover": {"action":"write.hover","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/hover","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows","scope":{"sessionId":{"from":"path","at":"sessionId"}}},
-      "windows_loadUrl": {"action":"write.windows","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_monitor": {"action":"write.monitor","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/monitor","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_page-query": {"action":"write.page_query","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/page-query","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_paginated-extraction": {"action":"write.paginated_extraction","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/paginated-extraction","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_prompt-content": {"action":"write.prompt_content","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/prompt-content","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_scrape-content": {"action":"write.scrape_content","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/scrape-content","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_screenshot": {"action":"write.screenshot","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/screenshot","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_scroll": {"action":"write.scroll","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/scroll","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_summarize-content": {"action":"generate.summarize_content","effects":["generate"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/summarize-content","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}},
-      "windows_type": {"action":"write.type","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/type","body":"any","scope":{"sessionId":{"from":"path","at":"sessionId"},"windowId":{"from":"path","at":"windowId"}}}
+      "automations_delete": {"action":"automations.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtop.ai","path":"/api/v1/automations/{automationId}","scope":{"automationId":{"at":"automationId","from":"path"}}},
+      "automations_get": {"action":"automations.read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","path":"/api/v1/automations/{automationId}","scope":{"automationId":{"at":"automationId","from":"path"}}},
+      "automations_list": {"action":"automations.read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","path":"/api/v1/automations","scope":{}},
+      "automations_update": {"action":"automations.description.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.airtop.ai","path":"/api/v1/automations/description","scope":{}},
+      "files_create": {"action":"files.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/files","scope":{}},
+      "files_delete": {"action":"files.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtop.ai","path":"/api/v1/files/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "files_get": {"action":"files.read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","path":"/api/v1/files/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "files_list": {"action":"files.read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","params":["sessionIds","offset","limit"],"path":"/api/v1/files","scope":{}},
+      "files_push": {"action":"files.push.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/files/{id}/push","scope":{"id":{"at":"id","from":"path"}}},
+      "profiles_delete": {"action":"profiles.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtop.ai","params":["profileIds","profileNames"],"path":"/api/v1/profiles","scope":{}},
+      "requests_get-request-status": {"action":"requests.status.read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","path":"/api/v1/requests/{requestId}/status","scope":{"requestId":{"at":"requestId","from":"path"}}},
+      "sessions_create": {"action":"sessions.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions","scope":{}},
+      "sessions_getInfo": {"action":"sessions.read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "sessions_list": {"action":"sessions.read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","params":["sessionIds","status","offset","limit"],"path":"/api/v1/sessions","scope":{}},
+      "sessions_save-profile-on-termination": {"action":"sessions.save_profile_on_termination.write","effects":["write"],"method":"PUT","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/save-profile-on-termination/{profileName}","scope":{"profileName":{"at":"profileName","from":"path"},"sessionId":{"at":"sessionId","from":"path"}}},
+      "sessions_terminate": {"action":"sessions.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "windows_async-create-automation": {"action":"async.sessions.windows.automation.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/async/sessions/{sessionId}/windows/{windowId}/create-automation","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_async-create-form-filler": {"action":"async.sessions.windows.form_filler.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/async/sessions/{sessionId}/windows/{windowId}/create-form-filler","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_async-execute-automation": {"action":"async.sessions.windows.automation.execute","body":"any","effects":["execute"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/async/sessions/{sessionId}/windows/{windowId}/execute-automation","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_async-fill-form": {"action":"async.sessions.windows.fill_form.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/async/sessions/{sessionId}/windows/{windowId}/fill-form","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_click": {"action":"sessions.windows.click.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/click","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_close": {"action":"sessions.windows.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_create": {"action":"sessions.windows.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows","scope":{"sessionId":{"at":"sessionId","from":"path"}}},
+      "windows_create-form-filler": {"action":"sessions.windows.form_filler.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/create-form-filler","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_file-input": {"action":"sessions.windows.file_input.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/file-input","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_fill-form": {"action":"sessions.windows.fill_form.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/fill-form","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_get-window-info": {"action":"sessions.windows.read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","params":["includeNavigationBar","disableResize","screenResolution"],"path":"/api/v1/sessions/{sessionId}/windows/{windowId}","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_hover": {"action":"sessions.windows.hover.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/hover","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_list": {"action":"sessions.windows.read","effects":["read"],"method":"GET","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows","scope":{"sessionId":{"at":"sessionId","from":"path"}}},
+      "windows_loadUrl": {"action":"sessions.windows.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_monitor": {"action":"sessions.windows.monitor.generate","body":"any","effects":["generate"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/monitor","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_page-query": {"action":"sessions.windows.page.generate","body":"any","effects":["generate"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/page-query","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_paginated-extraction": {"action":"sessions.windows.paginated_extraction.generate","body":"any","effects":["generate"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/paginated-extraction","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_prompt-content": {"action":"sessions.windows.prompt_content.generate","body":"any","effects":["generate"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/prompt-content","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_scrape-content": {"action":"sessions.windows.scrape_content.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/scrape-content","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_screenshot": {"action":"sessions.windows.screenshot.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/screenshot","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_scroll": {"action":"sessions.windows.scroll.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/scroll","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_summarize-content": {"action":"sessions.windows.summarize_content.generate","body":"any","effects":["generate"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/summarize-content","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}},
+      "windows_type": {"action":"sessions.windows.type.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.airtop.ai","path":"/api/v1/sessions/{sessionId}/windows/{windowId}/type","scope":{"sessionId":{"at":"sessionId","from":"path"},"windowId":{"at":"windowId","from":"path"}}}
     }
   }
 }

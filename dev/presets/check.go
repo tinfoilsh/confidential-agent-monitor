@@ -121,7 +121,7 @@ func checkReport(r generationReport, src source, locked []lockEntry, digest stri
 			if len(op.Descriptors) == 0 {
 				return fmt.Errorf("%s has no descriptor mapping", op.ID)
 			}
-		case "unsupported":
+		case "unsupported", "excluded":
 			if op.Reason == "" {
 				return fmt.Errorf("%s has no explanation for missing support", op.ID)
 			}
@@ -138,7 +138,7 @@ func checkReport(r generationReport, src source, locked []lockEntry, digest stri
 			counts["parameter_gaps"]++
 		}
 	}
-	for _, status := range []string{"shipped_override", "needs_review", "unsupported", "archived_schema", "parameter_gaps"} {
+	for _, status := range []string{"shipped_override", "needs_review", "unsupported", "archived_schema", "excluded", "parameter_gaps"} {
 		if r.Counts[status] != counts[status] {
 			return fmt.Errorf("incorrect %s count", status)
 		}

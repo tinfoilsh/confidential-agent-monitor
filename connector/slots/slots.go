@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/textproto"
 	"net/url"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -35,6 +36,10 @@ var reservedHeaders = []string{
 	"Host", "Content-Length", "Content-Type", "Content-Encoding", "Transfer-Encoding", "Connection", "Keep-Alive",
 	"Te", "Trailer", "Upgrade", "Expect", "Proxy-Authorization", "Proxy-Connection",
 }
+
+const wildcardOrigin = "https://*."
+
+var wildcardSuffix = regexp.MustCompile(`\A([a-z0-9-]+\.)+[a-z0-9-]+\z`)
 
 var formTypes = map[string][]string{"username": {"", "text", "email", "tel"}, "password": {"password"}, "otp": {"", "text", "tel", "number"}}
 
@@ -96,7 +101,7 @@ func (s Set) Names() []string {
 	names := []string{}
 	for _, slot := range s.slots {
 		names = append(names, slot.Value)
-		if slot.SigV4 != nil {
+		if slot.SigV4 != nil && slot.SigV4.Secret != "" {
 			names = append(names, slot.SigV4.Secret)
 			if slot.SigV4.Session != "" {
 				names = append(names, slot.SigV4.Session)
@@ -113,13 +118,20 @@ func (s Set) Claim(target connector.Target) int {
 	for _, slot := range s.slots {
 		if slot.host == host && slot.port == target.Port {
 			score = len(host)
+		} else if target.Port == httpsPort && slot.serves("https://"+host) {
+			score = max(score, len(strings.TrimPrefix(slot.Origin, wildcardOrigin)))
 		}
 	}
 	return score
 }
 
 func (s Set) Covers(origin, path string) bool {
-	return slices.ContainsFunc(s.slots, func(slot Slot) bool { return slot.OAuth == "" && origin == slot.Origin && under(path, slot.Path) })
+	return slices.ContainsFunc(s.slots, func(slot Slot) bool { return slot.OAuth == "" && slot.serves(origin) && under(path, slot.Path) })
+}
+
+func (s *Slot) serves(origin string) bool {
+	suffix, wildcard := strings.CutPrefix(s.Origin, wildcardOrigin)
+	return origin == s.Origin || wildcard && strings.HasPrefix(origin, "https://") && strings.HasSuffix(origin, "."+suffix) && len(origin) >= len(s.Origin)
 }
 
 func (s Set) Form(origin, text string, placeholder func(string) string) (name, field string, inputTypes []string, err error) {
@@ -135,8 +147,14 @@ func (s Set) Form(origin, text string, placeholder func(string) string) (name, f
 }
 
 func (s *Slot) validate() error {
+	if u, err := url.Parse(s.Origin); err == nil && u.Host != "" && strings.HasPrefix(u.Path, "/") && strings.HasPrefix(cmp.Or(s.Path, "/"), "/") {
+		s.Origin, s.Path = strings.TrimSuffix(s.Origin, u.Path), strings.TrimSuffix(u.Path, "/")+cmp.Or(s.Path, "/")
+	}
 	if !ValidOrigin(s.Origin) {
 		return fmt.Errorf("slot origin %s must be https://host[:port] in lowercase without the default port", s.Origin)
+	}
+	if suffix, wildcard := strings.CutPrefix(s.Origin, wildcardOrigin); wildcard && (s.Form != "" || s.OAuth != "" || !wildcardSuffix.MatchString(suffix)) || !wildcard && strings.Contains(s.Origin, "*") {
+		return fmt.Errorf("slot origin %s may only use * as the first label of a domain with at least two more, without a port, form field or OAuth endpoint", s.Origin)
 	}
 	u, _ := url.Parse(s.Origin)
 	s.host, s.port = u.Hostname(), httpsPort
@@ -166,8 +184,8 @@ func (s *Slot) validate() error {
 	if _, ok := formTypes[s.Form]; s.Form != "" && (!ok || s.Path != "/") {
 		return fmt.Errorf("form slot for %s must fill a username, password or otp field and match the whole origin", s.Value)
 	}
-	if s.SigV4 != nil && (s.SigV4.Service == "" || s.SigV4.Region == "" || s.SigV4.Secret == "") {
-		return errors.New("a SigV4 slot needs a service, a region and a secret value")
+	if s.SigV4 != nil && s.SigV4.Secret == "" && s.SigV4.Session != "" {
+		return errors.New("a SigV4 slot with a session value needs a secret value")
 	}
 	if s.Header != "" {
 		s.Header = textproto.CanonicalMIMEHeaderKey(s.Header)
@@ -178,13 +196,22 @@ func (s *Slot) validate() error {
 	return nil
 }
 
+// carries reports whether values hold exactly the slot's placeholder; an Authorization scheme is case-insensitive (RFC 7235).
+func (s *Slot) carries(values []string, value string) bool {
+	if len(values) != 1 || len(values[0]) != len(s.Prefix)+len(value) || values[0][len(s.Prefix):] != value {
+		return false
+	}
+	scheme := values[0][:len(s.Prefix)]
+	return scheme == s.Prefix || s.Header == authorization && strings.EqualFold(scheme, s.Prefix)
+}
+
 func ValidOrigin(origin string) bool {
 	u, err := url.Parse(origin)
 	return err == nil && u.Scheme == "https" && u.Host != "" && u.User == nil && u.Path == "" && u.RawQuery == "" && u.Fragment == "" &&
 		u.Host == strings.ToLower(u.Host) && u.Port() != "443" && !strings.HasSuffix(origin, ":")
 }
 
-func (s Set) Bind(r *http.Request, origin string, placeholder func(string) string) ([]string, func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error), error) {
+func (s Set) Bind(r *http.Request, origin string, placeholder func(string) string) ([]string, []string, func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error), error) {
 	header := r.Header.Clone()
 	query := r.URL.Query()
 	segments := strings.Split(r.URL.Path, "/")
@@ -196,7 +223,7 @@ func (s Set) Bind(r *http.Request, origin string, placeholder func(string) strin
 	signed := false
 	for i := range s.slots {
 		slot := &s.slots[i]
-		if slot.Origin != origin || !under(r.URL.Path, slot.Path) {
+		if !slot.serves(origin) || !under(r.URL.Path, slot.Path) {
 			continue
 		}
 		signed = signed || slot.SigV4 != nil
@@ -206,7 +233,7 @@ func (s Set) Bind(r *http.Request, origin string, placeholder func(string) strin
 		}
 		want := slot.Prefix + value
 		switch {
-		case slot.Header != "" && slices.Equal(header.Values(slot.Header), []string{want}):
+		case slot.Header != "" && slot.carries(header.Values(slot.Header), value):
 			header.Del(slot.Header)
 		case slot.Query != "" && slices.Equal(query[slot.Query], []string{want}):
 			delete(query, slot.Query)
@@ -218,8 +245,14 @@ func (s Set) Bind(r *http.Request, origin string, placeholder func(string) strin
 			pass = ""
 		case slot.SigV4 != nil && len(header.Values(authorization)) == 1 && strings.HasPrefix(header.Get(authorization), sigV4Credential+want+"/"):
 			if err := streaming(header); err != nil {
-				return nil, nil, err
+				return nil, nil, nil, err
 			}
+			sig, err := slot.SigV4.scoped(strings.TrimPrefix(header.Get(authorization), sigV4Credential+want+"/"))
+			if err != nil {
+				return nil, nil, nil, err
+			}
+			bound := *slot
+			bound.SigV4, slot = sig, &bound
 			header.Del(authorization)
 			header.Del("X-Amz-Security-Token")
 		default:
@@ -228,10 +261,10 @@ func (s Set) Bind(r *http.Request, origin string, placeholder func(string) strin
 		used = append(used, slot)
 	}
 	if signed && (header.Get(authorization) != "" || presigned(query)) {
-		return nil, nil, errors.New("this SigV4 origin accepts only the signature its slot places")
+		return nil, nil, nil, errors.New("this SigV4 origin accepts only the signature its slot places")
 	}
 	for _, slot := range s.slots {
-		if slot.Origin != origin || !under(r.URL.Path, slot.Path) {
+		if !slot.serves(origin) || !under(r.URL.Path, slot.Path) {
 			continue
 		}
 		var values []string
@@ -254,9 +287,9 @@ func (s Set) Bind(r *http.Request, origin string, placeholder func(string) strin
 				continue
 			}
 			if strings.Contains(v, value) {
-				return nil, nil, fmt.Errorf("%s has an incorrectly formatted or repeated credential placeholder. Send exactly one value: %q", location, slot.Prefix+value)
+				return nil, nil, nil, fmt.Errorf("%s has an incorrectly formatted or repeated credential placeholder. Send exactly one value: %q", location, slot.Prefix+value)
 			}
-			return nil, nil, fmt.Errorf("%s contains an unrecognized credential placeholder. Expected %q. Update the client's %s credential placeholder to %q, then restart the client", location, slot.Prefix+value, slot.Value, value)
+			return nil, nil, nil, fmt.Errorf("%s contains an unrecognized credential placeholder. Expected %q. Update the client's %s credential placeholder to %q, then restart the client", location, slot.Prefix+value, slot.Value, value)
 		}
 	}
 	fields := map[string]string{"Basic authentication username": user, "Basic authentication password": pass}
@@ -275,19 +308,22 @@ func (s Set) Bind(r *http.Request, origin string, placeholder func(string) strin
 		}
 		for _, name := range s.Names() {
 			if p := placeholder(name); p != "" && strings.Contains(fields[field], p) {
-				return nil, nil, fmt.Errorf("%s: credential %s is not allowed for %s%s", field, name, origin, r.URL.Path)
+				return nil, nil, nil, fmt.Errorf("%s: credential %s is not allowed for %s%s", field, name, origin, r.URL.Path)
 			}
 		}
-		return nil, nil, fmt.Errorf("%s: this identity has no credential with this placeholder for %s", field, origin)
+		return nil, nil, nil, fmt.Errorf("%s: this identity has no credential with this placeholder for %s", field, origin)
 	}
-	var names []string
+	var names, keys []string
 	for _, slot := range used {
 		if r.Header["Upgrade"] != nil && strings.HasPrefix(slot.Header, "Sec-Websocket-") {
-			return nil, nil, errors.New("WebSocket negotiation headers cannot carry credentials")
+			return nil, nil, nil, errors.New("WebSocket negotiation headers cannot carry credentials")
 		}
 		names = append(names, slot.Value)
+		if slot.Query != "" {
+			keys = append(keys, slot.Query)
+		}
 	}
-	return names, func(r *http.Request, value func(context.Context, string) (string, error)) (*http.Request, error) {
+	return names, keys, func(r *http.Request, value func(context.Context, string) (string, error)) (*http.Request, error) {
 		return place(r, used, value, s.MaxSignedBody)
 	}, nil
 }
@@ -370,14 +406,9 @@ func place(r *http.Request, slots []*Slot, value func(context.Context, string) (
 			pass = secret
 			r.SetBasicAuth(user, pass)
 		default:
-			signer, keys.AccessKeyID = s, secret
-			if keys.SecretAccessKey, err = resolve(s.SigV4.Secret); err != nil {
+			signer = s
+			if keys, err = s.awsKeys(secret, resolve); err != nil {
 				return nil, err
-			}
-			if s.SigV4.Session != "" {
-				if keys.SessionToken, err = resolve(s.SigV4.Session); err != nil {
-					return nil, err
-				}
 			}
 		}
 	}

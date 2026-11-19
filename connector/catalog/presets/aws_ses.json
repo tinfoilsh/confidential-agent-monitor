@@ -1,93 +1,767 @@
 {
-  "title": "AWS SES",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["http", "slots", 0, "sigv4", "region"]},
-      {"key": "access_key", "label": "Access key ID", "secret": true, "credential": true},
-      {"key": "secret_key", "label": "Secret access key", "secret": true, "credential": true},
-      {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/", "sigv4": {"service": "ses", "region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}},
     "actions": {
-      "read": {"title": "Read everything the account can see"},
-      "send.email": {"title": "Send: email"}
-    }
+      "email": {
+        "title": "Email"
+      },
+      "email.account": {
+        "title": "Account"
+      },
+      "email.account.dedicated_ips": {
+        "title": "Dedicated ips"
+      },
+      "email.account.dedicated_ips.warmup": {
+        "title": "Warmup"
+      },
+      "email.account.dedicated_ips.warmup.admin": {
+        "title": "Manage"
+      },
+      "email.account.delivery": {
+        "title": "Delivery"
+      },
+      "email.account.delivery.admin": {
+        "title": "Manage"
+      },
+      "email.account.details": {
+        "title": "Details"
+      },
+      "email.account.details.admin": {
+        "title": "Manage"
+      },
+      "email.account.pricing_attributes": {
+        "title": "Pricing attributes"
+      },
+      "email.account.pricing_attributes.admin": {
+        "title": "Manage"
+      },
+      "email.account.read": {
+        "title": "Read"
+      },
+      "email.account.sending": {
+        "title": "Sending"
+      },
+      "email.account.sending.admin": {
+        "title": "Manage"
+      },
+      "email.account.suppression": {
+        "title": "Suppression"
+      },
+      "email.account.suppression.admin": {
+        "title": "Manage"
+      },
+      "email.account.vdm": {
+        "title": "Vdm"
+      },
+      "email.account.vdm.admin": {
+        "title": "Manage"
+      },
+      "email.admin": {
+        "title": "Manage"
+      },
+      "email.configuration_sets": {
+        "title": "Configuration sets"
+      },
+      "email.configuration_sets.archiving_options": {
+        "title": "Archiving options"
+      },
+      "email.configuration_sets.archiving_options.write": {
+        "title": "Create and edit"
+      },
+      "email.configuration_sets.delete": {
+        "title": "Delete"
+      },
+      "email.configuration_sets.delivery_options": {
+        "title": "Delivery options"
+      },
+      "email.configuration_sets.delivery_options.write": {
+        "title": "Create and edit"
+      },
+      "email.configuration_sets.event_destinations": {
+        "title": "Event destinations"
+      },
+      "email.configuration_sets.event_destinations.delete": {
+        "title": "Delete"
+      },
+      "email.configuration_sets.event_destinations.read": {
+        "title": "Read"
+      },
+      "email.configuration_sets.event_destinations.write": {
+        "title": "Create and edit"
+      },
+      "email.configuration_sets.read": {
+        "title": "Read"
+      },
+      "email.configuration_sets.reputation_options": {
+        "title": "Reputation options"
+      },
+      "email.configuration_sets.reputation_options.write": {
+        "title": "Create and edit"
+      },
+      "email.configuration_sets.sending": {
+        "title": "Sending"
+      },
+      "email.configuration_sets.sending.write": {
+        "title": "Create and edit"
+      },
+      "email.configuration_sets.suppression_options": {
+        "title": "Suppression options"
+      },
+      "email.configuration_sets.suppression_options.write": {
+        "title": "Create and edit"
+      },
+      "email.configuration_sets.tracking_options": {
+        "title": "Tracking options"
+      },
+      "email.configuration_sets.tracking_options.write": {
+        "title": "Create and edit"
+      },
+      "email.configuration_sets.vdm_options": {
+        "title": "Vdm options"
+      },
+      "email.configuration_sets.vdm_options.write": {
+        "title": "Create and edit"
+      },
+      "email.configuration_sets.write": {
+        "title": "Create and edit"
+      },
+      "email.contact_lists": {
+        "title": "Contact lists"
+      },
+      "email.contact_lists.contacts": {
+        "title": "Contacts"
+      },
+      "email.contact_lists.contacts.delete": {
+        "title": "Delete"
+      },
+      "email.contact_lists.contacts.read": {
+        "title": "Read"
+      },
+      "email.contact_lists.contacts.write": {
+        "title": "Create and edit"
+      },
+      "email.contact_lists.delete": {
+        "title": "Delete"
+      },
+      "email.contact_lists.read": {
+        "title": "Read"
+      },
+      "email.contact_lists.write": {
+        "title": "Create and edit"
+      },
+      "email.custom_verification_email_templates": {
+        "title": "Custom verification email templates"
+      },
+      "email.custom_verification_email_templates.delete": {
+        "title": "Delete"
+      },
+      "email.custom_verification_email_templates.read": {
+        "title": "Read"
+      },
+      "email.custom_verification_email_templates.write": {
+        "title": "Create and edit"
+      },
+      "email.dedicated_ip_pools": {
+        "title": "Dedicated ip pools"
+      },
+      "email.dedicated_ip_pools.delete": {
+        "title": "Delete"
+      },
+      "email.dedicated_ip_pools.read": {
+        "title": "Read"
+      },
+      "email.dedicated_ip_pools.scaling": {
+        "title": "Scaling"
+      },
+      "email.dedicated_ip_pools.scaling.write": {
+        "title": "Create and edit"
+      },
+      "email.dedicated_ip_pools.write": {
+        "title": "Create and edit"
+      },
+      "email.dedicated_ips": {
+        "title": "Dedicated ips"
+      },
+      "email.dedicated_ips.pool": {
+        "title": "Pool"
+      },
+      "email.dedicated_ips.pool.write": {
+        "title": "Create and edit"
+      },
+      "email.dedicated_ips.read": {
+        "title": "Read"
+      },
+      "email.dedicated_ips.warmup": {
+        "title": "Warmup"
+      },
+      "email.dedicated_ips.warmup.write": {
+        "title": "Create and edit"
+      },
+      "email.delete": {
+        "title": "Delete"
+      },
+      "email.deliverability_dashboard": {
+        "title": "Deliverability dashboard"
+      },
+      "email.deliverability_dashboard.blacklist_report": {
+        "title": "Blacklist report"
+      },
+      "email.deliverability_dashboard.blacklist_report.read": {
+        "title": "Read"
+      },
+      "email.deliverability_dashboard.campaigns": {
+        "title": "Campaigns"
+      },
+      "email.deliverability_dashboard.campaigns.read": {
+        "title": "Read"
+      },
+      "email.deliverability_dashboard.domains": {
+        "title": "Domains"
+      },
+      "email.deliverability_dashboard.domains.campaigns": {
+        "title": "Campaigns"
+      },
+      "email.deliverability_dashboard.domains.campaigns.read": {
+        "title": "Read"
+      },
+      "email.deliverability_dashboard.pay": {
+        "title": "Make payments"
+      },
+      "email.deliverability_dashboard.read": {
+        "title": "Read"
+      },
+      "email.deliverability_dashboard.send": {
+        "title": "Send"
+      },
+      "email.deliverability_dashboard.statistics_report": {
+        "title": "Statistics report"
+      },
+      "email.deliverability_dashboard.statistics_report.read": {
+        "title": "Read"
+      },
+      "email.deliverability_dashboard.test_reports": {
+        "title": "Test reports"
+      },
+      "email.deliverability_dashboard.test_reports.read": {
+        "title": "Read"
+      },
+      "email.email_address_insights": {
+        "title": "Email address insights"
+      },
+      "email.email_address_insights.read": {
+        "title": "Read"
+      },
+      "email.export_jobs": {
+        "title": "Export jobs"
+      },
+      "email.export_jobs.read": {
+        "title": "Read"
+      },
+      "email.export_jobs.write": {
+        "title": "Create and edit"
+      },
+      "email.identities": {
+        "title": "Identities"
+      },
+      "email.identities.configuration": {
+        "title": "Configuration"
+      },
+      "email.identities.configuration.write": {
+        "title": "Create and edit"
+      },
+      "email.identities.delete": {
+        "title": "Delete"
+      },
+      "email.identities.dkim": {
+        "title": "Dkim"
+      },
+      "email.identities.dkim.signing": {
+        "title": "Signing"
+      },
+      "email.identities.dkim.signing.write": {
+        "title": "Create and edit"
+      },
+      "email.identities.dkim.write": {
+        "title": "Create and edit"
+      },
+      "email.identities.feedback": {
+        "title": "Feedback"
+      },
+      "email.identities.feedback.write": {
+        "title": "Create and edit"
+      },
+      "email.identities.mail_from": {
+        "title": "Mail from"
+      },
+      "email.identities.mail_from.write": {
+        "title": "Create and edit"
+      },
+      "email.identities.policies": {
+        "title": "Policies"
+      },
+      "email.identities.policies.delete": {
+        "title": "Delete"
+      },
+      "email.identities.policies.read": {
+        "title": "Read"
+      },
+      "email.identities.policies.share": {
+        "title": "Share"
+      },
+      "email.identities.read": {
+        "title": "Read"
+      },
+      "email.identities.send": {
+        "title": "Send"
+      },
+      "email.identity": {
+        "title": "Identity"
+      },
+      "email.identity.certificates": {
+        "title": "Certificates"
+      },
+      "email.identity.certificates.read": {
+        "title": "Read"
+      },
+      "email.identity.certificates.write": {
+        "title": "Create and edit"
+      },
+      "email.import_jobs": {
+        "title": "Import jobs"
+      },
+      "email.import_jobs.read": {
+        "title": "Read"
+      },
+      "email.import_jobs.write": {
+        "title": "Create and edit"
+      },
+      "email.insights": {
+        "title": "Insights"
+      },
+      "email.insights.read": {
+        "title": "Read"
+      },
+      "email.metrics": {
+        "title": "Metrics"
+      },
+      "email.metrics.read": {
+        "title": "Read"
+      },
+      "email.multi_region_endpoints": {
+        "title": "Multi region endpoints"
+      },
+      "email.multi_region_endpoints.delete": {
+        "title": "Delete"
+      },
+      "email.multi_region_endpoints.read": {
+        "title": "Read"
+      },
+      "email.multi_region_endpoints.write": {
+        "title": "Create and edit"
+      },
+      "email.outbound_bulk_emails": {
+        "title": "Outbound bulk emails"
+      },
+      "email.outbound_bulk_emails.send": {
+        "title": "Send"
+      },
+      "email.outbound_custom_verification_emails": {
+        "title": "Outbound custom verification emails"
+      },
+      "email.outbound_custom_verification_emails.send": {
+        "title": "Send"
+      },
+      "email.outbound_emails": {
+        "title": "Outbound emails"
+      },
+      "email.outbound_emails.send": {
+        "title": "Send"
+      },
+      "email.read": {
+        "title": "Read"
+      },
+      "email.reputation": {
+        "title": "Reputation"
+      },
+      "email.reputation.entities": {
+        "title": "Entities"
+      },
+      "email.reputation.entities.customer_managed_status": {
+        "title": "Customer managed status"
+      },
+      "email.reputation.entities.customer_managed_status.write": {
+        "title": "Create and edit"
+      },
+      "email.reputation.entities.policy": {
+        "title": "Policy"
+      },
+      "email.reputation.entities.policy.write": {
+        "title": "Create and edit"
+      },
+      "email.reputation.entities.read": {
+        "title": "Read"
+      },
+      "email.resources": {
+        "title": "Resources"
+      },
+      "email.resources.tenants": {
+        "title": "Tenants"
+      },
+      "email.resources.tenants.read": {
+        "title": "Read"
+      },
+      "email.send": {
+        "title": "Send"
+      },
+      "email.share": {
+        "title": "Share"
+      },
+      "email.suppression": {
+        "title": "Suppression"
+      },
+      "email.suppression.addresses": {
+        "title": "Addresses"
+      },
+      "email.suppression.addresses.delete": {
+        "title": "Delete"
+      },
+      "email.suppression.addresses.read": {
+        "title": "Read"
+      },
+      "email.suppression.addresses.write": {
+        "title": "Create and edit"
+      },
+      "email.tags": {
+        "title": "Tags"
+      },
+      "email.tags.read": {
+        "title": "Read"
+      },
+      "email.tags.write": {
+        "title": "Create and edit"
+      },
+      "email.templates": {
+        "title": "Templates"
+      },
+      "email.templates.delete": {
+        "title": "Delete"
+      },
+      "email.templates.read": {
+        "title": "Read"
+      },
+      "email.templates.render": {
+        "title": "Render"
+      },
+      "email.templates.render.read": {
+        "title": "Read"
+      },
+      "email.templates.write": {
+        "title": "Create and edit"
+      },
+      "email.tenant": {
+        "title": "Tenant"
+      },
+      "email.tenant.suppression": {
+        "title": "Suppression"
+      },
+      "email.tenant.suppression.write": {
+        "title": "Create and edit"
+      },
+      "email.tenants": {
+        "title": "Tenants"
+      },
+      "email.tenants.delete": {
+        "title": "Delete"
+      },
+      "email.tenants.read": {
+        "title": "Read"
+      },
+      "email.tenants.resources": {
+        "title": "Resources"
+      },
+      "email.tenants.resources.delete": {
+        "title": "Delete"
+      },
+      "email.tenants.resources.read": {
+        "title": "Read"
+      },
+      "email.tenants.resources.write": {
+        "title": "Create and edit"
+      },
+      "email.tenants.write": {
+        "title": "Create and edit"
+      },
+      "email.vdm": {
+        "title": "Vdm"
+      },
+      "email.vdm.recommendations": {
+        "title": "Recommendations"
+      },
+      "email.vdm.recommendations.read": {
+        "title": "Read"
+      },
+      "email.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "origin": "https://example.com",
+            "path": "/",
+            "sigv4": {
+              "region": "us-east-1",
+              "secret": "secret_key",
+              "service": "ses",
+              "session": "session_token"
+            },
+            "value": "access_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Service endpoint (https://service.region.amazonaws.com)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "key": "region",
+        "label": "Region (e.g. us-east-1)",
+        "path": [
+          "http",
+          "slots",
+          0,
+          "sigv4",
+          "region"
+        ]
+      },
+      {
+        "credential": true,
+        "key": "access_key",
+        "label": "Access key ID",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "secret_key",
+        "label": "Secret access key",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "session_token",
+        "label": "Session token (temporary credentials only)",
+        "secret": true
+      }
+    ],
+    "group": "api",
+    "replaced_by": "aws"
   },
+  "title": "AWS SES",
   "http": {
+    "origins": {"origin":["https://email-fips.{region}.amazonaws.com","https://email.{region}.amazonaws.com"]},
     "operations": {
-      "CloneReceiptRuleSet": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"CloneReceiptRuleSet"},"body":"form","scope":{"RuleSetName":{"from":"form","at":"RuleSetName"},"OriginalRuleSetName":{"from":"form","at":"OriginalRuleSetName"}}},
-      "CreateConfigurationSet": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"CreateConfigurationSet"},"body":"form","scope":{}},
-      "CreateConfigurationSetEventDestination": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"CreateConfigurationSetEventDestination"},"body":"form","scope":{"ConfigurationSetName":{"from":"form","at":"ConfigurationSetName"}}},
-      "CreateConfigurationSetTrackingOptions": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"CreateConfigurationSetTrackingOptions"},"body":"form","scope":{"ConfigurationSetName":{"from":"form","at":"ConfigurationSetName"}}},
-      "CreateCustomVerificationEmailTemplate": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"CreateCustomVerificationEmailTemplate"},"body":"form","scope":{"TemplateName":{"from":"form","at":"TemplateName"},"SuccessRedirectionURL":{"from":"form","at":"SuccessRedirectionURL"},"FailureRedirectionURL":{"from":"form","at":"FailureRedirectionURL"}}},
-      "CreateReceiptFilter": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"CreateReceiptFilter"},"body":"form","scope":{}},
-      "CreateReceiptRule": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"CreateReceiptRule"},"body":"form","scope":{"RuleSetName":{"from":"form","at":"RuleSetName"}}},
-      "CreateReceiptRuleSet": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"CreateReceiptRuleSet"},"body":"form","scope":{"RuleSetName":{"from":"form","at":"RuleSetName"}}},
-      "CreateTemplate": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"CreateTemplate"},"body":"form","scope":{}},
-      "DeleteConfigurationSet": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeleteConfigurationSet"},"body":"form","scope":{"ConfigurationSetName":{"from":"form","at":"ConfigurationSetName"}}},
-      "DeleteConfigurationSetEventDestination": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeleteConfigurationSetEventDestination"},"body":"form","scope":{"ConfigurationSetName":{"from":"form","at":"ConfigurationSetName"},"EventDestinationName":{"from":"form","at":"EventDestinationName"}}},
-      "DeleteConfigurationSetTrackingOptions": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeleteConfigurationSetTrackingOptions"},"body":"form","scope":{"ConfigurationSetName":{"from":"form","at":"ConfigurationSetName"}}},
-      "DeleteCustomVerificationEmailTemplate": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeleteCustomVerificationEmailTemplate"},"body":"form","scope":{"TemplateName":{"from":"form","at":"TemplateName"}}},
-      "DeleteIdentity": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeleteIdentity"},"body":"form","scope":{}},
-      "DeleteIdentityPolicy": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeleteIdentityPolicy"},"body":"form","scope":{"PolicyName":{"from":"form","at":"PolicyName"}}},
-      "DeleteReceiptFilter": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeleteReceiptFilter"},"body":"form","scope":{"FilterName":{"from":"form","at":"FilterName"}}},
-      "DeleteReceiptRule": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeleteReceiptRule"},"body":"form","scope":{"RuleSetName":{"from":"form","at":"RuleSetName"},"RuleName":{"from":"form","at":"RuleName"}}},
-      "DeleteReceiptRuleSet": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeleteReceiptRuleSet"},"body":"form","scope":{"RuleSetName":{"from":"form","at":"RuleSetName"}}},
-      "DeleteTemplate": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeleteTemplate"},"body":"form","scope":{"TemplateName":{"from":"form","at":"TemplateName"}}},
-      "DeleteVerifiedEmailAddress": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeleteVerifiedEmailAddress"},"body":"form","scope":{}},
-      "DescribeActiveReceiptRuleSet": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeActiveReceiptRuleSet"},"body":"form","scope":{}},
-      "DescribeConfigurationSet": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeConfigurationSet"},"body":"form","scope":{"ConfigurationSetName":{"from":"form","at":"ConfigurationSetName"}}},
-      "DescribeReceiptRule": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeReceiptRule"},"body":"form","scope":{"RuleSetName":{"from":"form","at":"RuleSetName"},"RuleName":{"from":"form","at":"RuleName"}}},
-      "DescribeReceiptRuleSet": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeReceiptRuleSet"},"body":"form","scope":{"RuleSetName":{"from":"form","at":"RuleSetName"}}},
-      "GetAccountSendingEnabled": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"GetAccountSendingEnabled"},"body":"form","scope":{}},
-      "GetCustomVerificationEmailTemplate": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"GetCustomVerificationEmailTemplate"},"body":"form","scope":{"TemplateName":{"from":"form","at":"TemplateName"}}},
-      "GetIdentityDkimAttributes": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"GetIdentityDkimAttributes"},"body":"form","scope":{}},
-      "GetIdentityMailFromDomainAttributes": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"GetIdentityMailFromDomainAttributes"},"body":"form","scope":{}},
-      "GetIdentityNotificationAttributes": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"GetIdentityNotificationAttributes"},"body":"form","scope":{}},
-      "GetIdentityPolicies": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"GetIdentityPolicies"},"body":"form","scope":{}},
-      "GetIdentityVerificationAttributes": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"GetIdentityVerificationAttributes"},"body":"form","scope":{}},
-      "GetSendQuota": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"GetSendQuota"},"body":"form","scope":{}},
-      "GetSendStatistics": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"GetSendStatistics"},"body":"form","scope":{}},
-      "GetTemplate": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"GetTemplate"},"body":"form","scope":{"TemplateName":{"from":"form","at":"TemplateName"}}},
-      "ListConfigurationSets": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ListConfigurationSets"},"body":"form","scope":{}},
-      "ListCustomVerificationEmailTemplates": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ListCustomVerificationEmailTemplates"},"body":"form","scope":{}},
-      "ListIdentities": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ListIdentities"},"body":"form","scope":{}},
-      "ListIdentityPolicies": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ListIdentityPolicies"},"body":"form","scope":{}},
-      "ListReceiptFilters": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ListReceiptFilters"},"body":"form","scope":{}},
-      "ListReceiptRuleSets": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ListReceiptRuleSets"},"body":"form","scope":{}},
-      "ListTemplates": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ListTemplates"},"body":"form","scope":{}},
-      "ListVerifiedEmailAddresses": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ListVerifiedEmailAddresses"},"body":"form","scope":{}},
-      "PutConfigurationSetDeliveryOptions": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"PutConfigurationSetDeliveryOptions"},"body":"form","scope":{"ConfigurationSetName":{"from":"form","at":"ConfigurationSetName"}}},
-      "PutIdentityPolicy": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"PutIdentityPolicy"},"body":"form","scope":{"PolicyName":{"from":"form","at":"PolicyName"}}},
-      "ReorderReceiptRuleSet": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ReorderReceiptRuleSet"},"body":"form","scope":{"RuleSetName":{"from":"form","at":"RuleSetName"}}},
-      "SendBounce": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"SendBounce"},"body":"form","scope":{"OriginalMessageId":{"from":"form","at":"OriginalMessageId"}}},
-      "SendBulkTemplatedEmail": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"SendBulkTemplatedEmail"},"body":"form","scope":{}},
-      "SendCustomVerificationEmail": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"SendCustomVerificationEmail"},"body":"form","scope":{"TemplateName":{"from":"form","at":"TemplateName"}}},
-      "SendEmail": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"SendEmail"},"body":"form","scope":{}},
-      "SendRawEmail": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"SendRawEmail"},"body":"form","scope":{}},
-      "SendTemplatedEmail": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"SendTemplatedEmail"},"body":"form","scope":{}},
-      "SetActiveReceiptRuleSet": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"SetActiveReceiptRuleSet"},"body":"form","scope":{}},
-      "SetIdentityDkimEnabled": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"SetIdentityDkimEnabled"},"body":"form","scope":{}},
-      "SetIdentityFeedbackForwardingEnabled": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"SetIdentityFeedbackForwardingEnabled"},"body":"form","scope":{}},
-      "SetIdentityHeadersInNotificationsEnabled": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"SetIdentityHeadersInNotificationsEnabled"},"body":"form","scope":{}},
-      "SetIdentityMailFromDomain": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"SetIdentityMailFromDomain"},"body":"form","scope":{}},
-      "SetIdentityNotificationTopic": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"SetIdentityNotificationTopic"},"body":"form","scope":{}},
-      "SetReceiptRulePosition": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"SetReceiptRulePosition"},"body":"form","scope":{"RuleSetName":{"from":"form","at":"RuleSetName"},"RuleName":{"from":"form","at":"RuleName"}}},
-      "TestRenderTemplate": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"TestRenderTemplate"},"body":"form","scope":{"TemplateName":{"from":"form","at":"TemplateName"}}},
-      "UpdateAccountSendingEnabled": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"UpdateAccountSendingEnabled"},"body":"form","scope":{}},
-      "UpdateConfigurationSetEventDestination": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"UpdateConfigurationSetEventDestination"},"body":"form","scope":{"ConfigurationSetName":{"from":"form","at":"ConfigurationSetName"}}},
-      "UpdateConfigurationSetReputationMetricsEnabled": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"UpdateConfigurationSetReputationMetricsEnabled"},"body":"form","scope":{"ConfigurationSetName":{"from":"form","at":"ConfigurationSetName"}}},
-      "UpdateConfigurationSetSendingEnabled": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"UpdateConfigurationSetSendingEnabled"},"body":"form","scope":{"ConfigurationSetName":{"from":"form","at":"ConfigurationSetName"}}},
-      "UpdateConfigurationSetTrackingOptions": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"UpdateConfigurationSetTrackingOptions"},"body":"form","scope":{"ConfigurationSetName":{"from":"form","at":"ConfigurationSetName"}}},
-      "UpdateCustomVerificationEmailTemplate": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"UpdateCustomVerificationEmailTemplate"},"body":"form","scope":{"TemplateName":{"from":"form","at":"TemplateName"}}},
-      "UpdateReceiptRule": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"UpdateReceiptRule"},"body":"form","scope":{"RuleSetName":{"from":"form","at":"RuleSetName"}}},
-      "UpdateTemplate": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"UpdateTemplate"},"body":"form","scope":{}},
-      "VerifyDomainDkim": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"VerifyDomainDkim"},"body":"form","scope":{}},
-      "VerifyDomainIdentity": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"VerifyDomainIdentity"},"body":"form","scope":{}},
-      "VerifyEmailAddress": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"VerifyEmailAddress"},"body":"form","scope":{}},
-      "VerifyEmailIdentity": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"VerifyEmailIdentity"},"body":"form","scope":{}}
+      "AssociateEmailIdentityCertificate": {"action":"email.identity.certificates.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/email/identity/certificates","scope":{}},
+      "BatchGetMetricData": {"action":"email.metrics.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/email/metrics/batch","scope":{}},
+      "CancelExportJob": {"action":"email.export_jobs.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/export-jobs/{JobId}/cancel","scope":{"JobId":{"at":"JobId","from":"path"}}},
+      "CloneReceiptRuleSet": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"CloneReceiptRuleSet"},"method":"POST","origin":"{origin}","path":"/","scope":{"OriginalRuleSetName":{"at":"OriginalRuleSetName","from":"form"},"RuleSetName":{"at":"RuleSetName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "CreateConfigurationSet": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"CreateConfigurationSet"},"method":"POST","origin":"{origin}","path":"/","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "CreateConfigurationSet.any.a256f0d0d1c1": {"action":"email.configuration_sets.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/email/configuration-sets","scope":{}},
+      "CreateConfigurationSetEventDestination": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"CreateConfigurationSetEventDestination"},"method":"POST","origin":"{origin}","path":"/","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "CreateConfigurationSetEventDestination.any.8ec4df52673f": {"action":"email.configuration_sets.event_destinations.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/email/configuration-sets/{ConfigurationSetName}/event-destinations","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"path"}}},
+      "CreateConfigurationSetTrackingOptions": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"CreateConfigurationSetTrackingOptions"},"method":"POST","origin":"{origin}","path":"/","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "CreateContact": {"action":"email.contact_lists.contacts.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/email/contact-lists/{ContactListName}/contacts","scope":{"ContactListName":{"at":"ContactListName","from":"path"}}},
+      "CreateContactList": {"action":"email.contact_lists.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/email/contact-lists","scope":{}},
+      "CreateCustomVerificationEmailTemplate": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"CreateCustomVerificationEmailTemplate"},"method":"POST","origin":"{origin}","path":"/","scope":{"FailureRedirectionURL":{"at":"FailureRedirectionURL","from":"form"},"SuccessRedirectionURL":{"at":"SuccessRedirectionURL","from":"form"},"TemplateName":{"at":"TemplateName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "CreateCustomVerificationEmailTemplate.any.de45eb229656": {"action":"email.custom_verification_email_templates.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/email/custom-verification-email-templates","scope":{}},
+      "CreateDedicatedIpPool": {"action":"email.dedicated_ip_pools.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/email/dedicated-ip-pools","scope":{}},
+      "CreateDeliverabilityTestReport": {"action":"email.deliverability_dashboard.send","body":"any","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/v2/email/deliverability-dashboard/test","scope":{}},
+      "CreateEmailIdentity": {"action":"email.identities.send","body":"any","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/v2/email/identities","scope":{}},
+      "CreateEmailIdentityPolicy": {"action":"email.identities.policies.share","body":"any","effects":["share"],"method":"POST","origin":"{origin}","path":"/v2/email/identities/{EmailIdentity}/policies/{PolicyName}","scope":{"EmailIdentity":{"at":"EmailIdentity","from":"path"},"PolicyName":{"at":"PolicyName","from":"path"}}},
+      "CreateEmailTemplate": {"action":"email.templates.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/email/templates","scope":{}},
+      "CreateExportJob": {"action":"email.export_jobs.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/email/export-jobs","scope":{}},
+      "CreateImportJob": {"action":"email.import_jobs.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/email/import-jobs","scope":{}},
+      "CreateMultiRegionEndpoint": {"action":"email.multi_region_endpoints.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/email/multi-region-endpoints","scope":{}},
+      "CreateReceiptFilter": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"CreateReceiptFilter"},"method":"POST","origin":"{origin}","path":"/","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "CreateReceiptRule": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"CreateReceiptRule"},"method":"POST","origin":"{origin}","path":"/","scope":{"RuleSetName":{"at":"RuleSetName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "CreateReceiptRuleSet": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"CreateReceiptRuleSet"},"method":"POST","origin":"{origin}","path":"/","scope":{"RuleSetName":{"at":"RuleSetName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "CreateTemplate": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"CreateTemplate"},"method":"POST","origin":"{origin}","path":"/","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "CreateTenant": {"action":"email.tenants.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/email/tenants","scope":{}},
+      "CreateTenantResourceAssociation": {"action":"email.tenants.resources.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/email/tenants/resources","scope":{}},
+      "DeleteConfigurationSet": {"action":"email.delete","body":"form","effects":["delete"],"fields":{"Action":"DeleteConfigurationSet"},"method":"POST","origin":"{origin}","path":"/","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "DeleteConfigurationSet.none.8f41e57ce09a": {"action":"email.configuration_sets.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/email/configuration-sets/{ConfigurationSetName}","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"path"}}},
+      "DeleteConfigurationSetEventDestination": {"action":"email.delete","body":"form","effects":["delete"],"fields":{"Action":"DeleteConfigurationSetEventDestination"},"method":"POST","origin":"{origin}","path":"/","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"form"},"EventDestinationName":{"at":"EventDestinationName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "DeleteConfigurationSetEventDestination.none.00e4ff800799": {"action":"email.configuration_sets.event_destinations.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/email/configuration-sets/{ConfigurationSetName}/event-destinations/{EventDestinationName}","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"path"},"EventDestinationName":{"at":"EventDestinationName","from":"path"}}},
+      "DeleteConfigurationSetTrackingOptions": {"action":"email.delete","body":"form","effects":["delete"],"fields":{"Action":"DeleteConfigurationSetTrackingOptions"},"method":"POST","origin":"{origin}","path":"/","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "DeleteContact": {"action":"email.contact_lists.contacts.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/email/contact-lists/{ContactListName}/contacts/{EmailAddress}","scope":{"ContactListName":{"at":"ContactListName","from":"path"},"EmailAddress":{"at":"EmailAddress","from":"path"}}},
+      "DeleteContactList": {"action":"email.contact_lists.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/email/contact-lists/{ContactListName}","scope":{"ContactListName":{"at":"ContactListName","from":"path"}}},
+      "DeleteCustomVerificationEmailTemplate": {"action":"email.delete","body":"form","effects":["delete"],"fields":{"Action":"DeleteCustomVerificationEmailTemplate"},"method":"POST","origin":"{origin}","path":"/","scope":{"TemplateName":{"at":"TemplateName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "DeleteCustomVerificationEmailTemplate.none.6c5ca89a8b49": {"action":"email.custom_verification_email_templates.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/email/custom-verification-email-templates/{TemplateName}","scope":{"TemplateName":{"at":"TemplateName","from":"path"}}},
+      "DeleteDedicatedIpPool": {"action":"email.dedicated_ip_pools.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/email/dedicated-ip-pools/{PoolName}","scope":{"PoolName":{"at":"PoolName","from":"path"}}},
+      "DeleteEmailIdentity": {"action":"email.identities.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/email/identities/{EmailIdentity}","scope":{"EmailIdentity":{"at":"EmailIdentity","from":"path"}}},
+      "DeleteEmailIdentityPolicy": {"action":"email.identities.policies.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/email/identities/{EmailIdentity}/policies/{PolicyName}","scope":{"EmailIdentity":{"at":"EmailIdentity","from":"path"},"PolicyName":{"at":"PolicyName","from":"path"}}},
+      "DeleteEmailTemplate": {"action":"email.templates.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/email/templates/{TemplateName}","scope":{"TemplateName":{"at":"TemplateName","from":"path"}}},
+      "DeleteIdentity": {"action":"email.delete","body":"form","effects":["delete"],"fields":{"Action":"DeleteIdentity"},"method":"POST","origin":"{origin}","path":"/","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "DeleteIdentityPolicy": {"action":"email.delete","body":"form","effects":["delete"],"fields":{"Action":"DeleteIdentityPolicy"},"method":"POST","origin":"{origin}","path":"/","scope":{"PolicyName":{"at":"PolicyName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "DeleteMultiRegionEndpoint": {"action":"email.multi_region_endpoints.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/email/multi-region-endpoints/{EndpointName}","scope":{"EndpointName":{"at":"EndpointName","from":"path"}}},
+      "DeleteReceiptFilter": {"action":"email.delete","body":"form","effects":["delete"],"fields":{"Action":"DeleteReceiptFilter"},"method":"POST","origin":"{origin}","path":"/","scope":{"FilterName":{"at":"FilterName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "DeleteReceiptRule": {"action":"email.delete","body":"form","effects":["delete"],"fields":{"Action":"DeleteReceiptRule"},"method":"POST","origin":"{origin}","path":"/","scope":{"RuleName":{"at":"RuleName","from":"form"},"RuleSetName":{"at":"RuleSetName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "DeleteReceiptRuleSet": {"action":"email.delete","body":"form","effects":["delete"],"fields":{"Action":"DeleteReceiptRuleSet"},"method":"POST","origin":"{origin}","path":"/","scope":{"RuleSetName":{"at":"RuleSetName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "DeleteSuppressedDestination": {"action":"email.suppression.addresses.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["TenantName"],"path":"/v2/email/suppression/addresses/{EmailAddress}","scope":{"EmailAddress":{"at":"EmailAddress","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "DeleteTemplate": {"action":"email.delete","body":"form","effects":["delete"],"fields":{"Action":"DeleteTemplate"},"method":"POST","origin":"{origin}","path":"/","scope":{"TemplateName":{"at":"TemplateName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "DeleteTenant": {"action":"email.tenants.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","path":"/v2/email/tenants/delete","scope":{}},
+      "DeleteTenantResourceAssociation": {"action":"email.tenants.resources.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","path":"/v2/email/tenants/resources/delete","scope":{}},
+      "DeleteVerifiedEmailAddress": {"action":"email.delete","body":"form","effects":["delete"],"fields":{"Action":"DeleteVerifiedEmailAddress"},"method":"POST","origin":"{origin}","path":"/","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "DescribeActiveReceiptRuleSet": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"DescribeActiveReceiptRuleSet"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeConfigurationSet": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"DescribeConfigurationSet"},"method":"POST","origin":"{origin}","path":"/","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"form"}}},
+      "DescribeReceiptRule": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"DescribeReceiptRule"},"method":"POST","origin":"{origin}","path":"/","scope":{"RuleName":{"at":"RuleName","from":"form"},"RuleSetName":{"at":"RuleSetName","from":"form"}}},
+      "DescribeReceiptRuleSet": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"DescribeReceiptRuleSet"},"method":"POST","origin":"{origin}","path":"/","scope":{"RuleSetName":{"at":"RuleSetName","from":"form"}}},
+      "DisassociateEmailIdentityCertificate": {"action":"email.identity.certificates.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/email/identity/certificates/delete","scope":{}},
+      "GetAccount": {"action":"email.account.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/account","scope":{}},
+      "GetAccountSendingEnabled": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"GetAccountSendingEnabled"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetBlacklistReports": {"action":"email.deliverability_dashboard.blacklist_report.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/deliverability-dashboard/blacklist-report","query":{"BlacklistItemNames":true},"scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GetConfigurationSet": {"action":"email.configuration_sets.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/configuration-sets/{ConfigurationSetName}","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"path"}}},
+      "GetConfigurationSetEventDestinations": {"action":"email.configuration_sets.event_destinations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/configuration-sets/{ConfigurationSetName}/event-destinations","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"path"}}},
+      "GetContact": {"action":"email.contact_lists.contacts.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/contact-lists/{ContactListName}/contacts/{EmailAddress}","scope":{"ContactListName":{"at":"ContactListName","from":"path"},"EmailAddress":{"at":"EmailAddress","from":"path"}}},
+      "GetContactList": {"action":"email.contact_lists.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/contact-lists/{ContactListName}","scope":{"ContactListName":{"at":"ContactListName","from":"path"}}},
+      "GetCustomVerificationEmailTemplate": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"GetCustomVerificationEmailTemplate"},"method":"POST","origin":"{origin}","path":"/","scope":{"TemplateName":{"at":"TemplateName","from":"form"}}},
+      "GetCustomVerificationEmailTemplate.none.65c0763bda01": {"action":"email.custom_verification_email_templates.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/custom-verification-email-templates/{TemplateName}","scope":{"TemplateName":{"at":"TemplateName","from":"path"}}},
+      "GetDedicatedIp": {"action":"email.dedicated_ips.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/dedicated-ips/{IP}","scope":{"IP":{"at":"IP","from":"path"}}},
+      "GetDedicatedIpPool": {"action":"email.dedicated_ip_pools.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/dedicated-ip-pools/{PoolName}","scope":{"PoolName":{"at":"PoolName","from":"path"}}},
+      "GetDedicatedIps": {"action":"email.dedicated_ips.read","effects":["read"],"method":"GET","origin":"{origin}","params":["NextToken","PageSize","PoolName"],"path":"/v2/email/dedicated-ips","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GetDeliverabilityDashboardOptions": {"action":"email.deliverability_dashboard.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/deliverability-dashboard","scope":{}},
+      "GetDeliverabilityTestReport": {"action":"email.deliverability_dashboard.test_reports.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/deliverability-dashboard/test-reports/{ReportId}","scope":{"ReportId":{"at":"ReportId","from":"path"}}},
+      "GetDomainDeliverabilityCampaign": {"action":"email.deliverability_dashboard.campaigns.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/deliverability-dashboard/campaigns/{CampaignId}","scope":{"CampaignId":{"at":"CampaignId","from":"path"}}},
+      "GetDomainStatisticsReport": {"action":"email.deliverability_dashboard.statistics_report.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/deliverability-dashboard/statistics-report/{Domain}","query":{"EndDate":true,"StartDate":true},"scope":{"Domain":{"at":"Domain","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "GetEmailAddressInsights": {"action":"email.email_address_insights.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/email/email-address-insights/","scope":{}},
+      "GetEmailIdentity": {"action":"email.identities.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/identities/{EmailIdentity}","scope":{"EmailIdentity":{"at":"EmailIdentity","from":"path"}}},
+      "GetEmailIdentityPolicies": {"action":"email.identities.policies.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/identities/{EmailIdentity}/policies","scope":{"EmailIdentity":{"at":"EmailIdentity","from":"path"}}},
+      "GetEmailTemplate": {"action":"email.templates.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/templates/{TemplateName}","scope":{"TemplateName":{"at":"TemplateName","from":"path"}}},
+      "GetExportJob": {"action":"email.export_jobs.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/export-jobs/{JobId}","scope":{"JobId":{"at":"JobId","from":"path"}}},
+      "GetIdentityDkimAttributes": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"GetIdentityDkimAttributes"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetIdentityMailFromDomainAttributes": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"GetIdentityMailFromDomainAttributes"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetIdentityNotificationAttributes": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"GetIdentityNotificationAttributes"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetIdentityPolicies": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"GetIdentityPolicies"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetIdentityVerificationAttributes": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"GetIdentityVerificationAttributes"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetImportJob": {"action":"email.import_jobs.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/import-jobs/{JobId}","scope":{"JobId":{"at":"JobId","from":"path"}}},
+      "GetMessageInsights": {"action":"email.insights.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/insights/{MessageId}/","scope":{"MessageId":{"at":"MessageId","from":"path"}}},
+      "GetMultiRegionEndpoint": {"action":"email.multi_region_endpoints.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/multi-region-endpoints/{EndpointName}","scope":{"EndpointName":{"at":"EndpointName","from":"path"}}},
+      "GetReputationEntity": {"action":"email.reputation.entities.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/reputation/entities/{ReputationEntityType}/{ReputationEntityReference}","scope":{"ReputationEntityReference":{"at":"ReputationEntityReference","from":"path"},"ReputationEntityType":{"at":"ReputationEntityType","from":"path"}}},
+      "GetSendQuota": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"GetSendQuota"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetSendStatistics": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"GetSendStatistics"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetSuppressedDestination": {"action":"email.suppression.addresses.read","effects":["read"],"method":"GET","origin":"{origin}","params":["TenantName"],"path":"/v2/email/suppression/addresses/{EmailAddress}","scope":{"EmailAddress":{"at":"EmailAddress","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "GetTemplate": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"GetTemplate"},"method":"POST","origin":"{origin}","path":"/","scope":{"TemplateName":{"at":"TemplateName","from":"form"}}},
+      "GetTenant": {"action":"email.tenants.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/email/tenants/get","scope":{}},
+      "ListConfigurationSets": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"ListConfigurationSets"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListConfigurationSets.any.fe17ded036ec": {"action":"email.configuration_sets.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/email/list-configuration-sets","scope":{}},
+      "ListContactLists": {"action":"email.contact_lists.read","effects":["read"],"method":"GET","origin":"{origin}","params":["NextToken","PageSize"],"path":"/v2/email/contact-lists","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "ListContacts": {"action":"email.contact_lists.contacts.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/email/contact-lists/{ContactListName}/contacts/list","scope":{"ContactListName":{"at":"ContactListName","from":"path"}}},
+      "ListCustomVerificationEmailTemplates": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"ListCustomVerificationEmailTemplates"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListCustomVerificationEmailTemplates.none.cacb212a09a0": {"action":"email.custom_verification_email_templates.read","effects":["read"],"method":"GET","origin":"{origin}","params":["NextToken","PageSize"],"path":"/v2/email/custom-verification-email-templates","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "ListDedicatedIpPools": {"action":"email.dedicated_ip_pools.read","effects":["read"],"method":"GET","origin":"{origin}","params":["NextToken","PageSize"],"path":"/v2/email/dedicated-ip-pools","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "ListDeliverabilityTestReports": {"action":"email.deliverability_dashboard.test_reports.read","effects":["read"],"method":"GET","origin":"{origin}","params":["NextToken","PageSize"],"path":"/v2/email/deliverability-dashboard/test-reports","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "ListDomainDeliverabilityCampaigns": {"action":"email.deliverability_dashboard.domains.campaigns.read","effects":["read"],"method":"GET","origin":"{origin}","params":["NextToken","PageSize"],"path":"/v2/email/deliverability-dashboard/domains/{SubscribedDomain}/campaigns","query":{"EndDate":true,"StartDate":true},"scope":{"SubscribedDomain":{"at":"SubscribedDomain","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "ListEmailIdentities": {"action":"email.identities.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/email/list-identities","scope":{}},
+      "ListEmailIdentityCertificates": {"action":"email.identity.certificates.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/email/identity/certificates/list","scope":{}},
+      "ListEmailTemplates": {"action":"email.templates.read","effects":["read"],"method":"GET","origin":"{origin}","params":["NextToken","PageSize"],"path":"/v2/email/templates","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "ListExportJobs": {"action":"email.export_jobs.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/email/list-export-jobs","scope":{}},
+      "ListIdentities": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"ListIdentities"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListIdentityPolicies": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"ListIdentityPolicies"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListImportJobs": {"action":"email.import_jobs.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/email/import-jobs/list","scope":{}},
+      "ListMultiRegionEndpoints": {"action":"email.multi_region_endpoints.read","effects":["read"],"method":"GET","origin":"{origin}","params":["NextToken","PageSize"],"path":"/v2/email/multi-region-endpoints","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "ListReceiptFilters": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"ListReceiptFilters"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListReceiptRuleSets": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"ListReceiptRuleSets"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListRecommendations": {"action":"email.vdm.recommendations.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/email/vdm/recommendations","scope":{}},
+      "ListReputationEntities": {"action":"email.reputation.entities.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/email/reputation/entities","scope":{}},
+      "ListResourceTenants": {"action":"email.resources.tenants.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/email/resources/tenants/list","scope":{}},
+      "ListSuppressedDestinations": {"action":"email.suppression.addresses.read","effects":["read"],"method":"GET","origin":"{origin}","params":["EndDate","NextToken","PageSize","Reason","StartDate","TenantName"],"path":"/v2/email/suppression/addresses","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "ListTagsForResource": {"action":"email.tags.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/email/tags","query":{"ResourceArn":true},"scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "ListTemplates": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"ListTemplates"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListTenantResources": {"action":"email.tenants.resources.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/email/tenants/resources/list","scope":{}},
+      "ListTenants": {"action":"email.tenants.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/email/tenants/list","scope":{}},
+      "ListVerifiedEmailAddresses": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"ListVerifiedEmailAddresses"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "PutAccountDedicatedIpWarmupAttributes": {"action":"email.account.dedicated_ips.warmup.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/v2/email/account/dedicated-ips/warmup","scope":{}},
+      "PutAccountDeliveryAttributes": {"action":"email.account.delivery.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v2/email/account/delivery","scope":{}},
+      "PutAccountDetails": {"action":"email.account.details.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v2/email/account/details","scope":{}},
+      "PutAccountPricingAttributes": {"action":"email.account.pricing_attributes.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/v2/email/account/pricing-attributes","scope":{}},
+      "PutAccountSendingAttributes": {"action":"email.account.sending.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/v2/email/account/sending","scope":{}},
+      "PutAccountSuppressionAttributes": {"action":"email.account.suppression.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/v2/email/account/suppression","scope":{}},
+      "PutAccountVdmAttributes": {"action":"email.account.vdm.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/v2/email/account/vdm","scope":{}},
+      "PutConfigurationSetArchivingOptions": {"action":"email.configuration_sets.archiving_options.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/configuration-sets/{ConfigurationSetName}/archiving-options","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"path"}}},
+      "PutConfigurationSetDeliveryOptions": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"PutConfigurationSetDeliveryOptions"},"method":"POST","origin":"{origin}","path":"/","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "PutConfigurationSetDeliveryOptions.any.35fb25ca95b0": {"action":"email.configuration_sets.delivery_options.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/configuration-sets/{ConfigurationSetName}/delivery-options","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"path"}}},
+      "PutConfigurationSetReputationOptions": {"action":"email.configuration_sets.reputation_options.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/configuration-sets/{ConfigurationSetName}/reputation-options","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"path"}}},
+      "PutConfigurationSetSendingOptions": {"action":"email.configuration_sets.sending.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/configuration-sets/{ConfigurationSetName}/sending","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"path"}}},
+      "PutConfigurationSetSuppressionOptions": {"action":"email.configuration_sets.suppression_options.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/configuration-sets/{ConfigurationSetName}/suppression-options","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"path"}}},
+      "PutConfigurationSetTrackingOptions": {"action":"email.configuration_sets.tracking_options.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/configuration-sets/{ConfigurationSetName}/tracking-options","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"path"}}},
+      "PutConfigurationSetVdmOptions": {"action":"email.configuration_sets.vdm_options.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/configuration-sets/{ConfigurationSetName}/vdm-options","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"path"}}},
+      "PutDedicatedIpInPool": {"action":"email.dedicated_ips.pool.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/dedicated-ips/{IP}/pool","scope":{"IP":{"at":"IP","from":"path"}}},
+      "PutDedicatedIpPoolScalingAttributes": {"action":"email.dedicated_ip_pools.scaling.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/dedicated-ip-pools/{PoolName}/scaling","scope":{"PoolName":{"at":"PoolName","from":"path"}}},
+      "PutDedicatedIpWarmupAttributes": {"action":"email.dedicated_ips.warmup.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/dedicated-ips/{IP}/warmup","scope":{"IP":{"at":"IP","from":"path"}}},
+      "PutDeliverabilityDashboardOption": {"action":"email.deliverability_dashboard.pay","body":"any","effects":["pay","admin"],"method":"PUT","origin":"{origin}","path":"/v2/email/deliverability-dashboard","scope":{}},
+      "PutEmailIdentityConfigurationSetAttributes": {"action":"email.identities.configuration.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/identities/{EmailIdentity}/configuration-set","scope":{"EmailIdentity":{"at":"EmailIdentity","from":"path"}}},
+      "PutEmailIdentityDkimAttributes": {"action":"email.identities.dkim.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/identities/{EmailIdentity}/dkim","scope":{"EmailIdentity":{"at":"EmailIdentity","from":"path"}}},
+      "PutEmailIdentityDkimSigningAttributes": {"action":"email.identities.dkim.signing.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/identities/{EmailIdentity}/dkim/signing","scope":{"EmailIdentity":{"at":"EmailIdentity","from":"path"}}},
+      "PutEmailIdentityFeedbackAttributes": {"action":"email.identities.feedback.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/identities/{EmailIdentity}/feedback","scope":{"EmailIdentity":{"at":"EmailIdentity","from":"path"}}},
+      "PutEmailIdentityMailFromAttributes": {"action":"email.identities.mail_from.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/identities/{EmailIdentity}/mail-from","scope":{"EmailIdentity":{"at":"EmailIdentity","from":"path"}}},
+      "PutIdentityPolicy": {"action":"email.share","body":"form","effects":["share"],"fields":{"Action":"PutIdentityPolicy"},"method":"POST","origin":"{origin}","path":"/","scope":{"PolicyName":{"at":"PolicyName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "PutSuppressedDestination": {"action":"email.suppression.addresses.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/suppression/addresses","scope":{}},
+      "PutTenantSuppressionAttributes": {"action":"email.tenant.suppression.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/email/tenant/suppression","scope":{}},
+      "ReorderReceiptRuleSet": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"ReorderReceiptRuleSet"},"method":"POST","origin":"{origin}","path":"/","scope":{"RuleSetName":{"at":"RuleSetName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "SendBounce": {"action":"email.send","body":"form","effects":["send"],"fields":{"Action":"SendBounce"},"method":"POST","origin":"{origin}","path":"/","scope":{"OriginalMessageId":{"at":"OriginalMessageId","from":"form"}}},
+      "SendBulkEmail": {"action":"email.outbound_bulk_emails.send","body":"any","effects":["send"],"method":"POST","origin":"{origin}","path":"/v2/email/outbound-bulk-emails","scope":{}},
+      "SendBulkTemplatedEmail": {"action":"email.send","body":"form","effects":["send"],"fields":{"Action":"SendBulkTemplatedEmail"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "SendCustomVerificationEmail": {"action":"email.send","body":"form","effects":["send"],"fields":{"Action":"SendCustomVerificationEmail"},"method":"POST","origin":"{origin}","path":"/","scope":{"TemplateName":{"at":"TemplateName","from":"form"}}},
+      "SendCustomVerificationEmail.any.a537f393fdff": {"action":"email.outbound_custom_verification_emails.send","body":"any","effects":["send"],"method":"POST","origin":"{origin}","path":"/v2/email/outbound-custom-verification-emails","scope":{}},
+      "SendEmail": {"action":"email.send","body":"form","effects":["send"],"fields":{"Action":"SendEmail"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "SendEmail.any.c0bdeddff5e0": {"action":"email.outbound_emails.send","body":"any","effects":["send"],"method":"POST","origin":"{origin}","path":"/v2/email/outbound-emails","scope":{}},
+      "SendRawEmail": {"action":"email.send","body":"form","effects":["send"],"fields":{"Action":"SendRawEmail"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "SendTemplatedEmail": {"action":"email.send","body":"form","effects":["send"],"fields":{"Action":"SendTemplatedEmail"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "SetActiveReceiptRuleSet": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"SetActiveReceiptRuleSet"},"method":"POST","origin":"{origin}","path":"/","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "SetIdentityDkimEnabled": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"SetIdentityDkimEnabled"},"method":"POST","origin":"{origin}","path":"/","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "SetIdentityFeedbackForwardingEnabled": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"SetIdentityFeedbackForwardingEnabled"},"method":"POST","origin":"{origin}","path":"/","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "SetIdentityHeadersInNotificationsEnabled": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"SetIdentityHeadersInNotificationsEnabled"},"method":"POST","origin":"{origin}","path":"/","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "SetIdentityMailFromDomain": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"SetIdentityMailFromDomain"},"method":"POST","origin":"{origin}","path":"/","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "SetIdentityNotificationTopic": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"SetIdentityNotificationTopic"},"method":"POST","origin":"{origin}","path":"/","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "SetReceiptRulePosition": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"SetReceiptRulePosition"},"method":"POST","origin":"{origin}","path":"/","scope":{"RuleName":{"at":"RuleName","from":"form"},"RuleSetName":{"at":"RuleSetName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "TagResource": {"action":"email.tags.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/email/tags","scope":{}},
+      "TestRenderEmailTemplate": {"action":"email.templates.render.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/email/templates/{TemplateName}/render","scope":{"TemplateName":{"at":"TemplateName","from":"path"}}},
+      "TestRenderTemplate": {"action":"email.read","body":"form","effects":["read"],"fields":{"Action":"TestRenderTemplate"},"method":"POST","origin":"{origin}","path":"/","scope":{"TemplateName":{"at":"TemplateName","from":"form"}}},
+      "UntagResource": {"action":"email.tags.write","effects":["write"],"method":"DELETE","origin":"{origin}","path":"/v2/email/tags","query":{"ResourceArn":true,"TagKeys":true},"scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "UpdateAccountSendingEnabled": {"action":"email.admin","body":"form","effects":["admin"],"fields":{"Action":"UpdateAccountSendingEnabled"},"method":"POST","origin":"{origin}","path":"/","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "UpdateConfigurationSet": {"action":"email.configuration_sets.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/email/update-configuration-sets","scope":{}},
+      "UpdateConfigurationSetEventDestination": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"UpdateConfigurationSetEventDestination"},"method":"POST","origin":"{origin}","path":"/","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "UpdateConfigurationSetEventDestination.any.426bf77eefca": {"action":"email.configuration_sets.event_destinations.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/configuration-sets/{ConfigurationSetName}/event-destinations/{EventDestinationName}","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"path"},"EventDestinationName":{"at":"EventDestinationName","from":"path"}}},
+      "UpdateConfigurationSetReputationMetricsEnabled": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"UpdateConfigurationSetReputationMetricsEnabled"},"method":"POST","origin":"{origin}","path":"/","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "UpdateConfigurationSetSendingEnabled": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"UpdateConfigurationSetSendingEnabled"},"method":"POST","origin":"{origin}","path":"/","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "UpdateConfigurationSetTrackingOptions": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"UpdateConfigurationSetTrackingOptions"},"method":"POST","origin":"{origin}","path":"/","scope":{"ConfigurationSetName":{"at":"ConfigurationSetName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "UpdateContact": {"action":"email.contact_lists.contacts.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/contact-lists/{ContactListName}/contacts/{EmailAddress}","scope":{"ContactListName":{"at":"ContactListName","from":"path"},"EmailAddress":{"at":"EmailAddress","from":"path"}}},
+      "UpdateContactList": {"action":"email.contact_lists.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/contact-lists/{ContactListName}","scope":{"ContactListName":{"at":"ContactListName","from":"path"}}},
+      "UpdateCustomVerificationEmailTemplate": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"UpdateCustomVerificationEmailTemplate"},"method":"POST","origin":"{origin}","path":"/","scope":{"TemplateName":{"at":"TemplateName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "UpdateCustomVerificationEmailTemplate.any.560fa6961185": {"action":"email.custom_verification_email_templates.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/custom-verification-email-templates/{TemplateName}","scope":{"TemplateName":{"at":"TemplateName","from":"path"}}},
+      "UpdateEmailIdentityPolicy": {"action":"email.identities.policies.share","body":"any","effects":["share"],"method":"PUT","origin":"{origin}","path":"/v2/email/identities/{EmailIdentity}/policies/{PolicyName}","scope":{"EmailIdentity":{"at":"EmailIdentity","from":"path"},"PolicyName":{"at":"PolicyName","from":"path"}}},
+      "UpdateEmailTemplate": {"action":"email.templates.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/templates/{TemplateName}","scope":{"TemplateName":{"at":"TemplateName","from":"path"}}},
+      "UpdateReceiptRule": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"UpdateReceiptRule"},"method":"POST","origin":"{origin}","path":"/","scope":{"RuleSetName":{"at":"RuleSetName","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "UpdateReputationEntityCustomerManagedStatus": {"action":"email.reputation.entities.customer_managed_status.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/reputation/entities/{ReputationEntityType}/{ReputationEntityReference}/customer-managed-status","scope":{"ReputationEntityReference":{"at":"ReputationEntityReference","from":"path"},"ReputationEntityType":{"at":"ReputationEntityType","from":"path"}}},
+      "UpdateReputationEntityPolicy": {"action":"email.reputation.entities.policy.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/email/reputation/entities/{ReputationEntityType}/{ReputationEntityReference}/policy","scope":{"ReputationEntityReference":{"at":"ReputationEntityReference","from":"path"},"ReputationEntityType":{"at":"ReputationEntityType","from":"path"}}},
+      "UpdateTemplate": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"UpdateTemplate"},"method":"POST","origin":"{origin}","path":"/","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "VerifyDomainDkim": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"VerifyDomainDkim"},"method":"POST","origin":"{origin}","path":"/","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "VerifyDomainIdentity": {"action":"email.write","body":"form","effects":["write"],"fields":{"Action":"VerifyDomainIdentity"},"method":"POST","origin":"{origin}","path":"/","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "VerifyEmailAddress": {"action":"email.send","body":"form","effects":["send","write"],"fields":{"Action":"VerifyEmailAddress"},"method":"POST","origin":"{origin}","path":"/","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "VerifyEmailIdentity": {"action":"email.send","body":"form","effects":["send","write"],"fields":{"Action":"VerifyEmailIdentity"},"method":"POST","origin":"{origin}","path":"/","scope":{"request":{"at":"","from":"form","type":"object"}}}
     }
   }
 }

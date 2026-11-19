@@ -4,13 +4,19 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.manage_alert_grouping": {"title": "Manage alert grouping", "effects": ["delete", "write"]},
+      "use.manage_incidents": {"title": "Manage incidents", "effects": ["execute", "send", "write"]},
+      "use.manage_status_pages": {"title": "Manage status pages", "effects": ["publish", "send", "write"]},
+      "use.manage_teams": {"title": "Manage teams", "effects": ["admin", "delete", "write"]}
     },
-    "connection": {"mcp": {"url": "https://mcp.pagerduty.com/mcp"}},
+    "connection": {"mcp": {"url": "{url}"}},
     "fields": [
+      {"key": "url", "label": "Server URL", "default": "https://mcp.pagerduty.com/mcp", "hint": "Use https://mcp.eu.pagerduty.com/mcp for the EU service region.", "path": ["mcp", "url"]},
       {"key": "client_id", "label": "OAuth client ID", "paths": []},
       {"key": "client_secret", "label": "OAuth client secret", "paths": [], "secret": true},
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.pagerduty.com/mcp", "client_id": "{client_id}", "client_secret": "{client_secret}"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}", "client_id": "{client_id}", "client_secret": "{client_secret}"}}
     ]
-  }
+  },
+  "mcp": {"token": {"header": "Authorization", "prefix": "Token token="}}
 }

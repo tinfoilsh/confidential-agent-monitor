@@ -1,50 +1,230 @@
 {
-  "title": "Vercel AI Gateway Chat Model",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key or OIDC Token", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://ai-gateway.vercel.sh", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "delete.completions": {"title": "Delete: completions"},
-      "delete.models": {"title": "Delete: models"},
-      "delete.responses": {"title": "Delete: responses"},
-      "generate.compact": {"title": "Generate: compact"},
-      "generate.compact?beta=true": {"title": "Generate: compact?beta=true"},
-      "generate.completions": {"title": "Generate: completions"},
-      "generate.embeddings": {"title": "Generate: embeddings"},
-      "generate.input_tokens?beta=true": {"title": "Generate: input tokens?beta=true"},
-      "generate.responses": {"title": "Generate: responses"},
-      "generate.responses?beta=true": {"title": "Generate: responses?beta=true"},
-      "read": {"title": "Read everything the account can see"}
-    }
+      "ai": {
+        "title": "Ai"
+      },
+      "ai.config": {
+        "title": "Config"
+      },
+      "ai.config.read": {
+        "title": "Read"
+      },
+      "ai.embedding_model": {
+        "title": "Embedding model"
+      },
+      "ai.embedding_model.generate": {
+        "title": "Generate"
+      },
+      "ai.image_model": {
+        "title": "Image model"
+      },
+      "ai.image_model.generate": {
+        "title": "Generate"
+      },
+      "ai.language_model": {
+        "title": "Language model"
+      },
+      "ai.language_model.generate": {
+        "title": "Generate"
+      },
+      "ai.reranking_model": {
+        "title": "Reranking model"
+      },
+      "ai.reranking_model.generate": {
+        "title": "Generate"
+      },
+      "ai.speech_model": {
+        "title": "Speech model"
+      },
+      "ai.speech_model.generate": {
+        "title": "Generate"
+      },
+      "ai.transcription_model": {
+        "title": "Transcription model"
+      },
+      "ai.transcription_model.generate": {
+        "title": "Generate"
+      },
+      "ai.video_model": {
+        "title": "Video model"
+      },
+      "ai.video_model.generate": {
+        "title": "Generate"
+      },
+      "ai.video_model.status": {
+        "title": "Status"
+      },
+      "ai.video_model.status.read": {
+        "title": "Read"
+      },
+      "chat": {
+        "title": "Chat"
+      },
+      "chat.completions": {
+        "title": "Completions"
+      },
+      "chat.completions.generate": {
+        "title": "Generate"
+      },
+      "credits": {
+        "title": "Credits"
+      },
+      "credits.read": {
+        "title": "Read"
+      },
+      "decisions": {
+        "title": "Decisions"
+      },
+      "decisions.generate": {
+        "title": "Generate"
+      },
+      "embeddings": {
+        "title": "Embeddings"
+      },
+      "embeddings.generate": {
+        "title": "Generate"
+      },
+      "generation": {
+        "title": "Generation"
+      },
+      "generation.read": {
+        "title": "Read"
+      },
+      "messages": {
+        "title": "Messages"
+      },
+      "messages.batches": {
+        "title": "Batches"
+      },
+      "messages.batches.generate": {
+        "title": "Generate"
+      },
+      "messages.batches.read": {
+        "title": "Read"
+      },
+      "messages.batches.results": {
+        "title": "Results"
+      },
+      "messages.batches.results.read": {
+        "title": "Read"
+      },
+      "messages.batches.write": {
+        "title": "Create and edit"
+      },
+      "messages.count_tokens": {
+        "title": "Count tokens"
+      },
+      "messages.count_tokens.read": {
+        "title": "Read"
+      },
+      "messages.generate": {
+        "title": "Generate"
+      },
+      "models": {
+        "title": "Models"
+      },
+      "models.endpoints": {
+        "title": "Endpoints"
+      },
+      "models.endpoints.read": {
+        "title": "Read"
+      },
+      "models.read": {
+        "title": "Read"
+      },
+      "realtime": {
+        "title": "Realtime"
+      },
+      "realtime.client_secrets": {
+        "title": "Client secrets"
+      },
+      "realtime.client_secrets.generate": {
+        "title": "Generate"
+      },
+      "report": {
+        "title": "Report"
+      },
+      "report.read": {
+        "title": "Read"
+      },
+      "responses": {
+        "title": "Responses"
+      },
+      "responses.compact": {
+        "title": "Compact"
+      },
+      "responses.compact.generate": {
+        "title": "Generate"
+      },
+      "responses.generate": {
+        "title": "Generate"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://ai-gateway.vercel.sh",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          },
+          {
+            "header": "X-Api-Key",
+            "origin": "https://ai-gateway.vercel.sh",
+            "path": "/v1/messages",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key or OIDC Token",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Vercel AI Gateway Chat Model",
   "http": {
     "operations": {
-      "Compactconversation": {"action":"generate.compact","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/compact","body":"any","scope":{}},
-      "Getinputtokencounts": {"action":"read","effects":["read"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/input_tokens","body":"any","scope":{}},
-      "beta_Compactconversation": {"action":"generate.compact?beta=true","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/compact?beta=true","body":"any","scope":{}},
-      "beta_Getinputtokencounts": {"action":"generate.input_tokens?beta=true","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/input_tokens?beta=true","body":"any","scope":{}},
-      "beta_cancelResponse": {"action":"generate.responses","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/{response_id}/cancel?beta=true","scope":{"response_id":{"from":"path","at":"response_id"}}},
-      "beta_createResponse": {"action":"generate.responses?beta=true","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses?beta=true","body":"json","scope":{}},
-      "beta_listInputItems": {"action":"read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/{response_id}/input_items?beta=true","params":["limit","order","after","include"],"scope":{"response_id":{"from":"path","at":"response_id"}}},
-      "cancelResponse": {"action":"generate.responses","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/{response_id}/cancel","scope":{"response_id":{"from":"path","at":"response_id"}}},
-      "createChatCompletion": {"action":"generate.completions","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/chat/completions","body":"json","scope":{}},
-      "createCompletion": {"action":"generate.completions","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/completions","body":"json","scope":{}},
-      "createEmbedding": {"action":"generate.embeddings","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/embeddings","body":"json","scope":{}},
-      "createResponse": {"action":"generate.responses","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses","body":"json","scope":{}},
-      "deleteChatCompletion": {"action":"delete.completions","effects":["delete"],"method":"DELETE","origin":"https://ai-gateway.vercel.sh","path":"/v1/chat/completions/{completion_id}","scope":{"completion_id":{"from":"path","at":"completion_id"}}},
-      "deleteModel": {"action":"delete.models","effects":["delete"],"method":"DELETE","origin":"https://ai-gateway.vercel.sh","path":"/v1/models/{model}","scope":{"model":{"from":"path","at":"model"}}},
-      "deleteResponse": {"action":"delete.responses","effects":["delete"],"method":"DELETE","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/{response_id}","scope":{"response_id":{"from":"path","at":"response_id"}}},
-      "getChatCompletion": {"action":"read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/chat/completions/{completion_id}","scope":{"completion_id":{"from":"path","at":"completion_id"}}},
-      "getChatCompletionMessages": {"action":"read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/chat/completions/{completion_id}/messages","params":["after","limit","order"],"scope":{"completion_id":{"from":"path","at":"completion_id"}}},
-      "getResponse": {"action":"read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/{response_id}","params":["include","stream","starting_after","include_obfuscation"],"scope":{"response_id":{"from":"path","at":"response_id"}}},
-      "listChatCompletions": {"action":"read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/chat/completions","params":["model","metadata","after","limit","order"],"scope":{}},
-      "listInputItems": {"action":"read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/{response_id}/input_items","params":["limit","order","after","include"],"scope":{"response_id":{"from":"path","at":"response_id"}}},
-      "listModels": {"action":"read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/models","scope":{}},
-      "retrieveModel": {"action":"read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/models/{model}","scope":{"model":{"from":"path","at":"model"}}},
-      "updateChatCompletion": {"action":"generate.completions","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/chat/completions/{completion_id}","body":"json","scope":{"completion_id":{"from":"path","at":"completion_id"}}}
+      "Compactconversation": {"action":"responses.compact.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/compact","scope":{}},
+      "ai.config.get": {"action":"ai.config.read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/{version}/ai/config","path_patterns":{"version":"v[0-9]+"},"scope":{}},
+      "ai.embedding_model.create": {"action":"ai.embedding_model.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/{version}/ai/embedding-model","path_patterns":{"version":"v[0-9]+"},"scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "ai.image_model.create": {"action":"ai.image_model.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/{version}/ai/image-model","path_patterns":{"version":"v[0-9]+"},"scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "ai.language_model.create": {"action":"ai.language_model.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/{version}/ai/language-model","path_patterns":{"version":"v[0-9]+"},"scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "ai.reranking_model.create": {"action":"ai.reranking_model.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/{version}/ai/reranking-model","path_patterns":{"version":"v[0-9]+"},"scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "ai.speech_model.create": {"action":"ai.speech_model.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/{version}/ai/speech-model","path_patterns":{"version":"v[0-9]+"},"scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "ai.transcription_model.create": {"action":"ai.transcription_model.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/{version}/ai/transcription-model","path_patterns":{"version":"v[0-9]+"},"scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "ai.video_model.create": {"action":"ai.video_model.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/{version}/ai/video-model","path_patterns":{"version":"v[0-9]+"},"scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "ai.video_model.start": {"action":"ai.video_model.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/{version}/ai/video-model/start","path_patterns":{"version":"v[0-9]+"},"scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "ai.video_model.status": {"action":"ai.video_model.status.read","body":"json","effects":["read"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/{version}/ai/video-model/status","path_patterns":{"version":"v[0-9]+"},"scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "beta_Compactconversation": {"action":"responses.compact.generate","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/compact","query":{"beta":"true"},"scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "beta_Compactconversation.json.0fd9b4544591": {"action":"responses.compact.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/compact","query":{"beta":"true"},"scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "beta_createResponse": {"action":"responses.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses","query":{"beta":"true"},"scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createChatCompletion": {"action":"chat.completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/chat/completions","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createDecision": {"action":"decisions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/decisions","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createEmbedding": {"action":"embeddings.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/embeddings","scope":{"request":{"at":"","from":"body","type":"object"},"user":{"at":"/user","from":"body","optional":true}}},
+      "createResponse": {"action":"responses.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "credits.get": {"action":"credits.read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","params":["slug","teamId"],"path":"/v1/credits","scope":{}},
+      "generation.get": {"action":"generation.read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","params":["id"],"path":"/v1/generation","scope":{"id":{"at":"id","from":"query"}}},
+      "listModels": {"action":"models.read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","params":["include_availability"],"path":"/v1/models","scope":{}},
+      "messages.batches.cancel": {"action":"messages.batches.write","effects":["write"],"method":"POST","origin":"https://ai-gateway.vercel.sh","params":["beta"],"path":"/v1/messages/batches/{batch_id}/cancel","scope":{"batch_id":{"at":"batch_id","from":"path"}}},
+      "messages.batches.create": {"action":"messages.batches.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","params":["beta"],"path":"/v1/messages/batches","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "messages.batches.list": {"action":"messages.batches.read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","params":["after_id","before_id","beta","limit"],"path":"/v1/messages/batches","scope":{}},
+      "messages.batches.results": {"action":"messages.batches.results.read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","params":["beta"],"path":"/v1/messages/batches/{batch_id}/results","scope":{"batch_id":{"at":"batch_id","from":"path"}}},
+      "messages.batches.retrieve": {"action":"messages.batches.read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","params":["beta"],"path":"/v1/messages/batches/{batch_id}","scope":{"batch_id":{"at":"batch_id","from":"path"}}},
+      "messages.count_tokens": {"action":"messages.count_tokens.read","body":"json","effects":["read"],"method":"POST","origin":"https://ai-gateway.vercel.sh","params":["beta"],"path":"/v1/messages/count_tokens","scope":{}},
+      "messages.create": {"action":"messages.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","params":["beta"],"path":"/v1/messages","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "models.endpoints.list": {"action":"models.endpoints.read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/models/{creator}/{model}/endpoints","scope":{"creator":{"at":"creator","from":"path"},"model":{"at":"model","from":"path"}}},
+      "models.get": {"action":"models.read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/models/{creator}/{model}","scope":{"creator":{"at":"creator","from":"path"},"model":{"at":"model","from":"path"}}},
+      "realtime.client_secrets.create": {"action":"realtime.client_secrets.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/realtime/client-secrets","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "report.get": {"action":"report.read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","params":["api_key_id","credential_type","date_part","end_date","group_by","model","provider","start_date","tags","tags_match","user_id","zero_data_retention"],"path":"/v1/report","scope":{"query":{"at":"","from":"query","type":"object"}}}
     }
   }
 }

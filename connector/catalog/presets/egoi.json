@@ -1,232 +1,1537 @@
 {
-  "title": "E-goi",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.egoiapp.com", "path": "/", "header": "Apikey"}]}},
     "actions": {
-      "admin.token": {"title": "Admin: token"},
-      "admin.webhooks": {"title": "Admin: webhooks"},
-      "delete.automations": {"title": "Delete: automations"},
-      "delete.campaign_groups": {"title": "Delete: campaign groups"},
-      "delete.campaigns": {"title": "Delete: campaigns"},
-      "delete.catalogs": {"title": "Delete: catalogs"},
-      "delete.cellphone": {"title": "Delete: cellphone"},
-      "delete.connectedsites": {"title": "Delete: connectedsites"},
-      "delete.email": {"title": "Delete: email"},
-      "delete.extra": {"title": "Delete: extra"},
-      "delete.lists": {"title": "Delete: lists"},
-      "delete.options": {"title": "Delete: options"},
-      "delete.phone": {"title": "Delete: phone"},
-      "delete.products": {"title": "Delete: products"},
-      "delete.segments": {"title": "Delete: segments"},
-      "delete.suppression_list": {"title": "Delete: suppression list"},
-      "delete.tags": {"title": "Delete: tags"},
-      "delete.users": {"title": "Delete: users"},
-      "delete.webhooks": {"title": "Delete: webhooks"},
-      "execute.actions": {"title": "Execute: actions"},
-      "generate.contact_activity": {"title": "Generate: contact activity"},
-      "generate.email_bounces": {"title": "Generate: email bounces"},
-      "generate.email_clicks_by_contact": {"title": "Generate: email clicks by contact"},
-      "generate.email_clicks_by_url": {"title": "Generate: email clicks by url"},
-      "generate.email_events": {"title": "Generate: email events"},
-      "generate.email_unsubscriptions": {"title": "Generate: email unsubscriptions"},
-      "generate.form_answers": {"title": "Generate: form answers"},
-      "generate.model": {"title": "Generate: model"},
-      "generate.sends": {"title": "Generate: sends"},
-      "generate.sms_bounces": {"title": "Generate: sms bounces"},
-      "generate.sms_events": {"title": "Generate: sms events"},
-      "generate.subscriptions": {"title": "Generate: subscriptions"},
-      "generate.unsubscriptions": {"title": "Generate: unsubscriptions"},
-      "read": {"title": "Read everything the account can see"},
-      "send.actions": {"title": "Send: actions"},
-      "send.email": {"title": "Send: email"},
-      "send.ping": {"title": "Send: ping"},
-      "send.sms": {"title": "Send: sms"},
-      "write.approve": {"title": "Write: approve"},
-      "write.attach_tag": {"title": "Write: attach tag"},
-      "write.base": {"title": "Write: base"},
-      "write.by_field": {"title": "Write: by field"},
-      "write.campaign_groups": {"title": "Write: campaign groups"},
-      "write.cancel": {"title": "Write: cancel"},
-      "write.carts": {"title": "Write: carts"},
-      "write.catalogs": {"title": "Write: catalogs"},
-      "write.cellphone": {"title": "Write: cellphone"},
-      "write.cnames": {"title": "Write: cnames"},
-      "write.connectedsites": {"title": "Write: connectedsites"},
-      "write.contacts": {"title": "Write: contacts"},
-      "write.detach_tag": {"title": "Write: detach tag"},
-      "write.email": {"title": "Write: email"},
-      "write.enable_te": {"title": "Write: enable te"},
-      "write.enable_transactional": {"title": "Write: enable transactional"},
-      "write.event": {"title": "Write: event"},
-      "write.extra": {"title": "Write: extra"},
-      "write.forget": {"title": "Write: forget"},
-      "write.lists": {"title": "Write: lists"},
-      "write.options": {"title": "Write: options"},
-      "write.orders": {"title": "Write: orders"},
-      "write.pause": {"title": "Write: pause"},
-      "write.phone": {"title": "Write: phone"},
-      "write.products": {"title": "Write: products"},
-      "write.push": {"title": "Write: push"},
-      "write.resume": {"title": "Write: resume"},
-      "write.rss": {"title": "Write: rss"},
-      "write.sites": {"title": "Write: sites"},
-      "write.smart_sms": {"title": "Write: smart sms"},
-      "write.sms": {"title": "Write: sms"},
-      "write.suppression_list": {"title": "Write: suppression list"},
-      "write.tags": {"title": "Write: tags"},
-      "write.update": {"title": "Write: update"},
-      "write.voice": {"title": "Write: voice"},
-      "write.web_push": {"title": "Write: web push"}
-    }
+      "alert": {
+        "title": "Alert"
+      },
+      "alert.action": {
+        "title": "Action"
+      },
+      "alert.action.send": {
+        "title": "Send"
+      },
+      "alert.action.write": {
+        "title": "Create and edit"
+      },
+      "alert.template": {
+        "title": "Template"
+      },
+      "alert.template.delete": {
+        "title": "Delete"
+      },
+      "alert.template.read": {
+        "title": "Read"
+      },
+      "alert.template.write": {
+        "title": "Create and edit"
+      },
+      "apps": {
+        "title": "Apps"
+      },
+      "apps.read": {
+        "title": "Read"
+      },
+      "automations": {
+        "title": "Automations"
+      },
+      "automations.actions": {
+        "title": "Actions"
+      },
+      "automations.actions.read": {
+        "title": "Read"
+      },
+      "automations.delete": {
+        "title": "Delete"
+      },
+      "automations.read": {
+        "title": "Read"
+      },
+      "brandkit": {
+        "title": "Brandkit"
+      },
+      "brandkit.read": {
+        "title": "Read"
+      },
+      "campaign_groups": {
+        "title": "Campaign groups"
+      },
+      "campaign_groups.delete": {
+        "title": "Delete"
+      },
+      "campaign_groups.read": {
+        "title": "Read"
+      },
+      "campaign_groups.write": {
+        "title": "Create and edit"
+      },
+      "campaigns": {
+        "title": "Campaigns"
+      },
+      "campaigns.delete": {
+        "title": "Delete"
+      },
+      "campaigns.email": {
+        "title": "Email"
+      },
+      "campaigns.email.actions": {
+        "title": "Actions"
+      },
+      "campaigns.email.actions.send": {
+        "title": "Send"
+      },
+      "campaigns.email.html": {
+        "title": "Html"
+      },
+      "campaigns.email.html.read": {
+        "title": "Read"
+      },
+      "campaigns.email.public_url": {
+        "title": "Public url"
+      },
+      "campaigns.email.public_url.read": {
+        "title": "Read"
+      },
+      "campaigns.email.rss": {
+        "title": "Rss"
+      },
+      "campaigns.email.rss.actions": {
+        "title": "Actions"
+      },
+      "campaigns.email.rss.actions.send": {
+        "title": "Send"
+      },
+      "campaigns.email.rss.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.email.thumbnail": {
+        "title": "Thumbnail"
+      },
+      "campaigns.email.thumbnail.read": {
+        "title": "Read"
+      },
+      "campaigns.email.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.push": {
+        "title": "Push commits"
+      },
+      "campaigns.push.actions": {
+        "title": "Actions"
+      },
+      "campaigns.push.actions.send": {
+        "title": "Send"
+      },
+      "campaigns.push.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.read": {
+        "title": "Read"
+      },
+      "campaigns.smart_sms": {
+        "title": "Smart sms"
+      },
+      "campaigns.smart_sms.actions": {
+        "title": "Actions"
+      },
+      "campaigns.smart_sms.actions.send": {
+        "title": "Send"
+      },
+      "campaigns.smart_sms.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.sms": {
+        "title": "Sms"
+      },
+      "campaigns.sms.actions": {
+        "title": "Actions"
+      },
+      "campaigns.sms.actions.send": {
+        "title": "Send"
+      },
+      "campaigns.sms.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.voice": {
+        "title": "Voice"
+      },
+      "campaigns.voice.actions": {
+        "title": "Actions"
+      },
+      "campaigns.voice.actions.send": {
+        "title": "Send"
+      },
+      "campaigns.voice.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.web_push": {
+        "title": "Web push"
+      },
+      "campaigns.web_push.actions": {
+        "title": "Actions"
+      },
+      "campaigns.web_push.actions.send": {
+        "title": "Send"
+      },
+      "campaigns.web_push.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.webpush": {
+        "title": "Webpush"
+      },
+      "campaigns.webpush.rss": {
+        "title": "Rss"
+      },
+      "campaigns.webpush.rss.actions": {
+        "title": "Actions"
+      },
+      "campaigns.webpush.rss.actions.send": {
+        "title": "Send"
+      },
+      "campaigns.webpush.rss.write": {
+        "title": "Create and edit"
+      },
+      "carts": {
+        "title": "Carts"
+      },
+      "carts.write": {
+        "title": "Create and edit"
+      },
+      "catalogs": {
+        "title": "Catalogs"
+      },
+      "catalogs.delete": {
+        "title": "Delete"
+      },
+      "catalogs.products": {
+        "title": "Products"
+      },
+      "catalogs.products.actions": {
+        "title": "Actions"
+      },
+      "catalogs.products.actions.write": {
+        "title": "Create and edit"
+      },
+      "catalogs.products.delete": {
+        "title": "Delete"
+      },
+      "catalogs.products.read": {
+        "title": "Read"
+      },
+      "catalogs.products.write": {
+        "title": "Create and edit"
+      },
+      "catalogs.read": {
+        "title": "Read"
+      },
+      "catalogs.write": {
+        "title": "Create and edit"
+      },
+      "cnames": {
+        "title": "Cnames"
+      },
+      "cnames.admin": {
+        "title": "Manage"
+      },
+      "cnames.read": {
+        "title": "Read"
+      },
+      "connectedsites": {
+        "title": "Connectedsites"
+      },
+      "connectedsites.delete": {
+        "title": "Delete"
+      },
+      "connectedsites.read": {
+        "title": "Read"
+      },
+      "connectedsites.write": {
+        "title": "Create and edit"
+      },
+      "contacts": {
+        "title": "Contacts"
+      },
+      "contacts.read": {
+        "title": "Read"
+      },
+      "domain": {
+        "title": "Domain"
+      },
+      "domain.admin": {
+        "title": "Manage"
+      },
+      "domain.default": {
+        "title": "Default"
+      },
+      "domain.default.admin": {
+        "title": "Manage"
+      },
+      "domain.default.read": {
+        "title": "Read"
+      },
+      "domain.read": {
+        "title": "Read"
+      },
+      "ecommerce": {
+        "title": "Ecommerce"
+      },
+      "ecommerce.clear_cart": {
+        "title": "Clear cart"
+      },
+      "ecommerce.clear_cart.delete": {
+        "title": "Delete"
+      },
+      "email": {
+        "title": "Email"
+      },
+      "email.events": {
+        "title": "Events"
+      },
+      "email.events.read": {
+        "title": "Read"
+      },
+      "email.log": {
+        "title": "Log"
+      },
+      "email.log.read": {
+        "title": "Read"
+      },
+      "email.messages": {
+        "title": "Messages"
+      },
+      "email.messages.action": {
+        "title": "Action"
+      },
+      "email.messages.action.send": {
+        "title": "Send"
+      },
+      "email.messages.action.send.bulk": {
+        "title": "Bulk"
+      },
+      "email.messages.action.send.bulk.send": {
+        "title": "Send"
+      },
+      "email.messages.action.send.single": {
+        "title": "Single"
+      },
+      "email.messages.action.send.single.send": {
+        "title": "Send"
+      },
+      "email.messages.read": {
+        "title": "Read"
+      },
+      "email.reports": {
+        "title": "Reports"
+      },
+      "email.reports.read": {
+        "title": "Read"
+      },
+      "email.senders": {
+        "title": "Senders"
+      },
+      "email.senders.read": {
+        "title": "Read"
+      },
+      "email.templates": {
+        "title": "Templates"
+      },
+      "email.templates.delete": {
+        "title": "Delete"
+      },
+      "email.templates.read": {
+        "title": "Read"
+      },
+      "email.templates.write": {
+        "title": "Create and edit"
+      },
+      "groups": {
+        "title": "Groups"
+      },
+      "groups.read": {
+        "title": "Read"
+      },
+      "lists": {
+        "title": "Lists"
+      },
+      "lists.contacts": {
+        "title": "Contacts"
+      },
+      "lists.contacts.actions": {
+        "title": "Actions"
+      },
+      "lists.contacts.actions.activate": {
+        "title": "Activate"
+      },
+      "lists.contacts.actions.activate.write": {
+        "title": "Create and edit"
+      },
+      "lists.contacts.actions.automation": {
+        "title": "Automation"
+      },
+      "lists.contacts.actions.automation.send": {
+        "title": "Send"
+      },
+      "lists.contacts.actions.bulk": {
+        "title": "Bulk"
+      },
+      "lists.contacts.actions.bulk.write": {
+        "title": "Create and edit"
+      },
+      "lists.contacts.actions.deactivate": {
+        "title": "Deactivate"
+      },
+      "lists.contacts.actions.deactivate.write": {
+        "title": "Create and edit"
+      },
+      "lists.contacts.actions.forget": {
+        "title": "Forget"
+      },
+      "lists.contacts.actions.forget.delete": {
+        "title": "Delete"
+      },
+      "lists.contacts.actions.send": {
+        "title": "Send"
+      },
+      "lists.contacts.actions.tag": {
+        "title": "Tag"
+      },
+      "lists.contacts.actions.tag.write": {
+        "title": "Create and edit"
+      },
+      "lists.contacts.actions.write": {
+        "title": "Create and edit"
+      },
+      "lists.contacts.activities": {
+        "title": "Activities"
+      },
+      "lists.contacts.activities.read": {
+        "title": "Read"
+      },
+      "lists.contacts.by_field": {
+        "title": "By field"
+      },
+      "lists.contacts.by_field.write": {
+        "title": "Create and edit"
+      },
+      "lists.contacts.read": {
+        "title": "Read"
+      },
+      "lists.contacts.segment": {
+        "title": "Segment"
+      },
+      "lists.contacts.segment.count": {
+        "title": "Count"
+      },
+      "lists.contacts.segment.count.read": {
+        "title": "Read"
+      },
+      "lists.contacts.segment.read": {
+        "title": "Read"
+      },
+      "lists.contacts.write": {
+        "title": "Create and edit"
+      },
+      "lists.delete": {
+        "title": "Delete"
+      },
+      "lists.fields": {
+        "title": "Fields"
+      },
+      "lists.fields.base": {
+        "title": "Base"
+      },
+      "lists.fields.base.write": {
+        "title": "Create and edit"
+      },
+      "lists.fields.extra": {
+        "title": "Extra"
+      },
+      "lists.fields.extra.delete": {
+        "title": "Delete"
+      },
+      "lists.fields.extra.options": {
+        "title": "Options"
+      },
+      "lists.fields.extra.options.delete": {
+        "title": "Delete"
+      },
+      "lists.fields.extra.options.read": {
+        "title": "Read"
+      },
+      "lists.fields.extra.options.write": {
+        "title": "Create and edit"
+      },
+      "lists.fields.extra.write": {
+        "title": "Create and edit"
+      },
+      "lists.fields.read": {
+        "title": "Read"
+      },
+      "lists.orders": {
+        "title": "Orders"
+      },
+      "lists.orders.write": {
+        "title": "Create and edit"
+      },
+      "lists.read": {
+        "title": "Read"
+      },
+      "lists.segments": {
+        "title": "Segments"
+      },
+      "lists.segments.delete": {
+        "title": "Delete"
+      },
+      "lists.segments.read": {
+        "title": "Read"
+      },
+      "lists.segments.write": {
+        "title": "Create and edit"
+      },
+      "lists.write": {
+        "title": "Create and edit"
+      },
+      "logs": {
+        "title": "Logs"
+      },
+      "logs.read": {
+        "title": "Read"
+      },
+      "messages": {
+        "title": "Messages"
+      },
+      "messages.action": {
+        "title": "Action"
+      },
+      "messages.action.delete": {
+        "title": "Delete"
+      },
+      "multi_channel": {
+        "title": "Multi channel"
+      },
+      "multi_channel.flow": {
+        "title": "Flow"
+      },
+      "multi_channel.flow.delete": {
+        "title": "Delete"
+      },
+      "multi_channel.flow.read": {
+        "title": "Read"
+      },
+      "multi_channel.flow.write": {
+        "title": "Create and edit"
+      },
+      "multi_channel.send": {
+        "title": "Send"
+      },
+      "multichannel": {
+        "title": "Multichannel"
+      },
+      "multichannel.reports": {
+        "title": "Reports"
+      },
+      "multichannel.reports.read": {
+        "title": "Read"
+      },
+      "my_account": {
+        "title": "My account"
+      },
+      "my_account.actions": {
+        "title": "Actions"
+      },
+      "my_account.actions.te": {
+        "title": "Te"
+      },
+      "my_account.actions.te.admin": {
+        "title": "Manage"
+      },
+      "my_account.actions.transactional": {
+        "title": "Transactional"
+      },
+      "my_account.actions.transactional.admin": {
+        "title": "Manage"
+      },
+      "my_account.read": {
+        "title": "Read"
+      },
+      "oauth": {
+        "title": "Oauth"
+      },
+      "oauth.admin": {
+        "title": "Manage"
+      },
+      "oauth.token": {
+        "title": "Token"
+      },
+      "oauth.token.admin": {
+        "title": "Manage"
+      },
+      "operations": {
+        "title": "Operations"
+      },
+      "operations.actions": {
+        "title": "Actions"
+      },
+      "operations.actions.send": {
+        "title": "Send"
+      },
+      "operations.actions.write": {
+        "title": "Create and edit"
+      },
+      "operations.read": {
+        "title": "Read"
+      },
+      "orders": {
+        "title": "Orders"
+      },
+      "orders.write": {
+        "title": "Create and edit"
+      },
+      "ping": {
+        "title": "Ping"
+      },
+      "ping.read": {
+        "title": "Read"
+      },
+      "push": {
+        "title": "Push commits"
+      },
+      "push.apps": {
+        "title": "Apps"
+      },
+      "push.apps.event": {
+        "title": "Event"
+      },
+      "push.apps.event.write": {
+        "title": "Create and edit"
+      },
+      "push.apps.read": {
+        "title": "Read"
+      },
+      "push.apps.token": {
+        "title": "Token"
+      },
+      "push.apps.token.write": {
+        "title": "Create and edit"
+      },
+      "push.messages": {
+        "title": "Messages"
+      },
+      "push.messages.action": {
+        "title": "Action"
+      },
+      "push.messages.action.send": {
+        "title": "Send"
+      },
+      "push.reports": {
+        "title": "Reports"
+      },
+      "push.reports.read": {
+        "title": "Read"
+      },
+      "push.templates": {
+        "title": "Templates"
+      },
+      "push.templates.delete": {
+        "title": "Delete"
+      },
+      "push.templates.read": {
+        "title": "Read"
+      },
+      "push.templates.write": {
+        "title": "Create and edit"
+      },
+      "registered": {
+        "title": "Registered"
+      },
+      "registered.autocertificate": {
+        "title": "Autocertificate"
+      },
+      "registered.autocertificate.delete": {
+        "title": "Delete"
+      },
+      "registered.autocertificate.read": {
+        "title": "Read"
+      },
+      "registered.autocertificate.write": {
+        "title": "Create and edit"
+      },
+      "registered.custom": {
+        "title": "Custom"
+      },
+      "registered.custom.event": {
+        "title": "Event"
+      },
+      "registered.custom.event.write": {
+        "title": "Create and edit"
+      },
+      "registered.event": {
+        "title": "Event"
+      },
+      "registered.event.read": {
+        "title": "Read"
+      },
+      "registered.evidence": {
+        "title": "Evidence"
+      },
+      "registered.evidence.bulk": {
+        "title": "Bulk"
+      },
+      "registered.evidence.bulk.write": {
+        "title": "Create and edit"
+      },
+      "registered.evidence.delete": {
+        "title": "Delete"
+      },
+      "registered.evidence.read": {
+        "title": "Read"
+      },
+      "registered.evidence.write": {
+        "title": "Create and edit"
+      },
+      "registered.read": {
+        "title": "Read"
+      },
+      "registered.webhook": {
+        "title": "Webhook"
+      },
+      "registered.webhook.admin": {
+        "title": "Manage"
+      },
+      "registered.webhook.delete": {
+        "title": "Delete"
+      },
+      "registered.webhook.read": {
+        "title": "Read"
+      },
+      "reports": {
+        "title": "Reports"
+      },
+      "reports.advanced": {
+        "title": "Advanced"
+      },
+      "reports.advanced.contact_activity": {
+        "title": "Contact activity"
+      },
+      "reports.advanced.contact_activity.generate": {
+        "title": "Generate"
+      },
+      "reports.advanced.email_bounces": {
+        "title": "Email bounces"
+      },
+      "reports.advanced.email_bounces.generate": {
+        "title": "Generate"
+      },
+      "reports.advanced.email_clicks_by_contact": {
+        "title": "Email clicks by contact"
+      },
+      "reports.advanced.email_clicks_by_contact.generate": {
+        "title": "Generate"
+      },
+      "reports.advanced.email_clicks_by_url": {
+        "title": "Email clicks by url"
+      },
+      "reports.advanced.email_clicks_by_url.generate": {
+        "title": "Generate"
+      },
+      "reports.advanced.email_events": {
+        "title": "Email events"
+      },
+      "reports.advanced.email_events.generate": {
+        "title": "Generate"
+      },
+      "reports.advanced.email_unsubscriptions": {
+        "title": "Email unsubscriptions"
+      },
+      "reports.advanced.email_unsubscriptions.generate": {
+        "title": "Generate"
+      },
+      "reports.advanced.form_answers": {
+        "title": "Form answers"
+      },
+      "reports.advanced.form_answers.generate": {
+        "title": "Generate"
+      },
+      "reports.advanced.model": {
+        "title": "Model"
+      },
+      "reports.advanced.model.generate": {
+        "title": "Generate"
+      },
+      "reports.advanced.models": {
+        "title": "Models"
+      },
+      "reports.advanced.models.read": {
+        "title": "Read"
+      },
+      "reports.advanced.read": {
+        "title": "Read"
+      },
+      "reports.advanced.sends": {
+        "title": "Sends"
+      },
+      "reports.advanced.sends.generate": {
+        "title": "Generate"
+      },
+      "reports.advanced.sms_bounces": {
+        "title": "Sms bounces"
+      },
+      "reports.advanced.sms_bounces.generate": {
+        "title": "Generate"
+      },
+      "reports.advanced.sms_events": {
+        "title": "Sms events"
+      },
+      "reports.advanced.sms_events.generate": {
+        "title": "Generate"
+      },
+      "reports.advanced.subscriptions": {
+        "title": "Subscriptions"
+      },
+      "reports.advanced.subscriptions.generate": {
+        "title": "Generate"
+      },
+      "reports.advanced.unsubscriptions": {
+        "title": "Unsubscriptions"
+      },
+      "reports.advanced.unsubscriptions.generate": {
+        "title": "Generate"
+      },
+      "reports.automation": {
+        "title": "Automation"
+      },
+      "reports.automation.read": {
+        "title": "Read"
+      },
+      "reports.email": {
+        "title": "Email"
+      },
+      "reports.email.read": {
+        "title": "Read"
+      },
+      "reports.push": {
+        "title": "Push commits"
+      },
+      "reports.push.read": {
+        "title": "Read"
+      },
+      "reports.smart_sms": {
+        "title": "Smart sms"
+      },
+      "reports.smart_sms.read": {
+        "title": "Read"
+      },
+      "reports.sms": {
+        "title": "Sms"
+      },
+      "reports.sms.read": {
+        "title": "Read"
+      },
+      "reports.voice": {
+        "title": "Voice"
+      },
+      "reports.voice.read": {
+        "title": "Read"
+      },
+      "reports.web_push": {
+        "title": "Web push"
+      },
+      "reports.web_push.read": {
+        "title": "Read"
+      },
+      "senders": {
+        "title": "Senders"
+      },
+      "senders.cellphone": {
+        "title": "Cellphone"
+      },
+      "senders.cellphone.admin": {
+        "title": "Manage"
+      },
+      "senders.cellphone.delete": {
+        "title": "Delete"
+      },
+      "senders.cellphone.read": {
+        "title": "Read"
+      },
+      "senders.email": {
+        "title": "Email"
+      },
+      "senders.email.admin": {
+        "title": "Manage"
+      },
+      "senders.email.delete": {
+        "title": "Delete"
+      },
+      "senders.email.read": {
+        "title": "Read"
+      },
+      "senders.phone": {
+        "title": "Phone"
+      },
+      "senders.phone.admin": {
+        "title": "Manage"
+      },
+      "senders.phone.delete": {
+        "title": "Delete"
+      },
+      "senders.phone.read": {
+        "title": "Read"
+      },
+      "shortener": {
+        "title": "Shortener"
+      },
+      "shortener.activate": {
+        "title": "Activate"
+      },
+      "shortener.activate.admin": {
+        "title": "Manage"
+      },
+      "shortener.read": {
+        "title": "Read"
+      },
+      "shortener.reports": {
+        "title": "Reports"
+      },
+      "shortener.reports.read": {
+        "title": "Read"
+      },
+      "shortener.write": {
+        "title": "Create and edit"
+      },
+      "smartlinks": {
+        "title": "Smartlinks"
+      },
+      "smartlinks.configs": {
+        "title": "Configs"
+      },
+      "smartlinks.configs.admin": {
+        "title": "Manage"
+      },
+      "smartlinks.configs.delete": {
+        "title": "Delete"
+      },
+      "smartlinks.configs.read": {
+        "title": "Read"
+      },
+      "smartlinks.delete": {
+        "title": "Delete"
+      },
+      "smartlinks.read": {
+        "title": "Read"
+      },
+      "smartlinks.stats": {
+        "title": "Stats"
+      },
+      "smartlinks.stats.read": {
+        "title": "Read"
+      },
+      "smartlinks.stats.utm": {
+        "title": "Utm"
+      },
+      "smartlinks.stats.utm.read": {
+        "title": "Read"
+      },
+      "smartlinks.write": {
+        "title": "Create and edit"
+      },
+      "smartsms": {
+        "title": "Smartsms"
+      },
+      "smartsms.templates": {
+        "title": "Templates"
+      },
+      "smartsms.templates.read": {
+        "title": "Read"
+      },
+      "smpp": {
+        "title": "Smpp"
+      },
+      "smpp.auth": {
+        "title": "Auth"
+      },
+      "smpp.auth.admin": {
+        "title": "Manage"
+      },
+      "sms": {
+        "title": "Sms"
+      },
+      "sms.events": {
+        "title": "Events"
+      },
+      "sms.events.read": {
+        "title": "Read"
+      },
+      "sms.log": {
+        "title": "Log"
+      },
+      "sms.log.read": {
+        "title": "Read"
+      },
+      "sms.messages": {
+        "title": "Messages"
+      },
+      "sms.messages.action": {
+        "title": "Action"
+      },
+      "sms.messages.action.send": {
+        "title": "Send"
+      },
+      "sms.messages.action.send.bulk": {
+        "title": "Bulk"
+      },
+      "sms.messages.action.send.bulk.send": {
+        "title": "Send"
+      },
+      "sms.messages.action.send.single": {
+        "title": "Single"
+      },
+      "sms.messages.action.send.single.send": {
+        "title": "Send"
+      },
+      "sms.messages.read": {
+        "title": "Read"
+      },
+      "sms.reports": {
+        "title": "Reports"
+      },
+      "sms.reports.read": {
+        "title": "Read"
+      },
+      "sms.senders": {
+        "title": "Senders"
+      },
+      "sms.senders.read": {
+        "title": "Read"
+      },
+      "sms.templates": {
+        "title": "Templates"
+      },
+      "sms.templates.delete": {
+        "title": "Delete"
+      },
+      "sms.templates.read": {
+        "title": "Read"
+      },
+      "sms.templates.write": {
+        "title": "Create and edit"
+      },
+      "stores": {
+        "title": "Stores"
+      },
+      "stores.read": {
+        "title": "Read"
+      },
+      "subscribers": {
+        "title": "Subscribers"
+      },
+      "subscribers.read": {
+        "title": "Read"
+      },
+      "suppression_list": {
+        "title": "Suppression list"
+      },
+      "suppression_list.delete": {
+        "title": "Delete"
+      },
+      "suppression_list.read": {
+        "title": "Read"
+      },
+      "suppression_list.write": {
+        "title": "Create and edit"
+      },
+      "tags": {
+        "title": "Tags"
+      },
+      "tags.delete": {
+        "title": "Delete"
+      },
+      "tags.read": {
+        "title": "Read"
+      },
+      "tags.write": {
+        "title": "Create and edit"
+      },
+      "trackengage": {
+        "title": "Trackengage"
+      },
+      "trackengage.domains": {
+        "title": "Domains"
+      },
+      "trackengage.domains.read": {
+        "title": "Read"
+      },
+      "trackengage.goals": {
+        "title": "Goals"
+      },
+      "trackengage.goals.read": {
+        "title": "Read"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.activity": {
+        "title": "Activity"
+      },
+      "users.activity.read": {
+        "title": "Read"
+      },
+      "users.admin": {
+        "title": "Manage"
+      },
+      "users.profiles": {
+        "title": "Profiles"
+      },
+      "users.profiles.read": {
+        "title": "Read"
+      },
+      "users.read": {
+        "title": "Read"
+      },
+      "utilities": {
+        "title": "Utilities"
+      },
+      "utilities.countries": {
+        "title": "Countries"
+      },
+      "utilities.countries.read": {
+        "title": "Read"
+      },
+      "utilities.email_validator": {
+        "title": "Email validator"
+      },
+      "utilities.email_validator.read": {
+        "title": "Read"
+      },
+      "utilities.phone": {
+        "title": "Phone"
+      },
+      "utilities.phone.read": {
+        "title": "Read"
+      },
+      "utilities.ping": {
+        "title": "Ping"
+      },
+      "utilities.ping.read": {
+        "title": "Read"
+      },
+      "utilities.sms_length_calculator": {
+        "title": "Sms length calculator"
+      },
+      "utilities.sms_length_calculator.read": {
+        "title": "Read"
+      },
+      "utilities.supported_countries": {
+        "title": "Supported countries"
+      },
+      "utilities.supported_countries.read": {
+        "title": "Read"
+      },
+      "verify": {
+        "title": "Verify"
+      },
+      "verify.read": {
+        "title": "Read"
+      },
+      "verify.request": {
+        "title": "Request"
+      },
+      "verify.request.email": {
+        "title": "Email"
+      },
+      "verify.request.email.send": {
+        "title": "Send"
+      },
+      "verify.request.push": {
+        "title": "Push commits"
+      },
+      "verify.request.push.send": {
+        "title": "Send"
+      },
+      "verify.request.sms": {
+        "title": "Sms"
+      },
+      "verify.request.sms.send": {
+        "title": "Send"
+      },
+      "verify.resend": {
+        "title": "Resend"
+      },
+      "verify.resend.send": {
+        "title": "Send"
+      },
+      "verify.write": {
+        "title": "Create and edit"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.delete": {
+        "title": "Delete"
+      },
+      "webhooks.read": {
+        "title": "Read"
+      },
+      "webpush": {
+        "title": "Webpush"
+      },
+      "webpush.sites": {
+        "title": "Sites"
+      },
+      "webpush.sites.read": {
+        "title": "Read"
+      },
+      "webpush.sites.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Apikey",
+            "origin": "https://api.egoiapp.com",
+            "path": "/",
+            "value": "api_key"
+          },
+          {
+            "header": "Apikey",
+            "origin": "https://slingshot.egoiapp.com",
+            "path": "/api",
+            "value": "api_key"
+          },
+          {
+            "header": "Apikey",
+            "origin": "https://registered.egoiapp.com",
+            "path": "/",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "E-goi",
   "http": {
     "operations": {
-      "CreateOrder": {"action":"write.orders","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/{domain}/orders","body":"json","scope":{"domain":{"from":"path","at":"domain"},"order_id":{"from":"body","at":"/order_id"}}},
-      "ImportOrdersBulk": {"action":"write.orders","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/orders","body":"json","scope":{"list_id":{"from":"path","at":"list_id"}}},
-      "ImportProducts": {"action":"execute.actions","effects":["execute"],"method":"POST","origin":"https://api.egoiapp.com","path":"/catalogs/{catalog_id}/products/actions/import","body":"json","scope":{"catalog_id":{"from":"path","at":"catalog_id"}}},
-      "actionActivateContacts": {"action":"execute.actions","effects":["execute"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/activate","body":"json","scope":{"list_id":{"from":"path","at":"list_id"}}},
-      "actionApproveOperation": {"action":"write.approve","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/operations/actions/approve","body":"json","scope":{}},
-      "actionAttachTag": {"action":"write.attach_tag","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/attach-tag","body":"json","scope":{"list_id":{"from":"path","at":"list_id"},"tag_id":{"from":"body","at":"/tag_id","type":"number"}}},
-      "actionCancelOperation": {"action":"write.cancel","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/operations/actions/cancel","body":"json","scope":{}},
-      "actionDeactivateContacts": {"action":"execute.actions","effects":["execute"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/deactivate","body":"json","scope":{"list_id":{"from":"path","at":"list_id"}}},
-      "actionDetachTag": {"action":"write.detach_tag","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/detach-tag","body":"json","scope":{"list_id":{"from":"path","at":"list_id"},"tag_id":{"from":"body","at":"/tag_id","type":"number"}}},
-      "actionEnableEmailRss": {"action":"execute.actions","effects":["execute"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/email/rss/{campaign_hash}/actions/enable","scope":{"campaign_hash":{"from":"path","at":"campaign_hash"}}},
-      "actionEnableWebPushRss": {"action":"execute.actions","effects":["execute"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/webpush/rss/{campaign_hash}/actions/enable","scope":{"campaign_hash":{"from":"path","at":"campaign_hash"}}},
-      "actionExportContacts": {"action":"execute.actions","effects":["execute"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/export","body":"json","scope":{"list_id":{"from":"path","at":"list_id"}}},
-      "actionForgetContacts": {"action":"write.forget","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/forget","body":"json","scope":{"list_id":{"from":"path","at":"list_id"}}},
-      "actionImportBulk": {"action":"execute.actions","effects":["execute"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/import-bulk","body":"json","scope":{"list_id":{"from":"path","at":"list_id"}}},
-      "actionPauseOperation": {"action":"write.pause","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/operations/actions/pause","body":"json","scope":{}},
-      "actionResumeOperation": {"action":"write.resume","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/operations/actions/resume","body":"json","scope":{}},
-      "actionSendEmail": {"action":"send.actions","effects":["send"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/email/{campaign_hash}/actions/send","body":"json","scope":{"campaign_hash":{"from":"path","at":"campaign_hash"},"request":{"from":"body","at":"","type":"object"}},"grant":["campaign_hash"]},
-      "actionSendPush": {"action":"send.actions","effects":["send"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/push/{campaign_hash}/actions/send","body":"json","scope":{"campaign_hash":{"from":"path","at":"campaign_hash"},"request":{"from":"body","at":"","type":"object"}},"grant":["campaign_hash"]},
-      "actionSendSmartSms": {"action":"send.actions","effects":["send"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/smart-sms/{campaign_hash}/actions/send","body":"json","scope":{"campaign_hash":{"from":"path","at":"campaign_hash"},"request":{"from":"body","at":"","type":"object"}},"grant":["campaign_hash"]},
-      "actionSendSms": {"action":"send.actions","effects":["send"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/sms/{campaign_hash}/actions/send","body":"json","scope":{"campaign_hash":{"from":"path","at":"campaign_hash"},"request":{"from":"body","at":"","type":"object"}},"grant":["campaign_hash"]},
-      "actionSendVoice": {"action":"send.actions","effects":["send"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/voice/{campaign_hash}/actions/send","body":"json","scope":{"campaign_hash":{"from":"path","at":"campaign_hash"},"request":{"from":"body","at":"","type":"object"}},"grant":["campaign_hash"]},
-      "actionSendWebPush": {"action":"send.actions","effects":["send"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/web-push/{campaign_hash}/actions/send","body":"json","scope":{"campaign_hash":{"from":"path","at":"campaign_hash"},"request":{"from":"body","at":"","type":"object"}},"grant":["campaign_hash"]},
-      "actionStartAutomation": {"action":"execute.actions","effects":["execute"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/start-automation","body":"json","scope":{"list_id":{"from":"path","at":"list_id"},"action_id":{"from":"body","at":"/action_id","type":"number"},"automation_id":{"from":"body","at":"/automation_id","type":"number"}}},
-      "actionUnsubscribeContact": {"action":"execute.actions","effects":["execute"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/unsubscribe","body":"json","scope":{"list_id":{"from":"path","at":"list_id"}}},
-      "actionUpdateContacts": {"action":"write.update","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/update","body":"json","scope":{"list_id":{"from":"path","at":"list_id"}}},
-      "createCName": {"action":"write.cnames","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/cnames","body":"json","scope":{}},
-      "createCampaignGroup": {"action":"write.campaign_groups","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaign-groups","body":"json","scope":{}},
-      "createCart": {"action":"write.carts","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/{domain}/carts","body":"json","scope":{"domain":{"from":"path","at":"domain"}}},
-      "createCatalog": {"action":"write.catalogs","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/catalogs","body":"json","scope":{}},
-      "createCellphoneSender": {"action":"write.cellphone","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/senders/cellphone","body":"json","scope":{}},
-      "createConnectedSites": {"action":"write.connectedsites","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/connectedsites","body":"json","scope":{}},
-      "createContact": {"action":"write.contacts","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts","body":"json","scope":{"list_id":{"from":"path","at":"list_id"}}},
-      "createEmailCampaign": {"action":"send.email","effects":["send"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/email","body":"json","scope":{"internal_name":{"from":"body","at":"/internal_name"},"list_id":{"from":"body","at":"/list_id","type":"number"},"sender_id":{"from":"body","at":"/sender_id","type":"number"},"request":{"from":"body","at":"","type":"object"}},"grant":["internal_name","list_id","sender_id"]},
-      "createEmailRssCampaign": {"action":"write.rss","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/email/rss","body":"json","scope":{"internal_name":{"from":"body","at":"/internal_name"},"list_id":{"from":"body","at":"/list_id","type":"number"},"sender_id":{"from":"body","at":"/sender_id","type":"number"}}},
-      "createEmailSender": {"action":"send.email","effects":["send"],"method":"POST","origin":"https://api.egoiapp.com","path":"/senders/email","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "createExtraField": {"action":"write.extra","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/fields/extra","body":"json","scope":{"list_id":{"from":"path","at":"list_id"},"name":{"from":"body","at":"/name"}}},
-      "createFieldOption": {"action":"write.options","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/fields/extra/{field_id}/options","body":"json","scope":{"list_id":{"from":"path","at":"list_id"},"field_id":{"from":"path","at":"field_id"}}},
-      "createList": {"action":"write.lists","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists","body":"json","scope":{"internal_name":{"from":"body","at":"/internal_name"}}},
-      "createPhoneSender": {"action":"write.phone","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/senders/phone","body":"json","scope":{}},
-      "createProduct": {"action":"write.products","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/catalogs/{catalog_id}/products","body":"json","scope":{"catalog_id":{"from":"path","at":"catalog_id"}}},
-      "createPushCampaign": {"action":"write.push","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/push","body":"json","scope":{"app_id":{"from":"body","at":"/app_id"}}},
-      "createSmartSmsCampaign": {"action":"write.smart_sms","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/smart-sms","body":"json","scope":{"internal_name":{"from":"body","at":"/internal_name"},"list_id":{"from":"body","at":"/list_id","type":"number"}}},
-      "createSmsCampaign": {"action":"send.sms","effects":["send"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/sms","body":"json","scope":{"internal_name":{"from":"body","at":"/internal_name"},"list_id":{"from":"body","at":"/list_id","type":"number"},"request":{"from":"body","at":"","type":"object"}},"grant":["internal_name","list_id"]},
-      "createSuppressionList": {"action":"write.suppression_list","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/suppression-list","body":"json","scope":{}},
-      "createTag": {"action":"write.tags","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/tags","body":"json","scope":{}},
-      "createVoiceCampaign": {"action":"write.voice","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/voice","body":"json","scope":{}},
-      "createWebPushCampaign": {"action":"write.web_push","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/web-push","body":"json","scope":{"internal_name":{"from":"body","at":"/internal_name"},"site_id":{"from":"body","at":"/site_id","type":"number"}}},
-      "createWebPushRssCampaign": {"action":"write.rss","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/webpush/rss","body":"json","scope":{"internal_name":{"from":"body","at":"/internal_name"},"site_id":{"from":"body","at":"/site_id","type":"number"}}},
-      "createWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.egoiapp.com","path":"/webhooks","body":"json","scope":{"list_id":{"from":"body","at":"/list_id","type":"number"},"url":{"from":"body","at":"/url"}}},
-      "createWebpushSite": {"action":"write.sites","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/webpush/sites","body":"json","scope":{"list_id":{"from":"body","at":"/list_id","type":"number"},"name":{"from":"body","at":"/name"},"site":{"from":"body","at":"/site"}}},
-      "deleteAutomation": {"action":"delete.automations","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/automations/{automation_id}","scope":{"automation_id":{"from":"path","at":"automation_id"}}},
-      "deleteCampaignGroup": {"action":"delete.campaign_groups","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/campaign-groups/{group_id}","scope":{"group_id":{"from":"path","at":"group_id"}}},
-      "deleteCampaigns": {"action":"delete.campaigns","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/campaigns/{campaign_hash}","scope":{"campaign_hash":{"from":"path","at":"campaign_hash"}}},
-      "deleteCatalog": {"action":"delete.catalogs","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/catalogs/{catalog_id}","scope":{"catalog_id":{"from":"path","at":"catalog_id"}}},
-      "deleteCellphoneSender": {"action":"delete.cellphone","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/senders/cellphone/{sender_id}","scope":{"sender_id":{"from":"path","at":"sender_id"}}},
-      "deleteConnectedSites": {"action":"delete.connectedsites","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/connectedsites/{domain}","scope":{"domain":{"from":"path","at":"domain"}}},
-      "deleteEmailSender": {"action":"delete.email","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/senders/email/{sender_id}","scope":{"sender_id":{"from":"path","at":"sender_id"}}},
-      "deleteExtraField": {"action":"delete.extra","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/fields/extra/{field_id}","scope":{"list_id":{"from":"path","at":"list_id"},"field_id":{"from":"path","at":"field_id"}}},
-      "deleteFieldOption": {"action":"delete.options","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/fields/extra/{field_id}/options/{option_id}","scope":{"list_id":{"from":"path","at":"list_id"},"field_id":{"from":"path","at":"field_id"},"option_id":{"from":"path","at":"option_id"}}},
-      "deleteList": {"action":"delete.lists","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/lists/{list_id}","scope":{"list_id":{"from":"path","at":"list_id"}}},
-      "deletePhoneSender": {"action":"delete.phone","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/senders/phone/{sender_id}","scope":{"sender_id":{"from":"path","at":"sender_id"}}},
-      "deleteProduct": {"action":"delete.products","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/catalogs/{catalog_id}/products/{product_identifier}","scope":{"catalog_id":{"from":"path","at":"catalog_id"},"product_identifier":{"from":"path","at":"product_identifier"}}},
-      "deleteSegment": {"action":"delete.segments","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/segments/{segment_id}","scope":{"list_id":{"from":"path","at":"list_id"},"segment_id":{"from":"path","at":"segment_id"}}},
-      "deleteSuppressionList": {"action":"delete.suppression_list","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/suppression-list/{suppression_id}","scope":{"suppression_id":{"from":"path","at":"suppression_id"}}},
-      "deleteTag": {"action":"delete.tags","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/tags/{tag_id}","scope":{"tag_id":{"from":"path","at":"tag_id"}}},
-      "deleteUser": {"action":"delete.users","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/users/{user_id}","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "deleteWebhook": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/webhooks/{webhook_id}","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "enableTe": {"action":"write.enable_te","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/my-account/actions/enable-te","body":"json","scope":{}},
-      "enableTransactional": {"action":"write.enable_transactional","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/my-account/actions/enable-transactional","scope":{}},
-      "generateByModelReport": {"action":"generate.model","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/model","body":"json","scope":{"model_id":{"from":"body","at":"/model_id","type":"number"}}},
-      "generateContactActivityReport": {"action":"generate.contact_activity","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/contact-activity","body":"json","scope":{}},
-      "generateEmailBouncesReport": {"action":"generate.email_bounces","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/email-bounces","body":"json","scope":{}},
-      "generateEmailClicksByContactReport": {"action":"generate.email_clicks_by_contact","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/email-clicks-by-contact","body":"json","scope":{}},
-      "generateEmailClicksByUrlReport": {"action":"generate.email_clicks_by_url","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/email-clicks-by-url","body":"json","scope":{}},
-      "generateEmailEventsReport": {"action":"generate.email_events","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/email-events","body":"json","scope":{}},
-      "generateEmailUnsubscriptionsReport": {"action":"generate.email_unsubscriptions","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/email-unsubscriptions","body":"json","scope":{}},
-      "generateFormAnswersReport": {"action":"generate.form_answers","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/form-answers","body":"json","scope":{}},
-      "generateSendsReport": {"action":"generate.sends","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/sends","body":"json","scope":{}},
-      "generateSmsBouncesReport": {"action":"generate.sms_bounces","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/sms-bounces","body":"json","scope":{}},
-      "generateSmsEventsReport": {"action":"generate.sms_events","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/sms-events","body":"json","scope":{}},
-      "generateSubscriptionsReport": {"action":"generate.subscriptions","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/subscriptions","body":"json","scope":{}},
-      "generateUnsubscriptionsReport": {"action":"generate.unsubscriptions","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/unsubscriptions","body":"json","scope":{}},
-      "getAllActions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/automations/{automation_id}/actions","params":["automation_id","offset","limit"],"scope":{"automation_id":{"from":"path","at":"automation_id"}}},
-      "getAllAdvancedReports": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/reports/advanced","params":["status","title","created_min","created_max","offset","limit","order","order_by"],"scope":{}},
-      "getAllAdvancedReportsModels": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/reports/advanced/models","params":["title","offset","limit","order","order_by"],"scope":{}},
-      "getAllAutomations": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/automations","params":["automation_id","title","created_by","list_id","status","offset","limit","order","order_by"],"scope":{}},
-      "getAllCNames": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/cnames","scope":{}},
-      "getAllCampaignGroups": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/campaign-groups","params":["group_id","name","limit","offset"],"scope":{}},
-      "getAllCampaigns": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/campaigns","params":["channel","campaign_hash","list_id","status","internal_name","created_by","group_id","created_min","created_max","updated_min","updated_max","start_date_min","start_date_max","end_date_min","end_date_max","schedule_date_min","schedule_date_max","offset","limit","order","order_by"],"scope":{}},
-      "getAllCatalogs": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/catalogs","scope":{}},
-      "getAllCellphoneSenders": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/senders/cellphone","params":["offset","limit","status"],"scope":{}},
-      "getAllConnectedSites": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/connectedsites","scope":{}},
-      "getAllContacts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts","params":["offset","limit","first_name","last_name","email","email_status","cellphone","cellphone_status","phone","phone_status","birth_date","language","extra_field_id"],"scope":{"list_id":{"from":"path","at":"list_id"}}},
-      "getAllContactsBySegment": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/segment/{segment_id}","params":["offset","limit","show_removed","date_min","date_max","action_name"],"scope":{"list_id":{"from":"path","at":"list_id"},"segment_id":{"from":"path","at":"segment_id"}}},
-      "getAllCountries": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/utilities/countries","params":["phone"],"scope":{}},
-      "getAllDomains": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/trackengage/domains","scope":{}},
-      "getAllEmailSenders": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/senders/email","params":["offset","limit","status"],"scope":{}},
-      "getAllFieldOptions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/fields/extra/{field_id}/options","scope":{"list_id":{"from":"path","at":"list_id"},"field_id":{"from":"path","at":"field_id"}}},
-      "getAllFields": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/fields","params":["offset","limit"],"scope":{"list_id":{"from":"path","at":"list_id"}}},
-      "getAllGoals": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/trackengage/goals","scope":{}},
-      "getAllLists": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/lists","params":["offset","limit","order","order_by","internal_name","public_name","created_min","created_max","updated_min","updated_max"],"scope":{}},
-      "getAllOperations": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/operations","params":["type","status","offset","limit","order","order_by"],"scope":{}},
-      "getAllPhoneSenders": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/senders/phone","params":["offset","limit","status"],"scope":{}},
-      "getAllProducts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/catalogs/{catalog_id}/products","params":["product_identifier","name","description","sku","upc","ean","gtin","mpn","price","sale_price","brand","custom_attributes","offset","limit"],"scope":{"catalog_id":{"from":"path","at":"catalog_id"}}},
-      "getAllSegments": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/segments","params":["type","name","offset","limit"],"scope":{"list_id":{"from":"path","at":"list_id"}}},
-      "getAllSuppressionList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/suppression-list","params":["type","method","value","campaign_hash","created_min","created_max","offset","limit","order","order_by"],"scope":{}},
-      "getAllTags": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/tags","params":["offset","limit","order","order_by"],"scope":{}},
-      "getAllUsers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/users","params":["username","status","created_min","created_max","updated_min","updated_max","offset","limit","order","order_by"],"scope":{}},
-      "getAllWebPushSites": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/webpush/sites","params":["offset","limit","order","order_by","list_id"],"scope":{}},
-      "getAllWebhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/webhooks","params":["offset","limit"],"scope":{}},
-      "getConnectedSites": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/connectedsites/{domain}","scope":{"domain":{"from":"path","at":"domain"}}},
-      "getContact": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/{contact_id}","scope":{"list_id":{"from":"path","at":"list_id"},"contact_id":{"from":"path","at":"contact_id"}}},
-      "getEmailReport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/reports/email/{campaign_hash}","params":["date","weekday","hour","location","domain","url","reader"],"scope":{"campaign_hash":{"from":"path","at":"campaign_hash"}}},
-      "getList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/lists/{list_id}","scope":{"list_id":{"from":"path","at":"list_id"}}},
-      "getMyAccount": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/my-account","scope":{}},
-      "getProduct": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/catalogs/{catalog_id}/products/{product_identifier}","scope":{"catalog_id":{"from":"path","at":"catalog_id"},"product_identifier":{"from":"path","at":"product_identifier"}}},
-      "getPushApp": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/push/apps/{app_id}","scope":{"app_id":{"from":"path","at":"app_id"}}},
-      "getPushApps": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/push/apps","params":["list_id"],"scope":{}},
-      "getPushReport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/reports/push/{campaign_hash}","params":["operating_systems"],"scope":{"campaign_hash":{"from":"path","at":"campaign_hash"}}},
-      "getSMSReport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/reports/sms/{campaign_hash}","params":["networks"],"scope":{"campaign_hash":{"from":"path","at":"campaign_hash"}}},
-      "getVoiceReport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/reports/voice/{campaign_hash}","params":["networks"],"scope":{"campaign_hash":{"from":"path","at":"campaign_hash"}}},
-      "getWebPushReport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/reports/web-push/{campaign_hash}","params":["devices","operating_systems","browsers","url"],"scope":{"campaign_hash":{"from":"path","at":"campaign_hash"}}},
-      "patchBaseField": {"action":"write.base","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/fields/base/{field_id}","body":"json","scope":{"list_id":{"from":"path","at":"list_id"},"field_id":{"from":"path","at":"field_id"}}},
-      "patchContact": {"action":"write.contacts","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/{contact_id}","body":"json","scope":{"list_id":{"from":"path","at":"list_id"},"contact_id":{"from":"path","at":"contact_id"}}},
-      "patchEmailCampaign": {"action":"write.email","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/campaigns/email/{campaign_hash}","body":"json","scope":{"campaign_hash":{"from":"path","at":"campaign_hash"}}},
-      "patchExtraField": {"action":"write.extra","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/fields/extra/{field_id}","body":"json","scope":{"list_id":{"from":"path","at":"list_id"},"field_id":{"from":"path","at":"field_id"}}},
-      "patchPushCampaign": {"action":"write.push","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/campaigns/push/{campaign_hash}","body":"json","scope":{"campaign_hash":{"from":"path","at":"campaign_hash"}}},
-      "patchSmartSmsCampaign": {"action":"write.smart_sms","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/campaigns/smart-sms/{campaign_hash}","body":"json","scope":{"campaign_hash":{"from":"path","at":"campaign_hash"}}},
-      "patchSmsCampaign": {"action":"write.sms","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/campaigns/sms/{campaign_hash}","body":"json","scope":{"campaign_hash":{"from":"path","at":"campaign_hash"}}},
-      "patchVoiceCampaign": {"action":"write.voice","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/campaigns/voice/{campaign_hash}","body":"json","scope":{"campaign_hash":{"from":"path","at":"campaign_hash"}}},
-      "patchWebPushCampaign": {"action":"write.web_push","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/campaigns/web-push/{campaign_hash}","body":"json","scope":{"campaign_hash":{"from":"path","at":"campaign_hash"}}},
-      "ping": {"action":"send.ping","effects":["send"],"method":"POST","origin":"https://api.egoiapp.com","path":"/ping","scope":{}},
-      "putEmailSender": {"action":"write.email","effects":["write"],"method":"PUT","origin":"https://api.egoiapp.com","path":"/senders/email/{sender_id}","body":"json","scope":{"sender_id":{"from":"path","at":"sender_id"},"name":{"from":"body","at":"/name"}}},
-      "registerPushEvent": {"action":"write.event","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/push/apps/{app_id}/event","body":"json","scope":{"app_id":{"from":"path","at":"app_id"},"device_id":{"from":"body","at":"/device_id","type":"number"}}},
-      "registerPushToken": {"action":"admin.token","effects":["admin"],"method":"POST","origin":"https://api.egoiapp.com","path":"/push/apps/{app_id}/token","body":"json","scope":{"app_id":{"from":"path","at":"app_id"}}},
-      "searchContacts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/contacts/search","params":["type","contact"],"scope":{}},
-      "updateCampaignGroup": {"action":"write.campaign_groups","effects":["write"],"method":"PUT","origin":"https://api.egoiapp.com","path":"/campaign-groups/{group_id}","body":"json","scope":{"group_id":{"from":"path","at":"group_id"}}},
-      "updateContactByField": {"action":"write.by_field","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/by-field","body":"json","scope":{"list_id":{"from":"path","at":"list_id"}}},
-      "updateFieldOption": {"action":"write.options","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/fields/extra/{field_id}/options/{option_id}","body":"json","scope":{"list_id":{"from":"path","at":"list_id"},"field_id":{"from":"path","at":"field_id"},"option_id":{"from":"path","at":"option_id"}}},
-      "updateList": {"action":"write.lists","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/lists/{list_id}","body":"json","scope":{"list_id":{"from":"path","at":"list_id"}}},
-      "updateProduct": {"action":"write.products","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/catalogs/{catalog_id}/products/{product_identifier}","body":"json","scope":{"catalog_id":{"from":"path","at":"catalog_id"},"product_identifier":{"from":"path","at":"product_identifier"}}},
-      "updateTag": {"action":"write.tags","effects":["write"],"method":"PUT","origin":"https://api.egoiapp.com","path":"/tags/{tag_id}","body":"json","scope":{"tag_id":{"from":"path","at":"tag_id"}}}
+      "CreateOrder": {"action":"orders.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/{domain}/orders","scope":{"domain":{"at":"domain","from":"path"},"order_id":{"at":"/order_id","from":"body"}}},
+      "ImportOrdersBulk": {"action":"lists.orders.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/orders","scope":{"list_id":{"at":"list_id","from":"path"}}},
+      "ImportProducts": {"action":"catalogs.products.actions.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/catalogs/{catalog_id}/products/actions/import","scope":{"catalog_id":{"at":"catalog_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "actionActivateContacts": {"action":"lists.contacts.actions.activate.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/activate","scope":{"list_id":{"at":"list_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "actionApproveOperation": {"action":"operations.actions.send","body":"json","effects":["send","write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/operations/actions/approve","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "actionAttachTag": {"action":"lists.contacts.actions.tag.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/attach-tag","scope":{"list_id":{"at":"list_id","from":"path"},"tag_id":{"at":"/tag_id","from":"body","type":"number"}}},
+      "actionCancelOperation": {"action":"operations.actions.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/operations/actions/cancel","scope":{}},
+      "actionDeactivateContacts": {"action":"lists.contacts.actions.deactivate.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/deactivate","scope":{"list_id":{"at":"list_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "actionDetachTag": {"action":"lists.contacts.actions.tag.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/detach-tag","scope":{"list_id":{"at":"list_id","from":"path"},"tag_id":{"at":"/tag_id","from":"body","type":"number"}}},
+      "actionEnableEmailRss": {"action":"campaigns.email.rss.actions.send","effects":["send"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/email/rss/{campaign_hash}/actions/enable","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"}}},
+      "actionEnableWebPushRss": {"action":"campaigns.webpush.rss.actions.send","effects":["send"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/webpush/rss/{campaign_hash}/actions/enable","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"}}},
+      "actionExportContacts": {"action":"lists.contacts.actions.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/export","scope":{"callback_url":{"at":"/callback_url","from":"body","optional":true},"list_id":{"at":"list_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "actionForgetContacts": {"action":"lists.contacts.actions.forget.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/forget","scope":{"list_id":{"at":"list_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "actionImportBulk": {"action":"lists.contacts.actions.bulk.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/import-bulk","scope":{"list_id":{"at":"list_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "actionPauseOperation": {"action":"operations.actions.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/operations/actions/pause","scope":{}},
+      "actionResumeOperation": {"action":"operations.actions.send","body":"json","effects":["send","write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/operations/actions/resume","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "actionSendEmail": {"action":"campaigns.email.actions.send","body":"json","effects":["send"],"grant":["campaign_hash"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/email/{campaign_hash}/actions/send","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "actionSendPush": {"action":"campaigns.push.actions.send","body":"json","effects":["send"],"grant":["campaign_hash"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/push/{campaign_hash}/actions/send","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "actionSendSmartSms": {"action":"campaigns.smart_sms.actions.send","body":"json","effects":["send"],"grant":["campaign_hash"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/smart-sms/{campaign_hash}/actions/send","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "actionSendSms": {"action":"campaigns.sms.actions.send","body":"json","effects":["send"],"grant":["campaign_hash"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/sms/{campaign_hash}/actions/send","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "actionSendVoice": {"action":"campaigns.voice.actions.send","body":"json","effects":["send"],"grant":["campaign_hash"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/voice/{campaign_hash}/actions/send","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "actionSendWebPush": {"action":"campaigns.web_push.actions.send","body":"json","effects":["send"],"grant":["campaign_hash"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/web-push/{campaign_hash}/actions/send","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "actionStartAutomation": {"action":"lists.contacts.actions.automation.send","body":"json","effects":["send","execute"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/start-automation","scope":{"action_id":{"at":"/action_id","from":"body","type":"number"},"automation_id":{"at":"/automation_id","from":"body","type":"number"},"list_id":{"at":"list_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "actionUnsubscribeContact": {"action":"lists.contacts.actions.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/unsubscribe","scope":{"list_id":{"at":"list_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "actionUpdateContacts": {"action":"lists.contacts.actions.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/actions/update","scope":{"list_id":{"at":"list_id","from":"path"}}},
+      "addDomain": {"action":"domain.admin","effects":["admin"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/domain","scope":{}},
+      "addDomain.json.3d147789e595": {"action":"domain.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/domain","scope":{"fallbackUrl":{"at":"/fallbackUrl","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "addEmailTemplate": {"action":"email.templates.write","effects":["write"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/email/templates","scope":{}},
+      "addEmailTemplate.json.63db8b2427d9": {"action":"email.templates.write","body":"json","effects":["write"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/email/templates","scope":{"request":{"at":"","from":"body","type":"object"},"templateName":{"at":"/templateName","from":"body"}}},
+      "addPushTemplate": {"action":"push.templates.write","effects":["write"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/push/templates","scope":{}},
+      "addPushTemplate.json.6dad2df9f0e0": {"action":"push.templates.write","body":"json","effects":["write"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/push/templates","scope":{"appId":{"at":"/appId","from":"body"},"request":{"at":"","from":"body","type":"object"},"templateName":{"at":"/templateName","from":"body"}}},
+      "addSmsTemplate": {"action":"sms.templates.write","effects":["write"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/sms/templates","scope":{}},
+      "addSmsTemplate.json": {"action":"sms.templates.write","body":"json","effects":["write"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/sms/templates","scope":{"request":{"at":"","from":"body","type":"object"},"templateName":{"at":"/templateName","from":"body"}}},
+      "addWebHook": {"action":"webhooks.admin","effects":["admin"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/webhooks","scope":{}},
+      "addWebHook.json.58c2f074e8a4": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/webhooks","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "cancelScheduledMessage": {"action":"messages.action.delete","effects":["delete"],"method":"DELETE","origin":"https://slingshot.egoiapp.com","path":"/api/v2/messages/{id}/action/cancel","scope":{"id":{"at":"id","from":"path"}}},
+      "cancelVerify": {"action":"verify.write","effects":["write"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/verify/{id}/cancel","scope":{"id":{"at":"id","from":"path"}}},
+      "changeAlertTemplate": {"action":"alert.template.write","effects":["write"],"method":"PATCH","origin":"https://slingshot.egoiapp.com","path":"/api/v2/alert/template/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "changeAlertTemplate.json.7098e09de0fe": {"action":"alert.template.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://slingshot.egoiapp.com","path":"/api/v2/alert/template/{id}","scope":{"channel":{"at":"/channel","from":"body","optional":true},"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"/templateId","from":"body","optional":true}}},
+      "changeDefaultDomain": {"action":"domain.default.admin","effects":["admin"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/domain/default","scope":{}},
+      "changeDefaultDomain.json.52a60899e8ba": {"action":"domain.default.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/domain/default","scope":{"domainId":{"at":"/domainId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "clearCart": {"action":"ecommerce.clear_cart.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://api.egoiapp.com","path":"/ecommerce/clear-cart","scope":{"contact_id":{"at":"/contact_id","from":"body"},"list_id":{"at":"/list_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "createAlertTemplate": {"action":"alert.template.write","effects":["write"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/alert/template","scope":{}},
+      "createAlertTemplate.json.d562691b1948": {"action":"alert.template.write","body":"json","effects":["write"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/alert/template","scope":{"channel":{"at":"/channel","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"/templateId","from":"body","optional":true}}},
+      "createAutocertifiedOption": {"action":"registered.autocertificate.write","body":"json","effects":["write"],"method":"POST","origin":"https://registered.egoiapp.com","path":"/registered/autocertificate","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createCName": {"action":"cnames.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.egoiapp.com","path":"/cnames","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createCampaignGroup": {"action":"campaign_groups.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaign-groups","scope":{}},
+      "createCart": {"action":"carts.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/{domain}/carts","scope":{"domain":{"at":"domain","from":"path"}}},
+      "createCatalog": {"action":"catalogs.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/catalogs","scope":{}},
+      "createCellphoneSender": {"action":"senders.cellphone.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.egoiapp.com","path":"/senders/cellphone","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createConnectedSites": {"action":"connectedsites.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/connectedsites","scope":{}},
+      "createContact": {"action":"lists.contacts.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts","scope":{"list_id":{"at":"list_id","from":"path"}}},
+      "createEmailCampaign": {"action":"campaigns.email.write","body":"json","effects":["write"],"grant":["internal_name","list_id","sender_id"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/email","scope":{"internal_name":{"at":"/internal_name","from":"body"},"list_id":{"at":"/list_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"},"sender_id":{"at":"/sender_id","from":"body","type":"number"}}},
+      "createEmailRssCampaign": {"action":"campaigns.email.rss.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/email/rss","scope":{"internal_name":{"at":"/internal_name","from":"body"},"list_id":{"at":"/list_id","from":"body","type":"number"},"sender_id":{"at":"/sender_id","from":"body","type":"number"}}},
+      "createEmailSender": {"action":"senders.email.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.egoiapp.com","path":"/senders/email","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createExtraField": {"action":"lists.fields.extra.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/fields/extra","scope":{"list_id":{"at":"list_id","from":"path"},"name":{"at":"/name","from":"body"}}},
+      "createFieldOption": {"action":"lists.fields.extra.options.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/fields/extra/{field_id}/options","scope":{"field_id":{"at":"field_id","from":"path"},"list_id":{"at":"list_id","from":"path"}}},
+      "createList": {"action":"lists.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists","scope":{"internal_name":{"at":"/internal_name","from":"body"}}},
+      "createMultiChannelFlow": {"action":"multi_channel.flow.write","effects":["write"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/multi-channel/flow","scope":{}},
+      "createMultiChannelFlow.json.fa818f66133a": {"action":"multi_channel.flow.write","body":"json","effects":["write"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/multi-channel/flow","scope":{"group":{"at":"/group","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createPhoneSender": {"action":"senders.phone.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.egoiapp.com","path":"/senders/phone","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createProduct": {"action":"catalogs.products.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/catalogs/{catalog_id}/products","scope":{"catalog_id":{"at":"catalog_id","from":"path"}}},
+      "createPushCampaign": {"action":"campaigns.push.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/push","scope":{"app_id":{"at":"/app_id","from":"body"}}},
+      "createRegisteredCustomEvent": {"action":"registered.custom.event.write","body":"json","effects":["write"],"method":"POST","origin":"https://registered.egoiapp.com","path":"/registered/custom/event","scope":{"channel":{"at":"/channel","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createRegisteredEvidence": {"action":"registered.evidence.write","effects":["write"],"method":"POST","origin":"https://registered.egoiapp.com","path":"/registered/{registered_id}/evidence","scope":{"registered_id":{"at":"registered_id","from":"path"}}},
+      "createRegisteredEvidenceBulk": {"action":"registered.evidence.bulk.write","body":"json","effects":["write"],"method":"POST","origin":"https://registered.egoiapp.com","path":"/registered/evidence/bulk","scope":{"request":{"at":"","from":"body","type":"array"}}},
+      "createRegisteredWebhook": {"action":"registered.webhook.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://registered.egoiapp.com","path":"/registered/webhook","scope":{"request":{"at":"","from":"body","type":"object"},"url":{"at":"/url","from":"body"}}},
+      "createSegment": {"action":"lists.segments.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/segments","scope":{"list_id":{"at":"list_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createSmartLink": {"action":"smartlinks.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/smartlinks","scope":{"config_id":{"at":"/config_id","from":"body","type":"number"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"url_slug":{"at":"/url_slug","from":"body"},"web_url":{"at":"/web_url","from":"body"}}},
+      "createSmartLinkConfig": {"action":"smartlinks.configs.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.egoiapp.com","path":"/smartlinks/configs","scope":{"android_store_url":{"at":"/android_store_url","from":"body","optional":true},"cname":{"at":"/cname","from":"body"},"ios_store_url":{"at":"/ios_store_url","from":"body","optional":true},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createSmartSmsCampaign": {"action":"campaigns.smart_sms.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/smart-sms","scope":{"internal_name":{"at":"/internal_name","from":"body"},"list_id":{"at":"/list_id","from":"body","type":"number"}}},
+      "createSmppAuth": {"action":"smpp.auth.admin","effects":["admin"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/smpp/auth","scope":{}},
+      "createSmppAuth.json.a211833d1e09": {"action":"smpp.auth.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/smpp/auth","scope":{"request":{"at":"","from":"body","type":"object"},"systemId":{"at":"/systemId","from":"body"}}},
+      "createSmsCampaign": {"action":"campaigns.sms.write","body":"json","effects":["write"],"grant":["internal_name","list_id"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/sms","scope":{"internal_name":{"at":"/internal_name","from":"body"},"list_id":{"at":"/list_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"},"sender_id":{"at":"/sender_id","from":"body","optional":true,"type":"number"}}},
+      "createSuppressionList": {"action":"suppression_list.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/suppression-list","scope":{}},
+      "createTag": {"action":"tags.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/tags","scope":{}},
+      "createVoiceCampaign": {"action":"campaigns.voice.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/voice","scope":{}},
+      "createWebPushCampaign": {"action":"campaigns.web_push.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/web-push","scope":{"internal_name":{"at":"/internal_name","from":"body"},"site_id":{"at":"/site_id","from":"body","type":"number"}}},
+      "createWebPushRssCampaign": {"action":"campaigns.webpush.rss.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/campaigns/webpush/rss","scope":{"internal_name":{"at":"/internal_name","from":"body"},"site_id":{"at":"/site_id","from":"body","type":"number"}}},
+      "createWebhook": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.egoiapp.com","path":"/webhooks","scope":{"list_id":{"at":"/list_id","from":"body","type":"number"},"url":{"at":"/url","from":"body"}}},
+      "createWebpushSite": {"action":"webpush.sites.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/webpush/sites","scope":{"list_id":{"at":"/list_id","from":"body","type":"number"},"name":{"at":"/name","from":"body"},"site":{"at":"/site","from":"body"}}},
+      "deleteAutocertifiedOption": {"action":"registered.autocertificate.delete","effects":["delete"],"method":"DELETE","origin":"https://registered.egoiapp.com","path":"/registered/autocertificate/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteAutomation": {"action":"automations.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/automations/{automation_id}","scope":{"automation_id":{"at":"automation_id","from":"path"}}},
+      "deleteCampaignGroup": {"action":"campaign_groups.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/campaign-groups/{group_id}","scope":{"group_id":{"at":"group_id","from":"path"}}},
+      "deleteCampaigns": {"action":"campaigns.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/campaigns/{campaign_hash}","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"}}},
+      "deleteCatalog": {"action":"catalogs.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/catalogs/{catalog_id}","scope":{"catalog_id":{"at":"catalog_id","from":"path"}}},
+      "deleteCellphoneSender": {"action":"senders.cellphone.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/senders/cellphone/{sender_id}","scope":{"sender_id":{"at":"sender_id","from":"path"}}},
+      "deleteConnectedSites": {"action":"connectedsites.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/connectedsites/{domain}","scope":{"domain":{"at":"domain","from":"path"}}},
+      "deleteEmailSender": {"action":"senders.email.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/senders/email/{sender_id}","scope":{"sender_id":{"at":"sender_id","from":"path"}}},
+      "deleteEmailTemplate": {"action":"email.templates.delete","effects":["delete"],"method":"DELETE","origin":"https://slingshot.egoiapp.com","path":"/api/v2/email/templates/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteExtraField": {"action":"lists.fields.extra.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/fields/extra/{field_id}","scope":{"field_id":{"at":"field_id","from":"path"},"list_id":{"at":"list_id","from":"path"}}},
+      "deleteFieldOption": {"action":"lists.fields.extra.options.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/fields/extra/{field_id}/options/{option_id}","scope":{"field_id":{"at":"field_id","from":"path"},"list_id":{"at":"list_id","from":"path"},"option_id":{"at":"option_id","from":"path"}}},
+      "deleteList": {"action":"lists.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/lists/{list_id}","scope":{"list_id":{"at":"list_id","from":"path"}}},
+      "deletePhoneSender": {"action":"senders.phone.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/senders/phone/{sender_id}","scope":{"sender_id":{"at":"sender_id","from":"path"}}},
+      "deleteProduct": {"action":"catalogs.products.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/catalogs/{catalog_id}/products/{product_identifier}","scope":{"catalog_id":{"at":"catalog_id","from":"path"},"product_identifier":{"at":"product_identifier","from":"path"}}},
+      "deletePushTemplate": {"action":"push.templates.delete","effects":["delete"],"method":"DELETE","origin":"https://slingshot.egoiapp.com","path":"/api/v2/push/templates/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteRegisteredEvidence": {"action":"registered.evidence.delete","effects":["delete"],"method":"DELETE","origin":"https://registered.egoiapp.com","path":"/registered/{registered_id}/evidence/{evidence_id}","scope":{"evidence_id":{"at":"evidence_id","from":"path"},"registered_id":{"at":"registered_id","from":"path"}}},
+      "deleteRegisteredWebhook": {"action":"registered.webhook.delete","effects":["delete"],"method":"DELETE","origin":"https://registered.egoiapp.com","path":"/registered/webhook/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "deleteSegment": {"action":"lists.segments.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/segments/{segment_id}","scope":{"list_id":{"at":"list_id","from":"path"},"segment_id":{"at":"segment_id","from":"path"}}},
+      "deleteSmartLink": {"action":"smartlinks.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/smartlinks/{link_id}","scope":{"link_id":{"at":"link_id","from":"path"}}},
+      "deleteSmartLinkConfig": {"action":"smartlinks.configs.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/smartlinks/configs/{config_id}","scope":{"config_id":{"at":"config_id","from":"path"}}},
+      "deleteSmsTemplate": {"action":"sms.templates.delete","effects":["delete"],"method":"DELETE","origin":"https://slingshot.egoiapp.com","path":"/api/v2/sms/templates/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteSuppressionList": {"action":"suppression_list.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/suppression-list/{suppression_id}","scope":{"suppression_id":{"at":"suppression_id","from":"path"}}},
+      "deleteTag": {"action":"tags.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/tags/{tag_id}","scope":{"tag_id":{"at":"tag_id","from":"path"}}},
+      "deleteUser": {"action":"users.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/users/{user_id}","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "deleteWebhook": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"https://api.egoiapp.com","path":"/webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "downloadRegisteredEvidence": {"action":"registered.evidence.read","effects":["read"],"method":"GET","origin":"https://registered.egoiapp.com","path":"/registered/{registered_id}/evidence/download/{evidence_id}","scope":{"evidence_id":{"at":"evidence_id","from":"path"},"registered_id":{"at":"registered_id","from":"path"}}},
+      "emailValidator": {"action":"utilities.email_validator.read","effects":["read"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/utilities/emailValidator","scope":{}},
+      "emailValidator.json.a69b2d7323f1": {"action":"utilities.email_validator.read","body":"json","effects":["read"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/utilities/emailValidator","scope":{"email":{"at":"/email","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "enableTe": {"action":"my_account.actions.te.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.egoiapp.com","path":"/my-account/actions/enable-te","scope":{"list_id":{"at":"/list_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "enableTransactional": {"action":"my_account.actions.transactional.admin","effects":["admin"],"method":"POST","origin":"https://api.egoiapp.com","path":"/my-account/actions/enable-transactional","scope":{}},
+      "executeEmailAlert": {"action":"alert.action.send","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/alert/action/execute","scope":{}},
+      "executeEmailAlert.json.50c4bb2f442e": {"action":"alert.action.send","body":"json","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/alert/action/execute","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "executeMultiChannel": {"action":"multi_channel.send","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/multi-channel/execute","scope":{}},
+      "executeMultiChannel.json.921f1361b8b8": {"action":"multi_channel.send","body":"json","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/multi-channel/execute","scope":{"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"/templateId","from":"body"}}},
+      "generateByModelReport": {"action":"reports.advanced.model.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/model","scope":{"model_id":{"at":"/model_id","from":"body","type":"number"}}},
+      "generateContactActivityReport": {"action":"reports.advanced.contact_activity.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/contact-activity","scope":{}},
+      "generateEmailBouncesReport": {"action":"reports.advanced.email_bounces.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/email-bounces","scope":{}},
+      "generateEmailClicksByContactReport": {"action":"reports.advanced.email_clicks_by_contact.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/email-clicks-by-contact","scope":{}},
+      "generateEmailClicksByUrlReport": {"action":"reports.advanced.email_clicks_by_url.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/email-clicks-by-url","scope":{}},
+      "generateEmailEventsReport": {"action":"reports.advanced.email_events.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/email-events","scope":{}},
+      "generateEmailUnsubscriptionsReport": {"action":"reports.advanced.email_unsubscriptions.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/email-unsubscriptions","scope":{}},
+      "generateFormAnswersReport": {"action":"reports.advanced.form_answers.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/form-answers","scope":{}},
+      "generateSendsReport": {"action":"reports.advanced.sends.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/sends","scope":{}},
+      "generateSmsBouncesReport": {"action":"reports.advanced.sms_bounces.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/sms-bounces","scope":{}},
+      "generateSmsEventsReport": {"action":"reports.advanced.sms_events.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/sms-events","scope":{}},
+      "generateSubscriptionsReport": {"action":"reports.advanced.subscriptions.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/subscriptions","scope":{}},
+      "generateUnsubscriptionsReport": {"action":"reports.advanced.unsubscriptions.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.egoiapp.com","path":"/reports/advanced/unsubscriptions","scope":{}},
+      "getAllActions": {"action":"automations.actions.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["automation_id","offset","limit"],"path":"/automations/{automation_id}/actions","scope":{"automation_id":{"at":"automation_id","from":"path"}}},
+      "getAllAdvancedReports": {"action":"reports.advanced.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["status","title","created_min","created_max","offset","limit","order","order_by"],"path":"/reports/advanced","scope":{}},
+      "getAllAdvancedReportsModels": {"action":"reports.advanced.models.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["title","offset","limit","order","order_by"],"path":"/reports/advanced/models","scope":{}},
+      "getAllAlertTemplates": {"action":"alert.template.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/alert/template","scope":{}},
+      "getAllAutomations": {"action":"automations.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["automation_id","title","created_by","list_id","status","offset","limit","order","order_by"],"path":"/automations","scope":{}},
+      "getAllCNames": {"action":"cnames.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/cnames","scope":{}},
+      "getAllCampaignGroups": {"action":"campaign_groups.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["group_id","name","limit","offset"],"path":"/campaign-groups","scope":{}},
+      "getAllCampaigns": {"action":"campaigns.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["channel","campaign_hash","list_id","status","internal_name","created_by","group_id","created_min","created_max","updated_min","updated_max","start_date_min","start_date_max","end_date_min","end_date_max","schedule_date_min","schedule_date_max","offset","limit","order","order_by"],"path":"/campaigns","scope":{}},
+      "getAllCatalogs": {"action":"catalogs.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/catalogs","scope":{}},
+      "getAllCellphoneSenders": {"action":"senders.cellphone.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["offset","limit","status"],"path":"/senders/cellphone","scope":{}},
+      "getAllConnectedSites": {"action":"connectedsites.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/connectedsites","scope":{}},
+      "getAllContactActivities": {"action":"lists.contacts.activities.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["offset","limit","date_min","date_max","action_name"],"path":"/lists/{list_id}/contacts/{contact_id}/activities","path_patterns":{"contact_id":"[^s].*|s(?:|[^e].*|e(?:|[^g].*|g(?:|[^m].*|m(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t.+))))))"},"scope":{"action_name":{"at":"action_name","from":"query","optional":true},"contact_id":{"at":"contact_id","from":"path"},"list_id":{"at":"list_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getAllContacts": {"action":"lists.contacts.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["offset","limit","first_name","last_name","email","email_status","cellphone","cellphone_status","phone","phone_status","birth_date","language","extra_field_id"],"path":"/lists/{list_id}/contacts","scope":{"list_id":{"at":"list_id","from":"path"}}},
+      "getAllContactsBySegment": {"action":"lists.contacts.segment.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["offset","limit","show_removed","date_min","date_max","action_name"],"path":"/lists/{list_id}/contacts/segment/{segment_id}","scope":{"list_id":{"at":"list_id","from":"path"},"segment_id":{"at":"segment_id","from":"path"}}},
+      "getAllCountries": {"action":"utilities.countries.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["phone"],"path":"/utilities/countries","scope":{}},
+      "getAllDomains": {"action":"trackengage.domains.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/trackengage/domains","scope":{}},
+      "getAllEmailSenders": {"action":"senders.email.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["offset","limit","status"],"path":"/senders/email","scope":{}},
+      "getAllEmailTemplates": {"action":"email.templates.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["offset","limit","show_html"],"path":"/email/templates","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getAllFieldOptions": {"action":"lists.fields.extra.options.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/fields/extra/{field_id}/options","scope":{"field_id":{"at":"field_id","from":"path"},"list_id":{"at":"list_id","from":"path"}}},
+      "getAllFields": {"action":"lists.fields.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["offset","limit"],"path":"/lists/{list_id}/fields","scope":{"list_id":{"at":"list_id","from":"path"}}},
+      "getAllGoals": {"action":"trackengage.goals.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/trackengage/goals","scope":{}},
+      "getAllLists": {"action":"lists.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["offset","limit","order","order_by","internal_name","public_name","created_min","created_max","updated_min","updated_max"],"path":"/lists","scope":{}},
+      "getAllLogs": {"action":"logs.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["status_code","http_method","route","start_date","end_date","offset","limit","order","order_by"],"path":"/logs","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getAllOperations": {"action":"operations.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["type","status","offset","limit","order","order_by"],"path":"/operations","scope":{}},
+      "getAllPhoneSenders": {"action":"senders.phone.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["offset","limit","status"],"path":"/senders/phone","scope":{}},
+      "getAllProducts": {"action":"catalogs.products.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["product_identifier","name","description","sku","upc","ean","gtin","mpn","price","sale_price","brand","custom_attributes","offset","limit","custom_attributes[{alias}]","custom_attributes[alias]","custom_attributes[other_alias]"],"path":"/catalogs/{catalog_id}/products","scope":{"catalog_id":{"at":"catalog_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getAllPushTemplates": {"action":"push.templates.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["offset","limit"],"path":"/push/templates","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getAllRegistered": {"action":"registered.read","effects":["read"],"method":"GET","origin":"https://registered.egoiapp.com","params":["offset","limit","subject","to","start_date","end_date"],"path":"/registered","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getAllRegisteredEvents": {"action":"registered.event.read","effects":["read"],"method":"GET","origin":"https://registered.egoiapp.com","path":"/registered/{registered_id}/event","scope":{"registered_id":{"at":"registered_id","from":"path"}}},
+      "getAllRegisteredEvidences": {"action":"registered.evidence.read","effects":["read"],"method":"GET","origin":"https://registered.egoiapp.com","params":["offset","limit"],"path":"/registered/{registered_id}/evidence","scope":{"query":{"at":"","from":"query","type":"object"},"registered_id":{"at":"registered_id","from":"path"}}},
+      "getAllRegisteredWebhooks": {"action":"registered.webhook.read","effects":["read"],"method":"GET","origin":"https://registered.egoiapp.com","path":"/registered/webhook","scope":{}},
+      "getAllSegments": {"action":"lists.segments.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["type","name","offset","limit"],"path":"/lists/{list_id}/segments","scope":{"list_id":{"at":"list_id","from":"path"}}},
+      "getAllSmartLinkConfigs": {"action":"smartlinks.configs.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/smartlinks/configs","scope":{}},
+      "getAllSmartLinks": {"action":"smartlinks.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["config_id"],"path":"/smartlinks","scope":{"config_id":{"at":"config_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getAllSmartSmsTemplates": {"action":"smartsms.templates.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["offset","limit"],"path":"/smartsms/templates","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getAllSmsTemplates": {"action":"sms.templates.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["offset","limit"],"path":"/sms/templates","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getAllStores": {"action":"stores.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["offset","limit"],"path":"/stores","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getAllSuppressionList": {"action":"suppression_list.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["type","method","value","campaign_hash","created_min","created_max","offset","limit","order","order_by"],"path":"/suppression-list","scope":{}},
+      "getAllTags": {"action":"tags.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["offset","limit","order","order_by"],"path":"/tags","scope":{}},
+      "getAllUserProfile": {"action":"users.profiles.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["offset","limit"],"path":"/users/profiles","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getAllUsers": {"action":"users.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["username","status","created_min","created_max","updated_min","updated_max","offset","limit","order","order_by"],"path":"/users","scope":{}},
+      "getAllWebPushSites": {"action":"webpush.sites.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["offset","limit","order","order_by","list_id"],"path":"/webpush/sites","scope":{}},
+      "getAllWebhooks": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["offset","limit"],"path":"/webhooks","scope":{}},
+      "getAutocertifiedOption": {"action":"registered.autocertificate.read","effects":["read"],"method":"GET","origin":"https://registered.egoiapp.com","path":"/registered/autocertificate","scope":{}},
+      "getAutomationReport": {"action":"reports.automation.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["channel","start_date","end_date"],"path":"/reports/automation/{automation_id}","scope":{"automation_id":{"at":"automation_id","from":"path"},"channel":{"at":"channel","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getBrandKit": {"action":"brandkit.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/brandkit","scope":{}},
+      "getConnectedSites": {"action":"connectedsites.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/connectedsites/{domain}","scope":{"domain":{"at":"domain","from":"path"}}},
+      "getContact": {"action":"lists.contacts.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/{contact_id}","scope":{"contact_id":{"at":"contact_id","from":"path"},"list_id":{"at":"list_id","from":"path"}}},
+      "getEmailCampaignHtml": {"action":"campaigns.email.html.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/campaigns/email/{campaign_hash}/html","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"}}},
+      "getEmailCampaignPublicUrl": {"action":"campaigns.email.public_url.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/campaigns/email/{campaign_hash}/public-url","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"}}},
+      "getEmailCampaignThumbnail": {"action":"campaigns.email.thumbnail.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/campaigns/email/{campaign_hash}/thumbnail","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"}}},
+      "getEmailMessageLog": {"action":"email.log.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/email/log/{messageId}","scope":{"messageId":{"at":"messageId","from":"path"}}},
+      "getEmailReport": {"action":"reports.email.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["date","weekday","hour","location","domain","url","reader"],"path":"/reports/email/{campaign_hash}","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"}}},
+      "getEmailSenders": {"action":"email.senders.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/email/senders","scope":{}},
+      "getList": {"action":"lists.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/lists/{list_id}","scope":{"list_id":{"at":"list_id","from":"path"}}},
+      "getLog": {"action":"logs.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/logs/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getLog.none.d56d9e36b892": {"action":"logs.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/logs/{id}","path_patterns":{"id":"[0-9]+"},"scope":{"id":{"at":"id","from":"path"}}},
+      "getMyAccount": {"action":"my_account.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/my-account","scope":{}},
+      "getProduct": {"action":"catalogs.products.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/catalogs/{catalog_id}/products/{product_identifier}","scope":{"catalog_id":{"at":"catalog_id","from":"path"},"product_identifier":{"at":"product_identifier","from":"path"}}},
+      "getPushApp": {"action":"push.apps.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/push/apps/{app_id}","scope":{"app_id":{"at":"app_id","from":"path"}}},
+      "getPushApps": {"action":"push.apps.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["list_id"],"path":"/push/apps","scope":{}},
+      "getPushReport": {"action":"reports.push.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["operating_systems"],"path":"/reports/push/{campaign_hash}","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"}}},
+      "getRegistered": {"action":"registered.read","effects":["read"],"method":"GET","origin":"https://registered.egoiapp.com","path":"/registered/{registered_id}","path_patterns":{"registered_id":"[^aw].*|a(?:|[^u].*|u(?:|[^t].*|t(?:|[^o].*|o(?:|[^c].*|c(?:|[^e].*|e(?:|[^r].*|r(?:|[^t].*|t(?:|[^i].*|i(?:|[^f].*|f(?:|[^i].*|i(?:|[^c].*|c(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e.+))))))))))))))|w(?:|[^e].*|e(?:|[^b].*|b(?:|[^h].*|h(?:|[^o].*|o(?:|[^o].*|o(?:|[^k].*|k.+))))))"},"scope":{"registered_id":{"at":"registered_id","from":"path"}}},
+      "getSMSReport": {"action":"reports.sms.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["networks"],"path":"/reports/sms/{campaign_hash}","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"}}},
+      "getShortenedLinkList": {"action":"shortener.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","params":["link","originalLink","dateStart","dateEnd"],"path":"/api/v2/shortener","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getSingleAlertTemplate": {"action":"alert.template.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/alert/template/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getSmartLink": {"action":"smartlinks.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/smartlinks/{link_id}","path_patterns":{"link_id":"[0-9]+"},"scope":{"link_id":{"at":"link_id","from":"path"}}},
+      "getSmartLinkConfig": {"action":"smartlinks.configs.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/smartlinks/configs/{config_id}","scope":{"config_id":{"at":"config_id","from":"path"}}},
+      "getSmartLinkStats": {"action":"smartlinks.stats.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/smartlinks/{link_id}/stats","path_patterns":{"link_id":"[0-9]+"},"scope":{"link_id":{"at":"link_id","from":"path"}}},
+      "getSmartLinkUtmStats": {"action":"smartlinks.stats.utm.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["group_by","date_min","date_max","device","redirect","utm_source","utm_medium","utm_campaign","utm_content","utm_term","offset","limit"],"path":"/smartlinks/{link_id}/stats/utm","scope":{"link_id":{"at":"link_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getSmartSMSReport": {"action":"reports.smart_sms.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["networks"],"path":"/reports/smart-sms/{campaign_hash}","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getSmsMessageLog": {"action":"sms.log.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/sms/log/{messageId}","scope":{"messageId":{"at":"messageId","from":"path"}}},
+      "getSmsSenders": {"action":"sms.senders.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/sms/senders","scope":{}},
+      "getTotalContactsBySegment": {"action":"lists.contacts.segment.count.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/segment/{segment_id}/count","scope":{"list_id":{"at":"list_id","from":"path"},"segment_id":{"at":"segment_id","from":"path"}}},
+      "getUserActivity": {"action":"users.activity.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["date","offset","limit"],"path":"/users/{user_id}/activity","path_patterns":{"user_id":"[0-9]+"},"scope":{"query":{"at":"","from":"query","type":"object"},"user_id":{"at":"user_id","from":"path"}}},
+      "getUserProfile": {"action":"users.profiles.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","path":"/users/profiles/{profile_id}","scope":{"profile_id":{"at":"profile_id","from":"path"}}},
+      "getVerify": {"action":"verify.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/verify/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getVoiceReport": {"action":"reports.voice.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["networks"],"path":"/reports/voice/{campaign_hash}","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"}}},
+      "getWebPushReport": {"action":"reports.web_push.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["devices","operating_systems","browsers","url"],"path":"/reports/web-push/{campaign_hash}","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"}}},
+      "listAllEmailEvents": {"action":"email.events.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","params":["dateStart","dateEnd","status","limit","offset"],"path":"/api/v2/email/events","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listAllEmailMessages": {"action":"email.messages.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","params":["group","dateStart","dateEnd","destination","status"],"path":"/api/v2/email/messages","scope":{"group":{"at":"group","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listAllSmsEvents": {"action":"sms.events.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","params":["dateStart","dateEnd","status","limit","offset"],"path":"/api/v2/sms/events","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listAllSmsMessages": {"action":"sms.messages.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","params":["group","dateStart","dateEnd","destination","country","status"],"path":"/api/v2/sms/messages","scope":{"group":{"at":"group","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listApp": {"action":"apps.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/apps/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "listApps": {"action":"apps.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/apps","scope":{}},
+      "listDefaultDomain": {"action":"domain.default.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/domain/default","scope":{}},
+      "listDomain": {"action":"domain.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/domain/{id}","path_patterns":{"id":"[^d].*|d(?:|[^e].*|e(?:|[^f].*|f(?:|[^a].*|a(?:|[^u].*|u(?:|[^l].*|l(?:|[^t].*|t.+))))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "listDomains": {"action":"domain.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/domain","scope":{}},
+      "listEmailTemplate": {"action":"email.templates.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/email/templates/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "listEmailTemplates": {"action":"email.templates.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/email/templates","scope":{}},
+      "listGroups": {"action":"groups.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","params":["channel"],"path":"/api/v2/groups","scope":{"channel":{"at":"channel","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listLogs": {"action":"logs.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","params":["dateStart","dateEnd","statusCode","httpMethod","route","limit","offset","order","orderBy"],"path":"/api/v2/logs","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listMultiChannel": {"action":"multi_channel.flow.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/multi-channel/flow/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "listMultiChannels": {"action":"multi_channel.flow.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/multi-channel/flow","scope":{}},
+      "listPushTemplate": {"action":"push.templates.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/push/templates/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "listPushTemplates": {"action":"push.templates.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/push/templates","scope":{}},
+      "listSingleEmailMessage": {"action":"email.messages.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/email/messages/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "listSingleSmsMessage": {"action":"sms.messages.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/sms/messages/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "listSmsTemplate": {"action":"sms.templates.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/sms/templates/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "listSmsTemplates": {"action":"sms.templates.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/sms/templates","scope":{}},
+      "listSupportedCountries": {"action":"utilities.supported_countries.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/utilities/supportedCountries","scope":{}},
+      "listWebHooks": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","params":["channel"],"path":"/api/v2/webhooks","scope":{"channel":{"at":"channel","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "oauthRevoke": {"action":"oauth.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.egoiapp.com","path":"/oauth/revoke","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "oauthRevoke.json.f8c38e7a5ec5": {"action":"oauth.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/oauth/revoke","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "oauthRevoke.none.a0d7e7da8b67": {"action":"oauth.admin","effects":["admin"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/oauth/revoke","scope":{}},
+      "oauthToken": {"action":"oauth.token.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.egoiapp.com","path":"/oauth/token","scope":{"client_id":{"at":"/client_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "oauthToken.json.c6abb808b790": {"action":"oauth.token.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/oauth/token","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "oauthToken.none.482accabfffa": {"action":"oauth.token.admin","effects":["admin"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/oauth/token","scope":{}},
+      "patchBaseField": {"action":"lists.fields.base.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/fields/base/{field_id}","scope":{"field_id":{"at":"field_id","from":"path"},"list_id":{"at":"list_id","from":"path"}}},
+      "patchContact": {"action":"lists.contacts.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/{contact_id}","scope":{"contact_id":{"at":"contact_id","from":"path"},"list_id":{"at":"list_id","from":"path"}}},
+      "patchEmailCampaign": {"action":"campaigns.email.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/campaigns/email/{campaign_hash}","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"}}},
+      "patchExtraField": {"action":"lists.fields.extra.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/fields/extra/{field_id}","scope":{"field_id":{"at":"field_id","from":"path"},"list_id":{"at":"list_id","from":"path"}}},
+      "patchPushCampaign": {"action":"campaigns.push.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/campaigns/push/{campaign_hash}","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"}}},
+      "patchSmartSmsCampaign": {"action":"campaigns.smart_sms.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/campaigns/smart-sms/{campaign_hash}","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"}}},
+      "patchSmsCampaign": {"action":"campaigns.sms.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/campaigns/sms/{campaign_hash}","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"}}},
+      "patchVoiceCampaign": {"action":"campaigns.voice.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/campaigns/voice/{campaign_hash}","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"}}},
+      "patchWebPushCampaign": {"action":"campaigns.web_push.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/campaigns/web-push/{campaign_hash}","scope":{"campaign_hash":{"at":"campaign_hash","from":"path"}}},
+      "ping": {"action":"ping.read","effects":["read"],"method":"POST","origin":"https://api.egoiapp.com","path":"/ping","scope":{}},
+      "ping.none.39665423b264": {"action":"ping.read","effects":["read"],"method":"GET","origin":"https://registered.egoiapp.com","path":"/ping","scope":{}},
+      "pingApi": {"action":"utilities.ping.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/utilities/ping","scope":{}},
+      "produceEmailReport": {"action":"email.reports.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","params":["group","groupBy","dateStart","dateEnd"],"path":"/api/v2/email/reports","scope":{"group":{"at":"group","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "produceLinkStats": {"action":"shortener.reports.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/shortener/reports/{link}","scope":{"link":{"at":"link","from":"path"}}},
+      "produceLinkStatsByDay": {"action":"shortener.reports.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","params":["dateStart","dateEnd"],"path":"/api/v2/shortener/reports","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "produceMultiChannelReport": {"action":"multichannel.reports.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","params":["group","groupBy","dateStart","dateEnd","destination"],"path":"/api/v2/multichannel/reports","scope":{"group":{"at":"group","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "produceSmsReport": {"action":"sms.reports.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","params":["group","groupBy","dateStart","dateEnd"],"path":"/api/v2/sms/reports","scope":{"group":{"at":"group","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "produceSmsReport_1": {"action":"push.reports.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","params":["group","dateStart","dateEnd"],"path":"/api/v2/push/reports","scope":{"group":{"at":"group","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "produceSubscriberInfo": {"action":"subscribers.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","params":["email","mobile"],"path":"/api/v2/subscribers","scope":{"email":{"at":"email","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "putEmailSender": {"action":"senders.email.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.egoiapp.com","path":"/senders/email/{sender_id}","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"sender_id":{"at":"sender_id","from":"path"}}},
+      "registerPushEvent": {"action":"push.apps.event.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/push/apps/{app_id}/event","scope":{"app_id":{"at":"app_id","from":"path"},"device_id":{"at":"/device_id","from":"body","type":"number"}}},
+      "registerPushToken": {"action":"push.apps.token.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/push/apps/{app_id}/token","scope":{"app_id":{"at":"app_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "removeAlertTemplate": {"action":"alert.template.delete","effects":["delete"],"method":"DELETE","origin":"https://slingshot.egoiapp.com","path":"/api/v2/alert/template/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "removeMultiChannel": {"action":"multi_channel.flow.delete","effects":["delete"],"method":"DELETE","origin":"https://slingshot.egoiapp.com","path":"/api/v2/multi-channel/flow/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "removeWebHook": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"https://slingshot.egoiapp.com","params":["url","channel"],"path":"/api/v2/webhooks","scope":{"channel":{"at":"channel","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"url":{"at":"url","from":"query"}}},
+      "requestVerifyEmail": {"action":"verify.request.email.send","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/verify/request/email","scope":{}},
+      "requestVerifyEmail.json.fb83119f9b12": {"action":"verify.request.email.send","body":"json","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/verify/request/email","scope":{"email":{"at":"/email","from":"body"},"group":{"at":"/group","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"senderId":{"at":"/senderId","from":"body","optional":true}}},
+      "requestVerifyPush": {"action":"verify.request.push.send","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/verify/request/push","scope":{}},
+      "requestVerifyPush.json.884377aca697": {"action":"verify.request.push.send","body":"json","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/verify/request/push","scope":{"apikey":{"at":"/apikey","from":"body"},"appId":{"at":"/appId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "requestVerifySms": {"action":"verify.request.sms.send","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/verify/request/sms","scope":{}},
+      "requestVerifySms.json.d3795a2ef126": {"action":"verify.request.sms.send","body":"json","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/verify/request/sms","scope":{"request":{"at":"","from":"body","type":"object"},"senderId":{"at":"/senderId","from":"body"}}},
+      "resendVerify": {"action":"verify.resend.send","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/verify/{id}/resend","scope":{"id":{"at":"id","from":"path"}}},
+      "searchContacts": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"https://api.egoiapp.com","params":["type","contact"],"path":"/contacts/search","scope":{}},
+      "sendEmailMessages": {"action":"email.messages.action.send.single.send","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/email/messages/action/send/single","scope":{}},
+      "sendEmailMessages.json.fba9b5c00fd0": {"action":"email.messages.action.send.single.send","body":"json","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/email/messages/action/send/single","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "sendEmailMessages_1": {"action":"email.messages.action.send.bulk.send","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/email/messages/action/send/bulk","scope":{}},
+      "sendEmailMessages_1.json.f00db6071e41": {"action":"email.messages.action.send.bulk.send","body":"json","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/email/messages/action/send/bulk","scope":{"request":{"at":"","from":"body","type":"array"}}},
+      "sendPushMessages": {"action":"push.messages.action.send","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/push/messages/action/send","scope":{}},
+      "sendPushMessages.json.475d28e72109": {"action":"push.messages.action.send","body":"json","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/push/messages/action/send","scope":{"request":{"at":"","from":"body","type":"array"}}},
+      "sendSmsMessages": {"action":"sms.messages.action.send.single.send","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/sms/messages/action/send/single","scope":{}},
+      "sendSmsMessages.json.00b8864d6328": {"action":"sms.messages.action.send.single.send","body":"json","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/sms/messages/action/send/single","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "sendSmsMessages_1": {"action":"sms.messages.action.send.bulk.send","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/sms/messages/action/send/bulk","scope":{}},
+      "sendSmsMessages_1.json.9165cb1171b1": {"action":"sms.messages.action.send.bulk.send","body":"json","effects":["send"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/sms/messages/action/send/bulk","scope":{"request":{"at":"","from":"body","type":"array"}}},
+      "shortenerActivate": {"action":"shortener.activate.admin","effects":["admin"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/shortener/activate","scope":{}},
+      "shortenerActivate.json.04b3cf3b907a": {"action":"shortener.activate.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/shortener/activate","scope":{"apikey":{"at":"/apikey","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "shortenerCreate": {"action":"shortener.write","effects":["write"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/shortener","scope":{}},
+      "shortenerCreate.json.fd6c6bd0e72a": {"action":"shortener.write","body":"json","effects":["write"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/shortener","scope":{"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "smsLengthCalculator": {"action":"utilities.sms_length_calculator.read","effects":["read"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/utilities/smsLengthCalculator","scope":{}},
+      "smsLengthCalculator.json.c60b1f04b5bc": {"action":"utilities.sms_length_calculator.read","body":"json","effects":["read"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/utilities/smsLengthCalculator","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "stopAlert": {"action":"alert.action.write","effects":["write"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/alert/action/stop","scope":{}},
+      "stopAlert.json.ba4051a14cd7": {"action":"alert.action.write","body":"json","effects":["write"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/alert/action/stop","scope":{"alertName":{"at":"/alertName","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateCampaignGroup": {"action":"campaign_groups.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.egoiapp.com","path":"/campaign-groups/{group_id}","scope":{"group_id":{"at":"group_id","from":"path"}}},
+      "updateContactByField": {"action":"lists.contacts.by_field.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/contacts/by-field","scope":{"list_id":{"at":"list_id","from":"path"}}},
+      "updateEmailTemplate": {"action":"email.templates.write","effects":["write"],"method":"PATCH","origin":"https://slingshot.egoiapp.com","path":"/api/v2/email/templates/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateEmailTemplate.json.dc0b23b6981f": {"action":"email.templates.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://slingshot.egoiapp.com","path":"/api/v2/email/templates/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"templateName":{"at":"/templateName","from":"body"}}},
+      "updateFieldOption": {"action":"lists.fields.extra.options.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/lists/{list_id}/fields/extra/{field_id}/options/{option_id}","scope":{"field_id":{"at":"field_id","from":"path"},"list_id":{"at":"list_id","from":"path"},"option_id":{"at":"option_id","from":"path"}}},
+      "updateList": {"action":"lists.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/lists/{list_id}","scope":{"list_id":{"at":"list_id","from":"path"}}},
+      "updateMultiChannelFlow": {"action":"multi_channel.flow.write","effects":["write"],"method":"PUT","origin":"https://slingshot.egoiapp.com","path":"/api/v2/multi-channel/flow/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateMultiChannelFlow.json.dc1f7b746aa9": {"action":"multi_channel.flow.write","body":"json","effects":["write"],"method":"PUT","origin":"https://slingshot.egoiapp.com","path":"/api/v2/multi-channel/flow/{id}","scope":{"group":{"at":"/group","from":"body"},"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateProduct": {"action":"catalogs.products.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.egoiapp.com","path":"/catalogs/{catalog_id}/products/{product_identifier}","scope":{"catalog_id":{"at":"catalog_id","from":"path"},"product_identifier":{"at":"product_identifier","from":"path"}}},
+      "updatePushTemplate": {"action":"push.templates.write","effects":["write"],"method":"PATCH","origin":"https://slingshot.egoiapp.com","path":"/api/v2/push/templates/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updatePushTemplate.json.483b37433b4c": {"action":"push.templates.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://slingshot.egoiapp.com","path":"/api/v2/push/templates/{id}","scope":{"appId":{"at":"/appId","from":"body"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"templateName":{"at":"/templateName","from":"body"}}},
+      "updateSmartLink": {"action":"smartlinks.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.egoiapp.com","path":"/smartlinks/{link_id}","scope":{"config_id":{"at":"/config_id","from":"body","type":"number"},"link_id":{"at":"link_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"url_slug":{"at":"/url_slug","from":"body"},"web_url":{"at":"/web_url","from":"body"}}},
+      "updateSmartLinkConfig": {"action":"smartlinks.configs.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.egoiapp.com","path":"/smartlinks/configs/{config_id}","scope":{"android_store_url":{"at":"/android_store_url","from":"body","optional":true},"cname":{"at":"/cname","from":"body"},"config_id":{"at":"config_id","from":"path"},"ios_store_url":{"at":"/ios_store_url","from":"body","optional":true},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateSmsTemplate": {"action":"sms.templates.write","effects":["write"],"method":"PATCH","origin":"https://slingshot.egoiapp.com","path":"/api/v2/sms/templates/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateSmsTemplate.json.4bf54dbcb035": {"action":"sms.templates.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://slingshot.egoiapp.com","path":"/api/v2/sms/templates/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"templateName":{"at":"/templateName","from":"body"}}},
+      "updateTag": {"action":"tags.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.egoiapp.com","path":"/tags/{tag_id}","scope":{"tag_id":{"at":"tag_id","from":"path"}}},
+      "validateDomain": {"action":"domain.read","effects":["read"],"method":"GET","origin":"https://slingshot.egoiapp.com","path":"/api/v2/domain/{id}/validate","scope":{"id":{"at":"id","from":"path"}}},
+      "validatePhone": {"action":"utilities.phone.read","effects":["read"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/utilities/validate-phone","scope":{}},
+      "validatePhone.json.a223eca91c65": {"action":"utilities.phone.read","body":"json","effects":["read"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/utilities/validate-phone","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "validateVerifyCode": {"action":"verify.write","effects":["write"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/verify/{id}/validate","scope":{"id":{"at":"id","from":"path"}}},
+      "validateVerifyCode.json.94f274b608ea": {"action":"verify.write","body":"json","effects":["write"],"method":"POST","origin":"https://slingshot.egoiapp.com","path":"/api/v2/verify/{id}/validate","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}}
     }
   }
 }

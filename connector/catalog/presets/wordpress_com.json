@@ -4,7 +4,12 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.wpcom-domain-restore-default-dns-records": {"title": "Wpcom domain restore default dns records", "effects": ["admin"]},
+      "use.wpcom-domain-set-mail-service": {"title": "Wpcom domain set mail service", "effects": ["admin"]},
+      "use.wpcom-domain-update-dns-records": {"title": "Wpcom domain update dns records", "effects": ["admin"]},
+      "use.wpcom-domain-update-nameservers": {"title": "Wpcom domain update nameservers", "effects": ["admin"]},
+      "use.wpcom-mcp-send-feedback": {"title": "Wpcom mcp send feedback", "effects": ["send"]}
     },
     "connection": {"mcp": {"url": "https://public-api.wordpress.com/wpcom/v2/mcp/v1"}},
     "fields": [

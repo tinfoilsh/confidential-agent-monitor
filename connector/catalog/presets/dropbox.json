@@ -1,14 +1,248 @@
 {
   "catalog": {
     "actions": {
+      "account": {
+        "title": "Account"
+      },
+      "account.photo": {
+        "title": "Photo"
+      },
+      "account.photo.read": {
+        "title": "Read"
+      },
+      "account.profile_photo": {
+        "title": "Profile photo"
+      },
+      "account.profile_photo.delete": {
+        "title": "Delete"
+      },
+      "account.profile_photo.write": {
+        "title": "Create and edit"
+      },
+      "auth": {
+        "title": "Auth"
+      },
+      "auth.token": {
+        "title": "Token"
+      },
+      "auth.token.admin": {
+        "title": "Manage"
+      },
+      "auth.token.from_oauth1": {
+        "title": "From oauth1"
+      },
+      "auth.token.from_oauth1.admin": {
+        "title": "Manage"
+      },
+      "check": {
+        "title": "Check"
+      },
+      "check.app": {
+        "title": "App"
+      },
+      "check.app.read": {
+        "title": "Read"
+      },
+      "check.user": {
+        "title": "Account"
+      },
+      "check.user.read": {
+        "title": "Read"
+      },
+      "contacts": {
+        "title": "Contacts"
+      },
+      "contacts.manual_contacts": {
+        "title": "Manual contacts"
+      },
+      "contacts.manual_contacts.delete": {
+        "title": "Delete"
+      },
+      "contacts.manual_contacts_batch": {
+        "title": "Manual contacts batch"
+      },
+      "contacts.manual_contacts_batch.delete": {
+        "title": "Delete"
+      },
+      "file_properties": {
+        "title": "File properties"
+      },
+      "file_properties.properties": {
+        "title": "Properties"
+      },
+      "file_properties.properties.delete": {
+        "title": "Delete"
+      },
+      "file_properties.properties.overwrite": {
+        "title": "Overwrite"
+      },
+      "file_properties.properties.overwrite.write": {
+        "title": "Create and edit"
+      },
+      "file_properties.properties.search": {
+        "title": "Search"
+      },
+      "file_properties.properties.search.continue": {
+        "title": "Continue"
+      },
+      "file_properties.properties.search.continue.read": {
+        "title": "Read"
+      },
+      "file_properties.properties.search.read": {
+        "title": "Read"
+      },
+      "file_properties.properties.write": {
+        "title": "Create and edit"
+      },
+      "file_properties.templates": {
+        "title": "Templates"
+      },
+      "file_properties.templates.for_team": {
+        "title": "For team"
+      },
+      "file_properties.templates.for_team.admin": {
+        "title": "Manage"
+      },
+      "file_properties.templates.for_team.delete": {
+        "title": "Delete"
+      },
+      "file_properties.templates.for_team.read": {
+        "title": "Read"
+      },
+      "file_properties.templates.for_user": {
+        "title": "For user"
+      },
+      "file_properties.templates.for_user.delete": {
+        "title": "Delete"
+      },
+      "file_properties.templates.for_user.read": {
+        "title": "Read"
+      },
+      "file_properties.templates.for_user.write": {
+        "title": "Create and edit"
+      },
+      "file_requests": {
+        "title": "File requests"
+      },
+      "file_requests.all_closed": {
+        "title": "All closed"
+      },
+      "file_requests.all_closed.delete": {
+        "title": "Delete"
+      },
+      "file_requests.count": {
+        "title": "Count"
+      },
+      "file_requests.count.read": {
+        "title": "Read"
+      },
+      "file_requests.delete": {
+        "title": "Delete"
+      },
+      "file_requests.list": {
+        "title": "List"
+      },
+      "file_requests.list.continue": {
+        "title": "Continue"
+      },
+      "file_requests.list.continue.read": {
+        "title": "Read"
+      },
+      "file_requests.list.read": {
+        "title": "Read"
+      },
+      "file_requests.read": {
+        "title": "Read"
+      },
+      "file_requests.v2": {
+        "title": "V2"
+      },
+      "file_requests.v2.read": {
+        "title": "Read"
+      },
+      "file_requests.write": {
+        "title": "Create and edit"
+      },
       "files": {
         "title": "Files"
+      },
+      "files.alpha": {
+        "title": "Alpha"
+      },
+      "files.alpha.metadata": {
+        "title": "Metadata"
+      },
+      "files.alpha.metadata.read": {
+        "title": "Read"
+      },
+      "files.alpha.write": {
+        "title": "Create and edit"
+      },
+      "files.copy_batch": {
+        "title": "Copy batch"
+      },
+      "files.copy_batch.read": {
+        "title": "Read"
+      },
+      "files.copy_batch.v2": {
+        "title": "V2"
+      },
+      "files.copy_batch.v2.read": {
+        "title": "Read"
+      },
+      "files.copy_batch.write": {
+        "title": "Create and edit"
+      },
+      "files.copy_reference": {
+        "title": "Copy reference"
+      },
+      "files.copy_reference.read": {
+        "title": "Read"
+      },
+      "files.copy_reference.save": {
+        "title": "Save"
+      },
+      "files.copy_reference.save.write": {
+        "title": "Create and edit"
+      },
+      "files.create_folder_batch": {
+        "title": "Create folder batch"
+      },
+      "files.create_folder_batch.read": {
+        "title": "Read"
+      },
+      "files.create_folder_batch.write": {
+        "title": "Create and edit"
+      },
+      "files.delete": {
+        "title": "Delete"
+      },
+      "files.delete_batch": {
+        "title": "Delete batch"
+      },
+      "files.delete_batch.delete": {
+        "title": "Delete"
+      },
+      "files.delete_batch.read": {
+        "title": "Read"
+      },
+      "files.file_batch": {
+        "title": "File batch"
+      },
+      "files.file_batch.write": {
+        "title": "Create and edit"
+      },
+      "files.file_lock_batch": {
+        "title": "File lock batch"
+      },
+      "files.file_lock_batch.read": {
+        "title": "Read"
       },
       "files.folder": {
         "title": "Folder"
       },
-      "files.folder.read": {
-        "title": "Read"
+      "files.folder.write": {
+        "title": "Create and edit"
       },
       "files.folder_v2": {
         "title": "Folder v2"
@@ -16,14 +250,206 @@
       "files.folder_v2.write": {
         "title": "Create and edit"
       },
+      "files.list_folder": {
+        "title": "List folder"
+      },
+      "files.list_folder.continue": {
+        "title": "Continue"
+      },
+      "files.list_folder.continue.read": {
+        "title": "Read"
+      },
+      "files.list_folder.latest_cursor": {
+        "title": "Latest cursor"
+      },
+      "files.list_folder.latest_cursor.read": {
+        "title": "Read"
+      },
+      "files.list_folder.longpoll": {
+        "title": "Longpoll"
+      },
+      "files.list_folder.longpoll.read": {
+        "title": "Read"
+      },
+      "files.list_folder.read": {
+        "title": "Read"
+      },
       "files.metadata": {
         "title": "Metadata"
       },
       "files.metadata.read": {
         "title": "Read"
       },
+      "files.move_batch": {
+        "title": "Move batch"
+      },
+      "files.move_batch.read": {
+        "title": "Read"
+      },
+      "files.move_batch.v2": {
+        "title": "V2"
+      },
+      "files.move_batch.v2.read": {
+        "title": "Read"
+      },
+      "files.move_batch.write": {
+        "title": "Create and edit"
+      },
+      "files.paper": {
+        "title": "Paper"
+      },
+      "files.paper.write": {
+        "title": "Create and edit"
+      },
+      "files.permanently_delete": {
+        "title": "Permanently delete"
+      },
+      "files.permanently_delete.delete": {
+        "title": "Delete"
+      },
+      "files.preview": {
+        "title": "Preview"
+      },
+      "files.preview.read": {
+        "title": "Read"
+      },
+      "files.properties": {
+        "title": "Properties"
+      },
+      "files.properties.overwrite": {
+        "title": "Overwrite"
+      },
+      "files.properties.overwrite.write": {
+        "title": "Create and edit"
+      },
+      "files.properties.write": {
+        "title": "Create and edit"
+      },
       "files.read": {
         "title": "Read"
+      },
+      "files.revisions": {
+        "title": "Revisions"
+      },
+      "files.revisions.read": {
+        "title": "Read"
+      },
+      "files.save_url": {
+        "title": "Save url"
+      },
+      "files.save_url.job_status": {
+        "title": "Job status"
+      },
+      "files.save_url.job_status.read": {
+        "title": "Read"
+      },
+      "files.save_url.write": {
+        "title": "Create and edit"
+      },
+      "files.search": {
+        "title": "Search"
+      },
+      "files.search.continue_v2": {
+        "title": "Continue v2"
+      },
+      "files.search.continue_v2.read": {
+        "title": "Read"
+      },
+      "files.search.read": {
+        "title": "Read"
+      },
+      "files.tags": {
+        "title": "Tags"
+      },
+      "files.tags.delete": {
+        "title": "Delete"
+      },
+      "files.tags.read": {
+        "title": "Read"
+      },
+      "files.tags.write": {
+        "title": "Create and edit"
+      },
+      "files.temporary_link": {
+        "title": "Temporary link"
+      },
+      "files.temporary_link.read": {
+        "title": "Read"
+      },
+      "files.temporary_upload_link": {
+        "title": "Temporary upload link"
+      },
+      "files.temporary_upload_link.write": {
+        "title": "Create and edit"
+      },
+      "files.thumbnail": {
+        "title": "Thumbnail"
+      },
+      "files.thumbnail.read": {
+        "title": "Read"
+      },
+      "files.thumbnail_batch": {
+        "title": "Thumbnail batch"
+      },
+      "files.thumbnail_batch.read": {
+        "title": "Read"
+      },
+      "files.thumbnail_v2": {
+        "title": "Thumbnail v2"
+      },
+      "files.thumbnail_v2.read": {
+        "title": "Read"
+      },
+      "files.upload_session": {
+        "title": "Upload session"
+      },
+      "files.upload_session.append": {
+        "title": "Append"
+      },
+      "files.upload_session.append.write": {
+        "title": "Create and edit"
+      },
+      "files.upload_session.append_batch": {
+        "title": "Append batch"
+      },
+      "files.upload_session.append_batch.write": {
+        "title": "Create and edit"
+      },
+      "files.upload_session.append_v2": {
+        "title": "Append v2"
+      },
+      "files.upload_session.append_v2.write": {
+        "title": "Create and edit"
+      },
+      "files.upload_session.batch": {
+        "title": "Batch"
+      },
+      "files.upload_session.batch.write": {
+        "title": "Create and edit"
+      },
+      "files.upload_session.finish": {
+        "title": "Finish"
+      },
+      "files.upload_session.finish.write": {
+        "title": "Create and edit"
+      },
+      "files.upload_session.finish_batch": {
+        "title": "Finish batch"
+      },
+      "files.upload_session.finish_batch.read": {
+        "title": "Read"
+      },
+      "files.upload_session.finish_batch.write": {
+        "title": "Create and edit"
+      },
+      "files.upload_session.finish_batch_v2": {
+        "title": "Finish batch v2"
+      },
+      "files.upload_session.finish_batch_v2.write": {
+        "title": "Create and edit"
+      },
+      "files.upload_session.write": {
+        "title": "Create and edit"
       },
       "files.v2": {
         "title": "V2"
@@ -31,21 +457,384 @@
       "files.v2.delete": {
         "title": "Delete"
       },
+      "files.v2.read": {
+        "title": "Read"
+      },
+      "files.v2.write": {
+        "title": "Create and edit"
+      },
       "files.write": {
+        "title": "Create and edit"
+      },
+      "files.zip": {
+        "title": "Zip"
+      },
+      "files.zip.read": {
+        "title": "Read"
+      },
+      "openid": {
+        "title": "Openid"
+      },
+      "openid.userinfo": {
+        "title": "Userinfo"
+      },
+      "openid.userinfo.read": {
+        "title": "Read"
+      },
+      "paper": {
+        "title": "Paper"
+      },
+      "paper.docs": {
+        "title": "Docs"
+      },
+      "paper.docs.delete": {
+        "title": "Delete"
+      },
+      "paper.docs.folder_info": {
+        "title": "Folder info"
+      },
+      "paper.docs.folder_info.read": {
+        "title": "Read"
+      },
+      "paper.docs.folder_users": {
+        "title": "Folder users"
+      },
+      "paper.docs.folder_users.list": {
+        "title": "List"
+      },
+      "paper.docs.folder_users.list.continue": {
+        "title": "Continue"
+      },
+      "paper.docs.folder_users.list.continue.read": {
+        "title": "Read"
+      },
+      "paper.docs.folder_users.list.read": {
+        "title": "Read"
+      },
+      "paper.docs.list": {
+        "title": "List"
+      },
+      "paper.docs.list.continue": {
+        "title": "Continue"
+      },
+      "paper.docs.list.continue.read": {
+        "title": "Read"
+      },
+      "paper.docs.list.read": {
+        "title": "Read"
+      },
+      "paper.docs.metadata": {
+        "title": "Metadata"
+      },
+      "paper.docs.metadata.read": {
+        "title": "Read"
+      },
+      "paper.docs.permanently_delete": {
+        "title": "Permanently delete"
+      },
+      "paper.docs.permanently_delete.delete": {
+        "title": "Delete"
+      },
+      "paper.docs.read": {
+        "title": "Read"
+      },
+      "paper.docs.sharing_policy": {
+        "title": "Sharing policy"
+      },
+      "paper.docs.sharing_policy.read": {
+        "title": "Read"
+      },
+      "paper.docs.sharing_policy.share": {
+        "title": "Share"
+      },
+      "paper.docs.users": {
+        "title": "Users"
+      },
+      "paper.docs.users.list": {
+        "title": "List"
+      },
+      "paper.docs.users.list.continue": {
+        "title": "Continue"
+      },
+      "paper.docs.users.list.continue.read": {
+        "title": "Read"
+      },
+      "paper.docs.users.list.read": {
+        "title": "Read"
+      },
+      "paper.docs.users.send": {
+        "title": "Send"
+      },
+      "paper.docs.users.share": {
+        "title": "Share"
+      },
+      "paper.docs.write": {
+        "title": "Create and edit"
+      },
+      "paper.folders": {
+        "title": "Folders"
+      },
+      "paper.folders.write": {
         "title": "Create and edit"
       },
       "sharing": {
         "title": "Sharing"
+      },
+      "sharing.access_inheritance": {
+        "title": "Access inheritance"
+      },
+      "sharing.access_inheritance.share": {
+        "title": "Share"
+      },
+      "sharing.file_member": {
+        "title": "File member"
+      },
+      "sharing.file_member.send": {
+        "title": "Send"
+      },
+      "sharing.file_member.share": {
+        "title": "Share"
+      },
+      "sharing.file_member_2": {
+        "title": "File member 2"
+      },
+      "sharing.file_member_2.share": {
+        "title": "Share"
+      },
+      "sharing.file_policy": {
+        "title": "File policy"
+      },
+      "sharing.file_policy.share": {
+        "title": "Share"
+      },
+      "sharing.folder": {
+        "title": "Folder"
+      },
+      "sharing.folder.admin": {
+        "title": "Manage"
+      },
+      "sharing.folder.share": {
+        "title": "Share"
+      },
+      "sharing.folder_member": {
+        "title": "Folder member"
+      },
+      "sharing.folder_member.send": {
+        "title": "Send"
+      },
+      "sharing.folder_member.share": {
+        "title": "Share"
+      },
+      "sharing.folder_metadata": {
+        "title": "Folder metadata"
+      },
+      "sharing.folder_metadata.read": {
+        "title": "Read"
+      },
+      "sharing.folder_policy": {
+        "title": "Folder policy"
+      },
+      "sharing.folder_policy.share": {
+        "title": "Share"
+      },
+      "sharing.get_file_metadata": {
+        "title": "Get file metadata"
+      },
+      "sharing.get_file_metadata.read": {
+        "title": "Read"
+      },
+      "sharing.job_status": {
+        "title": "Job status"
+      },
+      "sharing.job_status.read": {
+        "title": "Read"
+      },
+      "sharing.list_file_members": {
+        "title": "List file members"
+      },
+      "sharing.list_file_members.continue": {
+        "title": "Continue"
+      },
+      "sharing.list_file_members.continue.read": {
+        "title": "Read"
+      },
+      "sharing.list_file_members.read": {
+        "title": "Read"
+      },
+      "sharing.list_folder_members": {
+        "title": "List folder members"
+      },
+      "sharing.list_folder_members.continue": {
+        "title": "Continue"
+      },
+      "sharing.list_folder_members.continue.read": {
+        "title": "Read"
+      },
+      "sharing.list_folder_members.read": {
+        "title": "Read"
+      },
+      "sharing.list_folders": {
+        "title": "List folders"
+      },
+      "sharing.list_folders.continue": {
+        "title": "Continue"
+      },
+      "sharing.list_folders.continue.read": {
+        "title": "Read"
+      },
+      "sharing.list_folders.read": {
+        "title": "Read"
+      },
+      "sharing.list_mountable_folders": {
+        "title": "List mountable folders"
+      },
+      "sharing.list_mountable_folders.continue": {
+        "title": "Continue"
+      },
+      "sharing.list_mountable_folders.continue.read": {
+        "title": "Read"
+      },
+      "sharing.list_mountable_folders.read": {
+        "title": "Read"
+      },
+      "sharing.list_received_files": {
+        "title": "List received files"
+      },
+      "sharing.list_received_files.continue": {
+        "title": "Continue"
+      },
+      "sharing.list_received_files.continue.read": {
+        "title": "Read"
+      },
+      "sharing.list_received_files.read": {
+        "title": "Read"
+      },
+      "sharing.member_job_status": {
+        "title": "Member job status"
+      },
+      "sharing.member_job_status.read": {
+        "title": "Read"
+      },
+      "sharing.modify_shared_link_settings": {
+        "title": "Modify shared link settings"
+      },
+      "sharing.modify_shared_link_settings.share": {
+        "title": "Share"
+      },
+      "sharing.mount_folder": {
+        "title": "Mount folder"
+      },
+      "sharing.mount_folder.write": {
+        "title": "Create and edit"
+      },
+      "sharing.relinquish_access": {
+        "title": "Relinquish access"
+      },
+      "sharing.relinquish_access.write": {
+        "title": "Create and edit"
+      },
+      "sharing.relinquish_file_membership": {
+        "title": "Relinquish file membership"
+      },
+      "sharing.relinquish_file_membership.write": {
+        "title": "Create and edit"
+      },
+      "sharing.relinquish_folder_membership": {
+        "title": "Relinquish folder membership"
+      },
+      "sharing.relinquish_folder_membership.write": {
+        "title": "Create and edit"
+      },
+      "sharing.shared_link": {
+        "title": "Shared link"
+      },
+      "sharing.shared_link.share": {
+        "title": "Share"
+      },
+      "sharing.shared_link_file": {
+        "title": "Shared link file"
+      },
+      "sharing.shared_link_file.read": {
+        "title": "Read"
+      },
+      "sharing.shared_link_metadata": {
+        "title": "Shared link metadata"
+      },
+      "sharing.shared_link_metadata.read": {
+        "title": "Read"
       },
       "sharing.shared_link_with_settings": {
         "title": "Shared link with settings"
       },
       "sharing.shared_link_with_settings.share": {
         "title": "Share"
+      },
+      "sharing.shared_links": {
+        "title": "Shared links"
+      },
+      "sharing.shared_links.read": {
+        "title": "Read"
+      },
+      "sharing.unmount_folder": {
+        "title": "Unmount folder"
+      },
+      "sharing.unmount_folder.write": {
+        "title": "Create and edit"
+      },
+      "sharing.unshare_file": {
+        "title": "Unshare file"
+      },
+      "sharing.unshare_file.share": {
+        "title": "Share"
+      },
+      "sharing.unshare_folder": {
+        "title": "Unshare folder"
+      },
+      "sharing.unshare_folder.share": {
+        "title": "Share"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.account": {
+        "title": "Account"
+      },
+      "users.account.read": {
+        "title": "Read"
+      },
+      "users.account_batch": {
+        "title": "Account batch"
+      },
+      "users.account_batch.read": {
+        "title": "Read"
+      },
+      "users.current_account": {
+        "title": "Current account"
+      },
+      "users.current_account.read": {
+        "title": "Read"
+      },
+      "users.features": {
+        "title": "Features"
+      },
+      "users.features.values": {
+        "title": "Values"
+      },
+      "users.features.values.read": {
+        "title": "Read"
+      },
+      "users.space_usage": {
+        "title": "Space usage"
+      },
+      "users.space_usage.read": {
+        "title": "Read"
       }
     },
     "connection": {
       "http": {
+        "hosts": [
+          "notify.dropboxapi.com"
+        ],
         "slots": [
           {
             "header": "Authorization",
@@ -66,11 +855,20 @@
     },
     "fields": [
       {
+        "credential": true,
         "key": "token",
         "label": "Dropbox account",
-        "credential": true,
-        "secret": true,
-        "oauth": {"auth_url": "https://www.dropbox.com/oauth2/authorize", "token_url": "https://api.dropboxapi.com/oauth2/token", "client_id": "gajvr5hi10w0m66", "auth_style": "params", "loopback": true, "authorize_params": {"token_access_type": "offline"}}
+        "oauth": {
+          "auth_style": "params",
+          "auth_url": "https://www.dropbox.com/oauth2/authorize",
+          "authorize_params": {
+            "token_access_type": "offline"
+          },
+          "client_id": "gajvr5hi10w0m66",
+          "loopback": true,
+          "token_url": "https://api.dropboxapi.com/oauth2/token"
+        },
+        "secret": true
       }
     ],
     "group": "api"
@@ -78,13 +876,174 @@
   "title": "Dropbox",
   "http": {
     "operations": {
-      "files.create_folder_v2": {"action":"files.folder_v2.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/create_folder_v2","scope":{"folder":{"at":"","from":"body","type":"object"}}},
-      "files.delete_v2": {"action":"files.v2.delete","body":"json","effects":["delete"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/delete_v2","scope":{"path":{"at":"/path","from":"body"}}},
-      "files.download": {"action":"files.read","effects":["read"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/download","scope":{"path":{"at":"/path","from":"header_json","header":"Dropbox-Api-Arg"}}},
-      "files.get_metadata": {"action":"files.metadata.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/get_metadata","scope":{"path":{"at":"/path","from":"body"}}},
-      "files.list_folder": {"action":"files.folder.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/list_folder","scope":{"path":{"at":"/path","from":"body"}}},
-      "files.upload": {"action":"files.write","body":"any","effects":["write"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/upload","scope":{"arg":{"at":"","from":"header_json","header":"Dropbox-Api-Arg","type":"object"}}},
-      "sharing.create_shared_link_with_settings": {"action":"sharing.shared_link_with_settings.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/create_shared_link_with_settings","scope":{"settings":{"at":"","from":"body","type":"object"}}}
+      "accountDeleteProfilePhoto": {"action":"account.profile_photo.delete","body":"json","effects":["delete"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/account/delete_profile_photo","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "accountGetPhoto": {"action":"account.photo.read","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/account/get_photo","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "accountSetProfilePhoto": {"action":"account.profile_photo.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/account/set_profile_photo","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "authDeprecatedTokenFromOauth1": {"action":"auth.token.from_oauth1.admin","body":"json","effects":["admin"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/auth/token/from_oauth1","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "authTokenRevoke": {"action":"auth.token.admin","body":"any","effects":["admin"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/auth/token/revoke","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "checkApp": {"action":"check.app.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/check/app","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "checkUser": {"action":"check.user.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/check/user","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "contactsDeleteManualContacts": {"action":"contacts.manual_contacts.delete","body":"any","effects":["delete"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/contacts/delete_manual_contacts","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "contactsDeleteManualContactsBatch": {"action":"contacts.manual_contacts_batch.delete","body":"json","effects":["delete"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/contacts/delete_manual_contacts_batch","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filePropertiesPropertiesAdd": {"action":"file_properties.properties.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_properties/properties/add","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"property_groups":{"at":"/property_groups","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "filePropertiesPropertiesOverwrite": {"action":"file_properties.properties.overwrite.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_properties/properties/overwrite","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"property_groups":{"at":"/property_groups","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "filePropertiesPropertiesRemove": {"action":"file_properties.properties.delete","body":"json","effects":["delete"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_properties/properties/remove","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"property_template_ids":{"at":"/property_template_ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "filePropertiesPropertiesSearch": {"action":"file_properties.properties.search.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_properties/properties/search","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filePropertiesPropertiesSearchContinue": {"action":"file_properties.properties.search.continue.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_properties/properties/search/continue","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filePropertiesPropertiesUpdate": {"action":"file_properties.properties.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_properties/properties/update","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"update_property_groups":{"at":"/update_property_groups","from":"body","type":"array"}}},
+      "filePropertiesTeamTemplatesAddForTeam": {"action":"file_properties.templates.for_team.admin","body":"json","effects":["admin"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_properties/templates/add_for_team","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filePropertiesTeamTemplatesGetForTeam": {"action":"file_properties.templates.for_team.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_properties/templates/get_for_team","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"/template_id","from":"body"}}},
+      "filePropertiesTeamTemplatesListForTeam": {"action":"file_properties.templates.for_team.read","body":"any","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_properties/templates/list_for_team","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "filePropertiesTeamTemplatesRemoveForTeam": {"action":"file_properties.templates.for_team.delete","body":"json","effects":["delete","admin"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_properties/templates/remove_for_team","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"/template_id","from":"body"}}},
+      "filePropertiesTeamTemplatesUpdateForTeam": {"action":"file_properties.templates.for_team.admin","body":"json","effects":["admin"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_properties/templates/update_for_team","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"/template_id","from":"body"}}},
+      "filePropertiesTemplatesAddForUser": {"action":"file_properties.templates.for_user.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_properties/templates/add_for_user","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filePropertiesTemplatesGetForUser": {"action":"file_properties.templates.for_user.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_properties/templates/get_for_user","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"/template_id","from":"body"}}},
+      "filePropertiesTemplatesListForUser": {"action":"file_properties.templates.for_user.read","body":"any","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_properties/templates/list_for_user","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "filePropertiesTemplatesRemoveForUser": {"action":"file_properties.templates.for_user.delete","body":"json","effects":["delete"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_properties/templates/remove_for_user","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"/template_id","from":"body"}}},
+      "filePropertiesTemplatesUpdateForUser": {"action":"file_properties.templates.for_user.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_properties/templates/update_for_user","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"/template_id","from":"body"}}},
+      "fileRequestsCount": {"action":"file_requests.count.read","body":"any","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_requests/count","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "fileRequestsCreate": {"action":"file_requests.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_requests/create","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "fileRequestsDelete": {"action":"file_requests.delete","body":"json","effects":["delete"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_requests/delete","scope":{"ids":{"at":"/ids","from":"body","type":"array"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "fileRequestsDeleteAllClosed": {"action":"file_requests.all_closed.delete","body":"any","effects":["delete"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_requests/delete_all_closed","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "fileRequestsGet": {"action":"file_requests.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_requests/get","scope":{"id":{"at":"/id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "fileRequestsList": {"action":"file_requests.list.read","body":"any","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_requests/list","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "fileRequestsListContinue": {"action":"file_requests.list.continue.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_requests/list/continue","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "fileRequestsListV2": {"action":"file_requests.v2.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_requests/list_v2","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "fileRequestsUpdate": {"action":"file_requests.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/file_requests/update","scope":{"id":{"at":"/id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "files.create_folder_v2": {"action":"files.folder_v2.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/create_folder_v2","scope":{"folder":{"at":"","from":"body","type":"object"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "files.delete_v2": {"action":"files.v2.delete","body":"json","effects":["delete"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/delete_v2","scope":{"path":{"at":"/path","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "files.download": {"action":"files.read","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/download","scope":{"path":{"at":"/path","from":"header_json","header":"Dropbox-Api-Arg"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "files.get_metadata": {"action":"files.metadata.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/get_metadata","scope":{"path":{"at":"/path","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "files.list_folder": {"action":"files.list_folder.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/list_folder","scope":{"path":{"at":"/path","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "files.upload": {"action":"files.write","body":"any","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/upload","scope":{"arg":{"at":"","from":"header_json","header":"Dropbox-Api-Arg","type":"object"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "filesCopyBatchCheckV2": {"action":"files.copy_batch.v2.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/copy_batch/check_v2","scope":{"async_job_id":{"at":"/async_job_id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesCopyBatchV2": {"action":"files.v2.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/copy_batch_v2","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesCopyReferenceGet": {"action":"files.copy_reference.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/copy_reference/get","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesCopyReferenceSave": {"action":"files.copy_reference.save.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/copy_reference/save","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesCopyV2": {"action":"files.v2.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/copy_v2","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesCreateFolderBatch": {"action":"files.create_folder_batch.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/create_folder_batch","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesCreateFolderBatchCheck": {"action":"files.create_folder_batch.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/create_folder_batch/check","scope":{"async_job_id":{"at":"/async_job_id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesDeleteBatch": {"action":"files.delete_batch.delete","body":"json","effects":["delete"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/delete_batch","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesDeleteBatchCheck": {"action":"files.delete_batch.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/delete_batch/check","scope":{"async_job_id":{"at":"/async_job_id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesDeprecatedAlphaGetMetadata": {"action":"files.alpha.metadata.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/alpha/get_metadata","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesDeprecatedAlphaUpload": {"action":"files.alpha.write","body":"any","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/alpha/upload","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "filesDeprecatedCopy": {"action":"files.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/copy","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesDeprecatedCopyBatch": {"action":"files.copy_batch.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/copy_batch","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesDeprecatedCopyBatchCheck": {"action":"files.copy_batch.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/copy_batch/check","scope":{"async_job_id":{"at":"/async_job_id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesDeprecatedCreateFolder": {"action":"files.folder.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/create_folder","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesDeprecatedDelete": {"action":"files.delete","body":"json","effects":["delete"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/delete","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesDeprecatedMove": {"action":"files.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/move","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesDeprecatedMoveBatch": {"action":"files.move_batch.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/move_batch","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesDeprecatedMoveBatchCheck": {"action":"files.move_batch.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/move_batch/check","scope":{"async_job_id":{"at":"/async_job_id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesDeprecatedPropertiesAdd": {"action":"files.properties.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/properties/add","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"property_groups":{"at":"/property_groups","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesDeprecatedPropertiesOverwrite": {"action":"files.properties.overwrite.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/properties/overwrite","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"property_groups":{"at":"/property_groups","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesDeprecatedPropertiesUpdate": {"action":"files.properties.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/properties/update","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"update_property_groups":{"at":"/update_property_groups","from":"body","type":"array"}}},
+      "filesDeprecatedSearch": {"action":"files.search.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/search","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesDeprecatedUploadSessionAppend": {"action":"files.upload_session.append.write","body":"any","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/upload_session/append","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "filesDeprecatedUploadSessionFinishBatch": {"action":"files.upload_session.finish_batch.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/upload_session/finish_batch","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesDownloadZip": {"action":"files.zip.read","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/download_zip","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "filesExport": {"action":"files.read","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/export","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "filesGetFileLockBatch": {"action":"files.file_lock_batch.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/get_file_lock_batch","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesGetPreview": {"action":"files.preview.read","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/get_preview","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "filesGetTemporaryLink": {"action":"files.temporary_link.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/get_temporary_link","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesGetTemporaryUploadLink": {"action":"files.temporary_upload_link.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/get_temporary_upload_link","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesGetThumbnail": {"action":"files.thumbnail.read","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/get_thumbnail","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "filesGetThumbnailBatch": {"action":"files.thumbnail_batch.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/get_thumbnail_batch","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesGetThumbnailV2": {"action":"files.thumbnail_v2.read","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/get_thumbnail_v2","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "filesListFolderContinue": {"action":"files.list_folder.continue.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/list_folder/continue","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesListFolderGetLatestCursor": {"action":"files.list_folder.latest_cursor.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/list_folder/get_latest_cursor","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesListFolderLongpoll": {"action":"files.list_folder.longpoll.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://notify.dropboxapi.com","path":"/2/files/list_folder/longpoll","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesListRevisions": {"action":"files.revisions.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/list_revisions","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesLockFileBatch": {"action":"files.file_batch.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/lock_file_batch","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesMoveBatchCheckV2": {"action":"files.move_batch.v2.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/move_batch/check_v2","scope":{"async_job_id":{"at":"/async_job_id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesMoveBatchV2": {"action":"files.v2.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/move_batch_v2","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesMoveV2": {"action":"files.v2.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/move_v2","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesPaperCreate": {"action":"files.paper.write","body":"any","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/paper/create","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "filesPaperUpdate": {"action":"files.paper.write","body":"any","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/paper/update","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "filesPermanentlyDelete": {"action":"files.permanently_delete.delete","body":"json","effects":["delete"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/permanently_delete","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesRestore": {"action":"files.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/restore","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesSaveUrl": {"action":"files.save_url.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/save_url","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"url":{"at":"/url","from":"body"}}},
+      "filesSaveUrlCheckJobStatus": {"action":"files.save_url.job_status.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/save_url/check_job_status","scope":{"async_job_id":{"at":"/async_job_id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesSearchContinueV2": {"action":"files.search.continue_v2.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/search/continue_v2","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesSearchV2": {"action":"files.v2.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/search_v2","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesTagsAdd": {"action":"files.tags.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/tags/add","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesTagsGet": {"action":"files.tags.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/tags/get","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesTagsRemove": {"action":"files.tags.delete","body":"json","effects":["delete"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/tags/remove","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesUnlockFileBatch": {"action":"files.file_batch.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/unlock_file_batch","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesUploadSessionAppendBatch": {"action":"files.upload_session.append_batch.write","body":"any","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/upload_session/append_batch","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "filesUploadSessionAppendV2": {"action":"files.upload_session.append_v2.write","body":"any","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/upload_session/append_v2","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "filesUploadSessionFinish": {"action":"files.upload_session.finish.write","body":"any","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/upload_session/finish","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "filesUploadSessionFinishBatchCheck": {"action":"files.upload_session.finish_batch.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/upload_session/finish_batch/check","scope":{"async_job_id":{"at":"/async_job_id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesUploadSessionFinishBatchV2": {"action":"files.upload_session.finish_batch_v2.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/upload_session/finish_batch_v2","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "filesUploadSessionStart": {"action":"files.upload_session.write","body":"any","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/upload_session/start","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "filesUploadSessionStartBatch": {"action":"files.upload_session.batch.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/upload_session/start_batch","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "openidUserinfo": {"action":"openid.userinfo.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/openid/userinfo","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "paperDeprecatedDocsArchive": {"action":"paper.docs.delete","body":"json","effects":["delete"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/docs/archive","scope":{"doc_id":{"at":"/doc_id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "paperDeprecatedDocsCreate": {"action":"paper.docs.write","body":"any","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/docs/create","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "paperDeprecatedDocsDownload": {"action":"paper.docs.read","body":"any","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/docs/download","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "paperDeprecatedDocsFolderUsersList": {"action":"paper.docs.folder_users.list.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/docs/folder_users/list","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "paperDeprecatedDocsFolderUsersListContinue": {"action":"paper.docs.folder_users.list.continue.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/docs/folder_users/list/continue","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "paperDeprecatedDocsGetFolderInfo": {"action":"paper.docs.folder_info.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/docs/get_folder_info","scope":{"doc_id":{"at":"/doc_id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "paperDeprecatedDocsList": {"action":"paper.docs.list.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/docs/list","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "paperDeprecatedDocsListContinue": {"action":"paper.docs.list.continue.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/docs/list/continue","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "paperDeprecatedDocsPermanentlyDelete": {"action":"paper.docs.permanently_delete.delete","body":"json","effects":["delete"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/docs/permanently_delete","scope":{"doc_id":{"at":"/doc_id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "paperDeprecatedDocsSharingPolicyGet": {"action":"paper.docs.sharing_policy.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/docs/sharing_policy/get","scope":{"doc_id":{"at":"/doc_id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "paperDeprecatedDocsSharingPolicySet": {"action":"paper.docs.sharing_policy.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/docs/sharing_policy/set","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "paperDeprecatedDocsUpdate": {"action":"paper.docs.write","body":"any","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/docs/update","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "paperDeprecatedDocsUsersAdd": {"action":"paper.docs.users.send","body":"json","effects":["send","share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/docs/users/add","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "paperDeprecatedDocsUsersList": {"action":"paper.docs.users.list.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/docs/users/list","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "paperDeprecatedDocsUsersListContinue": {"action":"paper.docs.users.list.continue.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/docs/users/list/continue","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "paperDeprecatedDocsUsersRemove": {"action":"paper.docs.users.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/docs/users/remove","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "paperDeprecatedFoldersCreate": {"action":"paper.folders.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/folders/create","scope":{"name":{"at":"/name","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "paperDocsGetMetadata": {"action":"paper.docs.metadata.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/paper/docs/get_metadata","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharing.create_shared_link_with_settings": {"action":"sharing.shared_link_with_settings.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/create_shared_link_with_settings","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"settings":{"at":"","from":"body","type":"object"}}},
+      "sharingAddFileMember": {"action":"sharing.file_member.send","body":"json","effects":["send","share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/add_file_member","scope":{"file":{"at":"/file","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingAddFolderMember": {"action":"sharing.folder_member.send","body":"json","effects":["send","share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/add_folder_member","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"shared_folder_id":{"at":"/shared_folder_id","from":"body"}}},
+      "sharingCheckJobStatus": {"action":"sharing.job_status.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/check_job_status","scope":{"async_job_id":{"at":"/async_job_id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingCheckRemoveMemberJobStatus": {"action":"sharing.member_job_status.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/check_remove_member_job_status","scope":{"async_job_id":{"at":"/async_job_id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingCheckShareJobStatus": {"action":"sharing.job_status.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/check_share_job_status","scope":{"async_job_id":{"at":"/async_job_id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingDeprecatedCreateSharedLink": {"action":"sharing.shared_link.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/create_shared_link","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingDeprecatedGetSharedLinks": {"action":"sharing.shared_links.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/get_shared_links","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingGetFileMetadata": {"action":"sharing.get_file_metadata.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/get_file_metadata","scope":{"file":{"at":"/file","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingGetFileMetadataBatch": {"action":"sharing.get_file_metadata.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/get_file_metadata/batch","scope":{"files":{"at":"/files","from":"body","type":"array"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingGetFolderMetadata": {"action":"sharing.folder_metadata.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/get_folder_metadata","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"shared_folder_id":{"at":"/shared_folder_id","from":"body"}}},
+      "sharingGetSharedLinkFile": {"action":"sharing.shared_link_file.read","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/sharing/get_shared_link_file","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "sharingGetSharedLinkMetadata": {"action":"sharing.shared_link_metadata.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/get_shared_link_metadata","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"url":{"at":"/url","from":"body"}}},
+      "sharingListFileMembers": {"action":"sharing.list_file_members.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/list_file_members","scope":{"file":{"at":"/file","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingListFileMembersBatch": {"action":"sharing.list_file_members.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/list_file_members/batch","scope":{"files":{"at":"/files","from":"body","type":"array"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingListFileMembersContinue": {"action":"sharing.list_file_members.continue.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/list_file_members/continue","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingListFolderMembers": {"action":"sharing.list_folder_members.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/list_folder_members","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingListFolderMembersContinue": {"action":"sharing.list_folder_members.continue.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/list_folder_members/continue","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingListFolders": {"action":"sharing.list_folders.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/list_folders","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingListFoldersContinue": {"action":"sharing.list_folders.continue.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/list_folders/continue","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingListMountableFolders": {"action":"sharing.list_mountable_folders.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/list_mountable_folders","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingListMountableFoldersContinue": {"action":"sharing.list_mountable_folders.continue.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/list_mountable_folders/continue","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingListReceivedFiles": {"action":"sharing.list_received_files.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/list_received_files","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingListReceivedFilesContinue": {"action":"sharing.list_received_files.continue.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/list_received_files/continue","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingListSharedLinks": {"action":"sharing.shared_links.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/list_shared_links","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingModifySharedLinkSettings": {"action":"sharing.modify_shared_link_settings.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/modify_shared_link_settings","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"url":{"at":"/url","from":"body"}}},
+      "sharingMountFolder": {"action":"sharing.mount_folder.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/mount_folder","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"shared_folder_id":{"at":"/shared_folder_id","from":"body"}}},
+      "sharingRelinquishAccess": {"action":"sharing.relinquish_access.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/relinquish_access","scope":{"file_id":{"at":"/file_id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingRelinquishFileMembership": {"action":"sharing.relinquish_file_membership.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/relinquish_file_membership","scope":{"file":{"at":"/file","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingRelinquishFolderMembership": {"action":"sharing.relinquish_folder_membership.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/relinquish_folder_membership","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"shared_folder_id":{"at":"/shared_folder_id","from":"body"}}},
+      "sharingRemoveFileMember2": {"action":"sharing.file_member_2.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/remove_file_member_2","scope":{"file":{"at":"/file","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingRemoveFolderMember": {"action":"sharing.folder_member.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/remove_folder_member","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"shared_folder_id":{"at":"/shared_folder_id","from":"body"}}},
+      "sharingRevokeSharedLink": {"action":"sharing.shared_link.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/revoke_shared_link","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"url":{"at":"/url","from":"body"}}},
+      "sharingSetAccessInheritance": {"action":"sharing.access_inheritance.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/set_access_inheritance","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"shared_folder_id":{"at":"/shared_folder_id","from":"body"}}},
+      "sharingShareFolder": {"action":"sharing.folder.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/share_folder","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingTransferFolder": {"action":"sharing.folder.admin","body":"json","effects":["admin","share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/transfer_folder","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"shared_folder_id":{"at":"/shared_folder_id","from":"body"},"to_dropbox_id":{"at":"/to_dropbox_id","from":"body"}}},
+      "sharingUnmountFolder": {"action":"sharing.unmount_folder.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/unmount_folder","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"shared_folder_id":{"at":"/shared_folder_id","from":"body"}}},
+      "sharingUnshareFile": {"action":"sharing.unshare_file.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/unshare_file","scope":{"file":{"at":"/file","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingUnshareFolder": {"action":"sharing.unshare_folder.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/unshare_folder","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"shared_folder_id":{"at":"/shared_folder_id","from":"body"}}},
+      "sharingUpdateFileMember": {"action":"sharing.file_member.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/update_file_member","scope":{"file":{"at":"/file","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingUpdateFilePolicy": {"action":"sharing.file_policy.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/update_file_policy","scope":{"file":{"at":"/file","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "sharingUpdateFolderMember": {"action":"sharing.folder_member.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/update_folder_member","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"shared_folder_id":{"at":"/shared_folder_id","from":"body"}}},
+      "sharingUpdateFolderPolicy": {"action":"sharing.folder_policy.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/update_folder_policy","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"},"shared_folder_id":{"at":"/shared_folder_id","from":"body"}}},
+      "usersFeaturesGetValues": {"action":"users.features.values.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/users/features/get_values","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "usersGetAccount": {"action":"users.account.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/users/get_account","scope":{"account_id":{"at":"/account_id","from":"body"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "usersGetAccountBatch": {"action":"users.account_batch.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/users/get_account_batch","scope":{"account_ids":{"at":"/account_ids","from":"body","type":"array"},"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "usersGetCurrentAccount": {"action":"users.current_account.read","body":"any","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/users/get_current_account","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}},
+      "usersGetSpaceUsage": {"action":"users.space_usage.read","body":"any","effects":["read"],"headers":{"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/users/get_space_usage","scope":{"path_root":{"at":"","from":"header_json","header":"Dropbox-Api-Path-Root","optional":true,"type":"object"}}}
     }
   }
 }

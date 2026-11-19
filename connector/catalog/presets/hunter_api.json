@@ -1,238 +1,804 @@
 {
-  "title": "Hunter",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.hunter.io", "path": "/v2", "query": "api_key"}]}},
     "actions": {
-      "admin.account": {"title": "Admin: account"},
-      "admin.webhooks": {"title": "Admin: webhooks"},
-      "delete.api_keys": {"title": "Delete: api keys"},
-      "delete.companies": {"title": "Delete: companies"},
-      "delete.company_lists": {"title": "Delete: company lists"},
-      "delete.company_tags": {"title": "Delete: company tags"},
-      "delete.delete": {"title": "Delete: delete"},
-      "delete.folders": {"title": "Delete: folders"},
-      "delete.follow_ups": {"title": "Delete: follow ups"},
-      "delete.leads": {"title": "Delete: leads"},
-      "delete.leads_custom_attributes": {"title": "Delete: leads custom attributes"},
-      "delete.leads_lists": {"title": "Delete: leads lists"},
-      "delete.message_templates": {"title": "Delete: message templates"},
-      "delete.recipients": {"title": "Delete: recipients"},
-      "delete.sequences": {"title": "Delete: sequences"},
-      "delete.tags": {"title": "Delete: tags"},
-      "delete.views": {"title": "Delete: views"},
-      "delete.webhooks": {"title": "Delete: webhooks"},
-      "read": {"title": "Read everything the account can see"},
-      "send.messages": {"title": "Send: messages"},
-      "write.api_keys": {"title": "Write: api keys"},
-      "write.bulk": {"title": "Write: bulk"},
-      "write.campaigns": {"title": "Write: campaigns"},
-      "write.companies": {"title": "Write: companies"},
-      "write.company_lists": {"title": "Write: company lists"},
-      "write.company_tags": {"title": "Write: company tags"},
-      "write.copy": {"title": "Write: copy"},
-      "write.discover": {"title": "Write: discover"},
-      "write.email_accounts": {"title": "Write: email accounts"},
-      "write.enrich": {"title": "Write: enrich"},
-      "write.favorite": {"title": "Write: favorite"},
-      "write.feedback": {"title": "Write: feedback"},
-      "write.folders": {"title": "Write: folders"},
-      "write.follow_ups": {"title": "Write: follow ups"},
-      "write.leads": {"title": "Write: leads"},
-      "write.leads_custom_attributes": {"title": "Write: leads custom attributes"},
-      "write.leads_imports": {"title": "Write: leads imports"},
-      "write.leads_lists": {"title": "Write: leads lists"},
-      "write.message_templates": {"title": "Write: message templates"},
-      "write.move": {"title": "Write: move"},
-      "write.multi_domain_search": {"title": "Write: multi domain search"},
-      "write.people": {"title": "Write: people"},
-      "write.push": {"title": "Write: push"},
-      "write.recipients": {"title": "Write: recipients"},
-      "write.reveal": {"title": "Write: reveal"},
-      "write.sequences": {"title": "Write: sequences"},
-      "write.tag": {"title": "Write: tag"},
-      "write.tags": {"title": "Write: tags"},
-      "write.views": {"title": "Write: views"}
-    }
+      "account": {
+        "title": "Account"
+      },
+      "account.admin": {
+        "title": "Manage"
+      },
+      "account.read": {
+        "title": "Read"
+      },
+      "account_stats": {
+        "title": "Account stats"
+      },
+      "account_stats.read": {
+        "title": "Read"
+      },
+      "api_keys": {
+        "title": "Api keys"
+      },
+      "api_keys.delete": {
+        "title": "Delete"
+      },
+      "api_keys.read": {
+        "title": "Read"
+      },
+      "api_keys.write": {
+        "title": "Create and edit"
+      },
+      "briefing": {
+        "title": "Briefing"
+      },
+      "briefing.read": {
+        "title": "Read"
+      },
+      "campaigns": {
+        "title": "Campaigns"
+      },
+      "campaigns.follow_ups": {
+        "title": "Follow ups"
+      },
+      "campaigns.follow_ups.read": {
+        "title": "Read"
+      },
+      "campaigns.follow_ups.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.read": {
+        "title": "Read"
+      },
+      "campaigns.recipients": {
+        "title": "Recipients"
+      },
+      "campaigns.recipients.delete": {
+        "title": "Delete"
+      },
+      "campaigns.recipients.read": {
+        "title": "Read"
+      },
+      "campaigns.recipients.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.write": {
+        "title": "Create and edit"
+      },
+      "combined": {
+        "title": "Combined"
+      },
+      "combined.read": {
+        "title": "Read"
+      },
+      "companies": {
+        "title": "Companies"
+      },
+      "companies.bulk": {
+        "title": "Bulk"
+      },
+      "companies.bulk.delete": {
+        "title": "Delete"
+      },
+      "companies.bulk.tag": {
+        "title": "Tag"
+      },
+      "companies.bulk.tag.write": {
+        "title": "Create and edit"
+      },
+      "companies.bulk.write": {
+        "title": "Create and edit"
+      },
+      "companies.delete": {
+        "title": "Delete"
+      },
+      "companies.read": {
+        "title": "Read"
+      },
+      "companies.tags": {
+        "title": "Tags"
+      },
+      "companies.tags.delete": {
+        "title": "Delete"
+      },
+      "companies.tags.write": {
+        "title": "Create and edit"
+      },
+      "companies.write": {
+        "title": "Create and edit"
+      },
+      "company_lists": {
+        "title": "Company lists"
+      },
+      "company_lists.companies": {
+        "title": "Companies"
+      },
+      "company_lists.companies.delete": {
+        "title": "Delete"
+      },
+      "company_lists.companies.write": {
+        "title": "Create and edit"
+      },
+      "company_lists.delete": {
+        "title": "Delete"
+      },
+      "company_lists.favorite": {
+        "title": "Favorite"
+      },
+      "company_lists.favorite.delete": {
+        "title": "Delete"
+      },
+      "company_lists.favorite.write": {
+        "title": "Create and edit"
+      },
+      "company_lists.folders": {
+        "title": "Folders"
+      },
+      "company_lists.folders.delete": {
+        "title": "Delete"
+      },
+      "company_lists.folders.read": {
+        "title": "Read"
+      },
+      "company_lists.folders.write": {
+        "title": "Create and edit"
+      },
+      "company_lists.read": {
+        "title": "Read"
+      },
+      "company_lists.write": {
+        "title": "Create and edit"
+      },
+      "company_tags": {
+        "title": "Company tags"
+      },
+      "company_tags.delete": {
+        "title": "Delete"
+      },
+      "company_tags.read": {
+        "title": "Read"
+      },
+      "company_tags.write": {
+        "title": "Create and edit"
+      },
+      "connected_apps": {
+        "title": "Connected apps"
+      },
+      "connected_apps.push": {
+        "title": "Push commits"
+      },
+      "connected_apps.push.send": {
+        "title": "Send"
+      },
+      "connected_apps.read": {
+        "title": "Read"
+      },
+      "discover": {
+        "title": "Discover"
+      },
+      "discover.people": {
+        "title": "People"
+      },
+      "discover.people.read": {
+        "title": "Read"
+      },
+      "discover.people.write": {
+        "title": "Create and edit"
+      },
+      "discover.views": {
+        "title": "Views"
+      },
+      "discover.views.delete": {
+        "title": "Delete"
+      },
+      "discover.views.read": {
+        "title": "Read"
+      },
+      "discover.views.write": {
+        "title": "Create and edit"
+      },
+      "discover.write": {
+        "title": "Create and edit"
+      },
+      "domain_count": {
+        "title": "Domain count"
+      },
+      "domain_count.read": {
+        "title": "Read"
+      },
+      "domain_finder": {
+        "title": "Domain finder"
+      },
+      "domain_finder.read": {
+        "title": "Read"
+      },
+      "domain_search": {
+        "title": "Domain search"
+      },
+      "domain_search.read": {
+        "title": "Read"
+      },
+      "domains_suggestion": {
+        "title": "Domains suggestion"
+      },
+      "domains_suggestion.read": {
+        "title": "Read"
+      },
+      "email_accounts": {
+        "title": "Email accounts"
+      },
+      "email_accounts.capacities": {
+        "title": "Capacities"
+      },
+      "email_accounts.capacities.read": {
+        "title": "Read"
+      },
+      "email_accounts.health_report": {
+        "title": "Health report"
+      },
+      "email_accounts.health_report.read": {
+        "title": "Read"
+      },
+      "email_accounts.read": {
+        "title": "Read"
+      },
+      "email_accounts.sequences": {
+        "title": "Sequences"
+      },
+      "email_accounts.sequences.read": {
+        "title": "Read"
+      },
+      "email_accounts.usage": {
+        "title": "Usage"
+      },
+      "email_accounts.usage.read": {
+        "title": "Read"
+      },
+      "email_accounts.warmup_report": {
+        "title": "Warmup report"
+      },
+      "email_accounts.warmup_report.read": {
+        "title": "Read"
+      },
+      "email_accounts.write": {
+        "title": "Create and edit"
+      },
+      "email_count": {
+        "title": "Email count"
+      },
+      "email_count.read": {
+        "title": "Read"
+      },
+      "email_finder": {
+        "title": "Email finder"
+      },
+      "email_finder.found": {
+        "title": "Found"
+      },
+      "email_finder.found.read": {
+        "title": "Read"
+      },
+      "email_finder.read": {
+        "title": "Read"
+      },
+      "email_insight": {
+        "title": "Email insight"
+      },
+      "email_insight.read": {
+        "title": "Read"
+      },
+      "email_verifier": {
+        "title": "Email verifier"
+      },
+      "email_verifier.read": {
+        "title": "Read"
+      },
+      "feedback": {
+        "title": "Feedback"
+      },
+      "feedback.write": {
+        "title": "Create and edit"
+      },
+      "leads": {
+        "title": "Leads"
+      },
+      "leads.bulk": {
+        "title": "Bulk"
+      },
+      "leads.bulk.delete": {
+        "title": "Delete"
+      },
+      "leads.bulk.exist": {
+        "title": "Exist"
+      },
+      "leads.bulk.exist.read": {
+        "title": "Read"
+      },
+      "leads.bulk.write": {
+        "title": "Create and edit"
+      },
+      "leads.delete": {
+        "title": "Delete"
+      },
+      "leads.enrich": {
+        "title": "Enrich"
+      },
+      "leads.enrich.write": {
+        "title": "Create and edit"
+      },
+      "leads.exist": {
+        "title": "Exist"
+      },
+      "leads.exist.read": {
+        "title": "Read"
+      },
+      "leads.read": {
+        "title": "Read"
+      },
+      "leads.tags": {
+        "title": "Tags"
+      },
+      "leads.tags.delete": {
+        "title": "Delete"
+      },
+      "leads.tags.write": {
+        "title": "Create and edit"
+      },
+      "leads.write": {
+        "title": "Create and edit"
+      },
+      "leads_custom_attributes": {
+        "title": "Leads custom attributes"
+      },
+      "leads_custom_attributes.delete": {
+        "title": "Delete"
+      },
+      "leads_custom_attributes.read": {
+        "title": "Read"
+      },
+      "leads_custom_attributes.write": {
+        "title": "Create and edit"
+      },
+      "leads_imports": {
+        "title": "Leads imports"
+      },
+      "leads_imports.write": {
+        "title": "Create and edit"
+      },
+      "leads_lists": {
+        "title": "Leads lists"
+      },
+      "leads_lists.delete": {
+        "title": "Delete"
+      },
+      "leads_lists.favorite": {
+        "title": "Favorite"
+      },
+      "leads_lists.favorite.delete": {
+        "title": "Delete"
+      },
+      "leads_lists.favorite.write": {
+        "title": "Create and edit"
+      },
+      "leads_lists.folders": {
+        "title": "Folders"
+      },
+      "leads_lists.folders.delete": {
+        "title": "Delete"
+      },
+      "leads_lists.folders.read": {
+        "title": "Read"
+      },
+      "leads_lists.folders.write": {
+        "title": "Create and edit"
+      },
+      "leads_lists.read": {
+        "title": "Read"
+      },
+      "leads_lists.write": {
+        "title": "Create and edit"
+      },
+      "lookalikes": {
+        "title": "Lookalikes"
+      },
+      "lookalikes.read": {
+        "title": "Read"
+      },
+      "message_templates": {
+        "title": "Message templates"
+      },
+      "message_templates.delete": {
+        "title": "Delete"
+      },
+      "message_templates.read": {
+        "title": "Read"
+      },
+      "message_templates.write": {
+        "title": "Create and edit"
+      },
+      "messages": {
+        "title": "Messages"
+      },
+      "messages.read": {
+        "title": "Read"
+      },
+      "messages.send": {
+        "title": "Send"
+      },
+      "monitored_signals": {
+        "title": "Monitored signals"
+      },
+      "monitored_signals.read": {
+        "title": "Read"
+      },
+      "multi_domain_search": {
+        "title": "Multi domain search"
+      },
+      "multi_domain_search.read": {
+        "title": "Read"
+      },
+      "multi_domain_search.reveal": {
+        "title": "Reveal"
+      },
+      "multi_domain_search.reveal.read": {
+        "title": "Read"
+      },
+      "opportunities": {
+        "title": "Opportunities"
+      },
+      "opportunities.read": {
+        "title": "Read"
+      },
+      "opportunities.results": {
+        "title": "Results"
+      },
+      "opportunities.results.read": {
+        "title": "Read"
+      },
+      "people": {
+        "title": "People"
+      },
+      "people.read": {
+        "title": "Read"
+      },
+      "sequences": {
+        "title": "Sequences"
+      },
+      "sequences.delete": {
+        "title": "Delete"
+      },
+      "sequences.follow_ups": {
+        "title": "Follow ups"
+      },
+      "sequences.follow_ups.delete": {
+        "title": "Delete"
+      },
+      "sequences.follow_ups.read": {
+        "title": "Read"
+      },
+      "sequences.follow_ups.write": {
+        "title": "Create and edit"
+      },
+      "sequences.read": {
+        "title": "Read"
+      },
+      "sequences.recipients": {
+        "title": "Recipients"
+      },
+      "sequences.recipients.delete": {
+        "title": "Delete"
+      },
+      "sequences.recipients.read": {
+        "title": "Read"
+      },
+      "sequences.recipients.write": {
+        "title": "Create and edit"
+      },
+      "sequences.send": {
+        "title": "Send"
+      },
+      "sequences.stats": {
+        "title": "Stats"
+      },
+      "sequences.stats.read": {
+        "title": "Read"
+      },
+      "sequences.write": {
+        "title": "Create and edit"
+      },
+      "signals": {
+        "title": "Signals"
+      },
+      "signals.read": {
+        "title": "Read"
+      },
+      "tags": {
+        "title": "Tags"
+      },
+      "tags.delete": {
+        "title": "Delete"
+      },
+      "tags.read": {
+        "title": "Read"
+      },
+      "tags.write": {
+        "title": "Create and edit"
+      },
+      "team": {
+        "title": "Team"
+      },
+      "team.members": {
+        "title": "Members"
+      },
+      "team.members.read": {
+        "title": "Read"
+      },
+      "usage": {
+        "title": "Usage"
+      },
+      "usage.history": {
+        "title": "History"
+      },
+      "usage.history.read": {
+        "title": "Read"
+      },
+      "usage.read": {
+        "title": "Read"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.delete": {
+        "title": "Delete"
+      },
+      "webhooks.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "origin": "https://api.hunter.io",
+            "path": "/v2",
+            "query": "api_key",
+            "value": "api_key"
+          },
+          {
+            "header": "X-API-KEY",
+            "origin": "https://api.hunter.io",
+            "path": "/v2",
+            "value": "api_key"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api.hunter.io",
+            "path": "/v2",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Hunter",
   "http": {
+    "sensitive_query": ["api_key"],
     "operations": {
-      "addCampaignRecipients": {"action":"write.recipients","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/campaigns/{id}/recipients","scope":{"id":{"from":"path","at":"id"}}},
-      "addCompanyListCompany": {"action":"write.companies","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/company-lists/{id}/companies","scope":{"id":{"from":"path","at":"id"}}},
-      "addSequenceRecipients": {"action":"write.recipients","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/sequences/{id}/recipients","scope":{"id":{"from":"path","at":"id"}}},
-      "archiveSequence": {"action":"write.sequences","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/sequences/{sequence_id}/archive","scope":{"sequence_id":{"from":"path","at":"sequence_id"}}},
-      "bulkUpsertLeads": {"action":"write.bulk","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/leads/bulk","body":"json","scope":{}},
-      "checkLeadsBulkExist": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/leads/bulk/exist","params":["emails"],"scope":{}},
-      "copyCompaniesBulk": {"action":"write.copy","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/companies/bulk/copy","scope":{}},
-      "countDomainEmails": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/email-count","params":["domain","company","type","include_job_titles"],"scope":{}},
-      "countDomains": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/domain-count","scope":{}},
-      "createApiKey": {"action":"write.api_keys","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/api-keys","scope":{}},
-      "createCampaignFollowUp": {"action":"write.campaigns","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/campaigns/{id}/follow-ups","scope":{"id":{"from":"path","at":"id"}}},
-      "createCompany": {"action":"write.companies","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/companies","scope":{}},
-      "createCompanyList": {"action":"write.company_lists","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/company-lists","scope":{}},
-      "createCompanyListFolder": {"action":"write.folders","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/company-lists/folders","scope":{}},
-      "createCompanyTag": {"action":"write.company_tags","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/company-tags","scope":{}},
-      "createDiscoverView": {"action":"write.views","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/discover/views","scope":{}},
-      "createFeedback": {"action":"write.feedback","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/feedback","scope":{}},
-      "createLead": {"action":"write.leads","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/leads","scope":{}},
-      "createLeadCustomAttribute": {"action":"write.leads_custom_attributes","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/leads_custom_attributes","scope":{}},
-      "createLeadList": {"action":"write.leads_lists","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/leads_lists","scope":{}},
-      "createLeadListFolder": {"action":"write.folders","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/leads_lists/folders","scope":{}},
-      "createLeadListFolderHyphen": {"action":"write.folders","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/leads-lists/folders","scope":{}},
-      "createLeadListHyphen": {"action":"write.leads_lists","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/leads-lists","scope":{}},
-      "createLeadsImport": {"action":"write.leads_imports","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/leads-imports","body":"any","scope":{}},
-      "createMessage": {"action":"send.messages","effects":["send"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/messages","scope":{}},
-      "createMessageTemplate": {"action":"write.message_templates","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/message-templates","scope":{}},
-      "createSequence": {"action":"write.sequences","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/sequences","scope":{}},
-      "createSequenceFollowUp": {"action":"write.sequences","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/sequences/{id}/follow-ups","scope":{"id":{"from":"path","at":"id"}}},
-      "createTag": {"action":"write.tags","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/tags","scope":{}},
-      "createWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/webhooks","scope":{}},
-      "deleteApiKey": {"action":"delete.api_keys","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/api-keys/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteCompaniesBulk": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/companies/bulk/delete","scope":{}},
-      "deleteCompany": {"action":"delete.companies","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/companies/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteCompanyList": {"action":"delete.company_lists","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/company-lists/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteCompanyListFolder": {"action":"delete.folders","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/company-lists/folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteCompanyTag": {"action":"delete.company_tags","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/company-tags/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteDiscoverView": {"action":"delete.views","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/discover/views/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteLead": {"action":"delete.leads","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/leads/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteLeadCustomAttribute": {"action":"delete.leads_custom_attributes","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/leads_custom_attributes/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteLeadList": {"action":"delete.leads_lists","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/leads_lists/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteLeadListFolder": {"action":"delete.folders","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/leads_lists/folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteLeadListFolderHyphen": {"action":"delete.folders","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/leads-lists/folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteLeadListHyphen": {"action":"delete.leads_lists","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/leads-lists/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteLeadsBulk": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/leads/bulk/delete","scope":{}},
-      "deleteMessageTemplate": {"action":"delete.message_templates","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/message-templates/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteSequence": {"action":"delete.sequences","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/sequences/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteSequenceFollowUp": {"action":"delete.follow_ups","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/sequences/{id}/follow-ups/{follow_up_id}","scope":{"id":{"from":"path","at":"id"},"follow_up_id":{"from":"path","at":"follow_up_id"}}},
-      "deleteTag": {"action":"delete.tags","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/tags/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteWebhook": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/webhooks/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteWebhooksCollection": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/webhooks","params":["id"],"scope":{}},
-      "discoverCompanies": {"action":"write.discover","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/discover","body":"any","scope":{}},
-      "discoverPeople": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/discover/people","scope":{}},
-      "discoverPeopleWithPost": {"action":"write.people","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/discover/people","scope":{}},
-      "enrichLead": {"action":"write.enrich","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/leads/{id}/enrich","scope":{"id":{"from":"path","at":"id"}}},
-      "enrichPerson": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/people/find","params":["email","linkedin_handle","clearbit_format"],"scope":{}},
-      "enrichPersonAndCompany": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/combined/find","params":["email","linkedin_handle","clearbit_format"],"scope":{}},
-      "favoriteCompanyList": {"action":"write.favorite","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/company-lists/{id}/favorite","scope":{"id":{"from":"path","at":"id"}}},
-      "favoriteLeadList": {"action":"write.favorite","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/leads_lists/{id}/favorite","scope":{"id":{"from":"path","at":"id"}}},
-      "favoriteLeadListHyphen": {"action":"write.favorite","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/leads-lists/{id}/favorite","scope":{"id":{"from":"path","at":"id"}}},
-      "findDomain": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/domain-finder","params":["company","limit","perfect_match"],"scope":{}},
-      "findDomainWithPost": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/domain-finder","params":["company","limit","perfect_match"],"body":"any","scope":{}},
-      "findEmail": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/email-finder","params":["domain","company","first_name","last_name","full_name","linkedin_handle","max_duration"],"scope":{}},
-      "findEmailFound": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/email-finder/found","params":["domain","company","first_name","last_name","full_name","linkedin_handle","max_duration"],"scope":{}},
-      "findEmailFoundWithPost": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/email-finder/found","params":["domain","company","first_name","last_name","full_name","linkedin_handle","max_duration"],"scope":{}},
-      "getAccount": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/account","scope":{}},
-      "getAccountStats": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/account-stats","scope":{}},
-      "getCampaignFollowUp": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/campaigns/{id}/follow-ups/{follow_up_id}","scope":{"id":{"from":"path","at":"id"},"follow_up_id":{"from":"path","at":"follow_up_id"}}},
-      "getCompany": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/companies/{id}","params":["domain","clearbit_format"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getCompanyList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/company-lists/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getCompanyListFolder": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/company-lists/folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getCompanyTag": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/company-tags/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getConnectedApp": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/connected-apps/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getDiscoverView": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/discover/views/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getEmailAccount": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/email-accounts/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getEmailAccountHealthReport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/email-accounts/{id}/health-report","scope":{"id":{"from":"path","at":"id"}}},
-      "getEmailAccountUsage": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/email-accounts/{id}/usage","scope":{"id":{"from":"path","at":"id"}}},
-      "getEmailAccountWarmupReport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/email-accounts/{id}/warmup-report","scope":{"id":{"from":"path","at":"id"}}},
-      "getEmailInsight": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/email-insight","params":["email"],"scope":{}},
-      "getLead": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/leads/{id}","params":["email"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getLeadCustomAttribute": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/leads_custom_attributes/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getLeadList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/leads_lists/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getLeadListFolder": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/leads_lists/folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getLeadListFolderHyphen": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/leads-lists/folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getLeadListHyphen": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/leads-lists/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getMessageTemplate": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/message-templates/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getSequence": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/sequences/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getSequenceFollowUp": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/sequences/{id}/follow-ups/{follow_up_id}","scope":{"id":{"from":"path","at":"id"},"follow_up_id":{"from":"path","at":"follow_up_id"}}},
-      "getSequenceStats": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/sequences/{id}/stats","scope":{"id":{"from":"path","at":"id"}}},
-      "getTag": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/tags/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getUsage": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/usage","scope":{}},
-      "getUsageHistory": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/usage/history","scope":{}},
-      "getWebhook": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/webhooks/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "listApiKeys": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/api-keys","scope":{}},
-      "listCampaignRecipients": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/campaigns/{id}/recipients","scope":{"id":{"from":"path","at":"id"}}},
-      "listCampaigns": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/campaigns","scope":{}},
-      "listCompanies": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/companies","scope":{}},
-      "listCompanyLists": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/company-lists","scope":{}},
-      "listCompanyTags": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/company-tags","scope":{}},
-      "listConnectedApps": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/connected-apps","scope":{}},
-      "listDiscoverViews": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/discover/views","scope":{}},
-      "listEmailAccountSequences": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/email-accounts/{id}/sequences","scope":{"id":{"from":"path","at":"id"}}},
-      "listEmailAccounts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/email-accounts","scope":{}},
-      "listLeadCustomAttributes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/leads_custom_attributes","scope":{}},
-      "listLeadLists": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/leads_lists","scope":{}},
-      "listLeadListsHyphen": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/leads-lists","scope":{}},
-      "listLeads": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/leads","scope":{}},
-      "listLookalikes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/lookalikes","params":["company_list_id","country","size","industry","limit"],"scope":{"company_list_id":{"from":"query","at":"company_list_id"}}},
-      "listMessageTemplates": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/message-templates","scope":{}},
-      "listMessages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/messages","scope":{}},
-      "listSequenceFollowUps": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/sequences/{id}/follow-ups","scope":{"id":{"from":"path","at":"id"}}},
-      "listSequenceRecipients": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/sequences/{id}/recipients","scope":{"id":{"from":"path","at":"id"}}},
-      "listSequences": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/sequences","scope":{}},
-      "listTags": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/tags","scope":{}},
-      "listTeamMembers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/team/members","scope":{}},
-      "listWebhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/webhooks","scope":{}},
-      "mergeLeadLists": {"action":"write.leads_lists","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/leads_lists/{id}/merge","scope":{"id":{"from":"path","at":"id"}}},
-      "mergeLeadListsHyphen": {"action":"write.leads_lists","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/leads-lists/{id}/merge","scope":{"id":{"from":"path","at":"id"}}},
-      "moveCompaniesBulk": {"action":"write.move","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/companies/bulk/move","scope":{}},
-      "moveLeadsBulk": {"action":"write.move","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/leads/bulk/move","scope":{}},
-      "multiDomainSearch": {"action":"write.multi_domain_search","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/multi-domain-search","body":"any","scope":{}},
-      "pauseSequence": {"action":"write.sequences","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/sequences/{sequence_id}/pause","scope":{"sequence_id":{"from":"path","at":"sequence_id"}}},
-      "pushToConnectedApp": {"action":"write.push","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/connected-apps/{id}/push","scope":{"id":{"from":"path","at":"id"}}},
-      "removeCampaignRecipients": {"action":"delete.recipients","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/campaigns/{id}/recipients","scope":{"id":{"from":"path","at":"id"}}},
-      "removeCompanyListCompany": {"action":"delete.companies","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/company-lists/{id}/companies/{company_id}","scope":{"id":{"from":"path","at":"id"},"company_id":{"from":"path","at":"company_id"}}},
-      "removeSequenceRecipients": {"action":"delete.recipients","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/sequences/{id}/recipients","scope":{"id":{"from":"path","at":"id"}}},
-      "replaceApiKey": {"action":"write.api_keys","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/api-keys/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "replaceCompanyList": {"action":"write.company_lists","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/company-lists/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "replaceCompanyListFolder": {"action":"write.folders","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/company-lists/folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "replaceCompanyTag": {"action":"write.company_tags","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/company-tags/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "replaceEmailAccount": {"action":"write.email_accounts","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/email-accounts/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "replaceLead": {"action":"write.leads","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/leads/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "replaceLeadCustomAttribute": {"action":"write.leads_custom_attributes","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/leads_custom_attributes/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "replaceLeadList": {"action":"write.leads_lists","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/leads_lists/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "replaceLeadListFolder": {"action":"write.folders","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/leads_lists/folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "replaceLeadListFolderHyphen": {"action":"write.folders","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/leads-lists/folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "replaceLeadListHyphen": {"action":"write.leads_lists","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/leads-lists/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "replaceMessageTemplate": {"action":"write.message_templates","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/message-templates/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "replaceSequence": {"action":"write.sequences","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/sequences/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "replaceSequenceFollowUp": {"action":"write.follow_ups","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/sequences/{id}/follow-ups/{follow_up_id}","scope":{"id":{"from":"path","at":"id"},"follow_up_id":{"from":"path","at":"follow_up_id"}}},
-      "replaceTag": {"action":"write.tags","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/tags/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "replaceWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/webhooks/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "resumeSequence": {"action":"delete.sequences","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/sequences/{sequence_id}/pause","scope":{"sequence_id":{"from":"path","at":"sequence_id"}}},
-      "revealMultiDomainSearch": {"action":"write.reveal","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/multi-domain-search/reveal","scope":{}},
-      "searchDomain": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/domain-search","params":["domain","company","type","limit","offset","department","source_type","job_titles","seniority","decision_maker","required_field","verification_status","aggregations","saved_leads"],"scope":{}},
-      "searchDomainWithPost": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/domain-search","params":["domain","company","type","limit","offset","department","source_type","job_titles","seniority","decision_maker","required_field","verification_status","aggregations","saved_leads"],"body":"any","scope":{}},
-      "startCampaign": {"action":"write.campaigns","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/campaigns/{id}/start","scope":{"id":{"from":"path","at":"id"}}},
-      "startSequence": {"action":"write.sequences","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/sequences/{id}/start","scope":{"id":{"from":"path","at":"id"}}},
-      "suggestDomains": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/domains-suggestion","params":["query","limit"],"scope":{}},
-      "tagCompaniesBulk": {"action":"write.tag","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/companies/bulk/tag","scope":{}},
-      "tagLead": {"action":"write.tags","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/leads/{id}/tags","scope":{"id":{"from":"path","at":"id"}}},
-      "tagSavedCompany": {"action":"write.tags","effects":["write"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/companies/{id}/tags","scope":{"id":{"from":"path","at":"id"}}},
-      "testSequence": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.hunter.io","path":"/v2/sequences/{sequence_id}/test","body":"any","scope":{"sequence_id":{"from":"path","at":"sequence_id"}}},
-      "untagLead": {"action":"delete.tags","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/leads/{id}/tags/{tag_id}","scope":{"id":{"from":"path","at":"id"},"tag_id":{"from":"path","at":"tag_id"}}},
-      "untagSavedCompany": {"action":"delete.tags","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","path":"/v2/companies/{id}/tags/{tag_id}","scope":{"id":{"from":"path","at":"id"},"tag_id":{"from":"path","at":"tag_id"}}},
-      "updateAccount": {"action":"admin.account","effects":["admin"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/account","scope":{}},
-      "updateApiKey": {"action":"write.api_keys","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","path":"/v2/api-keys/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "updateCompanyList": {"action":"write.company_lists","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","path":"/v2/company-lists/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "updateCompanyListFolder": {"action":"write.folders","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","path":"/v2/company-lists/folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "updateCompanyTag": {"action":"write.company_tags","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","path":"/v2/company-tags/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "updateEmailAccount": {"action":"write.email_accounts","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","path":"/v2/email-accounts/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "updateLead": {"action":"write.leads","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","path":"/v2/leads/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "updateLeadCustomAttribute": {"action":"write.leads_custom_attributes","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","path":"/v2/leads_custom_attributes/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "updateLeadList": {"action":"write.leads_lists","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","path":"/v2/leads_lists/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "updateLeadListFolder": {"action":"write.folders","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","path":"/v2/leads_lists/folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "updateLeadListFolderHyphen": {"action":"write.folders","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","path":"/v2/leads-lists/folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "updateLeadListHyphen": {"action":"write.leads_lists","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","path":"/v2/leads-lists/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "updateMessageTemplate": {"action":"write.message_templates","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","path":"/v2/message-templates/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "updateSequence": {"action":"write.sequences","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","path":"/v2/sequences/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "updateSequenceFollowUp": {"action":"write.follow_ups","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","path":"/v2/sequences/{id}/follow-ups/{follow_up_id}","scope":{"id":{"from":"path","at":"id"},"follow_up_id":{"from":"path","at":"follow_up_id"}}},
-      "updateTag": {"action":"write.tags","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","path":"/v2/tags/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "updateWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"PATCH","origin":"https://api.hunter.io","path":"/v2/webhooks/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "upsertLeads": {"action":"write.leads","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","path":"/v2/leads","scope":{}},
-      "verifyEmail": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","path":"/v2/email-verifier","params":["email","domain_metadata"],"scope":{"email":{"from":"query","at":"email"}}}
+      "addCampaignRecipients": {"action":"campaigns.recipients.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/campaigns/{id}/recipients","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "addCompanyListCompany": {"action":"company_lists.companies.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-lists/{id}/companies","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "addSequenceRecipients": {"action":"sequences.recipients.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{id}/recipients","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "archiveSequence": {"action":"sequences.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{sequence_id}/archive","scope":{"query":{"at":"","from":"query","type":"object"},"sequence_id":{"at":"sequence_id","from":"path"}}},
+      "bulkUpsertLeads": {"action":"leads.bulk.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads/bulk","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "checkLeadExists": {"action":"leads.exist.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key","email"],"path":"/v2/leads/exist","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"email":{"at":"email","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "checkLeadsBulkExist": {"action":"leads.bulk.exist.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["emails","api_key"],"path":"/v2/leads/bulk/exist","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "copyCompaniesBulk": {"action":"companies.bulk.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/companies/bulk/copy","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "countDomainEmails": {"action":"email_count.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["domain","company","type","include_job_titles","api_key"],"path":"/v2/email-count","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "countDomains": {"action":"domain_count.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/domain-count","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createApiKey": {"action":"api_keys.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/api-keys","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createCampaignFollowUp": {"action":"campaigns.follow_ups.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/campaigns/{id}/follow-ups","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "createCampaignFollowUp.form.91afce66cb06": {"action":"campaigns.follow_ups.write","body":"form","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/campaigns/{id}/follow-ups","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"form.api_key":{"at":"api_key","from":"form","optional":true},"id":{"at":"id","from":"path"},"message_template_id":{"at":"message_template_id","from":"form","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "createCampaignFollowUp.json.343185131912": {"action":"campaigns.follow_ups.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/campaigns/{id}/follow-ups","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"body.api_key":{"at":"/api_key","from":"body","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createCompany": {"action":"companies.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/companies","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createCompanyList": {"action":"company_lists.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-lists","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createCompanyListFolder": {"action":"company_lists.folders.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-lists/folders","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createCompanyTag": {"action":"company_tags.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-tags","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createDiscoverView": {"action":"discover.views.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/discover/views","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createFeedback": {"action":"feedback.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/feedback","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createLead": {"action":"leads.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createLeadCustomAttribute": {"action":"leads_custom_attributes.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_custom_attributes","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createLeadList": {"action":"leads_lists.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createLeadList.form.289aeb122736": {"action":"leads_lists.write","body":"form","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "createLeadList.json.5b510be909b2": {"action":"leads_lists.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createLeadListFolder": {"action":"leads_lists.folders.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists/folders","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createLeadListFolderHyphen": {"action":"leads_lists.folders.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists/folders","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createLeadListHyphen": {"action":"leads_lists.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createLeadListHyphen.form.3af7d0c2d4ea": {"action":"leads_lists.write","body":"form","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "createLeadListHyphen.json.db17fab9fa9a": {"action":"leads_lists.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createLeadsImport": {"action":"leads_imports.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-imports","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createMessage": {"action":"messages.send","effects":["send"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/messages","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createMessageTemplate": {"action":"message_templates.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/message-templates","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createSequence": {"action":"sequences.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createSequenceFollowUp": {"action":"sequences.follow_ups.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{id}/follow-ups","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "createSequenceFollowUp.form.1cf0ba57bb97": {"action":"sequences.follow_ups.write","body":"form","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{id}/follow-ups","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"form.api_key":{"at":"api_key","from":"form","optional":true},"id":{"at":"id","from":"path"},"message_template_id":{"at":"message_template_id","from":"form","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "createSequenceFollowUp.json.cd202d153364": {"action":"sequences.follow_ups.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{id}/follow-ups","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"body.api_key":{"at":"/api_key","from":"body","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createTag": {"action":"tags.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/tags","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createWebhook": {"action":"webhooks.admin","effects":["admin"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/webhooks","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "deleteApiKey": {"action":"api_keys.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/api-keys/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteCompaniesBulk": {"action":"companies.bulk.delete","effects":["delete"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/companies/bulk/delete","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "deleteCompany": {"action":"companies.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/companies/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteCompanyList": {"action":"company_lists.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-lists/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteCompanyListFolder": {"action":"company_lists.folders.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-lists/folders/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteCompanyTag": {"action":"company_tags.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-tags/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteDiscoverView": {"action":"discover.views.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/discover/views/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteLead": {"action":"leads.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteLeadCustomAttribute": {"action":"leads_custom_attributes.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_custom_attributes/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteLeadList": {"action":"leads_lists.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteLeadListFolder": {"action":"leads_lists.folders.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists/folders/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteLeadListFolderHyphen": {"action":"leads_lists.folders.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists/folders/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteLeadListHyphen": {"action":"leads_lists.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteLeadsBulk": {"action":"leads.bulk.delete","effects":["delete"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads/bulk/delete","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "deleteMessageTemplate": {"action":"message_templates.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/message-templates/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteSequence": {"action":"sequences.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteSequenceFollowUp": {"action":"sequences.follow_ups.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{id}/follow-ups/{follow_up_id}","scope":{"follow_up_id":{"at":"follow_up_id","from":"path"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteTag": {"action":"tags.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/tags/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteWebhook": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/webhooks/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteWebhooksCollection": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["id","api_key"],"path":"/v2/webhooks","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "discoverCompanies": {"action":"discover.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/discover","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "discoverPeople": {"action":"discover.people.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/discover/people","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "discoverPeopleWithPost": {"action":"discover.people.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/discover/people","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "enrichCompany": {"action":"companies.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key","domain","clearbit_format"],"path":"/v2/companies/find","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "enrichLead": {"action":"leads.enrich.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads/{id}/enrich","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "enrichPerson": {"action":"people.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["email","linkedin_handle","clearbit_format","api_key"],"path":"/v2/people/find","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "enrichPersonAndCompany": {"action":"combined.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["email","linkedin_handle","clearbit_format","api_key"],"path":"/v2/combined/find","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "favoriteCompanyList": {"action":"company_lists.favorite.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-lists/{id}/favorite","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "favoriteLeadList": {"action":"leads_lists.favorite.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists/{id}/favorite","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "favoriteLeadListHyphen": {"action":"leads_lists.favorite.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists/{id}/favorite","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "findDomain": {"action":"domain_finder.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["company","limit","perfect_match","api_key"],"path":"/v2/domain-finder","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "findDomainWithPost": {"action":"domain_finder.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.hunter.io","params":["company","limit","perfect_match","api_key"],"path":"/v2/domain-finder","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "findEmail": {"action":"email_finder.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["domain","company","first_name","last_name","full_name","linkedin_handle","max_duration","api_key"],"path":"/v2/email-finder","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "findEmailFound": {"action":"email_finder.found.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["domain","company","first_name","last_name","full_name","linkedin_handle","max_duration","api_key"],"path":"/v2/email-finder/found","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "findEmailFoundWithPost": {"action":"email_finder.found.read","effects":["read"],"method":"POST","origin":"https://api.hunter.io","params":["domain","company","first_name","last_name","full_name","linkedin_handle","max_duration","api_key"],"path":"/v2/email-finder/found","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getAccount": {"action":"account.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/account","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getAccountStats": {"action":"account_stats.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/account-stats","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getBriefing": {"action":"briefing.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key","since","leads_since","monitored_since"],"path":"/v2/briefing","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getCampaignFollowUp": {"action":"campaigns.follow_ups.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/campaigns/{id}/follow-ups/{follow_up_id}","scope":{"follow_up_id":{"at":"follow_up_id","from":"path"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getCompany": {"action":"companies.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["domain","clearbit_format","api_key"],"path":"/v2/companies/{id}","path_patterns":{"id":"[^f].*|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^d].*|d.+)))"},"scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getCompanyList": {"action":"company_lists.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-lists/{id}","path_patterns":{"id":"[^f].*|f(?:|[^o].*|o(?:|[^l].*|l(?:|[^d].*|d(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getCompanyListFolder": {"action":"company_lists.folders.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-lists/folders/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getCompanyTag": {"action":"company_tags.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-tags/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getConnectedApp": {"action":"connected_apps.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/connected-apps/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getDiscoverView": {"action":"discover.views.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/discover/views/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getEmailAccount": {"action":"email_accounts.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/email-accounts/{id}","path_patterns":{"id":"[^c].*|c(?:|[^a].*|a(?:|[^p].*|p(?:|[^a].*|a(?:|[^c].*|c(?:|[^i].*|i(?:|[^t].*|t(?:|[^i].*|i(?:|[^e].*|e(?:|[^s].*|s.+)))))))))"},"scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getEmailAccountCapacities": {"action":"email_accounts.capacities.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/email-accounts/capacities","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getEmailAccountHealthReport": {"action":"email_accounts.health_report.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/email-accounts/{id}/health-report","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getEmailAccountUsage": {"action":"email_accounts.usage.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/email-accounts/{id}/usage","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getEmailAccountWarmupReport": {"action":"email_accounts.warmup_report.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/email-accounts/{id}/warmup-report","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getEmailInsight": {"action":"email_insight.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["email","api_key"],"path":"/v2/email-insight","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getLead": {"action":"leads.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["email","api_key"],"path":"/v2/leads/{id}","path_patterns":{"id":"[^e].*|e(?:|[^x].*|x(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t.+))))"},"scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getLeadCustomAttribute": {"action":"leads_custom_attributes.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_custom_attributes/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getLeadList": {"action":"leads_lists.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists/{id}","path_patterns":{"id":"[^f].*|f(?:|[^o].*|o(?:|[^l].*|l(?:|[^d].*|d(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getLeadListFolder": {"action":"leads_lists.folders.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists/folders/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getLeadListFolderHyphen": {"action":"leads_lists.folders.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists/folders/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getLeadListHyphen": {"action":"leads_lists.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists/{id}","path_patterns":{"id":"[^f].*|f(?:|[^o].*|o(?:|[^l].*|l(?:|[^d].*|d(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getMessageTemplate": {"action":"message_templates.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/message-templates/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getSequence": {"action":"sequences.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getSequenceFollowUp": {"action":"sequences.follow_ups.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{id}/follow-ups/{follow_up_id}","scope":{"follow_up_id":{"at":"follow_up_id","from":"path"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getSequenceStats": {"action":"sequences.stats.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{id}/stats","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getTag": {"action":"tags.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/tags/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getUsage": {"action":"usage.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/usage","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getUsageHistory": {"action":"usage.history.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/usage/history","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getWebhook": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/webhooks/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listApiKeys": {"action":"api_keys.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/api-keys","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listCampaignRecipients": {"action":"campaigns.recipients.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/campaigns/{id}/recipients","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listCampaigns": {"action":"campaigns.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/campaigns","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listCompanies": {"action":"companies.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/companies","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listCompanyListFolders": {"action":"company_lists.folders.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-lists/folders","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listCompanyLists": {"action":"company_lists.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-lists","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listCompanyTags": {"action":"company_tags.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-tags","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listConnectedApps": {"action":"connected_apps.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/connected-apps","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listDiscoverViews": {"action":"discover.views.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/discover/views","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listEmailAccountSequences": {"action":"email_accounts.sequences.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/email-accounts/{id}/sequences","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listEmailAccounts": {"action":"email_accounts.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/email-accounts","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listLeadCustomAttributes": {"action":"leads_custom_attributes.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_custom_attributes","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listLeadListFolders": {"action":"leads_lists.folders.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists/folders","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listLeadListFoldersHyphen": {"action":"leads_lists.folders.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists/folders","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listLeadLists": {"action":"leads_lists.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listLeadListsHyphen": {"action":"leads_lists.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listLeads": {"action":"leads.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key","company","decision_maker","email_type","people_per_company","position_keywords","query","seniority_level","sort"],"path":"/v2/leads","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listLookalikes": {"action":"lookalikes.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["company_list_id","country","size","industry","limit","api_key","domain"],"path":"/v2/lookalikes","scope":{"company_list_id":{"at":"company_list_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "listMessageTemplates": {"action":"message_templates.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/message-templates","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listMessages": {"action":"messages.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/messages","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listMonitoredSignals": {"action":"monitored_signals.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key","limit","offset"],"path":"/v2/monitored-signals","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listOpportunities": {"action":"opportunities.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key","limit","offset"],"path":"/v2/opportunities","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listOpportunityResults": {"action":"opportunities.results.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key","limit","offset"],"path":"/v2/opportunities/{id}/results","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listSequenceFollowUps": {"action":"sequences.follow_ups.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{id}/follow-ups","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listSequenceRecipients": {"action":"sequences.recipients.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{id}/recipients","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listSequences": {"action":"sequences.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listSignals": {"action":"signals.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key","source","signal_id","since","types","limit","cursor"],"path":"/v2/signals","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"signal_id":{"at":"signal_id","from":"query","optional":true}}},
+      "listTags": {"action":"tags.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/tags","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listTeamMembers": {"action":"team.members.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/team/members","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listWebhooks": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/webhooks","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "mergeLeadLists": {"action":"leads_lists.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists/{id}/merge","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "mergeLeadListsHyphen": {"action":"leads_lists.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists/{id}/merge","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "moveCompaniesBulk": {"action":"companies.bulk.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/companies/bulk/move","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "moveLeadsBulk": {"action":"leads.bulk.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads/bulk/move","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "multiDomainSearch": {"action":"multi_domain_search.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/multi-domain-search","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "pauseSequence": {"action":"sequences.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{sequence_id}/pause","scope":{"query":{"at":"","from":"query","type":"object"},"sequence_id":{"at":"sequence_id","from":"path"}}},
+      "pushToConnectedApp": {"action":"connected_apps.push.send","effects":["send"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/connected-apps/{id}/push","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "removeCampaignRecipients": {"action":"campaigns.recipients.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/campaigns/{id}/recipients","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "removeCompanyListCompany": {"action":"company_lists.companies.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-lists/{id}/companies/{company_id}","scope":{"company_id":{"at":"company_id","from":"path"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "removeSequenceRecipients": {"action":"sequences.recipients.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{id}/recipients","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "replaceApiKey": {"action":"api_keys.write","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/api-keys/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "replaceCompanyList": {"action":"company_lists.write","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-lists/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "replaceCompanyListFolder": {"action":"company_lists.folders.write","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-lists/folders/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "replaceCompanyTag": {"action":"company_tags.write","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-tags/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "replaceEmailAccount": {"action":"email_accounts.write","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/email-accounts/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "replaceLead": {"action":"leads.write","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "replaceLeadCustomAttribute": {"action":"leads_custom_attributes.write","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_custom_attributes/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "replaceLeadList": {"action":"leads_lists.write","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "replaceLeadList.form.fe8aa0ba46e2": {"action":"leads_lists.write","body":"form","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists/{id}","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"form.api_key":{"at":"api_key","from":"form","optional":true},"id":{"at":"id","from":"path"},"leads_list_folder_id":{"at":"leads_list_folder_id","from":"form","optional":true},"name":{"at":"name","from":"form","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "replaceLeadList.json.470a4db8233d": {"action":"leads_lists.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists/{id}","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"body.api_key":{"at":"/api_key","from":"body","optional":true},"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "replaceLeadListFolder": {"action":"leads_lists.folders.write","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists/folders/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "replaceLeadListFolderHyphen": {"action":"leads_lists.folders.write","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists/folders/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "replaceLeadListHyphen": {"action":"leads_lists.write","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "replaceLeadListHyphen.form.4c475dae0617": {"action":"leads_lists.write","body":"form","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists/{id}","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"form.api_key":{"at":"api_key","from":"form","optional":true},"id":{"at":"id","from":"path"},"leads_list_folder_id":{"at":"leads_list_folder_id","from":"form","optional":true},"name":{"at":"name","from":"form","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "replaceLeadListHyphen.json.2fffb479f45b": {"action":"leads_lists.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists/{id}","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"body.api_key":{"at":"/api_key","from":"body","optional":true},"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "replaceMessageTemplate": {"action":"message_templates.write","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/message-templates/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "replaceSequence": {"action":"sequences.write","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "replaceSequenceFollowUp": {"action":"sequences.follow_ups.write","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{id}/follow-ups/{follow_up_id}","scope":{"follow_up_id":{"at":"follow_up_id","from":"path"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "replaceTag": {"action":"tags.write","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/tags/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "replaceWebhook": {"action":"webhooks.admin","effects":["admin"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/webhooks/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "resumeSequence": {"action":"sequences.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{sequence_id}/pause","scope":{"query":{"at":"","from":"query","type":"object"},"sequence_id":{"at":"sequence_id","from":"path"}}},
+      "revealMultiDomainSearch": {"action":"multi_domain_search.reveal.read","effects":["read"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/multi-domain-search/reveal","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "searchDomain": {"action":"domain_search.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["domain","company","type","limit","offset","department","source_type","job_titles","seniority","decision_maker","required_field","verification_status","aggregations","saved_leads","api_key","provenance"],"path":"/v2/domain-search","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "searchDomainWithPost": {"action":"domain_search.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.hunter.io","params":["domain","company","type","limit","offset","department","source_type","job_titles","seniority","decision_maker","required_field","verification_status","aggregations","saved_leads","api_key","provenance"],"path":"/v2/domain-search","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "startCampaign": {"action":"campaigns.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/campaigns/{id}/start","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "startSequence": {"action":"sequences.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{id}/start","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "suggestDomains": {"action":"domains_suggestion.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["query","limit","api_key"],"path":"/v2/domains-suggestion","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "tagCompaniesBulk": {"action":"companies.bulk.tag.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/companies/bulk/tag","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "tagLead": {"action":"leads.tags.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads/{id}/tags","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "tagSavedCompany": {"action":"companies.tags.write","effects":["write"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/companies/{id}/tags","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "testSequence": {"action":"sequences.send","body":"any","effects":["send"],"method":"POST","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{sequence_id}/test","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"sequence_id":{"at":"sequence_id","from":"path"}}},
+      "unfavoriteCompanyList": {"action":"company_lists.favorite.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-lists/{id}/favorite","path_patterns":{"id":"[^f].*|f(?:|[^o].*|o(?:|[^l].*|l(?:|[^d].*|d(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"api_key":{"at":"api_key","from":"query","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "unfavoriteLeadList": {"action":"leads_lists.favorite.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists/{id}/favorite","path_patterns":{"id":"[^f].*|f(?:|[^o].*|o(?:|[^l].*|l(?:|[^d].*|d(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"api_key":{"at":"api_key","from":"query","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "unfavoriteLeadListHyphen": {"action":"leads_lists.favorite.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists/{id}/favorite","path_patterns":{"id":"[^f].*|f(?:|[^o].*|o(?:|[^l].*|l(?:|[^d].*|d(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"api_key":{"at":"api_key","from":"query","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "untagLead": {"action":"leads.tags.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads/{id}/tags/{tag_id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"tag_id":{"at":"tag_id","from":"path"}}},
+      "untagSavedCompany": {"action":"companies.tags.delete","effects":["delete"],"method":"DELETE","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/companies/{id}/tags/{tag_id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"tag_id":{"at":"tag_id","from":"path"}}},
+      "updateAccount": {"action":"account.admin","effects":["admin"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/account","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "updateApiKey": {"action":"api_keys.write","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/api-keys/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateCompanyList": {"action":"company_lists.write","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-lists/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateCompanyListFolder": {"action":"company_lists.folders.write","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-lists/folders/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateCompanyTag": {"action":"company_tags.write","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/company-tags/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateEmailAccount": {"action":"email_accounts.write","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/email-accounts/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateLead": {"action":"leads.write","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateLeadCustomAttribute": {"action":"leads_custom_attributes.write","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_custom_attributes/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateLeadList": {"action":"leads_lists.write","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateLeadList.form.5802460051b2": {"action":"leads_lists.write","body":"form","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists/{id}","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"form.api_key":{"at":"api_key","from":"form","optional":true},"id":{"at":"id","from":"path"},"leads_list_folder_id":{"at":"leads_list_folder_id","from":"form","optional":true},"name":{"at":"name","from":"form","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "updateLeadList.json.be2ac1d86799": {"action":"leads_lists.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists/{id}","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"body.api_key":{"at":"/api_key","from":"body","optional":true},"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateLeadListFolder": {"action":"leads_lists.folders.write","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads_lists/folders/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateLeadListFolderHyphen": {"action":"leads_lists.folders.write","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists/folders/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateLeadListHyphen": {"action":"leads_lists.write","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateLeadListHyphen.form.b3103a550d2f": {"action":"leads_lists.write","body":"form","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists/{id}","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"form.api_key":{"at":"api_key","from":"form","optional":true},"id":{"at":"id","from":"path"},"leads_list_folder_id":{"at":"leads_list_folder_id","from":"form","optional":true},"name":{"at":"name","from":"form","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "updateLeadListHyphen.json.e51edde648b3": {"action":"leads_lists.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads-lists/{id}","scope":{"api_key":{"at":"api_key","from":"query","optional":true},"body.api_key":{"at":"/api_key","from":"body","optional":true},"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateMessageTemplate": {"action":"message_templates.write","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/message-templates/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateSequence": {"action":"sequences.write","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateSequenceFollowUp": {"action":"sequences.follow_ups.write","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/sequences/{id}/follow-ups/{follow_up_id}","scope":{"follow_up_id":{"at":"follow_up_id","from":"path"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateTag": {"action":"tags.write","effects":["write"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/tags/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateWebhook": {"action":"webhooks.admin","effects":["admin"],"method":"PATCH","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/webhooks/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "upsertLeads": {"action":"leads.write","effects":["write"],"method":"PUT","origin":"https://api.hunter.io","params":["api_key"],"path":"/v2/leads","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "verifyEmail": {"action":"email_verifier.read","effects":["read"],"method":"GET","origin":"https://api.hunter.io","params":["email","domain_metadata","api_key"],"path":"/v2/email-verifier","scope":{"email":{"at":"email","from":"query"},"query":{"at":"","from":"query","type":"object"}}}
     }
   }
 }

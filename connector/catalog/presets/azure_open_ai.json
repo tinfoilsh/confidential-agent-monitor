@@ -1,170 +1,585 @@
 {
-  "title": "Embeddings Azure OpenAI",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your Embeddings Azure OpenAI origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://example.com", "path": "/", "header": "api-key"}]}},
     "actions": {
-      "delete.containers": {"title": "Delete: containers"},
-      "delete.conversations": {"title": "Delete: conversations"},
-      "delete.evals": {"title": "Delete: evals"},
-      "delete.files": {"title": "Delete: files"},
-      "delete.items": {"title": "Delete: items"},
-      "delete.messages": {"title": "Delete: messages"},
-      "delete.models": {"title": "Delete: models"},
-      "delete.permissions": {"title": "Delete: permissions"},
-      "delete.responses": {"title": "Delete: responses"},
-      "delete.runs": {"title": "Delete: runs"},
-      "delete.threads": {"title": "Delete: threads"},
-      "delete.vector_stores": {"title": "Delete: vector stores"},
-      "execute.evals": {"title": "Execute: evals"},
-      "execute.jobs": {"title": "Execute: jobs"},
-      "execute.run": {"title": "Execute: run"},
-      "execute.runs": {"title": "Execute: runs"},
-      "execute.submit_tool_outputs": {"title": "Execute: submit tool outputs"},
-      "execute.threads": {"title": "Execute: threads"},
-      "generate.batches": {"title": "Generate: batches"},
-      "generate.checkpoints": {"title": "Generate: checkpoints"},
-      "generate.client_secrets": {"title": "Generate: client secrets"},
-      "generate.completions": {"title": "Generate: completions"},
-      "generate.containers": {"title": "Generate: containers"},
-      "generate.conversations": {"title": "Generate: conversations"},
-      "generate.embeddings": {"title": "Generate: embeddings"},
-      "generate.file_batches": {"title": "Generate: file batches"},
-      "generate.files": {"title": "Generate: files"},
-      "generate.generations": {"title": "Generate: generations"},
-      "generate.items": {"title": "Generate: items"},
-      "generate.responses": {"title": "Generate: responses"},
-      "generate.sessions": {"title": "Generate: sessions"},
-      "generate.threads": {"title": "Generate: threads"},
-      "generate.transcription_sessions": {"title": "Generate: transcription sessions"},
-      "generate.transcriptions": {"title": "Generate: transcriptions"},
-      "generate.translations": {"title": "Generate: translations"},
-      "generate.vector_stores": {"title": "Generate: vector stores"},
-      "read": {"title": "Read everything the account can see"},
-      "send.calls": {"title": "Send: calls"},
-      "send.hangup": {"title": "Send: hangup"},
-      "send.messages": {"title": "Send: messages"},
-      "send.refer": {"title": "Send: refer"},
-      "share.permissions": {"title": "Share: permissions"}
-    }
+      "openai": {
+        "title": "Openai"
+      },
+      "openai.batches": {
+        "title": "Batches"
+      },
+      "openai.batches.generate": {
+        "title": "Generate"
+      },
+      "openai.batches.read": {
+        "title": "Read"
+      },
+      "openai.batches.write": {
+        "title": "Create and edit"
+      },
+      "openai.chat": {
+        "title": "Chat"
+      },
+      "openai.chat.completions": {
+        "title": "Completions"
+      },
+      "openai.chat.completions.generate": {
+        "title": "Generate"
+      },
+      "openai.completions": {
+        "title": "Completions"
+      },
+      "openai.completions.generate": {
+        "title": "Generate"
+      },
+      "openai.containers": {
+        "title": "Containers"
+      },
+      "openai.containers.delete": {
+        "title": "Delete"
+      },
+      "openai.containers.files": {
+        "title": "Files"
+      },
+      "openai.containers.files.content": {
+        "title": "Content"
+      },
+      "openai.containers.files.content.read": {
+        "title": "Read"
+      },
+      "openai.containers.files.delete": {
+        "title": "Delete"
+      },
+      "openai.containers.files.read": {
+        "title": "Read"
+      },
+      "openai.containers.files.write": {
+        "title": "Create and edit"
+      },
+      "openai.containers.read": {
+        "title": "Read"
+      },
+      "openai.containers.write": {
+        "title": "Create and edit"
+      },
+      "openai.conversations": {
+        "title": "Conversations"
+      },
+      "openai.conversations.delete": {
+        "title": "Delete"
+      },
+      "openai.conversations.items": {
+        "title": "Items"
+      },
+      "openai.conversations.items.delete": {
+        "title": "Delete"
+      },
+      "openai.conversations.items.read": {
+        "title": "Read"
+      },
+      "openai.conversations.items.write": {
+        "title": "Create and edit"
+      },
+      "openai.conversations.read": {
+        "title": "Read"
+      },
+      "openai.conversations.write": {
+        "title": "Create and edit"
+      },
+      "openai.deployments": {
+        "title": "Deployments"
+      },
+      "openai.deployments.audio": {
+        "title": "Audio"
+      },
+      "openai.deployments.audio.transcriptions": {
+        "title": "Transcriptions"
+      },
+      "openai.deployments.audio.transcriptions.generate": {
+        "title": "Generate"
+      },
+      "openai.deployments.audio.translations": {
+        "title": "Translations"
+      },
+      "openai.deployments.audio.translations.generate": {
+        "title": "Generate"
+      },
+      "openai.deployments.chat": {
+        "title": "Chat"
+      },
+      "openai.deployments.chat.completions": {
+        "title": "Completions"
+      },
+      "openai.deployments.chat.completions.generate": {
+        "title": "Generate"
+      },
+      "openai.deployments.completions": {
+        "title": "Completions"
+      },
+      "openai.deployments.completions.generate": {
+        "title": "Generate"
+      },
+      "openai.deployments.embeddings": {
+        "title": "Embeddings"
+      },
+      "openai.deployments.embeddings.generate": {
+        "title": "Generate"
+      },
+      "openai.deployments.images": {
+        "title": "Images"
+      },
+      "openai.deployments.images.generations": {
+        "title": "Generations"
+      },
+      "openai.deployments.images.generations.generate": {
+        "title": "Generate"
+      },
+      "openai.embeddings": {
+        "title": "Embeddings"
+      },
+      "openai.embeddings.generate": {
+        "title": "Generate"
+      },
+      "openai.evals": {
+        "title": "Evals"
+      },
+      "openai.evals.delete": {
+        "title": "Delete"
+      },
+      "openai.evals.read": {
+        "title": "Read"
+      },
+      "openai.evals.runs": {
+        "title": "Runs"
+      },
+      "openai.evals.runs.delete": {
+        "title": "Delete"
+      },
+      "openai.evals.runs.execute": {
+        "title": "Execute"
+      },
+      "openai.evals.runs.output_items": {
+        "title": "Output items"
+      },
+      "openai.evals.runs.output_items.read": {
+        "title": "Read"
+      },
+      "openai.evals.runs.read": {
+        "title": "Read"
+      },
+      "openai.evals.runs.write": {
+        "title": "Create and edit"
+      },
+      "openai.evals.write": {
+        "title": "Create and edit"
+      },
+      "openai.files": {
+        "title": "Files"
+      },
+      "openai.files.content": {
+        "title": "Content"
+      },
+      "openai.files.content.read": {
+        "title": "Read"
+      },
+      "openai.files.delete": {
+        "title": "Delete"
+      },
+      "openai.files.read": {
+        "title": "Read"
+      },
+      "openai.files.write": {
+        "title": "Create and edit"
+      },
+      "openai.fine_tuning": {
+        "title": "Fine tuning"
+      },
+      "openai.fine_tuning.alpha": {
+        "title": "Alpha"
+      },
+      "openai.fine_tuning.alpha.graders": {
+        "title": "Graders"
+      },
+      "openai.fine_tuning.alpha.graders.execute": {
+        "title": "Execute"
+      },
+      "openai.fine_tuning.alpha.graders.read": {
+        "title": "Read"
+      },
+      "openai.fine_tuning.checkpoints": {
+        "title": "Checkpoints"
+      },
+      "openai.fine_tuning.checkpoints.permissions": {
+        "title": "Permissions"
+      },
+      "openai.fine_tuning.checkpoints.permissions.delete": {
+        "title": "Delete"
+      },
+      "openai.fine_tuning.checkpoints.permissions.read": {
+        "title": "Read"
+      },
+      "openai.fine_tuning.checkpoints.permissions.share": {
+        "title": "Share"
+      },
+      "openai.fine_tuning.jobs": {
+        "title": "Jobs"
+      },
+      "openai.fine_tuning.jobs.checkpoints": {
+        "title": "Checkpoints"
+      },
+      "openai.fine_tuning.jobs.checkpoints.read": {
+        "title": "Read"
+      },
+      "openai.fine_tuning.jobs.checkpoints.write": {
+        "title": "Create and edit"
+      },
+      "openai.fine_tuning.jobs.events": {
+        "title": "Events"
+      },
+      "openai.fine_tuning.jobs.events.read": {
+        "title": "Read"
+      },
+      "openai.fine_tuning.jobs.execute": {
+        "title": "Execute"
+      },
+      "openai.fine_tuning.jobs.read": {
+        "title": "Read"
+      },
+      "openai.fine_tuning.jobs.write": {
+        "title": "Create and edit"
+      },
+      "openai.models": {
+        "title": "Models"
+      },
+      "openai.models.delete": {
+        "title": "Delete"
+      },
+      "openai.models.read": {
+        "title": "Read"
+      },
+      "openai.realtime": {
+        "title": "Realtime"
+      },
+      "openai.realtime.calls": {
+        "title": "Calls"
+      },
+      "openai.realtime.calls.generate": {
+        "title": "Generate"
+      },
+      "openai.realtime.calls.hangup": {
+        "title": "Hangup"
+      },
+      "openai.realtime.calls.hangup.send": {
+        "title": "Send"
+      },
+      "openai.realtime.calls.refer": {
+        "title": "Refer"
+      },
+      "openai.realtime.calls.refer.send": {
+        "title": "Send"
+      },
+      "openai.realtime.calls.send": {
+        "title": "Send"
+      },
+      "openai.realtime.client_secrets": {
+        "title": "Client secrets"
+      },
+      "openai.realtime.client_secrets.generate": {
+        "title": "Generate"
+      },
+      "openai.realtime.sessions": {
+        "title": "Sessions"
+      },
+      "openai.realtime.sessions.generate": {
+        "title": "Generate"
+      },
+      "openai.realtime.transcription_sessions": {
+        "title": "Transcription sessions"
+      },
+      "openai.realtime.transcription_sessions.generate": {
+        "title": "Generate"
+      },
+      "openai.responses": {
+        "title": "Responses"
+      },
+      "openai.responses.delete": {
+        "title": "Delete"
+      },
+      "openai.responses.generate": {
+        "title": "Generate"
+      },
+      "openai.responses.input_items": {
+        "title": "Input items"
+      },
+      "openai.responses.input_items.read": {
+        "title": "Read"
+      },
+      "openai.responses.read": {
+        "title": "Read"
+      },
+      "openai.responses.write": {
+        "title": "Create and edit"
+      },
+      "openai.threads": {
+        "title": "Threads"
+      },
+      "openai.threads.delete": {
+        "title": "Delete"
+      },
+      "openai.threads.messages": {
+        "title": "Messages"
+      },
+      "openai.threads.messages.delete": {
+        "title": "Delete"
+      },
+      "openai.threads.messages.read": {
+        "title": "Read"
+      },
+      "openai.threads.messages.write": {
+        "title": "Create and edit"
+      },
+      "openai.threads.read": {
+        "title": "Read"
+      },
+      "openai.threads.runs": {
+        "title": "Runs"
+      },
+      "openai.threads.runs.execute": {
+        "title": "Execute"
+      },
+      "openai.threads.runs.read": {
+        "title": "Read"
+      },
+      "openai.threads.runs.steps": {
+        "title": "Steps"
+      },
+      "openai.threads.runs.steps.read": {
+        "title": "Read"
+      },
+      "openai.threads.runs.submit_tool_outputs": {
+        "title": "Submit tool outputs"
+      },
+      "openai.threads.runs.submit_tool_outputs.execute": {
+        "title": "Execute"
+      },
+      "openai.threads.runs.write": {
+        "title": "Create and edit"
+      },
+      "openai.threads.write": {
+        "title": "Create and edit"
+      },
+      "openai.vector_stores": {
+        "title": "Vector stores"
+      },
+      "openai.vector_stores.delete": {
+        "title": "Delete"
+      },
+      "openai.vector_stores.file_batches": {
+        "title": "File batches"
+      },
+      "openai.vector_stores.file_batches.files": {
+        "title": "Files"
+      },
+      "openai.vector_stores.file_batches.files.read": {
+        "title": "Read"
+      },
+      "openai.vector_stores.file_batches.read": {
+        "title": "Read"
+      },
+      "openai.vector_stores.file_batches.write": {
+        "title": "Create and edit"
+      },
+      "openai.vector_stores.files": {
+        "title": "Files"
+      },
+      "openai.vector_stores.files.content": {
+        "title": "Content"
+      },
+      "openai.vector_stores.files.content.read": {
+        "title": "Read"
+      },
+      "openai.vector_stores.files.delete": {
+        "title": "Delete"
+      },
+      "openai.vector_stores.files.read": {
+        "title": "Read"
+      },
+      "openai.vector_stores.files.write": {
+        "title": "Create and edit"
+      },
+      "openai.vector_stores.read": {
+        "title": "Read"
+      },
+      "openai.vector_stores.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "api-key",
+            "origin": "https://example.com",
+            "path": "/",
+            "value": "api_key"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://example.com",
+            "path": "/openai/v1",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "hint": "Foundry resources can also use https://\u003cresource\u003e.services.ai.azure.com or https://\u003cresource\u003e.cognitiveservices.azure.com.",
+        "key": "origin",
+        "label": "Your Azure OpenAI endpoint (https://\u003cresource\u003e.openai.azure.com)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            1,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Azure OpenAI",
   "http": {
     "operations": {
-      "ChatCompletions_Create": {"action":"generate.completions","effects":["generate"],"method":"POST","origin":"{origin}","path":"/deployments/{deployment-id}/chat/completions","params":["api-version"],"body":"json","scope":{"deployment-id":{"from":"path","at":"deployment-id"}}},
-      "Completions_Create": {"action":"generate.completions","effects":["generate"],"method":"POST","origin":"{origin}","path":"/deployments/{deployment-id}/completions","params":["api-version"],"body":"json","scope":{"deployment-id":{"from":"path","at":"deployment-id"}}},
-      "FineTuning_CopyCheckpoint": {"action":"generate.checkpoints","effects":["generate"],"method":"POST","origin":"{origin}","path":"/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints/{fine_tuning_checkpoint_id}/copy","params":["api-version"],"body":"json","scope":{"fine_tuning_job_id":{"from":"path","at":"fine_tuning_job_id"},"fine_tuning_checkpoint_id":{"from":"path","at":"fine_tuning_checkpoint_id"},"destinationResourceId":{"from":"body","at":"/destinationResourceId"}}},
-      "FineTuning_GetCheckpoint": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints/{fine_tuning_checkpoint_id}/copy","params":["api-version"],"scope":{"fine_tuning_job_id":{"from":"path","at":"fine_tuning_job_id"},"fine_tuning_checkpoint_id":{"from":"path","at":"fine_tuning_checkpoint_id"}}},
-      "ImageGenerations_Create": {"action":"generate.generations","effects":["generate"],"method":"POST","origin":"{origin}","path":"/deployments/{deployment-id}/images/generations","params":["api-version"],"body":"json","scope":{"deployment-id":{"from":"path","at":"deployment-id"}}},
-      "Transcriptions_Create": {"action":"generate.transcriptions","effects":["generate"],"method":"POST","origin":"{origin}","path":"/deployments/{deployment-id}/audio/transcriptions","params":["api-version"],"body":"any","scope":{"deployment-id":{"from":"path","at":"deployment-id"}}},
-      "Translations_Create": {"action":"generate.translations","effects":["generate"],"method":"POST","origin":"{origin}","path":"/deployments/{deployment-id}/audio/translations","params":["api-version"],"body":"any","scope":{"deployment-id":{"from":"path","at":"deployment-id"}}},
-      "acceptRealtimeCall": {"action":"send.calls","effects":["send"],"method":"POST","origin":"{origin}","path":"/realtime/calls/{call_id}/accept","params":["api-version"],"body":"json","scope":{"call_id":{"from":"path","at":"call_id"},"request":{"from":"body","at":"","type":"object"}},"grant":["call_id"]},
-      "cancelBatch": {"action":"generate.batches","effects":["generate"],"method":"POST","origin":"{origin}","path":"/batches/{batch_id}/cancel","params":["api-version"],"scope":{"batch_id":{"from":"path","at":"batch_id"}}},
-      "cancelEvalRun": {"action":"execute.runs","effects":["execute"],"method":"POST","origin":"{origin}","path":"/evals/{eval_id}/runs/{run_id}","params":["api-version"],"scope":{"eval_id":{"from":"path","at":"eval_id"},"run_id":{"from":"path","at":"run_id"}}},
-      "cancelFineTuningJob": {"action":"execute.jobs","effects":["execute"],"method":"POST","origin":"{origin}","path":"/fine_tuning/jobs/{fine_tuning_job_id}/cancel","params":["api-version"],"scope":{"fine_tuning_job_id":{"from":"path","at":"fine_tuning_job_id"}}},
-      "cancelResponse": {"action":"generate.responses","effects":["generate"],"method":"POST","origin":"{origin}","path":"/responses/{response_id}/cancel","params":["api-version"],"scope":{"response_id":{"from":"path","at":"response_id"}}},
-      "cancelRun": {"action":"execute.runs","effects":["execute"],"method":"POST","origin":"{origin}","path":"/threads/{thread_id}/runs/{run_id}/cancel","params":["api-version"],"scope":{"thread_id":{"from":"path","at":"thread_id"},"run_id":{"from":"path","at":"run_id"}}},
-      "cancelVectorStoreFileBatch": {"action":"generate.file_batches","effects":["generate"],"method":"POST","origin":"{origin}","path":"/vector_stores/{vector_store_id}/file_batches/{batch_id}/cancel","params":["api-version"],"scope":{"vector_store_id":{"from":"path","at":"vector_store_id"},"batch_id":{"from":"path","at":"batch_id"}}},
-      "createBatch": {"action":"generate.batches","effects":["generate"],"method":"POST","origin":"{origin}","path":"/batches","params":["api-version"],"body":"json","scope":{}},
-      "createChatCompletion": {"action":"generate.completions","effects":["generate"],"method":"POST","origin":"{origin}","path":"/chat/completions","params":["api-version"],"body":"json","scope":{}},
-      "createCompletion": {"action":"generate.completions","effects":["generate"],"method":"POST","origin":"{origin}","path":"/completions","params":["api-version"],"body":"json","scope":{}},
-      "createContainer": {"action":"generate.containers","effects":["generate"],"method":"POST","origin":"{origin}","path":"/containers","params":["api-version"],"body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "createContainerFile": {"action":"generate.files","effects":["generate"],"method":"POST","origin":"{origin}","path":"/containers/{container_id}/files","params":["api-version"],"body":"any","scope":{"container_id":{"from":"path","at":"container_id"}}},
-      "createConversation": {"action":"generate.conversations","effects":["generate"],"method":"POST","origin":"{origin}","path":"/conversations","params":["api-version"],"body":"json","scope":{}},
-      "createConversationItems": {"action":"generate.items","effects":["generate"],"method":"POST","origin":"{origin}","path":"/conversations/{conversation_id}/items","params":["api-version","include"],"body":"json","scope":{"conversation_id":{"from":"path","at":"conversation_id"}}},
-      "createEmbedding": {"action":"generate.embeddings","effects":["generate"],"method":"POST","origin":"{origin}","path":"/embeddings","params":["api-version"],"body":"json","scope":{}},
-      "createEval": {"action":"execute.evals","effects":["execute"],"method":"POST","origin":"{origin}","path":"/evals","params":["api-version"],"body":"json","scope":{}},
-      "createEvalRun": {"action":"execute.evals","effects":["execute"],"method":"POST","origin":"{origin}","path":"/evals/{eval_id}/runs","params":["api-version"],"body":"json","scope":{"eval_id":{"from":"path","at":"eval_id"}}},
-      "createFile": {"action":"generate.files","effects":["generate"],"method":"POST","origin":"{origin}","path":"/files","params":["api-version"],"body":"any","scope":{}},
-      "createFineTuningCheckpointPermission": {"action":"share.permissions","effects":["share"],"method":"POST","origin":"{origin}","path":"/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions","params":["api-version"],"body":"json","scope":{"fine_tuned_model_checkpoint":{"from":"path","at":"fine_tuned_model_checkpoint"},"request":{"from":"body","at":"","type":"object"}},"grant":["fine_tuned_model_checkpoint"]},
-      "createFineTuningJob": {"action":"execute.jobs","effects":["execute"],"method":"POST","origin":"{origin}","path":"/fine_tuning/jobs","params":["api-version"],"body":"json","scope":{"training_file":{"from":"body","at":"/training_file"}}},
-      "createMessage": {"action":"send.messages","effects":["send"],"method":"POST","origin":"{origin}","path":"/threads/{thread_id}/messages","params":["api-version"],"body":"json","scope":{"thread_id":{"from":"path","at":"thread_id"},"request":{"from":"body","at":"","type":"object"}},"grant":["thread_id"]},
-      "createRealtimeCall": {"action":"send.calls","effects":["send"],"method":"POST","origin":"{origin}","path":"/realtime/calls","params":["api-version"],"body":"any","scope":{}},
-      "createRealtimeClientSecret": {"action":"generate.client_secrets","effects":["generate"],"method":"POST","origin":"{origin}","path":"/realtime/client_secrets","params":["api-version"],"body":"json","scope":{}},
-      "createRealtimeSession": {"action":"generate.sessions","effects":["generate"],"method":"POST","origin":"{origin}","path":"/realtime/sessions","params":["api-version"],"body":"json","scope":{}},
-      "createRealtimeTranscriptionSession": {"action":"generate.transcription_sessions","effects":["generate"],"method":"POST","origin":"{origin}","path":"/realtime/transcription_sessions","params":["api-version"],"body":"json","scope":{}},
-      "createResponse": {"action":"generate.responses","effects":["generate"],"method":"POST","origin":"{origin}","path":"/responses","params":["api-version"],"body":"json","scope":{}},
-      "createRun": {"action":"execute.threads","effects":["execute"],"method":"POST","origin":"{origin}","path":"/threads/{thread_id}/runs","params":["api-version"],"body":"json","scope":{"thread_id":{"from":"path","at":"thread_id"},"assistant_id":{"from":"body","at":"/assistant_id"}}},
-      "createThread": {"action":"generate.threads","effects":["generate"],"method":"POST","origin":"{origin}","path":"/threads","params":["api-version"],"body":"json","scope":{}},
-      "createVectorStore": {"action":"generate.vector_stores","effects":["generate"],"method":"POST","origin":"{origin}","path":"/vector_stores","params":["api-version"],"body":"json","scope":{}},
-      "createVectorStoreFile": {"action":"generate.files","effects":["generate"],"method":"POST","origin":"{origin}","path":"/vector_stores/{vector_store_id}/files","params":["api-version"],"body":"json","scope":{"vector_store_id":{"from":"path","at":"vector_store_id"},"file_id":{"from":"body","at":"/file_id"}}},
-      "createVectorStoreFileBatch": {"action":"generate.file_batches","effects":["generate"],"method":"POST","origin":"{origin}","path":"/vector_stores/{vector_store_id}/file_batches","params":["api-version"],"body":"json","scope":{"vector_store_id":{"from":"path","at":"vector_store_id"}}},
-      "deleteContainer": {"action":"delete.containers","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/containers/{container_id}","params":["api-version"],"scope":{"container_id":{"from":"path","at":"container_id"}}},
-      "deleteContainerFile": {"action":"delete.files","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/containers/{container_id}/files/{file_id}","params":["api-version"],"scope":{"container_id":{"from":"path","at":"container_id"},"file_id":{"from":"path","at":"file_id"}}},
-      "deleteConversation": {"action":"delete.conversations","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/conversations/{conversation_id}","params":["api-version"],"scope":{"conversation_id":{"from":"path","at":"conversation_id"}}},
-      "deleteConversationItem": {"action":"delete.items","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/conversations/{conversation_id}/items/{item_id}","params":["api-version"],"scope":{"conversation_id":{"from":"path","at":"conversation_id"},"item_id":{"from":"path","at":"item_id"}}},
-      "deleteEval": {"action":"delete.evals","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/evals/{eval_id}","params":["api-version"],"scope":{"eval_id":{"from":"path","at":"eval_id"}}},
-      "deleteEvalRun": {"action":"delete.runs","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/evals/{eval_id}/runs/{run_id}","params":["api-version"],"scope":{"eval_id":{"from":"path","at":"eval_id"},"run_id":{"from":"path","at":"run_id"}}},
-      "deleteFile": {"action":"delete.files","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/files/{file_id}","params":["api-version"],"scope":{"file_id":{"from":"path","at":"file_id"}}},
-      "deleteFineTuningCheckpointPermission": {"action":"delete.permissions","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions/{permission_id}","params":["api-version"],"scope":{"fine_tuned_model_checkpoint":{"from":"path","at":"fine_tuned_model_checkpoint"},"permission_id":{"from":"path","at":"permission_id"}}},
-      "deleteMessage": {"action":"delete.messages","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/threads/{thread_id}/messages/{message_id}","params":["api-version"],"scope":{"thread_id":{"from":"path","at":"thread_id"},"message_id":{"from":"path","at":"message_id"}}},
-      "deleteModel": {"action":"delete.models","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/models/{model}","params":["api-version"],"scope":{"model":{"from":"path","at":"model"}}},
-      "deleteResponse": {"action":"delete.responses","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/responses/{response_id}","params":["api-version"],"scope":{"response_id":{"from":"path","at":"response_id"}}},
-      "deleteThread": {"action":"delete.threads","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/threads/{thread_id}","params":["api-version"],"scope":{"thread_id":{"from":"path","at":"thread_id"}}},
-      "deleteVectorStore": {"action":"delete.vector_stores","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/vector_stores/{vector_store_id}","params":["api-version"],"scope":{"vector_store_id":{"from":"path","at":"vector_store_id"}}},
-      "deleteVectorStoreFile": {"action":"delete.files","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/vector_stores/{vector_store_id}/files/{file_id}","params":["api-version"],"scope":{"vector_store_id":{"from":"path","at":"vector_store_id"},"file_id":{"from":"path","at":"file_id"}}},
-      "downloadFile": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/files/{file_id}/content","params":["api-version"],"scope":{"file_id":{"from":"path","at":"file_id"}}},
-      "embeddings_create": {"action":"generate.embeddings","effects":["generate"],"method":"POST","origin":"{origin}","path":"/deployments/{deployment-id}/embeddings","params":["api-version"],"body":"json","scope":{"deployment-id":{"from":"path","at":"deployment-id"}}},
-      "getEval": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/evals/{eval_id}","params":["api-version"],"scope":{"eval_id":{"from":"path","at":"eval_id"}}},
-      "getEvalRun": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/evals/{eval_id}/runs/{run_id}","params":["api-version"],"scope":{"eval_id":{"from":"path","at":"eval_id"},"run_id":{"from":"path","at":"run_id"}}},
-      "getEvalRunOutputItem": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/evals/{eval_id}/runs/{run_id}/output_items/{output_item_id}","params":["api-version"],"scope":{"eval_id":{"from":"path","at":"eval_id"},"run_id":{"from":"path","at":"run_id"},"output_item_id":{"from":"path","at":"output_item_id"}}},
-      "getEvalRunOutputItems": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/evals/{eval_id}/runs/{run_id}/output_items","params":["api-version","after","limit","status","order"],"scope":{"eval_id":{"from":"path","at":"eval_id"},"run_id":{"from":"path","at":"run_id"}}},
-      "getEvalRuns": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/evals/{eval_id}/runs","params":["api-version","after","limit","order","status"],"scope":{"eval_id":{"from":"path","at":"eval_id"}}},
-      "getResponse": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/responses/{response_id}","params":["api-version","include[]","stream","starting_after","include_obfuscation"],"scope":{"response_id":{"from":"path","at":"response_id"}}},
-      "getRunStep": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/threads/{thread_id}/runs/{run_id}/steps/{step_id}","params":["api-version"],"scope":{"thread_id":{"from":"path","at":"thread_id"},"run_id":{"from":"path","at":"run_id"},"step_id":{"from":"path","at":"step_id"}}},
-      "getVectorStore": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/vector_stores/{vector_store_id}","params":["api-version"],"scope":{"vector_store_id":{"from":"path","at":"vector_store_id"}}},
-      "getVectorStoreFile": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/vector_stores/{vector_store_id}/files/{file_id}","params":["api-version"],"scope":{"vector_store_id":{"from":"path","at":"vector_store_id"},"file_id":{"from":"path","at":"file_id"}}},
-      "getVectorStoreFileBatch": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/vector_stores/{vector_store_id}/file_batches/{batch_id}","params":["api-version"],"scope":{"vector_store_id":{"from":"path","at":"vector_store_id"},"batch_id":{"from":"path","at":"batch_id"}}},
-      "hangupRealtimeCall": {"action":"send.hangup","effects":["send"],"method":"POST","origin":"{origin}","path":"/realtime/calls/{call_id}/hangup","params":["api-version"],"scope":{"call_id":{"from":"path","at":"call_id"}}},
-      "listBatches": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/batches","params":["api-version","after","limit"],"scope":{}},
-      "listContainerFiles": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/containers/{container_id}/files","params":["api-version","limit","order","after","before"],"scope":{"container_id":{"from":"path","at":"container_id"}}},
-      "listContainers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/containers","params":["api-version","limit","order","after","before"],"scope":{}},
-      "listConversationItems": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/conversations/{conversation_id}/items","params":["api-version","limit","order","after","include"],"scope":{"conversation_id":{"from":"path","at":"conversation_id"}}},
-      "listEvals": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/evals","params":["api-version","after","limit","order","order_by"],"scope":{}},
-      "listFiles": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/files","params":["api-version","purpose","limit","order","after"],"scope":{}},
-      "listFilesInVectorStoreBatch": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/vector_stores/{vector_store_id}/file_batches/{batch_id}/files","params":["api-version","limit","order","after","before","filter"],"scope":{"vector_store_id":{"from":"path","at":"vector_store_id"},"batch_id":{"from":"path","at":"batch_id"}}},
-      "listFineTuningCheckpointPermissions": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions","params":["api-version","project_id","after","limit","order"],"scope":{"fine_tuned_model_checkpoint":{"from":"path","at":"fine_tuned_model_checkpoint"}}},
-      "listFineTuningEvents": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/fine_tuning/jobs/{fine_tuning_job_id}/events","params":["api-version","after","limit"],"scope":{"fine_tuning_job_id":{"from":"path","at":"fine_tuning_job_id"}}},
-      "listFineTuningJobCheckpoints": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints","params":["api-version","after","limit"],"scope":{"fine_tuning_job_id":{"from":"path","at":"fine_tuning_job_id"}}},
-      "listInputItems": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/responses/{response_id}/input_items","params":["api-version","limit","order","after","before"],"scope":{"response_id":{"from":"path","at":"response_id"}}},
-      "listMessages": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/threads/{thread_id}/messages","params":["api-version","limit","order","after","before","run_id"],"scope":{"thread_id":{"from":"path","at":"thread_id"}}},
-      "listModels": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/models","params":["api-version"],"scope":{}},
-      "listPaginatedFineTuningJobs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/fine_tuning/jobs","params":["api-version","after","limit"],"scope":{}},
-      "listRunSteps": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/threads/{thread_id}/runs/{run_id}/steps","params":["api-version","limit","order","after","before"],"scope":{"thread_id":{"from":"path","at":"thread_id"},"run_id":{"from":"path","at":"run_id"}}},
-      "listRuns": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/threads/{thread_id}/runs","params":["api-version","limit","order","after","before"],"scope":{"thread_id":{"from":"path","at":"thread_id"}}},
-      "listVectorStoreFiles": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/vector_stores/{vector_store_id}/files","params":["api-version","limit","order","after","before","filter"],"scope":{"vector_store_id":{"from":"path","at":"vector_store_id"}}},
-      "listVectorStores": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/vector_stores","params":["api-version","limit","order","after","before"],"scope":{}},
-      "modifyMessage": {"action":"send.messages","effects":["send"],"method":"POST","origin":"{origin}","path":"/threads/{thread_id}/messages/{message_id}","params":["api-version"],"body":"json","scope":{"thread_id":{"from":"path","at":"thread_id"},"message_id":{"from":"path","at":"message_id"},"request":{"from":"body","at":"","type":"object"}},"grant":["thread_id","message_id"]},
-      "modifyRun": {"action":"execute.runs","effects":["execute"],"method":"POST","origin":"{origin}","path":"/threads/{thread_id}/runs/{run_id}","params":["api-version"],"body":"json","scope":{"thread_id":{"from":"path","at":"thread_id"},"run_id":{"from":"path","at":"run_id"}}},
-      "modifyThread": {"action":"execute.runs","effects":["execute"],"method":"POST","origin":"{origin}","path":"/threads/{thread_id}","params":["api-version"],"body":"json","scope":{"thread_id":{"from":"path","at":"thread_id"}}},
-      "modifyVectorStore": {"action":"generate.vector_stores","effects":["generate"],"method":"POST","origin":"{origin}","path":"/vector_stores/{vector_store_id}","params":["api-version"],"body":"json","scope":{"vector_store_id":{"from":"path","at":"vector_store_id"}}},
-      "pauseFineTuningJob": {"action":"execute.jobs","effects":["execute"],"method":"POST","origin":"{origin}","path":"/fine_tuning/jobs/{fine_tuning_job_id}/pause","params":["api-version"],"scope":{"fine_tuning_job_id":{"from":"path","at":"fine_tuning_job_id"}}},
-      "referRealtimeCall": {"action":"send.refer","effects":["send"],"method":"POST","origin":"{origin}","path":"/realtime/calls/{call_id}/refer","params":["api-version"],"body":"json","scope":{"call_id":{"from":"path","at":"call_id"},"request":{"from":"body","at":"","type":"object"}},"grant":["call_id"]},
-      "rejectRealtimeCall": {"action":"send.calls","effects":["send"],"method":"POST","origin":"{origin}","path":"/realtime/calls/{call_id}/reject","params":["api-version"],"body":"json","scope":{"call_id":{"from":"path","at":"call_id"},"request":{"from":"body","at":"","type":"object"}},"grant":["call_id"]},
-      "resumeFineTuningJob": {"action":"execute.jobs","effects":["execute"],"method":"POST","origin":"{origin}","path":"/fine_tuning/jobs/{fine_tuning_job_id}/resume","params":["api-version"],"scope":{"fine_tuning_job_id":{"from":"path","at":"fine_tuning_job_id"}}},
-      "retrieveBatch": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/batches/{batch_id}","params":["api-version"],"scope":{"batch_id":{"from":"path","at":"batch_id"}}},
-      "retrieveContainer": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/containers/{container_id}","params":["api-version"],"scope":{"container_id":{"from":"path","at":"container_id"}}},
-      "retrieveContainerFile": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/containers/{container_id}/files/{file_id}","params":["api-version"],"scope":{"container_id":{"from":"path","at":"container_id"},"file_id":{"from":"path","at":"file_id"}}},
-      "retrieveContainerFileContent": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/containers/{container_id}/files/{file_id}/content","params":["api-version"],"scope":{"container_id":{"from":"path","at":"container_id"},"file_id":{"from":"path","at":"file_id"}}},
-      "retrieveConversation": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/conversations/{conversation_id}","params":["api-version"],"scope":{"conversation_id":{"from":"path","at":"conversation_id"}}},
-      "retrieveConversationItem": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/conversations/{conversation_id}/items/{item_id}","params":["api-version","include"],"scope":{"conversation_id":{"from":"path","at":"conversation_id"},"item_id":{"from":"path","at":"item_id"}}},
-      "retrieveFile": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/files/{file_id}","params":["api-version"],"scope":{"file_id":{"from":"path","at":"file_id"}}},
-      "retrieveFineTuningJob": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/fine_tuning/jobs/{fine_tuning_job_id}","params":["api-version"],"scope":{"fine_tuning_job_id":{"from":"path","at":"fine_tuning_job_id"}}},
-      "retrieveMessage": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/threads/{thread_id}/messages/{message_id}","params":["api-version"],"scope":{"thread_id":{"from":"path","at":"thread_id"},"message_id":{"from":"path","at":"message_id"}}},
-      "retrieveModel": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/models/{model}","params":["api-version"],"scope":{"model":{"from":"path","at":"model"}}},
-      "retrieveRun": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/threads/{thread_id}/runs/{run_id}","params":["api-version"],"scope":{"thread_id":{"from":"path","at":"thread_id"},"run_id":{"from":"path","at":"run_id"}}},
-      "retrieveThread": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/threads/{thread_id}","params":["api-version"],"scope":{"thread_id":{"from":"path","at":"thread_id"}}},
-      "retrieveVectorStoreFileContent": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/vector_stores/{vector_store_id}/files/{file_id}/content","params":["api-version"],"scope":{"vector_store_id":{"from":"path","at":"vector_store_id"},"file_id":{"from":"path","at":"file_id"}}},
-      "runGrader": {"action":"execute.run","effects":["execute"],"method":"POST","origin":"{origin}","path":"/fine_tuning/alpha/graders/run","params":["api-version"],"body":"json","scope":{}},
-      "searchVectorStore": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/vector_stores/{vector_store_id}/search","params":["api-version"],"body":"json","scope":{"vector_store_id":{"from":"path","at":"vector_store_id"}}},
-      "submitToolOutputsToRun": {"action":"execute.submit_tool_outputs","effects":["execute"],"method":"POST","origin":"{origin}","path":"/threads/{thread_id}/runs/{run_id}/submit_tool_outputs","params":["api-version"],"body":"json","scope":{"thread_id":{"from":"path","at":"thread_id"},"run_id":{"from":"path","at":"run_id"}}},
-      "updateConversation": {"action":"generate.conversations","effects":["generate"],"method":"POST","origin":"{origin}","path":"/conversations/{conversation_id}","params":["api-version"],"body":"json","scope":{"conversation_id":{"from":"path","at":"conversation_id"}}},
-      "updateEval": {"action":"execute.evals","effects":["execute"],"method":"POST","origin":"{origin}","path":"/evals/{eval_id}","params":["api-version"],"body":"json","scope":{"eval_id":{"from":"path","at":"eval_id"}}},
-      "updateVectorStoreFileAttributes": {"action":"generate.files","effects":["generate"],"method":"POST","origin":"{origin}","path":"/vector_stores/{vector_store_id}/files/{file_id}","params":["api-version"],"body":"json","scope":{"vector_store_id":{"from":"path","at":"vector_store_id"},"file_id":{"from":"path","at":"file_id"}}},
-      "validateGrader": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/fine_tuning/alpha/graders/validate","params":["api-version"],"body":"json","scope":{}}
+      "ChatCompletions_Create": {"action":"openai.deployments.chat.completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/deployments/{deployment-id}/chat/completions","scope":{"deployment-id":{"at":"deployment-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "Completions_Create": {"action":"openai.deployments.completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/deployments/{deployment-id}/completions","scope":{"deployment-id":{"at":"deployment-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"user":{"at":"/user","from":"body","optional":true}}},
+      "FineTuning_CopyCheckpoint": {"action":"openai.fine_tuning.jobs.checkpoints.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints/{fine_tuning_checkpoint_id}/copy","scope":{"destinationResourceId":{"at":"/destinationResourceId","from":"body"},"fine_tuning_checkpoint_id":{"at":"fine_tuning_checkpoint_id","from":"path"},"fine_tuning_job_id":{"at":"fine_tuning_job_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "FineTuning_GetCheckpoint": {"action":"openai.fine_tuning.jobs.checkpoints.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints/{fine_tuning_checkpoint_id}/copy","scope":{"fine_tuning_checkpoint_id":{"at":"fine_tuning_checkpoint_id","from":"path"},"fine_tuning_job_id":{"at":"fine_tuning_job_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "ImageGenerations_Create": {"action":"openai.deployments.images.generations.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/deployments/{deployment-id}/images/generations","scope":{"deployment-id":{"at":"deployment-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"user":{"at":"/user","from":"body","optional":true}}},
+      "Transcriptions_Create": {"action":"openai.deployments.audio.transcriptions.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/deployments/{deployment-id}/audio/transcriptions","scope":{"deployment-id":{"at":"deployment-id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "Translations_Create": {"action":"openai.deployments.audio.translations.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/deployments/{deployment-id}/audio/translations","scope":{"deployment-id":{"at":"deployment-id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "acceptRealtimeCall": {"action":"openai.realtime.calls.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/realtime/calls/{call_id}/accept","scope":{"call_id":{"at":"call_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "cancelBatch": {"action":"openai.batches.write","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/batches/{batch_id}/cancel","scope":{"batch_id":{"at":"batch_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "cancelEvalRun": {"action":"openai.evals.runs.write","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/evals/{eval_id}/runs/{run_id}","scope":{"eval_id":{"at":"eval_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"run_id":{"at":"run_id","from":"path"}}},
+      "cancelFineTuningJob": {"action":"openai.fine_tuning.jobs.write","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/fine_tuning/jobs/{fine_tuning_job_id}/cancel","scope":{"fine_tuning_job_id":{"at":"fine_tuning_job_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "cancelResponse": {"action":"openai.responses.write","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/responses/{response_id}/cancel","scope":{"query":{"at":"","from":"query","type":"object"},"response_id":{"at":"response_id","from":"path"}}},
+      "cancelRun": {"action":"openai.threads.runs.write","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/threads/{thread_id}/runs/{run_id}/cancel","scope":{"query":{"at":"","from":"query","type":"object"},"run_id":{"at":"run_id","from":"path"},"thread_id":{"at":"thread_id","from":"path"}}},
+      "cancelVectorStoreFileBatch": {"action":"openai.vector_stores.file_batches.write","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/vector_stores/{vector_store_id}/file_batches/{batch_id}/cancel","scope":{"batch_id":{"at":"batch_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"vector_store_id":{"at":"vector_store_id","from":"path"}}},
+      "createBatch": {"action":"openai.batches.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/batches","scope":{"input_file_id":{"at":"/input_file_id","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createChatCompletion": {"action":"openai.chat.completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/chat/completions","scope":{"prompt_cache_key":{"at":"/prompt_cache_key","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"user":{"at":"/user","from":"body","optional":true}}},
+      "createCompletion": {"action":"openai.completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/completions","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"user":{"at":"/user","from":"body","optional":true}}},
+      "createContainer": {"action":"openai.containers.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/containers","scope":{"file_ids":{"at":"/file_ids","from":"body","optional":true,"type":"array"},"name":{"at":"/name","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createContainerFile": {"action":"openai.containers.files.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/containers/{container_id}/files","scope":{"container_id":{"at":"container_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "createConversation": {"action":"openai.conversations.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/conversations","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createConversationItems": {"action":"openai.conversations.items.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version","include"],"path":"/openai/v1/conversations/{conversation_id}/items","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createEmbedding": {"action":"openai.embeddings.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/embeddings","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"user":{"at":"/user","from":"body","optional":true}}},
+      "createEval": {"action":"openai.evals.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/evals","scope":{"name":{"at":"/name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createEvalRun": {"action":"openai.evals.runs.execute","body":"json","effects":["execute","generate","pay"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/evals/{eval_id}/runs","scope":{"eval_id":{"at":"eval_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createFile": {"action":"openai.files.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/files","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createFineTuningCheckpointPermission": {"action":"openai.fine_tuning.checkpoints.permissions.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions","scope":{"fine_tuned_model_checkpoint":{"at":"fine_tuned_model_checkpoint","from":"path"},"project_ids":{"at":"/project_ids","from":"body","type":"array"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createFineTuningJob": {"action":"openai.fine_tuning.jobs.execute","body":"json","effects":["execute","pay"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/fine_tuning/jobs","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"training_file":{"at":"/training_file","from":"body"}}},
+      "createMessage": {"action":"openai.threads.messages.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/threads/{thread_id}/messages","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"thread_id":{"at":"thread_id","from":"path"}}},
+      "createRealtimeCall": {"action":"openai.realtime.calls.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/realtime/calls","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createRealtimeClientSecret": {"action":"openai.realtime.client_secrets.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/realtime/client_secrets","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createRealtimeSession": {"action":"openai.realtime.sessions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/realtime/sessions","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createRealtimeTranscriptionSession": {"action":"openai.realtime.transcription_sessions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/realtime/transcription_sessions","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createResponse": {"action":"openai.responses.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/responses","scope":{"prompt_cache_key":{"at":"/prompt_cache_key","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"user":{"at":"/user","from":"body","optional":true}}},
+      "createRun": {"action":"openai.threads.runs.execute","body":"json","effects":["execute","generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/threads/{thread_id}/runs","scope":{"assistant_id":{"at":"/assistant_id","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"thread_id":{"at":"thread_id","from":"path"}}},
+      "createThread": {"action":"openai.threads.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/threads","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createThreadAndRun": {"action":"openai.threads.runs.execute","body":"json","effects":["execute","generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/threads/runs","scope":{"assistant_id":{"at":"/assistant_id","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createVectorStore": {"action":"openai.vector_stores.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/vector_stores","scope":{"file_ids":{"at":"/file_ids","from":"body","optional":true,"type":"array"},"name":{"at":"/name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createVectorStoreFile": {"action":"openai.vector_stores.files.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/vector_stores/{vector_store_id}/files","scope":{"file_id":{"at":"/file_id","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"vector_store_id":{"at":"vector_store_id","from":"path"}}},
+      "createVectorStoreFileBatch": {"action":"openai.vector_stores.file_batches.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/vector_stores/{vector_store_id}/file_batches","scope":{"file_ids":{"at":"/file_ids","from":"body","optional":true,"type":"array"},"files":{"at":"/files","from":"body","optional":true,"type":"array"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"vector_store_id":{"at":"vector_store_id","from":"path"}}},
+      "deleteContainer": {"action":"openai.containers.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["api-version"],"path":"/openai/v1/containers/{container_id}","scope":{"container_id":{"at":"container_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteContainerFile": {"action":"openai.containers.files.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["api-version"],"path":"/openai/v1/containers/{container_id}/files/{file_id}","scope":{"container_id":{"at":"container_id","from":"path"},"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteConversation": {"action":"openai.conversations.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["api-version"],"path":"/openai/v1/conversations/{conversation_id}","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteConversationItem": {"action":"openai.conversations.items.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["api-version"],"path":"/openai/v1/conversations/{conversation_id}/items/{item_id}","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"item_id":{"at":"item_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteEval": {"action":"openai.evals.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["api-version"],"path":"/openai/v1/evals/{eval_id}","scope":{"eval_id":{"at":"eval_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteEvalRun": {"action":"openai.evals.runs.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["api-version"],"path":"/openai/v1/evals/{eval_id}/runs/{run_id}","scope":{"eval_id":{"at":"eval_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"run_id":{"at":"run_id","from":"path"}}},
+      "deleteFile": {"action":"openai.files.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["api-version"],"path":"/openai/v1/files/{file_id}","scope":{"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteFineTuningCheckpointPermission": {"action":"openai.fine_tuning.checkpoints.permissions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["api-version"],"path":"/openai/v1/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions/{permission_id}","scope":{"fine_tuned_model_checkpoint":{"at":"fine_tuned_model_checkpoint","from":"path"},"permission_id":{"at":"permission_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteMessage": {"action":"openai.threads.messages.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["api-version"],"path":"/openai/v1/threads/{thread_id}/messages/{message_id}","scope":{"message_id":{"at":"message_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"thread_id":{"at":"thread_id","from":"path"}}},
+      "deleteModel": {"action":"openai.models.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["api-version"],"path":"/openai/v1/models/{model}","scope":{"model":{"at":"model","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteResponse": {"action":"openai.responses.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["api-version"],"path":"/openai/v1/responses/{response_id}","scope":{"query":{"at":"","from":"query","type":"object"},"response_id":{"at":"response_id","from":"path"}}},
+      "deleteThread": {"action":"openai.threads.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["api-version"],"path":"/openai/v1/threads/{thread_id}","scope":{"query":{"at":"","from":"query","type":"object"},"thread_id":{"at":"thread_id","from":"path"}}},
+      "deleteVectorStore": {"action":"openai.vector_stores.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["api-version"],"path":"/openai/v1/vector_stores/{vector_store_id}","scope":{"query":{"at":"","from":"query","type":"object"},"vector_store_id":{"at":"vector_store_id","from":"path"}}},
+      "deleteVectorStoreFile": {"action":"openai.vector_stores.files.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["api-version"],"path":"/openai/v1/vector_stores/{vector_store_id}/files/{file_id}","scope":{"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"vector_store_id":{"at":"vector_store_id","from":"path"}}},
+      "downloadFile": {"action":"openai.files.content.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/files/{file_id}/content","scope":{"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "embeddings_create": {"action":"openai.deployments.embeddings.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/deployments/{deployment-id}/embeddings","scope":{"deployment-id":{"at":"deployment-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"user":{"at":"/user","from":"body","optional":true}}},
+      "getEval": {"action":"openai.evals.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/evals/{eval_id}","scope":{"eval_id":{"at":"eval_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getEvalRun": {"action":"openai.evals.runs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/evals/{eval_id}/runs/{run_id}","scope":{"eval_id":{"at":"eval_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"run_id":{"at":"run_id","from":"path"}}},
+      "getEvalRunOutputItem": {"action":"openai.evals.runs.output_items.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/evals/{eval_id}/runs/{run_id}/output_items/{output_item_id}","scope":{"eval_id":{"at":"eval_id","from":"path"},"output_item_id":{"at":"output_item_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"run_id":{"at":"run_id","from":"path"}}},
+      "getEvalRunOutputItems": {"action":"openai.evals.runs.output_items.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","after","limit","status","order"],"path":"/openai/v1/evals/{eval_id}/runs/{run_id}/output_items","scope":{"eval_id":{"at":"eval_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"run_id":{"at":"run_id","from":"path"}}},
+      "getEvalRuns": {"action":"openai.evals.runs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","after","limit","order","status"],"path":"/openai/v1/evals/{eval_id}/runs","scope":{"eval_id":{"at":"eval_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getResponse": {"action":"openai.responses.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","include[]","stream","starting_after","include_obfuscation"],"path":"/openai/v1/responses/{response_id}","scope":{"query":{"at":"","from":"query","type":"object"},"response_id":{"at":"response_id","from":"path"}}},
+      "getRunStep": {"action":"openai.threads.runs.steps.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/threads/{thread_id}/runs/{run_id}/steps/{step_id}","scope":{"query":{"at":"","from":"query","type":"object"},"run_id":{"at":"run_id","from":"path"},"step_id":{"at":"step_id","from":"path"},"thread_id":{"at":"thread_id","from":"path"}}},
+      "getVectorStore": {"action":"openai.vector_stores.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/vector_stores/{vector_store_id}","scope":{"query":{"at":"","from":"query","type":"object"},"vector_store_id":{"at":"vector_store_id","from":"path"}}},
+      "getVectorStoreFile": {"action":"openai.vector_stores.files.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/vector_stores/{vector_store_id}/files/{file_id}","scope":{"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"vector_store_id":{"at":"vector_store_id","from":"path"}}},
+      "getVectorStoreFileBatch": {"action":"openai.vector_stores.file_batches.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/vector_stores/{vector_store_id}/file_batches/{batch_id}","scope":{"batch_id":{"at":"batch_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"vector_store_id":{"at":"vector_store_id","from":"path"}}},
+      "hangupRealtimeCall": {"action":"openai.realtime.calls.hangup.send","effects":["send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/realtime/calls/{call_id}/hangup","scope":{"call_id":{"at":"call_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listBatches": {"action":"openai.batches.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","after","limit"],"path":"/openai/v1/batches","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listContainerFiles": {"action":"openai.containers.files.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","limit","order","after","before"],"path":"/openai/v1/containers/{container_id}/files","scope":{"container_id":{"at":"container_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listContainers": {"action":"openai.containers.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","limit","order","after","before"],"path":"/openai/v1/containers","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listConversationItems": {"action":"openai.conversations.items.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","limit","order","after","include"],"path":"/openai/v1/conversations/{conversation_id}/items","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listEvals": {"action":"openai.evals.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","after","limit","order","order_by"],"path":"/openai/v1/evals","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listFiles": {"action":"openai.files.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","purpose","limit","order","after"],"path":"/openai/v1/files","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listFilesInVectorStoreBatch": {"action":"openai.vector_stores.file_batches.files.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","limit","order","after","before","filter"],"path":"/openai/v1/vector_stores/{vector_store_id}/file_batches/{batch_id}/files","scope":{"batch_id":{"at":"batch_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"vector_store_id":{"at":"vector_store_id","from":"path"}}},
+      "listFineTuningCheckpointPermissions": {"action":"openai.fine_tuning.checkpoints.permissions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","project_id","after","limit","order"],"path":"/openai/v1/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions","scope":{"fine_tuned_model_checkpoint":{"at":"fine_tuned_model_checkpoint","from":"path"},"project_id":{"at":"project_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listFineTuningEvents": {"action":"openai.fine_tuning.jobs.events.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","after","limit"],"path":"/openai/v1/fine_tuning/jobs/{fine_tuning_job_id}/events","scope":{"fine_tuning_job_id":{"at":"fine_tuning_job_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listFineTuningJobCheckpoints": {"action":"openai.fine_tuning.jobs.checkpoints.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","after","limit"],"path":"/openai/v1/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints","scope":{"fine_tuning_job_id":{"at":"fine_tuning_job_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listInputItems": {"action":"openai.responses.input_items.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","limit","order","after","before"],"path":"/openai/v1/responses/{response_id}/input_items","scope":{"query":{"at":"","from":"query","type":"object"},"response_id":{"at":"response_id","from":"path"}}},
+      "listMessages": {"action":"openai.threads.messages.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","limit","order","after","before","run_id"],"path":"/openai/v1/threads/{thread_id}/messages","scope":{"query":{"at":"","from":"query","type":"object"},"run_id":{"at":"run_id","from":"query","optional":true},"thread_id":{"at":"thread_id","from":"path"}}},
+      "listModels": {"action":"openai.models.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/models","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listPaginatedFineTuningJobs": {"action":"openai.fine_tuning.jobs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","after","limit"],"path":"/openai/v1/fine_tuning/jobs","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listRunSteps": {"action":"openai.threads.runs.steps.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","limit","order","after","before"],"path":"/openai/v1/threads/{thread_id}/runs/{run_id}/steps","scope":{"query":{"at":"","from":"query","type":"object"},"run_id":{"at":"run_id","from":"path"},"thread_id":{"at":"thread_id","from":"path"}}},
+      "listRuns": {"action":"openai.threads.runs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","limit","order","after","before"],"path":"/openai/v1/threads/{thread_id}/runs","scope":{"query":{"at":"","from":"query","type":"object"},"thread_id":{"at":"thread_id","from":"path"}}},
+      "listVectorStoreFiles": {"action":"openai.vector_stores.files.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","limit","order","after","before","filter"],"path":"/openai/v1/vector_stores/{vector_store_id}/files","scope":{"query":{"at":"","from":"query","type":"object"},"vector_store_id":{"at":"vector_store_id","from":"path"}}},
+      "listVectorStores": {"action":"openai.vector_stores.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","limit","order","after","before"],"path":"/openai/v1/vector_stores","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "modifyMessage": {"action":"openai.threads.messages.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/threads/{thread_id}/messages/{message_id}","scope":{"message_id":{"at":"message_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"thread_id":{"at":"thread_id","from":"path"}}},
+      "modifyRun": {"action":"openai.threads.runs.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/threads/{thread_id}/runs/{run_id}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"run_id":{"at":"run_id","from":"path"},"thread_id":{"at":"thread_id","from":"path"}}},
+      "modifyThread": {"action":"openai.threads.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/threads/{thread_id}","path_patterns":{"thread_id":"[^r].*|r(?:|[^u].*|u(?:|[^n].*|n(?:|[^s].*|s.+)))"},"scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"thread_id":{"at":"thread_id","from":"path"}}},
+      "modifyVectorStore": {"action":"openai.vector_stores.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/vector_stores/{vector_store_id}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"vector_store_id":{"at":"vector_store_id","from":"path"}}},
+      "pauseFineTuningJob": {"action":"openai.fine_tuning.jobs.write","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/fine_tuning/jobs/{fine_tuning_job_id}/pause","scope":{"fine_tuning_job_id":{"at":"fine_tuning_job_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "referRealtimeCall": {"action":"openai.realtime.calls.refer.send","body":"json","effects":["send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/realtime/calls/{call_id}/refer","scope":{"call_id":{"at":"call_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "rejectRealtimeCall": {"action":"openai.realtime.calls.send","body":"json","effects":["send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/realtime/calls/{call_id}/reject","scope":{"call_id":{"at":"call_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "resumeFineTuningJob": {"action":"openai.fine_tuning.jobs.execute","effects":["execute"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/fine_tuning/jobs/{fine_tuning_job_id}/resume","scope":{"fine_tuning_job_id":{"at":"fine_tuning_job_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "retrieveBatch": {"action":"openai.batches.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/batches/{batch_id}","scope":{"batch_id":{"at":"batch_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "retrieveContainer": {"action":"openai.containers.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/containers/{container_id}","scope":{"container_id":{"at":"container_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "retrieveContainerFile": {"action":"openai.containers.files.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/containers/{container_id}/files/{file_id}","scope":{"container_id":{"at":"container_id","from":"path"},"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "retrieveContainerFileContent": {"action":"openai.containers.files.content.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/containers/{container_id}/files/{file_id}/content","scope":{"container_id":{"at":"container_id","from":"path"},"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "retrieveConversation": {"action":"openai.conversations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/conversations/{conversation_id}","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "retrieveConversationItem": {"action":"openai.conversations.items.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version","include"],"path":"/openai/v1/conversations/{conversation_id}/items/{item_id}","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"item_id":{"at":"item_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "retrieveFile": {"action":"openai.files.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/files/{file_id}","scope":{"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "retrieveFineTuningJob": {"action":"openai.fine_tuning.jobs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/fine_tuning/jobs/{fine_tuning_job_id}","scope":{"fine_tuning_job_id":{"at":"fine_tuning_job_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "retrieveMessage": {"action":"openai.threads.messages.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/threads/{thread_id}/messages/{message_id}","scope":{"message_id":{"at":"message_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"thread_id":{"at":"thread_id","from":"path"}}},
+      "retrieveModel": {"action":"openai.models.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/models/{model}","scope":{"model":{"at":"model","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "retrieveRun": {"action":"openai.threads.runs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/threads/{thread_id}/runs/{run_id}","scope":{"query":{"at":"","from":"query","type":"object"},"run_id":{"at":"run_id","from":"path"},"thread_id":{"at":"thread_id","from":"path"}}},
+      "retrieveThread": {"action":"openai.threads.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/threads/{thread_id}","scope":{"query":{"at":"","from":"query","type":"object"},"thread_id":{"at":"thread_id","from":"path"}}},
+      "retrieveVectorStoreFileContent": {"action":"openai.vector_stores.files.content.read","effects":["read"],"method":"GET","origin":"{origin}","params":["api-version"],"path":"/openai/v1/vector_stores/{vector_store_id}/files/{file_id}/content","scope":{"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"vector_store_id":{"at":"vector_store_id","from":"path"}}},
+      "runGrader": {"action":"openai.fine_tuning.alpha.graders.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/fine_tuning/alpha/graders/run","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "searchVectorStore": {"action":"openai.vector_stores.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/vector_stores/{vector_store_id}/search","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"vector_store_id":{"at":"vector_store_id","from":"path"}}},
+      "submitToolOutputsToRun": {"action":"openai.threads.runs.submit_tool_outputs.execute","body":"json","effects":["execute","generate","pay","send"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/threads/{thread_id}/runs/{run_id}/submit_tool_outputs","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"run_id":{"at":"run_id","from":"path"},"thread_id":{"at":"thread_id","from":"path"}}},
+      "updateConversation": {"action":"openai.conversations.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/conversations/{conversation_id}","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateEval": {"action":"openai.evals.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/evals/{eval_id}","scope":{"eval_id":{"at":"eval_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateVectorStoreFileAttributes": {"action":"openai.vector_stores.files.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/vector_stores/{vector_store_id}/files/{file_id}","scope":{"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"vector_store_id":{"at":"vector_store_id","from":"path"}}},
+      "validateGrader": {"action":"openai.fine_tuning.alpha.graders.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["api-version"],"path":"/openai/v1/fine_tuning/alpha/graders/validate","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}}
     }
   }
 }

@@ -12,5 +12,6 @@
       {"key": "client_secret", "label": "OAuth client secret", "paths": [], "secret": true},
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.bigdata.com/", "client_id": "{client_id}", "client_secret": "{client_secret}"}}
     ]
-  }
+  },
+  "mcp": {"token": {"header": "x-api-key"}}
 }

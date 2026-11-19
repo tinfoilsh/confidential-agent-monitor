@@ -4,11 +4,299 @@
       "wp_json": {
         "title": "Wp json"
       },
+      "wp_json.oembed": {
+        "title": "oEmbed"
+      },
+      "wp_json.oembed.read": {
+        "title": "Read"
+      },
+      "wp_json.read": {
+        "title": "Read"
+      },
       "wp_json.wp": {
         "title": "Wp"
       },
+      "wp_json.wp.block_directory": {
+        "title": "Block directory"
+      },
+      "wp_json.wp.block_directory.search": {
+        "title": "Search"
+      },
+      "wp_json.wp.block_directory.search.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.block_patterns": {
+        "title": "Block patterns"
+      },
+      "wp_json.wp.block_patterns.categories": {
+        "title": "Categories"
+      },
+      "wp_json.wp.block_patterns.categories.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.block_patterns.patterns": {
+        "title": "Patterns"
+      },
+      "wp_json.wp.block_patterns.patterns.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.block_renderer": {
+        "title": "Block renderer"
+      },
+      "wp_json.wp.block_renderer.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.block_types": {
+        "title": "Block types"
+      },
+      "wp_json.wp.block_types.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.blocks": {
+        "title": "Blocks"
+      },
+      "wp_json.wp.blocks.autosaves": {
+        "title": "Autosaves"
+      },
+      "wp_json.wp.blocks.autosaves.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.blocks.autosaves.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.blocks.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.blocks.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.blocks.revisions": {
+        "title": "Revisions"
+      },
+      "wp_json.wp.blocks.revisions.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.blocks.revisions.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.blocks.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.categories": {
+        "title": "Categories"
+      },
+      "wp_json.wp.categories.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.categories.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.categories.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.comments": {
+        "title": "Comments"
+      },
+      "wp_json.wp.comments.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.comments.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.comments.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.font_collections": {
+        "title": "Font collections"
+      },
+      "wp_json.wp.font_collections.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.font_families": {
+        "title": "Font families"
+      },
+      "wp_json.wp.font_families.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.font_families.font_faces": {
+        "title": "Font faces"
+      },
+      "wp_json.wp.font_families.font_faces.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.font_families.font_faces.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.font_families.font_faces.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.font_families.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.font_families.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.global_styles": {
+        "title": "Global styles"
+      },
+      "wp_json.wp.global_styles.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.global_styles.revisions": {
+        "title": "Revisions"
+      },
+      "wp_json.wp.global_styles.revisions.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.global_styles.themes": {
+        "title": "Themes"
+      },
+      "wp_json.wp.global_styles.themes.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.global_styles.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.media": {
+        "title": "Media"
+      },
+      "wp_json.wp.media.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.media.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.media.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.menu_items": {
+        "title": "Menu items"
+      },
+      "wp_json.wp.menu_items.autosaves": {
+        "title": "Autosaves"
+      },
+      "wp_json.wp.menu_items.autosaves.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.menu_items.autosaves.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.menu_items.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.menu_items.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.menu_items.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.menu_locations": {
+        "title": "Menu locations"
+      },
+      "wp_json.wp.menu_locations.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.menus": {
+        "title": "Menus"
+      },
+      "wp_json.wp.menus.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.menus.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.menus.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.navigation": {
+        "title": "Navigation"
+      },
+      "wp_json.wp.navigation.autosaves": {
+        "title": "Autosaves"
+      },
+      "wp_json.wp.navigation.autosaves.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.navigation.autosaves.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.navigation.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.navigation.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.navigation.revisions": {
+        "title": "Revisions"
+      },
+      "wp_json.wp.navigation.revisions.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.navigation.revisions.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.navigation.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.pages": {
+        "title": "Pages"
+      },
+      "wp_json.wp.pages.autosaves": {
+        "title": "Autosaves"
+      },
+      "wp_json.wp.pages.autosaves.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.pages.autosaves.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.pages.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.pages.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.pages.revisions": {
+        "title": "Revisions"
+      },
+      "wp_json.wp.pages.revisions.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.pages.revisions.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.pages.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.pattern_directory": {
+        "title": "Pattern directory"
+      },
+      "wp_json.wp.pattern_directory.patterns": {
+        "title": "Patterns"
+      },
+      "wp_json.wp.pattern_directory.patterns.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.plugins": {
+        "title": "Plugins"
+      },
+      "wp_json.wp.plugins.admin": {
+        "title": "Manage"
+      },
+      "wp_json.wp.plugins.read": {
+        "title": "Read"
+      },
       "wp_json.wp.posts": {
         "title": "Posts"
+      },
+      "wp_json.wp.posts.autosaves": {
+        "title": "Autosaves"
+      },
+      "wp_json.wp.posts.autosaves.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.posts.autosaves.write": {
+        "title": "Create and edit"
       },
       "wp_json.wp.posts.delete": {
         "title": "Delete"
@@ -16,8 +304,194 @@
       "wp_json.wp.posts.read": {
         "title": "Read"
       },
+      "wp_json.wp.posts.revisions": {
+        "title": "Revisions"
+      },
+      "wp_json.wp.posts.revisions.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.posts.revisions.read": {
+        "title": "Read"
+      },
       "wp_json.wp.posts.write": {
         "title": "Create and edit"
+      },
+      "wp_json.wp.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.search": {
+        "title": "Search"
+      },
+      "wp_json.wp.search.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.settings": {
+        "title": "Settings"
+      },
+      "wp_json.wp.settings.admin": {
+        "title": "Manage"
+      },
+      "wp_json.wp.settings.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.sidebars": {
+        "title": "Sidebars"
+      },
+      "wp_json.wp.sidebars.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.sidebars.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.statuses": {
+        "title": "Statuses"
+      },
+      "wp_json.wp.statuses.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.tags": {
+        "title": "Tags"
+      },
+      "wp_json.wp.tags.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.tags.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.tags.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.taxonomies": {
+        "title": "Taxonomies"
+      },
+      "wp_json.wp.taxonomies.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.template_parts": {
+        "title": "Template parts"
+      },
+      "wp_json.wp.template_parts.autosaves": {
+        "title": "Autosaves"
+      },
+      "wp_json.wp.template_parts.autosaves.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.template_parts.autosaves.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.template_parts.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.template_parts.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.template_parts.revisions": {
+        "title": "Revisions"
+      },
+      "wp_json.wp.template_parts.revisions.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.template_parts.revisions.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.template_parts.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.templates": {
+        "title": "Templates"
+      },
+      "wp_json.wp.templates.autosaves": {
+        "title": "Autosaves"
+      },
+      "wp_json.wp.templates.autosaves.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.templates.autosaves.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.templates.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.templates.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.templates.revisions": {
+        "title": "Revisions"
+      },
+      "wp_json.wp.templates.revisions.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.templates.revisions.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.templates.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.themes": {
+        "title": "Themes"
+      },
+      "wp_json.wp.themes.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.types": {
+        "title": "Types"
+      },
+      "wp_json.wp.types.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.users": {
+        "title": "Users"
+      },
+      "wp_json.wp.users.admin": {
+        "title": "Manage"
+      },
+      "wp_json.wp.users.application_passwords": {
+        "title": "Application passwords"
+      },
+      "wp_json.wp.users.application_passwords.admin": {
+        "title": "Manage"
+      },
+      "wp_json.wp.users.application_passwords.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.users.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.widget_types": {
+        "title": "Widget types"
+      },
+      "wp_json.wp.widget_types.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.widgets": {
+        "title": "Widgets"
+      },
+      "wp_json.wp.widgets.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.widgets.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.widgets.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp.wp_pattern_category": {
+        "title": "Wp pattern category"
+      },
+      "wp_json.wp.wp_pattern_category.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.wp_pattern_category.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.wp_pattern_category.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wp_site_health": {
+        "title": "Site Health"
+      },
+      "wp_json.wp_site_health.read": {
+        "title": "Read"
       }
     },
     "connection": {
@@ -26,13 +500,13 @@
           {
             "basic": "user",
             "origin": "https://example.com",
-            "path": "/wp-json/wp/v2",
+            "path": "/wp-json",
             "value": "username"
           },
           {
             "basic": "password",
             "origin": "https://example.com",
-            "path": "/wp-json/wp/v2",
+            "path": "/wp-json",
             "value": "apppassword"
           }
         ]
@@ -41,7 +515,7 @@
     "fields": [
       {
         "key": "origin",
-        "label": "Your site URL (https://yoursite.example.com)",
+        "label": "Your site URL (https://yoursite.example.com or https://example.com/blog)",
         "paths": [
           [
             "policy_options",
@@ -79,11 +553,237 @@
   "title": "WordPress",
   "http": {
     "operations": {
+      "block_directory.search.list": {"action":"wp_json.wp.block_directory.search.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","page","per_page","term"],"path":"/wp-json/wp/v2/block-directory/search","scope":{}},
+      "block_patterns.categories.list": {"action":"wp_json.wp.block_patterns.categories.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/block-patterns/categories","scope":{}},
+      "block_patterns.patterns.list": {"action":"wp_json.wp.block_patterns.patterns.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/block-patterns/patterns","scope":{}},
+      "block_renderer.get": {"action":"wp_json.wp.block_renderer.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","attributes","context","post_id"],"path":"/wp-json/wp/v2/block-renderer/{namespace}/{name}","scope":{"name":{"at":"name","from":"path"},"namespace":{"at":"namespace","from":"path"}}},
+      "block_renderer.render": {"action":"wp_json.wp.block_renderer.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/block-renderer/{namespace}/{name}","scope":{"name":{"at":"name","from":"path"},"namespace":{"at":"namespace","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "block_types.get": {"action":"wp_json.wp.block_types.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/block-types/{namespace}/{name}","scope":{"name":{"at":"name","from":"path"},"namespace":{"at":"namespace","from":"path"}}},
+      "block_types.list": {"action":"wp_json.wp.block_types.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","namespace"],"path":"/wp-json/wp/v2/block-types","scope":{}},
+      "block_types.namespace.list": {"action":"wp_json.wp.block_types.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/block-types/{namespace}","scope":{"namespace":{"at":"namespace","from":"path"}}},
+      "blocks.autosaves.create": {"action":"wp_json.wp.blocks.autosaves.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/blocks/{block}/autosaves","path_patterns":{"block":"[0-9]+"},"scope":{"autosave":{"at":"","from":"body","type":"object"},"block":{"at":"block","from":"path"}}},
+      "blocks.autosaves.get": {"action":"wp_json.wp.blocks.autosaves.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/blocks/{block}/autosaves/{autosave}","path_patterns":{"autosave":"[0-9]+","block":"[0-9]+"},"scope":{"autosave":{"at":"autosave","from":"path"},"block":{"at":"block","from":"path"}}},
+      "blocks.autosaves.list": {"action":"wp_json.wp.blocks.autosaves.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/blocks/{block}/autosaves","path_patterns":{"block":"[0-9]+"},"scope":{"block":{"at":"block","from":"path"}}},
+      "blocks.create": {"action":"wp_json.wp.blocks.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/blocks","scope":{"block":{"at":"","from":"body","type":"object"}}},
+      "blocks.delete": {"action":"wp_json.wp.blocks.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/blocks/{block}","path_patterns":{"block":"[0-9]+"},"scope":{"block":{"at":"block","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "blocks.get": {"action":"wp_json.wp.blocks.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","excerpt_length","password"],"path":"/wp-json/wp/v2/blocks/{block}","path_patterns":{"block":"[0-9]+"},"scope":{"block":{"at":"block","from":"path"}}},
+      "blocks.list": {"action":"wp_json.wp.blocks.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","after","author","author_exclude","before","context","exclude","include","modified_after","modified_before","offset","order","orderby","page","per_page","search","search_columns","search_semantics","slug","status","tax_relation","wp_pattern_category","wp_pattern_category_exclude"],"path":"/wp-json/wp/v2/blocks","scope":{}},
+      "blocks.revisions.delete": {"action":"wp_json.wp.blocks.revisions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/blocks/{block}/revisions/{revision}","path_patterns":{"block":"[0-9]+","revision":"[0-9]+"},"scope":{"block":{"at":"block","from":"path"},"query":{"at":"","from":"query","type":"object"},"revision":{"at":"revision","from":"path"}}},
+      "blocks.revisions.get": {"action":"wp_json.wp.blocks.revisions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/blocks/{block}/revisions/{revision}","path_patterns":{"block":"[0-9]+","revision":"[0-9]+"},"scope":{"block":{"at":"block","from":"path"},"revision":{"at":"revision","from":"path"}}},
+      "blocks.revisions.list": {"action":"wp_json.wp.blocks.revisions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","exclude","include","offset","order","orderby","page","per_page","search"],"path":"/wp-json/wp/v2/blocks/{block}/revisions","path_patterns":{"block":"[0-9]+"},"scope":{"block":{"at":"block","from":"path"}}},
+      "blocks.update": {"action":"wp_json.wp.blocks.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/blocks/{block}","path_patterns":{"block":"[0-9]+"},"scope":{"block":{"at":"block","from":"path"},"changes":{"at":"","from":"body","type":"object"}}},
+      "blocks.update.patch": {"action":"wp_json.wp.blocks.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/blocks/{block}","path_patterns":{"block":"[0-9]+"},"scope":{"block":{"at":"block","from":"path"},"changes":{"at":"","from":"body","type":"object"}}},
+      "blocks.update.put": {"action":"wp_json.wp.blocks.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/blocks/{block}","path_patterns":{"block":"[0-9]+"},"scope":{"block":{"at":"block","from":"path"},"changes":{"at":"","from":"body","type":"object"}}},
+      "categories.create": {"action":"wp_json.wp.categories.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/categories","scope":{"category":{"at":"","from":"body","type":"object"}}},
+      "categories.delete": {"action":"wp_json.wp.categories.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/categories/{category}","path_patterns":{"category":"[0-9]+"},"scope":{"category":{"at":"category","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "categories.get": {"action":"wp_json.wp.categories.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/categories/{category}","path_patterns":{"category":"[0-9]+"},"scope":{"category":{"at":"category","from":"path"}}},
+      "categories.list": {"action":"wp_json.wp.categories.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","exclude","hide_empty","include","order","orderby","page","parent","per_page","post","search","slug"],"path":"/wp-json/wp/v2/categories","scope":{}},
+      "categories.update": {"action":"wp_json.wp.categories.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/categories/{category}","path_patterns":{"category":"[0-9]+"},"scope":{"category":{"at":"category","from":"path"},"changes":{"at":"","from":"body","type":"object"}}},
+      "categories.update.patch": {"action":"wp_json.wp.categories.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/categories/{category}","path_patterns":{"category":"[0-9]+"},"scope":{"category":{"at":"category","from":"path"},"changes":{"at":"","from":"body","type":"object"}}},
+      "categories.update.put": {"action":"wp_json.wp.categories.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/categories/{category}","path_patterns":{"category":"[0-9]+"},"scope":{"category":{"at":"category","from":"path"},"changes":{"at":"","from":"body","type":"object"}}},
+      "comments.create": {"action":"wp_json.wp.comments.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/comments","scope":{"comment":{"at":"","from":"body","type":"object"}}},
+      "comments.delete": {"action":"wp_json.wp.comments.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force","password"],"path":"/wp-json/wp/v2/comments/{comment}","path_patterns":{"comment":"[0-9]+"},"scope":{"comment":{"at":"comment","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "comments.get": {"action":"wp_json.wp.comments.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","password"],"path":"/wp-json/wp/v2/comments/{comment}","path_patterns":{"comment":"[0-9]+"},"scope":{"comment":{"at":"comment","from":"path"}}},
+      "comments.list": {"action":"wp_json.wp.comments.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","after","author","author_email","author_exclude","before","context","exclude","include","offset","order","orderby","page","parent","parent_exclude","password","per_page","post","search","status","type"],"path":"/wp-json/wp/v2/comments","scope":{}},
+      "comments.update": {"action":"wp_json.wp.comments.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/comments/{comment}","path_patterns":{"comment":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"comment":{"at":"comment","from":"path"}}},
+      "comments.update.patch": {"action":"wp_json.wp.comments.write","body":"json","effects":["write","publish"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/comments/{comment}","path_patterns":{"comment":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"comment":{"at":"comment","from":"path"}}},
+      "comments.update.put": {"action":"wp_json.wp.comments.write","body":"json","effects":["write","publish"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/comments/{comment}","path_patterns":{"comment":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"comment":{"at":"comment","from":"path"}}},
+      "font_collections.get": {"action":"wp_json.wp.font_collections.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/font-collections/{slug*}","scope":{"slug":{"at":"slug","from":"path"}}},
+      "font_collections.list": {"action":"wp_json.wp.font_collections.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","page","per_page"],"path":"/wp-json/wp/v2/font-collections","scope":{}},
+      "font_families.create": {"action":"wp_json.wp.font_families.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/font-families","scope":{"font_family":{"at":"","from":"body","type":"object"}}},
+      "font_families.delete": {"action":"wp_json.wp.font_families.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/font-families/{font_family}","path_patterns":{"font_family":"[0-9]+"},"scope":{"font_family":{"at":"font_family","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "font_families.font_faces.create": {"action":"wp_json.wp.font_families.font_faces.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/font-families/{font_family}/font-faces","path_patterns":{"font_family":"[0-9]+"},"scope":{"font_face":{"at":"","from":"body","type":"object"},"font_family":{"at":"font_family","from":"path"}}},
+      "font_families.font_faces.delete": {"action":"wp_json.wp.font_families.font_faces.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/font-families/{font_family}/font-faces/{font_face}","path_patterns":{"font_face":"[0-9]+","font_family":"[0-9]+"},"scope":{"font_face":{"at":"font_face","from":"path"},"font_family":{"at":"font_family","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "font_families.font_faces.get": {"action":"wp_json.wp.font_families.font_faces.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/font-families/{font_family}/font-faces/{font_face}","path_patterns":{"font_face":"[0-9]+","font_family":"[0-9]+"},"scope":{"font_face":{"at":"font_face","from":"path"},"font_family":{"at":"font_family","from":"path"}}},
+      "font_families.font_faces.list": {"action":"wp_json.wp.font_families.font_faces.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","exclude","include","offset","order","orderby","page","per_page","search_semantics"],"path":"/wp-json/wp/v2/font-families/{font_family}/font-faces","path_patterns":{"font_family":"[0-9]+"},"scope":{"font_family":{"at":"font_family","from":"path"}}},
+      "font_families.get": {"action":"wp_json.wp.font_families.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/font-families/{font_family}","path_patterns":{"font_family":"[0-9]+"},"scope":{"font_family":{"at":"font_family","from":"path"}}},
+      "font_families.list": {"action":"wp_json.wp.font_families.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","exclude","include","offset","order","orderby","page","per_page","search_semantics","slug"],"path":"/wp-json/wp/v2/font-families","scope":{}},
+      "font_families.update": {"action":"wp_json.wp.font_families.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/font-families/{font_family}","path_patterns":{"font_family":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"font_family":{"at":"font_family","from":"path"}}},
+      "font_families.update.patch": {"action":"wp_json.wp.font_families.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/font-families/{font_family}","path_patterns":{"font_family":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"font_family":{"at":"font_family","from":"path"}}},
+      "font_families.update.put": {"action":"wp_json.wp.font_families.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/font-families/{font_family}","path_patterns":{"font_family":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"font_family":{"at":"font_family","from":"path"}}},
+      "global_styles.get": {"action":"wp_json.wp.global_styles.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/global-styles/{global_style}","path_patterns":{"global_style":"[0-9]+"},"scope":{"global_style":{"at":"global_style","from":"path"}}},
+      "global_styles.revisions.get": {"action":"wp_json.wp.global_styles.revisions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/global-styles/{global_style}/revisions/{revision}","path_patterns":{"global_style":"[0-9]+","revision":"[0-9]+"},"scope":{"global_style":{"at":"global_style","from":"path"},"revision":{"at":"revision","from":"path"}}},
+      "global_styles.revisions.list": {"action":"wp_json.wp.global_styles.revisions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","offset","page","per_page"],"path":"/wp-json/wp/v2/global-styles/{global_style}/revisions","path_patterns":{"global_style":"[0-9]+"},"scope":{"global_style":{"at":"global_style","from":"path"}}},
+      "global_styles.themes.get": {"action":"wp_json.wp.global_styles.themes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/global-styles/themes/{stylesheet*}","scope":{"stylesheet":{"at":"stylesheet","from":"path"}}},
+      "global_styles.update": {"action":"wp_json.wp.global_styles.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/global-styles/{global_style}","path_patterns":{"global_style":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"global_style":{"at":"global_style","from":"path"}}},
+      "global_styles.update.patch": {"action":"wp_json.wp.global_styles.write","body":"json","effects":["write","publish"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/global-styles/{global_style}","path_patterns":{"global_style":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"global_style":{"at":"global_style","from":"path"}}},
+      "global_styles.update.put": {"action":"wp_json.wp.global_styles.write","body":"json","effects":["write","publish"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/global-styles/{global_style}","path_patterns":{"global_style":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"global_style":{"at":"global_style","from":"path"}}},
+      "index.get": {"action":"wp_json.wp.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","namespace"],"path":"/wp-json/wp/v2","scope":{}},
+      "media.create": {"action":"wp_json.wp.media.write","body":"any","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/media","scope":{}},
+      "media.delete": {"action":"wp_json.wp.media.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/media/{media}","path_patterns":{"media":"[0-9]+"},"scope":{"media":{"at":"media","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "media.edit": {"action":"wp_json.wp.media.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/media/{media}/edit","path_patterns":{"media":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"media":{"at":"media","from":"path"}}},
+      "media.finalize": {"action":"wp_json.wp.media.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/media/{media}/finalize","path_patterns":{"media":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"media":{"at":"media","from":"path"}}},
+      "media.get": {"action":"wp_json.wp.media.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/media/{media}","path_patterns":{"media":"[0-9]+"},"scope":{"media":{"at":"media","from":"path"}}},
+      "media.list": {"action":"wp_json.wp.media.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","after","author","author_exclude","before","context","exclude","include","media_type","mime_type","modified_after","modified_before","offset","order","orderby","page","parent","parent_exclude","per_page","search","search_columns","search_semantics","slug","status"],"path":"/wp-json/wp/v2/media","scope":{}},
+      "media.post_process": {"action":"wp_json.wp.media.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/media/{media}/post-process","path_patterns":{"media":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"media":{"at":"media","from":"path"}}},
+      "media.sideload": {"action":"wp_json.wp.media.write","body":"any","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/media/{media}/sideload","path_patterns":{"media":"[0-9]+"},"scope":{"media":{"at":"media","from":"path"}}},
+      "media.update": {"action":"wp_json.wp.media.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/media/{media}","path_patterns":{"media":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"media":{"at":"media","from":"path"}}},
+      "media.update.patch": {"action":"wp_json.wp.media.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/media/{media}","path_patterns":{"media":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"media":{"at":"media","from":"path"}}},
+      "media.update.put": {"action":"wp_json.wp.media.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/media/{media}","path_patterns":{"media":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"media":{"at":"media","from":"path"}}},
+      "menu_items.autosaves.create": {"action":"wp_json.wp.menu_items.autosaves.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/menu-items/{menu_item}/autosaves","path_patterns":{"menu_item":"[0-9]+"},"scope":{"autosave":{"at":"","from":"body","type":"object"},"menu_item":{"at":"menu_item","from":"path"}}},
+      "menu_items.autosaves.get": {"action":"wp_json.wp.menu_items.autosaves.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/menu-items/{menu_item}/autosaves/{autosave}","path_patterns":{"autosave":"[0-9]+","menu_item":"[0-9]+"},"scope":{"autosave":{"at":"autosave","from":"path"},"menu_item":{"at":"menu_item","from":"path"}}},
+      "menu_items.autosaves.list": {"action":"wp_json.wp.menu_items.autosaves.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/menu-items/{menu_item}/autosaves","path_patterns":{"menu_item":"[0-9]+"},"scope":{"menu_item":{"at":"menu_item","from":"path"}}},
+      "menu_items.create": {"action":"wp_json.wp.menu_items.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/menu-items","scope":{"menu_item":{"at":"","from":"body","type":"object"}}},
+      "menu_items.delete": {"action":"wp_json.wp.menu_items.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/menu-items/{menu_item}","path_patterns":{"menu_item":"[0-9]+"},"scope":{"menu_item":{"at":"menu_item","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "menu_items.get": {"action":"wp_json.wp.menu_items.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/menu-items/{menu_item}","path_patterns":{"menu_item":"[0-9]+"},"scope":{"menu_item":{"at":"menu_item","from":"path"}}},
+      "menu_items.list": {"action":"wp_json.wp.menu_items.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","after","before","context","exclude","include","menu_order","menus","menus_exclude","modified_after","modified_before","offset","order","orderby","page","per_page","search","search_columns","search_semantics","slug","status","tax_relation"],"path":"/wp-json/wp/v2/menu-items","scope":{}},
+      "menu_items.update": {"action":"wp_json.wp.menu_items.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/menu-items/{menu_item}","path_patterns":{"menu_item":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"menu_item":{"at":"menu_item","from":"path"}}},
+      "menu_items.update.patch": {"action":"wp_json.wp.menu_items.write","body":"json","effects":["write","publish"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/menu-items/{menu_item}","path_patterns":{"menu_item":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"menu_item":{"at":"menu_item","from":"path"}}},
+      "menu_items.update.put": {"action":"wp_json.wp.menu_items.write","body":"json","effects":["write","publish"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/menu-items/{menu_item}","path_patterns":{"menu_item":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"menu_item":{"at":"menu_item","from":"path"}}},
+      "menu_locations.get": {"action":"wp_json.wp.menu_locations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/menu-locations/{location}","scope":{"location":{"at":"location","from":"path"}}},
+      "menu_locations.list": {"action":"wp_json.wp.menu_locations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/menu-locations","scope":{}},
+      "menus.create": {"action":"wp_json.wp.menus.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/menus","scope":{"menu":{"at":"","from":"body","type":"object"}}},
+      "menus.delete": {"action":"wp_json.wp.menus.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/menus/{menu}","path_patterns":{"menu":"[0-9]+"},"scope":{"menu":{"at":"menu","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "menus.get": {"action":"wp_json.wp.menus.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/menus/{menu}","path_patterns":{"menu":"[0-9]+"},"scope":{"menu":{"at":"menu","from":"path"}}},
+      "menus.list": {"action":"wp_json.wp.menus.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","exclude","hide_empty","include","offset","order","orderby","page","per_page","post","search","slug"],"path":"/wp-json/wp/v2/menus","scope":{}},
+      "menus.update": {"action":"wp_json.wp.menus.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/menus/{menu}","path_patterns":{"menu":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"menu":{"at":"menu","from":"path"}}},
+      "menus.update.patch": {"action":"wp_json.wp.menus.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/menus/{menu}","path_patterns":{"menu":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"menu":{"at":"menu","from":"path"}}},
+      "menus.update.put": {"action":"wp_json.wp.menus.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/menus/{menu}","path_patterns":{"menu":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"menu":{"at":"menu","from":"path"}}},
+      "navigation.autosaves.create": {"action":"wp_json.wp.navigation.autosaves.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/navigation/{navigation}/autosaves","path_patterns":{"navigation":"[0-9]+"},"scope":{"autosave":{"at":"","from":"body","type":"object"},"navigation":{"at":"navigation","from":"path"}}},
+      "navigation.autosaves.get": {"action":"wp_json.wp.navigation.autosaves.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/navigation/{navigation}/autosaves/{autosave}","path_patterns":{"autosave":"[0-9]+","navigation":"[0-9]+"},"scope":{"autosave":{"at":"autosave","from":"path"},"navigation":{"at":"navigation","from":"path"}}},
+      "navigation.autosaves.list": {"action":"wp_json.wp.navigation.autosaves.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/navigation/{navigation}/autosaves","path_patterns":{"navigation":"[0-9]+"},"scope":{"navigation":{"at":"navigation","from":"path"}}},
+      "navigation.create": {"action":"wp_json.wp.navigation.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/navigation","scope":{"navigation":{"at":"","from":"body","type":"object"}}},
+      "navigation.delete": {"action":"wp_json.wp.navigation.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/navigation/{navigation}","path_patterns":{"navigation":"[0-9]+"},"scope":{"navigation":{"at":"navigation","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "navigation.get": {"action":"wp_json.wp.navigation.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","password"],"path":"/wp-json/wp/v2/navigation/{navigation}","path_patterns":{"navigation":"[0-9]+"},"scope":{"navigation":{"at":"navigation","from":"path"}}},
+      "navigation.list": {"action":"wp_json.wp.navigation.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","after","before","context","exclude","include","modified_after","modified_before","offset","order","orderby","page","per_page","search","search_columns","search_semantics","slug","status"],"path":"/wp-json/wp/v2/navigation","scope":{}},
+      "navigation.revisions.delete": {"action":"wp_json.wp.navigation.revisions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/navigation/{navigation}/revisions/{revision}","path_patterns":{"navigation":"[0-9]+","revision":"[0-9]+"},"scope":{"navigation":{"at":"navigation","from":"path"},"query":{"at":"","from":"query","type":"object"},"revision":{"at":"revision","from":"path"}}},
+      "navigation.revisions.get": {"action":"wp_json.wp.navigation.revisions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/navigation/{navigation}/revisions/{revision}","path_patterns":{"navigation":"[0-9]+","revision":"[0-9]+"},"scope":{"navigation":{"at":"navigation","from":"path"},"revision":{"at":"revision","from":"path"}}},
+      "navigation.revisions.list": {"action":"wp_json.wp.navigation.revisions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","exclude","include","offset","order","orderby","page","per_page","search"],"path":"/wp-json/wp/v2/navigation/{navigation}/revisions","path_patterns":{"navigation":"[0-9]+"},"scope":{"navigation":{"at":"navigation","from":"path"}}},
+      "navigation.update": {"action":"wp_json.wp.navigation.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/navigation/{navigation}","path_patterns":{"navigation":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"navigation":{"at":"navigation","from":"path"}}},
+      "navigation.update.patch": {"action":"wp_json.wp.navigation.write","body":"json","effects":["write","publish"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/navigation/{navigation}","path_patterns":{"navigation":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"navigation":{"at":"navigation","from":"path"}}},
+      "navigation.update.put": {"action":"wp_json.wp.navigation.write","body":"json","effects":["write","publish"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/navigation/{navigation}","path_patterns":{"navigation":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"navigation":{"at":"navigation","from":"path"}}},
+      "oembed.embed": {"action":"wp_json.oembed.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format","maxwidth","url"],"path":"/wp-json/oembed/1.0/embed","scope":{}},
+      "oembed.proxy": {"action":"wp_json.oembed.read","effects":["read"],"method":"GET","origin":"{origin}","params":["discover","format","maxheight","maxwidth","url"],"path":"/wp-json/oembed/1.0/proxy","scope":{}},
+      "pages.autosaves.create": {"action":"wp_json.wp.pages.autosaves.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/pages/{page}/autosaves","path_patterns":{"page":"[0-9]+"},"scope":{"autosave":{"at":"","from":"body","type":"object"},"page":{"at":"page","from":"path"}}},
+      "pages.autosaves.get": {"action":"wp_json.wp.pages.autosaves.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/pages/{page}/autosaves/{autosave}","path_patterns":{"autosave":"[0-9]+","page":"[0-9]+"},"scope":{"autosave":{"at":"autosave","from":"path"},"page":{"at":"page","from":"path"}}},
+      "pages.autosaves.list": {"action":"wp_json.wp.pages.autosaves.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/pages/{page}/autosaves","path_patterns":{"page":"[0-9]+"},"scope":{"page":{"at":"page","from":"path"}}},
+      "pages.create": {"action":"wp_json.wp.pages.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/pages","scope":{"page":{"at":"","from":"body","type":"object"}}},
+      "pages.delete": {"action":"wp_json.wp.pages.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/pages/{page}","path_patterns":{"page":"[0-9]+"},"scope":{"page":{"at":"page","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "pages.get": {"action":"wp_json.wp.pages.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","excerpt_length","password"],"path":"/wp-json/wp/v2/pages/{page}","path_patterns":{"page":"[0-9]+"},"scope":{"page":{"at":"page","from":"path"}}},
+      "pages.list": {"action":"wp_json.wp.pages.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","after","author","author_exclude","before","context","exclude","include","menu_order","modified_after","modified_before","offset","order","orderby","page","parent","parent_exclude","per_page","search","search_columns","search_semantics","slug","status"],"path":"/wp-json/wp/v2/pages","scope":{}},
+      "pages.revisions.delete": {"action":"wp_json.wp.pages.revisions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/pages/{page}/revisions/{revision}","path_patterns":{"page":"[0-9]+","revision":"[0-9]+"},"scope":{"page":{"at":"page","from":"path"},"query":{"at":"","from":"query","type":"object"},"revision":{"at":"revision","from":"path"}}},
+      "pages.revisions.get": {"action":"wp_json.wp.pages.revisions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/pages/{page}/revisions/{revision}","path_patterns":{"page":"[0-9]+","revision":"[0-9]+"},"scope":{"page":{"at":"page","from":"path"},"revision":{"at":"revision","from":"path"}}},
+      "pages.revisions.list": {"action":"wp_json.wp.pages.revisions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","exclude","include","offset","order","orderby","page","per_page","search"],"path":"/wp-json/wp/v2/pages/{page}/revisions","path_patterns":{"page":"[0-9]+"},"scope":{"page":{"at":"page","from":"path"}}},
+      "pages.update": {"action":"wp_json.wp.pages.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/pages/{page}","path_patterns":{"page":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"page":{"at":"page","from":"path"}}},
+      "pages.update.patch": {"action":"wp_json.wp.pages.write","body":"json","effects":["write","publish"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/pages/{page}","path_patterns":{"page":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"page":{"at":"page","from":"path"}}},
+      "pages.update.put": {"action":"wp_json.wp.pages.write","body":"json","effects":["write","publish"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/pages/{page}","path_patterns":{"page":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"page":{"at":"page","from":"path"}}},
+      "pattern_directory.patterns.list": {"action":"wp_json.wp.pattern_directory.patterns.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","category","context","keyword","offset","order","orderby","page","per_page","search","slug"],"path":"/wp-json/wp/v2/pattern-directory/patterns","scope":{}},
+      "plugins.create": {"action":"wp_json.wp.plugins.admin","body":"json","effects":["admin","execute"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/plugins","scope":{"plugin":{"at":"","from":"body","type":"object"}}},
+      "plugins.delete": {"action":"wp_json.wp.plugins.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["context"],"path":"/wp-json/wp/v2/plugins/{plugin*}","scope":{"plugin":{"at":"plugin","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "plugins.get": {"action":"wp_json.wp.plugins.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/plugins/{plugin*}","scope":{"plugin":{"at":"plugin","from":"path"}}},
+      "plugins.list": {"action":"wp_json.wp.plugins.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","search","status"],"path":"/wp-json/wp/v2/plugins","scope":{}},
+      "plugins.update": {"action":"wp_json.wp.plugins.admin","body":"json","effects":["admin","execute"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/plugins/{plugin*}","scope":{"changes":{"at":"","from":"body","type":"object"},"plugin":{"at":"plugin","from":"path"}}},
+      "plugins.update.patch": {"action":"wp_json.wp.plugins.admin","body":"json","effects":["admin","execute"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/plugins/{plugin*}","scope":{"changes":{"at":"","from":"body","type":"object"},"plugin":{"at":"plugin","from":"path"}}},
+      "plugins.update.put": {"action":"wp_json.wp.plugins.admin","body":"json","effects":["admin","execute"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/plugins/{plugin*}","scope":{"changes":{"at":"","from":"body","type":"object"},"plugin":{"at":"plugin","from":"path"}}},
+      "posts.autosaves.create": {"action":"wp_json.wp.posts.autosaves.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/posts/{post}/autosaves","path_patterns":{"post":"[0-9]+"},"scope":{"autosave":{"at":"","from":"body","type":"object"},"post":{"at":"post","from":"path"}}},
+      "posts.autosaves.get": {"action":"wp_json.wp.posts.autosaves.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/posts/{post}/autosaves/{autosave}","path_patterns":{"autosave":"[0-9]+","post":"[0-9]+"},"scope":{"autosave":{"at":"autosave","from":"path"},"post":{"at":"post","from":"path"}}},
+      "posts.autosaves.list": {"action":"wp_json.wp.posts.autosaves.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/posts/{post}/autosaves","path_patterns":{"post":"[0-9]+"},"scope":{"post":{"at":"post","from":"path"}}},
       "posts.create": {"action":"wp_json.wp.posts.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/posts","scope":{"post":{"at":"","from":"body","type":"object"}}},
-      "posts.delete": {"action":"wp_json.wp.posts.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/posts/{post}","scope":{"post":{"at":"post","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-      "posts.get": {"action":"wp_json.wp.posts.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wp-json/wp/v2/posts/{post}","scope":{"post":{"at":"post","from":"path"}}},
-      "posts.list": {"action":"wp_json.wp.posts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","per_page","search","status"],"path":"/wp-json/wp/v2/posts","scope":{}},
-      "posts.update": {"action":"wp_json.wp.posts.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/posts/{post}","scope":{"changes":{"at":"","from":"body","type":"object"},"post":{"at":"post","from":"path"}}}
+      "posts.delete": {"action":"wp_json.wp.posts.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/posts/{post}","path_patterns":{"post":"[0-9]+"},"scope":{"post":{"at":"post","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "posts.get": {"action":"wp_json.wp.posts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","excerpt_length","password"],"path":"/wp-json/wp/v2/posts/{post}","path_patterns":{"post":"[0-9]+"},"scope":{"post":{"at":"post","from":"path"}}},
+      "posts.list": {"action":"wp_json.wp.posts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","after","author","author_exclude","before","categories","categories_exclude","context","exclude","format","ignore_sticky","include","modified_after","modified_before","offset","order","orderby","page","per_page","search","search_columns","search_semantics","slug","status","sticky","tags","tags_exclude","tax_relation"],"path":"/wp-json/wp/v2/posts","scope":{}},
+      "posts.revisions.delete": {"action":"wp_json.wp.posts.revisions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/posts/{post}/revisions/{revision}","path_patterns":{"post":"[0-9]+","revision":"[0-9]+"},"scope":{"post":{"at":"post","from":"path"},"query":{"at":"","from":"query","type":"object"},"revision":{"at":"revision","from":"path"}}},
+      "posts.revisions.get": {"action":"wp_json.wp.posts.revisions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/posts/{post}/revisions/{revision}","path_patterns":{"post":"[0-9]+","revision":"[0-9]+"},"scope":{"post":{"at":"post","from":"path"},"revision":{"at":"revision","from":"path"}}},
+      "posts.revisions.list": {"action":"wp_json.wp.posts.revisions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","exclude","include","offset","order","orderby","page","per_page","search"],"path":"/wp-json/wp/v2/posts/{post}/revisions","path_patterns":{"post":"[0-9]+"},"scope":{"post":{"at":"post","from":"path"}}},
+      "posts.update": {"action":"wp_json.wp.posts.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/posts/{post}","path_patterns":{"post":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"post":{"at":"post","from":"path"}}},
+      "posts.update.patch": {"action":"wp_json.wp.posts.write","body":"json","effects":["write","publish"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/posts/{post}","path_patterns":{"post":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"post":{"at":"post","from":"path"}}},
+      "posts.update.put": {"action":"wp_json.wp.posts.write","body":"json","effects":["write","publish"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/posts/{post}","path_patterns":{"post":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"post":{"at":"post","from":"path"}}},
+      "root.get": {"action":"wp_json.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/","scope":{}},
+      "root.get.bare": {"action":"wp_json.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json","scope":{}},
+      "search.list": {"action":"wp_json.wp.search.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","exclude","include","page","per_page","search","subtype","type"],"path":"/wp-json/wp/v2/search","scope":{}},
+      "settings.list": {"action":"wp_json.wp.settings.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/settings","scope":{}},
+      "settings.update": {"action":"wp_json.wp.settings.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/settings","scope":{"changes":{"at":"","from":"body","type":"object"}}},
+      "settings.update.patch": {"action":"wp_json.wp.settings.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/settings","scope":{"changes":{"at":"","from":"body","type":"object"}}},
+      "settings.update.put": {"action":"wp_json.wp.settings.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/settings","scope":{"changes":{"at":"","from":"body","type":"object"}}},
+      "sidebars.get": {"action":"wp_json.wp.sidebars.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/sidebars/{sidebar}","scope":{"sidebar":{"at":"sidebar","from":"path"}}},
+      "sidebars.list": {"action":"wp_json.wp.sidebars.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/sidebars","scope":{}},
+      "sidebars.update": {"action":"wp_json.wp.sidebars.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/sidebars/{sidebar}","scope":{"changes":{"at":"","from":"body","type":"object"},"sidebar":{"at":"sidebar","from":"path"}}},
+      "sidebars.update.patch": {"action":"wp_json.wp.sidebars.write","body":"json","effects":["write","publish"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/sidebars/{sidebar}","scope":{"changes":{"at":"","from":"body","type":"object"},"sidebar":{"at":"sidebar","from":"path"}}},
+      "sidebars.update.put": {"action":"wp_json.wp.sidebars.write","body":"json","effects":["write","publish"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/sidebars/{sidebar}","scope":{"changes":{"at":"","from":"body","type":"object"},"sidebar":{"at":"sidebar","from":"path"}}},
+      "site_health.directory_sizes.get": {"action":"wp_json.wp_site_health.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_fields"],"path":"/wp-json/wp-site-health/v1/directory-sizes","scope":{}},
+      "site_health.tests.get": {"action":"wp_json.wp_site_health.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_fields"],"path":"/wp-json/wp-site-health/v1/tests/{test}","scope":{"test":{"at":"test","from":"path"}}},
+      "statuses.get": {"action":"wp_json.wp.statuses.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/statuses/{status}","scope":{"status":{"at":"status","from":"path"}}},
+      "statuses.list": {"action":"wp_json.wp.statuses.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/statuses","scope":{}},
+      "tags.create": {"action":"wp_json.wp.tags.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/tags","scope":{"tag":{"at":"","from":"body","type":"object"}}},
+      "tags.delete": {"action":"wp_json.wp.tags.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/tags/{tag}","path_patterns":{"tag":"[0-9]+"},"scope":{"query":{"at":"","from":"query","type":"object"},"tag":{"at":"tag","from":"path"}}},
+      "tags.get": {"action":"wp_json.wp.tags.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/tags/{tag}","path_patterns":{"tag":"[0-9]+"},"scope":{"tag":{"at":"tag","from":"path"}}},
+      "tags.list": {"action":"wp_json.wp.tags.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","exclude","hide_empty","include","offset","order","orderby","page","per_page","post","search","slug"],"path":"/wp-json/wp/v2/tags","scope":{}},
+      "tags.update": {"action":"wp_json.wp.tags.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/tags/{tag}","path_patterns":{"tag":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"tag":{"at":"tag","from":"path"}}},
+      "tags.update.patch": {"action":"wp_json.wp.tags.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/tags/{tag}","path_patterns":{"tag":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"tag":{"at":"tag","from":"path"}}},
+      "tags.update.put": {"action":"wp_json.wp.tags.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/tags/{tag}","path_patterns":{"tag":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"tag":{"at":"tag","from":"path"}}},
+      "taxonomies.get": {"action":"wp_json.wp.taxonomies.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/taxonomies/{taxonomy}","scope":{"taxonomy":{"at":"taxonomy","from":"path"}}},
+      "taxonomies.list": {"action":"wp_json.wp.taxonomies.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","type"],"path":"/wp-json/wp/v2/taxonomies","scope":{}},
+      "template_parts.autosaves.create": {"action":"wp_json.wp.template_parts.autosaves.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/template-parts/{theme}//{slug}/autosaves","scope":{"autosave":{"at":"","from":"body","type":"object"},"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "template_parts.autosaves.get": {"action":"wp_json.wp.template_parts.autosaves.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/template-parts/{theme}//{slug}/autosaves/{autosave}","path_patterns":{"autosave":"[0-9]+"},"scope":{"autosave":{"at":"autosave","from":"path"},"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "template_parts.autosaves.list": {"action":"wp_json.wp.template_parts.autosaves.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/template-parts/{theme}//{slug}/autosaves","scope":{"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "template_parts.create": {"action":"wp_json.wp.template_parts.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/template-parts","scope":{"template_part":{"at":"","from":"body","type":"object"}}},
+      "template_parts.delete": {"action":"wp_json.wp.template_parts.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/template-parts/{theme}//{slug}","scope":{"query":{"at":"","from":"query","type":"object"},"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "template_parts.get": {"action":"wp_json.wp.template_parts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/template-parts/{theme}//{slug}","scope":{"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "template_parts.list": {"action":"wp_json.wp.template_parts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","area","context","post_type","wp_id"],"path":"/wp-json/wp/v2/template-parts","scope":{}},
+      "template_parts.lookup.list": {"action":"wp_json.wp.template_parts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","is_custom","slug","template_prefix"],"path":"/wp-json/wp/v2/template-parts/lookup","scope":{}},
+      "template_parts.revisions.delete": {"action":"wp_json.wp.template_parts.revisions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/template-parts/{theme}//{slug}/revisions/{revision}","path_patterns":{"revision":"[0-9]+"},"scope":{"query":{"at":"","from":"query","type":"object"},"revision":{"at":"revision","from":"path"},"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "template_parts.revisions.get": {"action":"wp_json.wp.template_parts.revisions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/template-parts/{theme}//{slug}/revisions/{revision}","path_patterns":{"revision":"[0-9]+"},"scope":{"revision":{"at":"revision","from":"path"},"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "template_parts.revisions.list": {"action":"wp_json.wp.template_parts.revisions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","exclude","include","offset","order","orderby","page","per_page","search"],"path":"/wp-json/wp/v2/template-parts/{theme}//{slug}/revisions","scope":{"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "template_parts.update": {"action":"wp_json.wp.template_parts.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/template-parts/{theme}//{slug}","scope":{"changes":{"at":"","from":"body","type":"object"},"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "template_parts.update.patch": {"action":"wp_json.wp.template_parts.write","body":"json","effects":["write","publish"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/template-parts/{theme}//{slug}","scope":{"changes":{"at":"","from":"body","type":"object"},"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "template_parts.update.put": {"action":"wp_json.wp.template_parts.write","body":"json","effects":["write","publish"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/template-parts/{theme}//{slug}","scope":{"changes":{"at":"","from":"body","type":"object"},"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "templates.autosaves.create": {"action":"wp_json.wp.templates.autosaves.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/templates/{theme}//{slug}/autosaves","scope":{"autosave":{"at":"","from":"body","type":"object"},"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "templates.autosaves.get": {"action":"wp_json.wp.templates.autosaves.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/templates/{theme}//{slug}/autosaves/{autosave}","path_patterns":{"autosave":"[0-9]+"},"scope":{"autosave":{"at":"autosave","from":"path"},"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "templates.autosaves.list": {"action":"wp_json.wp.templates.autosaves.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/templates/{theme}//{slug}/autosaves","scope":{"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "templates.create": {"action":"wp_json.wp.templates.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/templates","scope":{"template":{"at":"","from":"body","type":"object"}}},
+      "templates.delete": {"action":"wp_json.wp.templates.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/templates/{theme}//{slug}","scope":{"query":{"at":"","from":"query","type":"object"},"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "templates.get": {"action":"wp_json.wp.templates.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/templates/{theme}//{slug}","scope":{"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "templates.list": {"action":"wp_json.wp.templates.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","area","context","post_type","wp_id"],"path":"/wp-json/wp/v2/templates","scope":{}},
+      "templates.lookup.list": {"action":"wp_json.wp.templates.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","is_custom","slug","template_prefix"],"path":"/wp-json/wp/v2/templates/lookup","scope":{}},
+      "templates.revisions.delete": {"action":"wp_json.wp.templates.revisions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/templates/{theme}//{slug}/revisions/{revision}","path_patterns":{"revision":"[0-9]+"},"scope":{"query":{"at":"","from":"query","type":"object"},"revision":{"at":"revision","from":"path"},"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "templates.revisions.get": {"action":"wp_json.wp.templates.revisions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/templates/{theme}//{slug}/revisions/{revision}","path_patterns":{"revision":"[0-9]+"},"scope":{"revision":{"at":"revision","from":"path"},"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "templates.revisions.list": {"action":"wp_json.wp.templates.revisions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","exclude","include","offset","order","orderby","page","per_page","search"],"path":"/wp-json/wp/v2/templates/{theme}//{slug}/revisions","scope":{"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "templates.update": {"action":"wp_json.wp.templates.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/templates/{theme}//{slug}","scope":{"changes":{"at":"","from":"body","type":"object"},"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "templates.update.patch": {"action":"wp_json.wp.templates.write","body":"json","effects":["write","publish"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/templates/{theme}//{slug}","scope":{"changes":{"at":"","from":"body","type":"object"},"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "templates.update.put": {"action":"wp_json.wp.templates.write","body":"json","effects":["write","publish"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/templates/{theme}//{slug}","scope":{"changes":{"at":"","from":"body","type":"object"},"slug":{"at":"slug","from":"path"},"theme":{"at":"theme","from":"path"}}},
+      "themes.get": {"action":"wp_json.wp.themes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/themes/{stylesheet*}","scope":{"stylesheet":{"at":"stylesheet","from":"path"}}},
+      "themes.list": {"action":"wp_json.wp.themes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","status"],"path":"/wp-json/wp/v2/themes","scope":{}},
+      "types.get": {"action":"wp_json.wp.types.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/types/{type}","scope":{"type":{"at":"type","from":"path"}}},
+      "types.list": {"action":"wp_json.wp.types.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/types","scope":{}},
+      "users.application_passwords.create": {"action":"wp_json.wp.users.application_passwords.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/users/{user}/application-passwords","path_patterns":{"user":"[0-9]+|me"},"scope":{"application_password":{"at":"","from":"body","type":"object"},"user":{"at":"user","from":"path"}}},
+      "users.application_passwords.delete": {"action":"wp_json.wp.users.application_passwords.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/wp-json/wp/v2/users/{user}/application-passwords/{uuid}","path_patterns":{"user":"[0-9]+|me","uuid":"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"},"scope":{"user":{"at":"user","from":"path"},"uuid":{"at":"uuid","from":"path"}}},
+      "users.application_passwords.delete_all": {"action":"wp_json.wp.users.application_passwords.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/wp-json/wp/v2/users/{user}/application-passwords","path_patterns":{"user":"[0-9]+|me"},"scope":{"user":{"at":"user","from":"path"}}},
+      "users.application_passwords.get": {"action":"wp_json.wp.users.application_passwords.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/users/{user}/application-passwords/{uuid}","path_patterns":{"user":"[0-9]+|me","uuid":"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"},"scope":{"user":{"at":"user","from":"path"},"uuid":{"at":"uuid","from":"path"}}},
+      "users.application_passwords.introspect.list": {"action":"wp_json.wp.users.application_passwords.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/users/{user}/application-passwords/introspect","path_patterns":{"user":"[0-9]+|me"},"scope":{"user":{"at":"user","from":"path"}}},
+      "users.application_passwords.list": {"action":"wp_json.wp.users.application_passwords.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/users/{user}/application-passwords","path_patterns":{"user":"[0-9]+|me"},"scope":{"user":{"at":"user","from":"path"}}},
+      "users.application_passwords.update": {"action":"wp_json.wp.users.application_passwords.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/users/{user}/application-passwords/{uuid}","path_patterns":{"user":"[0-9]+|me","uuid":"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"},"scope":{"changes":{"at":"","from":"body","type":"object"},"user":{"at":"user","from":"path"},"uuid":{"at":"uuid","from":"path"}}},
+      "users.application_passwords.update.patch": {"action":"wp_json.wp.users.application_passwords.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/users/{user}/application-passwords/{uuid}","path_patterns":{"user":"[0-9]+|me","uuid":"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"},"scope":{"changes":{"at":"","from":"body","type":"object"},"user":{"at":"user","from":"path"},"uuid":{"at":"uuid","from":"path"}}},
+      "users.application_passwords.update.put": {"action":"wp_json.wp.users.application_passwords.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/users/{user}/application-passwords/{uuid}","path_patterns":{"user":"[0-9]+|me","uuid":"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"},"scope":{"changes":{"at":"","from":"body","type":"object"},"user":{"at":"user","from":"path"},"uuid":{"at":"uuid","from":"path"}}},
+      "users.create": {"action":"wp_json.wp.users.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/users","scope":{"user":{"at":"","from":"body","type":"object"}}},
+      "users.delete": {"action":"wp_json.wp.users.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["force","reassign"],"path":"/wp-json/wp/v2/users/{user}","path_patterns":{"user":"[0-9]+"},"scope":{"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"path"}}},
+      "users.get": {"action":"wp_json.wp.users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/users/{user}","path_patterns":{"user":"[0-9]+"},"scope":{"user":{"at":"user","from":"path"}}},
+      "users.list": {"action":"wp_json.wp.users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","capabilities","context","exclude","has_published_posts","include","offset","order","orderby","page","per_page","roles","search","search_columns","slug","who"],"path":"/wp-json/wp/v2/users","scope":{}},
+      "users.me.delete": {"action":"wp_json.wp.users.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["force","reassign"],"path":"/wp-json/wp/v2/users/me","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "users.me.get": {"action":"wp_json.wp.users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/users/me","scope":{}},
+      "users.me.update": {"action":"wp_json.wp.users.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/users/me","scope":{"changes":{"at":"","from":"body","type":"object"}}},
+      "users.me.update.patch": {"action":"wp_json.wp.users.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/users/me","scope":{"changes":{"at":"","from":"body","type":"object"}}},
+      "users.me.update.put": {"action":"wp_json.wp.users.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/users/me","scope":{"changes":{"at":"","from":"body","type":"object"}}},
+      "users.update": {"action":"wp_json.wp.users.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/users/{user}","path_patterns":{"user":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"user":{"at":"user","from":"path"}}},
+      "users.update.patch": {"action":"wp_json.wp.users.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/users/{user}","path_patterns":{"user":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"user":{"at":"user","from":"path"}}},
+      "users.update.put": {"action":"wp_json.wp.users.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/users/{user}","path_patterns":{"user":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"user":{"at":"user","from":"path"}}},
+      "widget_types.encode": {"action":"wp_json.wp.widget_types.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/widget-types/{widget_type}/encode","scope":{"request":{"at":"","from":"body","type":"object"},"widget_type":{"at":"widget_type","from":"path"}}},
+      "widget_types.get": {"action":"wp_json.wp.widget_types.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/widget-types/{widget_type}","scope":{"widget_type":{"at":"widget_type","from":"path"}}},
+      "widget_types.list": {"action":"wp_json.wp.widget_types.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/widget-types","scope":{}},
+      "widget_types.render": {"action":"wp_json.wp.widget_types.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/widget-types/{widget_type}/render","scope":{"request":{"at":"","from":"body","type":"object"},"widget_type":{"at":"widget_type","from":"path"}}},
+      "widgets.create": {"action":"wp_json.wp.widgets.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/widgets","scope":{"widget":{"at":"","from":"body","type":"object"}}},
+      "widgets.delete": {"action":"wp_json.wp.widgets.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/widgets/{widget}","scope":{"query":{"at":"","from":"query","type":"object"},"widget":{"at":"widget","from":"path"}}},
+      "widgets.get": {"action":"wp_json.wp.widgets.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/widgets/{widget}","scope":{"widget":{"at":"widget","from":"path"}}},
+      "widgets.list": {"action":"wp_json.wp.widgets.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","sidebar"],"path":"/wp-json/wp/v2/widgets","scope":{}},
+      "widgets.update": {"action":"wp_json.wp.widgets.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/widgets/{widget}","scope":{"changes":{"at":"","from":"body","type":"object"},"widget":{"at":"widget","from":"path"}}},
+      "widgets.update.patch": {"action":"wp_json.wp.widgets.write","body":"json","effects":["write","publish"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/widgets/{widget}","scope":{"changes":{"at":"","from":"body","type":"object"},"widget":{"at":"widget","from":"path"}}},
+      "widgets.update.put": {"action":"wp_json.wp.widgets.write","body":"json","effects":["write","publish"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/widgets/{widget}","scope":{"changes":{"at":"","from":"body","type":"object"},"widget":{"at":"widget","from":"path"}}},
+      "wp_pattern_category.create": {"action":"wp_json.wp.wp_pattern_category.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/wp_pattern_category","scope":{"pattern_category":{"at":"","from":"body","type":"object"}}},
+      "wp_pattern_category.delete": {"action":"wp_json.wp.wp_pattern_category.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/wp_pattern_category/{pattern_category}","path_patterns":{"pattern_category":"[0-9]+"},"scope":{"pattern_category":{"at":"pattern_category","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "wp_pattern_category.get": {"action":"wp_json.wp.wp_pattern_category.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wp/v2/wp_pattern_category/{pattern_category}","path_patterns":{"pattern_category":"[0-9]+"},"scope":{"pattern_category":{"at":"pattern_category","from":"path"}}},
+      "wp_pattern_category.list": {"action":"wp_json.wp.wp_pattern_category.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","exclude","hide_empty","include","offset","order","orderby","page","per_page","post","search","slug"],"path":"/wp-json/wp/v2/wp_pattern_category","scope":{}},
+      "wp_pattern_category.update": {"action":"wp_json.wp.wp_pattern_category.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/wp_pattern_category/{pattern_category}","path_patterns":{"pattern_category":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"pattern_category":{"at":"pattern_category","from":"path"}}},
+      "wp_pattern_category.update.patch": {"action":"wp_json.wp.wp_pattern_category.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/wp-json/wp/v2/wp_pattern_category/{pattern_category}","path_patterns":{"pattern_category":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"pattern_category":{"at":"pattern_category","from":"path"}}},
+      "wp_pattern_category.update.put": {"action":"wp_json.wp.wp_pattern_category.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wp-json/wp/v2/wp_pattern_category/{pattern_category}","path_patterns":{"pattern_category":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"pattern_category":{"at":"pattern_category","from":"path"}}}
     }
   }
 }

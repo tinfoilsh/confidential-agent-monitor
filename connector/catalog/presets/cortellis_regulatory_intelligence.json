@@ -8,7 +8,9 @@
     },
     "connection": {"mcp": {"url": "https://api.clarivate.com/lifesciences/mcp-regulatory/mcp"}},
     "fields": [
+      {"key": "url", "label": "Server URL", "default": "https://api.clarivate.com/lifesciences/mcp-regulatory/mcp", "help": "With a Clarivate API key, use https://api.clarivate.com/lifesciences/mcp-regulatory/apikey/mcp instead.", "path": ["mcp", "url"]},
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://api.clarivate.com/lifesciences/mcp-regulatory/mcp"}}
     ]
-  }
+  },
+  "mcp": {"token": {"header": "X-ApiKey"}}
 }

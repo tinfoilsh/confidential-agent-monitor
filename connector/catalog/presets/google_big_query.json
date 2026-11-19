@@ -1,8 +1,155 @@
 {
-  "title": "Google BigQuery",
   "catalog": {
-    "group": "api",
+    "actions": {
+      "bigquery": {
+        "title": "Bigquery"
+      },
+      "bigquery.projects": {
+        "title": "Projects"
+      },
+      "bigquery.projects.datasets": {
+        "title": "Datasets"
+      },
+      "bigquery.projects.datasets.delete": {
+        "title": "Delete"
+      },
+      "bigquery.projects.datasets.models": {
+        "title": "Models"
+      },
+      "bigquery.projects.datasets.models.delete": {
+        "title": "Delete"
+      },
+      "bigquery.projects.datasets.models.read": {
+        "title": "Read"
+      },
+      "bigquery.projects.datasets.models.write": {
+        "title": "Create and edit"
+      },
+      "bigquery.projects.datasets.read": {
+        "title": "Read"
+      },
+      "bigquery.projects.datasets.routines": {
+        "title": "Routines"
+      },
+      "bigquery.projects.datasets.routines.delete": {
+        "title": "Delete"
+      },
+      "bigquery.projects.datasets.routines.read": {
+        "title": "Read"
+      },
+      "bigquery.projects.datasets.routines.share": {
+        "title": "Share"
+      },
+      "bigquery.projects.datasets.routines.write": {
+        "title": "Create and edit"
+      },
+      "bigquery.projects.datasets.tables": {
+        "title": "Tables"
+      },
+      "bigquery.projects.datasets.tables.data": {
+        "title": "Data"
+      },
+      "bigquery.projects.datasets.tables.data.read": {
+        "title": "Read"
+      },
+      "bigquery.projects.datasets.tables.delete": {
+        "title": "Delete"
+      },
+      "bigquery.projects.datasets.tables.insert_all": {
+        "title": "Insert all"
+      },
+      "bigquery.projects.datasets.tables.insert_all.write": {
+        "title": "Create and edit"
+      },
+      "bigquery.projects.datasets.tables.read": {
+        "title": "Read"
+      },
+      "bigquery.projects.datasets.tables.row_access_policies": {
+        "title": "Row access policies"
+      },
+      "bigquery.projects.datasets.tables.row_access_policies.delete": {
+        "title": "Delete"
+      },
+      "bigquery.projects.datasets.tables.row_access_policies.read": {
+        "title": "Read"
+      },
+      "bigquery.projects.datasets.tables.row_access_policies.share": {
+        "title": "Share"
+      },
+      "bigquery.projects.datasets.tables.share": {
+        "title": "Share"
+      },
+      "bigquery.projects.datasets.tables.write": {
+        "title": "Create and edit"
+      },
+      "bigquery.projects.datasets.write": {
+        "title": "Create and edit"
+      },
+      "bigquery.projects.jobs": {
+        "title": "Jobs"
+      },
+      "bigquery.projects.jobs.delete": {
+        "title": "Delete"
+      },
+      "bigquery.projects.jobs.execute": {
+        "title": "Run"
+      },
+      "bigquery.projects.jobs.read": {
+        "title": "Read"
+      },
+      "bigquery.projects.jobs.write": {
+        "title": "Create and edit"
+      },
+      "bigquery.projects.queries": {
+        "title": "Queries"
+      },
+      "bigquery.projects.queries.execute": {
+        "title": "Run"
+      },
+      "bigquery.projects.queries.read": {
+        "title": "Read"
+      },
+      "bigquery.projects.read": {
+        "title": "Read"
+      },
+      "bigquery.projects.service_account": {
+        "title": "Service account"
+      },
+      "bigquery.projects.service_account.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://bigquery.googleapis.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
     "fields": [
+      {
+        "default": "https://bigquery.googleapis.com",
+        "key": "origin",
+        "label": "BigQuery API origin (https://bigquery.googleapis.com, or a regional endpoint such as https://bigquery.europe-west3.rep.googleapis.com)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
       {
         "key": "client_id",
         "label": "Google OAuth client ID",
@@ -14,76 +161,76 @@
         "paths": [],
         "secret": true
       },
-      {"key": "token", "label": "Google BigQuery account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/bigquery https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/drive"}}
+      {
+        "credential": true,
+        "key": "token",
+        "label": "Google BigQuery account",
+        "oauth": {
+          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
+          "client_id": "{client_id}",
+          "client_secret": "{client_secret}",
+          "scope": "https://www.googleapis.com/auth/bigquery https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/drive",
+          "token_url": "https://oauth2.googleapis.com/token"
+        },
+        "secret": true
+      }
     ],
-    "connection": {"http": {"slots": [{"value": "token", "origin": "https://bigquery.googleapis.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
-    "actions": {
-      "delete.datasets": {"title": "Delete: datasets"},
-      "delete.delete": {"title": "Delete: delete"},
-      "delete.models": {"title": "Delete: models"},
-      "delete.routines": {"title": "Delete: routines"},
-      "delete.row_access_policies": {"title": "Delete: row access policies"},
-      "delete.tables": {"title": "Delete: tables"},
-      "execute.jobs": {"title": "Execute: jobs"},
-      "read": {"title": "Read everything the account can see"},
-      "write.datasets": {"title": "Write: datasets"},
-      "write.insert_all": {"title": "Write: insert all"},
-      "write.models": {"title": "Write: models"},
-      "write.routines": {"title": "Write: routines"},
-      "write.row_access_policies": {"title": "Write: row access policies"},
-      "write.tables": {"title": "Write: tables"}
-    }
+    "group": "api",
+    "replaced_by": "google_cloud"
   },
+  "title": "Google BigQuery",
   "http": {
+    "origins": {"origin":["https://bigquery.googleapis.com","https://bigquery.{location}.rep.googleapis.com"]},
     "operations": {
-      "datasets.delete": {"action":"delete.datasets","effects":["delete"],"method":"DELETE","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","deleteContents"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"}}},
-      "datasets.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","accessPolicyVersion","datasetView"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"}}},
-      "datasets.insert": {"action":"write.datasets","effects":["write"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","accessPolicyVersion"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"}}},
-      "datasets.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","all","filter","maxResults","pageToken"],"scope":{"projectsId":{"from":"path","at":"projectsId"}}},
-      "datasets.patch": {"action":"write.datasets","effects":["write"],"method":"PATCH","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","accessPolicyVersion","updateMode"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"}}},
-      "datasets.undelete": {"action":"write.datasets","effects":["write"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}:undelete","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"}}},
-      "datasets.update": {"action":"write.datasets","effects":["write"],"method":"PUT","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","accessPolicyVersion","updateMode"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"}}},
-      "jobs.cancel": {"action":"execute.jobs","effects":["execute"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/jobs/{jobsId}/cancel","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","location"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"jobsId":{"from":"path","at":"jobsId"}}},
-      "jobs.delete": {"action":"delete.delete","effects":["delete"],"method":"DELETE","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/jobs/{jobsId}/delete","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","location"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"jobsId":{"from":"path","at":"jobsId"}}},
-      "jobs.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/jobs/{jobsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","location"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"jobsId":{"from":"path","at":"jobsId"}}},
-      "jobs.getQueryResults": {"action":"read","effects":["read"],"method":"GET","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/queries/{queriesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","formatOptions.timestampOutputFormat","formatOptions.useInt64Timestamp","location","maxResults","pageToken","startIndex","timeoutMs"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"queriesId":{"from":"path","at":"queriesId"}}},
-      "jobs.insert": {"action":"execute.jobs","effects":["execute"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/jobs","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"}}},
-      "jobs.insert.upload": {"action":"execute.jobs","effects":["execute"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/upload/bigquery/v2/projects/{projectId}/jobs","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","uploadType"],"body":"any","scope":{"projectId":{"from":"path","at":"projectId"}}},
-      "jobs.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/jobs","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","allUsers","maxCreationTime","maxResults","minCreationTime","pageToken","parentJobId","projection","stateFilter"],"scope":{"projectsId":{"from":"path","at":"projectsId"}}},
-      "jobs.query": {"action":"read","effects":["read"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/queries","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"}}},
-      "models.delete": {"action":"delete.models","effects":["delete"],"method":"DELETE","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/models/{modelsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"modelsId":{"from":"path","at":"modelsId"}}},
-      "models.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/models/{modelsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"modelsId":{"from":"path","at":"modelsId"}}},
-      "models.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/models","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","pageToken"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"}}},
-      "models.patch": {"action":"write.models","effects":["write"],"method":"PATCH","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/models/{modelsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"modelsId":{"from":"path","at":"modelsId"}}},
-      "projects.getServiceAccount": {"action":"read","effects":["read"],"method":"GET","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/serviceAccount","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"}}},
-      "projects.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","pageToken"],"scope":{}},
-      "routines.delete": {"action":"delete.routines","effects":["delete"],"method":"DELETE","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"routinesId":{"from":"path","at":"routinesId"}}},
-      "routines.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","readMask"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"routinesId":{"from":"path","at":"routinesId"}}},
-      "routines.getIamPolicy": {"action":"read","effects":["read"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}:getIamPolicy","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"routinesId":{"from":"path","at":"routinesId"}}},
-      "routines.insert": {"action":"write.routines","effects":["write"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/routines","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"}}},
-      "routines.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/routines","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","maxResults","pageToken","readMask"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"}}},
-      "routines.setIamPolicy": {"action":"write.routines","effects":["write"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}:setIamPolicy","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"routinesId":{"from":"path","at":"routinesId"}}},
-      "routines.testIamPermissions": {"action":"read","effects":["read"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}:testIamPermissions","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"routinesId":{"from":"path","at":"routinesId"}}},
-      "routines.update": {"action":"write.routines","effects":["write"],"method":"PUT","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"routinesId":{"from":"path","at":"routinesId"}}},
-      "rowAccessPolicies.batchDelete": {"action":"delete.row_access_policies","effects":["delete"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies:batchDelete","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"tablesId":{"from":"path","at":"tablesId"}}},
-      "rowAccessPolicies.delete": {"action":"delete.row_access_policies","effects":["delete"],"method":"DELETE","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies/{rowAccessPoliciesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","force"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"tablesId":{"from":"path","at":"tablesId"},"rowAccessPoliciesId":{"from":"path","at":"rowAccessPoliciesId"}}},
-      "rowAccessPolicies.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies/{rowAccessPoliciesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"tablesId":{"from":"path","at":"tablesId"},"rowAccessPoliciesId":{"from":"path","at":"rowAccessPoliciesId"}}},
-      "rowAccessPolicies.getIamPolicy": {"action":"read","effects":["read"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies/{rowAccessPoliciesId}:getIamPolicy","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"tablesId":{"from":"path","at":"tablesId"},"rowAccessPoliciesId":{"from":"path","at":"rowAccessPoliciesId"}}},
-      "rowAccessPolicies.insert": {"action":"write.row_access_policies","effects":["write"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"tablesId":{"from":"path","at":"tablesId"}}},
-      "rowAccessPolicies.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"tablesId":{"from":"path","at":"tablesId"}}},
-      "rowAccessPolicies.testIamPermissions": {"action":"read","effects":["read"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies/{rowAccessPoliciesId}:testIamPermissions","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"tablesId":{"from":"path","at":"tablesId"},"rowAccessPoliciesId":{"from":"path","at":"rowAccessPoliciesId"}}},
-      "rowAccessPolicies.update": {"action":"write.row_access_policies","effects":["write"],"method":"PUT","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies/{rowAccessPoliciesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"tablesId":{"from":"path","at":"tablesId"},"rowAccessPoliciesId":{"from":"path","at":"rowAccessPoliciesId"}}},
-      "tabledata.insertAll": {"action":"write.insert_all","effects":["write"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/insertAll","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"tablesId":{"from":"path","at":"tablesId"}}},
-      "tabledata.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/data","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","formatOptions.timestampOutputFormat","formatOptions.useInt64Timestamp","maxResults","pageToken","selectedFields","startIndex"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"tablesId":{"from":"path","at":"tablesId"}}},
-      "tables.delete": {"action":"delete.tables","effects":["delete"],"method":"DELETE","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"tablesId":{"from":"path","at":"tablesId"}}},
-      "tables.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","selectedFields","view"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"tablesId":{"from":"path","at":"tablesId"}}},
-      "tables.getIamPolicy": {"action":"read","effects":["read"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}:getIamPolicy","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"tablesId":{"from":"path","at":"tablesId"}}},
-      "tables.insert": {"action":"write.tables","effects":["write"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"}}},
-      "tables.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","pageToken"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"}}},
-      "tables.patch": {"action":"write.tables","effects":["write"],"method":"PATCH","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","autodetect_schema"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"tablesId":{"from":"path","at":"tablesId"}}},
-      "tables.setIamPolicy": {"action":"write.tables","effects":["write"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}:setIamPolicy","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"tablesId":{"from":"path","at":"tablesId"}}},
-      "tables.testIamPermissions": {"action":"read","effects":["read"],"method":"POST","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}:testIamPermissions","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"tablesId":{"from":"path","at":"tablesId"}}},
-      "tables.update": {"action":"write.tables","effects":["write"],"method":"PUT","origin":"https://bigquery.googleapis.com","path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","autodetect_schema"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"datasetsId":{"from":"path","at":"datasetsId"},"tablesId":{"from":"path","at":"tablesId"}}}
+      "datasets.delete": {"action":"bigquery.projects.datasets.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","deleteContents"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "datasets.get": {"action":"bigquery.projects.datasets.read","effects":["read"],"method":"GET","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","accessPolicyVersion","datasetView"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "datasets.insert": {"action":"bigquery.projects.datasets.write","body":"json","effects":["write"],"fields":{"/access":null},"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","accessPolicyVersion"],"path":"/bigquery/v2/projects/{projectsId}/datasets","scope":{"projectsId":{"at":"projectsId","from":"path"}}},
+      "datasets.list": {"action":"bigquery.projects.datasets.read","effects":["read"],"method":"GET","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","all","filter","maxResults","pageToken"],"path":"/bigquery/v2/projects/{projectsId}/datasets","scope":{"projectsId":{"at":"projectsId","from":"path"}}},
+      "datasets.patch": {"action":"bigquery.projects.datasets.write","body":"json","effects":["write"],"fields":{"/access":null},"method":"PATCH","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","accessPolicyVersion","updateMode"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "datasets.undelete": {"action":"bigquery.projects.datasets.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}:undelete","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "datasets.update": {"action":"bigquery.projects.datasets.write","body":"json","effects":["write"],"fields":{"/access":null},"method":"PUT","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","accessPolicyVersion","updateMode"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "jobs.cancel": {"action":"bigquery.projects.jobs.write","effects":["write"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","location"],"path":"/bigquery/v2/projects/{projectsId}/jobs/{jobsId}/cancel","scope":{"jobsId":{"at":"jobsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "jobs.delete": {"action":"bigquery.projects.jobs.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","location"],"path":"/bigquery/v2/projects/{projectsId}/jobs/{jobsId}/delete","scope":{"jobsId":{"at":"jobsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "jobs.get": {"action":"bigquery.projects.jobs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","location"],"path":"/bigquery/v2/projects/{projectsId}/jobs/{jobsId}","scope":{"jobsId":{"at":"jobsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "jobs.getQueryResults": {"action":"bigquery.projects.queries.read","effects":["read"],"method":"GET","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","formatOptions.timestampOutputFormat","formatOptions.useInt64Timestamp","location","maxResults","pageToken","startIndex","timeoutMs"],"path":"/bigquery/v2/projects/{projectsId}/queries/{queriesId}","scope":{"projectsId":{"at":"projectsId","from":"path"},"queriesId":{"at":"queriesId","from":"path"}}},
+      "jobs.insert": {"action":"bigquery.projects.jobs.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/jobs","scope":{"projectsId":{"at":"projectsId","from":"path"}}},
+      "jobs.insert.upload": {"action":"bigquery.projects.jobs.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","upload_id"],"path":"/upload/bigquery/v2/projects/{projectId}/jobs","scope":{"projectId":{"at":"projectId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "jobs.insert.upload.session": {"action":"bigquery.projects.jobs.execute","body":"any","effects":["execute"],"method":"PUT","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/upload/bigquery/v2/projects/{projectId}/jobs","query":{"upload_id":true},"scope":{"projectId":{"at":"projectId","from":"path"}}},
+      "jobs.list": {"action":"bigquery.projects.jobs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","allUsers","maxCreationTime","maxResults","minCreationTime","pageToken","parentJobId","projection","stateFilter"],"path":"/bigquery/v2/projects/{projectsId}/jobs","scope":{"projectsId":{"at":"projectsId","from":"path"}}},
+      "jobs.query": {"action":"bigquery.projects.queries.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/queries","scope":{"projectsId":{"at":"projectsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "models.delete": {"action":"bigquery.projects.datasets.models.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/models/{modelsId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"modelsId":{"at":"modelsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "models.get": {"action":"bigquery.projects.datasets.models.read","effects":["read"],"method":"GET","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/models/{modelsId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"modelsId":{"at":"modelsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "models.list": {"action":"bigquery.projects.datasets.models.read","effects":["read"],"method":"GET","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","pageToken"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/models","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "models.patch": {"action":"bigquery.projects.datasets.models.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/models/{modelsId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"modelsId":{"at":"modelsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.getServiceAccount": {"action":"bigquery.projects.service_account.read","effects":["read"],"method":"GET","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/serviceAccount","scope":{"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.list": {"action":"bigquery.projects.read","effects":["read"],"method":"GET","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","pageToken"],"path":"/bigquery/v2/projects","scope":{}},
+      "routines.delete": {"action":"bigquery.projects.datasets.routines.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"routinesId":{"at":"routinesId","from":"path"}}},
+      "routines.get": {"action":"bigquery.projects.datasets.routines.read","effects":["read"],"method":"GET","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","readMask"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"routinesId":{"at":"routinesId","from":"path"}}},
+      "routines.getIamPolicy": {"action":"bigquery.projects.datasets.routines.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}:getIamPolicy","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"routinesId":{"at":"routinesId","from":"path"}}},
+      "routines.insert": {"action":"bigquery.projects.datasets.routines.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/routines","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "routines.list": {"action":"bigquery.projects.datasets.routines.read","effects":["read"],"method":"GET","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","maxResults","pageToken","readMask"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/routines","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "routines.setIamPolicy": {"action":"bigquery.projects.datasets.routines.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}:setIamPolicy","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"routinesId":{"at":"routinesId","from":"path"}}},
+      "routines.testIamPermissions": {"action":"bigquery.projects.datasets.routines.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}:testIamPermissions","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"routinesId":{"at":"routinesId","from":"path"}}},
+      "routines.update": {"action":"bigquery.projects.datasets.routines.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"routinesId":{"at":"routinesId","from":"path"}}},
+      "rowAccessPolicies.batchDelete": {"action":"bigquery.projects.datasets.tables.row_access_policies.delete","body":"json","effects":["delete","share"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies:batchDelete","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tablesId":{"at":"tablesId","from":"path"}}},
+      "rowAccessPolicies.delete": {"action":"bigquery.projects.datasets.tables.row_access_policies.delete","effects":["delete","share"],"method":"DELETE","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","force"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies/{rowAccessPoliciesId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"rowAccessPoliciesId":{"at":"rowAccessPoliciesId","from":"path"},"tablesId":{"at":"tablesId","from":"path"}}},
+      "rowAccessPolicies.get": {"action":"bigquery.projects.datasets.tables.row_access_policies.read","effects":["read"],"method":"GET","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies/{rowAccessPoliciesId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"rowAccessPoliciesId":{"at":"rowAccessPoliciesId","from":"path"},"tablesId":{"at":"tablesId","from":"path"}}},
+      "rowAccessPolicies.getIamPolicy": {"action":"bigquery.projects.datasets.tables.row_access_policies.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies/{rowAccessPoliciesId}:getIamPolicy","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"rowAccessPoliciesId":{"at":"rowAccessPoliciesId","from":"path"},"tablesId":{"at":"tablesId","from":"path"}}},
+      "rowAccessPolicies.insert": {"action":"bigquery.projects.datasets.tables.row_access_policies.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tablesId":{"at":"tablesId","from":"path"}}},
+      "rowAccessPolicies.list": {"action":"bigquery.projects.datasets.tables.row_access_policies.read","effects":["read"],"method":"GET","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"tablesId":{"at":"tablesId","from":"path"}}},
+      "rowAccessPolicies.testIamPermissions": {"action":"bigquery.projects.datasets.tables.row_access_policies.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies/{rowAccessPoliciesId}:testIamPermissions","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"rowAccessPoliciesId":{"at":"rowAccessPoliciesId","from":"path"},"tablesId":{"at":"tablesId","from":"path"}}},
+      "rowAccessPolicies.update": {"action":"bigquery.projects.datasets.tables.row_access_policies.share","body":"json","effects":["share"],"method":"PUT","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/rowAccessPolicies/{rowAccessPoliciesId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"rowAccessPoliciesId":{"at":"rowAccessPoliciesId","from":"path"},"tablesId":{"at":"tablesId","from":"path"}}},
+      "tabledata.insertAll": {"action":"bigquery.projects.datasets.tables.insert_all.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/insertAll","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"tablesId":{"at":"tablesId","from":"path"}}},
+      "tabledata.list": {"action":"bigquery.projects.datasets.tables.data.read","effects":["read"],"method":"GET","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","formatOptions.timestampOutputFormat","formatOptions.useInt64Timestamp","maxResults","pageToken","selectedFields","startIndex"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/data","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"tablesId":{"at":"tablesId","from":"path"}}},
+      "tables.delete": {"action":"bigquery.projects.datasets.tables.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"tablesId":{"at":"tablesId","from":"path"}}},
+      "tables.get": {"action":"bigquery.projects.datasets.tables.read","effects":["read"],"method":"GET","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","selectedFields","view"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"tablesId":{"at":"tablesId","from":"path"}}},
+      "tables.getIamPolicy": {"action":"bigquery.projects.datasets.tables.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}:getIamPolicy","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"tablesId":{"at":"tablesId","from":"path"}}},
+      "tables.insert": {"action":"bigquery.projects.datasets.tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "tables.list": {"action":"bigquery.projects.datasets.tables.read","effects":["read"],"method":"GET","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","pageToken"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "tables.patch": {"action":"bigquery.projects.datasets.tables.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","autodetect_schema"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"tablesId":{"at":"tablesId","from":"path"}}},
+      "tables.setIamPolicy": {"action":"bigquery.projects.datasets.tables.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}:setIamPolicy","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tablesId":{"at":"tablesId","from":"path"}}},
+      "tables.testIamPermissions": {"action":"bigquery.projects.datasets.tables.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}:testIamPermissions","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"tablesId":{"at":"tablesId","from":"path"}}},
+      "tables.update": {"action":"bigquery.projects.datasets.tables.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","autodetect_schema"],"path":"/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"tablesId":{"at":"tablesId","from":"path"}}}
     }
   }
 }

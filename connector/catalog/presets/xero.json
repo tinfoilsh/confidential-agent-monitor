@@ -4,13 +4,14 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.void_invoice": {"title": "Void invoice", "effects": ["delete"]}
     },
-    "connection": {"mcp": {"url": "https://mcp.xero.com/mcp"}},
+    "connection": {"mcp": {"url": "https://api.xero.com/mcp/v1"}},
     "fields": [
       {"key": "client_id", "label": "OAuth client ID", "paths": []},
       {"key": "client_secret", "label": "OAuth client secret", "paths": [], "secret": true},
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.xero.com/mcp", "client_id": "{client_id}", "client_secret": "{client_secret}"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://api.xero.com/mcp/v1", "client_id": "{client_id}", "client_secret": "{client_secret}"}}
     ]
   }
 }

@@ -4,7 +4,13 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.board_move_to_team": {"title": "Board move to team", "effects": ["admin"]},
+      "use.board_role_update": {"title": "Board role update", "effects": ["admin", "share"]},
+      "use.board_share": {"title": "Board share", "effects": ["share"]},
+      "use.section_delete": {"title": "Section delete", "effects": ["delete"]},
+      "use.space_role_update": {"title": "Space role update", "effects": ["admin", "share"]},
+      "use.space_share": {"title": "Space share", "effects": ["share"]}
     },
     "connection": {"mcp": {"url": "https://mcp.miro.com/"}},
     "fields": [

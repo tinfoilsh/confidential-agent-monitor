@@ -4,7 +4,19 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.create_flight": {"title": "Create flight", "effects": ["execute"]},
+      "use.delete_dive": {"title": "Delete dive", "effects": ["delete"]},
+      "use.delete_flight": {"title": "Delete flight", "effects": ["delete"]},
+      "use.delete_guide": {"title": "Delete guide", "effects": ["delete"]},
+      "use.edit_flight_source": {"title": "Edit flight source", "effects": ["execute"]},
+      "use.grant_access": {"title": "Grant access", "effects": ["share"]},
+      "use.query_rw": {"title": "Query rw", "effects": ["execute"]},
+      "use.revoke_access": {"title": "Revoke access", "effects": ["admin"]},
+      "use.run_flight": {"title": "Run flight", "effects": ["execute"]},
+      "use.set_guide_access": {"title": "Set guide access", "effects": ["share"]},
+      "use.share_dive_data": {"title": "Share dive data", "effects": ["share"]},
+      "use.update_flight": {"title": "Update flight", "effects": ["admin", "execute"]}
     },
     "connection": {"mcp": {"url": "https://api.motherduck.com/mcp"}},
     "fields": [

@@ -4,11 +4,37 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.accept_dispute_claim": {"title": "Accept dispute claim", "effects": ["pay"]},
+      "use.activate_recurring_series": {"title": "Activate recurring series", "effects": ["send"]},
+      "use.cancel_sent_invoice": {"title": "Cancel sent invoice", "effects": ["send", "write"]},
+      "use.create_refund": {"title": "Create refund", "effects": ["pay"]},
+      "use.delete_invoice": {"title": "Delete invoice", "effects": ["delete"]},
+      "use.delete_recurring_series": {"title": "Delete recurring series", "effects": ["delete"]},
+      "use.get_dispute": {"title": "Get dispute", "effects": ["read"]},
+      "use.get_invoice": {"title": "Get invoice", "effects": ["read"]},
+      "use.get_merchant_insights": {"title": "Get merchant insights", "effects": ["read"]},
+      "use.get_order": {"title": "Get order", "effects": ["read"]},
+      "use.get_recurring_series": {"title": "Get recurring series", "effects": ["read"]},
+      "use.get_refund": {"title": "Get refund", "effects": ["read"]},
+      "use.get_shipment_tracking": {"title": "Get shipment tracking", "effects": ["read"]},
+      "use.list_disputes": {"title": "List disputes", "effects": ["read"]},
+      "use.list_invoices": {"title": "List invoices", "effects": ["read"]},
+      "use.list_products": {"title": "List products", "effects": ["read"]},
+      "use.list_subscription_plans": {"title": "List subscription plans", "effects": ["read"]},
+      "use.list_transactions": {"title": "List transactions", "effects": ["read"]},
+      "use.pay_order": {"title": "Pay order", "effects": ["pay"]},
+      "use.search_invoicing": {"title": "Search invoicing", "effects": ["read"]},
+      "use.send_invoice": {"title": "Send invoice", "effects": ["send"]},
+      "use.send_invoice_reminder": {"title": "Send invoice reminder", "effects": ["send"]},
+      "use.show_product_details": {"title": "Show product details", "effects": ["read"]},
+      "use.show_subscription_details": {"title": "Show subscription details", "effects": ["read"]},
+      "use.show_subscription_plan_details": {"title": "Show subscription plan details", "effects": ["read"]}
     },
-    "connection": {"mcp": {"url": "https://mcp.paypal.com/mcp"}},
+    "connection": {"mcp": {"url": "{url}"}},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.paypal.com/mcp"}}
+      {"key": "url", "label": "Server URL", "default": "https://mcp.paypal.com/mcp", "hint": "Use https://mcp.sandbox.paypal.com/mcp for the PayPal sandbox.", "path": ["mcp", "url"]},
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}"}}
     ]
   }
 }

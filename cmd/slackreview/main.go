@@ -227,7 +227,7 @@ func (rv *reviewer) serve(address, hostKey, agentKeys, target string) error {
 		func(_ context.Context, p facts.Principal, _ core.Request) (core.Watch, error) {
 			return func(context.Context, func()) (connector.Gate, bool) { return rv.gate(p.Name), true }, nil
 		},
-		func(target connector.Target, _ []core.Candidate) (string, bool, bool) { return target.Host, true, true },
+		func(target connector.Target, _ []core.Candidate) (string, bool, error) { return target.Host, true, nil },
 		openTimeout)
 	defer table.Close()
 	table.Stage(database, "tcp", nil, func(context.Context) (connector.Instance, error) {

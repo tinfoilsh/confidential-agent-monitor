@@ -1,23 +1,200 @@
 {
-  "title": "MessageBird",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "access_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_key", "origin": "https://rest.messagebird.com", "path": "/messages", "header": "Authorization", "prefix": "AccessKey "}]}},
     "actions": {
-      "delete.messages": {"title": "Delete: messages"},
-      "read": {"title": "Read everything the account can see"},
-      "send.messages": {"title": "Send: messages"}
-    }
+      "balance": {
+        "title": "Balance"
+      },
+      "balance.read": {
+        "title": "Read"
+      },
+      "contacts": {
+        "title": "Contacts"
+      },
+      "contacts.delete": {
+        "title": "Delete"
+      },
+      "contacts.groups": {
+        "title": "Groups"
+      },
+      "contacts.groups.read": {
+        "title": "Read"
+      },
+      "contacts.messages": {
+        "title": "Messages"
+      },
+      "contacts.messages.read": {
+        "title": "Read"
+      },
+      "contacts.read": {
+        "title": "Read"
+      },
+      "contacts.write": {
+        "title": "Create and edit"
+      },
+      "groups": {
+        "title": "Groups"
+      },
+      "groups.contacts": {
+        "title": "Contacts"
+      },
+      "groups.contacts.delete": {
+        "title": "Delete"
+      },
+      "groups.contacts.read": {
+        "title": "Read"
+      },
+      "groups.contacts.write": {
+        "title": "Create and edit"
+      },
+      "groups.delete": {
+        "title": "Delete"
+      },
+      "groups.read": {
+        "title": "Read"
+      },
+      "groups.write": {
+        "title": "Create and edit"
+      },
+      "hlr": {
+        "title": "Hlr"
+      },
+      "hlr.delete": {
+        "title": "Delete"
+      },
+      "hlr.pay": {
+        "title": "Make payments"
+      },
+      "hlr.read": {
+        "title": "Read"
+      },
+      "lookup": {
+        "title": "Lookup"
+      },
+      "lookup.hlr": {
+        "title": "Hlr"
+      },
+      "lookup.hlr.pay": {
+        "title": "Make payments"
+      },
+      "lookup.hlr.read": {
+        "title": "Read"
+      },
+      "lookup.read": {
+        "title": "Read"
+      },
+      "messages": {
+        "title": "Messages"
+      },
+      "messages.delete": {
+        "title": "Delete"
+      },
+      "messages.read": {
+        "title": "Read"
+      },
+      "messages.send": {
+        "title": "Send"
+      },
+      "verify": {
+        "title": "Verify"
+      },
+      "verify.delete": {
+        "title": "Delete"
+      },
+      "verify.read": {
+        "title": "Read"
+      },
+      "verify.send": {
+        "title": "Send"
+      },
+      "verify.write": {
+        "title": "Create and edit"
+      },
+      "voicemessages": {
+        "title": "Voicemessages"
+      },
+      "voicemessages.delete": {
+        "title": "Delete"
+      },
+      "voicemessages.read": {
+        "title": "Read"
+      },
+      "voicemessages.send": {
+        "title": "Send"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://rest.messagebird.com",
+            "path": "/",
+            "prefix": "AccessKey ",
+            "value": "access_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "access_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "MessageBird",
   "http": {
     "operations": {
-      "DELETE /messages/messages/{messageId}": {"action":"delete.messages","effects":["delete"],"method":"DELETE","origin":"https://rest.messagebird.com","path":"/messages/messages/{messageId}","scope":{"messageId":{"from":"path","at":"messageId"}}},
-      "GET /messages/messages": {"action":"read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","path":"/messages/messages","params":["originator","recipient","direction","limit","offset","searchterm","type","contact_id","status","from","until"],"scope":{}},
-      "GET /messages/messages/{messageId}": {"action":"read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","path":"/messages/messages/{messageId}","scope":{"messageId":{"from":"path","at":"messageId"}}},
-      "POST /messages/messages": {"action":"send.messages","effects":["send"],"method":"POST","origin":"https://rest.messagebird.com","path":"/messages/messages","body":"any","scope":{}}
+      "POST /messages": {"action":"messages.send","effects":["send","pay"],"method":"POST","origin":"https://rest.messagebird.com","path":"/messages","scope":{}},
+      "balance.get": {"action":"balance.read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","path":"/balance","scope":{}},
+      "contacts.create.form": {"action":"contacts.write","body":"form","effects":["write"],"method":"POST","origin":"https://rest.messagebird.com","path":"/contacts","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "contacts.create.json": {"action":"contacts.write","body":"json","effects":["write"],"method":"POST","origin":"https://rest.messagebird.com","path":"/contacts","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "contacts.delete": {"action":"contacts.delete","effects":["delete"],"method":"DELETE","origin":"https://rest.messagebird.com","path":"/contacts/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "contacts.get": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","path":"/contacts/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "contacts.groups.list": {"action":"contacts.groups.read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","params":["limit","offset"],"path":"/contacts/{contactId}/groups","scope":{"contactId":{"at":"contactId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "contacts.list": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","params":["limit","offset"],"path":"/contacts","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "contacts.messages.list": {"action":"contacts.messages.read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","params":["limit","offset"],"path":"/contacts/{contactId}/messages","scope":{"contactId":{"at":"contactId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "contacts.update.form": {"action":"contacts.write","body":"form","effects":["write"],"method":"PATCH","origin":"https://rest.messagebird.com","path":"/contacts/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"},"request":{"at":"","from":"form","type":"object"}}},
+      "contacts.update.json": {"action":"contacts.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://rest.messagebird.com","path":"/contacts/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "groups.contacts.add.form": {"action":"groups.contacts.write","body":"form","effects":["write"],"method":"PUT","origin":"https://rest.messagebird.com","path":"/groups/{groupId}/contacts","scope":{"groupId":{"at":"groupId","from":"path"},"request":{"at":"","from":"form","type":"object"}}},
+      "groups.contacts.add.json": {"action":"groups.contacts.write","body":"json","effects":["write"],"method":"PUT","origin":"https://rest.messagebird.com","path":"/groups/{groupId}/contacts","scope":{"groupId":{"at":"groupId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "groups.contacts.list": {"action":"groups.contacts.read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","params":["limit","offset"],"path":"/groups/{groupId}/contacts","scope":{"groupId":{"at":"groupId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "groups.contacts.remove": {"action":"groups.contacts.delete","effects":["delete"],"method":"DELETE","origin":"https://rest.messagebird.com","path":"/groups/{groupId}/contacts/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"},"groupId":{"at":"groupId","from":"path"}}},
+      "groups.create.form": {"action":"groups.write","body":"form","effects":["write"],"method":"POST","origin":"https://rest.messagebird.com","path":"/groups","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "groups.create.json": {"action":"groups.write","body":"json","effects":["write"],"method":"POST","origin":"https://rest.messagebird.com","path":"/groups","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "groups.delete": {"action":"groups.delete","effects":["delete"],"method":"DELETE","origin":"https://rest.messagebird.com","path":"/groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"}}},
+      "groups.get": {"action":"groups.read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","path":"/groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"}}},
+      "groups.list": {"action":"groups.read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","params":["limit","offset"],"path":"/groups","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "groups.update.form": {"action":"groups.write","body":"form","effects":["write"],"method":"PATCH","origin":"https://rest.messagebird.com","path":"/groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"},"request":{"at":"","from":"form","type":"object"}}},
+      "groups.update.json": {"action":"groups.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://rest.messagebird.com","path":"/groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "hlr.create.form": {"action":"hlr.pay","body":"form","effects":["pay"],"method":"POST","origin":"https://rest.messagebird.com","path":"/hlr","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "hlr.create.json": {"action":"hlr.pay","body":"json","effects":["pay"],"method":"POST","origin":"https://rest.messagebird.com","path":"/hlr","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "hlr.delete": {"action":"hlr.delete","effects":["delete"],"method":"DELETE","origin":"https://rest.messagebird.com","path":"/hlr/{hlrId}","scope":{"hlrId":{"at":"hlrId","from":"path"}}},
+      "hlr.get": {"action":"hlr.read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","path":"/hlr/{hlrId}","scope":{"hlrId":{"at":"hlrId","from":"path"}}},
+      "hlr.list": {"action":"hlr.read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","params":["limit","offset"],"path":"/hlr","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "lookup.get": {"action":"lookup.read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","params":["countryCode"],"path":"/lookup/{phoneNumber}","scope":{"phoneNumber":{"at":"phoneNumber","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "lookup.hlr.create.form": {"action":"lookup.hlr.pay","body":"form","effects":["pay"],"method":"POST","origin":"https://rest.messagebird.com","path":"/lookup/{phoneNumber}/hlr","scope":{"phoneNumber":{"at":"phoneNumber","from":"path"},"request":{"at":"","from":"form","type":"object"}}},
+      "lookup.hlr.create.json": {"action":"lookup.hlr.pay","body":"json","effects":["pay"],"method":"POST","origin":"https://rest.messagebird.com","path":"/lookup/{phoneNumber}/hlr","scope":{"phoneNumber":{"at":"phoneNumber","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "lookup.hlr.create.none": {"action":"lookup.hlr.pay","effects":["pay"],"method":"POST","origin":"https://rest.messagebird.com","path":"/lookup/{phoneNumber}/hlr","scope":{"phoneNumber":{"at":"phoneNumber","from":"path"}}},
+      "lookup.hlr.get": {"action":"lookup.hlr.read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","params":["countryCode"],"path":"/lookup/{phoneNumber}/hlr","scope":{"phoneNumber":{"at":"phoneNumber","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "messages.create.form": {"action":"messages.send","body":"form","effects":["send","pay"],"method":"POST","origin":"https://rest.messagebird.com","path":"/messages","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "messages.create.json": {"action":"messages.send","body":"json","effects":["send","pay"],"method":"POST","origin":"https://rest.messagebird.com","path":"/messages","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "messages.delete": {"action":"messages.delete","effects":["delete"],"method":"DELETE","origin":"https://rest.messagebird.com","path":"/messages/{messageId}","scope":{"messageId":{"at":"messageId","from":"path"}}},
+      "messages.get": {"action":"messages.read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","path":"/messages/{messageId}","scope":{"messageId":{"at":"messageId","from":"path"}}},
+      "messages.list": {"action":"messages.read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","params":["originator","recipient","direction","limit","offset","searchterm","type","contact_id","status","from","until"],"path":"/messages","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "verify.check": {"action":"verify.write","effects":["write"],"method":"GET","origin":"https://rest.messagebird.com","path":"/verify/{verifyId}","query":{"token":true},"scope":{"token":{"at":"token","from":"query"},"verifyId":{"at":"verifyId","from":"path"}}},
+      "verify.create.form": {"action":"verify.send","body":"form","effects":["send","pay"],"method":"POST","origin":"https://rest.messagebird.com","path":"/verify","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "verify.create.json": {"action":"verify.send","body":"json","effects":["send","pay"],"method":"POST","origin":"https://rest.messagebird.com","path":"/verify","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "verify.delete": {"action":"verify.delete","effects":["delete"],"method":"DELETE","origin":"https://rest.messagebird.com","path":"/verify/{verifyId}","scope":{"verifyId":{"at":"verifyId","from":"path"}}},
+      "verify.get": {"action":"verify.read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","path":"/verify/{verifyId}","query":{"token":null},"scope":{"verifyId":{"at":"verifyId","from":"path"}}},
+      "voicemessages.create.form": {"action":"voicemessages.send","body":"form","effects":["send","pay"],"method":"POST","origin":"https://rest.messagebird.com","path":"/voicemessages","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "voicemessages.create.json": {"action":"voicemessages.send","body":"json","effects":["send","pay"],"method":"POST","origin":"https://rest.messagebird.com","path":"/voicemessages","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "voicemessages.delete": {"action":"voicemessages.delete","effects":["delete"],"method":"DELETE","origin":"https://rest.messagebird.com","path":"/voicemessages/{voiceMessageId}","scope":{"voiceMessageId":{"at":"voiceMessageId","from":"path"}}},
+      "voicemessages.get": {"action":"voicemessages.read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","path":"/voicemessages/{voiceMessageId}","scope":{"voiceMessageId":{"at":"voiceMessageId","from":"path"}}},
+      "voicemessages.list": {"action":"voicemessages.read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","params":["limit","offset","status"],"path":"/voicemessages","scope":{"query":{"at":"","from":"query","type":"object"}}}
     }
   }
 }

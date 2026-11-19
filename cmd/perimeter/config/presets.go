@@ -86,6 +86,9 @@ func LoadPresets(extra fs.FS) (map[string]*catalog.Preset, map[string]json.RawMe
 			out[name] = p
 		}
 	}
+	if err := catalog.Compose(out); err != nil {
+		return nil, nil, err
+	}
 	return out, defaults, nil
 }
 

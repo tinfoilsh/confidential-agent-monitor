@@ -347,7 +347,7 @@ func guardedDialer(allowed []netip.Prefix, network string) *net.Dialer {
 }
 
 func (st *settings) client() *http.Client {
-	return &http.Client{Transport: netx.Transport(guardedDialer(st.AllowNetworks, "tcp").DialContext), CheckRedirect: netx.RefuseRedirects}
+	return &http.Client{Transport: connections.Identified{RoundTripper: netx.Transport(guardedDialer(st.AllowNetworks, "tcp").DialContext)}, CheckRedirect: netx.RefuseRedirects}
 }
 
 func (s *state) opener(st *settings, c *installed) core.Open {
@@ -359,7 +359,7 @@ func (s *state) opener(st *settings, c *installed) core.Open {
 		grants.HostKey = st.hostKey
 	}
 	for name, value := range c.secrets {
-		grants.Secrets[name] = worker.Secret{Configured: value.Configured(), Placeholder: c.placeholders[name], Value: value.Value}
+		grants.Secrets[name] = worker.Secret{Configured: value.Configured(), OAuth: value.OAuth(), Placeholder: c.placeholders[name], Value: value.Value}
 	}
 	if workers == nil {
 		return func(ctx context.Context) (connector.Instance, error) { return c.Open(ctx, grants.Host()) }

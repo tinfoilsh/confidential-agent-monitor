@@ -1,148 +1,499 @@
 {
-  "title": "AWS Lambda",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["http", "slots", 0, "sigv4", "region"]},
-      {"key": "access_key", "label": "Access key ID", "secret": true, "credential": true},
-      {"key": "secret_key", "label": "Secret access key", "secret": true, "credential": true},
-      {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/", "sigv4": {"service": "lambda", "region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}},
     "actions": {
-      "admin.configuration": {"title": "Admin: configuration"},
-      "admin.policy": {"title": "Admin: policy"},
-      "delete.aliases": {"title": "Delete: aliases"},
-      "delete.capacity_providers": {"title": "Delete: capacity providers"},
-      "delete.code_signing_config": {"title": "Delete: code signing config"},
-      "delete.code_signing_configs": {"title": "Delete: code signing configs"},
-      "delete.concurrency": {"title": "Delete: concurrency"},
-      "delete.event_invoke_config": {"title": "Delete: event invoke config"},
-      "delete.event_source_mappings": {"title": "Delete: event source mappings"},
-      "delete.functions": {"title": "Delete: functions"},
-      "delete.policy": {"title": "Delete: policy"},
-      "delete.provisioned_concurrency": {"title": "Delete: provisioned concurrency"},
-      "delete.resource_policy": {"title": "Delete: resource policy"},
-      "delete.tags": {"title": "Delete: tags"},
-      "delete.url": {"title": "Delete: url"},
-      "delete.versions": {"title": "Delete: versions"},
-      "execute.event_invoke_config": {"title": "Execute: event invoke config"},
-      "execute.functions": {"title": "Execute: functions"},
-      "execute.invocations": {"title": "Execute: invocations"},
-      "execute.response_streaming_invocations": {"title": "Execute: response streaming invocations"},
-      "publish.versions": {"title": "Publish: versions"},
-      "read": {"title": "Read everything the account can see"},
-      "send.fail": {"title": "Send: fail"},
-      "send.heartbeat": {"title": "Send: heartbeat"},
-      "send.succeed": {"title": "Send: succeed"},
-      "write.aliases": {"title": "Write: aliases"},
-      "write.capacity_providers": {"title": "Write: capacity providers"},
-      "write.code": {"title": "Write: code"},
-      "write.code_signing_config": {"title": "Write: code signing config"},
-      "write.code_signing_configs": {"title": "Write: code signing configs"},
-      "write.concurrency": {"title": "Write: concurrency"},
-      "write.durable_executions": {"title": "Write: durable executions"},
-      "write.event_source_mappings": {"title": "Write: event source mappings"},
-      "write.function_scaling_config": {"title": "Write: function scaling config"},
-      "write.functions": {"title": "Write: functions"},
-      "write.provisioned_concurrency": {"title": "Write: provisioned concurrency"},
-      "write.recursion_config": {"title": "Write: recursion config"},
-      "write.resource_policy": {"title": "Write: resource policy"},
-      "write.tags": {"title": "Write: tags"},
-      "write.url": {"title": "Write: url"}
-    }
+      "account_settings": {
+        "title": "Account settings"
+      },
+      "account_settings.read": {
+        "title": "Read"
+      },
+      "capacity_providers": {
+        "title": "Capacity providers"
+      },
+      "capacity_providers.delete": {
+        "title": "Delete"
+      },
+      "capacity_providers.function_versions": {
+        "title": "Function versions"
+      },
+      "capacity_providers.function_versions.read": {
+        "title": "Read"
+      },
+      "capacity_providers.read": {
+        "title": "Read"
+      },
+      "capacity_providers.write": {
+        "title": "Create and edit"
+      },
+      "code_signing_configs": {
+        "title": "Code signing configs"
+      },
+      "code_signing_configs.delete": {
+        "title": "Delete"
+      },
+      "code_signing_configs.functions": {
+        "title": "Functions"
+      },
+      "code_signing_configs.functions.read": {
+        "title": "Read"
+      },
+      "code_signing_configs.read": {
+        "title": "Read"
+      },
+      "code_signing_configs.write": {
+        "title": "Create and edit"
+      },
+      "durable_execution_callbacks": {
+        "title": "Durable execution callbacks"
+      },
+      "durable_execution_callbacks.fail": {
+        "title": "Fail"
+      },
+      "durable_execution_callbacks.fail.write": {
+        "title": "Create and edit"
+      },
+      "durable_execution_callbacks.heartbeat": {
+        "title": "Heartbeat"
+      },
+      "durable_execution_callbacks.heartbeat.write": {
+        "title": "Create and edit"
+      },
+      "durable_execution_callbacks.succeed": {
+        "title": "Succeed"
+      },
+      "durable_execution_callbacks.succeed.write": {
+        "title": "Create and edit"
+      },
+      "durable_executions": {
+        "title": "Durable executions"
+      },
+      "durable_executions.checkpoint": {
+        "title": "Checkpoint"
+      },
+      "durable_executions.checkpoint.write": {
+        "title": "Create and edit"
+      },
+      "durable_executions.history": {
+        "title": "History"
+      },
+      "durable_executions.history.read": {
+        "title": "Read"
+      },
+      "durable_executions.read": {
+        "title": "Read"
+      },
+      "durable_executions.state": {
+        "title": "State"
+      },
+      "durable_executions.state.read": {
+        "title": "Read"
+      },
+      "durable_executions.write": {
+        "title": "Create and edit"
+      },
+      "event_source_mappings": {
+        "title": "Event source mappings"
+      },
+      "event_source_mappings.delete": {
+        "title": "Delete"
+      },
+      "event_source_mappings.read": {
+        "title": "Read"
+      },
+      "event_source_mappings.write": {
+        "title": "Create and edit"
+      },
+      "functions": {
+        "title": "Functions"
+      },
+      "functions.aliases": {
+        "title": "Aliases"
+      },
+      "functions.aliases.delete": {
+        "title": "Delete"
+      },
+      "functions.aliases.read": {
+        "title": "Read"
+      },
+      "functions.aliases.write": {
+        "title": "Create and edit"
+      },
+      "functions.async": {
+        "title": "Async"
+      },
+      "functions.async.execute": {
+        "title": "Run"
+      },
+      "functions.code": {
+        "title": "Code"
+      },
+      "functions.code.write": {
+        "title": "Create and edit"
+      },
+      "functions.code_signing_config": {
+        "title": "Code signing config"
+      },
+      "functions.code_signing_config.delete": {
+        "title": "Delete"
+      },
+      "functions.code_signing_config.read": {
+        "title": "Read"
+      },
+      "functions.code_signing_config.write": {
+        "title": "Create and edit"
+      },
+      "functions.concurrency": {
+        "title": "Concurrency"
+      },
+      "functions.concurrency.delete": {
+        "title": "Delete"
+      },
+      "functions.concurrency.read": {
+        "title": "Read"
+      },
+      "functions.concurrency.write": {
+        "title": "Create and edit"
+      },
+      "functions.configuration": {
+        "title": "Configuration"
+      },
+      "functions.configuration.admin": {
+        "title": "Manage"
+      },
+      "functions.configuration.read": {
+        "title": "Read"
+      },
+      "functions.delete": {
+        "title": "Delete"
+      },
+      "functions.durable_executions": {
+        "title": "Durable executions"
+      },
+      "functions.durable_executions.read": {
+        "title": "Read"
+      },
+      "functions.event_invoke_config": {
+        "title": "Event invoke config"
+      },
+      "functions.event_invoke_config.delete": {
+        "title": "Delete"
+      },
+      "functions.event_invoke_config.read": {
+        "title": "Read"
+      },
+      "functions.event_invoke_config.write": {
+        "title": "Create and edit"
+      },
+      "functions.function_scaling_config": {
+        "title": "Function scaling config"
+      },
+      "functions.function_scaling_config.read": {
+        "title": "Read"
+      },
+      "functions.function_scaling_config.write": {
+        "title": "Create and edit"
+      },
+      "functions.invocations": {
+        "title": "Invocations"
+      },
+      "functions.invocations.execute": {
+        "title": "Run"
+      },
+      "functions.policy": {
+        "title": "Policy"
+      },
+      "functions.policy.delete": {
+        "title": "Delete"
+      },
+      "functions.policy.read": {
+        "title": "Read"
+      },
+      "functions.policy.share": {
+        "title": "Share"
+      },
+      "functions.provisioned_concurrency": {
+        "title": "Provisioned concurrency"
+      },
+      "functions.provisioned_concurrency.delete": {
+        "title": "Delete"
+      },
+      "functions.provisioned_concurrency.read": {
+        "title": "Read"
+      },
+      "functions.provisioned_concurrency.write": {
+        "title": "Create and edit"
+      },
+      "functions.read": {
+        "title": "Read"
+      },
+      "functions.recursion_config": {
+        "title": "Recursion config"
+      },
+      "functions.recursion_config.read": {
+        "title": "Read"
+      },
+      "functions.recursion_config.write": {
+        "title": "Create and edit"
+      },
+      "functions.response_streaming_invocations": {
+        "title": "Response streaming invocations"
+      },
+      "functions.response_streaming_invocations.execute": {
+        "title": "Run"
+      },
+      "functions.runtime_management_config": {
+        "title": "Runtime management config"
+      },
+      "functions.runtime_management_config.read": {
+        "title": "Read"
+      },
+      "functions.runtime_management_config.write": {
+        "title": "Create and edit"
+      },
+      "functions.url": {
+        "title": "Url"
+      },
+      "functions.url.delete": {
+        "title": "Delete"
+      },
+      "functions.url.read": {
+        "title": "Read"
+      },
+      "functions.url.write": {
+        "title": "Create and edit"
+      },
+      "functions.urls": {
+        "title": "Urls"
+      },
+      "functions.urls.read": {
+        "title": "Read"
+      },
+      "functions.versions": {
+        "title": "Versions"
+      },
+      "functions.versions.read": {
+        "title": "Read"
+      },
+      "functions.versions.write": {
+        "title": "Create and edit"
+      },
+      "functions.write": {
+        "title": "Create and edit"
+      },
+      "layers": {
+        "title": "Layers"
+      },
+      "layers.read": {
+        "title": "Read"
+      },
+      "layers.versions": {
+        "title": "Versions"
+      },
+      "layers.versions.delete": {
+        "title": "Delete"
+      },
+      "layers.versions.policy": {
+        "title": "Policy"
+      },
+      "layers.versions.policy.delete": {
+        "title": "Delete"
+      },
+      "layers.versions.policy.read": {
+        "title": "Read"
+      },
+      "layers.versions.policy.share": {
+        "title": "Share"
+      },
+      "layers.versions.read": {
+        "title": "Read"
+      },
+      "layers.versions.write": {
+        "title": "Create and edit"
+      },
+      "resource_policy": {
+        "title": "Resource policy"
+      },
+      "resource_policy.delete": {
+        "title": "Delete"
+      },
+      "resource_policy.read": {
+        "title": "Read"
+      },
+      "resource_policy.share": {
+        "title": "Share"
+      },
+      "tags": {
+        "title": "Tags"
+      },
+      "tags.delete": {
+        "title": "Delete"
+      },
+      "tags.read": {
+        "title": "Read"
+      },
+      "tags.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "origin": "https://example.com",
+            "path": "/",
+            "sigv4": {
+              "region": "us-east-1",
+              "secret": "secret_key",
+              "service": "lambda",
+              "session": "session_token"
+            },
+            "value": "access_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Service endpoint (https://service.region.amazonaws.com)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "key": "region",
+        "label": "Region (e.g. us-east-1)",
+        "path": [
+          "http",
+          "slots",
+          0,
+          "sigv4",
+          "region"
+        ]
+      },
+      {
+        "credential": true,
+        "key": "access_key",
+        "label": "Access key ID",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "secret_key",
+        "label": "Secret access key",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "session_token",
+        "label": "Session token (temporary credentials only)",
+        "secret": true
+      }
+    ],
+    "group": "api",
+    "replaced_by": "aws"
   },
+  "title": "AWS Lambda",
   "http": {
+    "origins": {"origin":["https://lambda-fips.{region}.amazonaws.com","https://lambda.{region}.amazonaws.com"]},
     "operations": {
-      "AddLayerVersionPermission": {"action":"admin.policy","effects":["admin"],"method":"POST","origin":"{origin}","path":"/2018-10-31/layers/{LayerName}/versions/{VersionNumber}/policy","params":["RevisionId"],"body":"any","scope":{"LayerName":{"from":"path","at":"LayerName"},"VersionNumber":{"from":"path","at":"VersionNumber"}}},
-      "AddPermission": {"action":"admin.policy","effects":["admin"],"method":"POST","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/policy","params":["Qualifier"],"body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "CheckpointDurableExecution": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/2025-12-01/durable-executions/{DurableExecutionArn}/checkpoint","body":"any","scope":{"DurableExecutionArn":{"from":"path","at":"DurableExecutionArn"}}},
-      "CreateAlias": {"action":"write.aliases","effects":["write"],"method":"POST","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/aliases","body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "CreateCapacityProvider": {"action":"write.capacity_providers","effects":["write"],"method":"POST","origin":"{origin}","path":"/2025-11-30/capacity-providers","body":"any","scope":{}},
-      "CreateCodeSigningConfig": {"action":"write.code_signing_configs","effects":["write"],"method":"POST","origin":"{origin}","path":"/2020-04-22/code-signing-configs","body":"any","scope":{}},
-      "CreateEventSourceMapping": {"action":"write.event_source_mappings","effects":["write"],"method":"POST","origin":"{origin}","path":"/2015-03-31/event-source-mappings","body":"any","scope":{}},
-      "CreateFunction": {"action":"execute.functions","effects":["execute"],"method":"POST","origin":"{origin}","path":"/2015-03-31/functions","body":"any","scope":{}},
-      "CreateFunctionUrlConfig": {"action":"write.url","effects":["write"],"method":"POST","origin":"{origin}","path":"/2021-10-31/functions/{FunctionName}/url","params":["Qualifier"],"body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "DeleteAlias": {"action":"delete.aliases","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/aliases/{Name}","scope":{"FunctionName":{"from":"path","at":"FunctionName"},"Name":{"from":"path","at":"Name"}}},
-      "DeleteCapacityProvider": {"action":"delete.capacity_providers","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2025-11-30/capacity-providers/{CapacityProviderName}","scope":{"CapacityProviderName":{"from":"path","at":"CapacityProviderName"}}},
-      "DeleteCodeSigningConfig": {"action":"delete.code_signing_configs","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2020-04-22/code-signing-configs/{CodeSigningConfigArn}","scope":{"CodeSigningConfigArn":{"from":"path","at":"CodeSigningConfigArn"}}},
-      "DeleteEventSourceMapping": {"action":"delete.event_source_mappings","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2015-03-31/event-source-mappings/{UUID}","scope":{"UUID":{"from":"path","at":"UUID"}}},
-      "DeleteFunction": {"action":"delete.functions","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}","params":["Qualifier"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "DeleteFunctionCodeSigningConfig": {"action":"delete.code_signing_config","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2020-06-30/functions/{FunctionName}/code-signing-config","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "DeleteFunctionConcurrency": {"action":"delete.concurrency","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2017-10-31/functions/{FunctionName}/concurrency","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "DeleteFunctionEventInvokeConfig": {"action":"delete.event_invoke_config","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2019-09-25/functions/{FunctionName}/event-invoke-config","params":["Qualifier"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "DeleteFunctionUrlConfig": {"action":"delete.url","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2021-10-31/functions/{FunctionName}/url","params":["Qualifier"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "DeleteLayerVersion": {"action":"delete.versions","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2018-10-31/layers/{LayerName}/versions/{VersionNumber}","scope":{"LayerName":{"from":"path","at":"LayerName"},"VersionNumber":{"from":"path","at":"VersionNumber"}}},
-      "DeleteProvisionedConcurrencyConfig": {"action":"delete.provisioned_concurrency","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2019-09-30/functions/{FunctionName}/provisioned-concurrency","params":["Qualifier"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "DeleteResourcePolicy": {"action":"delete.resource_policy","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2026-07-09/resource-policy/{ResourceArn}","params":["RevisionId"],"scope":{"ResourceArn":{"from":"path","at":"ResourceArn"}}},
-      "GetAccountSettings": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2016-08-19/account-settings","scope":{}},
-      "GetAlias": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/aliases/{Name}","scope":{"FunctionName":{"from":"path","at":"FunctionName"},"Name":{"from":"path","at":"Name"}}},
-      "GetCapacityProvider": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2025-11-30/capacity-providers/{CapacityProviderName}","scope":{"CapacityProviderName":{"from":"path","at":"CapacityProviderName"}}},
-      "GetCodeSigningConfig": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2020-04-22/code-signing-configs/{CodeSigningConfigArn}","scope":{"CodeSigningConfigArn":{"from":"path","at":"CodeSigningConfigArn"}}},
-      "GetDurableExecution": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2025-12-01/durable-executions/{DurableExecutionArn}","params":["IncludeExecutionData"],"scope":{"DurableExecutionArn":{"from":"path","at":"DurableExecutionArn"}}},
-      "GetDurableExecutionHistory": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2025-12-01/durable-executions/{DurableExecutionArn}/history","params":["IncludeExecutionData","Marker","MaxItems","ReverseOrder"],"scope":{"DurableExecutionArn":{"from":"path","at":"DurableExecutionArn"}}},
-      "GetDurableExecutionState": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2025-12-01/durable-executions/{DurableExecutionArn}/state","params":["CheckpointToken","Marker","MaxItems"],"scope":{"DurableExecutionArn":{"from":"path","at":"DurableExecutionArn"}}},
-      "GetEventSourceMapping": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2015-03-31/event-source-mappings/{UUID}","scope":{"UUID":{"from":"path","at":"UUID"}}},
-      "GetFunction": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}","params":["Qualifier"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "GetFunctionCodeSigningConfig": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2020-06-30/functions/{FunctionName}/code-signing-config","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "GetFunctionConcurrency": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2019-09-30/functions/{FunctionName}/concurrency","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "GetFunctionConfiguration": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/configuration","params":["Qualifier"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "GetFunctionEventInvokeConfig": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2019-09-25/functions/{FunctionName}/event-invoke-config","params":["Qualifier"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "GetFunctionRecursionConfig": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2024-08-31/functions/{FunctionName}/recursion-config","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "GetFunctionScalingConfig": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2025-11-30/functions/{FunctionName}/function-scaling-config","params":["Qualifier"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "GetFunctionUrlConfig": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2021-10-31/functions/{FunctionName}/url","params":["Qualifier"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "GetLayerVersion": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2018-10-31/layers/{LayerName}/versions/{VersionNumber}","scope":{"LayerName":{"from":"path","at":"LayerName"},"VersionNumber":{"from":"path","at":"VersionNumber"}}},
-      "GetLayerVersionByArn": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2018-10-31/layers","query":{"find":"LayerVersion"},"params":["Arn"],"scope":{}},
-      "GetLayerVersionPolicy": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2018-10-31/layers/{LayerName}/versions/{VersionNumber}/policy","scope":{"LayerName":{"from":"path","at":"LayerName"},"VersionNumber":{"from":"path","at":"VersionNumber"}}},
-      "GetPolicy": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/policy","params":["Qualifier"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "GetProvisionedConcurrencyConfig": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2019-09-30/functions/{FunctionName}/provisioned-concurrency","params":["Qualifier"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "GetResourcePolicy": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2026-07-09/resource-policy/{ResourceArn}","scope":{"ResourceArn":{"from":"path","at":"ResourceArn"}}},
-      "GetRuntimeManagementConfig": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2021-07-20/functions/{FunctionName}/runtime-management-config","params":["Qualifier"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "Invoke": {"action":"execute.invocations","effects":["execute"],"method":"POST","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/invocations","params":["Qualifier"],"body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "InvokeAsync": {"action":"execute.functions","effects":["execute"],"method":"POST","origin":"{origin}","path":"/2014-11-13/functions/{FunctionName}/invoke-async","body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "InvokeWithResponseStream": {"action":"execute.response_streaming_invocations","effects":["execute"],"method":"POST","origin":"{origin}","path":"/2021-11-15/functions/{FunctionName}/response-streaming-invocations","params":["Qualifier"],"body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "ListAliases": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/aliases","params":["FunctionVersion","Marker","MaxItems"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "ListCapacityProviders": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2025-11-30/capacity-providers","params":["Marker","MaxItems","State"],"scope":{}},
-      "ListCodeSigningConfigs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2020-04-22/code-signing-configs","params":["Marker","MaxItems"],"scope":{}},
-      "ListDurableExecutionsByFunction": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2025-12-01/functions/{FunctionName}/durable-executions","params":["DurableExecutionName","Marker","MaxItems","Qualifier","ReverseOrder","StartedAfter","StartedBefore","Statuses"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "ListEventSourceMappings": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2015-03-31/event-source-mappings","params":["EventSourceArn","FunctionName","Marker","MaxItems"],"scope":{}},
-      "ListFunctionEventInvokeConfigs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2019-09-25/functions/{FunctionName}/event-invoke-config/list","params":["Marker","MaxItems"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "ListFunctionUrlConfigs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2021-10-31/functions/{FunctionName}/urls","params":["Marker","MaxItems"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "ListFunctionVersionsByCapacityProvider": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2025-11-30/capacity-providers/{CapacityProviderName}/function-versions","params":["Marker","MaxItems"],"scope":{"CapacityProviderName":{"from":"path","at":"CapacityProviderName"}}},
-      "ListFunctions": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2015-03-31/functions","params":["FunctionVersion","Marker","MasterRegion","MaxItems"],"scope":{}},
-      "ListFunctionsByCodeSigningConfig": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2020-04-22/code-signing-configs/{CodeSigningConfigArn}/functions","params":["Marker","MaxItems"],"scope":{"CodeSigningConfigArn":{"from":"path","at":"CodeSigningConfigArn"}}},
-      "ListLayerVersions": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2018-10-31/layers/{LayerName}/versions","params":["CompatibleArchitecture","CompatibleRuntime","Marker","MaxItems"],"scope":{"LayerName":{"from":"path","at":"LayerName"}}},
-      "ListLayers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2018-10-31/layers","params":["CompatibleArchitecture","CompatibleRuntime","Marker","MaxItems"],"scope":{}},
-      "ListProvisionedConcurrencyConfigs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2019-09-30/functions/{FunctionName}/provisioned-concurrency","query":{"List":"ALL"},"params":["Marker","MaxItems"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "ListTags": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2017-03-31/tags/{Resource}","scope":{"Resource":{"from":"path","at":"Resource"}}},
-      "ListVersionsByFunction": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/versions","params":["Marker","MaxItems"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "PublishLayerVersion": {"action":"publish.versions","effects":["publish"],"method":"POST","origin":"{origin}","path":"/2018-10-31/layers/{LayerName}/versions","body":"any","scope":{"LayerName":{"from":"path","at":"LayerName"}}},
-      "PublishVersion": {"action":"publish.versions","effects":["publish"],"method":"POST","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/versions","body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "PutFunctionCodeSigningConfig": {"action":"write.code_signing_config","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2020-06-30/functions/{FunctionName}/code-signing-config","body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "PutFunctionConcurrency": {"action":"write.concurrency","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2017-10-31/functions/{FunctionName}/concurrency","body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "PutFunctionEventInvokeConfig": {"action":"execute.event_invoke_config","effects":["execute"],"method":"PUT","origin":"{origin}","path":"/2019-09-25/functions/{FunctionName}/event-invoke-config","params":["Qualifier"],"body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "PutFunctionRecursionConfig": {"action":"write.recursion_config","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2024-08-31/functions/{FunctionName}/recursion-config","body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "PutFunctionScalingConfig": {"action":"write.function_scaling_config","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2025-11-30/functions/{FunctionName}/function-scaling-config","params":["Qualifier"],"body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "PutProvisionedConcurrencyConfig": {"action":"write.provisioned_concurrency","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2019-09-30/functions/{FunctionName}/provisioned-concurrency","params":["Qualifier"],"body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "PutResourcePolicy": {"action":"write.resource_policy","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2026-07-09/resource-policy/{ResourceArn}","body":"any","scope":{"ResourceArn":{"from":"path","at":"ResourceArn"}}},
-      "PutRuntimeManagementConfig": {"action":"write.functions","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2021-07-20/functions/{FunctionName}/runtime-management-config","params":["Qualifier"],"body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "RemoveLayerVersionPermission": {"action":"delete.policy","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2018-10-31/layers/{LayerName}/versions/{VersionNumber}/policy/{StatementId}","params":["RevisionId"],"scope":{"LayerName":{"from":"path","at":"LayerName"},"VersionNumber":{"from":"path","at":"VersionNumber"},"StatementId":{"from":"path","at":"StatementId"}}},
-      "RemovePermission": {"action":"delete.policy","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/policy/{StatementId}","params":["Qualifier","RevisionId"],"scope":{"FunctionName":{"from":"path","at":"FunctionName"},"StatementId":{"from":"path","at":"StatementId"}}},
-      "SendDurableExecutionCallbackFailure": {"action":"send.fail","effects":["send"],"method":"POST","origin":"{origin}","path":"/2025-12-01/durable-execution-callbacks/{CallbackId}/fail","body":"any","scope":{"CallbackId":{"from":"path","at":"CallbackId"}}},
-      "SendDurableExecutionCallbackHeartbeat": {"action":"send.heartbeat","effects":["send"],"method":"POST","origin":"{origin}","path":"/2025-12-01/durable-execution-callbacks/{CallbackId}/heartbeat","body":"any","scope":{"CallbackId":{"from":"path","at":"CallbackId"}}},
-      "SendDurableExecutionCallbackSuccess": {"action":"send.succeed","effects":["send"],"method":"POST","origin":"{origin}","path":"/2025-12-01/durable-execution-callbacks/{CallbackId}/succeed","body":"any","scope":{"CallbackId":{"from":"path","at":"CallbackId"}}},
-      "StopDurableExecution": {"action":"write.durable_executions","effects":["write"],"method":"POST","origin":"{origin}","path":"/2025-12-01/durable-executions/{DurableExecutionArn}/stop","body":"any","scope":{"DurableExecutionArn":{"from":"path","at":"DurableExecutionArn"}}},
-      "TagResource": {"action":"write.tags","effects":["write"],"method":"POST","origin":"{origin}","path":"/2017-03-31/tags/{Resource}","body":"any","scope":{"Resource":{"from":"path","at":"Resource"}}},
-      "UntagResource": {"action":"delete.tags","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2017-03-31/tags/{Resource}","params":["tagKeys"],"scope":{"Resource":{"from":"path","at":"Resource"}}},
-      "UpdateAlias": {"action":"write.aliases","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/aliases/{Name}","body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"},"Name":{"from":"path","at":"Name"}}},
-      "UpdateCapacityProvider": {"action":"write.capacity_providers","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2025-11-30/capacity-providers/{CapacityProviderName}","body":"any","scope":{"CapacityProviderName":{"from":"path","at":"CapacityProviderName"}}},
-      "UpdateCodeSigningConfig": {"action":"write.code_signing_configs","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2020-04-22/code-signing-configs/{CodeSigningConfigArn}","body":"any","scope":{"CodeSigningConfigArn":{"from":"path","at":"CodeSigningConfigArn"}}},
-      "UpdateEventSourceMapping": {"action":"write.event_source_mappings","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2015-03-31/event-source-mappings/{UUID}","body":"any","scope":{"UUID":{"from":"path","at":"UUID"}}},
-      "UpdateFunctionCode": {"action":"write.code","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/code","body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "UpdateFunctionConfiguration": {"action":"admin.configuration","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/configuration","body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "UpdateFunctionEventInvokeConfig": {"action":"execute.event_invoke_config","effects":["execute"],"method":"POST","origin":"{origin}","path":"/2019-09-25/functions/{FunctionName}/event-invoke-config","params":["Qualifier"],"body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},
-      "UpdateFunctionUrlConfig": {"action":"write.url","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2021-10-31/functions/{FunctionName}/url","params":["Qualifier"],"body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}}
+      "AddLayerVersionPermission": {"action":"layers.versions.policy.share","body":"any","effects":["share","admin"],"method":"POST","origin":"{origin}","params":["RevisionId"],"path":"/2018-10-31/layers/{LayerName}/versions/{VersionNumber}/policy","scope":{"LayerName":{"at":"LayerName","from":"path"},"VersionNumber":{"at":"VersionNumber","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "AddPermission": {"action":"functions.policy.share","body":"any","effects":["share","admin"],"method":"POST","origin":"{origin}","params":["Qualifier"],"path":"/2015-03-31/functions/{FunctionName}/policy","scope":{"FunctionName":{"at":"FunctionName","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "CheckpointDurableExecution": {"action":"durable_executions.checkpoint.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/2025-12-01/durable-executions/{DurableExecutionArn}/checkpoint","scope":{"DurableExecutionArn":{"at":"DurableExecutionArn","from":"path"}}},
+      "CreateAlias": {"action":"functions.aliases.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/aliases","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "CreateCapacityProvider": {"action":"capacity_providers.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/2025-11-30/capacity-providers","scope":{}},
+      "CreateCodeSigningConfig": {"action":"code_signing_configs.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/2020-04-22/code-signing-configs","scope":{}},
+      "CreateEventSourceMapping": {"action":"event_source_mappings.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/2015-03-31/event-source-mappings","scope":{}},
+      "CreateFunction": {"action":"functions.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/2015-03-31/functions","scope":{}},
+      "CreateFunctionUrlConfig": {"action":"functions.url.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["Qualifier"],"path":"/2021-10-31/functions/{FunctionName}/url","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "DeleteAlias": {"action":"functions.aliases.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/aliases/{Name}","scope":{"FunctionName":{"at":"FunctionName","from":"path"},"Name":{"at":"Name","from":"path"}}},
+      "DeleteCapacityProvider": {"action":"capacity_providers.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2025-11-30/capacity-providers/{CapacityProviderName}","scope":{"CapacityProviderName":{"at":"CapacityProviderName","from":"path"}}},
+      "DeleteCodeSigningConfig": {"action":"code_signing_configs.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2020-04-22/code-signing-configs/{CodeSigningConfigArn}","scope":{"CodeSigningConfigArn":{"at":"CodeSigningConfigArn","from":"path"}}},
+      "DeleteEventSourceMapping": {"action":"event_source_mappings.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2015-03-31/event-source-mappings/{UUID}","scope":{"UUID":{"at":"UUID","from":"path"}}},
+      "DeleteFunction": {"action":"functions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["Qualifier"],"path":"/2015-03-31/functions/{FunctionName}","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "DeleteFunctionCodeSigningConfig": {"action":"functions.code_signing_config.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2020-06-30/functions/{FunctionName}/code-signing-config","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "DeleteFunctionConcurrency": {"action":"functions.concurrency.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2017-10-31/functions/{FunctionName}/concurrency","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "DeleteFunctionEventInvokeConfig": {"action":"functions.event_invoke_config.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["Qualifier"],"path":"/2019-09-25/functions/{FunctionName}/event-invoke-config","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "DeleteFunctionUrlConfig": {"action":"functions.url.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["Qualifier"],"path":"/2021-10-31/functions/{FunctionName}/url","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "DeleteLayerVersion": {"action":"layers.versions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/2018-10-31/layers/{LayerName}/versions/{VersionNumber}","scope":{"LayerName":{"at":"LayerName","from":"path"},"VersionNumber":{"at":"VersionNumber","from":"path"}}},
+      "DeleteProvisionedConcurrencyConfig": {"action":"functions.provisioned_concurrency.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["Qualifier"],"path":"/2019-09-30/functions/{FunctionName}/provisioned-concurrency","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "DeleteResourcePolicy": {"action":"resource_policy.delete","effects":["delete","admin"],"method":"DELETE","origin":"{origin}","params":["RevisionId"],"path":"/2026-07-09/resource-policy/{ResourceArn}","scope":{"ResourceArn":{"at":"ResourceArn","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "GetAccountSettings": {"action":"account_settings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2016-08-19/account-settings","scope":{}},
+      "GetAlias": {"action":"functions.aliases.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/aliases/{Name}","scope":{"FunctionName":{"at":"FunctionName","from":"path"},"Name":{"at":"Name","from":"path"}}},
+      "GetCapacityProvider": {"action":"capacity_providers.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2025-11-30/capacity-providers/{CapacityProviderName}","scope":{"CapacityProviderName":{"at":"CapacityProviderName","from":"path"}}},
+      "GetCodeSigningConfig": {"action":"code_signing_configs.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2020-04-22/code-signing-configs/{CodeSigningConfigArn}","scope":{"CodeSigningConfigArn":{"at":"CodeSigningConfigArn","from":"path"}}},
+      "GetDurableExecution": {"action":"durable_executions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["IncludeExecutionData"],"path":"/2025-12-01/durable-executions/{DurableExecutionArn}","scope":{"DurableExecutionArn":{"at":"DurableExecutionArn","from":"path"}}},
+      "GetDurableExecutionHistory": {"action":"durable_executions.history.read","effects":["read"],"method":"GET","origin":"{origin}","params":["IncludeExecutionData","Marker","MaxItems","ReverseOrder"],"path":"/2025-12-01/durable-executions/{DurableExecutionArn}/history","scope":{"DurableExecutionArn":{"at":"DurableExecutionArn","from":"path"}}},
+      "GetDurableExecutionState": {"action":"durable_executions.state.read","effects":["read"],"method":"GET","origin":"{origin}","params":["CheckpointToken","Marker","MaxItems"],"path":"/2025-12-01/durable-executions/{DurableExecutionArn}/state","scope":{"DurableExecutionArn":{"at":"DurableExecutionArn","from":"path"}}},
+      "GetEventSourceMapping": {"action":"event_source_mappings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2015-03-31/event-source-mappings/{UUID}","scope":{"UUID":{"at":"UUID","from":"path"}}},
+      "GetFunction": {"action":"functions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Qualifier"],"path":"/2015-03-31/functions/{FunctionName}","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "GetFunctionCodeSigningConfig": {"action":"functions.code_signing_config.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2020-06-30/functions/{FunctionName}/code-signing-config","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "GetFunctionConcurrency": {"action":"functions.concurrency.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2019-09-30/functions/{FunctionName}/concurrency","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "GetFunctionConfiguration": {"action":"functions.configuration.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Qualifier"],"path":"/2015-03-31/functions/{FunctionName}/configuration","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "GetFunctionEventInvokeConfig": {"action":"functions.event_invoke_config.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Qualifier"],"path":"/2019-09-25/functions/{FunctionName}/event-invoke-config","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "GetFunctionRecursionConfig": {"action":"functions.recursion_config.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2024-08-31/functions/{FunctionName}/recursion-config","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "GetFunctionScalingConfig": {"action":"functions.function_scaling_config.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Qualifier"],"path":"/2025-11-30/functions/{FunctionName}/function-scaling-config","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "GetFunctionUrlConfig": {"action":"functions.url.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Qualifier"],"path":"/2021-10-31/functions/{FunctionName}/url","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "GetLayerVersion": {"action":"layers.versions.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2018-10-31/layers/{LayerName}/versions/{VersionNumber}","scope":{"LayerName":{"at":"LayerName","from":"path"},"VersionNumber":{"at":"VersionNumber","from":"path"}}},
+      "GetLayerVersionByArn": {"action":"layers.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Arn"],"path":"/2018-10-31/layers","query":{"find":"LayerVersion"},"scope":{}},
+      "GetLayerVersionPolicy": {"action":"layers.versions.policy.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2018-10-31/layers/{LayerName}/versions/{VersionNumber}/policy","scope":{"LayerName":{"at":"LayerName","from":"path"},"VersionNumber":{"at":"VersionNumber","from":"path"}}},
+      "GetPolicy": {"action":"functions.policy.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Qualifier"],"path":"/2015-03-31/functions/{FunctionName}/policy","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "GetProvisionedConcurrencyConfig": {"action":"functions.provisioned_concurrency.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Qualifier"],"path":"/2019-09-30/functions/{FunctionName}/provisioned-concurrency","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "GetResourcePolicy": {"action":"resource_policy.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2026-07-09/resource-policy/{ResourceArn}","scope":{"ResourceArn":{"at":"ResourceArn","from":"path"}}},
+      "GetRuntimeManagementConfig": {"action":"functions.runtime_management_config.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Qualifier"],"path":"/2021-07-20/functions/{FunctionName}/runtime-management-config","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "Invoke": {"action":"functions.invocations.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","params":["Qualifier"],"path":"/2015-03-31/functions/{FunctionName}/invocations","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "InvokeAsync": {"action":"functions.async.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","path":"/2014-11-13/functions/{FunctionName}/invoke-async","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "InvokeWithResponseStream": {"action":"functions.response_streaming_invocations.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","params":["Qualifier"],"path":"/2021-11-15/functions/{FunctionName}/response-streaming-invocations","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "ListAliases": {"action":"functions.aliases.read","effects":["read"],"method":"GET","origin":"{origin}","params":["FunctionVersion","Marker","MaxItems"],"path":"/2015-03-31/functions/{FunctionName}/aliases","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "ListCapacityProviders": {"action":"capacity_providers.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Marker","MaxItems","State"],"path":"/2025-11-30/capacity-providers","scope":{}},
+      "ListCodeSigningConfigs": {"action":"code_signing_configs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Marker","MaxItems"],"path":"/2020-04-22/code-signing-configs","scope":{}},
+      "ListDurableExecutionsByFunction": {"action":"functions.durable_executions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["DurableExecutionName","Marker","MaxItems","Qualifier","ReverseOrder","StartedAfter","StartedBefore","Statuses"],"path":"/2025-12-01/functions/{FunctionName}/durable-executions","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "ListEventSourceMappings": {"action":"event_source_mappings.read","effects":["read"],"method":"GET","origin":"{origin}","params":["EventSourceArn","FunctionName","Marker","MaxItems"],"path":"/2015-03-31/event-source-mappings","scope":{}},
+      "ListFunctionEventInvokeConfigs": {"action":"functions.event_invoke_config.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Marker","MaxItems"],"path":"/2019-09-25/functions/{FunctionName}/event-invoke-config/list","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "ListFunctionUrlConfigs": {"action":"functions.urls.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Marker","MaxItems"],"path":"/2021-10-31/functions/{FunctionName}/urls","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "ListFunctionVersionsByCapacityProvider": {"action":"capacity_providers.function_versions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Marker","MaxItems"],"path":"/2025-11-30/capacity-providers/{CapacityProviderName}/function-versions","scope":{"CapacityProviderName":{"at":"CapacityProviderName","from":"path"}}},
+      "ListFunctions": {"action":"functions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["FunctionVersion","Marker","MasterRegion","MaxItems"],"path":"/2015-03-31/functions","scope":{}},
+      "ListFunctionsByCodeSigningConfig": {"action":"code_signing_configs.functions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Marker","MaxItems"],"path":"/2020-04-22/code-signing-configs/{CodeSigningConfigArn}/functions","scope":{"CodeSigningConfigArn":{"at":"CodeSigningConfigArn","from":"path"}}},
+      "ListLayerVersions": {"action":"layers.versions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["CompatibleArchitecture","CompatibleRuntime","Marker","MaxItems"],"path":"/2018-10-31/layers/{LayerName}/versions","scope":{"LayerName":{"at":"LayerName","from":"path"}}},
+      "ListLayers": {"action":"layers.read","effects":["read"],"method":"GET","origin":"{origin}","params":["CompatibleArchitecture","CompatibleRuntime","Marker","MaxItems"],"path":"/2018-10-31/layers","scope":{}},
+      "ListProvisionedConcurrencyConfigs": {"action":"functions.provisioned_concurrency.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Marker","MaxItems"],"path":"/2019-09-30/functions/{FunctionName}/provisioned-concurrency","query":{"List":"ALL"},"scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "ListTags": {"action":"tags.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/2017-03-31/tags/{Resource}","scope":{"Resource":{"at":"Resource","from":"path"}}},
+      "ListVersionsByFunction": {"action":"functions.versions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Marker","MaxItems"],"path":"/2015-03-31/functions/{FunctionName}/versions","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "PublishLayerVersion": {"action":"layers.versions.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/2018-10-31/layers/{LayerName}/versions","scope":{"LayerName":{"at":"LayerName","from":"path"}}},
+      "PublishVersion": {"action":"functions.versions.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/versions","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "PutFunctionCodeSigningConfig": {"action":"functions.code_signing_config.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2020-06-30/functions/{FunctionName}/code-signing-config","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "PutFunctionConcurrency": {"action":"functions.concurrency.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2017-10-31/functions/{FunctionName}/concurrency","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "PutFunctionEventInvokeConfig": {"action":"functions.event_invoke_config.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["Qualifier"],"path":"/2019-09-25/functions/{FunctionName}/event-invoke-config","scope":{"FunctionName":{"at":"FunctionName","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "PutFunctionRecursionConfig": {"action":"functions.recursion_config.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2024-08-31/functions/{FunctionName}/recursion-config","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "PutFunctionScalingConfig": {"action":"functions.function_scaling_config.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["Qualifier"],"path":"/2025-11-30/functions/{FunctionName}/function-scaling-config","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "PutProvisionedConcurrencyConfig": {"action":"functions.provisioned_concurrency.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["Qualifier"],"path":"/2019-09-30/functions/{FunctionName}/provisioned-concurrency","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "PutResourcePolicy": {"action":"resource_policy.share","body":"any","effects":["share","admin"],"method":"PUT","origin":"{origin}","path":"/2026-07-09/resource-policy/{ResourceArn}","scope":{"ResourceArn":{"at":"ResourceArn","from":"path"}}},
+      "PutRuntimeManagementConfig": {"action":"functions.runtime_management_config.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["Qualifier"],"path":"/2021-07-20/functions/{FunctionName}/runtime-management-config","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "RemoveLayerVersionPermission": {"action":"layers.versions.policy.delete","effects":["delete","admin"],"method":"DELETE","origin":"{origin}","params":["RevisionId"],"path":"/2018-10-31/layers/{LayerName}/versions/{VersionNumber}/policy/{StatementId}","scope":{"LayerName":{"at":"LayerName","from":"path"},"StatementId":{"at":"StatementId","from":"path"},"VersionNumber":{"at":"VersionNumber","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "RemovePermission": {"action":"functions.policy.delete","effects":["delete","admin"],"method":"DELETE","origin":"{origin}","params":["Qualifier","RevisionId"],"path":"/2015-03-31/functions/{FunctionName}/policy/{StatementId}","scope":{"FunctionName":{"at":"FunctionName","from":"path"},"StatementId":{"at":"StatementId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "SendDurableExecutionCallbackFailure": {"action":"durable_execution_callbacks.fail.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/2025-12-01/durable-execution-callbacks/{CallbackId}/fail","scope":{"CallbackId":{"at":"CallbackId","from":"path"}}},
+      "SendDurableExecutionCallbackHeartbeat": {"action":"durable_execution_callbacks.heartbeat.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/2025-12-01/durable-execution-callbacks/{CallbackId}/heartbeat","scope":{"CallbackId":{"at":"CallbackId","from":"path"}}},
+      "SendDurableExecutionCallbackSuccess": {"action":"durable_execution_callbacks.succeed.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/2025-12-01/durable-execution-callbacks/{CallbackId}/succeed","scope":{"CallbackId":{"at":"CallbackId","from":"path"}}},
+      "StopDurableExecution": {"action":"durable_executions.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/2025-12-01/durable-executions/{DurableExecutionArn}/stop","scope":{"DurableExecutionArn":{"at":"DurableExecutionArn","from":"path"}}},
+      "TagResource": {"action":"tags.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/2017-03-31/tags/{Resource}","scope":{"Resource":{"at":"Resource","from":"path"}}},
+      "UntagResource": {"action":"tags.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["tagKeys"],"path":"/2017-03-31/tags/{Resource}","scope":{"Resource":{"at":"Resource","from":"path"}}},
+      "UpdateAlias": {"action":"functions.aliases.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/aliases/{Name}","scope":{"FunctionName":{"at":"FunctionName","from":"path"},"Name":{"at":"Name","from":"path"}}},
+      "UpdateCapacityProvider": {"action":"capacity_providers.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2025-11-30/capacity-providers/{CapacityProviderName}","scope":{"CapacityProviderName":{"at":"CapacityProviderName","from":"path"}}},
+      "UpdateCodeSigningConfig": {"action":"code_signing_configs.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2020-04-22/code-signing-configs/{CodeSigningConfigArn}","scope":{"CodeSigningConfigArn":{"at":"CodeSigningConfigArn","from":"path"}}},
+      "UpdateEventSourceMapping": {"action":"event_source_mappings.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2015-03-31/event-source-mappings/{UUID}","scope":{"UUID":{"at":"UUID","from":"path"}}},
+      "UpdateFunctionCode": {"action":"functions.code.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/code","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "UpdateFunctionConfiguration": {"action":"functions.configuration.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/configuration","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}},
+      "UpdateFunctionEventInvokeConfig": {"action":"functions.event_invoke_config.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["Qualifier"],"path":"/2019-09-25/functions/{FunctionName}/event-invoke-config","scope":{"FunctionName":{"at":"FunctionName","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "UpdateFunctionUrlConfig": {"action":"functions.url.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["Qualifier"],"path":"/2021-10-31/functions/{FunctionName}/url","scope":{"FunctionName":{"at":"FunctionName","from":"path"}}}
     }
   }
 }

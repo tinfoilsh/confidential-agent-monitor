@@ -1,105 +1,506 @@
 {
-  "title": "SeaTable",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "token", "label": "API Token (of a Base)", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "token", "origin": "https://cloud.seatable.io", "path": "/", "header": "Authorization", "prefix": "Token "}]}},
     "actions": {
-      "delete.api_tokens": {"title": "Delete: api tokens"},
-      "delete.column_options": {"title": "Delete: column options"},
-      "delete.columns": {"title": "Delete: columns"},
-      "delete.comments": {"title": "Delete: comments"},
-      "delete.links": {"title": "Delete: links"},
-      "delete.notifications": {"title": "Delete: notifications"},
-      "delete.rows": {"title": "Delete: rows"},
-      "delete.tables": {"title": "Delete: tables"},
-      "delete.views": {"title": "Delete: views"},
-      "read": {"title": "Read everything the account can see"},
-      "send.comments": {"title": "Send: comments"},
-      "send.ui_toasts": {"title": "Send: ui toasts"},
-      "share.links": {"title": "Share: links"},
-      "write.add_archived_rows": {"title": "Write: add archived rows"},
-      "write.api_tokens": {"title": "Write: api tokens"},
-      "write.auto_links": {"title": "Write: auto links"},
-      "write.batch_append_columns": {"title": "Write: batch append columns"},
-      "write.column_cascade_settings": {"title": "Write: column cascade settings"},
-      "write.column_options": {"title": "Write: column options"},
-      "write.columns": {"title": "Write: columns"},
-      "write.dtables": {"title": "Write: dtables"},
-      "write.notifications": {"title": "Write: notifications"},
-      "write.restore_operations": {"title": "Write: restore operations"},
-      "write.rows": {"title": "Write: rows"},
-      "write.snapshot": {"title": "Write: snapshot"},
-      "write.tables": {"title": "Write: tables"},
-      "write.views": {"title": "Write: views"}
-    }
+      "api2": {
+        "title": "Api2"
+      },
+      "api2.auth": {
+        "title": "Auth"
+      },
+      "api2.auth.ping": {
+        "title": "Ping"
+      },
+      "api2.auth.ping.read": {
+        "title": "Read"
+      },
+      "api2.auth_token": {
+        "title": "Auth token"
+      },
+      "api2.auth_token.read": {
+        "title": "Read"
+      },
+      "api2.ping": {
+        "title": "Ping"
+      },
+      "api2.ping.read": {
+        "title": "Read"
+      },
+      "api_gateway": {
+        "title": "Api gateway"
+      },
+      "api_gateway.dtables": {
+        "title": "Dtables"
+      },
+      "api_gateway.dtables.activities": {
+        "title": "Activities"
+      },
+      "api_gateway.dtables.activities.read": {
+        "title": "Read"
+      },
+      "api_gateway.dtables.append_columns": {
+        "title": "Append columns"
+      },
+      "api_gateway.dtables.append_columns.write": {
+        "title": "Create and edit"
+      },
+      "api_gateway.dtables.archived_rows": {
+        "title": "Archived rows"
+      },
+      "api_gateway.dtables.archived_rows.write": {
+        "title": "Create and edit"
+      },
+      "api_gateway.dtables.auto_link_task": {
+        "title": "Auto link task"
+      },
+      "api_gateway.dtables.auto_link_task.read": {
+        "title": "Read"
+      },
+      "api_gateway.dtables.auto_links": {
+        "title": "Auto links"
+      },
+      "api_gateway.dtables.auto_links.write": {
+        "title": "Create and edit"
+      },
+      "api_gateway.dtables.column_cascade_settings": {
+        "title": "Column cascade settings"
+      },
+      "api_gateway.dtables.column_cascade_settings.write": {
+        "title": "Create and edit"
+      },
+      "api_gateway.dtables.column_options": {
+        "title": "Column options"
+      },
+      "api_gateway.dtables.column_options.delete": {
+        "title": "Delete"
+      },
+      "api_gateway.dtables.column_options.write": {
+        "title": "Create and edit"
+      },
+      "api_gateway.dtables.columns": {
+        "title": "Columns"
+      },
+      "api_gateway.dtables.columns.delete": {
+        "title": "Delete"
+      },
+      "api_gateway.dtables.columns.read": {
+        "title": "Read"
+      },
+      "api_gateway.dtables.columns.write": {
+        "title": "Create and edit"
+      },
+      "api_gateway.dtables.comments": {
+        "title": "Comments"
+      },
+      "api_gateway.dtables.comments.delete": {
+        "title": "Delete"
+      },
+      "api_gateway.dtables.comments.read": {
+        "title": "Read"
+      },
+      "api_gateway.dtables.comments.send": {
+        "title": "Send"
+      },
+      "api_gateway.dtables.comments_count": {
+        "title": "Comments count"
+      },
+      "api_gateway.dtables.comments_count.read": {
+        "title": "Read"
+      },
+      "api_gateway.dtables.comments_within_days": {
+        "title": "Comments within days"
+      },
+      "api_gateway.dtables.comments_within_days.read": {
+        "title": "Read"
+      },
+      "api_gateway.dtables.db_operations": {
+        "title": "Db operations"
+      },
+      "api_gateway.dtables.db_operations.read": {
+        "title": "Read"
+      },
+      "api_gateway.dtables.links": {
+        "title": "Links"
+      },
+      "api_gateway.dtables.links.delete": {
+        "title": "Delete"
+      },
+      "api_gateway.dtables.links.read": {
+        "title": "Read"
+      },
+      "api_gateway.dtables.links.write": {
+        "title": "Create and edit"
+      },
+      "api_gateway.dtables.metadata": {
+        "title": "Metadata"
+      },
+      "api_gateway.dtables.metadata.read": {
+        "title": "Read"
+      },
+      "api_gateway.dtables.notifications": {
+        "title": "Notifications"
+      },
+      "api_gateway.dtables.notifications.delete": {
+        "title": "Delete"
+      },
+      "api_gateway.dtables.notifications.read": {
+        "title": "Read"
+      },
+      "api_gateway.dtables.notifications.write": {
+        "title": "Create and edit"
+      },
+      "api_gateway.dtables.operations": {
+        "title": "Operations"
+      },
+      "api_gateway.dtables.operations.read": {
+        "title": "Read"
+      },
+      "api_gateway.dtables.related_users": {
+        "title": "Related users"
+      },
+      "api_gateway.dtables.related_users.read": {
+        "title": "Read"
+      },
+      "api_gateway.dtables.restore_operations": {
+        "title": "Restore operations"
+      },
+      "api_gateway.dtables.restore_operations.write": {
+        "title": "Create and edit"
+      },
+      "api_gateway.dtables.rows": {
+        "title": "Rows"
+      },
+      "api_gateway.dtables.rows.delete": {
+        "title": "Delete"
+      },
+      "api_gateway.dtables.rows.read": {
+        "title": "Read"
+      },
+      "api_gateway.dtables.rows.write": {
+        "title": "Create and edit"
+      },
+      "api_gateway.dtables.snapshot": {
+        "title": "Snapshot"
+      },
+      "api_gateway.dtables.snapshot.write": {
+        "title": "Create and edit"
+      },
+      "api_gateway.dtables.sql": {
+        "title": "Sql"
+      },
+      "api_gateway.dtables.sql.delete": {
+        "title": "Delete"
+      },
+      "api_gateway.dtables.tables": {
+        "title": "Tables"
+      },
+      "api_gateway.dtables.tables.delete": {
+        "title": "Delete"
+      },
+      "api_gateway.dtables.tables.table": {
+        "title": "Table"
+      },
+      "api_gateway.dtables.tables.table.write": {
+        "title": "Create and edit"
+      },
+      "api_gateway.dtables.tables.write": {
+        "title": "Create and edit"
+      },
+      "api_gateway.dtables.ui_toasts": {
+        "title": "Ui toasts"
+      },
+      "api_gateway.dtables.ui_toasts.send": {
+        "title": "Send"
+      },
+      "api_gateway.dtables.view": {
+        "title": "View"
+      },
+      "api_gateway.dtables.view.write": {
+        "title": "Create and edit"
+      },
+      "api_gateway.dtables.views": {
+        "title": "Views"
+      },
+      "api_gateway.dtables.views.delete": {
+        "title": "Delete"
+      },
+      "api_gateway.dtables.views.read": {
+        "title": "Read"
+      },
+      "api_gateway.dtables.views.write": {
+        "title": "Create and edit"
+      },
+      "api_gateway.dtables.write": {
+        "title": "Create and edit"
+      },
+      "api_gateway.ping": {
+        "title": "Ping"
+      },
+      "api_gateway.ping.read": {
+        "title": "Read"
+      },
+      "dtable": {
+        "title": "Dtable"
+      },
+      "dtable.app_access_token": {
+        "title": "App access token"
+      },
+      "dtable.app_access_token.read": {
+        "title": "Read"
+      },
+      "dtable.app_asset": {
+        "title": "App asset"
+      },
+      "dtable.app_asset.delete": {
+        "title": "Delete"
+      },
+      "dtable.app_download_link": {
+        "title": "App download link"
+      },
+      "dtable.app_download_link.read": {
+        "title": "Read"
+      },
+      "dtable.app_upload_link": {
+        "title": "App upload link"
+      },
+      "dtable.app_upload_link.read": {
+        "title": "Read"
+      },
+      "dtable.custom": {
+        "title": "Custom"
+      },
+      "dtable.custom.app_asset_dir": {
+        "title": "App asset dir"
+      },
+      "dtable.custom.app_asset_dir.read": {
+        "title": "Read"
+      },
+      "dtable.custom.app_asset_file": {
+        "title": "App asset file"
+      },
+      "dtable.custom.app_asset_file.delete": {
+        "title": "Delete"
+      },
+      "dtable.custom.app_asset_file.read": {
+        "title": "Read"
+      },
+      "dtable.custom.app_download_link": {
+        "title": "App download link"
+      },
+      "dtable.custom.app_download_link.read": {
+        "title": "Read"
+      },
+      "dtable.custom.app_upload_link": {
+        "title": "App upload link"
+      },
+      "dtable.custom.app_upload_link.read": {
+        "title": "Read"
+      },
+      "dtable_db": {
+        "title": "Dtable db"
+      },
+      "dtable_db.ping": {
+        "title": "Ping"
+      },
+      "dtable_db.ping.read": {
+        "title": "Read"
+      },
+      "dtable_server": {
+        "title": "Dtable server"
+      },
+      "dtable_server.ping": {
+        "title": "Ping"
+      },
+      "dtable_server.ping.read": {
+        "title": "Read"
+      },
+      "dtables": {
+        "title": "Dtables"
+      },
+      "dtables.rows_comments_num": {
+        "title": "Rows comments num"
+      },
+      "dtables.rows_comments_num.read": {
+        "title": "Read"
+      },
+      "seafhttp": {
+        "title": "Seafhttp"
+      },
+      "seafhttp.upload_api": {
+        "title": "Upload api"
+      },
+      "seafhttp.upload_api.write": {
+        "title": "Create and edit"
+      },
+      "server_info": {
+        "title": "Server info"
+      },
+      "server_info.read": {
+        "title": "Read"
+      },
+      "workspace": {
+        "title": "Workspace"
+      },
+      "workspace.dtable": {
+        "title": "Dtable"
+      },
+      "workspace.dtable.access_token": {
+        "title": "Access token"
+      },
+      "workspace.dtable.access_token.read": {
+        "title": "Read"
+      },
+      "workspace.dtable.api_tokens": {
+        "title": "Api tokens"
+      },
+      "workspace.dtable.api_tokens.admin": {
+        "title": "Manage"
+      },
+      "workspace.dtable.api_tokens.delete": {
+        "title": "Delete"
+      },
+      "workspace.dtable.api_tokens.read": {
+        "title": "Read"
+      },
+      "workspace.dtable.temp_api_token": {
+        "title": "Temp api token"
+      },
+      "workspace.dtable.temp_api_token.admin": {
+        "title": "Manage"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://cloud.seatable.io",
+            "path": "/",
+            "prefix": "Token ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://cloud.seatable.io",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "default": "https://cloud.seatable.io",
+        "key": "origin",
+        "label": "Your SeaTable server URL",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            1,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "token",
+        "label": "API Token (of a Base)",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "SeaTable",
   "http": {
     "operations": {
-      "addBigDataRows": {"action":"write.add_archived_rows","effects":["write"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/add-archived-rows/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "addSelectOption": {"action":"write.column_options","effects":["write"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/column-options/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "appendColumns": {"action":"write.batch_append_columns","effects":["write"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/batch-append-columns/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "appendRows": {"action":"write.rows","effects":["write"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/rows/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "autoLinkTask": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/auto-link-task/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "autoLinks": {"action":"write.auto_links","effects":["write"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/auto-links/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "createApiToken": {"action":"write.api_tokens","effects":["write"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api/v2.1/workspace/{workspace_id}/dtable/{base_name}/api-tokens/","body":"any","scope":{"workspace_id":{"from":"path","at":"workspace_id"},"base_name":{"from":"path","at":"base_name"}}},
-      "createRowComment": {"action":"send.comments","effects":["send"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/comments/","params":["table_id","row_id"],"body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"},"table_id":{"from":"query","at":"table_id"},"row_id":{"from":"query","at":"row_id"}}},
-      "createRowLink": {"action":"share.links","effects":["share"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/links/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "createSnapshot": {"action":"write.snapshot","effects":["write"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/snapshot/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "createTable": {"action":"write.tables","effects":["write"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/tables/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "createTempApiToken": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api/v2.1/workspace/{workspace_id}/dtable/{base_name}/temp-api-token/","scope":{"workspace_id":{"from":"path","at":"workspace_id"},"base_name":{"from":"path","at":"base_name"}}},
-      "createView": {"action":"write.views","effects":["write"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/views/","params":["table_name"],"body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"},"table_name":{"from":"query","at":"table_name"}}},
-      "deleteApiToken": {"action":"delete.api_tokens","effects":["delete"],"method":"DELETE","origin":"https://cloud.seatable.io","path":"/api/v2.1/workspace/{workspace_id}/dtable/{base_name}/api-tokens/{app_name}/","scope":{"workspace_id":{"from":"path","at":"workspace_id"},"base_name":{"from":"path","at":"base_name"},"app_name":{"from":"path","at":"app_name"}}},
-      "deleteBaseNotifications": {"action":"delete.notifications","effects":["delete"],"method":"DELETE","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/notifications/","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "deleteColumn": {"action":"delete.columns","effects":["delete"],"method":"DELETE","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/columns/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "deleteComment": {"action":"delete.comments","effects":["delete"],"method":"DELETE","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/comments/{comment_id}/","scope":{"base_uuid":{"from":"path","at":"base_uuid"},"comment_id":{"from":"path","at":"comment_id"}}},
-      "deleteRow": {"action":"delete.rows","effects":["delete"],"method":"DELETE","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/rows/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "deleteRowLink": {"action":"delete.links","effects":["delete"],"method":"DELETE","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/links/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "deleteSelectOption": {"action":"delete.column_options","effects":["delete"],"method":"DELETE","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/column-options/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "deleteTable": {"action":"delete.tables","effects":["delete"],"method":"DELETE","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/tables/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "deleteView": {"action":"delete.views","effects":["delete"],"method":"DELETE","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/views/{view_name}/","params":["table_name"],"scope":{"base_uuid":{"from":"path","at":"base_uuid"},"view_name":{"from":"path","at":"view_name"},"table_name":{"from":"query","at":"table_name"}}},
-      "duplicateTable": {"action":"write.tables","effects":["write"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/tables/duplicate-table/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "getAccountTokenfromUsername": {"action":"read","effects":["read"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api2/auth-token/","body":"any","scope":{}},
-      "getBaseActivityLog": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/operations/","params":["page"],"scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "getBaseBigDataOperations": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/db-operations/","params":["page","per_page"],"scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "getBaseTokenWithAccountToken": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api/v2.1/workspace/{workspace_id}/dtable/{base_name}/access-token/","params":["exp"],"scope":{"workspace_id":{"from":"path","at":"workspace_id"},"base_name":{"from":"path","at":"base_name"}}},
-      "getBaseTokenWithApiToken": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api/v2.1/dtable/app-access-token/","params":["exp"],"scope":{}},
-      "getComment": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/comments/{comment_id}/","scope":{"base_uuid":{"from":"path","at":"base_uuid"},"comment_id":{"from":"path","at":"comment_id"}}},
-      "getMetadata": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/metadata/","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "getNumberOfComments": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api/v2.1/dtables/{base_uuid}/rows-comments-num/","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "getRow": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/rows/{row_id}/","params":["table_name","convert_keys"],"scope":{"base_uuid":{"from":"path","at":"base_uuid"},"row_id":{"from":"path","at":"row_id"},"table_name":{"from":"query","at":"table_name"}}},
-      "getRowCommentsCount": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/comments-count/","params":["row_id"],"scope":{"base_uuid":{"from":"path","at":"base_uuid"},"row_id":{"from":"query","at":"row_id"}}},
-      "getView": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/views/{view_name}/","params":["table_name"],"scope":{"base_uuid":{"from":"path","at":"base_uuid"},"view_name":{"from":"path","at":"view_name"},"table_name":{"from":"query","at":"table_name"}}},
-      "insertColumn": {"action":"write.columns","effects":["write"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/columns/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "listApiTokens": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api/v2.1/workspace/{workspace_id}/dtable/{base_name}/api-tokens/","scope":{"workspace_id":{"from":"path","at":"workspace_id"},"base_name":{"from":"path","at":"base_name"}}},
-      "listBaseNotifications": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/notifications/","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "listCollaborators": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/related-users/","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "listColumns": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/columns/","params":["table_name","view_name"],"scope":{"base_uuid":{"from":"path","at":"base_uuid"},"table_name":{"from":"query","at":"table_name"}}},
-      "listCommentsWithinDays": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/comments-within-days/","params":["days"],"scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "listRowActivities": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/activities/","params":["row_id","page","per_page"],"scope":{"base_uuid":{"from":"path","at":"base_uuid"},"row_id":{"from":"query","at":"row_id"}}},
-      "listRowComments": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/comments/","params":["row_id"],"scope":{"base_uuid":{"from":"path","at":"base_uuid"},"row_id":{"from":"query","at":"row_id"}}},
-      "listRowLinks": {"action":"read","effects":["read"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/query-links/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "listRows": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/rows/","params":["table_name","view_name","start","limit","convert_keys"],"scope":{"base_uuid":{"from":"path","at":"base_uuid"},"table_name":{"from":"query","at":"table_name"}}},
-      "listViews": {"action":"read","effects":["read"],"method":"GET","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/views/","params":["table_name"],"scope":{"base_uuid":{"from":"path","at":"base_uuid"},"table_name":{"from":"query","at":"table_name"}}},
-      "lockRows": {"action":"write.dtables","effects":["write"],"method":"PUT","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/lock-rows/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "markBaseNotificationAsSeen": {"action":"write.notifications","effects":["write"],"method":"PUT","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/notifications/{notification_id}/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"},"notification_id":{"from":"path","at":"notification_id"}}},
-      "markBaseNotificationsAsSeen": {"action":"write.notifications","effects":["write"],"method":"PUT","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/notifications/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "moveRowsToBigData": {"action":"write.dtables","effects":["write"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/archive-view/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "moveRowsToNormalBackend": {"action":"write.dtables","effects":["write"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/unarchive/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "querySQL": {"action":"read","effects":["read"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/sql/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "renameTable": {"action":"write.tables","effects":["write"],"method":"PUT","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/tables/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "restoreBigDataOperations": {"action":"write.restore_operations","effects":["write"],"method":"PUT","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/restore-operations/{op_id}/","scope":{"base_uuid":{"from":"path","at":"base_uuid"},"op_id":{"from":"path","at":"op_id"}}},
-      "sendToastNotification": {"action":"send.ui_toasts","effects":["send"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/ui-toasts/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "unlockRows": {"action":"write.dtables","effects":["write"],"method":"PUT","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/unlock-rows/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "updateApiToken": {"action":"write.api_tokens","effects":["write"],"method":"PUT","origin":"https://cloud.seatable.io","path":"/api/v2.1/workspace/{workspace_id}/dtable/{base_name}/api-tokens/{app_name}/","body":"any","scope":{"workspace_id":{"from":"path","at":"workspace_id"},"base_name":{"from":"path","at":"base_name"},"app_name":{"from":"path","at":"app_name"}}},
-      "updateColumn": {"action":"write.columns","effects":["write"],"method":"PUT","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/columns/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "updateColumnCascade": {"action":"write.column_cascade_settings","effects":["write"],"method":"POST","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/column-cascade-settings/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "updateRow": {"action":"write.rows","effects":["write"],"method":"PUT","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/rows/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "updateRowLink": {"action":"share.links","effects":["share"],"method":"PUT","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/links/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "updateSelectOption": {"action":"write.column_options","effects":["write"],"method":"PUT","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/column-options/","body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"}}},
-      "updateView": {"action":"write.views","effects":["write"],"method":"PUT","origin":"https://cloud.seatable.io","path":"/api-gateway/api/v2/dtables/{base_uuid}/views/{view_name}/","params":["table_name"],"body":"any","scope":{"base_uuid":{"from":"path","at":"base_uuid"},"view_name":{"from":"path","at":"view_name"},"table_name":{"from":"query","at":"table_name"}}}
+      "addBigDataRows": {"action":"api_gateway.dtables.archived_rows.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/add-archived-rows/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "addSelectOption": {"action":"api_gateway.dtables.column_options.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/column-options/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "appendColumns": {"action":"api_gateway.dtables.append_columns.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/batch-append-columns/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "appendRows": {"action":"api_gateway.dtables.rows.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/rows/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "autoLinkTask": {"action":"api_gateway.dtables.auto_link_task.read","body":"any","effects":["read"],"method":"GET","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/auto-link-task/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "autoLinks": {"action":"api_gateway.dtables.auto_links.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/auto-links/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "createApiToken": {"action":"workspace.dtable.api_tokens.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2.1/workspace/{workspace_id}/dtable/{base_name}/api-tokens/","scope":{"base_name":{"at":"base_name","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "createRowComment": {"action":"api_gateway.dtables.comments.send","body":"any","effects":["send"],"method":"POST","origin":"{origin}","params":["table_id","row_id"],"path":"/api-gateway/api/v2/dtables/{base_uuid}/comments/","scope":{"base_uuid":{"at":"base_uuid","from":"path"},"row_id":{"at":"row_id","from":"query"},"table_id":{"at":"table_id","from":"query"}}},
+      "createRowLink": {"action":"api_gateway.dtables.links.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/links/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "createSnapshot": {"action":"api_gateway.dtables.snapshot.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/snapshot/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "createTable": {"action":"api_gateway.dtables.tables.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/tables/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "createTempApiToken": {"action":"workspace.dtable.temp_api_token.admin","effects":["admin"],"method":"GET","origin":"{origin}","path":"/api/v2.1/workspace/{workspace_id}/dtable/{base_name}/temp-api-token/","scope":{"base_name":{"at":"base_name","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "createView": {"action":"api_gateway.dtables.views.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["table_name"],"path":"/api-gateway/api/v2/dtables/{base_uuid}/views/","scope":{"base_uuid":{"at":"base_uuid","from":"path"},"table_name":{"at":"table_name","from":"query"}}},
+      "deleteApiToken": {"action":"workspace.dtable.api_tokens.delete","effects":["delete","admin"],"method":"DELETE","origin":"{origin}","path":"/api/v2.1/workspace/{workspace_id}/dtable/{base_name}/api-tokens/{app_name}/","scope":{"app_name":{"at":"app_name","from":"path"},"base_name":{"at":"base_name","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "deleteBaseAsset": {"action":"dtable.app_asset.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["path"],"path":"/api/v2.1/dtable/app-asset/","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "deleteBaseCustomFolderAsset": {"action":"dtable.custom.app_asset_file.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["path"],"path":"/api/v2.1/dtable/custom/app-asset-file/","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "deleteBaseNotifications": {"action":"api_gateway.dtables.notifications.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/notifications/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "deleteColumn": {"action":"api_gateway.dtables.columns.delete","body":"any","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/columns/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "deleteComment": {"action":"api_gateway.dtables.comments.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/comments/{comment_id}/","scope":{"base_uuid":{"at":"base_uuid","from":"path"},"comment_id":{"at":"comment_id","from":"path"}}},
+      "deleteRow": {"action":"api_gateway.dtables.rows.delete","body":"any","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/rows/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "deleteRowLink": {"action":"api_gateway.dtables.links.delete","body":"any","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/links/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "deleteSelectOption": {"action":"api_gateway.dtables.column_options.delete","body":"any","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/column-options/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "deleteTable": {"action":"api_gateway.dtables.tables.delete","body":"any","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/tables/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "deleteView": {"action":"api_gateway.dtables.views.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["table_name"],"path":"/api-gateway/api/v2/dtables/{base_uuid}/views/{view_name}/","scope":{"base_uuid":{"at":"base_uuid","from":"path"},"table_name":{"at":"table_name","from":"query"},"view_name":{"at":"view_name","from":"path"}}},
+      "duplicateTable": {"action":"api_gateway.dtables.tables.table.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/tables/duplicate-table/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "getAccountTokenfromUsername": {"action":"api2.auth_token.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/api2/auth-token/","scope":{}},
+      "getBaseActivityLog": {"action":"api_gateway.dtables.operations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page"],"path":"/api-gateway/api/v2/dtables/{base_uuid}/operations/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "getBaseBigDataOperations": {"action":"api_gateway.dtables.db_operations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","per_page"],"path":"/api-gateway/api/v2/dtables/{base_uuid}/db-operations/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "getBaseTokenWithAccountToken": {"action":"workspace.dtable.access_token.read","effects":["read"],"method":"GET","origin":"{origin}","params":["exp"],"path":"/api/v2.1/workspace/{workspace_id}/dtable/{base_name}/access-token/","scope":{"base_name":{"at":"base_name","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "getBaseTokenWithApiToken": {"action":"dtable.app_access_token.read","effects":["read"],"method":"GET","origin":"{origin}","params":["exp"],"path":"/api/v2.1/dtable/app-access-token/","scope":{}},
+      "getComment": {"action":"api_gateway.dtables.comments.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/comments/{comment_id}/","scope":{"base_uuid":{"at":"base_uuid","from":"path"},"comment_id":{"at":"comment_id","from":"path"}}},
+      "getCustomDownloadLink": {"action":"dtable.custom.app_download_link.read","effects":["read"],"method":"GET","origin":"{origin}","params":["path"],"path":"/api/v2.1/dtable/custom/app-download-link/","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getCustomFileMetadata": {"action":"dtable.custom.app_asset_file.read","effects":["read"],"method":"GET","origin":"{origin}","params":["path","name"],"path":"/api/v2.1/dtable/custom/app-asset-file/","scope":{"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "getCustomFiles": {"action":"dtable.custom.app_asset_dir.read","effects":["read"],"method":"GET","origin":"{origin}","params":["path"],"path":"/api/v2.1/dtable/custom/app-asset-dir/","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getCustomUploadLink": {"action":"dtable.custom.app_upload_link.read","effects":["read"],"method":"GET","origin":"{origin}","params":["path"],"path":"/api/v2.1/dtable/custom/app-upload-link/","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getFileDownloadLink": {"action":"dtable.app_download_link.read","effects":["read"],"method":"GET","origin":"{origin}","params":["path"],"path":"/api/v2.1/dtable/app-download-link/","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getMetadata": {"action":"api_gateway.dtables.metadata.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/metadata/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "getNumberOfComments": {"action":"dtables.rows_comments_num.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2.1/dtables/{base_uuid}/rows-comments-num/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "getRow": {"action":"api_gateway.dtables.rows.read","effects":["read"],"method":"GET","origin":"{origin}","params":["table_name","convert_keys"],"path":"/api-gateway/api/v2/dtables/{base_uuid}/rows/{row_id}/","scope":{"base_uuid":{"at":"base_uuid","from":"path"},"row_id":{"at":"row_id","from":"path"},"table_name":{"at":"table_name","from":"query"}}},
+      "getRowCommentsCount": {"action":"api_gateway.dtables.comments_count.read","effects":["read"],"method":"GET","origin":"{origin}","params":["row_id"],"path":"/api-gateway/api/v2/dtables/{base_uuid}/comments-count/","scope":{"base_uuid":{"at":"base_uuid","from":"path"},"row_id":{"at":"row_id","from":"query"}}},
+      "getServerInfo": {"action":"server_info.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/server-info/","scope":{}},
+      "getUploadLink": {"action":"dtable.app_upload_link.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2.1/dtable/app-upload-link/","scope":{}},
+      "getView": {"action":"api_gateway.dtables.views.read","effects":["read"],"method":"GET","origin":"{origin}","params":["table_name"],"path":"/api-gateway/api/v2/dtables/{base_uuid}/views/{view_name}/","scope":{"base_uuid":{"at":"base_uuid","from":"path"},"table_name":{"at":"table_name","from":"query"},"view_name":{"at":"view_name","from":"path"}}},
+      "insertColumn": {"action":"api_gateway.dtables.columns.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/columns/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "listApiTokens": {"action":"workspace.dtable.api_tokens.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2.1/workspace/{workspace_id}/dtable/{base_name}/api-tokens/","scope":{"base_name":{"at":"base_name","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "listBaseNotifications": {"action":"api_gateway.dtables.notifications.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/notifications/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "listCollaborators": {"action":"api_gateway.dtables.related_users.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/related-users/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "listColumns": {"action":"api_gateway.dtables.columns.read","effects":["read"],"method":"GET","origin":"{origin}","params":["table_name","view_name"],"path":"/api-gateway/api/v2/dtables/{base_uuid}/columns/","scope":{"base_uuid":{"at":"base_uuid","from":"path"},"table_name":{"at":"table_name","from":"query"}}},
+      "listCommentsWithinDays": {"action":"api_gateway.dtables.comments_within_days.read","effects":["read"],"method":"GET","origin":"{origin}","params":["days"],"path":"/api-gateway/api/v2/dtables/{base_uuid}/comments-within-days/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "listRowActivities": {"action":"api_gateway.dtables.activities.read","effects":["read"],"method":"GET","origin":"{origin}","params":["row_id","page","per_page"],"path":"/api-gateway/api/v2/dtables/{base_uuid}/activities/","scope":{"base_uuid":{"at":"base_uuid","from":"path"},"row_id":{"at":"row_id","from":"query"}}},
+      "listRowComments": {"action":"api_gateway.dtables.comments.read","effects":["read"],"method":"GET","origin":"{origin}","params":["row_id"],"path":"/api-gateway/api/v2/dtables/{base_uuid}/comments/","scope":{"base_uuid":{"at":"base_uuid","from":"path"},"row_id":{"at":"row_id","from":"query"}}},
+      "listRowLinks": {"action":"api_gateway.dtables.links.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/query-links/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "listRows": {"action":"api_gateway.dtables.rows.read","effects":["read"],"method":"GET","origin":"{origin}","params":["table_name","view_name","start","limit","convert_keys"],"path":"/api-gateway/api/v2/dtables/{base_uuid}/rows/","scope":{"base_uuid":{"at":"base_uuid","from":"path"},"table_name":{"at":"table_name","from":"query"}}},
+      "listViews": {"action":"api_gateway.dtables.views.read","effects":["read"],"method":"GET","origin":"{origin}","params":["table_name"],"path":"/api-gateway/api/v2/dtables/{base_uuid}/views/","scope":{"base_uuid":{"at":"base_uuid","from":"path"},"table_name":{"at":"table_name","from":"query"}}},
+      "lockRows": {"action":"api_gateway.dtables.rows.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/lock-rows/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "markBaseNotificationAsSeen": {"action":"api_gateway.dtables.notifications.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/notifications/{notification_id}/","scope":{"base_uuid":{"at":"base_uuid","from":"path"},"notification_id":{"at":"notification_id","from":"path"}}},
+      "markBaseNotificationsAsSeen": {"action":"api_gateway.dtables.notifications.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/notifications/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "moveRowsToBigData": {"action":"api_gateway.dtables.view.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/archive-view/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "moveRowsToNormalBackend": {"action":"api_gateway.dtables.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/unarchive/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "pingApiGateway": {"action":"api_gateway.ping.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api-gateway/api/v2/ping/","scope":{}},
+      "pingDtableDbServer": {"action":"dtable_db.ping.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/dtable-db/ping/","scope":{}},
+      "pingDtableServer": {"action":"dtable_server.ping.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/dtable-server/ping/","scope":{}},
+      "pingServer": {"action":"api2.ping.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api2/ping/","scope":{}},
+      "pingServerWithAuth": {"action":"api2.auth.ping.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api2/auth/ping/","scope":{}},
+      "querySQL": {"action":"api_gateway.dtables.sql.delete","body":"any","effects":["delete","write"],"method":"POST","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/sql/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "renameTable": {"action":"api_gateway.dtables.tables.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/tables/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "restoreBigDataOperations": {"action":"api_gateway.dtables.restore_operations.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/restore-operations/{op_id}/","scope":{"base_uuid":{"at":"base_uuid","from":"path"},"op_id":{"at":"op_id","from":"path"}}},
+      "sendToastNotification": {"action":"api_gateway.dtables.ui_toasts.send","body":"any","effects":["send"],"method":"POST","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/ui-toasts/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "unlockRows": {"action":"api_gateway.dtables.rows.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/unlock-rows/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "updateApiToken": {"action":"workspace.dtable.api_tokens.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/v2.1/workspace/{workspace_id}/dtable/{base_name}/api-tokens/{app_name}/","scope":{"app_name":{"at":"app_name","from":"path"},"base_name":{"at":"base_name","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "updateColumn": {"action":"api_gateway.dtables.columns.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/columns/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "updateColumnCascade": {"action":"api_gateway.dtables.column_cascade_settings.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/column-cascade-settings/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "updateRow": {"action":"api_gateway.dtables.rows.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/rows/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "updateRowLink": {"action":"api_gateway.dtables.links.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/links/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "updateSelectOption": {"action":"api_gateway.dtables.column_options.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api-gateway/api/v2/dtables/{base_uuid}/column-options/","scope":{"base_uuid":{"at":"base_uuid","from":"path"}}},
+      "updateView": {"action":"api_gateway.dtables.views.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["table_name"],"path":"/api-gateway/api/v2/dtables/{base_uuid}/views/{view_name}/","scope":{"base_uuid":{"at":"base_uuid","from":"path"},"table_name":{"at":"table_name","from":"query"},"view_name":{"at":"view_name","from":"path"}}},
+      "uploadFile": {"action":"seafhttp.upload_api.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/seafhttp/upload-api/{upload_link}","query":{"ret-json":"1"},"scope":{"query":{"at":"","from":"query","type":"object"},"upload_link":{"at":"upload_link","from":"path"}}}
     }
   }
 }

@@ -16,6 +16,12 @@
       "alpha.decisions.generate": {
         "title": "Generate"
       },
+      "alpha.extractions": {
+        "title": "Extractions"
+      },
+      "alpha.extractions.generate": {
+        "title": "Generate"
+      },
       "analytics": {
         "title": "Analytics"
       },
@@ -133,6 +139,21 @@
       "credits.coinbase.pay": {
         "title": "Make payments"
       },
+      "credits.purchases": {
+        "title": "Purchases"
+      },
+      "credits.purchases.pay": {
+        "title": "Make payments"
+      },
+      "credits.purchases.read": {
+        "title": "Read"
+      },
+      "credits.purchases.setup": {
+        "title": "Setup"
+      },
+      "credits.purchases.setup.read": {
+        "title": "Read"
+      },
       "credits.read": {
         "title": "Read"
       },
@@ -190,6 +211,18 @@
       "endpoints.zdr.read": {
         "title": "Read"
       },
+      "external_users": {
+        "title": "External users"
+      },
+      "external_users.delete": {
+        "title": "Delete"
+      },
+      "external_users.read": {
+        "title": "Read"
+      },
+      "external_users.write": {
+        "title": "Create and edit"
+      },
       "files": {
         "title": "Files"
       },
@@ -204,6 +237,9 @@
       },
       "files.read": {
         "title": "Read"
+      },
+      "files.write": {
+        "title": "Create and edit"
       },
       "generation": {
         "title": "Generation"
@@ -248,6 +284,66 @@
         "title": "Manage"
       },
       "guardrails.assignments.members.read": {
+        "title": "Read"
+      },
+      "guardrails.policies": {
+        "title": "Policies"
+      },
+      "guardrails.policies.account": {
+        "title": "Account"
+      },
+      "guardrails.policies.account.admin": {
+        "title": "Manage"
+      },
+      "guardrails.policies.account.read": {
+        "title": "Read"
+      },
+      "guardrails.policies.assignments": {
+        "title": "Assignments"
+      },
+      "guardrails.policies.assignments.api_keys": {
+        "title": "Api keys"
+      },
+      "guardrails.policies.assignments.api_keys.admin": {
+        "title": "Manage"
+      },
+      "guardrails.policies.assignments.api_keys.read": {
+        "title": "Read"
+      },
+      "guardrails.policies.assignments.members": {
+        "title": "Members"
+      },
+      "guardrails.policies.assignments.members.admin": {
+        "title": "Manage"
+      },
+      "guardrails.policies.assignments.members.read": {
+        "title": "Read"
+      },
+      "guardrails.policies.budget": {
+        "title": "Budget"
+      },
+      "guardrails.policies.budget.admin": {
+        "title": "Manage"
+      },
+      "guardrails.policies.budget.read": {
+        "title": "Read"
+      },
+      "guardrails.policies.model_availability": {
+        "title": "Model availability"
+      },
+      "guardrails.policies.model_availability.admin": {
+        "title": "Manage"
+      },
+      "guardrails.policies.model_availability.read": {
+        "title": "Read"
+      },
+      "guardrails.policies.moderation": {
+        "title": "Moderation"
+      },
+      "guardrails.policies.moderation.admin": {
+        "title": "Manage"
+      },
+      "guardrails.policies.moderation.read": {
         "title": "Read"
       },
       "guardrails.read": {
@@ -436,6 +532,9 @@
       "presets.chat.completions.write": {
         "title": "Create and edit"
       },
+      "presets.delete": {
+        "title": "Delete"
+      },
       "presets.messages": {
         "title": "Messages"
       },
@@ -457,6 +556,9 @@
       "presets.versions.read": {
         "title": "Read"
       },
+      "presets.write": {
+        "title": "Create and edit"
+      },
       "private_endpoints": {
         "title": "Private endpoints"
       },
@@ -476,6 +578,15 @@
         "title": "Manage"
       },
       "private_endpoints.read": {
+        "title": "Read"
+      },
+      "private_providers": {
+        "title": "Private providers"
+      },
+      "private_providers.admin": {
+        "title": "Manage"
+      },
+      "private_providers.read": {
         "title": "Read"
       },
       "providers": {
@@ -514,14 +625,11 @@
       "scim.groups.read": {
         "title": "Read"
       },
-      "scim.jobs": {
-        "title": "Jobs"
-      },
-      "scim.jobs.admin": {
-        "title": "Manage"
-      },
       "scim.sync_jobs": {
         "title": "Sync jobs"
+      },
+      "scim.sync_jobs.admin": {
+        "title": "Manage"
       },
       "scim.sync_jobs.read": {
         "title": "Read"
@@ -543,6 +651,12 @@
       },
       "vault.interns": {
         "title": "Interns"
+      },
+      "vault.interns.connections": {
+        "title": "Connections"
+      },
+      "vault.interns.connections.read": {
+        "title": "Read"
       },
       "vault.interns.effective_secrets": {
         "title": "Effective secrets"
@@ -620,16 +734,30 @@
             "path": "/api",
             "prefix": "Bearer ",
             "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://eu.openrouter.ai",
+            "path": "/api",
+            "prefix": "Bearer ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://us.openrouter.ai",
+            "path": "/api",
+            "prefix": "Bearer ",
+            "value": "token"
           }
         ]
       }
     },
     "fields": [
       {
+        "credential": true,
         "hint": "Paste your OpenRouter API key",
         "key": "token",
         "label": "OpenRouter API key",
-        "credential": true,
         "secret": true
       }
     ],
@@ -637,157 +765,201 @@
   },
   "title": "OpenRouter (API)",
   "http": {
+    "origins": {"api":["https://openrouter.ai","https://eu.openrouter.ai","https://us.openrouter.ai"]},
     "slots": true,
     "operations": {
-      "activatePrivateEndpoint": {"action":"private_endpoints.activate.admin","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints/{id}/activate","scope":{"id":{"at":"id","from":"path"}}},
-      "bulkAddWorkspaceMembers": {"action":"workspaces.members.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/workspaces/{id}/members/add","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_ids":{"at":"/user_ids","from":"body","type":"array"}}},
-      "bulkAssignKeysToGuardrail": {"action":"guardrails.assignments.keys.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/guardrails/{id}/assignments/keys","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "bulkAssignMembersToGuardrail": {"action":"guardrails.assignments.members.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/guardrails/{id}/assignments/members","scope":{"id":{"at":"id","from":"path"},"member_user_ids":{"at":"/member_user_ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
-      "bulkRemoveWorkspaceMembers": {"action":"workspaces.members.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/workspaces/{id}/members/remove","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_ids":{"at":"/user_ids","from":"body","type":"array"}}},
-      "bulkUnassignKeysFromGuardrail": {"action":"guardrails.assignments.keys.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/guardrails/{id}/assignments/keys/remove","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "bulkUnassignMembersFromGuardrail": {"action":"guardrails.assignments.members.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/guardrails/{id}/assignments/members/remove","scope":{"id":{"at":"id","from":"path"},"member_user_ids":{"at":"/member_user_ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
-      "copyVaultSecretsToIntern": {"action":"vault.interns.secrets.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/vault/interns/{internId}/secrets/copy","scope":{"internId":{"at":"internId","from":"path"},"names":{"at":"/names","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
-      "createApiAlphaDecisions": {"action":"alpha.decisions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/alpha/decisions","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
-      "createAudioSpeech": {"action":"audio.speech.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/audio/speech","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
-      "createAudioTranscriptions": {"action":"audio.transcriptions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/audio/transcriptions","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
-      "createAuthKeysCode": {"action":"auth.keys.code.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/auth/keys/code","scope":{"callback_url":{"at":"/callback_url","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
-      "createBYOKKey": {"action":"byok.admin","body":"json","effects":["admin","send","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/byok","scope":{"key":{"at":"/key","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
-      "createBatches": {"action":"batches.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/batches","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "createCoinbaseCharge": {"action":"credits.coinbase.pay","effects":["pay"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/credits/coinbase","scope":{}},
-      "createEmbeddings": {"action":"embeddings.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/embeddings","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
-      "createEndUser": {"action":"end_users.write","body":"json","effects":["write"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/end-users","scope":{"request":{"at":"","from":"body","type":"object"},"user":{"at":"/user","from":"body"}}},
-      "createGuardrail": {"action":"guardrails.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/guardrails","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
-      "createImages": {"action":"images.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/images","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
-      "createIntern": {"action":"interns.admin","body":"json","effects":["admin","execute","pay"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/interns","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"vault_id":{"at":"/vault_id","from":"body","optional":true},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
-      "createInternChatCompletion": {"action":"interns.chat.completions.execute","body":"json","effects":["execute","generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}/chat/completions","scope":{"internId":{"at":"internId","from":"path"},"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true}}},
-      "createKeys": {"action":"keys.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/keys","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
-      "createMessages": {"action":"messages.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/messages","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
-      "createOauthToken": {"action":"oauth.token.admin","body":"form","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/oauth/token","scope":{"federation_policy_id":{"at":"federation_policy_id","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
-      "createObservabilityDestination": {"action":"observability.destinations.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/observability/destinations","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
-      "createPresetsChatCompletions": {"action":"presets.chat.completions.write","body":"json","effects":["write"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/presets/{slug}/chat/completions","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"slug":{"at":"slug","from":"path"},"user":{"at":"/user","from":"body","optional":true}}},
-      "createPresetsMessages": {"action":"presets.messages.write","body":"json","effects":["write"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/presets/{slug}/messages","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"slug":{"at":"slug","from":"path"},"user":{"at":"/user","from":"body","optional":true}}},
-      "createPresetsResponses": {"action":"presets.responses.write","body":"json","effects":["write"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/presets/{slug}/responses","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"slug":{"at":"slug","from":"path"},"user":{"at":"/user","from":"body","optional":true}}},
-      "createPrivateEndpoint": {"action":"private_endpoints.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints","scope":{"base_url":{"at":"/base_url","from":"body","optional":true},"provider_slug":{"at":"/provider_slug","from":"body"},"request":{"at":"","from":"body","type":"object"},"upstream_model_id":{"at":"/upstream_model_id","from":"body"}}},
-      "createRerank": {"action":"rerank.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/rerank","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
-      "createResponses": {"action":"responses.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/responses","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
-      "createScimGroupMapping": {"action":"scim.group_mappings.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/scim/group-mappings","scope":{"request":{"at":"","from":"body","type":"object"},"scim_group_id":{"at":"/scim_group_id","from":"body"},"workspace_id":{"at":"/workspace_id","from":"body"}}},
-      "createScimSyncJob": {"action":"scim.jobs.admin","effects":["admin","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/scim/sync-jobs","scope":{}},
-      "createSystemone": {"action":"systemone.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/systemone","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
-      "createVideos": {"action":"videos.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/videos","scope":{"callback_url":{"at":"/callback_url","from":"body","optional":true},"previous_job_id":{"at":"/previous_job_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
-      "createWorkspace": {"action":"workspaces.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/workspaces","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"slug":{"at":"/slug","from":"body"}}},
-      "deleteBYOKKey": {"action":"byok.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/byok/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "deleteBatch": {"action":"batches.delete","effects":["delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/batches/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "deleteEndUser": {"action":"end_users.delete","effects":["delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/end-users/{user}","scope":{"user":{"at":"user","from":"path"}}},
-      "deleteFile": {"action":"files.delete","effects":["delete"],"method":"DELETE","origin":"https://openrouter.ai","params":["workspace_id","provider"],"path":"/api/v1/files/{file_id}","scope":{"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
-      "deleteGuardrail": {"action":"guardrails.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/guardrails/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "deleteIntern": {"action":"interns.admin","body":"json","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}","scope":{"internId":{"at":"internId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "deleteInternVaultSecret": {"action":"vault.interns.secrets.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/vault/interns/{internId}/secrets/{name}","scope":{"internId":{"at":"internId","from":"path"},"name":{"at":"name","from":"path"}}},
-      "deleteKeys": {"action":"keys.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/keys/{hash}","scope":{"hash":{"at":"hash","from":"path"}}},
-      "deleteObservabilityDestination": {"action":"observability.destinations.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/observability/destinations/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "deletePrivateEndpoint": {"action":"private_endpoints.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","params":["draft_only"],"path":"/api/v1/private-endpoints/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-      "deleteScimGroupMapping": {"action":"scim.group_mappings.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","params":["keep_members"],"path":"/api/v1/scim/group-mappings/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-      "deleteVaultSecret": {"action":"vault.secrets.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/vault/secrets/{name}","scope":{"name":{"at":"name","from":"path"}}},
-      "deleteWorkspace": {"action":"workspaces.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","params":["confirm_default_workspace_deletion"],"path":"/api/v1/workspaces/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-      "deleteWorkspaceBudget": {"action":"workspaces.budgets.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/workspaces/{workspace_ref}/budgets/{interval}","scope":{"interval":{"at":"interval","from":"path"},"workspace_ref":{"at":"workspace_ref","from":"path"}}},
-      "disablePrivateEndpoint": {"action":"private_endpoints.admin","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints/{id}/disable","scope":{"id":{"at":"id","from":"path"}}},
-      "downloadContainerFileContent": {"action":"containers.files.content.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/containers/{container_id}/files/{file_id}/content","scope":{"container_id":{"at":"container_id","from":"path"},"file_id":{"at":"file_id","from":"path"}}},
-      "downloadFileContent": {"action":"files.content.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["workspace_id","provider"],"path":"/api/v1/files/{file_id}/content","scope":{"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
-      "enablePrivateEndpoint": {"action":"private_endpoints.admin","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints/{id}/enable","scope":{"id":{"at":"id","from":"path"}}},
-      "exchangeAuthCodeForAPIKey": {"action":"auth.keys.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/auth/keys","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "getAnalyticsMeta": {"action":"analytics.meta.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/analytics/meta","scope":{}},
-      "getAppRankings": {"action":"datasets.app_rankings.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["category","subcategory","sort","start_date","end_date","limit","offset"],"path":"/api/v1/datasets/app-rankings","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "getBYOKKey": {"action":"byok.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/byok/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "getBatches": {"action":"batches.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/batches/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "getBenchmarks": {"action":"benchmarks.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["source","task_type","benchmark_type","include_run_config","search_engine","search_surface","arena","category","max_results"],"path":"/api/v1/benchmarks","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "getContainerFile": {"action":"containers.files.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/containers/{container_id}/files/{file_id}","scope":{"container_id":{"at":"container_id","from":"path"},"file_id":{"at":"file_id","from":"path"}}},
-      "getCredits": {"action":"credits.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/credits","scope":{}},
-      "getCurrentKey": {"action":"key.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/key","scope":{}},
-      "getEndUser": {"action":"end_users.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/end-users/{user}","scope":{"user":{"at":"user","from":"path"}}},
-      "getFileMetadata": {"action":"files.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["workspace_id","provider"],"path":"/api/v1/files/{file_id}","scope":{"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
-      "getGeneration": {"action":"generation.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["id"],"path":"/api/v1/generation","scope":{"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
-      "getGuardrail": {"action":"guardrails.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/guardrails/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "getIntern": {"action":"interns.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}","scope":{"internId":{"at":"internId","from":"path"}}},
-      "getInternDaemon": {"action":"interns.daemon.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}/daemon","scope":{"internId":{"at":"internId","from":"path"}}},
-      "getInternDaemonAccess": {"action":"interns.daemon_access.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}/daemon-access","scope":{"internId":{"at":"internId","from":"path"}}},
-      "getKey": {"action":"keys.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/keys/{hash}","scope":{"hash":{"at":"hash","from":"path"}}},
-      "getModel": {"action":"model.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/model/{author}/{slug}","scope":{"author":{"at":"author","from":"path"},"slug":{"at":"slug","from":"path"}}},
-      "getModels": {"action":"models.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit","category","supported_parameters","output_modalities","sort","q","input_modalities","context","min_price","max_price","arch","model_authors","providers","distillable","zdr","region","min_output_price","max_output_price","min_age_days","max_age_days","min_intelligence_index","max_intelligence_index","min_coding_index","max_coding_index","min_agentic_index","max_agentic_index","min_tool_success_rate","max_tool_success_rate"],"path":"/api/v1/models","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "getObservabilityDestination": {"action":"observability.destinations.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/observability/destinations/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "getOrganizationSettings": {"action":"organization.settings.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/organization/settings","scope":{}},
-      "getPreset": {"action":"presets.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/presets/{slug}","scope":{"slug":{"at":"slug","from":"path"}}},
-      "getPresetVersion": {"action":"presets.versions.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/presets/{slug}/versions/{version}","scope":{"slug":{"at":"slug","from":"path"},"version":{"at":"version","from":"path"}}},
-      "getPrivateEndpoint": {"action":"private_endpoints.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "getRankingsDaily": {"action":"datasets.rankings_daily.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["start_date","end_date","period","modality","context_bucket","category","language_type"],"path":"/api/v1/datasets/rankings-daily","scope":{"context_bucket":{"at":"context_bucket","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-      "getScimGroupMapping": {"action":"scim.group_mappings.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/scim/group-mappings/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "getScimSyncJob": {"action":"scim.sync_jobs.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/scim/sync-jobs/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "getSessionCost": {"action":"datasets.session_cost.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["app_slug","model","turn_range","limit","offset"],"path":"/api/v1/datasets/session-cost","scope":{"app_slug":{"at":"app_slug","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-      "getTaskClassifications": {"action":"classifications.task.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["window"],"path":"/api/v1/classifications/task","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "getTool": {"action":"tools.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/tools/{name}","scope":{"name":{"at":"name","from":"path"}}},
-      "getUserActivity": {"action":"activity.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["date","api_key_hash","user_id","group_by","workspace_id"],"path":"/api/v1/activity","scope":{"query":{"at":"","from":"query","type":"object"},"user_id":{"at":"user_id","from":"query","optional":true},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
-      "getVideos": {"action":"videos.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/videos/{jobId}","scope":{"jobId":{"at":"jobId","from":"path"}}},
-      "getWorkspace": {"action":"workspaces.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/workspaces/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "getWorkspaceBudget": {"action":"workspaces.budgets.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/workspaces/{workspace_ref}/budgets/{interval}","scope":{"interval":{"at":"interval","from":"path"},"workspace_ref":{"at":"workspace_ref","from":"path"}}},
-      "invokeIntern": {"action":"interns.execute","body":"json","effects":["execute","generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}/invoke","scope":{"internId":{"at":"internId","from":"path"},"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true}}},
-      "list": {"action":"keys.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["include_disabled","include_expired","offset","workspace_id"],"path":"/api/v1/keys","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
-      "listBYOKKeys": {"action":"byok.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit","workspace_id","provider"],"path":"/api/v1/byok","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
-      "listBatches": {"action":"batches.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["limit","after","status","created_after","created_before"],"path":"/api/v1/batches","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "listContainerFiles": {"action":"containers.files.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["limit","after"],"path":"/api/v1/containers/{container_id}/files","scope":{"container_id":{"at":"container_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-      "listEmbeddingsModels": {"action":"embeddings.models.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/embeddings/models","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "listEndUsers": {"action":"end_users.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit","user","include_inactive"],"path":"/api/v1/end-users","scope":{"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"query","optional":true}}},
-      "listEndpoints": {"action":"models.endpoints.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/models/{author}/{slug}/endpoints","scope":{"author":{"at":"author","from":"path"},"slug":{"at":"slug","from":"path"}}},
-      "listEndpointsZdr": {"action":"endpoints.zdr.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/endpoints/zdr","scope":{}},
-      "listFiles": {"action":"files.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["limit","cursor","workspace_id","provider","after","after_id","before_id","order"],"path":"/api/v1/files","scope":{"after_id":{"at":"after_id","from":"query","optional":true},"before_id":{"at":"before_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
-      "listGenerationContent": {"action":"generation.content.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["id"],"path":"/api/v1/generation/content","scope":{"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
-      "listGuardrailKeyAssignments": {"action":"guardrails.assignments.keys.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/guardrails/{id}/assignments/keys","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-      "listGuardrailMemberAssignments": {"action":"guardrails.assignments.members.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/guardrails/{id}/assignments/members","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-      "listGuardrails": {"action":"guardrails.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit","workspace_id"],"path":"/api/v1/guardrails","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
-      "listImageModelEndpoints": {"action":"images.models.endpoints.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/images/models/{author}/{slug}/endpoints","scope":{"author":{"at":"author","from":"path"},"slug":{"at":"slug","from":"path"}}},
-      "listImageModels": {"action":"images.models.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/images/models","scope":{}},
-      "listInternEffectiveVaultSecrets": {"action":"vault.interns.effective_secrets.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["limit","offset"],"path":"/api/v1/vault/interns/{internId}/effective-secrets","scope":{"internId":{"at":"internId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-      "listInternVaultSecrets": {"action":"vault.interns.secrets.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["limit","offset"],"path":"/api/v1/vault/interns/{internId}/secrets","scope":{"internId":{"at":"internId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-      "listInterns": {"action":"interns.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["limit","status","starting_after","workspace_id"],"path":"/api/v1/interns","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
-      "listKeyAssignments": {"action":"guardrails.assignments.keys.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/guardrails/assignments/keys","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "listMemberAssignments": {"action":"guardrails.assignments.members.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/guardrails/assignments/members","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "listModelsCount": {"action":"models.count.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["output_modalities"],"path":"/api/v1/models/count","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "listModelsUser": {"action":"models.user.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit","output_modalities","sort"],"path":"/api/v1/models/user","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "listOauthJwks": {"action":"oauth.jwks.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/oauth/jwks","scope":{}},
-      "listObservabilityDestinations": {"action":"observability.destinations.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit","workspace_id"],"path":"/api/v1/observability/destinations","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
-      "listOrganizationMembers": {"action":"organization.members.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/organization/members","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "listPresetVersions": {"action":"presets.versions.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/presets/{slug}/versions","scope":{"query":{"at":"","from":"query","type":"object"},"slug":{"at":"slug","from":"path"}}},
-      "listPresets": {"action":"presets.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/presets","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "listPrivateEndpoints": {"action":"private_endpoints.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints","scope":{}},
-      "listProviders": {"action":"providers.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/providers","scope":{}},
-      "listScimGroupMappings": {"action":"scim.group_mappings.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/scim/group-mappings","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "listScimGroups": {"action":"scim.groups.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit","display_name","external_id"],"path":"/api/v1/scim/groups","scope":{"display_name":{"at":"display_name","from":"query","optional":true},"external_id":{"at":"external_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-      "listTools": {"action":"tools.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit","api_format"],"path":"/api/v1/tools","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "listVaultSecrets": {"action":"vault.secrets.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["limit","offset"],"path":"/api/v1/vault/secrets","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "listVideosContent": {"action":"videos.content.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["index"],"path":"/api/v1/videos/{jobId}/content","scope":{"jobId":{"at":"jobId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-      "listWorkspaceBudgets": {"action":"workspaces.budgets.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/workspaces/{workspace_ref}/budgets","scope":{"workspace_ref":{"at":"workspace_ref","from":"path"}}},
-      "listWorkspaceMembers": {"action":"workspaces.members.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/workspaces/{id}/members","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-      "listWorkspaces": {"action":"workspaces.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/workspaces","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "promoteContainerFile": {"action":"containers.files.promote.write","effects":["write"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/containers/{container_id}/files/{file_id}/promote","scope":{"container_id":{"at":"container_id","from":"path"},"file_id":{"at":"file_id","from":"path"}}},
-      "provisionIntern": {"action":"interns.provision.admin","effects":["admin","execute","pay"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}/provision","scope":{"internId":{"at":"internId","from":"path"}}},
-      "queryAnalytics": {"action":"analytics.read","body":"json","effects":["read"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/analytics/query","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "sendChatCompletionRequest": {"action":"chat.completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/chat/completions","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
-      "signInternDaemonAccessRequest": {"action":"interns.daemon_access.sign.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}/daemon-access/sign","scope":{"internId":{"at":"internId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "signInternDaemonRequest": {"action":"interns.daemon.sign.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}/daemon/sign","scope":{"internId":{"at":"internId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "storeInternVaultSecret": {"action":"vault.interns.secrets.admin","body":"json","effects":["admin","send","share"],"method":"PUT","origin":"https://openrouter.ai","path":"/api/v1/vault/interns/{internId}/secrets/{name}","scope":{"internId":{"at":"internId","from":"path"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "storeVaultSecret": {"action":"vault.secrets.admin","body":"json","effects":["admin","send","share"],"method":"PUT","origin":"https://openrouter.ai","path":"/api/v1/vault/secrets/{name}","scope":{"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "submitGenerationFeedback": {"action":"generation.feedback.write","body":"json","effects":["write"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/generation/feedback","scope":{"generation_id":{"at":"/generation_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
-      "suspendIntern": {"action":"interns.suspend.admin","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}/suspend","scope":{"internId":{"at":"internId","from":"path"}}},
-      "updateBYOKKey": {"action":"byok.admin","body":"json","effects":["admin","send","share"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/byok/{id}","scope":{"id":{"at":"id","from":"path"},"key":{"at":"/key","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
-      "updateEndUser": {"action":"end_users.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/end-users/{user}","scope":{"request":{"at":"","from":"body","type":"object"},"user":{"at":"user","from":"path"}}},
-      "updateGuardrail": {"action":"guardrails.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/guardrails/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
-      "updateIntern": {"action":"interns.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}","scope":{"internId":{"at":"internId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
-      "updateKeys": {"action":"keys.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/keys/{hash}","scope":{"hash":{"at":"hash","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
-      "updateObservabilityDestination": {"action":"observability.destinations.admin","body":"json","effects":["admin","share"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/observability/destinations/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
-      "updateOrganizationSettings": {"action":"organization.settings.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/organization/settings","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "updatePrivateEndpoint": {"action":"private_endpoints.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints/{id}","scope":{"base_url":{"at":"/base_url","from":"body","optional":true},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"upstream_model_id":{"at":"/upstream_model_id","from":"body"}}},
-      "updatePrivateEndpointPricing": {"action":"private_endpoints.pricing.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints/{id}/pricing","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "updateScimGroupMapping": {"action":"scim.group_mappings.admin","body":"json","effects":["admin","share"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/scim/group-mappings/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "updateWorkspace": {"action":"workspaces.admin","body":"json","effects":["admin","share"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/workspaces/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"slug":{"at":"/slug","from":"body","optional":true}}},
-      "upsertWorkspaceBudget": {"action":"workspaces.budgets.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://openrouter.ai","path":"/api/v1/workspaces/{workspace_ref}/budgets/{interval}","scope":{"interval":{"at":"interval","from":"path"},"request":{"at":"","from":"body","type":"object"},"workspace_ref":{"at":"workspace_ref","from":"path"}}},
-      "validatePrivateEndpoint": {"action":"private_endpoints.admin","body":"json","effects":["admin","generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints/{id}/validate","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body"}}}
+      "activatePrivateEndpoint": {"action":"private_endpoints.activate.admin","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/private-endpoints/{id}/activate","scope":{"id":{"at":"id","from":"path"}}},
+      "bulkAddWorkspaceMembers": {"action":"workspaces.members.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{api}","path":"/api/v1/workspaces/{id}/members/add","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_ids":{"at":"/user_ids","from":"body","type":"array"}}},
+      "bulkAssignKeysToGuardrail": {"action":"guardrails.assignments.keys.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/guardrails/{id}/assignments/keys","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "bulkAssignMembersToGuardrail": {"action":"guardrails.assignments.members.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/guardrails/{id}/assignments/members","scope":{"id":{"at":"id","from":"path"},"member_user_ids":{"at":"/member_user_ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "bulkRemoveWorkspaceMembers": {"action":"workspaces.members.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/workspaces/{id}/members/remove","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_ids":{"at":"/user_ids","from":"body","type":"array"}}},
+      "bulkUnassignKeysFromGuardrail": {"action":"guardrails.assignments.keys.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/guardrails/{id}/assignments/keys/remove","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "bulkUnassignMembersFromGuardrail": {"action":"guardrails.assignments.members.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/guardrails/{id}/assignments/members/remove","scope":{"id":{"at":"id","from":"path"},"member_user_ids":{"at":"/member_user_ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "changeApiKeyPolicyAssignment": {"action":"guardrails.policies.assignments.api_keys.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/api/v1/guardrails/policies/assignments/api-keys/{hash}","scope":{"hash":{"at":"hash","from":"path"},"policy_id":{"at":"/policy_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "changeMemberPolicyAssignment": {"action":"guardrails.policies.assignments.members.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/api/v1/guardrails/policies/assignments/members/{member_id}","scope":{"member_id":{"at":"member_id","from":"path"},"policy_id":{"at":"/policy_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "copyVaultSecretsToIntern": {"action":"vault.interns.secrets.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{api}","path":"/api/v1/vault/interns/{internId}/secrets/copy","scope":{"internId":{"at":"internId","from":"path"},"names":{"at":"/names","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "createAccountPolicy": {"action":"guardrails.policies.account.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/guardrails/policies/account","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createApiAlphaDecisions": {"action":"alpha.decisions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/api/alpha/decisions","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createApiAlphaExtractions": {"action":"alpha.extractions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/api/alpha/extractions","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createAudioSpeech": {"action":"audio.speech.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/api/v1/audio/speech","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createAudioTranscriptions": {"action":"audio.transcriptions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/api/v1/audio/transcriptions","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createAuthKeysCode": {"action":"auth.keys.code.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/auth/keys/code","scope":{"callback_url":{"at":"/callback_url","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "createBYOKKey": {"action":"byok.admin","body":"json","effects":["admin","send","share"],"method":"POST","origin":"{api}","path":"/api/v1/byok","scope":{"key":{"at":"/key","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "createBatches": {"action":"batches.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/api/v1/batches","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createBudgetPolicy": {"action":"guardrails.policies.budget.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/guardrails/policies/budget","scope":{"member_ids":{"at":"/member_ids","from":"body","optional":true,"type":"array"},"name":{"at":"/name","from":"body"},"opted_out_member_ids":{"at":"/opted_out_member_ids","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "createCoinbaseCharge": {"action":"credits.coinbase.pay","effects":["pay"],"method":"POST","origin":"{api}","path":"/api/v1/credits/coinbase","scope":{}},
+      "createCreditsPurchases": {"action":"credits.purchases.pay","body":"json","effects":["pay"],"method":"POST","origin":"{api}","path":"/api/v1/credits/purchases","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createEmbeddings": {"action":"embeddings.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/api/v1/embeddings","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createEndUser": {"action":"end_users.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/v1/end-users","scope":{"request":{"at":"","from":"body","type":"object"},"user":{"at":"/user","from":"body"}}},
+      "createExternalUser": {"action":"external_users.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/v1/external-users","scope":{"request":{"at":"","from":"body","type":"object"},"user":{"at":"/user","from":"body"}}},
+      "createGuardrail": {"action":"guardrails.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/guardrails","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "createImages": {"action":"images.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/api/v1/images","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createIntern": {"action":"interns.admin","body":"json","effects":["admin","execute","pay"],"method":"POST","origin":"{api}","path":"/api/v1/interns","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"vault_id":{"at":"/vault_id","from":"body","optional":true},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "createInternChatCompletion": {"action":"interns.chat.completions.execute","body":"json","effects":["execute","generate","pay","send"],"method":"POST","origin":"{api}","path":"/api/v1/interns/{internId}/chat/completions","scope":{"internId":{"at":"internId","from":"path"},"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true}}},
+      "createKeys": {"action":"keys.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/keys","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "createMessages": {"action":"messages.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/api/v1/messages","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createModelAvailabilityPolicy": {"action":"guardrails.policies.model_availability.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/guardrails/policies/model-availability","scope":{"member_ids":{"at":"/member_ids","from":"body","optional":true,"type":"array"},"name":{"at":"/name","from":"body"},"opted_out_member_ids":{"at":"/opted_out_member_ids","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "createModerationPolicy": {"action":"guardrails.policies.moderation.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/guardrails/policies/moderation","scope":{"member_ids":{"at":"/member_ids","from":"body","optional":true,"type":"array"},"name":{"at":"/name","from":"body"},"opted_out_member_ids":{"at":"/opted_out_member_ids","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "createOauthToken": {"action":"oauth.token.admin","body":"form","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/oauth/token","scope":{"federation_policy_id":{"at":"federation_policy_id","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "createObservabilityDestination": {"action":"observability.destinations.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{api}","path":"/api/v1/observability/destinations","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "createPresetsChatCompletions": {"action":"presets.chat.completions.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","params":["workspace_id"],"path":"/api/v1/presets/{slug}/chat/completions","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"slug":{"at":"slug","from":"path"},"user":{"at":"/user","from":"body","optional":true}}},
+      "createPresetsMessages": {"action":"presets.messages.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","params":["workspace_id"],"path":"/api/v1/presets/{slug}/messages","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"slug":{"at":"slug","from":"path"},"user":{"at":"/user","from":"body","optional":true}}},
+      "createPresetsResponses": {"action":"presets.responses.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","params":["workspace_id"],"path":"/api/v1/presets/{slug}/responses","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"slug":{"at":"slug","from":"path"},"user":{"at":"/user","from":"body","optional":true}}},
+      "createPrivateEndpoint": {"action":"private_endpoints.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/private-endpoints","scope":{"base_url":{"at":"/base_url","from":"body","optional":true},"provider_slug":{"at":"/provider_slug","from":"body"},"request":{"at":"","from":"body","type":"object"},"upstream_model_id":{"at":"/upstream_model_id","from":"body"}}},
+      "createPrivateProvider": {"action":"private_providers.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/private-providers","scope":{"base_url":{"at":"/base_url","from":"body","optional":true},"display_name":{"at":"/display_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"slug":{"at":"/slug","from":"body","optional":true}}},
+      "createRerank": {"action":"rerank.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/api/v1/rerank","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createResponses": {"action":"responses.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/api/v1/responses","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createScimGroupMapping": {"action":"scim.group_mappings.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{api}","path":"/api/v1/scim/group-mappings","scope":{"request":{"at":"","from":"body","type":"object"},"scim_group_id":{"at":"/scim_group_id","from":"body"},"workspace_id":{"at":"/workspace_id","from":"body"}}},
+      "createScimSyncJob": {"action":"scim.sync_jobs.admin","effects":["admin","share"],"method":"POST","origin":"{api}","path":"/api/v1/scim/sync-jobs","scope":{}},
+      "createSystemone": {"action":"systemone.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/api/v1/systemone","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createVideos": {"action":"videos.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/api/v1/videos","scope":{"callback_url":{"at":"/callback_url","from":"body","optional":true},"previous_job_id":{"at":"/previous_job_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createWorkspace": {"action":"workspaces.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{api}","path":"/api/v1/workspaces","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"slug":{"at":"/slug","from":"body"}}},
+      "deleteAccountPolicy": {"action":"guardrails.policies.account.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","path":"/api/v1/guardrails/policies/account/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteBYOKKey": {"action":"byok.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","path":"/api/v1/byok/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteBatch": {"action":"batches.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/api/v1/batches/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteBudgetPolicy": {"action":"guardrails.policies.budget.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","params":["workspace_id"],"path":"/api/v1/guardrails/policies/budget/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "deleteEndUser": {"action":"end_users.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/api/v1/end-users/{user}","scope":{"user":{"at":"user","from":"path"}}},
+      "deleteExternalUser": {"action":"external_users.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/api/v1/external-users/{user}","scope":{"user":{"at":"user","from":"path"}}},
+      "deleteFile": {"action":"files.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["workspace_id","provider"],"path":"/api/v1/files/{file_id}","scope":{"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "deleteGuardrail": {"action":"guardrails.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","path":"/api/v1/guardrails/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteIntern": {"action":"interns.admin","body":"json","effects":["admin","delete"],"method":"DELETE","origin":"{api}","path":"/api/v1/interns/{internId}","scope":{"internId":{"at":"internId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "deleteInternVaultSecret": {"action":"vault.interns.secrets.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","path":"/api/v1/vault/interns/{internId}/secrets/{name}","scope":{"internId":{"at":"internId","from":"path"},"name":{"at":"name","from":"path"}}},
+      "deleteKeys": {"action":"keys.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","path":"/api/v1/keys/{hash}","scope":{"hash":{"at":"hash","from":"path"}}},
+      "deleteModelAvailabilityPolicy": {"action":"guardrails.policies.model_availability.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","params":["workspace_id"],"path":"/api/v1/guardrails/policies/model-availability/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "deleteModerationPolicy": {"action":"guardrails.policies.moderation.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","params":["workspace_id"],"path":"/api/v1/guardrails/policies/moderation/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "deleteObservabilityDestination": {"action":"observability.destinations.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","path":"/api/v1/observability/destinations/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deletePreset": {"action":"presets.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["workspace_id"],"path":"/api/v1/presets/{slug}","scope":{"query":{"at":"","from":"query","type":"object"},"slug":{"at":"slug","from":"path"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "deletePrivateEndpoint": {"action":"private_endpoints.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","params":["draft_only"],"path":"/api/v1/private-endpoints/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deletePrivateProvider": {"action":"private_providers.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","path":"/api/v1/private-providers/{slug}","scope":{"slug":{"at":"slug","from":"path"}}},
+      "deleteScimGroupMapping": {"action":"scim.group_mappings.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","params":["keep_members"],"path":"/api/v1/scim/group-mappings/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteVaultSecret": {"action":"vault.secrets.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","path":"/api/v1/vault/secrets/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "deleteWorkspace": {"action":"workspaces.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","params":["confirm_default_workspace_deletion"],"path":"/api/v1/workspaces/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteWorkspaceBudget": {"action":"workspaces.budgets.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","path":"/api/v1/workspaces/{workspace_ref}/budgets/{interval}","scope":{"interval":{"at":"interval","from":"path"},"workspace_ref":{"at":"workspace_ref","from":"path"}}},
+      "disablePrivateEndpoint": {"action":"private_endpoints.admin","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/private-endpoints/{id}/disable","scope":{"id":{"at":"id","from":"path"}}},
+      "downloadContainerFileContent": {"action":"containers.files.content.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/containers/{container_id}/files/{file_id}/content","scope":{"container_id":{"at":"container_id","from":"path"},"file_id":{"at":"file_id","from":"path"}}},
+      "downloadFileContent": {"action":"files.content.read","effects":["read"],"method":"GET","origin":"{api}","params":["workspace_id","provider"],"path":"/api/v1/files/{file_id}/content","scope":{"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "enablePrivateEndpoint": {"action":"private_endpoints.admin","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/private-endpoints/{id}/enable","scope":{"id":{"at":"id","from":"path"}}},
+      "exchangeAuthCodeForAPIKey": {"action":"auth.keys.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/auth/keys","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "getAnalyticsMeta": {"action":"analytics.meta.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/analytics/meta","scope":{}},
+      "getApiKeyPolicyAssignment": {"action":"guardrails.policies.assignments.api_keys.read","effects":["read"],"method":"GET","origin":"{api}","params":["workspace_id","policy_type"],"path":"/api/v1/guardrails/policies/assignments/api-keys/{hash}","scope":{"hash":{"at":"hash","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "getAppRankings": {"action":"datasets.app_rankings.read","effects":["read"],"method":"GET","origin":"{api}","params":["category","subcategory","sort","start_date","end_date","limit","offset"],"path":"/api/v1/datasets/app-rankings","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getBYOKKey": {"action":"byok.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/byok/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getBatches": {"action":"batches.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/batches/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getBenchmarks": {"action":"benchmarks.read","effects":["read"],"method":"GET","origin":"{api}","params":["source","task_type","benchmark_type","include_run_config","search_engine","search_surface","arena","category","max_results"],"path":"/api/v1/benchmarks","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getBudgetPolicy": {"action":"guardrails.policies.budget.read","effects":["read"],"method":"GET","origin":"{api}","params":["workspace_id"],"path":"/api/v1/guardrails/policies/budget/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "getContainerFile": {"action":"containers.files.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/containers/{container_id}/files/{file_id}","scope":{"container_id":{"at":"container_id","from":"path"},"file_id":{"at":"file_id","from":"path"}}},
+      "getCreditPurchasesSetupGuide": {"action":"credits.purchases.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/credits/purchases","scope":{}},
+      "getCredits": {"action":"credits.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/credits","scope":{}},
+      "getCurrentKey": {"action":"key.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/key","scope":{}},
+      "getEndUser": {"action":"end_users.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/end-users/{user}","scope":{"user":{"at":"user","from":"path"}}},
+      "getExternalUser": {"action":"external_users.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/external-users/{user}","scope":{"user":{"at":"user","from":"path"}}},
+      "getFileMetadata": {"action":"files.read","effects":["read"],"method":"GET","origin":"{api}","params":["workspace_id","provider"],"path":"/api/v1/files/{file_id}","scope":{"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "getGeneration": {"action":"generation.read","effects":["read"],"method":"GET","origin":"{api}","params":["id"],"path":"/api/v1/generation","scope":{"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "getGuardrail": {"action":"guardrails.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/guardrails/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getIntern": {"action":"interns.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/interns/{internId}","scope":{"internId":{"at":"internId","from":"path"}}},
+      "getInternDaemon": {"action":"interns.daemon.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/interns/{internId}/daemon","scope":{"internId":{"at":"internId","from":"path"}}},
+      "getInternDaemonAccess": {"action":"interns.daemon_access.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/interns/{internId}/daemon-access","scope":{"internId":{"at":"internId","from":"path"}}},
+      "getKey": {"action":"keys.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/keys/{hash}","scope":{"hash":{"at":"hash","from":"path"}}},
+      "getMemberPolicyAssignment": {"action":"guardrails.policies.assignments.members.read","effects":["read"],"method":"GET","origin":"{api}","params":["workspace_id","policy_type"],"path":"/api/v1/guardrails/policies/assignments/members/{member_id}","scope":{"member_id":{"at":"member_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "getModel": {"action":"model.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/model/{author}/{slug}","scope":{"author":{"at":"author","from":"path"},"slug":{"at":"slug","from":"path"}}},
+      "getModelAvailabilityPolicy": {"action":"guardrails.policies.model_availability.read","effects":["read"],"method":"GET","origin":"{api}","params":["workspace_id"],"path":"/api/v1/guardrails/policies/model-availability/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "getModels": {"action":"models.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit","category","supported_parameters","output_modalities","sort","q","input_modalities","context","min_price","max_price","arch","model_authors","providers","distillable","zdr","region","min_output_price","max_output_price","min_age_days","max_age_days","min_intelligence_index","max_intelligence_index","min_coding_index","max_coding_index","min_agentic_index","max_agentic_index","min_tool_success_rate","max_tool_success_rate","endpoints","max_cyber_index","max_decision_index","max_economics_index","max_engineering_index","max_finance_and_accounting_index","max_healthcare_and_medical_index","max_legal_index","max_multilingual_index","max_openness_index","max_strategy_and_ops_index","min_cyber_index","min_decision_index","min_economics_index","min_engineering_index","min_finance_and_accounting_index","min_healthcare_and_medical_index","min_legal_index","min_multilingual_index","min_openness_index","min_strategy_and_ops_index"],"path":"/api/v1/models","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getModerationPolicy": {"action":"guardrails.policies.moderation.read","effects":["read"],"method":"GET","origin":"{api}","params":["workspace_id"],"path":"/api/v1/guardrails/policies/moderation/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "getObservabilityDestination": {"action":"observability.destinations.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/observability/destinations/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getOrganizationSettings": {"action":"organization.settings.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/organization/settings","scope":{}},
+      "getPreset": {"action":"presets.read","effects":["read"],"method":"GET","origin":"{api}","params":["workspace_id"],"path":"/api/v1/presets/{slug}","scope":{"query":{"at":"","from":"query","type":"object"},"slug":{"at":"slug","from":"path"}}},
+      "getPresetVersion": {"action":"presets.versions.read","effects":["read"],"method":"GET","origin":"{api}","params":["workspace_id"],"path":"/api/v1/presets/{slug}/versions/{version}","scope":{"query":{"at":"","from":"query","type":"object"},"slug":{"at":"slug","from":"path"},"version":{"at":"version","from":"path"}}},
+      "getPrivateEndpoint": {"action":"private_endpoints.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/private-endpoints/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getPrivateProvider": {"action":"private_providers.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/private-providers/{slug}","scope":{"slug":{"at":"slug","from":"path"}}},
+      "getRankingsDaily": {"action":"datasets.rankings_daily.read","effects":["read"],"method":"GET","origin":"{api}","params":["start_date","end_date","period","modality","context_bucket","category","language_type"],"path":"/api/v1/datasets/rankings-daily","scope":{"context_bucket":{"at":"context_bucket","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getScimGroupMapping": {"action":"scim.group_mappings.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/scim/group-mappings/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getScimSyncJob": {"action":"scim.sync_jobs.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/scim/sync-jobs/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getSessionCost": {"action":"datasets.session_cost.read","effects":["read"],"method":"GET","origin":"{api}","params":["app_slug","model","turn_range","limit","offset"],"path":"/api/v1/datasets/session-cost","scope":{"app_slug":{"at":"app_slug","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getTaskClassifications": {"action":"classifications.task.read","effects":["read"],"method":"GET","origin":"{api}","params":["window"],"path":"/api/v1/classifications/task","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getTool": {"action":"tools.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/tools/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "getUserActivity": {"action":"activity.read","effects":["read"],"method":"GET","origin":"{api}","params":["date","api_key_hash","user_id","group_by","workspace_id"],"path":"/api/v1/activity","scope":{"query":{"at":"","from":"query","type":"object"},"user_id":{"at":"user_id","from":"query","optional":true},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "getVideos": {"action":"videos.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/videos/{jobId}","scope":{"jobId":{"at":"jobId","from":"path"}}},
+      "getWorkspace": {"action":"workspaces.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/workspaces/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getWorkspaceBudget": {"action":"workspaces.budgets.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/workspaces/{workspace_ref}/budgets/{interval}","scope":{"interval":{"at":"interval","from":"path"},"workspace_ref":{"at":"workspace_ref","from":"path"}}},
+      "invokeIntern": {"action":"interns.execute","body":"json","effects":["execute","generate","pay","send"],"method":"POST","origin":"{api}","path":"/api/v1/interns/{internId}/invoke","scope":{"internId":{"at":"internId","from":"path"},"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true}}},
+      "list": {"action":"keys.read","effects":["read"],"method":"GET","origin":"{api}","params":["include_disabled","include_expired","offset","workspace_id"],"path":"/api/v1/keys","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "listAccountPolicies": {"action":"guardrails.policies.account.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit"],"path":"/api/v1/guardrails/policies/account","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listBYOKKeys": {"action":"byok.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit","workspace_id","provider"],"path":"/api/v1/byok","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "listBatches": {"action":"batches.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","after","status","created_after","created_before"],"path":"/api/v1/batches","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listBudgetPolicies": {"action":"guardrails.policies.budget.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit","workspace_id"],"path":"/api/v1/guardrails/policies/budget","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "listContainerFiles": {"action":"containers.files.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","after"],"path":"/api/v1/containers/{container_id}/files","scope":{"container_id":{"at":"container_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listCreditsPurchases": {"action":"credits.purchases.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/credits/purchases/{id}","path_patterns":{"id":"pi_[A-Za-z0-9]{1,64}"},"scope":{"id":{"at":"id","from":"path"}}},
+      "listCreditsPurchasesSKILL.md": {"action":"credits.purchases.setup.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/credits/purchases/SKILL.md","scope":{}},
+      "listCreditsPurchasesSetup": {"action":"credits.purchases.setup.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/credits/purchases/setup","scope":{}},
+      "listEmbeddingsModels": {"action":"embeddings.models.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit"],"path":"/api/v1/embeddings/models","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listEndUsers": {"action":"end_users.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit","user","include_inactive"],"path":"/api/v1/end-users","scope":{"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"query","optional":true}}},
+      "listEndpoints": {"action":"models.endpoints.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/models/{author}/{slug}/endpoints","scope":{"author":{"at":"author","from":"path"},"slug":{"at":"slug","from":"path"}}},
+      "listEndpointsZdr": {"action":"endpoints.zdr.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/endpoints/zdr","scope":{}},
+      "listExternalUsers": {"action":"external_users.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit","user","include_inactive"],"path":"/api/v1/external-users","scope":{"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"query","optional":true}}},
+      "listFiles": {"action":"files.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","cursor","workspace_id","provider","after","after_id","before_id","order"],"path":"/api/v1/files","scope":{"after_id":{"at":"after_id","from":"query","optional":true},"before_id":{"at":"before_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "listGenerationContent": {"action":"generation.content.read","effects":["read"],"method":"GET","origin":"{api}","params":["id"],"path":"/api/v1/generation/content","scope":{"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "listGuardrailKeyAssignments": {"action":"guardrails.assignments.keys.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit"],"path":"/api/v1/guardrails/{id}/assignments/keys","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listGuardrailMemberAssignments": {"action":"guardrails.assignments.members.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit"],"path":"/api/v1/guardrails/{id}/assignments/members","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listGuardrails": {"action":"guardrails.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit","workspace_id"],"path":"/api/v1/guardrails","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "listImageModelEndpoints": {"action":"images.models.endpoints.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/images/models/{author}/{slug}/endpoints","scope":{"author":{"at":"author","from":"path"},"slug":{"at":"slug","from":"path"}}},
+      "listImageModels": {"action":"images.models.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/images/models","scope":{}},
+      "listInternConnections": {"action":"vault.interns.connections.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/vault/interns/{internId}/connections","scope":{"internId":{"at":"internId","from":"path"}}},
+      "listInternEffectiveVaultSecrets": {"action":"vault.interns.effective_secrets.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset"],"path":"/api/v1/vault/interns/{internId}/effective-secrets","scope":{"internId":{"at":"internId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listInternVaultSecrets": {"action":"vault.interns.secrets.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset"],"path":"/api/v1/vault/interns/{internId}/secrets","scope":{"internId":{"at":"internId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listInterns": {"action":"interns.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","status","starting_after","workspace_id"],"path":"/api/v1/interns","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "listKeyAssignments": {"action":"guardrails.assignments.keys.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit","workspace_id"],"path":"/api/v1/guardrails/assignments/keys","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listMemberAssignments": {"action":"guardrails.assignments.members.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit","workspace_id"],"path":"/api/v1/guardrails/assignments/members","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listModelAvailabilityPolicies": {"action":"guardrails.policies.model_availability.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit","workspace_id"],"path":"/api/v1/guardrails/policies/model-availability","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "listModelsCount": {"action":"models.count.read","effects":["read"],"method":"GET","origin":"{api}","params":["output_modalities"],"path":"/api/v1/models/count","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listModelsUser": {"action":"models.user.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit","output_modalities","sort","client"],"path":"/api/v1/models/user","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listModerationPolicies": {"action":"guardrails.policies.moderation.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit","workspace_id"],"path":"/api/v1/guardrails/policies/moderation","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "listOauthJwks": {"action":"oauth.jwks.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/oauth/jwks","scope":{}},
+      "listObservabilityDestinations": {"action":"observability.destinations.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit","workspace_id"],"path":"/api/v1/observability/destinations","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "listOrganizationMembers": {"action":"organization.members.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit"],"path":"/api/v1/organization/members","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listPresetVersions": {"action":"presets.versions.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit","workspace_id"],"path":"/api/v1/presets/{slug}/versions","scope":{"query":{"at":"","from":"query","type":"object"},"slug":{"at":"slug","from":"path"}}},
+      "listPresets": {"action":"presets.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit","workspace_id"],"path":"/api/v1/presets","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listPrivateEndpoints": {"action":"private_endpoints.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/private-endpoints","scope":{}},
+      "listPrivateProviders": {"action":"private_providers.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/private-providers","scope":{}},
+      "listProviders": {"action":"providers.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/providers","scope":{}},
+      "listScimGroupMappings": {"action":"scim.group_mappings.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit"],"path":"/api/v1/scim/group-mappings","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listScimGroups": {"action":"scim.groups.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit","display_name","external_id"],"path":"/api/v1/scim/groups","scope":{"display_name":{"at":"display_name","from":"query","optional":true},"external_id":{"at":"external_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listTools": {"action":"tools.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit","api_format"],"path":"/api/v1/tools","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listVaultSecrets": {"action":"vault.secrets.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset"],"path":"/api/v1/vault/secrets","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listVideosContent": {"action":"videos.content.read","effects":["read"],"method":"GET","origin":"{api}","params":["index"],"path":"/api/v1/videos/{jobId}/content","scope":{"jobId":{"at":"jobId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listWorkspaceBudgets": {"action":"workspaces.budgets.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/v1/workspaces/{workspace_ref}/budgets","scope":{"workspace_ref":{"at":"workspace_ref","from":"path"}}},
+      "listWorkspaceMembers": {"action":"workspaces.members.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit"],"path":"/api/v1/workspaces/{id}/members","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listWorkspaces": {"action":"workspaces.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit"],"path":"/api/v1/workspaces","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "promoteContainerFile": {"action":"containers.files.promote.write","effects":["write"],"method":"POST","origin":"{api}","path":"/api/v1/containers/{container_id}/files/{file_id}/promote","scope":{"container_id":{"at":"container_id","from":"path"},"file_id":{"at":"file_id","from":"path"}}},
+      "provisionIntern": {"action":"interns.provision.admin","effects":["admin","execute","pay"],"method":"POST","origin":"{api}","path":"/api/v1/interns/{internId}/provision","scope":{"internId":{"at":"internId","from":"path"}}},
+      "queryAnalytics": {"action":"analytics.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/api/v1/analytics/query","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "restorePreset": {"action":"presets.write","effects":["write"],"method":"POST","origin":"{api}","params":["workspace_id"],"path":"/api/v1/presets/{slug}/restore","scope":{"query":{"at":"","from":"query","type":"object"},"slug":{"at":"slug","from":"path"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "sendChatCompletionRequest": {"action":"chat.completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/api/v1/chat/completions","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "signInternDaemonAccessRequest": {"action":"interns.daemon_access.sign.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{api}","path":"/api/v1/interns/{internId}/daemon-access/sign","scope":{"internId":{"at":"internId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "signInternDaemonRequest": {"action":"interns.daemon.sign.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{api}","path":"/api/v1/interns/{internId}/daemon/sign","scope":{"internId":{"at":"internId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "storeInternVaultSecret": {"action":"vault.interns.secrets.admin","body":"json","effects":["admin","send","share"],"method":"PUT","origin":"{api}","path":"/api/v1/vault/interns/{internId}/secrets/{name}","scope":{"internId":{"at":"internId","from":"path"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "storeVaultSecret": {"action":"vault.secrets.admin","body":"json","effects":["admin","send","share"],"method":"PUT","origin":"{api}","path":"/api/v1/vault/secrets/{name}","scope":{"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "submitGenerationFeedback": {"action":"generation.feedback.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/v1/generation/feedback","scope":{"generation_id":{"at":"/generation_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "suspendIntern": {"action":"interns.suspend.admin","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/v1/interns/{internId}/suspend","scope":{"internId":{"at":"internId","from":"path"}}},
+      "updateAccountPolicy": {"action":"guardrails.policies.account.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/api/v1/guardrails/policies/account/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateBYOKKey": {"action":"byok.admin","body":"json","effects":["admin","send","share"],"method":"PATCH","origin":"{api}","path":"/api/v1/byok/{id}","scope":{"id":{"at":"id","from":"path"},"key":{"at":"/key","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateBudgetPolicy": {"action":"guardrails.policies.budget.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/api/v1/guardrails/policies/budget/{id}","scope":{"id":{"at":"id","from":"path"},"member_ids":{"at":"/member_ids","from":"body","optional":true,"type":"array"},"name":{"at":"/name","from":"body"},"opted_out_member_ids":{"at":"/opted_out_member_ids","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "updateEndUser": {"action":"end_users.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","path":"/api/v1/end-users/{user}","scope":{"request":{"at":"","from":"body","type":"object"},"user":{"at":"user","from":"path"}}},
+      "updateExternalUser": {"action":"external_users.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","path":"/api/v1/external-users/{user}","scope":{"request":{"at":"","from":"body","type":"object"},"user":{"at":"user","from":"path"}}},
+      "updateGuardrail": {"action":"guardrails.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/api/v1/guardrails/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateIntern": {"action":"interns.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/api/v1/interns/{internId}","scope":{"internId":{"at":"internId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateKeys": {"action":"keys.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/api/v1/keys/{hash}","scope":{"hash":{"at":"hash","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "updateModelAvailabilityPolicy": {"action":"guardrails.policies.model_availability.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/api/v1/guardrails/policies/model-availability/{id}","scope":{"id":{"at":"id","from":"path"},"member_ids":{"at":"/member_ids","from":"body","optional":true,"type":"array"},"name":{"at":"/name","from":"body"},"opted_out_member_ids":{"at":"/opted_out_member_ids","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "updateModerationPolicy": {"action":"guardrails.policies.moderation.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/api/v1/guardrails/policies/moderation/{id}","scope":{"id":{"at":"id","from":"path"},"member_ids":{"at":"/member_ids","from":"body","optional":true,"type":"array"},"name":{"at":"/name","from":"body"},"opted_out_member_ids":{"at":"/opted_out_member_ids","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "updateObservabilityDestination": {"action":"observability.destinations.admin","body":"json","effects":["admin","share"],"method":"PATCH","origin":"{api}","path":"/api/v1/observability/destinations/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateOrganizationSettings": {"action":"organization.settings.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/api/v1/organization/settings","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "updatePrivateEndpoint": {"action":"private_endpoints.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/api/v1/private-endpoints/{id}","scope":{"base_url":{"at":"/base_url","from":"body","optional":true},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"upstream_model_id":{"at":"/upstream_model_id","from":"body"}}},
+      "updatePrivateEndpointPricing": {"action":"private_endpoints.pricing.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/api/v1/private-endpoints/{id}/pricing","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updatePrivateProvider": {"action":"private_providers.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/api/v1/private-providers/{slug}","scope":{"base_url":{"at":"/base_url","from":"body","optional":true},"display_name":{"at":"/display_name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"slug":{"at":"slug","from":"path"}}},
+      "updateScimGroupMapping": {"action":"scim.group_mappings.admin","body":"json","effects":["admin","share"],"method":"PATCH","origin":"{api}","path":"/api/v1/scim/group-mappings/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateWorkspace": {"action":"workspaces.admin","body":"json","effects":["admin","share"],"method":"PATCH","origin":"{api}","path":"/api/v1/workspaces/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"slug":{"at":"/slug","from":"body","optional":true}}},
+      "uploadFile": {"action":"files.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","params":["workspace_id","provider"],"path":"/api/v1/files","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "upsertWorkspaceBudget": {"action":"workspaces.budgets.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/api/v1/workspaces/{workspace_ref}/budgets/{interval}","scope":{"interval":{"at":"interval","from":"path"},"request":{"at":"","from":"body","type":"object"},"workspace_ref":{"at":"workspace_ref","from":"path"}}},
+      "validatePrivateEndpoint": {"action":"private_endpoints.admin","body":"json","effects":["admin","generate","pay","send"],"method":"POST","origin":"{api}","path":"/api/v1/private-endpoints/{id}/validate","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body"}}}
     }
   }
 }

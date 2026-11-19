@@ -31,6 +31,20 @@ origin. For example, Grafana's pinned spec declares `servers: [{url: /api}]`, so
 its health operation is `/api/health`, not `/health`. Its `sources.json` entry maps
 to the shipped `grafana` preset. Check routes against the vendor input as well as
 the preserved baseline: a `shipped_override` can preserve an old mistake.
+A source's `origin` and `path` replace only the document server's origin and base
+path; operation and path servers keep theirs, and a templated server host takes the
+preset origin set that covers it.
+A source's `pointer` names the JSON pointer of a document, string or object,
+embedded in a downloaded JSON page. Postman sources take `variables`, values for
+collection variables the export leaves undefined, and `captures`, which turn each
+path segment matching a pattern, such as `{"version": "v[0-9]+\\.[0-9]+"}`, into
+that capture.
+
+Discovery operation IDs are method IDs without the API name; an ID an earlier
+document of the source already uses gains the document's version as a prefix, such
+as `v1alpha.properties.runReport`. Postman operation IDs are request names; a
+repeated name gains its folder path, `Folder/Name`, and a number, `Folder/Name #2`,
+when the folder repeats it.
 
 ## Generation commands
 
@@ -56,7 +70,7 @@ GOWORK=off go run . group
 GOWORK=off go run . generate
 ```
 
-`generate` and `check` return a nonzero exit status for missing or failed sources. They continue through the other selected providers, preserving useful results and writing an error report for each failure. The current all-provider commands fail for six configured source gaps: Dropbox, Salesforce, Shopify, Supabase, WooCommerce, and WordPress.
+`generate` and `check` return a nonzero exit status for missing or failed sources. They continue through the other selected providers, preserving useful results and writing an error report for each failure. The current all-provider commands fail for five hand-maintained presets without a usable source: Salesforce, Salesmate, Shopify, WooCommerce, and WordPress.
 
 The files have different roles:
 
@@ -83,20 +97,49 @@ so the app can collapse groups and set permissions at any level. Effects stay
 on each operation and continue to determine its obligations independently of
 its display group. Read operations receive resource-specific actions too.
 
-Grouping uses enclosing URL resources, strips transport/version segments and
-terminal operation verbs, and handles dotted RPC methods. GraphQL uses schema
-return types when available, falling back to field names. Source categories
+Grouping uses enclosing URL resources, strips the server base path,
+transport/version segments and terminal operation verbs, and handles dotted RPC
+methods. A segment with child routes keeps its full name. A name loses either its
+leading verbs or, after a path parameter or in an RPC method, its trailing ones;
+on routes read with GET only read verbs count. GraphQL uses schema return types
+when available, falling back to field names and then the path. Source categories
 provide a fallback for paths without literal resources. A source can override
 an ambiguous group in `sources.json` with `"groups": {"operationId": "resource.subresource"}`.
-These keys name source operation IDs; unknown keys and malformed group paths
+These keys name source operations as described below, or shipped descriptor IDs such as hand-written ones; unknown keys and malformed group paths
 are errors. A specification can nest all of its operations under one parent
 with `"group": "graphql"`. `generate` uses these rules.
 
 Reviewed effects live in `sources.json` as `"effects": {"admin,delete": ["operationId"]}`,
 keyed by the comma-separated effect list. They replace the inferred effects, and
-`generate` rebuilds the descriptor of the same name from them even when it is
-already shipped, so changing a review means editing that table and regenerating.
-Unknown operations, unknown effects, and operations listed twice are errors.
+`generate` sets them and the matching action on the descriptors named after the
+operation and its body variants, or else on every descriptor serving it, keeping their
+other fields, so changing a review means editing that table and regenerating. Unknown
+operations, unknown effects, keys listed twice, reviews that reach no descriptor,
+and different reviews for one descriptor are errors.
+
+Reviewed upload endpoints whose bodies cannot be inspected are listed as
+`"opaque": ["operationId"]`. `generate` then emits one descriptor accepting any body
+for each, or makes the shipped descriptors serving it accept any body, binding path
+captures and query but not the body. Unknown, excluded, and repeated operations are errors.
+
+Source operations the preset deliberately omits are listed as
+`"exclusions": {"operationId": "reason"}`. No descriptor is generated or mapped for them;
+coverage reports those within the filters as `excluded` with the reason, and shipped
+descriptors that served only them as `unmapped_shipped`. Unknown operations are errors.
+
+Keys of `groups`, `effects`, `opaque` and `exclusions` are an operation ID, which
+names every operation with that ID in the source's specifications, or `METHOD /path`
+with the path of the generated descriptor, including the server base path, which names
+the operations on that route and takes precedence over an ID. An operation without an
+ID is also named by its method and the path its specification writes. A descriptor ID
+that is already taken gets a suffix derived from the request it matches.
+
+Source options: `wildcards` lists final path parameters that match several segments,
+like `{+name}`; `params` lists query parameters every operation accepts; `encodings`
+(`json`, `form`) also offers each OpenAPI request body declared only in the other
+encoding. Unknown, empty, and repeated entries, and wildcards matching no final path
+parameter, are errors. A specification's `headers` set request headers for `fetch` and
+`update`, such as a browser `User-Agent` for hosts that reject the default one.
 
 `group [preset-or-source...]` writes the grouping into shipped presets, using
 only their existing operations. With no arguments it processes all shipped API
@@ -112,12 +155,13 @@ Each source variant receives a status:
 
 | Status | Meaning |
 | --- | --- |
-| `shipped_override` | A shipped definition has the same route and encoding. Its deliberate restrictions still apply. This status records that it is shipped, not an independent semantic review. |
+| `shipped_override` | A shipped definition has the same route and encoding, or accepts any body on that route, and its path patterns and query, header, and field conditions can match the operation's requests. Its deliberate restrictions still apply. This status records that it is shipped, not an independent semantic review. |
 | `needs_review` | The generator proposed a descriptor. Permissions and resource semantics still need review. |
 | `unsupported` | No usable descriptor could be produced; `reason` explains the gap. |
 | `archived_schema` | A current method is indexed, but its request definition comes from an older source or preserved override. |
+| `excluded` | The source's `exclusions` list the operation; `reason` explains why. |
 
-`missing_params` identifies documented query parameters rejected by an existing definition. `unmapped_shipped` lists shipped definitions without a source mapping. These may be deliberate extensions, deleted upstream operations, or source omissions; generation does not delete them. Conflicting descriptors remain visible instead of being merged away. Accepting a candidate does not clear these gaps, and requests that match multiple operations remain refused by policy.
+`missing_params` identifies documented query parameters rejected by every matched definition. `generate` adds optional ones to the `params` of matched shipped definitions that can serve the operation, binding the query in their scope; it leaves their query conditions unchanged. `unmapped_shipped` lists shipped definitions without a source mapping. These may be deliberate extensions, deleted upstream operations, or source omissions; generation does not delete them. Generation adds `path_patterns` so a capture does not also match another descriptor's more specific segment, such as `/v1/charges/{charge}` and `/v1/charges/search`. It uses the source's integer, enum, anchored pattern, or merged multi-parameter segment when that separates them, and otherwise excludes the literal or literal prefix when the other descriptor accepts the rest of the route, or its shallowest literal when it is otherwise narrower only by literals. A bare capture beside a `{name}:verb` sibling excludes `:`. Conflicting descriptors remain visible instead of being merged away. Accepting a candidate does not clear these gaps, and requests that match multiple operations remain refused by policy.
 
 An accounted inventory does not prove that all vendor APIs were selected or that the proposed permissions are correct. API families and filters in `sources.json` define the denominator. Matching an existing route also does not prove every documented request passes its reviewed constraints. `check` validates artifact consistency, mappings, and counts. Additional gates are available:
 
@@ -134,9 +178,9 @@ GOWORK=off go run . update slack anthropic airtable
 GOWORK=off go run . generate slack anthropic airtable
 ```
 
-An unqualified `update` resolves changed source definitions. `update --all` refreshes every configured source, including unchanged upstream URLs. A failed refresh preserves the prior lock and returns an error. Older lock entries have no `checked_at`; the age gate rejects them until refreshed. External request-schema references must be bundled into the locked specification before import.
+An unqualified `update` resolves changed source definitions. `update --all` refreshes every configured source, including unchanged upstream URLs. A failed refresh, including a document that does not parse in its declared format, preserves the prior lock and returns an error. Older lock entries have no `checked_at`; the age gate rejects them until refreshed. `update` also locks the files that relative references outside examples and extensions name, and generation bundles them; other external references must be vendored into the locked specification.
 
-Slack's current snapshot contains the 340 method names from the official sitemap, plus the archived Swagger request definitions as a second source. It is explicitly marked `index-only`. Of the current method names, 164 map to archived or preserved definitions and 176 lack schemas. The documentation importer can fetch each current method's Markdown page during `update slack`; this collection still needs to complete. SCIM, Audit Logs, and Legal Holds are separately recorded family exclusions.
+Slack's current snapshot contains the 340 method names from the official sitemap, plus the archived Swagger request definitions as a second source. `update slack` fetches each current method's Markdown page, and every resulting request variant maps to a shipped definition. SCIM, Audit Logs, and Legal Holds are separate API families recorded in its note.
 
 Anthropic's pinned SDK mock specification includes beta and administration operations. Public availability, version headers, credential requirements, compound effects, and batch destinations need per-operation review. Airtable now uses the OpenAPI document embedded in its public developer documentation, including Web API and SCIM operations. Extraction persists only the specification and excludes surrounding browser state. Both providers still have unsupported bodies and overlapping routes in their reports.
 
@@ -157,7 +201,7 @@ with path selectors. Video model listings and job status share one read
 descriptor with the requested path segment bound, avoiding overlapping routes.
 The API key slot covers `/api`, including the documented alpha Decisions route;
 management and programme-gated endpoints still need the corresponding upstream
-access. The current inventory has 152 request variants and 149 descriptors.
-Multipart file upload and multipart audio transcription are reported as
-unsupported; JSON audio transcription is supported. Consequently,
-`check --reviewed open_router` still reports those two encoding gaps.
+access. The current inventory has 175 request variants and 192 descriptors.
+File upload is reviewed as an uninspectable body. Multipart audio transcription
+is reported as unsupported; JSON audio transcription is supported. Consequently,
+`check --reviewed open_router` still reports that encoding gap.

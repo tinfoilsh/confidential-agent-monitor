@@ -61,6 +61,9 @@
       "wiki.atlassian_connect.app.module.dynamic": {
         "title": "Dynamic"
       },
+      "wiki.atlassian_connect.app.module.dynamic.admin": {
+        "title": "Manage"
+      },
       "wiki.atlassian_connect.app.module.dynamic.delete": {
         "title": "Delete"
       },
@@ -208,6 +211,18 @@
       "wiki.blogposts.operations.read": {
         "title": "Read"
       },
+      "wiki.blogposts.permissions": {
+        "title": "Permissions"
+      },
+      "wiki.blogposts.permissions.delete": {
+        "title": "Delete"
+      },
+      "wiki.blogposts.permissions.read": {
+        "title": "Read"
+      },
+      "wiki.blogposts.permissions.share": {
+        "title": "Share"
+      },
       "wiki.blogposts.properties": {
         "title": "Properties"
       },
@@ -228,6 +243,15 @@
       },
       "wiki.blogposts.redact.write": {
         "title": "Create and edit"
+      },
+      "wiki.blogposts.restriction_state": {
+        "title": "Restriction state"
+      },
+      "wiki.blogposts.restriction_state.read": {
+        "title": "Read"
+      },
+      "wiki.blogposts.restriction_state.share": {
+        "title": "Share"
       },
       "wiki.blogposts.versions": {
         "title": "Versions"
@@ -277,6 +301,12 @@
       "wiki.content.child.attachment": {
         "title": "Attachment"
       },
+      "wiki.content.child.attachment.data": {
+        "title": "Data"
+      },
+      "wiki.content.child.attachment.data.write": {
+        "title": "Create and edit"
+      },
       "wiki.content.child.attachment.read": {
         "title": "Read"
       },
@@ -286,8 +316,8 @@
       "wiki.content.convert_ids_to_types": {
         "title": "Convert ids to types"
       },
-      "wiki.content.convert_ids_to_types.write": {
-        "title": "Create and edit"
+      "wiki.content.convert_ids_to_types.read": {
+        "title": "Read"
       },
       "wiki.content.descendant": {
         "title": "Descendant"
@@ -385,8 +415,8 @@
       "wiki.content.restriction.by_operation.by_group_id.read": {
         "title": "Read"
       },
-      "wiki.content.restriction.by_operation.by_group_id.write": {
-        "title": "Create and edit"
+      "wiki.content.restriction.by_operation.by_group_id.share": {
+        "title": "Share"
       },
       "wiki.content.restriction.by_operation.read": {
         "title": "Read"
@@ -394,14 +424,14 @@
       "wiki.content.restriction.by_operation.user": {
         "title": "Account"
       },
-      "wiki.content.restriction.by_operation.user.admin": {
-        "title": "Manage"
-      },
       "wiki.content.restriction.by_operation.user.delete": {
         "title": "Delete"
       },
       "wiki.content.restriction.by_operation.user.read": {
         "title": "Read"
+      },
+      "wiki.content.restriction.by_operation.user.share": {
+        "title": "Share"
       },
       "wiki.content.restriction.delete": {
         "title": "Delete"
@@ -409,8 +439,8 @@
       "wiki.content.restriction.read": {
         "title": "Read"
       },
-      "wiki.content.restriction.write": {
-        "title": "Create and edit"
+      "wiki.content.restriction.share": {
+        "title": "Share"
       },
       "wiki.content.state": {
         "title": "State"
@@ -466,14 +496,8 @@
       "wiki.contentbody.convert.async.bulk.tasks.read": {
         "title": "Read"
       },
-      "wiki.contentbody.convert.async.bulk.tasks.write": {
-        "title": "Create and edit"
-      },
       "wiki.contentbody.convert.async.read": {
         "title": "Read"
-      },
-      "wiki.contentbody.convert.async.write": {
-        "title": "Create and edit"
       },
       "wiki.custom_content": {
         "title": "Custom content"
@@ -583,11 +607,35 @@
       "wiki.databases.direct_children.read": {
         "title": "Read"
       },
+      "wiki.databases.entries": {
+        "title": "Entries"
+      },
+      "wiki.databases.entries.read": {
+        "title": "Read"
+      },
+      "wiki.databases.fields": {
+        "title": "Fields"
+      },
+      "wiki.databases.fields.read": {
+        "title": "Read"
+      },
       "wiki.databases.operations": {
         "title": "Operations"
       },
       "wiki.databases.operations.read": {
         "title": "Read"
+      },
+      "wiki.databases.permissions": {
+        "title": "Permissions"
+      },
+      "wiki.databases.permissions.delete": {
+        "title": "Delete"
+      },
+      "wiki.databases.permissions.read": {
+        "title": "Read"
+      },
+      "wiki.databases.permissions.share": {
+        "title": "Share"
       },
       "wiki.databases.properties": {
         "title": "Properties"
@@ -602,6 +650,21 @@
         "title": "Create and edit"
       },
       "wiki.databases.read": {
+        "title": "Read"
+      },
+      "wiki.databases.restriction_state": {
+        "title": "Restriction state"
+      },
+      "wiki.databases.restriction_state.read": {
+        "title": "Read"
+      },
+      "wiki.databases.restriction_state.share": {
+        "title": "Share"
+      },
+      "wiki.databases.views": {
+        "title": "Views"
+      },
+      "wiki.databases.views.read": {
         "title": "Read"
       },
       "wiki.databases.write": {
@@ -685,6 +748,18 @@
       "wiki.folders.operations.read": {
         "title": "Read"
       },
+      "wiki.folders.permissions": {
+        "title": "Permissions"
+      },
+      "wiki.folders.permissions.delete": {
+        "title": "Delete"
+      },
+      "wiki.folders.permissions.read": {
+        "title": "Read"
+      },
+      "wiki.folders.permissions.share": {
+        "title": "Share"
+      },
       "wiki.folders.properties": {
         "title": "Properties"
       },
@@ -699,6 +774,15 @@
       },
       "wiki.folders.read": {
         "title": "Read"
+      },
+      "wiki.folders.restriction_state": {
+        "title": "Restriction state"
+      },
+      "wiki.folders.restriction_state.read": {
+        "title": "Read"
+      },
+      "wiki.folders.restriction_state.share": {
+        "title": "Share"
       },
       "wiki.folders.write": {
         "title": "Create and edit"
@@ -784,11 +868,11 @@
       "wiki.group.user_by_group_id": {
         "title": "User by group id"
       },
+      "wiki.group.user_by_group_id.admin": {
+        "title": "Manage"
+      },
       "wiki.group.user_by_group_id.delete": {
         "title": "Delete"
-      },
-      "wiki.group.user_by_group_id.write": {
-        "title": "Create and edit"
       },
       "wiki.inline_comments": {
         "title": "Inline comments"
@@ -825,6 +909,9 @@
       },
       "wiki.inline_comments.read": {
         "title": "Read"
+      },
+      "wiki.inline_comments.send": {
+        "title": "Send"
       },
       "wiki.inline_comments.versions": {
         "title": "Versions"
@@ -961,6 +1048,18 @@
       "wiki.pages.operations.read": {
         "title": "Read"
       },
+      "wiki.pages.permissions": {
+        "title": "Permissions"
+      },
+      "wiki.pages.permissions.delete": {
+        "title": "Delete"
+      },
+      "wiki.pages.permissions.read": {
+        "title": "Read"
+      },
+      "wiki.pages.permissions.share": {
+        "title": "Share"
+      },
       "wiki.pages.properties": {
         "title": "Properties"
       },
@@ -982,6 +1081,15 @@
       "wiki.pages.redact.write": {
         "title": "Create and edit"
       },
+      "wiki.pages.restriction_state": {
+        "title": "Restriction state"
+      },
+      "wiki.pages.restriction_state.read": {
+        "title": "Read"
+      },
+      "wiki.pages.restriction_state.share": {
+        "title": "Share"
+      },
       "wiki.pages.title": {
         "title": "Title"
       },
@@ -996,9 +1104,6 @@
       },
       "wiki.pages.write": {
         "title": "Create and edit"
-      },
-      "wiki.read": {
-        "title": "Read"
       },
       "wiki.relation": {
         "title": "Relation"
@@ -1029,6 +1134,9 @@
       },
       "wiki.search": {
         "title": "Search"
+      },
+      "wiki.search.read": {
+        "title": "Read"
       },
       "wiki.search.user": {
         "title": "Account"
@@ -1099,8 +1207,8 @@
       "wiki.space.permission.custom_content": {
         "title": "Custom content"
       },
-      "wiki.space.permission.custom_content.write": {
-        "title": "Create and edit"
+      "wiki.space.permission.custom_content.share": {
+        "title": "Share"
       },
       "wiki.space.permission.delete": {
         "title": "Delete"
@@ -1180,17 +1288,14 @@
       "wiki.space_permissions.transition.combinations": {
         "title": "Combinations"
       },
-      "wiki.space_permissions.transition.combinations.generate": {
-        "title": "Generate"
-      },
       "wiki.space_permissions.transition.combinations.read": {
         "title": "Read"
       },
       "wiki.space_permissions.transition.role_assignments": {
         "title": "Role assignments"
       },
-      "wiki.space_permissions.transition.role_assignments.write": {
-        "title": "Create and edit"
+      "wiki.space_permissions.transition.role_assignments.admin": {
+        "title": "Manage"
       },
       "wiki.space_permissions.transition.tasks": {
         "title": "Tasks"
@@ -1450,8 +1555,8 @@
       "wiki.users_bulk": {
         "title": "Users bulk"
       },
-      "wiki.users_bulk.write": {
-        "title": "Create and edit"
+      "wiki.users_bulk.read": {
+        "title": "Read"
       },
       "wiki.whiteboards": {
         "title": "Whiteboards"
@@ -1492,6 +1597,18 @@
       "wiki.whiteboards.operations.read": {
         "title": "Read"
       },
+      "wiki.whiteboards.permissions": {
+        "title": "Permissions"
+      },
+      "wiki.whiteboards.permissions.delete": {
+        "title": "Delete"
+      },
+      "wiki.whiteboards.permissions.read": {
+        "title": "Read"
+      },
+      "wiki.whiteboards.permissions.share": {
+        "title": "Share"
+      },
       "wiki.whiteboards.properties": {
         "title": "Properties"
       },
@@ -1507,6 +1624,15 @@
       "wiki.whiteboards.read": {
         "title": "Read"
       },
+      "wiki.whiteboards.restriction_state": {
+        "title": "Restriction state"
+      },
+      "wiki.whiteboards.restriction_state.read": {
+        "title": "Read"
+      },
+      "wiki.whiteboards.restriction_state.share": {
+        "title": "Share"
+      },
       "wiki.whiteboards.write": {
         "title": "Create and edit"
       }
@@ -1517,13 +1643,13 @@
           {
             "basic": "user",
             "origin": "https://example.atlassian.net",
-            "path": "/wiki/api/v2",
+            "path": "/wiki",
             "value": "email"
           },
           {
             "basic": "password",
             "origin": "https://example.atlassian.net",
-            "path": "/wiki/api/v2",
+            "path": "/wiki",
             "value": "apitoken"
           }
         ]
@@ -1531,6 +1657,7 @@
     },
     "fields": [
       {
+        "hint": "For a scoped API token, use https://api.atlassian.com/ex/confluence/\u003ccloud ID\u003e. Your site's /_edge/tenant_info page shows the cloud ID.",
         "key": "origin",
         "label": "Your Confluence site (https://yourcompany.atlassian.net)",
         "paths": [
@@ -1570,35 +1697,41 @@
   "title": "Confluence",
   "http": {
     "operations": {
+      "addBlogPostPermissions": {"action":"wiki.blogposts.permissions.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","params":["allow-self-lockout"],"path":"/wiki/api/v2/blogposts/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
       "addContentWatcher": {"action":"wiki.user.watch.content.write","effects":["write"],"method":"POST","origin":"{origin}","params":["key","username","accountId"],"path":"/wiki/rest/api/user/watch/content/{contentId}","scope":{"accountId":{"at":"accountId","from":"query","optional":true},"contentId":{"at":"contentId","from":"path"},"key":{"at":"key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"username":{"at":"username","from":"query","optional":true}}},
-      "addCustomContentPermissions": {"action":"wiki.space.permission.custom_content.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/rest/api/space/{spaceKey}/permission/custom-content","scope":{"request":{"at":"","from":"body","type":"object"},"spaceKey":{"at":"spaceKey","from":"path"}}},
-      "addGroupToContentRestrictionByGroupId": {"action":"wiki.content.restriction.by_operation.by_group_id.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wiki/rest/api/content/{id}/restriction/byOperation/{operationKey}/byGroupId/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"},"id":{"at":"id","from":"path"},"operationKey":{"at":"operationKey","from":"path"}}},
+      "addCustomContentPermissions": {"action":"wiki.space.permission.custom_content.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","path":"/wiki/rest/api/space/{spaceKey}/permission/custom-content","scope":{"request":{"at":"","from":"body","type":"object"},"spaceKey":{"at":"spaceKey","from":"path"}}},
+      "addDatabasePermissions": {"action":"wiki.databases.permissions.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","params":["allow-self-lockout"],"path":"/wiki/api/v2/databases/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "addFolderPermissions": {"action":"wiki.folders.permissions.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","params":["allow-self-lockout"],"path":"/wiki/api/v2/folders/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "addGroupToContentRestrictionByGroupId": {"action":"wiki.content.restriction.by_operation.by_group_id.share","effects":["share"],"method":"PUT","origin":"{origin}","path":"/wiki/rest/api/content/{id}/restriction/byOperation/{operationKey}/byGroupId/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"},"id":{"at":"id","from":"path"},"operationKey":{"at":"operationKey","from":"path"}}},
       "addLabelWatcher": {"action":"wiki.user.watch.label.write","effects":["write"],"method":"POST","origin":"{origin}","params":["key","username","accountId"],"path":"/wiki/rest/api/user/watch/label/{labelName}","scope":{"accountId":{"at":"accountId","from":"query","optional":true},"key":{"at":"key","from":"query","optional":true},"labelName":{"at":"labelName","from":"path"},"query":{"at":"","from":"query","type":"object"},"username":{"at":"username","from":"query","optional":true}}},
       "addLabelsToContent": {"action":"wiki.content.label.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/rest/api/content/{id}/label","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "addLabelsToSpace": {"action":"wiki.space.label.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/rest/api/space/{spaceKey}/label","scope":{"request":{"at":"","from":"body","type":"array"},"spaceKey":{"at":"spaceKey","from":"path"}}},
+      "addPagePermissions": {"action":"wiki.pages.permissions.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","params":["allow-self-lockout"],"path":"/wiki/api/v2/pages/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
       "addPermissionToSpace": {"action":"wiki.space.permission.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","path":"/wiki/rest/api/space/{spaceKey}/permission","scope":{"request":{"at":"","from":"body","type":"object"},"spaceKey":{"at":"spaceKey","from":"path"}}},
-      "addRestrictions": {"action":"wiki.content.restriction.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["expand"],"path":"/wiki/rest/api/content/{id}/restriction","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "addRestrictions": {"action":"wiki.content.restriction.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","params":["expand"],"path":"/wiki/rest/api/content/{id}/restriction","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
       "addSpaceWatcher": {"action":"wiki.user.watch.space.write","effects":["write"],"method":"POST","origin":"{origin}","params":["key","username","accountId"],"path":"/wiki/rest/api/user/watch/space/{spaceKey}","scope":{"accountId":{"at":"accountId","from":"query","optional":true},"key":{"at":"key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"spaceKey":{"at":"spaceKey","from":"path"},"username":{"at":"username","from":"query","optional":true}}},
-      "addUserToContentRestriction": {"action":"wiki.content.restriction.by_operation.user.admin","effects":["admin"],"method":"PUT","origin":"{origin}","params":["key","username","accountId"],"path":"/wiki/rest/api/content/{id}/restriction/byOperation/{operationKey}/user","scope":{"accountId":{"at":"accountId","from":"query","optional":true},"id":{"at":"id","from":"path"},"key":{"at":"key","from":"query","optional":true},"operationKey":{"at":"operationKey","from":"path"},"query":{"at":"","from":"query","type":"object"},"username":{"at":"username","from":"query","optional":true}}},
-      "addUserToGroupByGroupId": {"action":"wiki.group.user_by_group_id.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["groupId"],"path":"/wiki/rest/api/group/userByGroupId","scope":{"accountId":{"at":"/accountId","from":"body"},"groupId":{"at":"groupId","from":"query"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "addUserToContentRestriction": {"action":"wiki.content.restriction.by_operation.user.share","effects":["share"],"method":"PUT","origin":"{origin}","params":["key","username","accountId"],"path":"/wiki/rest/api/content/{id}/restriction/byOperation/{operationKey}/user","scope":{"accountId":{"at":"accountId","from":"query","optional":true},"id":{"at":"id","from":"path"},"key":{"at":"key","from":"query","optional":true},"operationKey":{"at":"operationKey","from":"path"},"query":{"at":"","from":"query","type":"object"},"username":{"at":"username","from":"query","optional":true}}},
+      "addUserToGroupByGroupId": {"action":"wiki.group.user_by_group_id.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","params":["groupId"],"path":"/wiki/rest/api/group/userByGroupId","scope":{"accountId":{"at":"/accountId","from":"body"},"groupId":{"at":"groupId","from":"query"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "addWhiteboardPermissions": {"action":"wiki.whiteboards.permissions.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","params":["allow-self-lockout"],"path":"/wiki/api/v2/whiteboards/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
       "archivePages": {"action":"wiki.content.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/rest/api/content/archive","scope":{}},
       "archivePages.json.7d8d1fe2cc7e": {"action":"wiki.content.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/rest/api/content/archive","scope":{"pages":{"at":"/pages","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
-      "asyncConvertContentBodyRequest": {"action":"wiki.contentbody.convert.async.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["expand","spaceKeyContext","contentIdContext","allowCache","embeddedContentRender"],"path":"/wiki/rest/api/contentbody/convert/async/{to}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"to":{"at":"to","from":"path"}}},
+      "asyncConvertContentBodyRequest": {"action":"wiki.contentbody.convert.async.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["expand","spaceKeyContext","contentIdContext","allowCache","embeddedContentRender"],"path":"/wiki/rest/api/contentbody/convert/async/{to}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"to":{"at":"to","from":"path"}}},
       "asyncConvertContentBodyResponse": {"action":"wiki.contentbody.convert.async.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/rest/api/contentbody/convert/async/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "bulkAssignSpacePermissionRoles": {"action":"wiki.space_permissions.transition.role_assignments.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/space-permissions/transition/role-assignments","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "bulkAsyncConvertContentBodyRequest": {"action":"wiki.contentbody.convert.async.bulk.tasks.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/rest/api/contentbody/convert/async/bulk/tasks","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "bulkAssignSpacePermissionRoles": {"action":"wiki.space_permissions.transition.role_assignments.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/space-permissions/transition/role-assignments","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "bulkAsyncConvertContentBodyRequest": {"action":"wiki.contentbody.convert.async.bulk.tasks.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/wiki/rest/api/contentbody/convert/async/bulk/tasks","scope":{"request":{"at":"","from":"body","type":"object"}}},
       "bulkAsyncConvertContentBodyResponse": {"action":"wiki.contentbody.convert.async.bulk.tasks.read","effects":["read"],"method":"GET","origin":"{origin}","params":["ids"],"path":"/wiki/rest/api/contentbody/convert/async/bulk/tasks","scope":{"ids":{"at":"ids","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
       "bulkRemoveSpacePermissionAccess": {"action":"wiki.space_permissions.transition.access_removals.delete","body":"json","effects":["delete"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/space-permissions/transition/access-removals","scope":{"permissionCombinationIds":{"at":"/permissionCombinationIds","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
       "checkAccessByEmail": {"action":"wiki.user.access.access_by_email.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/user/access/check-access-by-email","scope":{"emails":{"at":"/emails","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
       "checkContentPermission": {"action":"wiki.content.permission.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/wiki/rest/api/content/{id}/permission/check","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "convertContentIdsToContentTypes": {"action":"wiki.content.convert_ids_to_types.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/content/convert-ids-to-types","scope":{"contentIds":{"at":"/contentIds","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "convertContentIdsToContentTypes": {"action":"wiki.content.convert_ids_to_types.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/content/convert-ids-to-types","scope":{"contentIds":{"at":"/contentIds","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
       "copyPage": {"action":"wiki.content.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["expand"],"path":"/wiki/rest/api/content/{id}/copy","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
       "copyPageHierarchy": {"action":"wiki.content.pagehierarchy.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/rest/api/content/{id}/pagehierarchy/copy","scope":{"destinationPageId":{"at":"/destinationPageId","from":"body"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createAttachment": {"action":"wiki.content.child.attachment.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["status"],"path":"/wiki/rest/api/content/{id}/child/attachment","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "createAttachmentProperty": {"action":"wiki.attachments.properties.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/attachments/{attachment-id}/properties","scope":{"attachment-id":{"at":"attachment-id","from":"path"},"key":{"at":"/key","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
       "createAuditRecord": {"action":"wiki.audit.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/rest/api/audit","scope":{"request":{"at":"","from":"body","type":"object"}}},
       "createBlogPost": {"action":"wiki.blogposts.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["private"],"path":"/wiki/api/v2/blogposts","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"spaceId":{"at":"/spaceId","from":"body"}}},
       "createBlogpostProperty": {"action":"wiki.blogposts.properties.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/blogposts/{blogpost-id}/properties","scope":{"blogpost-id":{"at":"blogpost-id","from":"path"},"key":{"at":"/key","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
-      "createBulkUserLookup": {"action":"wiki.users_bulk.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/users-bulk","scope":{"accountIds":{"at":"/accountIds","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "createBulkUserLookup": {"action":"wiki.users_bulk.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/users-bulk","scope":{"accountIds":{"at":"/accountIds","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
       "createCommentProperty": {"action":"wiki.comments.properties.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/comments/{comment-id}/properties","scope":{"comment-id":{"at":"comment-id","from":"path"},"key":{"at":"/key","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
       "createContentTemplate": {"action":"wiki.template.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/rest/api/template","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
       "createCustomContent": {"action":"wiki.custom_content.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/custom-content","scope":{"blogPostId":{"at":"/blogPostId","from":"body","optional":true},"customContentId":{"at":"/customContentId","from":"body","optional":true},"pageId":{"at":"/pageId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"spaceId":{"at":"/spaceId","from":"body","optional":true}}},
@@ -1608,7 +1741,8 @@
       "createFolder": {"action":"wiki.folders.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/folders","scope":{"parentId":{"at":"/parentId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"spaceId":{"at":"/spaceId","from":"body"}}},
       "createFolderProperty": {"action":"wiki.folders.properties.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/folders/{id}/properties","scope":{"id":{"at":"id","from":"path"},"key":{"at":"/key","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
       "createGroup": {"action":"wiki.group.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/wiki/rest/api/group","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
-      "createInlineComment": {"action":"wiki.inline_comments.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/inline-comments","scope":{"blogPostId":{"at":"/blogPostId","from":"body","optional":true},"pageId":{"at":"/pageId","from":"body","optional":true},"parentCommentId":{"at":"/parentCommentId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createInlineComment": {"action":"wiki.inline_comments.send","body":"json","effects":["send"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/inline-comments","scope":{"blogPostId":{"at":"/blogPostId","from":"body","optional":true},"pageId":{"at":"/pageId","from":"body","optional":true},"parentCommentId":{"at":"/parentCommentId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createOrUpdateAttachments": {"action":"wiki.content.child.attachment.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["status"],"path":"/wiki/rest/api/content/{id}/child/attachment","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "createPageProperty": {"action":"wiki.pages.properties.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/pages/{page-id}/properties","scope":{"key":{"at":"/key","from":"body","optional":true},"page-id":{"at":"page-id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "createPrivateSpace": {"action":"wiki.space.private.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/rest/api/space/_private","scope":{"key":{"at":"/key","from":"body","optional":true},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
       "createRelationship": {"action":"wiki.relation.from.to.write","effects":["write"],"method":"PUT","origin":"{origin}","params":["sourceStatus","targetStatus","sourceVersion","targetVersion"],"path":"/wiki/rest/api/relation/{relationName}/from/{sourceType}/{sourceKey}/to/{targetType}/{targetKey}","scope":{"query":{"at":"","from":"query","type":"object"},"relationName":{"at":"relationName","from":"path"},"sourceKey":{"at":"sourceKey","from":"path"},"sourceType":{"at":"sourceType","from":"path"},"targetKey":{"at":"targetKey","from":"path"},"targetType":{"at":"targetType","from":"path"}}},
@@ -1624,19 +1758,23 @@
       "deleteAttachment": {"action":"wiki.attachments.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["purge"],"path":"/wiki/api/v2/attachments/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "deleteAttachmentPropertyById": {"action":"wiki.attachments.properties.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/api/v2/attachments/{attachment-id}/properties/{property-id}","scope":{"attachment-id":{"at":"attachment-id","from":"path"},"property-id":{"at":"property-id","from":"path"}}},
       "deleteBlogPost": {"action":"wiki.blogposts.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["purge","draft"],"path":"/wiki/api/v2/blogposts/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteBlogPostPermissions": {"action":"wiki.blogposts.permissions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["operation","principal-type","principal-id","allow-self-lockout"],"path":"/wiki/api/v2/blogposts/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "deleteBlogpostPropertyById": {"action":"wiki.blogposts.properties.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/api/v2/blogposts/{blogpost-id}/properties/{property-id}","scope":{"blogpost-id":{"at":"blogpost-id","from":"path"},"property-id":{"at":"property-id","from":"path"}}},
       "deleteCommentPropertyById": {"action":"wiki.comments.properties.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/api/v2/comments/{comment-id}/properties/{property-id}","scope":{"comment-id":{"at":"comment-id","from":"path"},"property-id":{"at":"property-id","from":"path"}}},
       "deleteContentVersion": {"action":"wiki.content.version.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/rest/api/content/{id}/version/{versionNumber}","scope":{"id":{"at":"id","from":"path"},"versionNumber":{"at":"versionNumber","from":"path"}}},
       "deleteCustomContent": {"action":"wiki.custom_content.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["purge"],"path":"/wiki/api/v2/custom-content/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "deleteCustomContentPropertyById": {"action":"wiki.custom_content.properties.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/api/v2/custom-content/{custom-content-id}/properties/{property-id}","scope":{"custom-content-id":{"at":"custom-content-id","from":"path"},"property-id":{"at":"property-id","from":"path"}}},
       "deleteDatabase": {"action":"wiki.databases.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/api/v2/databases/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteDatabasePermissions": {"action":"wiki.databases.permissions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["operation","principal-type","principal-id","allow-self-lockout"],"path":"/wiki/api/v2/databases/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "deleteDatabasePropertyById": {"action":"wiki.databases.properties.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/api/v2/databases/{database-id}/properties/{property-id}","scope":{"database-id":{"at":"database-id","from":"path"},"property-id":{"at":"property-id","from":"path"}}},
       "deleteFolder": {"action":"wiki.folders.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/api/v2/folders/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteFolderPermissions": {"action":"wiki.folders.permissions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["operation","principal-type","principal-id","allow-self-lockout"],"path":"/wiki/api/v2/folders/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "deleteFolderPropertyById": {"action":"wiki.folders.properties.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/api/v2/folders/{folder-id}/properties/{property-id}","scope":{"folder-id":{"at":"folder-id","from":"path"},"property-id":{"at":"property-id","from":"path"}}},
       "deleteFooterComment": {"action":"wiki.footer_comments.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/api/v2/footer-comments/{comment-id}","scope":{"comment-id":{"at":"comment-id","from":"path"}}},
       "deleteForgeAppProperty": {"action":"wiki.app.properties.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/api/v2/app/properties/{propertyKey}","scope":{"propertyKey":{"at":"propertyKey","from":"path"}}},
       "deleteInlineComment": {"action":"wiki.inline_comments.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/api/v2/inline-comments/{comment-id}","scope":{"comment-id":{"at":"comment-id","from":"path"}}},
       "deleteLabelFromSpace": {"action":"wiki.space.label.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["name","prefix"],"path":"/wiki/rest/api/space/{spaceKey}/label","scope":{"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"},"spaceKey":{"at":"spaceKey","from":"path"}}},
+      "deletePagePermissions": {"action":"wiki.pages.permissions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["operation","principal-type","principal-id","allow-self-lockout"],"path":"/wiki/api/v2/pages/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "deletePagePropertyById": {"action":"wiki.pages.properties.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/api/v2/pages/{page-id}/properties/{property-id}","scope":{"page-id":{"at":"page-id","from":"path"},"property-id":{"at":"property-id","from":"path"}}},
       "deletePageTree": {"action":"wiki.content.page_tree.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/rest/api/content/{id}/pageTree","scope":{"id":{"at":"id","from":"path"}}},
       "deleteRelationship": {"action":"wiki.relation.from.to.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["sourceStatus","targetStatus","sourceVersion","targetVersion"],"path":"/wiki/rest/api/relation/{relationName}/from/{sourceType}/{sourceKey}/to/{targetType}/{targetKey}","scope":{"query":{"at":"","from":"query","type":"object"},"relationName":{"at":"relationName","from":"path"},"sourceKey":{"at":"sourceKey","from":"path"},"sourceType":{"at":"sourceType","from":"path"},"targetKey":{"at":"targetKey","from":"path"},"targetType":{"at":"targetType","from":"path"}}},
@@ -1649,6 +1787,7 @@
       "deleteSpaceRole": {"action":"wiki.space_roles.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/api/v2/space-roles/{id}","scope":{"id":{"at":"id","from":"path"}}},
       "deleteUserProperty": {"action":"wiki.user.property.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/rest/api/user/{userId}/property/{key}","scope":{"key":{"at":"key","from":"path"},"userId":{"at":"userId","from":"path"}}},
       "deleteWhiteboard": {"action":"wiki.whiteboards.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/api/v2/whiteboards/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteWhiteboardPermissions": {"action":"wiki.whiteboards.permissions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["operation","principal-type","principal-id","allow-self-lockout"],"path":"/wiki/api/v2/whiteboards/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "deleteWhiteboardPropertyById": {"action":"wiki.whiteboards.properties.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/api/v2/whiteboards/{whiteboard-id}/properties/{property-id}","scope":{"property-id":{"at":"property-id","from":"path"},"whiteboard-id":{"at":"whiteboard-id","from":"path"}}},
       "disableAdminKey": {"action":"wiki.admin_key.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/api/v2/admin-key","scope":{}},
       "downloadAttatchment": {"action":"wiki.content.child.attachment.read","effects":["read"],"method":"GET","origin":"{origin}","params":["version","status"],"path":"/wiki/rest/api/content/{id}/child/attachment/{attachmentId}/download","scope":{"attachmentId":{"at":"attachmentId","from":"path"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
@@ -1658,8 +1797,8 @@
       "findSourcesForTarget": {"action":"wiki.relation.to.from.read","effects":["read"],"method":"GET","origin":"{origin}","params":["sourceStatus","targetStatus","sourceVersion","targetVersion","expand","start","limit"],"path":"/wiki/rest/api/relation/{relationName}/to/{targetType}/{targetKey}/from/{sourceType}","scope":{"query":{"at":"","from":"query","type":"object"},"relationName":{"at":"relationName","from":"path"},"sourceType":{"at":"sourceType","from":"path"},"targetKey":{"at":"targetKey","from":"path"},"targetType":{"at":"targetType","from":"path"}}},
       "findTargetFromSource": {"action":"wiki.relation.from.to.read","effects":["read"],"method":"GET","origin":"{origin}","params":["sourceStatus","targetStatus","sourceVersion","targetVersion","expand","start","limit"],"path":"/wiki/rest/api/relation/{relationName}/from/{sourceType}/{sourceKey}/to/{targetType}","scope":{"query":{"at":"","from":"query","type":"object"},"relationName":{"at":"relationName","from":"path"},"sourceKey":{"at":"sourceKey","from":"path"},"sourceType":{"at":"sourceType","from":"path"},"targetType":{"at":"targetType","from":"path"}}},
       "footer_comments.create": {"action":"wiki.footer_comments.send","body":"json","effects":["send"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/footer-comments","scope":{"comment":{"at":"","from":"body","type":"object"}}},
-      "footer_comments.list": {"action":"wiki.pages.footer_comments.read","effects":["read"],"method":"GET","origin":"{origin}","params":["body-format","limit","cursor"],"path":"/wiki/api/v2/pages/{page}/footer-comments","scope":{"page":{"at":"page","from":"path"}}},
-      "generateSpacePermissionCombinations": {"action":"wiki.space_permissions.transition.combinations.generate","effects":["generate"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/space-permissions/transition/combinations","scope":{}},
+      "footer_comments.list": {"action":"wiki.pages.footer_comments.read","effects":["read"],"method":"GET","origin":"{origin}","params":["body-format","limit","cursor","sort","status"],"path":"/wiki/api/v2/pages/{page}/footer-comments","scope":{"page":{"at":"page","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "generateSpacePermissionCombinations": {"action":"wiki.space_permissions.transition.combinations.read","effects":["read"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/space-permissions/transition/combinations","scope":{}},
       "getAdminKey": {"action":"wiki.admin_key.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/admin-key","scope":{}},
       "getAllLabelContent": {"action":"wiki.label.read","effects":["read"],"method":"GET","origin":"{origin}","params":["name","type","start","limit"],"path":"/wiki/rest/api/label","scope":{"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
       "getAndAsyncConvertMacroBodyByMacroId": {"action":"wiki.content.history.macro.id.convert.async.read","effects":["read"],"method":"GET","origin":"{origin}","params":["expand","allowCache","spaceKeyContext","embeddedContentRender"],"path":"/wiki/rest/api/content/{id}/history/{version}/macro/id/{macroId}/convert/async/{to}","scope":{"id":{"at":"id","from":"path"},"macroId":{"at":"macroId","from":"path"},"query":{"at":"","from":"query","type":"object"},"to":{"at":"to","from":"path"},"version":{"at":"version","from":"path"}}},
@@ -1688,6 +1827,8 @@
       "getBlogPostLikeCount": {"action":"wiki.blogposts.likes.count.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/blogposts/{id}/likes/count","scope":{"id":{"at":"id","from":"path"}}},
       "getBlogPostLikeUsers": {"action":"wiki.blogposts.likes.users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["cursor","limit"],"path":"/wiki/api/v2/blogposts/{id}/likes/users","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "getBlogPostOperations": {"action":"wiki.blogposts.operations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/blogposts/{id}/operations","scope":{"id":{"at":"id","from":"path"}}},
+      "getBlogPostPermissions": {"action":"wiki.blogposts.permissions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["operation","principal-type","principal-id","cursor","limit"],"path":"/wiki/api/v2/blogposts/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getBlogPostRestrictionState": {"action":"wiki.blogposts.restriction_state.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/blogposts/{id}/restriction-state","scope":{"id":{"at":"id","from":"path"}}},
       "getBlogPostVersionDetails": {"action":"wiki.blogposts.versions.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/blogposts/{blogpost-id}/versions/{version-number}","scope":{"blogpost-id":{"at":"blogpost-id","from":"path"},"version-number":{"at":"version-number","from":"path"}}},
       "getBlogPostVersions": {"action":"wiki.blogposts.versions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["body-format","cursor","limit","sort"],"path":"/wiki/api/v2/blogposts/{id}/versions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "getBlogPosts": {"action":"wiki.blogposts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["id","space-id","sort","status","title","body-format","cursor","limit"],"path":"/wiki/api/v2/blogposts","scope":{"id":{"at":"id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
@@ -1706,7 +1847,7 @@
       "getContentRestrictionStatusForUser": {"action":"wiki.content.restriction.by_operation.user.read","effects":["read"],"method":"GET","origin":"{origin}","params":["key","username","accountId"],"path":"/wiki/rest/api/content/{id}/restriction/byOperation/{operationKey}/user","scope":{"accountId":{"at":"accountId","from":"query","optional":true},"id":{"at":"id","from":"path"},"key":{"at":"key","from":"query","optional":true},"operationKey":{"at":"operationKey","from":"path"},"query":{"at":"","from":"query","type":"object"},"username":{"at":"username","from":"query","optional":true}}},
       "getContentState": {"action":"wiki.content.state.read","effects":["read"],"method":"GET","origin":"{origin}","params":["status"],"path":"/wiki/rest/api/content/{id}/state","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "getContentStateSettings": {"action":"wiki.space.state.settings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/rest/api/space/{spaceKey}/state/settings","scope":{"spaceKey":{"at":"spaceKey","from":"path"}}},
-      "getContentTemplate": {"action":"wiki.template.read","effects":["read"],"method":"GET","origin":"{origin}","params":["expand"],"path":"/wiki/rest/api/template/{contentTemplateId}","scope":{"contentTemplateId":{"at":"contentTemplateId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getContentTemplate": {"action":"wiki.template.read","effects":["read"],"method":"GET","origin":"{origin}","params":["expand"],"path":"/wiki/rest/api/template/{contentTemplateId}","path_patterns":{"contentTemplateId":"[^bp].*|b(?:|[^l].*|l(?:|[^u].*|u(?:|[^e].*|e(?:|[^p].*|p(?:|[^r].*|r(?:|[^i].*|i(?:|[^n].*|n(?:|[^t].*|t.+))))))))|p(?:|[^a].*|a(?:|[^g].*|g(?:|[^e].*|e.+)))"},"scope":{"contentTemplateId":{"at":"contentTemplateId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "getContentTemplates": {"action":"wiki.template.page.read","effects":["read"],"method":"GET","origin":"{origin}","params":["spaceKey","start","limit","expand"],"path":"/wiki/rest/api/template/page","scope":{"query":{"at":"","from":"query","type":"object"},"spaceKey":{"at":"spaceKey","from":"query","optional":true}}},
       "getContentWatchStatus": {"action":"wiki.user.watch.content.read","effects":["read"],"method":"GET","origin":"{origin}","params":["key","username","accountId"],"path":"/wiki/rest/api/user/watch/content/{contentId}","scope":{"accountId":{"at":"accountId","from":"query","optional":true},"contentId":{"at":"contentId","from":"path"},"key":{"at":"key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"username":{"at":"username","from":"query","optional":true}}},
       "getContentsWithState": {"action":"wiki.space.state.content.read","effects":["read"],"method":"GET","origin":"{origin}","params":["state-id","expand","limit","start"],"path":"/wiki/rest/api/space/{spaceKey}/state/content","scope":{"query":{"at":"","from":"query","type":"object"},"spaceKey":{"at":"spaceKey","from":"path"}}},
@@ -1734,7 +1875,13 @@
       "getDatabaseContentPropertiesById": {"action":"wiki.databases.properties.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/databases/{database-id}/properties/{property-id}","scope":{"database-id":{"at":"database-id","from":"path"},"property-id":{"at":"property-id","from":"path"}}},
       "getDatabaseDescendants": {"action":"wiki.databases.descendants.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","depth","cursor"],"path":"/wiki/api/v2/databases/{id}/descendants","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "getDatabaseDirectChildren": {"action":"wiki.databases.direct_children.read","effects":["read"],"method":"GET","origin":"{origin}","params":["cursor","limit","sort"],"path":"/wiki/api/v2/databases/{id}/direct-children","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getDatabaseEntries": {"action":"wiki.databases.entries.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","cursor","sort","filter"],"path":"/wiki/api/v2/databases/{id}/entries","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getDatabaseEntryById": {"action":"wiki.databases.entries.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/databases/{id}/entries/{entryId}","scope":{"entryId":{"at":"entryId","from":"path"},"id":{"at":"id","from":"path"}}},
+      "getDatabaseFields": {"action":"wiki.databases.fields.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","cursor"],"path":"/wiki/api/v2/databases/{id}/fields","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "getDatabaseOperations": {"action":"wiki.databases.operations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/databases/{id}/operations","scope":{"id":{"at":"id","from":"path"}}},
+      "getDatabasePermissions": {"action":"wiki.databases.permissions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["operation","principal-type","principal-id","cursor","limit"],"path":"/wiki/api/v2/databases/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getDatabaseRestrictionState": {"action":"wiki.databases.restriction_state.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/databases/{id}/restriction-state","scope":{"id":{"at":"id","from":"path"}}},
+      "getDatabaseViews": {"action":"wiki.databases.views.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","cursor"],"path":"/wiki/api/v2/databases/{id}/views","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "getDescendantsOfType": {"action":"wiki.content.descendant.read","effects":["read"],"method":"GET","origin":"{origin}","params":["depth","expand","start","limit"],"path":"/wiki/rest/api/content/{id}/descendant/{type}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"type":{"at":"type","from":"path"}}},
       "getFolderAncestors": {"action":"wiki.folders.ancestors.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit"],"path":"/wiki/api/v2/folders/{id}/ancestors","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "getFolderById": {"action":"wiki.folders.read","effects":["read"],"method":"GET","origin":"{origin}","params":["include-collaborators","include-direct-children","include-operations","include-properties"],"path":"/wiki/api/v2/folders/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
@@ -1743,6 +1890,8 @@
       "getFolderDescendants": {"action":"wiki.folders.descendants.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","depth","cursor"],"path":"/wiki/api/v2/folders/{id}/descendants","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "getFolderDirectChildren": {"action":"wiki.folders.direct_children.read","effects":["read"],"method":"GET","origin":"{origin}","params":["cursor","limit","sort"],"path":"/wiki/api/v2/folders/{id}/direct-children","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "getFolderOperations": {"action":"wiki.folders.operations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/folders/{id}/operations","scope":{"id":{"at":"id","from":"path"}}},
+      "getFolderPermissions": {"action":"wiki.folders.permissions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["operation","principal-type","principal-id","cursor","limit"],"path":"/wiki/api/v2/folders/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getFolderRestrictionState": {"action":"wiki.folders.restriction_state.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/folders/{id}/restriction-state","scope":{"id":{"at":"id","from":"path"}}},
       "getFooterCommentById": {"action":"wiki.footer_comments.read","effects":["read"],"method":"GET","origin":"{origin}","params":["body-format","version","include-properties","include-operations","include-likes","include-versions","include-version"],"path":"/wiki/api/v2/footer-comments/{comment-id}","scope":{"comment-id":{"at":"comment-id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "getFooterCommentChildren": {"action":"wiki.footer_comments.children.read","effects":["read"],"method":"GET","origin":"{origin}","params":["body-format","sort","cursor","limit"],"path":"/wiki/api/v2/footer-comments/{id}/children","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "getFooterCommentOperations": {"action":"wiki.footer_comments.operations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/footer-comments/{id}/operations","scope":{"id":{"at":"id","from":"path"}}},
@@ -1787,6 +1936,8 @@
       "getPageLikeCount": {"action":"wiki.pages.likes.count.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/pages/{id}/likes/count","scope":{"id":{"at":"id","from":"path"}}},
       "getPageLikeUsers": {"action":"wiki.pages.likes.users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["cursor","limit"],"path":"/wiki/api/v2/pages/{id}/likes/users","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "getPageOperations": {"action":"wiki.pages.operations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/pages/{id}/operations","scope":{"id":{"at":"id","from":"path"}}},
+      "getPagePermissions": {"action":"wiki.pages.permissions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["operation","principal-type","principal-id","cursor","limit"],"path":"/wiki/api/v2/pages/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getPageRestrictionState": {"action":"wiki.pages.restriction_state.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/pages/{id}/restriction-state","scope":{"id":{"at":"id","from":"path"}}},
       "getPageVersionDetails": {"action":"wiki.pages.versions.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/pages/{page-id}/versions/{version-number}","scope":{"page-id":{"at":"page-id","from":"path"},"version-number":{"at":"version-number","from":"path"}}},
       "getPageVersions": {"action":"wiki.pages.versions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["body-format","cursor","limit","sort"],"path":"/wiki/api/v2/pages/{id}/versions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "getPagesInSpace": {"action":"wiki.spaces.pages.read","effects":["read"],"method":"GET","origin":"{origin}","params":["depth","sort","status","title","body-format","cursor","limit"],"path":"/wiki/api/v2/spaces/{id}/pages","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
@@ -1824,7 +1975,7 @@
       "getTaskById": {"action":"wiki.tasks.read","effects":["read"],"method":"GET","origin":"{origin}","params":["body-format"],"path":"/wiki/api/v2/tasks/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "getTasks": {"action":"wiki.tasks.read","effects":["read"],"method":"GET","origin":"{origin}","params":["body-format","include-blank-tasks","status","task-id","space-id","page-id","blogpost-id","created-by","assigned-to","completed-by","created-at-from","created-at-to","due-at-from","due-at-to","completed-at-from","completed-at-to","cursor","limit"],"path":"/wiki/api/v2/tasks","scope":{"query":{"at":"","from":"query","type":"object"}}},
       "getTasks.none.a78ed73255c7": {"action":"wiki.longtask.read","effects":["read"],"method":"GET","origin":"{origin}","params":["key","start","limit"],"path":"/wiki/rest/api/longtask","scope":{"key":{"at":"key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-      "getTheme": {"action":"wiki.settings.theme.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/rest/api/settings/theme/{themeKey}","scope":{"themeKey":{"at":"themeKey","from":"path"}}},
+      "getTheme": {"action":"wiki.settings.theme.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/rest/api/settings/theme/{themeKey}","path_patterns":{"themeKey":"[^s].*|s(?:|[^e].*|e(?:|[^l].*|l(?:|[^e].*|e(?:|[^c].*|c(?:|[^t].*|t(?:|[^e].*|e(?:|[^d].*|d.+)))))))"},"scope":{"themeKey":{"at":"themeKey","from":"path"}}},
       "getThemes": {"action":"wiki.settings.theme.read","effects":["read"],"method":"GET","origin":"{origin}","params":["start","limit"],"path":"/wiki/rest/api/settings/theme","scope":{"query":{"at":"","from":"query","type":"object"}}},
       "getUser": {"action":"wiki.user.read","effects":["read"],"method":"GET","origin":"{origin}","params":["accountId","expand"],"path":"/wiki/rest/api/user","scope":{"accountId":{"at":"accountId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
       "getUserProperties": {"action":"wiki.user.property.read","effects":["read"],"method":"GET","origin":"{origin}","params":["start","limit"],"path":"/wiki/rest/api/user/{userId}/property","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
@@ -1842,15 +1993,17 @@
       "getWhiteboardDescendants": {"action":"wiki.whiteboards.descendants.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","depth","cursor"],"path":"/wiki/api/v2/whiteboards/{id}/descendants","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "getWhiteboardDirectChildren": {"action":"wiki.whiteboards.direct_children.read","effects":["read"],"method":"GET","origin":"{origin}","params":["cursor","limit","sort"],"path":"/wiki/api/v2/whiteboards/{id}/direct-children","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "getWhiteboardOperations": {"action":"wiki.whiteboards.operations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/whiteboards/{id}/operations","scope":{"id":{"at":"id","from":"path"}}},
+      "getWhiteboardPermissions": {"action":"wiki.whiteboards.permissions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["operation","principal-type","principal-id","cursor","limit"],"path":"/wiki/api/v2/whiteboards/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getWhiteboardRestrictionState": {"action":"wiki.whiteboards.restriction_state.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki/api/v2/whiteboards/{id}/restriction-state","scope":{"id":{"at":"id","from":"path"}}},
       "inviteByEmail": {"action":"wiki.user.access.by_email.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/user/access/invite-by-email","scope":{"emails":{"at":"/emails","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
       "isWatchingLabel": {"action":"wiki.user.watch.label.read","effects":["read"],"method":"GET","origin":"{origin}","params":["key","username","accountId"],"path":"/wiki/rest/api/user/watch/label/{labelName}","scope":{"accountId":{"at":"accountId","from":"query","optional":true},"key":{"at":"key","from":"query","optional":true},"labelName":{"at":"labelName","from":"path"},"query":{"at":"","from":"query","type":"object"},"username":{"at":"username","from":"query","optional":true}}},
       "isWatchingSpace": {"action":"wiki.user.watch.space.read","effects":["read"],"method":"GET","origin":"{origin}","params":["key","username","accountId"],"path":"/wiki/rest/api/user/watch/space/{spaceKey}","scope":{"accountId":{"at":"accountId","from":"query","optional":true},"key":{"at":"key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"spaceKey":{"at":"spaceKey","from":"path"},"username":{"at":"username","from":"query","optional":true}}},
       "listSpacePermissionCombinations": {"action":"wiki.space_permissions.transition.combinations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["cursor","limit"],"path":"/wiki/api/v2/space-permissions/transition/combinations","scope":{"query":{"at":"","from":"query","type":"object"}}},
       "movePage": {"action":"wiki.content.move.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wiki/rest/api/content/{pageId}/move/{position}/{targetId}","scope":{"pageId":{"at":"pageId","from":"path"},"position":{"at":"position","from":"path"},"targetId":{"at":"targetId","from":"path"}}},
-      "pages.create": {"action":"wiki.pages.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/pages","scope":{"page":{"at":"","from":"body","type":"object"}}},
+      "pages.create": {"action":"wiki.pages.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","params":["embedded","private","root-level"],"path":"/wiki/api/v2/pages","scope":{"page":{"at":"","from":"body","type":"object"},"query":{"at":"","from":"query","type":"object"}}},
       "pages.delete": {"action":"wiki.pages.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["purge","draft"],"path":"/wiki/api/v2/pages/{page}","scope":{"page":{"at":"page","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-      "pages.get": {"action":"wiki.pages.read","effects":["read"],"method":"GET","origin":"{origin}","params":["body-format"],"path":"/wiki/api/v2/pages/{page}","scope":{"page":{"at":"page","from":"path"}}},
-      "pages.list": {"action":"wiki.pages.read","effects":["read"],"method":"GET","origin":"{origin}","params":["space-id","status","title","limit","cursor"],"path":"/wiki/api/v2/pages","scope":{}},
+      "pages.get": {"action":"wiki.pages.read","effects":["read"],"method":"GET","origin":"{origin}","params":["body-format","get-draft","include-collaborators","include-direct-children","include-favorited-by-current-user-status","include-labels","include-likes","include-operations","include-properties","include-version","include-versions","include-webresources","status","version"],"path":"/wiki/api/v2/pages/{page}","scope":{"page":{"at":"page","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "pages.list": {"action":"wiki.pages.read","effects":["read"],"method":"GET","origin":"{origin}","params":["space-id","status","title","limit","cursor","body-format","id","sort","subtype"],"path":"/wiki/api/v2/pages","scope":{"query":{"at":"","from":"query","type":"object"}}},
       "pages.update": {"action":"wiki.pages.write","body":"json","effects":["write","publish"],"method":"PUT","origin":"{origin}","path":"/wiki/api/v2/pages/{page}","scope":{"changes":{"at":"","from":"body","type":"object"},"page":{"at":"page","from":"path"}}},
       "postBlogPostClassificationLevel": {"action":"wiki.blogposts.classification_level.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/blogposts/{id}/classification-level/reset","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "postDatabaseClassificationLevel": {"action":"wiki.databases.classification_level.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/databases/{id}/classification-level/reset","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
@@ -1868,6 +2021,7 @@
       "putPageClassificationLevel": {"action":"wiki.pages.classification_level.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wiki/api/v2/pages/{id}/classification-level","scope":{"body.id":{"at":"/id","from":"body"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "putSpaceDefaultClassificationLevel": {"action":"wiki.spaces.classification_level.default.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wiki/api/v2/spaces/{id}/classification-level/default","scope":{"body.id":{"at":"/id","from":"body"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "putWhiteboardClassificationLevel": {"action":"wiki.whiteboards.classification_level.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wiki/api/v2/whiteboards/{id}/classification-level","scope":{"body.id":{"at":"/id","from":"body"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "registerModules": {"action":"wiki.atlassian_connect.app.module.dynamic.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/wiki/rest/atlassian-connect/1/app/module/dynamic","scope":{"request":{"at":"","from":"body","type":"object"}}},
       "removeContentState": {"action":"wiki.content.state.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["status"],"path":"/wiki/rest/api/content/{id}/state","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "removeContentWatcher": {"action":"wiki.user.watch.content.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["key","username","accountId"],"path":"/wiki/rest/api/user/watch/content/{contentId}","scope":{"accountId":{"at":"accountId","from":"query","optional":true},"contentId":{"at":"contentId","from":"path"},"key":{"at":"key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"username":{"at":"username","from":"query","optional":true}}},
       "removeGroupById": {"action":"wiki.group.by_id.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["id"],"path":"/wiki/rest/api/group/by-id","scope":{"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
@@ -1884,15 +2038,26 @@
       "resetLookAndFeelSettings": {"action":"wiki.settings.lookandfeel.custom.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["spaceKey"],"path":"/wiki/rest/api/settings/lookandfeel/custom","scope":{"query":{"at":"","from":"query","type":"object"},"spaceKey":{"at":"spaceKey","from":"query","optional":true}}},
       "resetSpaceTheme": {"action":"wiki.space.theme.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki/rest/api/space/{spaceKey}/theme","scope":{"spaceKey":{"at":"spaceKey","from":"path"}}},
       "restoreContentVersion": {"action":"wiki.content.version.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["expand"],"path":"/wiki/rest/api/content/{id}/version","scope":{"id":{"at":"id","from":"path"},"operationKey":{"at":"/operationKey","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-      "searchByCQL": {"action":"wiki.read","effects":["read"],"method":"GET","origin":"{origin}","params":["cql","cqlcontext","cursor","next","prev","limit","start","includeArchivedSpaces","excludeCurrentSpaces","excerpt","sitePermissionTypeFilter","_","expand"],"path":"/wiki/rest/api/search","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "searchByCQL": {"action":"wiki.search.read","effects":["read"],"method":"GET","origin":"{origin}","params":["cql","cqlcontext","cursor","next","prev","limit","start","includeArchivedSpaces","excludeCurrentSpaces","excerpt","sitePermissionTypeFilter","_","expand"],"path":"/wiki/rest/api/search","scope":{"query":{"at":"","from":"query","type":"object"}}},
       "searchContentByCQL": {"action":"wiki.content.read","effects":["read"],"method":"GET","origin":"{origin}","params":["cql","cqlcontext","expand","cursor","limit"],"path":"/wiki/rest/api/content/search","scope":{"query":{"at":"","from":"query","type":"object"}}},
       "searchGroups": {"action":"wiki.group.picker.read","effects":["read"],"method":"GET","origin":"{origin}","params":["query","start","limit","shouldReturnTotalSize"],"path":"/wiki/rest/api/group/picker","scope":{"query":{"at":"","from":"query","type":"object"}}},
       "searchUser": {"action":"wiki.search.user.read","effects":["read"],"method":"GET","origin":"{origin}","params":["cql","start","limit","expand","sitePermissionTypeFilter"],"path":"/wiki/rest/api/search/user","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "setBlogPostPermissions": {"action":"wiki.blogposts.permissions.share","body":"json","effects":["share"],"method":"PUT","origin":"{origin}","params":["allow-self-lockout"],"path":"/wiki/api/v2/blogposts/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "setBlogPostRestrictionState": {"action":"wiki.blogposts.restriction_state.share","body":"json","effects":["share"],"method":"PUT","origin":"{origin}","params":["allow-self-lockout"],"path":"/wiki/api/v2/blogposts/{id}/restriction-state","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
       "setContentState": {"action":"wiki.content.state.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","params":["status"],"path":"/wiki/rest/api/content/{id}/state","scope":{"body.id":{"at":"/id","from":"body","optional":true,"type":"number"},"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "setDatabasePermissions": {"action":"wiki.databases.permissions.share","body":"json","effects":["share"],"method":"PUT","origin":"{origin}","params":["allow-self-lockout"],"path":"/wiki/api/v2/databases/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "setDatabaseRestrictionState": {"action":"wiki.databases.restriction_state.share","body":"json","effects":["share"],"method":"PUT","origin":"{origin}","params":["allow-self-lockout"],"path":"/wiki/api/v2/databases/{id}/restriction-state","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "setFolderPermissions": {"action":"wiki.folders.permissions.share","body":"json","effects":["share"],"method":"PUT","origin":"{origin}","params":["allow-self-lockout"],"path":"/wiki/api/v2/folders/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "setFolderRestrictionState": {"action":"wiki.folders.restriction_state.share","body":"json","effects":["share"],"method":"PUT","origin":"{origin}","params":["allow-self-lockout"],"path":"/wiki/api/v2/folders/{id}/restriction-state","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "setPagePermissions": {"action":"wiki.pages.permissions.share","body":"json","effects":["share"],"method":"PUT","origin":"{origin}","params":["allow-self-lockout"],"path":"/wiki/api/v2/pages/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "setPageRestrictionState": {"action":"wiki.pages.restriction_state.share","body":"json","effects":["share"],"method":"PUT","origin":"{origin}","params":["allow-self-lockout"],"path":"/wiki/api/v2/pages/{id}/restriction-state","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
       "setRetentionPeriod": {"action":"wiki.audit.retention.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wiki/rest/api/audit/retention","scope":{"request":{"at":"","from":"body","type":"object"}}},
       "setSpaceRoleAssignments": {"action":"wiki.spaces.role_assignments.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/api/v2/spaces/{id}/role-assignments","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
       "setSpaceTheme": {"action":"wiki.space.theme.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wiki/rest/api/space/{spaceKey}/theme","scope":{"request":{"at":"","from":"body","type":"object"},"spaceKey":{"at":"spaceKey","from":"path"},"themeKey":{"at":"/themeKey","from":"body"}}},
-      "spaces.list": {"action":"wiki.spaces.read","effects":["read"],"method":"GET","origin":"{origin}","params":["keys","type","status","limit","cursor"],"path":"/wiki/api/v2/spaces","scope":{}},
+      "setWhiteboardPermissions": {"action":"wiki.whiteboards.permissions.share","body":"json","effects":["share"],"method":"PUT","origin":"{origin}","params":["allow-self-lockout"],"path":"/wiki/api/v2/whiteboards/{id}/permissions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "setWhiteboardRestrictionState": {"action":"wiki.whiteboards.restriction_state.share","body":"json","effects":["share"],"method":"PUT","origin":"{origin}","params":["allow-self-lockout"],"path":"/wiki/api/v2/whiteboards/{id}/restriction-state","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "spaces.list": {"action":"wiki.spaces.read","effects":["read"],"method":"GET","origin":"{origin}","params":["keys","type","status","limit","cursor","description-format","favorited-by","ids","include-icon","labels","not-favorited-by","sort"],"path":"/wiki/api/v2/spaces","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "updateAttachmentData": {"action":"wiki.content.child.attachment.data.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki/rest/api/content/{id}/child/attachment/{attachmentId}/data","scope":{"attachmentId":{"at":"attachmentId","from":"path"},"id":{"at":"id","from":"path"}}},
       "updateAttachmentProperties": {"action":"wiki.content.child.attachment.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wiki/rest/api/content/{id}/child/attachment/{attachmentId}","scope":{"attachmentId":{"at":"attachmentId","from":"path"},"body.id":{"at":"/id","from":"body"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "updateAttachmentPropertyById": {"action":"wiki.attachments.properties.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wiki/api/v2/attachments/{attachment-id}/properties/{property-id}","scope":{"attachment-id":{"at":"attachment-id","from":"path"},"key":{"at":"/key","from":"body","optional":true},"property-id":{"at":"property-id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "updateBlogPost": {"action":"wiki.blogposts.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wiki/api/v2/blogposts/{id}","scope":{"body.id":{"at":"/id","from":"body"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"spaceId":{"at":"/spaceId","from":"body","optional":true}}},
@@ -1909,7 +2074,7 @@
       "updateLookAndFeelSettings": {"action":"wiki.settings.lookandfeel.custom.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["spaceKey"],"path":"/wiki/rest/api/settings/lookandfeel/custom","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"spaceKey":{"at":"spaceKey","from":"query","optional":true}}},
       "updatePagePropertyById": {"action":"wiki.pages.properties.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wiki/api/v2/pages/{page-id}/properties/{property-id}","scope":{"key":{"at":"/key","from":"body","optional":true},"page-id":{"at":"page-id","from":"path"},"property-id":{"at":"property-id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "updatePageTitle": {"action":"wiki.pages.title.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wiki/api/v2/pages/{id}/title","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "updateRestrictions": {"action":"wiki.content.restriction.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","params":["expand"],"path":"/wiki/rest/api/content/{id}/restriction","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateRestrictions": {"action":"wiki.content.restriction.share","body":"json","effects":["share"],"method":"PUT","origin":"{origin}","params":["expand"],"path":"/wiki/rest/api/content/{id}/restriction","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
       "updateSmartLinkPropertyById": {"action":"wiki.embeds.properties.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wiki/api/v2/embeds/{embed-id}/properties/{property-id}","scope":{"embed-id":{"at":"embed-id","from":"path"},"key":{"at":"/key","from":"body","optional":true},"property-id":{"at":"property-id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "updateSpace": {"action":"wiki.space.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wiki/rest/api/space/{spaceKey}","scope":{"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"spaceKey":{"at":"spaceKey","from":"path"}}},
       "updateSpacePropertyById": {"action":"wiki.spaces.properties.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wiki/api/v2/spaces/{space-id}/properties/{property-id}","scope":{"key":{"at":"/key","from":"body","optional":true},"property-id":{"at":"property-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"space-id":{"at":"space-id","from":"path"}}},

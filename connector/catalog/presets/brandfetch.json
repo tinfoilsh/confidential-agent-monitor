@@ -1,31 +1,113 @@
 {
-  "title": "Brandfetch",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.brandfetch.io", "path": "/v2", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "pay.access": {"title": "Pay: access"},
-      "read": {"title": "Read everything the account can see"}
-    }
+      "agents": {
+        "title": "Agents"
+      },
+      "agents.access": {
+        "title": "Access"
+      },
+      "agents.access.pay": {
+        "title": "Make payments"
+      },
+      "agents.access.read": {
+        "title": "Read"
+      },
+      "brands": {
+        "title": "Brands"
+      },
+      "brands.crypto": {
+        "title": "Crypto"
+      },
+      "brands.crypto.read": {
+        "title": "Read"
+      },
+      "brands.domain": {
+        "title": "Domain"
+      },
+      "brands.domain.read": {
+        "title": "Read"
+      },
+      "brands.isin": {
+        "title": "Isin"
+      },
+      "brands.isin.read": {
+        "title": "Read"
+      },
+      "brands.read": {
+        "title": "Read"
+      },
+      "brands.ticker": {
+        "title": "Ticker"
+      },
+      "brands.ticker.read": {
+        "title": "Read"
+      },
+      "brands.transaction": {
+        "title": "Transaction"
+      },
+      "brands.transaction.read": {
+        "title": "Read"
+      },
+      "context": {
+        "title": "Context"
+      },
+      "context.read": {
+        "title": "Read"
+      },
+      "search": {
+        "title": "Search"
+      },
+      "search.read": {
+        "title": "Read"
+      },
+      "viewer": {
+        "title": "Viewer"
+      },
+      "viewer.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.brandfetch.io",
+            "path": "/v2",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Brandfetch",
   "http": {
     "operations": {
-      "getAgentAccessOffer": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","path":"/v2/agents/access","scope":{}},
-      "getBrandContext": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","path":"/v2/context/{domain}","params":["cachedOnly"],"scope":{"domain":{"from":"path","at":"domain"}}},
-      "getBrandData": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","path":"/v2/brands/{identifier}","params":["allowNsfw","cachedOnly"],"scope":{"identifier":{"from":"path","at":"identifier"}}},
-      "getBrandDataByCrypto": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","path":"/v2/brands/crypto/{symbol}","params":["allowNsfw","cachedOnly"],"scope":{"symbol":{"from":"path","at":"symbol"}}},
-      "getBrandDataByDomain": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","path":"/v2/brands/domain/{domain}","params":["allowNsfw","cachedOnly"],"scope":{"domain":{"from":"path","at":"domain"}}},
-      "getBrandDataByIsin": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","path":"/v2/brands/isin/{isin}","params":["allowNsfw","cachedOnly"],"scope":{"isin":{"from":"path","at":"isin"}}},
-      "getBrandDataByTicker": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","path":"/v2/brands/ticker/{ticker}","params":["allowNsfw","cachedOnly"],"scope":{"ticker":{"from":"path","at":"ticker"}}},
-      "getBrandFromTransaction": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.brandfetch.io","path":"/v2/brands/transaction","body":"json","scope":{}},
-      "getViewer": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","path":"/v2/viewer","scope":{}},
-      "prefetchBrand": {"action":"read","effects":["read"],"method":"HEAD","origin":"https://api.brandfetch.io","path":"/v2/brands/{identifier}","scope":{"identifier":{"from":"path","at":"identifier"}}},
-      "prefetchBrandByDomain": {"action":"read","effects":["read"],"method":"HEAD","origin":"https://api.brandfetch.io","path":"/v2/brands/domain/{domain}","scope":{"domain":{"from":"path","at":"domain"}}},
-      "purchaseAgentAccess": {"action":"pay.access","effects":["pay"],"method":"POST","origin":"https://api.brandfetch.io","path":"/v2/agents/access","params":["usd","rotateKey"],"scope":{}},
-      "searchBrands": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","path":"/v2/search/{name_clientId}","params":["c"],"scope":{"name_clientId":{"from":"path","at":"name_clientId"}}}
+      "getAgentAccessOffer": {"action":"agents.access.read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","path":"/v2/agents/access","scope":{}},
+      "getBrandBatch": {"action":"brands.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.brandfetch.io","path":"/v2/brands/batch","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "getBrandContext": {"action":"context.read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","params":["cachedOnly"],"path":"/v2/context/{domain}","scope":{"domain":{"at":"domain","from":"path"}}},
+      "getBrandData": {"action":"brands.read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","params":["allowNsfw","cachedOnly","palette","typography"],"path":"/v2/brands/{identifier}","scope":{"identifier":{"at":"identifier","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getBrandDataByCrypto": {"action":"brands.crypto.read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","params":["allowNsfw","cachedOnly","palette","typography"],"path":"/v2/brands/crypto/{symbol}","scope":{"query":{"at":"","from":"query","type":"object"},"symbol":{"at":"symbol","from":"path"}}},
+      "getBrandDataByDomain": {"action":"brands.domain.read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","params":["allowNsfw","cachedOnly","palette","typography"],"path":"/v2/brands/domain/{domain}","scope":{"domain":{"at":"domain","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getBrandDataByIsin": {"action":"brands.isin.read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","params":["allowNsfw","cachedOnly","palette","typography"],"path":"/v2/brands/isin/{isin}","scope":{"isin":{"at":"isin","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getBrandDataByTicker": {"action":"brands.ticker.read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","params":["allowNsfw","cachedOnly","palette","typography"],"path":"/v2/brands/ticker/{ticker}","scope":{"query":{"at":"","from":"query","type":"object"},"ticker":{"at":"ticker","from":"path"}}},
+      "getBrandFromTransaction": {"action":"brands.transaction.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.brandfetch.io","path":"/v2/brands/transaction","scope":{}},
+      "getViewer": {"action":"viewer.read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","path":"/v2/viewer","scope":{}},
+      "prefetchBrand": {"action":"brands.read","effects":["read"],"method":"HEAD","origin":"https://api.brandfetch.io","path":"/v2/brands/{identifier}","scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "prefetchBrandByDomain": {"action":"brands.domain.read","effects":["read"],"method":"HEAD","origin":"https://api.brandfetch.io","path":"/v2/brands/domain/{domain}","scope":{"domain":{"at":"domain","from":"path"}}},
+      "purchaseAgentAccess": {"action":"agents.access.pay","effects":["pay"],"method":"POST","origin":"https://api.brandfetch.io","params":["usd","rotateKey"],"path":"/v2/agents/access","scope":{}},
+      "searchBrands": {"action":"search.read","effects":["read"],"method":"GET","origin":"https://api.brandfetch.io","params":["c"],"path":"/v2/search/{name_clientId}","scope":{"name_clientId":{"at":"name_clientId","from":"path"}}}
     }
   }
 }

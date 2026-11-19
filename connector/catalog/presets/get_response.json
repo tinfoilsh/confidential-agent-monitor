@@ -1,294 +1,1039 @@
 {
-  "title": "GetResponse",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.getresponse.com", "path": "/v3", "header": "X-Auth-Token", "prefix": "api-key "}]}},
     "actions": {
-      "admin.accounts": {"title": "Admin: accounts"},
-      "delete.ab_tests": {"title": "Delete: ab tests"},
-      "delete.addresses": {"title": "Delete: addresses"},
-      "delete.autoresponders": {"title": "Delete: autoresponders"},
-      "delete.callbacks": {"title": "Delete: callbacks"},
-      "delete.carts": {"title": "Delete: carts"},
-      "delete.categories": {"title": "Delete: categories"},
-      "delete.contacts": {"title": "Delete: contacts"},
-      "delete.custom_events": {"title": "Delete: custom events"},
-      "delete.custom_fields": {"title": "Delete: custom fields"},
-      "delete.files": {"title": "Delete: files"},
-      "delete.folders": {"title": "Delete: folders"},
-      "delete.from_fields": {"title": "Delete: from fields"},
-      "delete.meta_fields": {"title": "Delete: meta fields"},
-      "delete.newsletters": {"title": "Delete: newsletters"},
-      "delete.orders": {"title": "Delete: orders"},
-      "delete.predefined_fields": {"title": "Delete: predefined fields"},
-      "delete.products": {"title": "Delete: products"},
-      "delete.rss_newsletters": {"title": "Delete: rss newsletters"},
-      "delete.search_contacts": {"title": "Delete: search contacts"},
-      "delete.shops": {"title": "Delete: shops"},
-      "delete.suppressions": {"title": "Delete: suppressions"},
-      "delete.tags": {"title": "Delete: tags"},
-      "delete.taxes": {"title": "Delete: taxes"},
-      "delete.templates": {"title": "Delete: templates"},
-      "delete.variants": {"title": "Delete: variants"},
-      "execute.trigger": {"title": "Execute: trigger"},
-      "execute.workflow": {"title": "Execute: workflow"},
-      "read": {"title": "Read everything the account can see"},
-      "send.newsletters": {"title": "Send: newsletters"},
-      "send.send_draft": {"title": "Send: send draft"},
-      "send.sms": {"title": "Send: sms"},
-      "write.ab_tests": {"title": "Write: ab tests"},
-      "write.addresses": {"title": "Write: addresses"},
-      "write.autoresponders": {"title": "Write: autoresponders"},
-      "write.badge": {"title": "Write: badge"},
-      "write.blocklists": {"title": "Write: blocklists"},
-      "write.callbacks": {"title": "Write: callbacks"},
-      "write.campaigns": {"title": "Write: campaigns"},
-      "write.carts": {"title": "Write: carts"},
-      "write.categories": {"title": "Write: categories"},
-      "write.contacts": {"title": "Write: contacts"},
-      "write.custom_events": {"title": "Write: custom events"},
-      "write.custom_fields": {"title": "Write: custom fields"},
-      "write.custom_reports": {"title": "Write: custom reports"},
-      "write.default": {"title": "Write: default"},
-      "write.files": {"title": "Write: files"},
-      "write.folders": {"title": "Write: folders"},
-      "write.from_fields": {"title": "Write: from fields"},
-      "write.imports": {"title": "Write: imports"},
-      "write.meta_fields": {"title": "Write: meta fields"},
-      "write.multimedia": {"title": "Write: multimedia"},
-      "write.newsletters": {"title": "Write: newsletters"},
-      "write.orders": {"title": "Write: orders"},
-      "write.predefined_fields": {"title": "Write: predefined fields"},
-      "write.products": {"title": "Write: products"},
-      "write.rss_newsletters": {"title": "Write: rss newsletters"},
-      "write.search_contacts": {"title": "Write: search contacts"},
-      "write.shops": {"title": "Write: shops"},
-      "write.subject": {"title": "Write: subject"},
-      "write.suppressions": {"title": "Write: suppressions"},
-      "write.tags": {"title": "Write: tags"},
-      "write.taxes": {"title": "Write: taxes"},
-      "write.templates": {"title": "Write: templates"},
-      "write.transactional_emails": {"title": "Write: transactional emails"},
-      "write.variants": {"title": "Write: variants"},
-      "write.winner": {"title": "Write: winner"}
-    }
+      "ab_tests": {
+        "title": "Ab tests"
+      },
+      "ab_tests.delete": {
+        "title": "Delete"
+      },
+      "ab_tests.subject": {
+        "title": "Subject"
+      },
+      "ab_tests.subject.read": {
+        "title": "Read"
+      },
+      "ab_tests.subject.winner": {
+        "title": "Winner"
+      },
+      "ab_tests.subject.winner.write": {
+        "title": "Create and edit"
+      },
+      "ab_tests.subject.write": {
+        "title": "Create and edit"
+      },
+      "ab_tests.write": {
+        "title": "Create and edit"
+      },
+      "accounts": {
+        "title": "Accounts"
+      },
+      "accounts.admin": {
+        "title": "Manage"
+      },
+      "accounts.badge": {
+        "title": "Badge"
+      },
+      "accounts.badge.read": {
+        "title": "Read"
+      },
+      "accounts.badge.write": {
+        "title": "Create and edit"
+      },
+      "accounts.billing": {
+        "title": "Billing"
+      },
+      "accounts.billing.read": {
+        "title": "Read"
+      },
+      "accounts.blocklists": {
+        "title": "Blocklists"
+      },
+      "accounts.blocklists.read": {
+        "title": "Read"
+      },
+      "accounts.blocklists.write": {
+        "title": "Create and edit"
+      },
+      "accounts.callbacks": {
+        "title": "Callbacks"
+      },
+      "accounts.callbacks.delete": {
+        "title": "Delete"
+      },
+      "accounts.callbacks.read": {
+        "title": "Read"
+      },
+      "accounts.callbacks.write": {
+        "title": "Create and edit"
+      },
+      "accounts.industries": {
+        "title": "Industries"
+      },
+      "accounts.industries.read": {
+        "title": "Read"
+      },
+      "accounts.login_history": {
+        "title": "Login history"
+      },
+      "accounts.login_history.read": {
+        "title": "Read"
+      },
+      "accounts.read": {
+        "title": "Read"
+      },
+      "accounts.sending_limits": {
+        "title": "Sending limits"
+      },
+      "accounts.sending_limits.read": {
+        "title": "Read"
+      },
+      "accounts.timezones": {
+        "title": "Timezones"
+      },
+      "accounts.timezones.read": {
+        "title": "Read"
+      },
+      "addresses": {
+        "title": "Addresses"
+      },
+      "addresses.delete": {
+        "title": "Delete"
+      },
+      "addresses.read": {
+        "title": "Read"
+      },
+      "addresses.write": {
+        "title": "Create and edit"
+      },
+      "autoresponders": {
+        "title": "Autoresponders"
+      },
+      "autoresponders.delete": {
+        "title": "Delete"
+      },
+      "autoresponders.read": {
+        "title": "Read"
+      },
+      "autoresponders.statistics": {
+        "title": "Statistics"
+      },
+      "autoresponders.statistics.read": {
+        "title": "Read"
+      },
+      "autoresponders.thumbnail": {
+        "title": "Thumbnail"
+      },
+      "autoresponders.thumbnail.read": {
+        "title": "Read"
+      },
+      "autoresponders.write": {
+        "title": "Create and edit"
+      },
+      "campaigns": {
+        "title": "Campaigns"
+      },
+      "campaigns.blocklists": {
+        "title": "Blocklists"
+      },
+      "campaigns.blocklists.read": {
+        "title": "Read"
+      },
+      "campaigns.blocklists.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.contacts": {
+        "title": "Contacts"
+      },
+      "campaigns.contacts.read": {
+        "title": "Read"
+      },
+      "campaigns.read": {
+        "title": "Read"
+      },
+      "campaigns.statistics": {
+        "title": "Statistics"
+      },
+      "campaigns.statistics.balance": {
+        "title": "Balance"
+      },
+      "campaigns.statistics.balance.read": {
+        "title": "Read"
+      },
+      "campaigns.statistics.locations": {
+        "title": "Locations"
+      },
+      "campaigns.statistics.locations.read": {
+        "title": "Read"
+      },
+      "campaigns.statistics.origins": {
+        "title": "Origins"
+      },
+      "campaigns.statistics.origins.read": {
+        "title": "Read"
+      },
+      "campaigns.statistics.removals": {
+        "title": "Removals"
+      },
+      "campaigns.statistics.removals.read": {
+        "title": "Read"
+      },
+      "campaigns.statistics.size": {
+        "title": "Size"
+      },
+      "campaigns.statistics.size.read": {
+        "title": "Read"
+      },
+      "campaigns.statistics.subscriptions": {
+        "title": "Subscriptions"
+      },
+      "campaigns.statistics.subscriptions.read": {
+        "title": "Read"
+      },
+      "campaigns.statistics.summary": {
+        "title": "Summary"
+      },
+      "campaigns.statistics.summary.read": {
+        "title": "Read"
+      },
+      "campaigns.write": {
+        "title": "Create and edit"
+      },
+      "click_tracks": {
+        "title": "Click tracks"
+      },
+      "click_tracks.read": {
+        "title": "Read"
+      },
+      "contacts": {
+        "title": "Contacts"
+      },
+      "contacts.activities": {
+        "title": "Activities"
+      },
+      "contacts.activities.read": {
+        "title": "Read"
+      },
+      "contacts.consents": {
+        "title": "Consents"
+      },
+      "contacts.consents.read": {
+        "title": "Read"
+      },
+      "contacts.custom_fields": {
+        "title": "Custom fields"
+      },
+      "contacts.custom_fields.write": {
+        "title": "Create and edit"
+      },
+      "contacts.delete": {
+        "title": "Delete"
+      },
+      "contacts.read": {
+        "title": "Read"
+      },
+      "contacts.tags": {
+        "title": "Tags"
+      },
+      "contacts.tags.write": {
+        "title": "Create and edit"
+      },
+      "contacts.write": {
+        "title": "Create and edit"
+      },
+      "custom_events": {
+        "title": "Custom events"
+      },
+      "custom_events.delete": {
+        "title": "Delete"
+      },
+      "custom_events.execute": {
+        "title": "Run"
+      },
+      "custom_events.read": {
+        "title": "Read"
+      },
+      "custom_events.write": {
+        "title": "Create and edit"
+      },
+      "custom_fields": {
+        "title": "Custom fields"
+      },
+      "custom_fields.delete": {
+        "title": "Delete"
+      },
+      "custom_fields.read": {
+        "title": "Read"
+      },
+      "custom_fields.write": {
+        "title": "Create and edit"
+      },
+      "custom_reports": {
+        "title": "Custom reports"
+      },
+      "custom_reports.read": {
+        "title": "Read"
+      },
+      "custom_reports.write": {
+        "title": "Create and edit"
+      },
+      "file_library": {
+        "title": "File library"
+      },
+      "file_library.files": {
+        "title": "Files"
+      },
+      "file_library.files.delete": {
+        "title": "Delete"
+      },
+      "file_library.files.read": {
+        "title": "Read"
+      },
+      "file_library.files.write": {
+        "title": "Create and edit"
+      },
+      "file_library.folders": {
+        "title": "Folders"
+      },
+      "file_library.folders.delete": {
+        "title": "Delete"
+      },
+      "file_library.folders.read": {
+        "title": "Read"
+      },
+      "file_library.folders.write": {
+        "title": "Create and edit"
+      },
+      "file_library.quota": {
+        "title": "Quota"
+      },
+      "file_library.quota.read": {
+        "title": "Read"
+      },
+      "forms": {
+        "title": "Forms"
+      },
+      "forms.read": {
+        "title": "Read"
+      },
+      "forms.variants": {
+        "title": "Variants"
+      },
+      "forms.variants.read": {
+        "title": "Read"
+      },
+      "from_fields": {
+        "title": "From fields"
+      },
+      "from_fields.default": {
+        "title": "Default"
+      },
+      "from_fields.default.write": {
+        "title": "Create and edit"
+      },
+      "from_fields.delete": {
+        "title": "Delete"
+      },
+      "from_fields.read": {
+        "title": "Read"
+      },
+      "from_fields.write": {
+        "title": "Create and edit"
+      },
+      "gdpr_fields": {
+        "title": "Gdpr fields"
+      },
+      "gdpr_fields.read": {
+        "title": "Read"
+      },
+      "imports": {
+        "title": "Imports"
+      },
+      "imports.read": {
+        "title": "Read"
+      },
+      "imports.write": {
+        "title": "Create and edit"
+      },
+      "landing_pages": {
+        "title": "Landing pages"
+      },
+      "landing_pages.read": {
+        "title": "Read"
+      },
+      "lps": {
+        "title": "Lps"
+      },
+      "lps.read": {
+        "title": "Read"
+      },
+      "multimedia": {
+        "title": "Multimedia"
+      },
+      "multimedia.read": {
+        "title": "Read"
+      },
+      "multimedia.write": {
+        "title": "Create and edit"
+      },
+      "newsletters": {
+        "title": "Newsletters"
+      },
+      "newsletters.activities": {
+        "title": "Activities"
+      },
+      "newsletters.activities.read": {
+        "title": "Read"
+      },
+      "newsletters.delete": {
+        "title": "Delete"
+      },
+      "newsletters.draft": {
+        "title": "Draft"
+      },
+      "newsletters.draft.send": {
+        "title": "Send"
+      },
+      "newsletters.read": {
+        "title": "Read"
+      },
+      "newsletters.send": {
+        "title": "Send"
+      },
+      "newsletters.statistics": {
+        "title": "Statistics"
+      },
+      "newsletters.statistics.read": {
+        "title": "Read"
+      },
+      "newsletters.thumbnail": {
+        "title": "Thumbnail"
+      },
+      "newsletters.thumbnail.read": {
+        "title": "Read"
+      },
+      "newsletters.write": {
+        "title": "Create and edit"
+      },
+      "popups": {
+        "title": "Popups"
+      },
+      "popups.read": {
+        "title": "Read"
+      },
+      "predefined_fields": {
+        "title": "Predefined fields"
+      },
+      "predefined_fields.delete": {
+        "title": "Delete"
+      },
+      "predefined_fields.read": {
+        "title": "Read"
+      },
+      "predefined_fields.write": {
+        "title": "Create and edit"
+      },
+      "rss_newsletters": {
+        "title": "Rss newsletters"
+      },
+      "rss_newsletters.delete": {
+        "title": "Delete"
+      },
+      "rss_newsletters.read": {
+        "title": "Read"
+      },
+      "rss_newsletters.send": {
+        "title": "Send"
+      },
+      "rss_newsletters.statistics": {
+        "title": "Statistics"
+      },
+      "rss_newsletters.statistics.read": {
+        "title": "Read"
+      },
+      "rss_newsletters.write": {
+        "title": "Create and edit"
+      },
+      "search_contacts": {
+        "title": "Search contacts"
+      },
+      "search_contacts.contacts": {
+        "title": "Contacts"
+      },
+      "search_contacts.contacts.read": {
+        "title": "Read"
+      },
+      "search_contacts.custom_fields": {
+        "title": "Custom fields"
+      },
+      "search_contacts.custom_fields.write": {
+        "title": "Create and edit"
+      },
+      "search_contacts.delete": {
+        "title": "Delete"
+      },
+      "search_contacts.read": {
+        "title": "Read"
+      },
+      "search_contacts.write": {
+        "title": "Create and edit"
+      },
+      "shops": {
+        "title": "Shops"
+      },
+      "shops.carts": {
+        "title": "Carts"
+      },
+      "shops.carts.delete": {
+        "title": "Delete"
+      },
+      "shops.carts.read": {
+        "title": "Read"
+      },
+      "shops.carts.write": {
+        "title": "Create and edit"
+      },
+      "shops.categories": {
+        "title": "Categories"
+      },
+      "shops.categories.delete": {
+        "title": "Delete"
+      },
+      "shops.categories.read": {
+        "title": "Read"
+      },
+      "shops.categories.write": {
+        "title": "Create and edit"
+      },
+      "shops.delete": {
+        "title": "Delete"
+      },
+      "shops.meta_fields": {
+        "title": "Meta fields"
+      },
+      "shops.meta_fields.delete": {
+        "title": "Delete"
+      },
+      "shops.meta_fields.read": {
+        "title": "Read"
+      },
+      "shops.meta_fields.write": {
+        "title": "Create and edit"
+      },
+      "shops.orders": {
+        "title": "Orders"
+      },
+      "shops.orders.delete": {
+        "title": "Delete"
+      },
+      "shops.orders.read": {
+        "title": "Read"
+      },
+      "shops.orders.write": {
+        "title": "Create and edit"
+      },
+      "shops.products": {
+        "title": "Products"
+      },
+      "shops.products.categories": {
+        "title": "Categories"
+      },
+      "shops.products.categories.write": {
+        "title": "Create and edit"
+      },
+      "shops.products.delete": {
+        "title": "Delete"
+      },
+      "shops.products.meta_fields": {
+        "title": "Meta fields"
+      },
+      "shops.products.meta_fields.write": {
+        "title": "Create and edit"
+      },
+      "shops.products.read": {
+        "title": "Read"
+      },
+      "shops.products.variants": {
+        "title": "Variants"
+      },
+      "shops.products.variants.delete": {
+        "title": "Delete"
+      },
+      "shops.products.variants.read": {
+        "title": "Read"
+      },
+      "shops.products.variants.write": {
+        "title": "Create and edit"
+      },
+      "shops.products.write": {
+        "title": "Create and edit"
+      },
+      "shops.read": {
+        "title": "Read"
+      },
+      "shops.taxes": {
+        "title": "Taxes"
+      },
+      "shops.taxes.delete": {
+        "title": "Delete"
+      },
+      "shops.taxes.read": {
+        "title": "Read"
+      },
+      "shops.taxes.write": {
+        "title": "Create and edit"
+      },
+      "shops.write": {
+        "title": "Create and edit"
+      },
+      "sms": {
+        "title": "Sms"
+      },
+      "sms.read": {
+        "title": "Read"
+      },
+      "sms.send": {
+        "title": "Send"
+      },
+      "sms.sender_names": {
+        "title": "Sender names"
+      },
+      "sms.sender_names.read": {
+        "title": "Read"
+      },
+      "sms_automation": {
+        "title": "Sms automation"
+      },
+      "sms_automation.read": {
+        "title": "Read"
+      },
+      "splittests": {
+        "title": "Splittests"
+      },
+      "splittests.read": {
+        "title": "Read"
+      },
+      "statistics": {
+        "title": "Statistics"
+      },
+      "statistics.ecommerce": {
+        "title": "Ecommerce"
+      },
+      "statistics.ecommerce.performance": {
+        "title": "Performance"
+      },
+      "statistics.ecommerce.performance.read": {
+        "title": "Read"
+      },
+      "statistics.ecommerce.revenue": {
+        "title": "Revenue"
+      },
+      "statistics.ecommerce.revenue.read": {
+        "title": "Read"
+      },
+      "statistics.lps": {
+        "title": "Lps"
+      },
+      "statistics.lps.performance": {
+        "title": "Performance"
+      },
+      "statistics.lps.performance.read": {
+        "title": "Read"
+      },
+      "statistics.popups": {
+        "title": "Popups"
+      },
+      "statistics.popups.performance": {
+        "title": "Performance"
+      },
+      "statistics.popups.performance.read": {
+        "title": "Read"
+      },
+      "statistics.sms": {
+        "title": "Sms"
+      },
+      "statistics.sms.read": {
+        "title": "Read"
+      },
+      "statistics.wbe": {
+        "title": "Wbe"
+      },
+      "statistics.wbe.performance": {
+        "title": "Performance"
+      },
+      "statistics.wbe.performance.read": {
+        "title": "Read"
+      },
+      "subscription_confirmations": {
+        "title": "Subscription confirmations"
+      },
+      "subscription_confirmations.body": {
+        "title": "Body"
+      },
+      "subscription_confirmations.body.read": {
+        "title": "Read"
+      },
+      "subscription_confirmations.subject": {
+        "title": "Subject"
+      },
+      "subscription_confirmations.subject.read": {
+        "title": "Read"
+      },
+      "suppressions": {
+        "title": "Suppressions"
+      },
+      "suppressions.delete": {
+        "title": "Delete"
+      },
+      "suppressions.read": {
+        "title": "Read"
+      },
+      "suppressions.write": {
+        "title": "Create and edit"
+      },
+      "tags": {
+        "title": "Tags"
+      },
+      "tags.delete": {
+        "title": "Delete"
+      },
+      "tags.read": {
+        "title": "Read"
+      },
+      "tags.write": {
+        "title": "Create and edit"
+      },
+      "tracking": {
+        "title": "Tracking"
+      },
+      "tracking.facebook_pixels": {
+        "title": "Facebook pixels"
+      },
+      "tracking.facebook_pixels.read": {
+        "title": "Read"
+      },
+      "tracking.read": {
+        "title": "Read"
+      },
+      "transactional_emails": {
+        "title": "Transactional emails"
+      },
+      "transactional_emails.read": {
+        "title": "Read"
+      },
+      "transactional_emails.send": {
+        "title": "Send"
+      },
+      "transactional_emails.statistics": {
+        "title": "Statistics"
+      },
+      "transactional_emails.statistics.read": {
+        "title": "Read"
+      },
+      "transactional_emails.templates": {
+        "title": "Templates"
+      },
+      "transactional_emails.templates.delete": {
+        "title": "Delete"
+      },
+      "transactional_emails.templates.read": {
+        "title": "Read"
+      },
+      "transactional_emails.templates.write": {
+        "title": "Create and edit"
+      },
+      "webforms": {
+        "title": "Webforms"
+      },
+      "webforms.read": {
+        "title": "Read"
+      },
+      "webinars": {
+        "title": "Webinars"
+      },
+      "webinars.read": {
+        "title": "Read"
+      },
+      "websites": {
+        "title": "Websites"
+      },
+      "websites.read": {
+        "title": "Read"
+      },
+      "workflow": {
+        "title": "Workflow"
+      },
+      "workflow.read": {
+        "title": "Read"
+      },
+      "workflow.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "X-Auth-Token",
+            "origin": "https://api.getresponse.com",
+            "path": "/v3",
+            "prefix": "api-key ",
+            "value": "api_key"
+          },
+          {
+            "header": "X-Auth-Token",
+            "origin": "https://api3.getresponse360.com",
+            "path": "/v3",
+            "prefix": "api-key ",
+            "value": "api_key"
+          },
+          {
+            "header": "X-Auth-Token",
+            "origin": "https://api3.getresponse360.pl",
+            "path": "/v3",
+            "prefix": "api-key ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "GetResponse",
   "http": {
+    "origins": {"api":["https://api.getresponse.com","https://api3.getresponse360.com","https://api3.getresponse360.pl"]},
     "operations": {
-      "GetAbTestSubjectList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/ab-tests/subject","params":["query[name]","query[stage]","query[abTestId]","query[campaignId]","sort[name]","sort[stage]","sort[sendOn]","sort[totalDelivered]","fields","perPage","page"],"scope":{}},
-      "cancelAbTest": {"action":"write.ab_tests","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/ab-tests/{abTestId}/cancel","scope":{"abTestId":{"from":"path","at":"abTestId"}}},
-      "cancelMessageSend": {"action":"send.newsletters","effects":["send"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/newsletters/{newsletterId}/cancel","scope":{"newsletterId":{"from":"path","at":"newsletterId"}}},
-      "createAddress": {"action":"write.addresses","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/addresses","body":"any","scope":{}},
-      "createAutoresponder": {"action":"write.autoresponders","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/autoresponders","body":"any","scope":{}},
-      "createCampaign": {"action":"write.campaigns","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/campaigns","body":"any","scope":{}},
-      "createCart": {"action":"write.carts","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/carts","body":"any","scope":{"shopId":{"from":"path","at":"shopId"}}},
-      "createCategory": {"action":"write.categories","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/categories","body":"any","scope":{"shopId":{"from":"path","at":"shopId"}}},
-      "createContact": {"action":"write.contacts","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/contacts","body":"any","scope":{}},
-      "createCustomEvent": {"action":"write.custom_events","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/custom-events","body":"any","scope":{}},
-      "createCustomField": {"action":"write.custom_fields","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/custom-fields","body":"any","scope":{}},
-      "createCustomReport": {"action":"write.custom_reports","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/custom-reports","body":"any","scope":{}},
-      "createFile": {"action":"write.files","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/file-library/files","body":"any","scope":{}},
-      "createFolder": {"action":"write.folders","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/file-library/folders","body":"any","scope":{}},
-      "createFromField": {"action":"write.from_fields","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/from-fields","body":"any","scope":{}},
-      "createImport": {"action":"write.imports","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/imports","body":"any","scope":{}},
-      "createMetaField": {"action":"write.meta_fields","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/meta-fields","body":"any","scope":{"shopId":{"from":"path","at":"shopId"}}},
-      "createNewsletter": {"action":"write.newsletters","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/newsletters","body":"any","scope":{}},
-      "createOrder": {"action":"write.orders","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/orders","params":["additionalFlags"],"body":"any","scope":{"shopId":{"from":"path","at":"shopId"}}},
-      "createPredefinedField": {"action":"write.predefined_fields","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/predefined-fields","body":"any","scope":{}},
-      "createProduct": {"action":"write.products","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/products","body":"any","scope":{"shopId":{"from":"path","at":"shopId"}}},
-      "createProductVariant": {"action":"write.variants","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/products/{productId}/variants","body":"any","scope":{"shopId":{"from":"path","at":"shopId"},"productId":{"from":"path","at":"productId"}}},
-      "createRssNewsletter": {"action":"write.rss_newsletters","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/rss-newsletters","body":"any","scope":{}},
-      "createShop": {"action":"write.shops","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops","body":"any","scope":{}},
-      "createSubjectAbTest": {"action":"write.subject","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/ab-tests/subject","body":"any","scope":{}},
-      "createSuppression": {"action":"write.suppressions","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/suppressions","body":"any","scope":{}},
-      "createTag": {"action":"write.tags","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/tags","body":"any","scope":{}},
-      "createTax": {"action":"write.taxes","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/taxes","body":"any","scope":{"shopId":{"from":"path","at":"shopId"}}},
-      "createTransactionalEmail": {"action":"write.transactional_emails","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/transactional-emails","body":"any","scope":{}},
-      "createTransactionalEmailTemplate": {"action":"write.templates","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/transactional-emails/templates","body":"any","scope":{}},
-      "deleteAbTest": {"action":"delete.ab_tests","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/ab-tests/{abTestId}","scope":{"abTestId":{"from":"path","at":"abTestId"}}},
-      "deleteAddress": {"action":"delete.addresses","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/addresses/{addressId}","scope":{"addressId":{"from":"path","at":"addressId"}}},
-      "deleteAutoresponder": {"action":"delete.autoresponders","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/autoresponders/{autoresponderId}","scope":{"autoresponderId":{"from":"path","at":"autoresponderId"}}},
-      "deleteCart": {"action":"delete.carts","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/carts/{cartId}","scope":{"shopId":{"from":"path","at":"shopId"},"cartId":{"from":"path","at":"cartId"}}},
-      "deleteCategory": {"action":"delete.categories","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/categories/{categoryId}","scope":{"shopId":{"from":"path","at":"shopId"},"categoryId":{"from":"path","at":"categoryId"}}},
-      "deleteContact": {"action":"delete.contacts","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/contacts/{contactId}","params":["messageId","ipAddress"],"scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "deleteCustomEvent": {"action":"delete.custom_events","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/custom-events/{customEventId}","scope":{"customEventId":{"from":"path","at":"customEventId"}}},
-      "deleteCustomField": {"action":"delete.custom_fields","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/custom-fields/{customFieldId}","scope":{"customFieldId":{"from":"path","at":"customFieldId"}}},
-      "deleteFile": {"action":"delete.files","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/file-library/files/{fileId}","scope":{"fileId":{"from":"path","at":"fileId"}}},
-      "deleteFolder": {"action":"delete.folders","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/file-library/folders/{folderId}","scope":{"folderId":{"from":"path","at":"folderId"}}},
-      "deleteFromField": {"action":"delete.from_fields","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/from-fields/{fromFieldId}","params":["fromFieldIdToReplaceWith"],"scope":{"fromFieldId":{"from":"path","at":"fromFieldId"}}},
-      "deleteMetaField": {"action":"delete.meta_fields","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/meta-fields/{metaFieldId}","scope":{"shopId":{"from":"path","at":"shopId"},"metaFieldId":{"from":"path","at":"metaFieldId"}}},
-      "deleteNewsletter": {"action":"delete.newsletters","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/newsletters/{newsletterId}","scope":{"newsletterId":{"from":"path","at":"newsletterId"}}},
-      "deleteOrder": {"action":"delete.orders","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/orders/{orderId}","scope":{"shopId":{"from":"path","at":"shopId"},"orderId":{"from":"path","at":"orderId"}}},
-      "deletePredefinedField": {"action":"delete.predefined_fields","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/predefined-fields/{predefinedFieldId}","scope":{"predefinedFieldId":{"from":"path","at":"predefinedFieldId"}}},
-      "deleteProduct": {"action":"delete.products","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/products/{productId}","scope":{"shopId":{"from":"path","at":"shopId"},"productId":{"from":"path","at":"productId"}}},
-      "deleteProductVariant": {"action":"delete.variants","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/products/{productId}/variants/{variantId}","scope":{"shopId":{"from":"path","at":"shopId"},"productId":{"from":"path","at":"productId"},"variantId":{"from":"path","at":"variantId"}}},
-      "deleteRssNewsletter": {"action":"delete.rss_newsletters","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/rss-newsletters/{rssNewsletterId}","scope":{"rssNewsletterId":{"from":"path","at":"rssNewsletterId"}}},
-      "deleteSearchContacts": {"action":"delete.search_contacts","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/search-contacts/{searchContactId}","scope":{"searchContactId":{"from":"path","at":"searchContactId"}}},
-      "deleteShop": {"action":"delete.shops","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}","scope":{"shopId":{"from":"path","at":"shopId"}}},
-      "deleteSuppression": {"action":"delete.suppressions","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/suppressions/{suppressionId}","scope":{"suppressionId":{"from":"path","at":"suppressionId"}}},
-      "deleteTag": {"action":"delete.tags","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/tags/{tagId}","scope":{"tagId":{"from":"path","at":"tagId"}}},
-      "deleteTax": {"action":"delete.taxes","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/taxes/{taxId}","scope":{"shopId":{"from":"path","at":"shopId"},"taxId":{"from":"path","at":"taxId"}}},
-      "deleteTransactionalEmailsTemplate": {"action":"delete.templates","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/transactional-emails/templates/{transactionalEmailTemplateId}","scope":{"transactionalEmailTemplateId":{"from":"path","at":"transactionalEmailTemplateId"}}},
-      "disableCallbacks": {"action":"delete.callbacks","effects":["delete"],"method":"DELETE","origin":"https://api.getresponse.com","path":"/v3/accounts/callbacks","scope":{}},
-      "getAbTestSubjectById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/ab-tests/subject/{abTestId}","params":["fields"],"scope":{"abTestId":{"from":"path","at":"abTestId"}}},
-      "getAccount": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/accounts","params":["fields"],"scope":{}},
-      "getAccountBadge": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/accounts/badge","scope":{}},
-      "getAccountBilling": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/accounts/billing","params":["fields"],"scope":{}},
-      "getAccountBlocklist": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/accounts/blocklists","params":["query[mask]"],"scope":{}},
-      "getAccountLoginHistory": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/accounts/login-history","params":["fields","perPage","page"],"scope":{}},
-      "getActivities": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/contacts/{contactId}/activities","params":["query[createdOn][from]","query[createdOn][to]","fields","perPage","page"],"scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "getAddress": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/addresses/{addressId}","params":["fields"],"scope":{"addressId":{"from":"path","at":"addressId"}}},
-      "getAddressList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/addresses","params":["query[name]","query[firstName]","query[lastName]","query[address1]","query[address2]","query[city]","query[zip]","query[province]","query[provinceCode]","query[phone]","query[company]","query[createdOn][from]","query[createdOn][to]","sort[createdOn]","fields","perPage","page"],"scope":{}},
-      "getAutoresponder": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/autoresponders/{autoresponderId}","params":["fields","query[groupBy]","query[autoreponderId]","query[campaignId]","query[createdOn][from]","query[createdOn][to]","perPage","page"],"scope":{"autoresponderId":{"from":"path","at":"autoresponderId"}}},
-      "getAutoresponderList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/autoresponders","params":["query[subject]","query[name]","query[status]","query[createdOn][from]","query[createdOn][to]","query[campaignId]","sort[name]","sort[subject]","sort[dayOfCycle]","sort[delivered]","sort[openRate]","sort[clickRate]","sort[createdOn]","fields","perPage","page"],"scope":{}},
-      "getAutoresponderThumbnail": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/autoresponders/{autoresponderId}/thumbnail","params":["size"],"scope":{"autoresponderId":{"from":"path","at":"autoresponderId"}}},
-      "getCallbacks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/accounts/callbacks","scope":{}},
-      "getCampaign": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/campaigns/{campaignId}","params":["fields"],"scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "getCampaignBlocklist": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/campaigns/{campaignId}/blocklists","params":["query[mask]"],"scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "getCampaignList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/campaigns","params":["query[name]","query[isDefault]","sort[name]","sort[createdOn]","fields","perPage","page"],"scope":{}},
-      "getCampaignStatisticsBalance": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/campaigns/statistics/balance","params":["query[campaignId]","query[groupBy]","query[createdOn][from]","query[createdOn][to]"],"scope":{}},
-      "getCampaignStatisticsListSize": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/campaigns/statistics/list-size","params":["query[campaignId]","query[groupBy]","query[createdOn][from]","query[createdOn][to]"],"scope":{}},
-      "getCampaignStatisticsLocations": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/campaigns/statistics/locations","params":["query[campaignId]","query[groupBy]","query[createdOn][from]","query[createdOn][to]"],"scope":{}},
-      "getCampaignStatisticsOrigins": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/campaigns/statistics/origins","params":["query[campaignId]","query[groupBy]","query[createdOn][from]","query[createdOn][to]"],"scope":{}},
-      "getCampaignStatisticsRemovals": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/campaigns/statistics/removals","params":["query[campaignId]","query[groupBy]","query[createdOn][from]","query[createdOn][to]"],"scope":{}},
-      "getCampaignStatisticsSubscriptions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/campaigns/statistics/subscriptions","params":["query[campaignId]","query[groupBy]","query[createdOn][from]","query[createdOn][to]"],"scope":{}},
-      "getCampaignStatisticsSummary": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/campaigns/statistics/summary","params":["query[campaignId]"],"scope":{}},
-      "getCart": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/carts/{cartId}","params":["fields"],"scope":{"shopId":{"from":"path","at":"shopId"},"cartId":{"from":"path","at":"cartId"}}},
-      "getCarts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/carts","params":["query[createdOn][from]","query[createdOn][to]","query[externalId]","sort[createdOn]","fields","perPage","page"],"scope":{"shopId":{"from":"path","at":"shopId"}}},
-      "getCategories": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/categories","params":["query[name]","query[parentId]","query[externalId]","search[createdAt][from]","search[createdAt][to]","sort[name]","sort[createdAt]","fields","perPage","page"],"scope":{"shopId":{"from":"path","at":"shopId"}}},
-      "getCategory": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/categories/{categoryId}","params":["fields"],"scope":{"shopId":{"from":"path","at":"shopId"},"categoryId":{"from":"path","at":"categoryId"}}},
-      "getClickTrackById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/click-tracks/{clickTrackId}","params":["fields"],"scope":{"clickTrackId":{"from":"path","at":"clickTrackId"}}},
-      "getClickTrackList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/click-tracks","params":["query[createdOn][from]","query[createdOn][to]","sort[createdOn]","fields","perPage","page"],"scope":{}},
-      "getContactById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/contacts/{contactId}","params":["fields"],"scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "getContactConsentsById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/contacts/{contactId}/consents","params":["fields"],"scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "getContactList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/contacts","params":["query[email]","query[name]","query[campaignId]","query[origin]","query[createdOn][from]","query[createdOn][to]","query[changedOn][from]","query[changedOn][to]","sort[email]","sort[name]","sort[createdOn]","sort[changedOn]","sort[campaignId]","additionalFlags","fields","perPage","page"],"scope":{}},
-      "getContactsByIdSearchContacts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/search-contacts/{searchContactId}/contacts","params":["sort[name]","sort[email]","sort[createdOn]","fields","perPage","page"],"scope":{"searchContactId":{"from":"path","at":"searchContactId"}}},
-      "getContactsFromCampaign": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/campaigns/{campaignId}/contacts","params":["query[email]","query[name]","query[createdOn][from]","query[createdOn][to]","sort[email]","sort[name]","sort[createdOn]","fields","perPage","page"],"scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "getCustomEventById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/custom-events/{customEventId}","params":["fields"],"scope":{"customEventId":{"from":"path","at":"customEventId"}}},
-      "getCustomEventsList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/custom-events","params":["query[name]","query[hasAttributes]","sort[name]","fields","perPage","page"],"scope":{}},
-      "getCustomFieldById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/custom-fields/{customFieldId}","params":["fields"],"scope":{"customFieldId":{"from":"path","at":"customFieldId"}}},
-      "getCustomFieldList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/custom-fields","params":["query[name]","sort[name]","fields","perPage","page"],"scope":{}},
-      "getCustomReportDetails": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/custom-reports/{customReportId}","params":["fields"],"scope":{"customReportId":{"from":"path","at":"customReportId"}}},
-      "getCustomReportList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/custom-reports","params":["query[name]","sort[name]","sort[frequency]","sort[generatedAt]","fields","perPage","page"],"scope":{}},
-      "getFacebookPixelList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/tracking/facebook-pixels","scope":{}},
-      "getFileById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/file-library/files/{fileId}","params":["fields"],"scope":{"fileId":{"from":"path","at":"fileId"}}},
-      "getFileList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/file-library/files","params":["query[allFolders]","query[folderId]","query[name]","query[group]","sort[name]","sort[group]","sort[size]","fields","perPage","page"],"scope":{}},
-      "getFolderList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/file-library/folders","params":["query[name]","sort[name]","sort[size]","sort[createdOn]","fields","perPage","page"],"scope":{}},
-      "getForm": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/forms/{formId}","params":["fields"],"scope":{"formId":{"from":"path","at":"formId"}}},
-      "getFormList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/forms","params":["query[name]","query[createdOn][from]","query[createdOn][to]","query[campaignId]","query[status]","sort[createdOn]","sort[name]","sort[visitors]","sort[uniqueVisitors]","sort[subscribed]","sort[subscriptionRate]","fields","perPage","page"],"scope":{}},
-      "getFormVariantList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/forms/{formId}/variants","params":["fields"],"scope":{"formId":{"from":"path","at":"formId"}}},
-      "getFromFieldById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/from-fields/{fromFieldId}","params":["fields"],"scope":{"fromFieldId":{"from":"path","at":"fromFieldId"}}},
-      "getFromFieldList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/from-fields","params":["query[email]","query[name]","query[isDefault]","query[isActive]","sort[createdOn]","fields","perPage","page"],"scope":{}},
-      "getGDPRField": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/gdpr-fields/{gdprFieldId}","params":["fields"],"scope":{"gdprFieldId":{"from":"path","at":"gdprFieldId"}}},
-      "getGDPRFieldList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/gdpr-fields","params":["sort[name]","sort[createdOn]","fields","perPage","page"],"scope":{}},
-      "getGeneralPerformanceStats": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/statistics/ecommerce/performance","params":["query[orderDate][from]","query[orderDate][to]","query[shopId]","fields"],"scope":{}},
-      "getImageList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/multimedia","params":["fields","perPage","page"],"scope":{}},
-      "getImportById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/imports/{importId}","params":["fields"],"scope":{"importId":{"from":"path","at":"importId"}}},
-      "getImportList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/imports","params":["query[campaignId]","query[createdOn][from]","query[createdOn][to]","sort[createdOn]","sort[finishedOn]","sort[campaignName]","sort[uploadedContacts]","sort[updatedContacts]","sort[addedContacts]","sort[invalidContacts]","sort[status]","fields","perPage","page"],"scope":{}},
-      "getIndustries": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/accounts/industries","params":["fields","perPage","page"],"scope":{}},
-      "getLandingPageById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/landing-pages/{landingPageId}","params":["fields"],"scope":{"landingPageId":{"from":"path","at":"landingPageId"}}},
-      "getLandingPageList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/landing-pages","params":["query[domain]","query[status]","query[subdomain]","query[metaTitle]","query[userDomain]","query[campaignId]","query[createdOn][from]","query[createdOn][to]","sort[createdOn]","sort[domain]","sort[campaignId]","sort[metaTitle]","fields","perPage","page"],"scope":{}},
-      "getLegacyFormById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/webforms/{webformId}","params":["fields"],"scope":{"webformId":{"from":"path","at":"webformId"}}},
-      "getLegacyFormList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/webforms","params":["query[name]","query[modifiedOn][from]","query[modifiedOn][to]","query[campaignId]","sort[modifiedOn]","fields","perPage","page"],"scope":{}},
-      "getLpsById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/lps/{lpsId}","params":["fields"],"scope":{"lpsId":{"from":"path","at":"lpsId"}}},
-      "getLpsGeneralPerformanceStats": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/statistics/lps/{lpsId}/performance","params":["query[date][from]","query[date][to]","query[location]","query[device]","query[page]","fields"],"scope":{"lpsId":{"from":"path","at":"lpsId"}}},
-      "getLpsList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/lps","params":["query[name]","query[status]","stats[from]","stats[to]","sort[name]","sort[createdAt]","sort[updatedAt]","sort[visits]","sort[leads]","sort[subscriptionRate]","fields","perPage","page"],"scope":{}},
-      "getMetaField": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/meta-fields/{metaFieldId}","params":["fields"],"scope":{"shopId":{"from":"path","at":"shopId"},"metaFieldId":{"from":"path","at":"metaFieldId"}}},
-      "getMetaFields": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/meta-fields","params":["query[name]","query[description]","query[value]","query[createdOn][from]","query[createdOn][to]","sort[createdOn]","fields","perPage","page"],"scope":{"shopId":{"from":"path","at":"shopId"}}},
-      "getNewsletter": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/newsletters/{newsletterId}","params":["fields","query[groupBy]","query[newsletterId]","query[campaignId]","query[createdOn][from]","query[createdOn][to]","perPage","page"],"scope":{"newsletterId":{"from":"path","at":"newsletterId"}}},
-      "getNewsletterActivities": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/newsletters/{newsletterId}/activities","params":["query[activity]","query[createdOn][from]","query[createdOn][to]","sort[createdOn]","perPage","page"],"scope":{"newsletterId":{"from":"path","at":"newsletterId"}}},
-      "getNewsletterList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/newsletters","params":["query[subject]","query[name]","query[status]","query[createdOn][from]","query[createdOn][to]","query[sendOn][from]","query[sendOn][to]","query[type]","query[campaignId]","sort[createdOn]","sort[sendOn]","fields","perPage","page"],"scope":{}},
-      "getNewsletterThumbnail": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/newsletters/{newsletterId}/thumbnail","params":["size"],"scope":{"newsletterId":{"from":"path","at":"newsletterId"}}},
-      "getOrderById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/orders/{orderId}","params":["fields"],"scope":{"shopId":{"from":"path","at":"shopId"},"orderId":{"from":"path","at":"orderId"}}},
-      "getOrderList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/orders","params":["query[description]","query[status]","query[externalId]","query[processedAt][from]","query[processedAt][to]","sort[createdOn]","fields","perPage","page"],"scope":{"shopId":{"from":"path","at":"shopId"}}},
-      "getPopupDetails": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/popups/{popupId}","params":["fields"],"scope":{"popupId":{"from":"path","at":"popupId"}}},
-      "getPopupGeneralPerformance": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/statistics/popups/{popupId}/performance","params":["query[date][from]","query[date][to]","query[location]","query[device]","fields"],"scope":{"popupId":{"from":"path","at":"popupId"}}},
-      "getPopupsList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/popups","params":["query[name]","query[status]","stats[from]","stats[to]","sort[name]","sort[status]","sort[createdAt]","sort[updatedAt]","sort[views]","sort[uniqueVisitors]","sort[leads]","sort[ctr]","fields","perPage","page"],"scope":{}},
-      "getPredefinedFieldById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/predefined-fields/{predefinedFieldId}","params":["fields"],"scope":{"predefinedFieldId":{"from":"path","at":"predefinedFieldId"}}},
-      "getPredefinedFieldList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/predefined-fields","params":["sort[name]","query[name]","query[campaignId]","fields","perPage","page"],"scope":{}},
-      "getProductById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/products/{productId}","params":["fields"],"scope":{"shopId":{"from":"path","at":"shopId"},"productId":{"from":"path","at":"productId"}}},
-      "getProductList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/products","params":["query[name]","query[vendor]","query[category]","query[categoryId]","query[externalId]","query[variantName]","query[metaFieldNames]","query[metaFieldValues]","query[createdOn][from]","query[createdOn][to]","sort[name]","sort[createdOn]","fields","perPage","page"],"scope":{"shopId":{"from":"path","at":"shopId"}}},
-      "getProductVariantById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/products/{productId}/variants/{variantId}","params":["fields"],"scope":{"shopId":{"from":"path","at":"shopId"},"productId":{"from":"path","at":"productId"},"variantId":{"from":"path","at":"variantId"}}},
-      "getProductVariantList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/products/{productId}/variants","params":["query[name]","query[sku]","query[description]","query[externalId]","query[createdAt][from]","query[createdAt][to]","sort[createdOn]","fields","perPage","page"],"scope":{"shopId":{"from":"path","at":"shopId"},"productId":{"from":"path","at":"productId"}}},
-      "getRevenueStats": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/statistics/ecommerce/revenue","params":["query[orderDate][from]","query[orderDate][to]","query[shopId]","fields"],"scope":{}},
-      "getRssNewsletterById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/rss-newsletters/{rssNewsletterId}","params":["fields","query[groupBy]","query[rssNewsletterId]","query[campaignId]","query[createdOn][from]","query[createdOn][to]","perPage","page"],"scope":{"rssNewsletterId":{"from":"path","at":"rssNewsletterId"}}},
-      "getRssNewslettersList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/rss-newsletters","params":["query[subject]","query[status]","query[createdOn][from]","query[createdOn][to]","query[campaignId]","sort[createdOn]","fields","perPage","page"],"scope":{}},
-      "getSMSAutomationList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/sms-automation","params":["query[name]","query[campaignId]","query[hasLinks]","sort[status]","sort[name]","sort[modifiedOn]","sort[delivered]","sort[sent]","sort[clicks]","fields","perPage","page"],"scope":{}},
-      "getSMSList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/sms","params":["query[type]","query[name]","query[sendingStatus]","query[campaignId]","query[hasLinks]","sort[sendingStatus]","sort[name]","sort[sendOn]","sort[modifiedOn]","sort[delivered]","sort[sent]","sort[clicks]","fields","perPage","page"],"scope":{}},
-      "getSearchContactsById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/search-contacts/{searchContactId}","params":["fields"],"scope":{"searchContactId":{"from":"path","at":"searchContactId"}}},
-      "getSearchContactsList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/search-contacts","params":["sort[name]","sort[createdOn]","query[name]","query[createdOn][from]","query[createdOn][to]","fields","perPage","page"],"scope":{}},
-      "getSendingLimits": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/accounts/sending-limits","params":["fields"],"scope":{}},
-      "getShopById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}","params":["fields"],"scope":{"shopId":{"from":"path","at":"shopId"}}},
-      "getShopList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/shops","params":["query[name]","sort[name]","sort[createdOn]","fields","perPage","page"],"scope":{}},
-      "getSingleAutoresponderStatistics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/autoresponders/{autoresponderId}/statistics","params":["query[groupBy]","query[createdOn][from]","query[createdOn][to]","fields","perPage","page"],"scope":{"autoresponderId":{"from":"path","at":"autoresponderId"}}},
-      "getSingleNewsletterStatistics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/newsletters/{newsletterId}/statistics","params":["query[groupBy]","query[createdOn][from]","query[createdOn][to]","fields","perPage","page"],"scope":{"newsletterId":{"from":"path","at":"newsletterId"}}},
-      "getSingleRssNewsletterStatisticsCollection": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/rss-newsletters/{rssNewsletterId}/statistics","params":["query[groupBy]","query[createdOn][from]","query[createdOn][to]","fields","perPage","page"],"scope":{"rssNewsletterId":{"from":"path","at":"rssNewsletterId"}}},
-      "getSmsAutomationById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/sms-automation/{smsId}","params":["fields"],"scope":{"smsId":{"from":"path","at":"smsId"}}},
-      "getSmsById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/sms/{smsId}","params":["fields","query[status]"],"scope":{"smsId":{"from":"path","at":"smsId"}}},
-      "getSmsStats": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/statistics/sms/{smsId}","params":["query[createdOn][from]","query[createdOn][to]","fields"],"scope":{"smsId":{"from":"path","at":"smsId"}}},
-      "getSplittest": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/splittests/{splittestId}","params":["fields"],"scope":{"splittestId":{"from":"path","at":"splittestId"}}},
-      "getSplittestList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/splittests","params":["query[name]","query[type]","query[status]","query[createdOn][from]","query[createdOn][to]","sort[name]","sort[createdOn]","fields","perPage","page"],"scope":{}},
-      "getSubscriptionConfirmationBodyList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/subscription-confirmations/body/{languageCode}","params":["fields"],"scope":{"languageCode":{"from":"path","at":"languageCode"}}},
-      "getSubscriptionConfirmationSubjectList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/subscription-confirmations/subject/{languageCode}","params":["fields"],"scope":{"languageCode":{"from":"path","at":"languageCode"}}},
-      "getSuppressionById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/suppressions/{suppressionId}","scope":{"suppressionId":{"from":"path","at":"suppressionId"}}},
-      "getSuppressionsList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/suppressions","params":["query[name]","query[createdOn][from]","query[createdOn][to]","sort[name]","sort[createdOn]","fields","perPage","page"],"scope":{}},
-      "getTagById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/tags/{tagId}","params":["fields"],"scope":{"tagId":{"from":"path","at":"tagId"}}},
-      "getTagsList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/tags","params":["query[name]","query[createdAt][from]","query[createdAt][to]","sort[createdAt]","sort[name]","fields","perPage","page"],"scope":{}},
-      "getTaxById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/taxes/{taxId}","params":["fields"],"scope":{"shopId":{"from":"path","at":"shopId"},"taxId":{"from":"path","at":"taxId"}}},
-      "getTaxList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/taxes","params":["query[name]","query[createdOn][from]","query[createdOn][to]","sort[createdOn]","fields","perPage","page"],"scope":{"shopId":{"from":"path","at":"shopId"}}},
-      "getTimezones": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/accounts/timezones","params":["fields"],"scope":{}},
-      "getTracking": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/tracking","scope":{}},
-      "getTransactionalEmailsById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/transactional-emails/{transactionalEmailId}","params":["fields","query[groupBy]","query[timeFrame][from]","query[timeFrame][to]","query[tagged]","query[tagId]","query[subject]","sort[createdOn]","sort[subject]","perPage","page"],"scope":{"transactionalEmailId":{"from":"path","at":"transactionalEmailId"}}},
-      "getTransactionalEmailsList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/transactional-emails","params":["query[sentOn][from]","query[sentOn][to]","query[tagged]","query[tagId]","fields","perPage","page"],"scope":{}},
-      "getTransactionalEmailsTemplatesById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/transactional-emails/templates/{transactionalEmailTemplateId}","params":["fields"],"scope":{"transactionalEmailTemplateId":{"from":"path","at":"transactionalEmailTemplateId"}}},
-      "getWbeGeneralPerformanceStats": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/statistics/wbe/{websiteId}/performance","params":["query[date][from]","query[date][to]","query[location]","query[device]","query[page]","fields"],"scope":{"websiteId":{"from":"path","at":"websiteId"}}},
-      "getWebinarById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/webinars/{webinarId}","params":["fields"],"scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "getWebinarList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/webinars","params":["query[name]","query[campaignId]","query[status]","sort[name]","sort[createdOn]","sort[startsOn]","query[type]","fields","perPage","page"],"scope":{}},
-      "getWebsiteById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/websites/{websiteId}","params":["fields"],"scope":{"websiteId":{"from":"path","at":"websiteId"}}},
-      "getWebsitesList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/websites","params":["query[name]","query[status]","stats[from]","stats[to]","sort[name]","sort[createdAt]","sort[updatedAt]","sort[pageViews]","sort[visits]","sort[uniqueVisitors]","fields","perPage","page"],"scope":{}},
-      "getWorkflow": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/workflow/{workflowId}","params":["fields"],"scope":{"workflowId":{"from":"path","at":"workflowId"}}},
-      "getWorkflowList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/workflow","params":["fields","perPage","page"],"scope":{}},
-      "newSearchContacts": {"action":"write.search_contacts","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/search-contacts","body":"any","scope":{}},
-      "postAbtestsSubjectByIdWinner": {"action":"write.winner","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/ab-tests/subject/{abTestId}/winner","body":"any","scope":{"abTestId":{"from":"path","at":"abTestId"}}},
-      "quota": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.getresponse.com","path":"/v3/file-library/quota","scope":{}},
-      "sendDraft": {"action":"send.send_draft","effects":["send"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/newsletters/send-draft","body":"any","scope":{}},
-      "sendSms": {"action":"send.sms","effects":["send"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/sms","body":"any","scope":{}},
-      "setFromFieldAsDefault": {"action":"write.default","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/from-fields/{fromFieldId}/default","scope":{"fromFieldId":{"from":"path","at":"fromFieldId"}}},
-      "updateAccount": {"action":"admin.accounts","effects":["admin"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/accounts","body":"any","scope":{}},
-      "updateAccountBadge": {"action":"write.badge","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/accounts/badge","body":"any","scope":{}},
-      "updateAccountBlocklist": {"action":"write.blocklists","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/accounts/blocklists","params":["additionalFlags"],"body":"any","scope":{}},
-      "updateAddress": {"action":"write.addresses","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/addresses/{addressId}","body":"any","scope":{"addressId":{"from":"path","at":"addressId"}}},
-      "updateAutoresponder": {"action":"write.autoresponders","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/autoresponders/{autoresponderId}","body":"any","scope":{"autoresponderId":{"from":"path","at":"autoresponderId"}}},
-      "updateCallbacks": {"action":"write.callbacks","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/accounts/callbacks","body":"any","scope":{}},
-      "updateCampaign": {"action":"write.campaigns","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/campaigns/{campaignId}","body":"any","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "updateCampaignBlocklist": {"action":"write.campaigns","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/campaigns/{campaignId}/blocklists","params":["additionalFlags"],"body":"any","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "updateCart": {"action":"write.carts","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/carts/{cartId}","body":"any","scope":{"shopId":{"from":"path","at":"shopId"},"cartId":{"from":"path","at":"cartId"}}},
-      "updateCategory": {"action":"write.categories","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/categories/{categoryId}","body":"any","scope":{"shopId":{"from":"path","at":"shopId"},"categoryId":{"from":"path","at":"categoryId"}}},
-      "updateContact": {"action":"write.contacts","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/contacts/{contactId}","body":"any","scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "updateCustomEvent": {"action":"execute.trigger","effects":["execute"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/custom-events/{customEventId}","body":"any","scope":{"customEventId":{"from":"path","at":"customEventId"}}},
-      "updateCustomField": {"action":"write.custom_fields","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/custom-fields/{customFieldId}","body":"any","scope":{"customFieldId":{"from":"path","at":"customFieldId"}}},
-      "updateMetaField": {"action":"write.meta_fields","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/meta-fields/{metaFieldId}","body":"any","scope":{"shopId":{"from":"path","at":"shopId"},"metaFieldId":{"from":"path","at":"metaFieldId"}}},
-      "updateOrder": {"action":"write.orders","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/orders/{orderId}","params":["additionalFlags"],"body":"any","scope":{"shopId":{"from":"path","at":"shopId"},"orderId":{"from":"path","at":"orderId"}}},
-      "updatePredefinedField": {"action":"write.predefined_fields","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/predefined-fields/{predefinedFieldId}","body":"any","scope":{"predefinedFieldId":{"from":"path","at":"predefinedFieldId"}}},
-      "updateProduct": {"action":"write.products","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/products/{productId}","body":"any","scope":{"shopId":{"from":"path","at":"shopId"},"productId":{"from":"path","at":"productId"}}},
-      "updateProductVariant": {"action":"write.variants","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/products/{productId}/variants/{variantId}","body":"any","scope":{"shopId":{"from":"path","at":"shopId"},"productId":{"from":"path","at":"productId"},"variantId":{"from":"path","at":"variantId"}}},
-      "updateRssNewsletter": {"action":"write.rss_newsletters","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/rss-newsletters/{rssNewsletterId}","body":"any","scope":{"rssNewsletterId":{"from":"path","at":"rssNewsletterId"}}},
-      "updateSearchContacts": {"action":"write.search_contacts","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/search-contacts/{searchContactId}","params":["sort[name]","sort[email]","sort[createdOn]","fields","perPage","page"],"body":"any","scope":{"searchContactId":{"from":"path","at":"searchContactId"}}},
-      "updateShop": {"action":"write.shops","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}","body":"any","scope":{"shopId":{"from":"path","at":"shopId"}}},
-      "updateSuppression": {"action":"write.suppressions","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/suppressions/{suppressionId}","body":"any","scope":{"suppressionId":{"from":"path","at":"suppressionId"}}},
-      "updateTag": {"action":"write.tags","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/tags/{tagId}","body":"any","scope":{"tagId":{"from":"path","at":"tagId"}}},
-      "updateTax": {"action":"write.taxes","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/taxes/{taxId}","body":"any","scope":{"shopId":{"from":"path","at":"shopId"},"taxId":{"from":"path","at":"taxId"}}},
-      "updateTransactionalEmailsTemplate": {"action":"write.templates","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/transactional-emails/templates/{transactionalEmailTemplateId}","body":"any","scope":{"transactionalEmailTemplateId":{"from":"path","at":"transactionalEmailTemplateId"}}},
-      "updateWorkflow": {"action":"execute.workflow","effects":["execute"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/workflow/{workflowId}","body":"any","scope":{"workflowId":{"from":"path","at":"workflowId"}}},
-      "uploadImage": {"action":"write.multimedia","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/multimedia","body":"any","scope":{}},
-      "upsertContactCustoms": {"action":"write.custom_fields","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/contacts/{contactId}/custom-fields","body":"any","scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "upsertCustomFieldsBySearchContactId": {"action":"write.custom_fields","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/search-contacts/{searchContactId}/custom-fields","body":"any","scope":{"searchContactId":{"from":"path","at":"searchContactId"}}},
-      "upsertMetaFields": {"action":"write.meta_fields","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/products/{productId}/meta-fields","body":"any","scope":{"shopId":{"from":"path","at":"shopId"},"productId":{"from":"path","at":"productId"}}},
-      "upsertProductCategories": {"action":"write.categories","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/shops/{shopId}/products/{productId}/categories","body":"any","scope":{"shopId":{"from":"path","at":"shopId"},"productId":{"from":"path","at":"productId"}}},
-      "upsertTags": {"action":"write.tags","effects":["write"],"method":"POST","origin":"https://api.getresponse.com","path":"/v3/contacts/{contactId}/tags","body":"any","scope":{"contactId":{"from":"path","at":"contactId"}}}
+      "GetAbTestSubjectList": {"action":"ab_tests.subject.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[stage]","query[abTestId]","query[campaignId]","sort[name]","sort[stage]","sort[sendOn]","sort[totalDelivered]","fields","perPage","page"],"path":"/v3/ab-tests/subject","scope":{}},
+      "cancelAbTest": {"action":"ab_tests.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/ab-tests/{abTestId}/cancel","scope":{"abTestId":{"at":"abTestId","from":"path"}}},
+      "cancelMessageSend": {"action":"newsletters.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/newsletters/{newsletterId}/cancel","scope":{"newsletterId":{"at":"newsletterId","from":"path"}}},
+      "createAddress": {"action":"addresses.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/addresses","scope":{}},
+      "createAutoresponder": {"action":"autoresponders.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/autoresponders","scope":{}},
+      "createBatchContacts": {"action":"contacts.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/contacts/batch","scope":{}},
+      "createBatchContacts.json.1ac065ec8555": {"action":"contacts.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/contacts/batch","scope":{"campaignId":{"at":"/campaignId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createCampaign": {"action":"campaigns.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/campaigns","scope":{}},
+      "createCart": {"action":"shops.carts.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/shops/{shopId}/carts","scope":{"shopId":{"at":"shopId","from":"path"}}},
+      "createCategory": {"action":"shops.categories.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/shops/{shopId}/categories","scope":{"shopId":{"at":"shopId","from":"path"}}},
+      "createContact": {"action":"contacts.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/contacts","scope":{}},
+      "createCustomEvent": {"action":"custom_events.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/custom-events","scope":{}},
+      "createCustomField": {"action":"custom_fields.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/custom-fields","scope":{}},
+      "createCustomReport": {"action":"custom_reports.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/custom-reports","scope":{}},
+      "createFile": {"action":"file_library.files.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/file-library/files","scope":{}},
+      "createFolder": {"action":"file_library.folders.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/file-library/folders","scope":{}},
+      "createFromField": {"action":"from_fields.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/from-fields","scope":{}},
+      "createImport": {"action":"imports.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/imports","scope":{}},
+      "createMetaField": {"action":"shops.meta_fields.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/shops/{shopId}/meta-fields","scope":{"shopId":{"at":"shopId","from":"path"}}},
+      "createNewsletter": {"action":"newsletters.send","body":"any","effects":["send","write"],"method":"POST","origin":"{api}","path":"/v3/newsletters","scope":{}},
+      "createOrder": {"action":"shops.orders.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","params":["additionalFlags"],"path":"/v3/shops/{shopId}/orders","scope":{"shopId":{"at":"shopId","from":"path"}}},
+      "createPredefinedField": {"action":"predefined_fields.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/predefined-fields","scope":{}},
+      "createProduct": {"action":"shops.products.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/shops/{shopId}/products","scope":{"shopId":{"at":"shopId","from":"path"}}},
+      "createProductVariant": {"action":"shops.products.variants.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/shops/{shopId}/products/{productId}/variants","scope":{"productId":{"at":"productId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "createRssNewsletter": {"action":"rss_newsletters.send","body":"any","effects":["send","write"],"method":"POST","origin":"{api}","path":"/v3/rss-newsletters","scope":{}},
+      "createShop": {"action":"shops.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/shops","scope":{}},
+      "createSubjectAbTest": {"action":"ab_tests.subject.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/ab-tests/subject","scope":{}},
+      "createSuppression": {"action":"suppressions.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/suppressions","scope":{}},
+      "createTag": {"action":"tags.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/tags","scope":{}},
+      "createTax": {"action":"shops.taxes.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/shops/{shopId}/taxes","scope":{"shopId":{"at":"shopId","from":"path"}}},
+      "createTransactionalEmail": {"action":"transactional_emails.send","body":"any","effects":["send"],"method":"POST","origin":"{api}","path":"/v3/transactional-emails","scope":{}},
+      "createTransactionalEmailTemplate": {"action":"transactional_emails.templates.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/transactional-emails/templates","scope":{}},
+      "deleteAbTest": {"action":"ab_tests.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/ab-tests/{abTestId}","scope":{"abTestId":{"at":"abTestId","from":"path"}}},
+      "deleteAddress": {"action":"addresses.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/addresses/{addressId}","scope":{"addressId":{"at":"addressId","from":"path"}}},
+      "deleteAutoresponder": {"action":"autoresponders.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/autoresponders/{autoresponderId}","scope":{"autoresponderId":{"at":"autoresponderId","from":"path"}}},
+      "deleteCart": {"action":"shops.carts.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/shops/{shopId}/carts/{cartId}","scope":{"cartId":{"at":"cartId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "deleteCategory": {"action":"shops.categories.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/shops/{shopId}/categories/{categoryId}","scope":{"categoryId":{"at":"categoryId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "deleteContact": {"action":"contacts.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["messageId","ipAddress"],"path":"/v3/contacts/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "deleteCustomEvent": {"action":"custom_events.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/custom-events/{customEventId}","scope":{"customEventId":{"at":"customEventId","from":"path"}}},
+      "deleteCustomField": {"action":"custom_fields.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/custom-fields/{customFieldId}","scope":{"customFieldId":{"at":"customFieldId","from":"path"}}},
+      "deleteFile": {"action":"file_library.files.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/file-library/files/{fileId}","scope":{"fileId":{"at":"fileId","from":"path"}}},
+      "deleteFolder": {"action":"file_library.folders.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/file-library/folders/{folderId}","scope":{"folderId":{"at":"folderId","from":"path"}}},
+      "deleteFromField": {"action":"from_fields.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["fromFieldIdToReplaceWith"],"path":"/v3/from-fields/{fromFieldId}","scope":{"fromFieldId":{"at":"fromFieldId","from":"path"}}},
+      "deleteMetaField": {"action":"shops.meta_fields.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/shops/{shopId}/meta-fields/{metaFieldId}","scope":{"metaFieldId":{"at":"metaFieldId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "deleteNewsletter": {"action":"newsletters.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/newsletters/{newsletterId}","scope":{"newsletterId":{"at":"newsletterId","from":"path"}}},
+      "deleteOrder": {"action":"shops.orders.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/shops/{shopId}/orders/{orderId}","scope":{"orderId":{"at":"orderId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "deletePredefinedField": {"action":"predefined_fields.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/predefined-fields/{predefinedFieldId}","scope":{"predefinedFieldId":{"at":"predefinedFieldId","from":"path"}}},
+      "deleteProduct": {"action":"shops.products.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/shops/{shopId}/products/{productId}","scope":{"productId":{"at":"productId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "deleteProductVariant": {"action":"shops.products.variants.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/shops/{shopId}/products/{productId}/variants/{variantId}","scope":{"productId":{"at":"productId","from":"path"},"shopId":{"at":"shopId","from":"path"},"variantId":{"at":"variantId","from":"path"}}},
+      "deleteRssNewsletter": {"action":"rss_newsletters.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/rss-newsletters/{rssNewsletterId}","scope":{"rssNewsletterId":{"at":"rssNewsletterId","from":"path"}}},
+      "deleteSearchContacts": {"action":"search_contacts.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/search-contacts/{searchContactId}","scope":{"searchContactId":{"at":"searchContactId","from":"path"}}},
+      "deleteShop": {"action":"shops.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/shops/{shopId}","scope":{"shopId":{"at":"shopId","from":"path"}}},
+      "deleteSuppression": {"action":"suppressions.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/suppressions/{suppressionId}","scope":{"suppressionId":{"at":"suppressionId","from":"path"}}},
+      "deleteTag": {"action":"tags.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/tags/{tagId}","scope":{"tagId":{"at":"tagId","from":"path"}}},
+      "deleteTax": {"action":"shops.taxes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/shops/{shopId}/taxes/{taxId}","scope":{"shopId":{"at":"shopId","from":"path"},"taxId":{"at":"taxId","from":"path"}}},
+      "deleteTransactionalEmailsTemplate": {"action":"transactional_emails.templates.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/transactional-emails/templates/{transactionalEmailTemplateId}","scope":{"transactionalEmailTemplateId":{"at":"transactionalEmailTemplateId","from":"path"}}},
+      "disableCallbacks": {"action":"accounts.callbacks.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/accounts/callbacks","scope":{}},
+      "getAbTestSubjectById": {"action":"ab_tests.subject.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/ab-tests/subject/{abTestId}","scope":{"abTestId":{"at":"abTestId","from":"path"}}},
+      "getAccount": {"action":"accounts.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/accounts","scope":{}},
+      "getAccountBadge": {"action":"accounts.badge.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/accounts/badge","scope":{}},
+      "getAccountBilling": {"action":"accounts.billing.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/accounts/billing","scope":{}},
+      "getAccountBlocklist": {"action":"accounts.blocklists.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[mask]"],"path":"/v3/accounts/blocklists","scope":{}},
+      "getAccountLoginHistory": {"action":"accounts.login_history.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields","perPage","page"],"path":"/v3/accounts/login-history","scope":{}},
+      "getActivities": {"action":"contacts.activities.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[createdOn][from]","query[createdOn][to]","fields","perPage","page"],"path":"/v3/contacts/{contactId}/activities","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "getAddress": {"action":"addresses.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/addresses/{addressId}","scope":{"addressId":{"at":"addressId","from":"path"}}},
+      "getAddressList": {"action":"addresses.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[firstName]","query[lastName]","query[address1]","query[address2]","query[city]","query[zip]","query[province]","query[provinceCode]","query[phone]","query[company]","query[createdOn][from]","query[createdOn][to]","sort[createdOn]","fields","perPage","page"],"path":"/v3/addresses","scope":{}},
+      "getAutoresponder": {"action":"autoresponders.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields","query[groupBy]","query[autoreponderId]","query[campaignId]","query[createdOn][from]","query[createdOn][to]","perPage","page"],"path":"/v3/autoresponders/{autoresponderId}","path_patterns":{"autoresponderId":"[^s].*|s(?:|[^t].*|t(?:|[^a].*|a(?:|[^t].*|t(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^i].*|i(?:|[^c].*|c(?:|[^s].*|s.+)))))))))"},"scope":{"autoresponderId":{"at":"autoresponderId","from":"path"}}},
+      "getAutoresponderList": {"action":"autoresponders.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[subject]","query[name]","query[status]","query[createdOn][from]","query[createdOn][to]","query[campaignId]","sort[name]","sort[subject]","sort[dayOfCycle]","sort[delivered]","sort[openRate]","sort[clickRate]","sort[createdOn]","fields","perPage","page"],"path":"/v3/autoresponders","scope":{}},
+      "getAutoresponderStatisticsCollection": {"action":"autoresponders.statistics.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[groupBy]","query[autoreponderId]","query[campaignId]","query[createdOn][from]","query[createdOn][to]","fields","perPage","page"],"path":"/v3/autoresponders/statistics","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getAutoresponderThumbnail": {"action":"autoresponders.thumbnail.read","effects":["read"],"method":"GET","origin":"{api}","params":["size"],"path":"/v3/autoresponders/{autoresponderId}/thumbnail","scope":{"autoresponderId":{"at":"autoresponderId","from":"path"}}},
+      "getCallbacks": {"action":"accounts.callbacks.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/accounts/callbacks","scope":{}},
+      "getCampaign": {"action":"campaigns.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/campaigns/{campaignId}","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "getCampaignBlocklist": {"action":"campaigns.blocklists.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[mask]"],"path":"/v3/campaigns/{campaignId}/blocklists","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "getCampaignList": {"action":"campaigns.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[isDefault]","sort[name]","sort[createdOn]","fields","perPage","page"],"path":"/v3/campaigns","scope":{}},
+      "getCampaignStatisticsBalance": {"action":"campaigns.statistics.balance.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[campaignId]","query[groupBy]","query[createdOn][from]","query[createdOn][to]"],"path":"/v3/campaigns/statistics/balance","scope":{}},
+      "getCampaignStatisticsListSize": {"action":"campaigns.statistics.size.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[campaignId]","query[groupBy]","query[createdOn][from]","query[createdOn][to]"],"path":"/v3/campaigns/statistics/list-size","scope":{}},
+      "getCampaignStatisticsLocations": {"action":"campaigns.statistics.locations.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[campaignId]","query[groupBy]","query[createdOn][from]","query[createdOn][to]"],"path":"/v3/campaigns/statistics/locations","scope":{}},
+      "getCampaignStatisticsOrigins": {"action":"campaigns.statistics.origins.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[campaignId]","query[groupBy]","query[createdOn][from]","query[createdOn][to]"],"path":"/v3/campaigns/statistics/origins","scope":{}},
+      "getCampaignStatisticsRemovals": {"action":"campaigns.statistics.removals.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[campaignId]","query[groupBy]","query[createdOn][from]","query[createdOn][to]"],"path":"/v3/campaigns/statistics/removals","scope":{}},
+      "getCampaignStatisticsSubscriptions": {"action":"campaigns.statistics.subscriptions.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[campaignId]","query[groupBy]","query[createdOn][from]","query[createdOn][to]"],"path":"/v3/campaigns/statistics/subscriptions","scope":{}},
+      "getCampaignStatisticsSummary": {"action":"campaigns.statistics.summary.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[campaignId]"],"path":"/v3/campaigns/statistics/summary","scope":{}},
+      "getCart": {"action":"shops.carts.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/shops/{shopId}/carts/{cartId}","scope":{"cartId":{"at":"cartId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "getCarts": {"action":"shops.carts.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[createdOn][from]","query[createdOn][to]","query[externalId]","sort[createdOn]","fields","perPage","page"],"path":"/v3/shops/{shopId}/carts","scope":{"shopId":{"at":"shopId","from":"path"}}},
+      "getCategories": {"action":"shops.categories.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[parentId]","query[externalId]","search[createdAt][from]","search[createdAt][to]","sort[name]","sort[createdAt]","fields","perPage","page"],"path":"/v3/shops/{shopId}/categories","scope":{"shopId":{"at":"shopId","from":"path"}}},
+      "getCategory": {"action":"shops.categories.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/shops/{shopId}/categories/{categoryId}","scope":{"categoryId":{"at":"categoryId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "getClickTrackById": {"action":"click_tracks.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/click-tracks/{clickTrackId}","scope":{"clickTrackId":{"at":"clickTrackId","from":"path"}}},
+      "getClickTrackList": {"action":"click_tracks.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[createdOn][from]","query[createdOn][to]","sort[createdOn]","fields","perPage","page"],"path":"/v3/click-tracks","scope":{}},
+      "getContactById": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/contacts/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "getContactConsentsById": {"action":"contacts.consents.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/contacts/{contactId}/consents","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "getContactList": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[email]","query[name]","query[campaignId]","query[origin]","query[createdOn][from]","query[createdOn][to]","query[changedOn][from]","query[changedOn][to]","sort[email]","sort[name]","sort[createdOn]","sort[changedOn]","sort[campaignId]","additionalFlags","fields","perPage","page"],"path":"/v3/contacts","scope":{}},
+      "getContactsByIdSearchContacts": {"action":"search_contacts.contacts.read","effects":["read"],"method":"GET","origin":"{api}","params":["sort[name]","sort[email]","sort[createdOn]","fields","perPage","page"],"path":"/v3/search-contacts/{searchContactId}/contacts","scope":{"searchContactId":{"at":"searchContactId","from":"path"}}},
+      "getContactsFromCampaign": {"action":"campaigns.contacts.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[email]","query[name]","query[createdOn][from]","query[createdOn][to]","sort[email]","sort[name]","sort[createdOn]","fields","perPage","page"],"path":"/v3/campaigns/{campaignId}/contacts","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "getContactsFromSearchContactsConditions": {"action":"search_contacts.contacts.read","effects":["read"],"method":"POST","origin":"{api}","params":["sort[name]","sort[email]","sort[createdOn]","fields","perPage","page"],"path":"/v3/search-contacts/contacts","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getContactsFromSearchContactsConditions.json.01640360821a": {"action":"search_contacts.contacts.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","params":["sort[name]","sort[email]","sort[createdOn]","fields","perPage","page"],"path":"/v3/search-contacts/contacts","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "getCustomEventById": {"action":"custom_events.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/custom-events/{customEventId}","scope":{"customEventId":{"at":"customEventId","from":"path"}}},
+      "getCustomEventsList": {"action":"custom_events.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[hasAttributes]","sort[name]","fields","perPage","page"],"path":"/v3/custom-events","scope":{}},
+      "getCustomFieldById": {"action":"custom_fields.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/custom-fields/{customFieldId}","scope":{"customFieldId":{"at":"customFieldId","from":"path"}}},
+      "getCustomFieldList": {"action":"custom_fields.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","sort[name]","fields","perPage","page"],"path":"/v3/custom-fields","scope":{}},
+      "getCustomReportDetails": {"action":"custom_reports.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/custom-reports/{customReportId}","scope":{"customReportId":{"at":"customReportId","from":"path"}}},
+      "getCustomReportList": {"action":"custom_reports.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","sort[name]","sort[frequency]","sort[generatedAt]","fields","perPage","page"],"path":"/v3/custom-reports","scope":{}},
+      "getFacebookPixelList": {"action":"tracking.facebook_pixels.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/tracking/facebook-pixels","scope":{}},
+      "getFileById": {"action":"file_library.files.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/file-library/files/{fileId}","scope":{"fileId":{"at":"fileId","from":"path"}}},
+      "getFileList": {"action":"file_library.files.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[allFolders]","query[folderId]","query[name]","query[group]","sort[name]","sort[group]","sort[size]","fields","perPage","page"],"path":"/v3/file-library/files","scope":{}},
+      "getFolderList": {"action":"file_library.folders.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","sort[name]","sort[size]","sort[createdOn]","fields","perPage","page"],"path":"/v3/file-library/folders","scope":{}},
+      "getForm": {"action":"forms.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/forms/{formId}","scope":{"formId":{"at":"formId","from":"path"}}},
+      "getFormList": {"action":"forms.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[createdOn][from]","query[createdOn][to]","query[campaignId]","query[status]","sort[createdOn]","sort[name]","sort[visitors]","sort[uniqueVisitors]","sort[subscribed]","sort[subscriptionRate]","fields","perPage","page"],"path":"/v3/forms","scope":{}},
+      "getFormVariantList": {"action":"forms.variants.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/forms/{formId}/variants","scope":{"formId":{"at":"formId","from":"path"}}},
+      "getFromFieldById": {"action":"from_fields.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/from-fields/{fromFieldId}","scope":{"fromFieldId":{"at":"fromFieldId","from":"path"}}},
+      "getFromFieldList": {"action":"from_fields.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[email]","query[name]","query[isDefault]","query[isActive]","sort[createdOn]","fields","perPage","page"],"path":"/v3/from-fields","scope":{}},
+      "getGDPRField": {"action":"gdpr_fields.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/gdpr-fields/{gdprFieldId}","scope":{"gdprFieldId":{"at":"gdprFieldId","from":"path"}}},
+      "getGDPRFieldList": {"action":"gdpr_fields.read","effects":["read"],"method":"GET","origin":"{api}","params":["sort[name]","sort[createdOn]","fields","perPage","page"],"path":"/v3/gdpr-fields","scope":{}},
+      "getGeneralPerformanceStats": {"action":"statistics.ecommerce.performance.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[orderDate][from]","query[orderDate][to]","query[shopId]","fields"],"path":"/v3/statistics/ecommerce/performance","scope":{}},
+      "getImageList": {"action":"multimedia.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields","perPage","page"],"path":"/v3/multimedia","scope":{}},
+      "getImportById": {"action":"imports.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/imports/{importId}","scope":{"importId":{"at":"importId","from":"path"}}},
+      "getImportList": {"action":"imports.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[campaignId]","query[createdOn][from]","query[createdOn][to]","sort[createdOn]","sort[finishedOn]","sort[campaignName]","sort[uploadedContacts]","sort[updatedContacts]","sort[addedContacts]","sort[invalidContacts]","sort[status]","fields","perPage","page"],"path":"/v3/imports","scope":{}},
+      "getIndustries": {"action":"accounts.industries.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields","perPage","page"],"path":"/v3/accounts/industries","scope":{}},
+      "getLandingPageById": {"action":"landing_pages.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/landing-pages/{landingPageId}","scope":{"landingPageId":{"at":"landingPageId","from":"path"}}},
+      "getLandingPageList": {"action":"landing_pages.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[domain]","query[status]","query[subdomain]","query[metaTitle]","query[userDomain]","query[campaignId]","query[createdOn][from]","query[createdOn][to]","sort[createdOn]","sort[domain]","sort[campaignId]","sort[metaTitle]","fields","perPage","page"],"path":"/v3/landing-pages","scope":{}},
+      "getLegacyFormById": {"action":"webforms.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/webforms/{webformId}","scope":{"webformId":{"at":"webformId","from":"path"}}},
+      "getLegacyFormList": {"action":"webforms.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[modifiedOn][from]","query[modifiedOn][to]","query[campaignId]","sort[modifiedOn]","fields","perPage","page"],"path":"/v3/webforms","scope":{}},
+      "getLpsById": {"action":"lps.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/lps/{lpsId}","scope":{"lpsId":{"at":"lpsId","from":"path"}}},
+      "getLpsGeneralPerformanceStats": {"action":"statistics.lps.performance.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[date][from]","query[date][to]","query[location]","query[device]","query[page]","fields"],"path":"/v3/statistics/lps/{lpsId}/performance","scope":{"lpsId":{"at":"lpsId","from":"path"}}},
+      "getLpsList": {"action":"lps.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[status]","stats[from]","stats[to]","sort[name]","sort[createdAt]","sort[updatedAt]","sort[visits]","sort[leads]","sort[subscriptionRate]","fields","perPage","page"],"path":"/v3/lps","scope":{}},
+      "getMetaField": {"action":"shops.meta_fields.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/shops/{shopId}/meta-fields/{metaFieldId}","scope":{"metaFieldId":{"at":"metaFieldId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "getMetaFields": {"action":"shops.meta_fields.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[description]","query[value]","query[createdOn][from]","query[createdOn][to]","sort[createdOn]","fields","perPage","page"],"path":"/v3/shops/{shopId}/meta-fields","scope":{"shopId":{"at":"shopId","from":"path"}}},
+      "getNewsletter": {"action":"newsletters.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields","query[groupBy]","query[newsletterId]","query[campaignId]","query[createdOn][from]","query[createdOn][to]","perPage","page"],"path":"/v3/newsletters/{newsletterId}","path_patterns":{"newsletterId":"[^s].*|s(?:|[^t].*|t(?:|[^a].*|a(?:|[^t].*|t(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^i].*|i(?:|[^c].*|c(?:|[^s].*|s.+)))))))))"},"scope":{"newsletterId":{"at":"newsletterId","from":"path"}}},
+      "getNewsletterActivities": {"action":"newsletters.activities.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[activity]","query[createdOn][from]","query[createdOn][to]","sort[createdOn]","perPage","page"],"path":"/v3/newsletters/{newsletterId}/activities","scope":{"newsletterId":{"at":"newsletterId","from":"path"}}},
+      "getNewsletterList": {"action":"newsletters.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[subject]","query[name]","query[status]","query[createdOn][from]","query[createdOn][to]","query[sendOn][from]","query[sendOn][to]","query[type]","query[campaignId]","sort[createdOn]","sort[sendOn]","fields","perPage","page"],"path":"/v3/newsletters","scope":{}},
+      "getNewsletterStatisticsCollection": {"action":"newsletters.statistics.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[groupBy]","query[newsletterId]","query[campaignId]","query[createdOn][from]","query[createdOn][to]","fields","perPage","page"],"path":"/v3/newsletters/statistics","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getNewsletterThumbnail": {"action":"newsletters.thumbnail.read","effects":["read"],"method":"GET","origin":"{api}","params":["size"],"path":"/v3/newsletters/{newsletterId}/thumbnail","scope":{"newsletterId":{"at":"newsletterId","from":"path"}}},
+      "getOrderById": {"action":"shops.orders.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/shops/{shopId}/orders/{orderId}","scope":{"orderId":{"at":"orderId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "getOrderList": {"action":"shops.orders.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[description]","query[status]","query[externalId]","query[processedAt][from]","query[processedAt][to]","sort[createdOn]","fields","perPage","page"],"path":"/v3/shops/{shopId}/orders","scope":{"shopId":{"at":"shopId","from":"path"}}},
+      "getPopupDetails": {"action":"popups.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/popups/{popupId}","scope":{"popupId":{"at":"popupId","from":"path"}}},
+      "getPopupGeneralPerformance": {"action":"statistics.popups.performance.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[date][from]","query[date][to]","query[location]","query[device]","fields"],"path":"/v3/statistics/popups/{popupId}/performance","scope":{"popupId":{"at":"popupId","from":"path"}}},
+      "getPopupsList": {"action":"popups.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[status]","stats[from]","stats[to]","sort[name]","sort[status]","sort[createdAt]","sort[updatedAt]","sort[views]","sort[uniqueVisitors]","sort[leads]","sort[ctr]","fields","perPage","page"],"path":"/v3/popups","scope":{}},
+      "getPredefinedFieldById": {"action":"predefined_fields.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/predefined-fields/{predefinedFieldId}","scope":{"predefinedFieldId":{"at":"predefinedFieldId","from":"path"}}},
+      "getPredefinedFieldList": {"action":"predefined_fields.read","effects":["read"],"method":"GET","origin":"{api}","params":["sort[name]","query[name]","query[campaignId]","fields","perPage","page"],"path":"/v3/predefined-fields","scope":{}},
+      "getProductById": {"action":"shops.products.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/shops/{shopId}/products/{productId}","scope":{"productId":{"at":"productId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "getProductList": {"action":"shops.products.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[vendor]","query[category]","query[categoryId]","query[externalId]","query[variantName]","query[metaFieldNames]","query[metaFieldValues]","query[createdOn][from]","query[createdOn][to]","sort[name]","sort[createdOn]","fields","perPage","page"],"path":"/v3/shops/{shopId}/products","scope":{"shopId":{"at":"shopId","from":"path"}}},
+      "getProductVariantById": {"action":"shops.products.variants.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/shops/{shopId}/products/{productId}/variants/{variantId}","scope":{"productId":{"at":"productId","from":"path"},"shopId":{"at":"shopId","from":"path"},"variantId":{"at":"variantId","from":"path"}}},
+      "getProductVariantList": {"action":"shops.products.variants.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[sku]","query[description]","query[externalId]","query[createdAt][from]","query[createdAt][to]","sort[createdOn]","fields","perPage","page"],"path":"/v3/shops/{shopId}/products/{productId}/variants","scope":{"productId":{"at":"productId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "getRevenueStats": {"action":"statistics.ecommerce.revenue.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[orderDate][from]","query[orderDate][to]","query[shopId]","fields"],"path":"/v3/statistics/ecommerce/revenue","scope":{}},
+      "getRssNewsletterById": {"action":"rss_newsletters.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields","query[groupBy]","query[rssNewsletterId]","query[campaignId]","query[createdOn][from]","query[createdOn][to]","perPage","page"],"path":"/v3/rss-newsletters/{rssNewsletterId}","path_patterns":{"rssNewsletterId":"[^s].*|s(?:|[^t].*|t(?:|[^a].*|a(?:|[^t].*|t(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^i].*|i(?:|[^c].*|c(?:|[^s].*|s.+)))))))))"},"scope":{"rssNewsletterId":{"at":"rssNewsletterId","from":"path"}}},
+      "getRssNewsletterStatisticsCollection": {"action":"rss_newsletters.statistics.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[groupBy]","query[rssNewsletterId]","query[campaignId]","query[createdOn][from]","query[createdOn][to]","fields","perPage","page"],"path":"/v3/rss-newsletters/statistics","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getRssNewslettersList": {"action":"rss_newsletters.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[subject]","query[status]","query[createdOn][from]","query[createdOn][to]","query[campaignId]","sort[createdOn]","fields","perPage","page"],"path":"/v3/rss-newsletters","scope":{}},
+      "getSMSAutomationList": {"action":"sms_automation.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[campaignId]","query[hasLinks]","sort[status]","sort[name]","sort[modifiedOn]","sort[delivered]","sort[sent]","sort[clicks]","fields","perPage","page"],"path":"/v3/sms-automation","scope":{}},
+      "getSMSList": {"action":"sms.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[type]","query[name]","query[sendingStatus]","query[campaignId]","query[hasLinks]","sort[sendingStatus]","sort[name]","sort[sendOn]","sort[modifiedOn]","sort[delivered]","sort[sent]","sort[clicks]","fields","perPage","page"],"path":"/v3/sms","scope":{}},
+      "getSearchContactsById": {"action":"search_contacts.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/search-contacts/{searchContactId}","scope":{"searchContactId":{"at":"searchContactId","from":"path"}}},
+      "getSearchContactsList": {"action":"search_contacts.read","effects":["read"],"method":"GET","origin":"{api}","params":["sort[name]","sort[createdOn]","query[name]","query[createdOn][from]","query[createdOn][to]","fields","perPage","page"],"path":"/v3/search-contacts","scope":{}},
+      "getSendingLimits": {"action":"accounts.sending_limits.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/accounts/sending-limits","scope":{}},
+      "getShopById": {"action":"shops.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/shops/{shopId}","scope":{"shopId":{"at":"shopId","from":"path"}}},
+      "getShopList": {"action":"shops.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","sort[name]","sort[createdOn]","fields","perPage","page"],"path":"/v3/shops","scope":{}},
+      "getSingleAutoresponderStatistics": {"action":"autoresponders.statistics.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[groupBy]","query[createdOn][from]","query[createdOn][to]","fields","perPage","page"],"path":"/v3/autoresponders/{autoresponderId}/statistics","scope":{"autoresponderId":{"at":"autoresponderId","from":"path"}}},
+      "getSingleNewsletterStatistics": {"action":"newsletters.statistics.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[groupBy]","query[createdOn][from]","query[createdOn][to]","fields","perPage","page"],"path":"/v3/newsletters/{newsletterId}/statistics","scope":{"newsletterId":{"at":"newsletterId","from":"path"}}},
+      "getSingleRssNewsletterStatisticsCollection": {"action":"rss_newsletters.statistics.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[groupBy]","query[createdOn][from]","query[createdOn][to]","fields","perPage","page"],"path":"/v3/rss-newsletters/{rssNewsletterId}/statistics","scope":{"rssNewsletterId":{"at":"rssNewsletterId","from":"path"}}},
+      "getSmsAutomationById": {"action":"sms_automation.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/sms-automation/{smsId}","scope":{"smsId":{"at":"smsId","from":"path"}}},
+      "getSmsById": {"action":"sms.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields","query[status]"],"path":"/v3/sms/{smsId}","path_patterns":{"smsId":"[^s].*|s(?:|[^e].*|e(?:|[^n].*|n(?:|[^d].*|d(?:|[^e].*|e(?:|[^r].*|r(?:|[^\\-].*|-(?:|[^n].*|n(?:|[^a].*|a(?:|[^m].*|m(?:|[^e].*|e(?:|[^s].*|s.+)))))))))))"},"scope":{"smsId":{"at":"smsId","from":"path"}}},
+      "getSmsSenderNameList": {"action":"sms.sender_names.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[status]","fields"],"path":"/v3/sms/sender-names","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getSmsStats": {"action":"statistics.sms.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[createdOn][from]","query[createdOn][to]","fields"],"path":"/v3/statistics/sms/{smsId}","scope":{"smsId":{"at":"smsId","from":"path"}}},
+      "getSplittest": {"action":"splittests.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/splittests/{splittestId}","scope":{"splittestId":{"at":"splittestId","from":"path"}}},
+      "getSplittestList": {"action":"splittests.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[type]","query[status]","query[createdOn][from]","query[createdOn][to]","sort[name]","sort[createdOn]","fields","perPage","page"],"path":"/v3/splittests","scope":{}},
+      "getSubscriptionConfirmationBodyList": {"action":"subscription_confirmations.body.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/subscription-confirmations/body/{languageCode}","scope":{"languageCode":{"at":"languageCode","from":"path"}}},
+      "getSubscriptionConfirmationSubjectList": {"action":"subscription_confirmations.subject.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/subscription-confirmations/subject/{languageCode}","scope":{"languageCode":{"at":"languageCode","from":"path"}}},
+      "getSuppressionById": {"action":"suppressions.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/suppressions/{suppressionId}","scope":{"suppressionId":{"at":"suppressionId","from":"path"}}},
+      "getSuppressionsList": {"action":"suppressions.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[createdOn][from]","query[createdOn][to]","sort[name]","sort[createdOn]","fields","perPage","page"],"path":"/v3/suppressions","scope":{}},
+      "getTagById": {"action":"tags.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/tags/{tagId}","scope":{"tagId":{"at":"tagId","from":"path"}}},
+      "getTagsList": {"action":"tags.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[createdAt][from]","query[createdAt][to]","sort[createdAt]","sort[name]","fields","perPage","page"],"path":"/v3/tags","scope":{}},
+      "getTaxById": {"action":"shops.taxes.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/shops/{shopId}/taxes/{taxId}","scope":{"shopId":{"at":"shopId","from":"path"},"taxId":{"at":"taxId","from":"path"}}},
+      "getTaxList": {"action":"shops.taxes.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[createdOn][from]","query[createdOn][to]","sort[createdOn]","fields","perPage","page"],"path":"/v3/shops/{shopId}/taxes","scope":{"shopId":{"at":"shopId","from":"path"}}},
+      "getTimezones": {"action":"accounts.timezones.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/accounts/timezones","scope":{}},
+      "getTracking": {"action":"tracking.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/tracking","scope":{}},
+      "getTransactionalEmailsById": {"action":"transactional_emails.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields","query[groupBy]","query[timeFrame][from]","query[timeFrame][to]","query[tagged]","query[tagId]","query[subject]","sort[createdOn]","sort[subject]","perPage","page"],"path":"/v3/transactional-emails/{transactionalEmailId}","path_patterns":{"transactionalEmailId":"[^st].*|s(?:|[^t].*|t(?:|[^a].*|a(?:|[^t].*|t(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^i].*|i(?:|[^c].*|c(?:|[^s].*|s.+)))))))))|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))"},"scope":{"transactionalEmailId":{"at":"transactionalEmailId","from":"path"}}},
+      "getTransactionalEmailsList": {"action":"transactional_emails.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[sentOn][from]","query[sentOn][to]","query[tagged]","query[tagId]","fields","perPage","page"],"path":"/v3/transactional-emails","scope":{}},
+      "getTransactionalEmailsStatistics": {"action":"transactional_emails.statistics.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[groupBy]","query[timeFrame][from]","query[timeFrame][to]","query[tagged]","query[tagId]","fields"],"path":"/v3/transactional-emails/statistics","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getTransactionalEmailsTemplatesById": {"action":"transactional_emails.templates.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/transactional-emails/templates/{transactionalEmailTemplateId}","scope":{"transactionalEmailTemplateId":{"at":"transactionalEmailTemplateId","from":"path"}}},
+      "getTransactionalEmailsTemplatesList": {"action":"transactional_emails.templates.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[subject]","sort[createdOn]","sort[subject]","fields","perPage","page"],"path":"/v3/transactional-emails/templates","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getWbeGeneralPerformanceStats": {"action":"statistics.wbe.performance.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[date][from]","query[date][to]","query[location]","query[device]","query[page]","fields"],"path":"/v3/statistics/wbe/{websiteId}/performance","scope":{"websiteId":{"at":"websiteId","from":"path"}}},
+      "getWebinarById": {"action":"webinars.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/webinars/{webinarId}","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "getWebinarList": {"action":"webinars.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[campaignId]","query[status]","sort[name]","sort[createdOn]","sort[startsOn]","query[type]","fields","perPage","page"],"path":"/v3/webinars","scope":{}},
+      "getWebsiteById": {"action":"websites.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/websites/{websiteId}","scope":{"websiteId":{"at":"websiteId","from":"path"}}},
+      "getWebsitesList": {"action":"websites.read","effects":["read"],"method":"GET","origin":"{api}","params":["query[name]","query[status]","stats[from]","stats[to]","sort[name]","sort[createdAt]","sort[updatedAt]","sort[pageViews]","sort[visits]","sort[uniqueVisitors]","fields","perPage","page"],"path":"/v3/websites","scope":{}},
+      "getWorkflow": {"action":"workflow.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/v3/workflow/{workflowId}","scope":{"workflowId":{"at":"workflowId","from":"path"}}},
+      "getWorkflowList": {"action":"workflow.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields","perPage","page"],"path":"/v3/workflow","scope":{}},
+      "newSearchContacts": {"action":"search_contacts.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/search-contacts","scope":{}},
+      "postAbtestsSubjectByIdWinner": {"action":"ab_tests.subject.winner.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/ab-tests/subject/{abTestId}/winner","scope":{"abTestId":{"at":"abTestId","from":"path"}}},
+      "quota": {"action":"file_library.quota.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/file-library/quota","scope":{}},
+      "sendDraft": {"action":"newsletters.draft.send","body":"any","effects":["send"],"method":"POST","origin":"{api}","path":"/v3/newsletters/send-draft","scope":{}},
+      "sendSms": {"action":"sms.send","body":"any","effects":["send"],"method":"POST","origin":"{api}","path":"/v3/sms","scope":{}},
+      "setFromFieldAsDefault": {"action":"from_fields.default.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/from-fields/{fromFieldId}/default","scope":{"fromFieldId":{"at":"fromFieldId","from":"path"}}},
+      "triggerCustomEvent": {"action":"custom_events.execute","effects":["execute"],"method":"POST","origin":"{api}","path":"/v3/custom-events/trigger","scope":{}},
+      "triggerCustomEvent.json.5930fef93b4b": {"action":"custom_events.execute","body":"json","effects":["execute"],"method":"POST","origin":"{api}","path":"/v3/custom-events/trigger","scope":{"contactId":{"at":"/contactId","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateAccount": {"action":"accounts.admin","body":"any","effects":["admin"],"method":"POST","origin":"{api}","path":"/v3/accounts","scope":{}},
+      "updateAccountBadge": {"action":"accounts.badge.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/accounts/badge","scope":{}},
+      "updateAccountBlocklist": {"action":"accounts.blocklists.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","params":["additionalFlags"],"path":"/v3/accounts/blocklists","scope":{}},
+      "updateAddress": {"action":"addresses.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/addresses/{addressId}","scope":{"addressId":{"at":"addressId","from":"path"}}},
+      "updateAutoresponder": {"action":"autoresponders.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/autoresponders/{autoresponderId}","scope":{"autoresponderId":{"at":"autoresponderId","from":"path"}}},
+      "updateCallbacks": {"action":"accounts.callbacks.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/accounts/callbacks","scope":{}},
+      "updateCampaign": {"action":"campaigns.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/campaigns/{campaignId}","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "updateCampaignBlocklist": {"action":"campaigns.blocklists.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","params":["additionalFlags"],"path":"/v3/campaigns/{campaignId}/blocklists","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "updateCart": {"action":"shops.carts.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/shops/{shopId}/carts/{cartId}","scope":{"cartId":{"at":"cartId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "updateCategory": {"action":"shops.categories.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/shops/{shopId}/categories/{categoryId}","scope":{"categoryId":{"at":"categoryId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "updateContact": {"action":"contacts.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/contacts/{contactId}","path_patterns":{"contactId":"[^b].*|b(?:|[^a].*|a(?:|[^t].*|t(?:|[^c].*|c(?:|[^h].*|h.+))))"},"scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "updateCustomEvent": {"action":"custom_events.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/custom-events/{customEventId}","path_patterns":{"customEventId":"[^t].*|t(?:|[^r].*|r(?:|[^i].*|i(?:|[^g].*|g(?:|[^g].*|g(?:|[^e].*|e(?:|[^r].*|r.+))))))"},"scope":{"customEventId":{"at":"customEventId","from":"path"}}},
+      "updateCustomField": {"action":"custom_fields.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/custom-fields/{customFieldId}","scope":{"customFieldId":{"at":"customFieldId","from":"path"}}},
+      "updateMetaField": {"action":"shops.meta_fields.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/shops/{shopId}/meta-fields/{metaFieldId}","scope":{"metaFieldId":{"at":"metaFieldId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "updateOrder": {"action":"shops.orders.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","params":["additionalFlags"],"path":"/v3/shops/{shopId}/orders/{orderId}","scope":{"orderId":{"at":"orderId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "updatePredefinedField": {"action":"predefined_fields.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/predefined-fields/{predefinedFieldId}","scope":{"predefinedFieldId":{"at":"predefinedFieldId","from":"path"}}},
+      "updateProduct": {"action":"shops.products.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/shops/{shopId}/products/{productId}","scope":{"productId":{"at":"productId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "updateProductVariant": {"action":"shops.products.variants.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/shops/{shopId}/products/{productId}/variants/{variantId}","scope":{"productId":{"at":"productId","from":"path"},"shopId":{"at":"shopId","from":"path"},"variantId":{"at":"variantId","from":"path"}}},
+      "updateRssNewsletter": {"action":"rss_newsletters.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/rss-newsletters/{rssNewsletterId}","scope":{"rssNewsletterId":{"at":"rssNewsletterId","from":"path"}}},
+      "updateSearchContacts": {"action":"search_contacts.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","params":["sort[name]","sort[email]","sort[createdOn]","fields","perPage","page"],"path":"/v3/search-contacts/{searchContactId}","path_patterns":{"searchContactId":"[^c].*|c(?:|[^o].*|o(?:|[^n].*|n(?:|[^t].*|t(?:|[^a].*|a(?:|[^c].*|c(?:|[^t].*|t(?:|[^s].*|s.+)))))))"},"scope":{"searchContactId":{"at":"searchContactId","from":"path"}}},
+      "updateShop": {"action":"shops.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/shops/{shopId}","scope":{"shopId":{"at":"shopId","from":"path"}}},
+      "updateSuppression": {"action":"suppressions.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/suppressions/{suppressionId}","scope":{"suppressionId":{"at":"suppressionId","from":"path"}}},
+      "updateTag": {"action":"tags.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/tags/{tagId}","scope":{"tagId":{"at":"tagId","from":"path"}}},
+      "updateTax": {"action":"shops.taxes.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/shops/{shopId}/taxes/{taxId}","scope":{"shopId":{"at":"shopId","from":"path"},"taxId":{"at":"taxId","from":"path"}}},
+      "updateTransactionalEmailsTemplate": {"action":"transactional_emails.templates.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/transactional-emails/templates/{transactionalEmailTemplateId}","scope":{"transactionalEmailTemplateId":{"at":"transactionalEmailTemplateId","from":"path"}}},
+      "updateWorkflow": {"action":"workflow.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/workflow/{workflowId}","scope":{"workflowId":{"at":"workflowId","from":"path"}}},
+      "uploadImage": {"action":"multimedia.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/multimedia","scope":{}},
+      "upsertContactCustoms": {"action":"contacts.custom_fields.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/contacts/{contactId}/custom-fields","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "upsertCustomFieldsBySearchContactId": {"action":"search_contacts.custom_fields.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/search-contacts/{searchContactId}/custom-fields","scope":{"searchContactId":{"at":"searchContactId","from":"path"}}},
+      "upsertMetaFields": {"action":"shops.products.meta_fields.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/shops/{shopId}/products/{productId}/meta-fields","scope":{"productId":{"at":"productId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "upsertProductCategories": {"action":"shops.products.categories.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/shops/{shopId}/products/{productId}/categories","scope":{"productId":{"at":"productId","from":"path"},"shopId":{"at":"shopId","from":"path"}}},
+      "upsertTags": {"action":"contacts.tags.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/contacts/{contactId}/tags","scope":{"contactId":{"at":"contactId","from":"path"}}}
     }
   }
 }

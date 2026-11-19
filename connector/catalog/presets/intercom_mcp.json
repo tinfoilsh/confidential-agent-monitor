@@ -8,7 +8,8 @@
     },
     "connection": {"mcp": {"url": "https://mcp.intercom.com/mcp"}},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.intercom.com/mcp"}}
+      {"key": "url", "label": "Server URL", "default": "https://mcp.intercom.com/mcp", "help": "Use https://mcp.eu.intercom.com/mcp for workspaces hosted in the EU.", "path": ["mcp", "url"]},
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}", "loopback": true}}
     ]
   }
 }

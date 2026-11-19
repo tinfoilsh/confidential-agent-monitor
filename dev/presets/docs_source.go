@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cmp"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -10,6 +11,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/go-openapi/jsonpointer"
 	"sigs.k8s.io/yaml"
 )
 
@@ -47,6 +49,7 @@ func airtableDocument(src []byte) ([]byte, error) {
 
 var slackMethodURL = regexp.MustCompile(`https://docs\.slack\.dev/reference/methods/([A-Za-z][A-Za-z0-9_.]+)/?`)
 var slackArgument = regexp.MustCompile("(?m)^\\*\\*`([^`]+)`\\*\\*(?:`([^`]+)`)?(Required|Optional)")
+var slackMethodAccess = regexp.MustCompile(`(?m)^([A-Z]+) https://slack\.com/api/([A-Za-z0-9_.]+)$`)
 
 func parseSlackMethod(src []byte, location string) ([]specOp, error) {
 	parts := strings.SplitN(string(src), "---", 3)
@@ -61,16 +64,23 @@ func parseSlackMethod(src []byte, location string) ([]specOp, error) {
 	if err := yaml.Unmarshal([]byte(parts[1]), &meta); err != nil {
 		return nil, err
 	}
-	if meta.Name == "" || !httpMethods.MatchString(strings.ToLower(meta.Method)) {
-		return nil, fmt.Errorf("%s has no HTTP method", location)
+	if meta.Name == "" {
+		return nil, fmt.Errorf("%s has no method metadata", location)
+	}
+	if access := slackMethodAccess.FindStringSubmatch(parts[2]); meta.Method == "" && access != nil && access[2] == meta.Name {
+		meta.Method = access[1]
 	}
 	digest := sha256.Sum256(src)
 	base := specOp{ID: meta.Name, SourceID: meta.Name, SourceURL: location, SourceHash: hex.EncodeToString(digest[:]), Summary: meta.Summary, Method: strings.ToUpper(meta.Method), Origin: "https://slack.com", Path: "/api/" + meta.Name, Body: "none"}
+	if !httpMethods.MatchString(strings.ToLower(meta.Method)) {
+		base.Method, base.Unsupported = "", "method documentation has no HTTP method"
+		return []specOp{base}, nil
+	}
 	args, _, _ := strings.Cut(parts[2], "## Usage")
 	_, args, _ = strings.Cut(args, "## Arguments")
 	var encodings []string
 	if base.Method == "GET" {
-		encodings = []string{"none"}
+		encodings = []string{"none", "form"}
 	} else {
 		facts, _, _ := strings.Cut(parts[2], "## Arguments")
 		if strings.Contains(facts, "application/json") {
@@ -83,15 +93,19 @@ func parseSlackMethod(src []byte, location string) ([]specOp, error) {
 			encodings = []string{"opaque"}
 		}
 	}
+	arguments := slackArgument.FindAllStringSubmatch(args, -1)
 	var out []specOp
 	for _, body := range encodings {
 		o := base
 		o.Body = body
+		if body != "none" {
+			o.Method = "POST"
+		}
 		if body == "opaque" {
 			o.Unsupported = "method documentation has no inspectable request encoding"
 		}
-		for _, arg := range slackArgument.FindAllStringSubmatch(args, -1) {
-			name, typ, optional := arg[1], arg[2], arg[3] == "Optional"
+		for _, arg := range arguments {
+			name, typ, optional := arg[1], cmp.Or(arg[2], "string"), arg[3] == "Optional"
 			if name == "token" {
 				continue
 			}
@@ -116,10 +130,15 @@ func parseSlackMethod(src []byte, location string) ([]specOp, error) {
 		}
 		out = append(out, o)
 	}
+	if !slices.ContainsFunc(arguments, func(arg []string) bool { return arg[1] != "token" && arg[3] == "Required" }) {
+		o := base
+		o.Method = "POST"
+		out = append(out, o)
+	}
 	return out, nil
 }
 
-func slackDocument(index []byte) ([]byte, error) {
+func slackDocument(index []byte, headers map[string]string) ([]byte, error) {
 	urls := map[string]bool{}
 	for _, match := range slackMethodURL.FindAllStringSubmatch(string(index), -1) {
 		urls["https://docs.slack.dev/reference/methods/"+match[1]+".md"] = true
@@ -136,7 +155,7 @@ func slackDocument(index []byte) ([]byte, error) {
 		wg.Go(func() {
 			slots <- struct{}{}
 			defer func() { <-slots }()
-			src, err := download(location)
+			src, err := download(location, headers)
 			if err == nil {
 				var ops []specOp
 				ops, err = parseSlackMethod(src, location)
@@ -161,7 +180,7 @@ func slackDocument(index []byte) ([]byte, error) {
 }
 
 func sourceBytes(ref specRef, url string) ([]byte, error) {
-	src, err := download(url)
+	src, err := download(url, ref.Headers)
 	if err != nil {
 		return nil, err
 	}
@@ -169,9 +188,27 @@ func sourceBytes(ref specRef, url string) ([]byte, error) {
 	case "airtable":
 		return airtableDocument(src)
 	case "slack":
-		return slackDocument(src)
+		return slackDocument(src, ref.Headers)
 	}
-	return src, nil
+	if ref.Pointer == "" {
+		return src, nil
+	}
+	var doc any
+	if err := json.Unmarshal(src, &doc); err != nil {
+		return nil, err
+	}
+	pointer, err := jsonpointer.New(ref.Pointer)
+	if err != nil {
+		return nil, err
+	}
+	embedded, _, err := pointer.Get(doc)
+	if err != nil {
+		return nil, err
+	}
+	if text, ok := embedded.(string); ok {
+		return []byte(text), nil
+	}
+	return json.Marshal(embedded)
 }
 
 func parseDocumentation(src []byte) (parsed, error) {

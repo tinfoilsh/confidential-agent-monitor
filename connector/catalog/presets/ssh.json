@@ -4,7 +4,7 @@
     "group": "generic",
     "warning": "Allows file transfer, commands, terminals, and interactive shells on the configured server. Prefer a narrower service when possible.",
     "actions": {
-      "files": { "title": "Transfer files", "effects": ["read", "write"] },
+      "files": { "title": "Transfer files", "effects": ["read", "write", "delete", "admin"] },
       "run": { "title": "Run commands", "effects": ["execute"] },
       "session": {
         "title": "Set up terminals and send signals",

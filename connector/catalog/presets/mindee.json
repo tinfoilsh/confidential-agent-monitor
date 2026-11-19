@@ -1,41 +1,290 @@
 {
-  "title": "Mindee",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.mindee.net", "path": "/", "header": "Authorization", "prefix": "Token "}]}},
     "actions": {
-      "delete.cache": {"title": "Delete: cache"},
-      "delete.health": {"title": "Delete: health"},
-      "delete.tokens": {"title": "Delete: tokens"},
-      "read": {"title": "Read everything the account can see"},
-      "send.executions": {"title": "Send: executions"},
-      "send.feedback": {"title": "Send: feedback"},
-      "send.predict": {"title": "Send: predict"},
-      "send.predict_async": {"title": "Send: predict async"},
-      "write.health": {"title": "Write: health"}
-    }
+      "customers": {
+        "title": "Customers"
+      },
+      "customers.self": {
+        "title": "Self"
+      },
+      "customers.self.products": {
+        "title": "Products"
+      },
+      "customers.self.products.read": {
+        "title": "Read"
+      },
+      "documents": {
+        "title": "Documents"
+      },
+      "documents.feedback": {
+        "title": "Feedback"
+      },
+      "documents.feedback.write": {
+        "title": "Create and edit"
+      },
+      "inferences": {
+        "title": "Inferences"
+      },
+      "inferences.enqueue": {
+        "title": "Enqueue"
+      },
+      "inferences.enqueue.generate": {
+        "title": "Generate"
+      },
+      "inferences.read": {
+        "title": "Read"
+      },
+      "internal": {
+        "title": "Internal"
+      },
+      "internal.cache": {
+        "title": "Cache"
+      },
+      "internal.cache.delete": {
+        "title": "Delete"
+      },
+      "internal.cache.tokens": {
+        "title": "Tokens"
+      },
+      "internal.cache.tokens.delete": {
+        "title": "Delete"
+      },
+      "internal.health": {
+        "title": "Health"
+      },
+      "internal.health.delete": {
+        "title": "Delete"
+      },
+      "internal.health.read": {
+        "title": "Read"
+      },
+      "internal.health.write": {
+        "title": "Create and edit"
+      },
+      "jobs": {
+        "title": "Jobs"
+      },
+      "jobs.read": {
+        "title": "Read"
+      },
+      "products": {
+        "title": "Products"
+      },
+      "products.classification": {
+        "title": "Classification"
+      },
+      "products.classification.enqueue": {
+        "title": "Enqueue"
+      },
+      "products.classification.enqueue.generate": {
+        "title": "Generate"
+      },
+      "products.classification.results": {
+        "title": "Results"
+      },
+      "products.classification.results.read": {
+        "title": "Read"
+      },
+      "products.crop": {
+        "title": "Crop"
+      },
+      "products.crop.enqueue": {
+        "title": "Enqueue"
+      },
+      "products.crop.enqueue.generate": {
+        "title": "Generate"
+      },
+      "products.crop.results": {
+        "title": "Results"
+      },
+      "products.crop.results.read": {
+        "title": "Read"
+      },
+      "products.documents": {
+        "title": "Documents"
+      },
+      "products.documents.queue": {
+        "title": "Queue"
+      },
+      "products.documents.queue.read": {
+        "title": "Read"
+      },
+      "products.documents.read": {
+        "title": "Read"
+      },
+      "products.extraction": {
+        "title": "Extraction"
+      },
+      "products.extraction.enqueue": {
+        "title": "Enqueue"
+      },
+      "products.extraction.enqueue.generate": {
+        "title": "Generate"
+      },
+      "products.extraction.rag_documents": {
+        "title": "Rag documents"
+      },
+      "products.extraction.rag_documents.delete": {
+        "title": "Delete"
+      },
+      "products.extraction.rag_documents.read": {
+        "title": "Read"
+      },
+      "products.extraction.rag_documents.write": {
+        "title": "Create and edit"
+      },
+      "products.extraction.results": {
+        "title": "Results"
+      },
+      "products.extraction.results.read": {
+        "title": "Read"
+      },
+      "products.ocr": {
+        "title": "Ocr"
+      },
+      "products.ocr.enqueue": {
+        "title": "Enqueue"
+      },
+      "products.ocr.enqueue.generate": {
+        "title": "Generate"
+      },
+      "products.ocr.results": {
+        "title": "Results"
+      },
+      "products.ocr.results.read": {
+        "title": "Read"
+      },
+      "products.openapi": {
+        "title": "Openapi"
+      },
+      "products.openapi.read": {
+        "title": "Read"
+      },
+      "products.predict": {
+        "title": "Predict"
+      },
+      "products.predict.generate": {
+        "title": "Generate"
+      },
+      "products.predict_async": {
+        "title": "Predict async"
+      },
+      "products.predict_async.generate": {
+        "title": "Generate"
+      },
+      "products.split": {
+        "title": "Split"
+      },
+      "products.split.enqueue": {
+        "title": "Enqueue"
+      },
+      "products.split.enqueue.generate": {
+        "title": "Generate"
+      },
+      "products.split.results": {
+        "title": "Results"
+      },
+      "products.split.results.read": {
+        "title": "Read"
+      },
+      "search": {
+        "title": "Search"
+      },
+      "search.models": {
+        "title": "Models"
+      },
+      "search.models.read": {
+        "title": "Read"
+      },
+      "search.rag_documents": {
+        "title": "Rag documents"
+      },
+      "search.rag_documents.read": {
+        "title": "Read"
+      },
+      "workflows": {
+        "title": "Workflows"
+      },
+      "workflows.executions": {
+        "title": "Executions"
+      },
+      "workflows.executions.generate": {
+        "title": "Generate"
+      },
+      "workflows.predict_async": {
+        "title": "Predict async"
+      },
+      "workflows.predict_async.generate": {
+        "title": "Generate"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.mindee.net",
+            "path": "/",
+            "prefix": "Token ",
+            "value": "api_key"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api-v2.mindee.net",
+            "path": "/v2",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Mindee",
   "http": {
     "operations": {
-      "clear_cache_internal_cache_delete": {"action":"delete.cache","effects":["delete"],"method":"DELETE","origin":"https://api.mindee.net","path":"/internal/cache","scope":{}},
-      "clear_multiple_tokens_cache_internal_cache_tokens_put": {"action":"delete.tokens","effects":["delete"],"method":"PUT","origin":"https://api.mindee.net","path":"/internal/cache/tokens","body":"json","scope":{}},
-      "health_check_internal_health_delete": {"action":"delete.health","effects":["delete"],"method":"DELETE","origin":"https://api.mindee.net","path":"/internal/health","scope":{}},
-      "health_check_internal_health_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mindee.net","path":"/internal/health","scope":{}},
-      "health_check_internal_health_post": {"action":"write.health","effects":["write"],"method":"POST","origin":"https://api.mindee.net","path":"/internal/health","scope":{}},
-      "health_check_internal_health_put": {"action":"write.health","effects":["write"],"method":"PUT","origin":"https://api.mindee.net","path":"/internal/health","scope":{}},
-      "send_request_v1_customers_self_products_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mindee.net","path":"/v1/customers/self/products","scope":{}},
-      "send_request_v1_documents__document_id__feedback_patch": {"action":"send.feedback","effects":["send"],"method":"PATCH","origin":"https://api.mindee.net","path":"/v1/documents/{document_id}/feedback","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "send_request_v1_documents__document_id__feedback_patch.2": {"action":"send.feedback","effects":["send"],"method":"PUT","origin":"https://api.mindee.net","path":"/v1/documents/{document_id}/feedback","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "send_request_v1_products__account___product___version__documents__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mindee.net","path":"/v1/products/{account}/{product}/{version}/documents/{document_id}","scope":{"account":{"from":"path","at":"account"},"product":{"from":"path","at":"product"},"version":{"from":"path","at":"version"},"document_id":{"from":"path","at":"document_id"}}},
-      "send_request_v1_products__account___product___version__documents_queue__job_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mindee.net","path":"/v1/products/{account}/{product}/{version}/documents/queue/{job_id}","scope":{"account":{"from":"path","at":"account"},"product":{"from":"path","at":"product"},"version":{"from":"path","at":"version"},"job_id":{"from":"path","at":"job_id"}}},
-      "send_request_v1_products__account___product___version__openapi_json_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mindee.net","path":"/v1/products/{account}/{product}/{version}/openapi.json","scope":{"account":{"from":"path","at":"account"},"product":{"from":"path","at":"product"},"version":{"from":"path","at":"version"}}},
-      "send_request_v1_products__account___product___version__predict_async_post": {"action":"send.predict_async","effects":["send"],"method":"POST","origin":"https://api.mindee.net","path":"/v1/products/{account}/{product}/{version}/predict_async","scope":{"account":{"from":"path","at":"account"},"product":{"from":"path","at":"product"},"version":{"from":"path","at":"version"}}},
-      "send_request_v1_products__account___product___version__predict_post": {"action":"send.predict","effects":["send"],"method":"POST","origin":"https://api.mindee.net","path":"/v1/products/{account}/{product}/{version}/predict","scope":{"account":{"from":"path","at":"account"},"product":{"from":"path","at":"product"},"version":{"from":"path","at":"version"}}},
-      "send_request_v1_workflows__workflow_id__executions_post": {"action":"send.executions","effects":["send"],"method":"POST","origin":"https://api.mindee.net","path":"/v1/workflows/{workflow_id}/executions","scope":{"workflow_id":{"from":"path","at":"workflow_id"}}},
-      "send_request_v1_workflows__workflow_id__predict_async_post": {"action":"send.predict_async","effects":["send"],"method":"POST","origin":"https://api.mindee.net","path":"/v1/workflows/{workflow_id}/predict_async","scope":{"workflow_id":{"from":"path","at":"workflow_id"}}}
+      "Delete_RAG_Document_for_Extraction_Product_v2_products_extraction_rag_documents__document_id__delete": {"action":"products.extraction.rag_documents.delete","effects":["delete"],"method":"DELETE","origin":"https://api-v2.mindee.net","path":"/v2/products/extraction/rag-documents/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Enqueue_Classification_Product_Inference_v2_products_classification_enqueue_post": {"action":"products.classification.enqueue.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api-v2.mindee.net","path":"/v2/products/classification/enqueue","scope":{"model_id":{"at":"/model_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"webhook_ids":{"at":"/webhook_ids","from":"body","optional":true,"type":"array"}}},
+      "Enqueue_Crop_Product_Inference_v2_products_crop_enqueue_post": {"action":"products.crop.enqueue.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api-v2.mindee.net","path":"/v2/products/crop/enqueue","scope":{"model_id":{"at":"/model_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"webhook_ids":{"at":"/webhook_ids","from":"body","optional":true,"type":"array"}}},
+      "Enqueue_Extraction_Product_Inference_v2_inferences_enqueue_post": {"action":"inferences.enqueue.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api-v2.mindee.net","path":"/v2/inferences/enqueue","scope":{"model_id":{"at":"/model_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"webhook_ids":{"at":"/webhook_ids","from":"body","optional":true,"type":"array"}}},
+      "Enqueue_Extraction_Product_Inference_v2_products_extraction_enqueue_post": {"action":"products.extraction.enqueue.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api-v2.mindee.net","path":"/v2/products/extraction/enqueue","scope":{"model_id":{"at":"/model_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"webhook_ids":{"at":"/webhook_ids","from":"body","optional":true,"type":"array"}}},
+      "Enqueue_OCR_Product_Inference_v2_products_ocr_enqueue_post": {"action":"products.ocr.enqueue.generate","body":"any","effects":["generate"],"method":"POST","origin":"https://api-v2.mindee.net","path":"/v2/products/ocr/enqueue","scope":{}},
+      "Enqueue_Split_Product_Inference_v2_products_split_enqueue_post": {"action":"products.split.enqueue.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api-v2.mindee.net","path":"/v2/products/split/enqueue","scope":{"model_id":{"at":"/model_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"webhook_ids":{"at":"/webhook_ids","from":"body","optional":true,"type":"array"}}},
+      "Get_Crop_Product_Result_v2_products_crop_results__inference_id__get": {"action":"products.crop.results.read","effects":["read"],"method":"GET","origin":"https://api-v2.mindee.net","path":"/v2/products/crop/results/{inference_id}","scope":{"inference_id":{"at":"inference_id","from":"path"}}},
+      "Get_Extraction_Product_Result_v2_inferences__inference_id__get": {"action":"inferences.read","effects":["read"],"method":"GET","origin":"https://api-v2.mindee.net","path":"/v2/inferences/{inference_id}","scope":{"inference_id":{"at":"inference_id","from":"path"}}},
+      "Get_Extraction_Product_Result_v2_products_extraction_results__inference_id__get": {"action":"products.extraction.results.read","effects":["read"],"method":"GET","origin":"https://api-v2.mindee.net","path":"/v2/products/extraction/results/{inference_id}","scope":{"inference_id":{"at":"inference_id","from":"path"}}},
+      "Get_Job_Status_v2_jobs__job_id__get": {"action":"jobs.read","effects":["read"],"method":"GET","origin":"https://api-v2.mindee.net","params":["redirect"],"path":"/v2/jobs/{job_id}","scope":{"job_id":{"at":"job_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "Get_OCR_Product_Result_v2_products_ocr_results__inference_id__get": {"action":"products.ocr.results.read","body":"any","effects":["read"],"method":"GET","origin":"https://api-v2.mindee.net","path":"/v2/products/ocr/results/{inference_id}","scope":{"inference_id":{"at":"inference_id","from":"path"}}},
+      "Get_RAG_Document_for_Extraction_Product_v2_products_extraction_rag_documents__document_id__get": {"action":"products.extraction.rag_documents.read","effects":["read"],"method":"GET","origin":"https://api-v2.mindee.net","path":"/v2/products/extraction/rag-documents/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Get_Split_Product_Result_v2_products_split_results__inference_id__get": {"action":"products.split.results.read","effects":["read"],"method":"GET","origin":"https://api-v2.mindee.net","path":"/v2/products/split/results/{inference_id}","scope":{"inference_id":{"at":"inference_id","from":"path"}}},
+      "Get_classification_Product_Result_v2_products_classification_results__inference_id__get": {"action":"products.classification.results.read","effects":["read"],"method":"GET","origin":"https://api-v2.mindee.net","path":"/v2/products/classification/results/{inference_id}","scope":{"inference_id":{"at":"inference_id","from":"path"}}},
+      "Search_Models_v2_search_models_get": {"action":"search.models.read","effects":["read"],"method":"GET","origin":"https://api-v2.mindee.net","params":["name","model_type","page","per_page"],"path":"/v2/search/models","scope":{"name":{"at":"name","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "Search_RAG_Documents_v2_search_rag_documents_get": {"action":"search.rag_documents.read","effects":["read"],"method":"GET","origin":"https://api-v2.mindee.net","params":["model_id","filename","page","per_page"],"path":"/v2/search/rag-documents","scope":{"filename":{"at":"filename","from":"query","optional":true},"model_id":{"at":"model_id","from":"query"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "Update_RAG_Document_for_Extraction_Product_v2_products_extraction_rag_documents__document_id__patch": {"action":"products.extraction.rag_documents.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api-v2.mindee.net","path":"/v2/products/extraction/rag-documents/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "Upload_RAG_Documents_for_Extraction_Product_v2_products_extraction_rag_documents_post": {"action":"products.extraction.rag_documents.write","body":"any","effects":["write"],"method":"POST","origin":"https://api-v2.mindee.net","path":"/v2/products/extraction/rag-documents","scope":{}},
+      "clear_cache_internal_cache_delete": {"action":"internal.cache.delete","effects":["delete"],"method":"DELETE","origin":"https://api.mindee.net","path":"/internal/cache","scope":{}},
+      "clear_multiple_tokens_cache_internal_cache_tokens_put": {"action":"internal.cache.tokens.delete","body":"json","effects":["delete"],"method":"PUT","origin":"https://api.mindee.net","path":"/internal/cache/tokens","scope":{}},
+      "health_check_internal_health_delete": {"action":"internal.health.delete","effects":["delete"],"method":"DELETE","origin":"https://api.mindee.net","path":"/internal/health","scope":{}},
+      "health_check_internal_health_get": {"action":"internal.health.read","effects":["read"],"method":"GET","origin":"https://api.mindee.net","path":"/internal/health","scope":{}},
+      "health_check_internal_health_post": {"action":"internal.health.write","effects":["write"],"method":"POST","origin":"https://api.mindee.net","path":"/internal/health","scope":{}},
+      "health_check_internal_health_put": {"action":"internal.health.write","effects":["write"],"method":"PUT","origin":"https://api.mindee.net","path":"/internal/health","scope":{}},
+      "send_request_v1_customers_self_products_get": {"action":"customers.self.products.read","effects":["read"],"method":"GET","origin":"https://api.mindee.net","path":"/v1/customers/self/products","scope":{}},
+      "send_request_v1_documents__document_id__feedback_patch": {"action":"documents.feedback.write","body":"any","effects":["write"],"method":"PATCH","origin":"https://api.mindee.net","path":"/v1/documents/{document_id}/feedback","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "send_request_v1_documents__document_id__feedback_patch.2": {"action":"documents.feedback.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.mindee.net","path":"/v1/documents/{document_id}/feedback","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "send_request_v1_products__account___product___version__documents__document_id__get": {"action":"products.documents.read","effects":["read"],"method":"GET","origin":"https://api.mindee.net","path":"/v1/products/{account}/{product}/{version}/documents/{document_id}","scope":{"account":{"at":"account","from":"path"},"document_id":{"at":"document_id","from":"path"},"product":{"at":"product","from":"path"},"version":{"at":"version","from":"path"}}},
+      "send_request_v1_products__account___product___version__documents_queue__job_id__get": {"action":"products.documents.queue.read","effects":["read"],"method":"GET","origin":"https://api.mindee.net","path":"/v1/products/{account}/{product}/{version}/documents/queue/{job_id}","scope":{"account":{"at":"account","from":"path"},"job_id":{"at":"job_id","from":"path"},"product":{"at":"product","from":"path"},"version":{"at":"version","from":"path"}}},
+      "send_request_v1_products__account___product___version__openapi_json_get": {"action":"products.openapi.read","effects":["read"],"method":"GET","origin":"https://api.mindee.net","path":"/v1/products/{account}/{product}/{version}/openapi.json","scope":{"account":{"at":"account","from":"path"},"product":{"at":"product","from":"path"},"version":{"at":"version","from":"path"}}},
+      "send_request_v1_products__account___product___version__predict_async_post": {"action":"products.predict_async.generate","body":"any","effects":["generate"],"method":"POST","origin":"https://api.mindee.net","path":"/v1/products/{account}/{product}/{version}/predict_async","scope":{"account":{"at":"account","from":"path"},"product":{"at":"product","from":"path"},"version":{"at":"version","from":"path"}}},
+      "send_request_v1_products__account___product___version__predict_post": {"action":"products.predict.generate","body":"any","effects":["generate"],"method":"POST","origin":"https://api.mindee.net","path":"/v1/products/{account}/{product}/{version}/predict","scope":{"account":{"at":"account","from":"path"},"product":{"at":"product","from":"path"},"version":{"at":"version","from":"path"}}},
+      "send_request_v1_workflows__workflow_id__executions_post": {"action":"workflows.executions.generate","body":"any","effects":["generate"],"method":"POST","origin":"https://api.mindee.net","path":"/v1/workflows/{workflow_id}/executions","scope":{"workflow_id":{"at":"workflow_id","from":"path"}}},
+      "send_request_v1_workflows__workflow_id__predict_async_post": {"action":"workflows.predict_async.generate","body":"any","effects":["generate"],"method":"POST","origin":"https://api.mindee.net","path":"/v1/workflows/{workflow_id}/predict_async","scope":{"workflow_id":{"at":"workflow_id","from":"path"}}}
     }
   }
 }

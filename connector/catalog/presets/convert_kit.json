@@ -1,124 +1,425 @@
 {
-  "title": "ConvertKit",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_secret", "label": "API Secret", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_secret", "origin": "https://api.kit.com", "path": "/v4", "header": "X-Kit-Api-Key"}]}},
     "actions": {
-      "admin.webhooks": {"title": "Admin: webhooks"},
-      "delete.broadcasts": {"title": "Delete: broadcasts"},
-      "delete.custom_fields": {"title": "Delete: custom fields"},
-      "delete.emails": {"title": "Delete: emails"},
-      "delete.location": {"title": "Delete: location"},
-      "delete.sequences": {"title": "Delete: sequences"},
-      "delete.subscribers": {"title": "Delete: subscribers"},
-      "delete.tags": {"title": "Delete: tags"},
-      "delete.webhook_endpoints": {"title": "Delete: webhook endpoints"},
-      "delete.webhooks": {"title": "Delete: webhooks"},
-      "pay.purchases": {"title": "Pay: purchases"},
-      "read": {"title": "Read everything the account can see"},
-      "send.emails": {"title": "Send: emails"},
-      "share.webhook_endpoints": {"title": "Share: webhook endpoints"},
-      "write.broadcasts": {"title": "Write: broadcasts"},
-      "write.colors": {"title": "Write: colors"},
-      "write.custom_fields": {"title": "Write: custom fields"},
-      "write.emails": {"title": "Write: emails"},
-      "write.filter": {"title": "Write: filter"},
-      "write.forms": {"title": "Write: forms"},
-      "write.location": {"title": "Write: location"},
-      "write.sequences": {"title": "Write: sequences"},
-      "write.snippets": {"title": "Write: snippets"},
-      "write.subscribers": {"title": "Write: subscribers"},
-      "write.tags": {"title": "Write: tags"},
-      "write.webhook_endpoints": {"title": "Write: webhook endpoints"}
-    }
+      "account": {
+        "title": "Account"
+      },
+      "account.colors": {
+        "title": "Colors"
+      },
+      "account.colors.read": {
+        "title": "Read"
+      },
+      "account.colors.write": {
+        "title": "Create and edit"
+      },
+      "account.creator_profile": {
+        "title": "Creator profile"
+      },
+      "account.creator_profile.read": {
+        "title": "Read"
+      },
+      "account.email_stats": {
+        "title": "Email stats"
+      },
+      "account.email_stats.read": {
+        "title": "Read"
+      },
+      "account.growth_stats": {
+        "title": "Growth stats"
+      },
+      "account.growth_stats.read": {
+        "title": "Read"
+      },
+      "account.read": {
+        "title": "Read"
+      },
+      "apps": {
+        "title": "Apps"
+      },
+      "apps.read": {
+        "title": "Read"
+      },
+      "broadcasts": {
+        "title": "Broadcasts"
+      },
+      "broadcasts.clicks": {
+        "title": "Clicks"
+      },
+      "broadcasts.clicks.read": {
+        "title": "Read"
+      },
+      "broadcasts.delete": {
+        "title": "Delete"
+      },
+      "broadcasts.read": {
+        "title": "Read"
+      },
+      "broadcasts.send": {
+        "title": "Send"
+      },
+      "broadcasts.stats": {
+        "title": "Stats"
+      },
+      "broadcasts.stats.read": {
+        "title": "Read"
+      },
+      "bulk": {
+        "title": "Bulk"
+      },
+      "bulk.custom_fields": {
+        "title": "Custom fields"
+      },
+      "bulk.custom_fields.subscribers": {
+        "title": "Subscribers"
+      },
+      "bulk.custom_fields.subscribers.write": {
+        "title": "Create and edit"
+      },
+      "bulk.custom_fields.write": {
+        "title": "Create and edit"
+      },
+      "bulk.forms": {
+        "title": "Forms"
+      },
+      "bulk.forms.subscribers": {
+        "title": "Subscribers"
+      },
+      "bulk.forms.subscribers.write": {
+        "title": "Create and edit"
+      },
+      "bulk.subscribers": {
+        "title": "Subscribers"
+      },
+      "bulk.subscribers.write": {
+        "title": "Create and edit"
+      },
+      "bulk.tags": {
+        "title": "Tags"
+      },
+      "bulk.tags.delete": {
+        "title": "Delete"
+      },
+      "bulk.tags.subscribers": {
+        "title": "Subscribers"
+      },
+      "bulk.tags.subscribers.delete": {
+        "title": "Delete"
+      },
+      "bulk.tags.subscribers.write": {
+        "title": "Create and edit"
+      },
+      "bulk.tags.write": {
+        "title": "Create and edit"
+      },
+      "custom_fields": {
+        "title": "Custom fields"
+      },
+      "custom_fields.delete": {
+        "title": "Delete"
+      },
+      "custom_fields.read": {
+        "title": "Read"
+      },
+      "custom_fields.write": {
+        "title": "Create and edit"
+      },
+      "email_templates": {
+        "title": "Email templates"
+      },
+      "email_templates.read": {
+        "title": "Read"
+      },
+      "forms": {
+        "title": "Forms"
+      },
+      "forms.read": {
+        "title": "Read"
+      },
+      "forms.subscribers": {
+        "title": "Subscribers"
+      },
+      "forms.subscribers.read": {
+        "title": "Read"
+      },
+      "forms.subscribers.send": {
+        "title": "Send"
+      },
+      "posts": {
+        "title": "Posts"
+      },
+      "posts.read": {
+        "title": "Read"
+      },
+      "purchases": {
+        "title": "Purchases"
+      },
+      "purchases.read": {
+        "title": "Read"
+      },
+      "purchases.write": {
+        "title": "Create and edit"
+      },
+      "segments": {
+        "title": "Segments"
+      },
+      "segments.read": {
+        "title": "Read"
+      },
+      "sequences": {
+        "title": "Sequences"
+      },
+      "sequences.delete": {
+        "title": "Delete"
+      },
+      "sequences.emails": {
+        "title": "Emails"
+      },
+      "sequences.emails.delete": {
+        "title": "Delete"
+      },
+      "sequences.emails.read": {
+        "title": "Read"
+      },
+      "sequences.emails.write": {
+        "title": "Create and edit"
+      },
+      "sequences.read": {
+        "title": "Read"
+      },
+      "sequences.subscribers": {
+        "title": "Subscribers"
+      },
+      "sequences.subscribers.read": {
+        "title": "Read"
+      },
+      "sequences.subscribers.send": {
+        "title": "Send"
+      },
+      "sequences.write": {
+        "title": "Create and edit"
+      },
+      "snippets": {
+        "title": "Snippets"
+      },
+      "snippets.read": {
+        "title": "Read"
+      },
+      "snippets.write": {
+        "title": "Create and edit"
+      },
+      "subscribers": {
+        "title": "Subscribers"
+      },
+      "subscribers.filter": {
+        "title": "Filter"
+      },
+      "subscribers.filter.read": {
+        "title": "Read"
+      },
+      "subscribers.location": {
+        "title": "Location"
+      },
+      "subscribers.location.delete": {
+        "title": "Delete"
+      },
+      "subscribers.location.write": {
+        "title": "Create and edit"
+      },
+      "subscribers.read": {
+        "title": "Read"
+      },
+      "subscribers.stats": {
+        "title": "Stats"
+      },
+      "subscribers.stats.read": {
+        "title": "Read"
+      },
+      "subscribers.tags": {
+        "title": "Tags"
+      },
+      "subscribers.tags.read": {
+        "title": "Read"
+      },
+      "subscribers.write": {
+        "title": "Create and edit"
+      },
+      "tags": {
+        "title": "Tags"
+      },
+      "tags.read": {
+        "title": "Read"
+      },
+      "tags.subscribers": {
+        "title": "Subscribers"
+      },
+      "tags.subscribers.delete": {
+        "title": "Delete"
+      },
+      "tags.subscribers.read": {
+        "title": "Read"
+      },
+      "tags.subscribers.write": {
+        "title": "Create and edit"
+      },
+      "tags.write": {
+        "title": "Create and edit"
+      },
+      "webhook_endpoints": {
+        "title": "Webhook endpoints"
+      },
+      "webhook_endpoints.admin": {
+        "title": "Manage"
+      },
+      "webhook_endpoints.delete": {
+        "title": "Delete"
+      },
+      "webhook_endpoints.deliveries": {
+        "title": "Deliveries"
+      },
+      "webhook_endpoints.deliveries.read": {
+        "title": "Read"
+      },
+      "webhook_endpoints.previous_secret": {
+        "title": "Previous secret"
+      },
+      "webhook_endpoints.previous_secret.admin": {
+        "title": "Manage"
+      },
+      "webhook_endpoints.read": {
+        "title": "Read"
+      },
+      "webhook_endpoints.secret": {
+        "title": "Secret"
+      },
+      "webhook_endpoints.secret.admin": {
+        "title": "Manage"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.delete": {
+        "title": "Delete"
+      },
+      "webhooks.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "X-Kit-Api-Key",
+            "origin": "https://api.kit.com",
+            "path": "/v4",
+            "value": "api_secret"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_secret",
+        "label": "API Key (v4)",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "ConvertKit",
   "http": {
     "operations": {
-      "DELETE /v4/broadcasts/{id}": {"action":"delete.broadcasts","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/broadcasts/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /v4/bulk/tags": {"action":"delete.tags","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/bulk/tags","body":"json","scope":{}},
-      "DELETE /v4/bulk/tags/subscribers": {"action":"delete.subscribers","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/bulk/tags/subscribers","scope":{}},
-      "DELETE /v4/custom_fields/{id}": {"action":"delete.custom_fields","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/custom_fields/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /v4/sequences/{id}": {"action":"delete.sequences","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/sequences/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /v4/sequences/{sequence_id}/emails/{id}": {"action":"delete.emails","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/sequences/{sequence_id}/emails/{id}","scope":{"sequence_id":{"from":"path","at":"sequence_id"},"id":{"from":"path","at":"id"}}},
-      "DELETE /v4/subscribers/{subscriber_id}/location": {"action":"delete.location","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/subscribers/{subscriber_id}/location","scope":{"subscriber_id":{"from":"path","at":"subscriber_id"}}},
-      "DELETE /v4/tags/{tag_id}/subscribers": {"action":"delete.tags","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/tags/{tag_id}/subscribers","scope":{"tag_id":{"from":"path","at":"tag_id"}}},
-      "DELETE /v4/tags/{tag_id}/subscribers/{id}": {"action":"delete.subscribers","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/tags/{tag_id}/subscribers/{id}","scope":{"tag_id":{"from":"path","at":"tag_id"},"id":{"from":"path","at":"id"}}},
-      "DELETE /v4/webhook_endpoints/{id}": {"action":"delete.webhook_endpoints","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/webhook_endpoints/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /v4/webhooks/{id}": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/webhooks/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v4/account": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/account","scope":{}},
-      "GET /v4/account/colors": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/account/colors","scope":{}},
-      "GET /v4/account/creator_profile": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/account/creator_profile","scope":{}},
-      "GET /v4/account/email_stats": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/account/email_stats","scope":{}},
-      "GET /v4/account/growth_stats": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/account/growth_stats","params":["ending","starting"],"scope":{}},
-      "GET /v4/broadcasts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/broadcasts","params":["after","before","include_total_count","per_page","sent_after","sent_before","slim","status"],"scope":{}},
-      "GET /v4/broadcasts/{broadcast_id}/clicks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/broadcasts/{broadcast_id}/clicks","scope":{"broadcast_id":{"from":"path","at":"broadcast_id"}}},
-      "GET /v4/broadcasts/{broadcast_id}/stats": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/broadcasts/{broadcast_id}/stats","scope":{"broadcast_id":{"from":"path","at":"broadcast_id"}}},
-      "GET /v4/broadcasts/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/broadcasts/{id}","params":["[]","after","before","include_total_count","per_page","sent_after","sent_before","status"],"scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v4/custom_fields": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/custom_fields","params":["after","before","include_total_count","per_page"],"scope":{}},
-      "GET /v4/email_templates": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/email_templates","params":["after","before","include_total_count","per_page"],"scope":{}},
-      "GET /v4/forms": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/forms","params":["after","before","include_total_count","per_page","status","type","include"],"scope":{}},
-      "GET /v4/forms/{form_id}/subscribers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/forms/{form_id}/subscribers","params":["added_after","added_before","after","before","created_after","created_before","include_total_count","per_page","slim","status"],"scope":{"form_id":{"from":"path","at":"form_id"}}},
-      "GET /v4/posts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/posts","params":["after","before","include_content","include_total_count","per_page"],"scope":{}},
-      "GET /v4/posts/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/posts/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v4/purchases": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/purchases","params":["after","before","include_total_count","per_page"],"scope":{}},
-      "GET /v4/purchases/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/purchases/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v4/segments": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/segments","params":["after","before","include_total_count","per_page"],"scope":{}},
-      "GET /v4/sequences": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/sequences","params":["after","before","include_total_count","per_page","include"],"scope":{}},
-      "GET /v4/sequences/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/sequences/{id}","params":["include"],"scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v4/sequences/{sequence_id}/emails": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/sequences/{sequence_id}/emails","params":["after","before","include_content","include_total_count","per_page","include"],"scope":{"sequence_id":{"from":"path","at":"sequence_id"}}},
-      "GET /v4/sequences/{sequence_id}/emails/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/sequences/{sequence_id}/emails/{id}","params":["include"],"scope":{"sequence_id":{"from":"path","at":"sequence_id"},"id":{"from":"path","at":"id"}}},
-      "GET /v4/sequences/{sequence_id}/subscribers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/sequences/{sequence_id}/subscribers","params":["added_after","added_before","after","before","created_after","created_before","include_total_count","per_page","status"],"scope":{"sequence_id":{"from":"path","at":"sequence_id"}}},
-      "GET /v4/snippets": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/snippets","params":["after","archived","before","include_content","include_total_count","per_page","snippet_type"],"scope":{}},
-      "GET /v4/snippets/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/snippets/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v4/subscribers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/subscribers","params":["after","before","created_after","created_before","email_address","include","include_total_count","per_page","slim","sort_field","sort_order","status","updated_after","updated_before"],"scope":{}},
-      "GET /v4/subscribers/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/subscribers/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v4/subscribers/{subscriber_id}/stats": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/subscribers/{subscriber_id}/stats","params":["email_sent_after","email_sent_before"],"scope":{"subscriber_id":{"from":"path","at":"subscriber_id"}}},
-      "GET /v4/subscribers/{subscriber_id}/tags": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/subscribers/{subscriber_id}/tags","params":["after","before","include_total_count","per_page"],"scope":{"subscriber_id":{"from":"path","at":"subscriber_id"}}},
-      "GET /v4/tags": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/tags","params":["after","before","include_total_count","per_page","include"],"scope":{}},
-      "GET /v4/tags/{tag_id}/subscribers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/tags/{tag_id}/subscribers","params":["after","before","created_after","created_before","include_total_count","per_page","slim","status","tagged_after","tagged_before"],"scope":{"tag_id":{"from":"path","at":"tag_id"}}},
-      "GET /v4/webhook_endpoints": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/webhook_endpoints","params":["after","before","include_total_count","per_page","status"],"scope":{}},
-      "GET /v4/webhook_endpoints/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/webhook_endpoints/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v4/webhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/webhooks","params":["after","before","include_total_count","per_page"],"scope":{}},
-      "PATCH /v4/subscribers/{subscriber_id}/location": {"action":"write.location","effects":["write"],"method":"PATCH","origin":"https://api.kit.com","path":"/v4/subscribers/{subscriber_id}/location","body":"any","scope":{"subscriber_id":{"from":"path","at":"subscriber_id"}}},
-      "PATCH /v4/webhook_endpoints/{id}": {"action":"write.webhook_endpoints","effects":["write"],"method":"PATCH","origin":"https://api.kit.com","path":"/v4/webhook_endpoints/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /v4/broadcasts": {"action":"write.broadcasts","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/broadcasts","body":"any","scope":{}},
-      "POST /v4/bulk/custom_fields": {"action":"write.custom_fields","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/bulk/custom_fields","body":"any","scope":{}},
-      "POST /v4/bulk/custom_fields/subscribers": {"action":"write.subscribers","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/bulk/custom_fields/subscribers","body":"any","scope":{}},
-      "POST /v4/bulk/forms/subscribers": {"action":"write.subscribers","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/bulk/forms/subscribers","body":"any","scope":{}},
-      "POST /v4/bulk/subscribers": {"action":"write.subscribers","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/bulk/subscribers","body":"any","scope":{}},
-      "POST /v4/bulk/tags": {"action":"write.tags","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/bulk/tags","body":"any","scope":{}},
-      "POST /v4/bulk/tags/subscribers": {"action":"write.subscribers","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/bulk/tags/subscribers","body":"any","scope":{}},
-      "POST /v4/custom_fields": {"action":"write.custom_fields","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/custom_fields","body":"any","scope":{}},
-      "POST /v4/forms/{form_id}/subscribers": {"action":"write.forms","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/forms/{form_id}/subscribers","body":"any","scope":{"form_id":{"from":"path","at":"form_id"}}},
-      "POST /v4/forms/{form_id}/subscribers/{id}": {"action":"write.subscribers","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/forms/{form_id}/subscribers/{id}","body":"any","scope":{"form_id":{"from":"path","at":"form_id"},"id":{"from":"path","at":"id"}}},
-      "POST /v4/purchases": {"action":"pay.purchases","effects":["pay"],"method":"POST","origin":"https://api.kit.com","path":"/v4/purchases","body":"any","scope":{}},
-      "POST /v4/sequences": {"action":"write.sequences","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/sequences","body":"any","scope":{}},
-      "POST /v4/sequences/{sequence_id}/emails": {"action":"send.emails","effects":["send"],"method":"POST","origin":"https://api.kit.com","path":"/v4/sequences/{sequence_id}/emails","body":"any","scope":{"sequence_id":{"from":"path","at":"sequence_id"}}},
-      "POST /v4/sequences/{sequence_id}/subscribers": {"action":"write.sequences","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/sequences/{sequence_id}/subscribers","body":"any","scope":{"sequence_id":{"from":"path","at":"sequence_id"}}},
-      "POST /v4/sequences/{sequence_id}/subscribers/{id}": {"action":"write.subscribers","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/sequences/{sequence_id}/subscribers/{id}","body":"any","scope":{"sequence_id":{"from":"path","at":"sequence_id"},"id":{"from":"path","at":"id"}}},
-      "POST /v4/snippets": {"action":"write.snippets","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/snippets","body":"any","scope":{}},
-      "POST /v4/subscribers": {"action":"write.subscribers","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/subscribers","body":"any","scope":{}},
-      "POST /v4/subscribers/filter": {"action":"write.filter","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/subscribers/filter","body":"any","scope":{}},
-      "POST /v4/subscribers/{id}/unsubscribe": {"action":"write.subscribers","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/subscribers/{id}/unsubscribe","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /v4/subscribers/{subscriber_id}/location": {"action":"write.location","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/subscribers/{subscriber_id}/location","body":"any","scope":{"subscriber_id":{"from":"path","at":"subscriber_id"}}},
-      "POST /v4/tags": {"action":"write.tags","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/tags","body":"any","scope":{}},
-      "POST /v4/tags/{tag_id}/subscribers": {"action":"write.tags","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/tags/{tag_id}/subscribers","body":"any","scope":{"tag_id":{"from":"path","at":"tag_id"}}},
-      "POST /v4/tags/{tag_id}/subscribers/{id}": {"action":"write.subscribers","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/tags/{tag_id}/subscribers/{id}","body":"any","scope":{"tag_id":{"from":"path","at":"tag_id"},"id":{"from":"path","at":"id"}}},
-      "POST /v4/webhook_endpoints": {"action":"write.webhook_endpoints","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/webhook_endpoints","body":"any","scope":{}},
-      "POST /v4/webhook_endpoints/{id}/revoke_previous_secret": {"action":"share.webhook_endpoints","effects":["share"],"method":"POST","origin":"https://api.kit.com","path":"/v4/webhook_endpoints/{id}/revoke_previous_secret","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /v4/webhook_endpoints/{id}/rotate_secret": {"action":"write.webhook_endpoints","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/webhook_endpoints/{id}/rotate_secret","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /v4/webhooks": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.kit.com","path":"/v4/webhooks","body":"any","scope":{}},
-      "PUT /v4/account/colors": {"action":"write.colors","effects":["write"],"method":"PUT","origin":"https://api.kit.com","path":"/v4/account/colors","body":"any","scope":{}},
-      "PUT /v4/broadcasts/{id}": {"action":"write.broadcasts","effects":["write"],"method":"PUT","origin":"https://api.kit.com","path":"/v4/broadcasts/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /v4/custom_fields/{id}": {"action":"write.custom_fields","effects":["write"],"method":"PUT","origin":"https://api.kit.com","path":"/v4/custom_fields/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /v4/sequences/{id}": {"action":"write.sequences","effects":["write"],"method":"PUT","origin":"https://api.kit.com","path":"/v4/sequences/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /v4/sequences/{sequence_id}/emails/{id}": {"action":"write.emails","effects":["write"],"method":"PUT","origin":"https://api.kit.com","path":"/v4/sequences/{sequence_id}/emails/{id}","body":"any","scope":{"sequence_id":{"from":"path","at":"sequence_id"},"id":{"from":"path","at":"id"}}},
-      "PUT /v4/snippets/{id}": {"action":"write.snippets","effects":["write"],"method":"PUT","origin":"https://api.kit.com","path":"/v4/snippets/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /v4/subscribers/{id}": {"action":"write.subscribers","effects":["write"],"method":"PUT","origin":"https://api.kit.com","path":"/v4/subscribers/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /v4/tags/{id}": {"action":"write.tags","effects":["write"],"method":"PUT","origin":"https://api.kit.com","path":"/v4/tags/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}}
+      "DELETE /v4/broadcasts/{id}": {"action":"broadcasts.delete","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/broadcasts/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /v4/bulk/tags": {"action":"bulk.tags.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/bulk/tags","scope":{}},
+      "DELETE /v4/bulk/tags/subscribers": {"action":"bulk.tags.subscribers.delete","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/bulk/tags/subscribers","scope":{}},
+      "DELETE /v4/custom_fields/{id}": {"action":"custom_fields.delete","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/custom_fields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /v4/sequences/{id}": {"action":"sequences.delete","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/sequences/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /v4/sequences/{sequence_id}/emails/{id}": {"action":"sequences.emails.delete","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/sequences/{sequence_id}/emails/{id}","scope":{"id":{"at":"id","from":"path"},"sequence_id":{"at":"sequence_id","from":"path"}}},
+      "DELETE /v4/subscribers/{subscriber_id}/location": {"action":"subscribers.location.delete","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/subscribers/{subscriber_id}/location","scope":{"subscriber_id":{"at":"subscriber_id","from":"path"}}},
+      "DELETE /v4/tags/{tag_id}/subscribers": {"action":"tags.subscribers.delete","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/tags/{tag_id}/subscribers","scope":{"tag_id":{"at":"tag_id","from":"path"}}},
+      "DELETE /v4/tags/{tag_id}/subscribers/{id}": {"action":"tags.subscribers.delete","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/tags/{tag_id}/subscribers/{id}","scope":{"id":{"at":"id","from":"path"},"tag_id":{"at":"tag_id","from":"path"}}},
+      "DELETE /v4/webhook_endpoints/{id}": {"action":"webhook_endpoints.delete","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/webhook_endpoints/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /v4/webhooks/{id}": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"https://api.kit.com","path":"/v4/webhooks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v4/account": {"action":"account.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/account","scope":{}},
+      "GET /v4/account/colors": {"action":"account.colors.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/account/colors","scope":{}},
+      "GET /v4/account/creator_profile": {"action":"account.creator_profile.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/account/creator_profile","scope":{}},
+      "GET /v4/account/email_stats": {"action":"account.email_stats.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/account/email_stats","scope":{}},
+      "GET /v4/account/growth_stats": {"action":"account.growth_stats.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["ending","starting"],"path":"/v4/account/growth_stats","scope":{}},
+      "GET /v4/apps": {"action":"apps.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","category","include_total_count","per_page","query"],"path":"/v4/apps","scope":{"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /v4/apps/{id}": {"action":"apps.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/apps/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v4/broadcasts": {"action":"broadcasts.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","include_total_count","per_page","sent_after","sent_before","slim","status"],"path":"/v4/broadcasts","scope":{}},
+      "GET /v4/broadcasts/stats": {"action":"broadcasts.stats.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","include_total_count","per_page","sent_after","sent_before","status"],"path":"/v4/broadcasts/stats","scope":{"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /v4/broadcasts/{broadcast_id}/clicks": {"action":"broadcasts.clicks.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/broadcasts/{broadcast_id}/clicks","scope":{"broadcast_id":{"at":"broadcast_id","from":"path"}}},
+      "GET /v4/broadcasts/{broadcast_id}/stats": {"action":"broadcasts.stats.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/broadcasts/{broadcast_id}/stats","scope":{"broadcast_id":{"at":"broadcast_id","from":"path"}}},
+      "GET /v4/broadcasts/{id}": {"action":"broadcasts.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["[]","after","before","include_total_count","per_page","sent_after","sent_before","status"],"path":"/v4/broadcasts/{id}","path_patterns":{"id":"[0-9]+"},"scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v4/custom_fields": {"action":"custom_fields.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","include_total_count","per_page"],"path":"/v4/custom_fields","scope":{}},
+      "GET /v4/email_templates": {"action":"email_templates.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","include_total_count","per_page"],"path":"/v4/email_templates","scope":{}},
+      "GET /v4/forms": {"action":"forms.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","include_total_count","per_page","status","type","include"],"path":"/v4/forms","scope":{}},
+      "GET /v4/forms/{form_id}/subscribers": {"action":"forms.subscribers.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["added_after","added_before","after","before","created_after","created_before","include_total_count","per_page","slim","status"],"path":"/v4/forms/{form_id}/subscribers","scope":{"form_id":{"at":"form_id","from":"path"}}},
+      "GET /v4/posts": {"action":"posts.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","include_content","include_total_count","per_page"],"path":"/v4/posts","scope":{}},
+      "GET /v4/posts/{id}": {"action":"posts.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/posts/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v4/purchases": {"action":"purchases.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","include_total_count","per_page"],"path":"/v4/purchases","scope":{}},
+      "GET /v4/purchases/{id}": {"action":"purchases.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/purchases/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v4/segments": {"action":"segments.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","include_total_count","per_page"],"path":"/v4/segments","scope":{}},
+      "GET /v4/sequences": {"action":"sequences.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","include_total_count","per_page","include"],"path":"/v4/sequences","scope":{}},
+      "GET /v4/sequences/{id}": {"action":"sequences.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["include"],"path":"/v4/sequences/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v4/sequences/{sequence_id}/emails": {"action":"sequences.emails.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","include_content","include_total_count","per_page","include"],"path":"/v4/sequences/{sequence_id}/emails","scope":{"sequence_id":{"at":"sequence_id","from":"path"}}},
+      "GET /v4/sequences/{sequence_id}/emails/{id}": {"action":"sequences.emails.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["include"],"path":"/v4/sequences/{sequence_id}/emails/{id}","scope":{"id":{"at":"id","from":"path"},"sequence_id":{"at":"sequence_id","from":"path"}}},
+      "GET /v4/sequences/{sequence_id}/subscribers": {"action":"sequences.subscribers.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["added_after","added_before","after","before","created_after","created_before","include_total_count","per_page","status"],"path":"/v4/sequences/{sequence_id}/subscribers","scope":{"sequence_id":{"at":"sequence_id","from":"path"}}},
+      "GET /v4/snippets": {"action":"snippets.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","archived","before","include_content","include_total_count","per_page","snippet_type"],"path":"/v4/snippets","scope":{}},
+      "GET /v4/snippets/{id}": {"action":"snippets.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/snippets/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v4/subscribers": {"action":"subscribers.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","created_after","created_before","email_address","include","include_total_count","per_page","slim","sort_field","sort_order","status","updated_after","updated_before"],"path":"/v4/subscribers","scope":{}},
+      "GET /v4/subscribers/{id}": {"action":"subscribers.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/subscribers/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v4/subscribers/{subscriber_id}/stats": {"action":"subscribers.stats.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["email_sent_after","email_sent_before"],"path":"/v4/subscribers/{subscriber_id}/stats","scope":{"subscriber_id":{"at":"subscriber_id","from":"path"}}},
+      "GET /v4/subscribers/{subscriber_id}/tags": {"action":"subscribers.tags.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","include_total_count","per_page"],"path":"/v4/subscribers/{subscriber_id}/tags","scope":{"subscriber_id":{"at":"subscriber_id","from":"path"}}},
+      "GET /v4/tags": {"action":"tags.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","include_total_count","per_page","include"],"path":"/v4/tags","scope":{}},
+      "GET /v4/tags/{tag_id}/subscribers": {"action":"tags.subscribers.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","created_after","created_before","include_total_count","per_page","slim","status","tagged_after","tagged_before"],"path":"/v4/tags/{tag_id}/subscribers","scope":{"tag_id":{"at":"tag_id","from":"path"}}},
+      "GET /v4/webhook_endpoints": {"action":"webhook_endpoints.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","include_total_count","per_page","status"],"path":"/v4/webhook_endpoints","scope":{}},
+      "GET /v4/webhook_endpoints/{id}": {"action":"webhook_endpoints.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","path":"/v4/webhook_endpoints/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v4/webhook_endpoints/{id}/deliveries": {"action":"webhook_endpoints.deliveries.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","event_type","per_page","status"],"path":"/v4/webhook_endpoints/{id}/deliveries","scope":{"id":{"at":"id","from":"path"},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /v4/webhook_endpoints/{id}/deliveries/{delivery_id}": {"action":"webhook_endpoints.deliveries.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["include_payload"],"path":"/v4/webhook_endpoints/{id}/deliveries/{delivery_id}","scope":{"delivery_id":{"at":"delivery_id","from":"path"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /v4/webhooks": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://api.kit.com","params":["after","before","include_total_count","per_page"],"path":"/v4/webhooks","scope":{}},
+      "PATCH /v4/subscribers/{subscriber_id}/location": {"action":"subscribers.location.write","body":"any","effects":["write"],"method":"PATCH","origin":"https://api.kit.com","path":"/v4/subscribers/{subscriber_id}/location","scope":{"subscriber_id":{"at":"subscriber_id","from":"path"}}},
+      "PATCH /v4/webhook_endpoints/{id}": {"action":"webhook_endpoints.admin","body":"any","effects":["admin"],"method":"PATCH","origin":"https://api.kit.com","path":"/v4/webhook_endpoints/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /v4/broadcasts": {"action":"broadcasts.send","body":"any","effects":["send","write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/broadcasts","scope":{}},
+      "POST /v4/bulk/custom_fields": {"action":"bulk.custom_fields.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/bulk/custom_fields","scope":{}},
+      "POST /v4/bulk/custom_fields/subscribers": {"action":"bulk.custom_fields.subscribers.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/bulk/custom_fields/subscribers","scope":{}},
+      "POST /v4/bulk/forms/subscribers": {"action":"bulk.forms.subscribers.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/bulk/forms/subscribers","scope":{}},
+      "POST /v4/bulk/subscribers": {"action":"bulk.subscribers.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/bulk/subscribers","scope":{}},
+      "POST /v4/bulk/tags": {"action":"bulk.tags.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/bulk/tags","scope":{}},
+      "POST /v4/bulk/tags/subscribers": {"action":"bulk.tags.subscribers.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/bulk/tags/subscribers","scope":{}},
+      "POST /v4/custom_fields": {"action":"custom_fields.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/custom_fields","scope":{}},
+      "POST /v4/forms/{form_id}/subscribers": {"action":"forms.subscribers.send","body":"any","effects":["send","write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/forms/{form_id}/subscribers","scope":{"form_id":{"at":"form_id","from":"path"}}},
+      "POST /v4/forms/{form_id}/subscribers/{id}": {"action":"forms.subscribers.send","body":"any","effects":["send","write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/forms/{form_id}/subscribers/{id}","scope":{"form_id":{"at":"form_id","from":"path"},"id":{"at":"id","from":"path"}}},
+      "POST /v4/purchases": {"action":"purchases.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/purchases","scope":{}},
+      "POST /v4/sequences": {"action":"sequences.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/sequences","scope":{}},
+      "POST /v4/sequences/{sequence_id}/emails": {"action":"sequences.emails.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/sequences/{sequence_id}/emails","scope":{"sequence_id":{"at":"sequence_id","from":"path"}}},
+      "POST /v4/sequences/{sequence_id}/subscribers": {"action":"sequences.subscribers.send","body":"any","effects":["send","write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/sequences/{sequence_id}/subscribers","scope":{"sequence_id":{"at":"sequence_id","from":"path"}}},
+      "POST /v4/sequences/{sequence_id}/subscribers/{id}": {"action":"sequences.subscribers.send","body":"any","effects":["send","write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/sequences/{sequence_id}/subscribers/{id}","scope":{"id":{"at":"id","from":"path"},"sequence_id":{"at":"sequence_id","from":"path"}}},
+      "POST /v4/snippets": {"action":"snippets.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/snippets","scope":{}},
+      "POST /v4/subscribers": {"action":"subscribers.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/subscribers","scope":{}},
+      "POST /v4/subscribers/filter": {"action":"subscribers.filter.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.kit.com","path":"/v4/subscribers/filter","scope":{}},
+      "POST /v4/subscribers/{id}/unsubscribe": {"action":"subscribers.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/subscribers/{id}/unsubscribe","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /v4/subscribers/{subscriber_id}/location": {"action":"subscribers.location.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/subscribers/{subscriber_id}/location","scope":{"subscriber_id":{"at":"subscriber_id","from":"path"}}},
+      "POST /v4/tags": {"action":"tags.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/tags","scope":{}},
+      "POST /v4/tags/{tag_id}/subscribers": {"action":"tags.subscribers.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/tags/{tag_id}/subscribers","scope":{"tag_id":{"at":"tag_id","from":"path"}}},
+      "POST /v4/tags/{tag_id}/subscribers/{id}": {"action":"tags.subscribers.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.kit.com","path":"/v4/tags/{tag_id}/subscribers/{id}","scope":{"id":{"at":"id","from":"path"},"tag_id":{"at":"tag_id","from":"path"}}},
+      "POST /v4/webhook_endpoints": {"action":"webhook_endpoints.admin","body":"any","effects":["admin"],"method":"POST","origin":"https://api.kit.com","path":"/v4/webhook_endpoints","scope":{}},
+      "POST /v4/webhook_endpoints/{id}/revoke_previous_secret": {"action":"webhook_endpoints.previous_secret.admin","effects":["admin"],"method":"POST","origin":"https://api.kit.com","path":"/v4/webhook_endpoints/{id}/revoke_previous_secret","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /v4/webhook_endpoints/{id}/rotate_secret": {"action":"webhook_endpoints.secret.admin","body":"any","effects":["admin"],"method":"POST","origin":"https://api.kit.com","path":"/v4/webhook_endpoints/{id}/rotate_secret","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /v4/webhooks": {"action":"webhooks.admin","body":"any","effects":["admin"],"method":"POST","origin":"https://api.kit.com","path":"/v4/webhooks","scope":{}},
+      "PUT /v4/account/colors": {"action":"account.colors.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.kit.com","path":"/v4/account/colors","scope":{}},
+      "PUT /v4/broadcasts/{id}": {"action":"broadcasts.send","body":"any","effects":["send","write"],"method":"PUT","origin":"https://api.kit.com","path":"/v4/broadcasts/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /v4/custom_fields/{id}": {"action":"custom_fields.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.kit.com","path":"/v4/custom_fields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /v4/sequences/{id}": {"action":"sequences.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.kit.com","path":"/v4/sequences/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /v4/sequences/{sequence_id}/emails/{id}": {"action":"sequences.emails.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.kit.com","path":"/v4/sequences/{sequence_id}/emails/{id}","scope":{"id":{"at":"id","from":"path"},"sequence_id":{"at":"sequence_id","from":"path"}}},
+      "PUT /v4/snippets/{id}": {"action":"snippets.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.kit.com","path":"/v4/snippets/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /v4/subscribers/{id}": {"action":"subscribers.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.kit.com","path":"/v4/subscribers/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /v4/tags/{id}": {"action":"tags.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.kit.com","path":"/v4/tags/{id}","scope":{"id":{"at":"id","from":"path"}}}
     }
   }
 }

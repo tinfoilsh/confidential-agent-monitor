@@ -27,6 +27,7 @@ type Host struct {
 	Dial        func(ctx context.Context, network, address string) (net.Conn, error)
 	Secret      func(ctx context.Context, name string) (string, error)
 	Configured  func(name string) bool
+	OAuth       func(name string) bool
 	Placeholder func(name string) string
 	TLS         func(ctx context.Context, host string) *tls.Config
 	HostKey     ssh.Signer
@@ -52,6 +53,7 @@ func Serve(ctx context.Context, factory func(ctx context.Context, data json.RawM
 			return value, err
 		},
 		Configured:  func(name string) bool { return boot.Secrets[name].Configured },
+		OAuth:       func(name string) bool { return boot.Secrets[name].OAuth },
 		Placeholder: func(name string) string { return boot.Secrets[name].Placeholder },
 		TLS: func(ctx context.Context, _ string) *tls.Config {
 			return &tls.Config{GetCertificate: func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {

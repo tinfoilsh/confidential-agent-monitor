@@ -4,7 +4,22 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.add_reviewers": {"title": "Add reviewers", "effects": ["send", "share"]},
+      "use.approve_review_request": {"title": "Approve review request", "effects": ["publish"]},
+      "use.delete_node": {"title": "Delete node", "effects": ["delete"]},
+      "use.discard": {"title": "Discard", "effects": ["delete"]},
+      "use.manage_access_auth": {"title": "Manage access auth", "effects": ["admin", "delete"]},
+      "use.manage_custom_domain": {"title": "Manage custom domain", "effects": ["admin", "delete"]},
+      "use.manage_git_source": {"title": "Manage git source", "effects": ["admin", "delete"]},
+      "use.manage_members_sharing": {"title": "Manage members sharing", "effects": ["admin", "delete", "send", "share"]},
+      "use.manage_workflow": {"title": "Manage workflow", "effects": ["admin", "delete", "execute"]},
+      "use.manage_workflow_prs": {"title": "Manage workflow prs", "effects": ["publish"]},
+      "use.publish": {"title": "Publish", "effects": ["publish"]},
+      "use.publish_review_request": {"title": "Publish review request", "effects": ["publish"]},
+      "use.request_review": {"title": "Request review", "effects": ["send"]},
+      "use.update_config": {"title": "Update config", "effects": ["admin"]},
+      "use.update_deployment_settings": {"title": "Update deployment settings", "effects": ["admin", "publish"]}
     },
     "connection": {"mcp": {"url": "https://mcp.mintlify.com"}},
     "fields": [
