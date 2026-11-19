@@ -577,6 +577,24 @@
       "checked_at": "2026-11-19T00:29:05Z"
     }
   ],
+  "datadog": [
+    {
+      "source": "github:DataDog/datadog-api-client-go@master:.generator/schemas/v1/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/DataDog/datadog-api-client-go/812cf1bb476974acabdf26494a63b547bffc70ba/.generator/schemas/v1/openapi.yaml",
+      "commit": "812cf1bb476974acabdf26494a63b547bffc70ba",
+      "sha256": "efbd14397c0db5455cc8412927ed9feceb29bd9f1adfd62dd9cd30083e8bf3f9",
+      "bytes": 1720793,
+      "checked_at": "2026-11-19T17:04:19Z"
+    },
+    {
+      "source": "github:DataDog/datadog-api-client-go@master:.generator/schemas/v2/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/DataDog/datadog-api-client-go/812cf1bb476974acabdf26494a63b547bffc70ba/.generator/schemas/v2/openapi.yaml",
+      "commit": "812cf1bb476974acabdf26494a63b547bffc70ba",
+      "sha256": "d6257f4d91fea4f1ffdca14ddef8707ef7b75fa24604949ef91e5a28f91723b0",
+      "bytes": 10368647,
+      "checked_at": "2026-11-19T17:04:20Z"
+    }
+  ],
   "deep_l": [
     {
       "source": "github:DeepLcom/openapi@main:openapi.yaml",

@@ -26,7 +26,7 @@ const (
 	maxCatalogBytes = 64 << 20
 
 	// The Catalog workflow publishes connector/catalog/presets under its SHA-256.
-	tinfoilCatalogPin = "c29f5b4cab294ce2ebe9a882d720d72f8d10d8e48ca4368d6439eedcc25524e0"
+	tinfoilCatalogPin = "b1e6d5dc703745b72830858e183a7edeb8c144e6f6c067e03d8243ab92486cac"
 	tinfoilCatalogs   = "https://github.com/tinfoilsh/confidential-agent-monitor/releases/download/catalog/"
 )
 

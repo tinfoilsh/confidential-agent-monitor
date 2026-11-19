@@ -1368,6 +1368,10 @@ details[open] > summary > .collection-chevron {
   background: color-mix(in srgb, var(--warn) 8%, var(--card));
   color: var(--warn);
 }
+.service-status[data-state="match-only"] {
+  background: color-mix(in srgb, var(--warn) 8%, var(--card));
+  color: var(--warn);
+}
 .service-status[data-state="error"] {
   background: color-mix(in srgb, var(--bad) 8%, var(--card));
   color: var(--bad);

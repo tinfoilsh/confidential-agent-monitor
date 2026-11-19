@@ -74,6 +74,7 @@ type PolicyOptions struct {
 
 type Connection struct {
 	Preset        string                     `json:"preset"`
+	MatchOnly     bool                       `json:"match_only,omitempty"`
 	Effects       map[string]string          `json:"effects,omitempty"`
 	PolicyOptions PolicyOptions              `json:"policy_options"`
 	Contents      string                     `json:"contents"`

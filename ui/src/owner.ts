@@ -50,6 +50,7 @@ export type Identity = {
 // A connection's one key that is not a setting is its connector's kind, holding the setup.
 const SETTINGS = [
   "preset",
+  "match_only",
   "effects",
   "policy_options",
   "contents",
@@ -58,6 +59,7 @@ const SETTINGS = [
 ];
 export type Connection = {
   preset: string;
+  match_only?: boolean;
   effects?: Record<string, Mode>;
   contents: Audience;
   sends: Audience;
@@ -774,6 +776,8 @@ export const setupOf = (c?: Connection) =>
 const UNKNOWN_PRESET = { title: "Service" };
 export const presetOf = (view: View, name: string): Omit<Preset, "defaults"> =>
   view.presets[connections(view)[name]?.preset] ?? UNKNOWN_PRESET;
+export const matchOnly = (view: View, name: string) =>
+  !!connections(view)[name]?.match_only;
 const fill = (text: string, scope?: { [key: string]: any }) =>
   text.replace(/\{(\w+)\}/g, (m, k) => scope?.[k] ?? m);
 const filled = <T>(c: T, values?: { [key: string]: any }): T =>
@@ -1938,6 +1942,11 @@ export const edits = {
     sourceChanges({
       identities: { [name]: { connections: { [connection]: access } } },
     }),
+  setMatchOnly: (name: string, on: boolean): Change[] => [
+    on
+      ? { path: ["connections", name, "match_only"], value: true }
+      : { path: ["connections", name, "match_only"], delete: true },
+  ],
   setEffect: (effect: string, mode?: Mode): Change[] => [
     {
       path: ["effects", effect],
