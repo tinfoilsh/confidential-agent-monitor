@@ -33,8 +33,35 @@ import {
 import { useMonitor } from "./monitor";
 import { AgentConnectionAccess } from "./Agents";
 import { SavedRules, ToolReview } from "./Approvals";
-import * as slack from "./slack";
 
+// Slack's create-app flow opens with this bot's name and scopes filled in.
+const SLACK_APP = `https://api.slack.com/apps?new_app=1&manifest_json=${encodeURIComponent(
+  JSON.stringify({
+    display_information: { name: "Perimeter agent" },
+    features: { bot_user: { display_name: "Perimeter agent" } },
+    oauth_config: {
+      scopes: {
+        bot: [
+          "channels:history",
+          "channels:join",
+          "channels:read",
+          "chat:write",
+          "files:read",
+          "files:write",
+          "groups:history",
+          "groups:read",
+          "im:history",
+          "im:read",
+          "mpim:history",
+          "mpim:read",
+          "reactions:read",
+          "reactions:write",
+          "users:read",
+        ],
+      },
+    },
+  }),
+)}`;
 const inCatalog =
   (search: string, group: { title: string }) =>
   (p: { name: string; title: string; aliases: string }) =>
@@ -341,8 +368,8 @@ function GlobalPermissions() {
           <span>
             <span class="setting-title">Allow AI inference without asking</span>
             <small>
-              Paid model calls (Tinfoil, OpenAI, …) go through without approval.
-              Other payments still ask.
+              Paid model calls (Tinfoil, OpenAI, …) go through without
+              approval. Other payments still ask.
             </small>
           </span>
           <input
@@ -551,15 +578,9 @@ function Catalog() {
   );
 }
 function ConnectionWarning(props: { warning?: string }) {
-  return (
-    <Show when={props.warning}>
-      {(warning) => (
-        <p class="connection-warning" role="note">
-          {warning()}
-        </p>
-      )}
-    </Show>
-  );
+  return <Show when={props.warning}>
+    {(warning) => <p class="connection-warning" role="note">{warning()}</p>}
+  </Show>;
 }
 
 function ApiFields(props: {
@@ -712,8 +733,15 @@ export function AddConnection(props: { preset: string }) {
         <Show when={fields.some((f) => f.oauth && !tokens[f.key] && local(f))}>
           <LocalSignIn />
         </Show>
-        <Show when={slack.SLACK_APP_PRESETS.includes(props.preset)}>
-          <SlackAppSetup preset={props.preset} origin={values.origin} open />
+        <Show when={props.preset === "slack"}>
+          <p class="muted field-help">
+            No Slack app yet?{" "}
+            <a href={SLACK_APP} target="_blank" rel="noopener noreferrer">
+              Create one with these permissions
+            </a>
+            , install it to your workspace, then paste its Bot User OAuth Token
+            below.
+          </p>
         </Show>
         <label>
           Name
@@ -1165,8 +1193,6 @@ function Connection(props: { name: string }) {
   });
   const codex = () => owner.codexSetup(m.view()!, props.name);
   const url = () => owner.serviceURL(m.view()!, props.name);
-  const slackApp = () =>
-    slack.SLACK_APP_PRESETS.includes(connection()?.preset ?? "");
   const tinfoil = createMemo(() => owner.tinfoilSetup(m.view()!, props.name));
   const review = createMemo(() => {
     const review = owner.review(m.view()!, props.name);
@@ -1239,23 +1265,8 @@ function Connection(props: { name: string }) {
         <ConnectionForm
           name={props.name}
           setup={
-            <Show
-              when={
-                tinfoil() || setups().length || codex() || url() || slackApp()
-              }
-            >
+            <Show when={tinfoil() || setups().length || codex() || url()}>
               <div class="connection-setup">
-                <Show when={slackApp()}>
-                  <SlackAppSetup
-                    preset={connection()!.preset}
-                    origin={
-                      (
-                        connection()!.policy_options as
-                          { origin?: string } | undefined
-                      )?.origin
-                    }
-                  />
-                </Show>
                 <Show when={url()}>
                   {(url) => (
                     <CopyField
@@ -1352,10 +1363,10 @@ function Connection(props: { name: string }) {
                             <p>
                               Save this in <code>~/.codex/config.toml</code>,
                               then run Codex in your Perimeter-connected bunker
-                              or with <code>perimeter run -- codex</code>.
-                              Choose a model available to your ChatGPT account.
-                              Grant your bunker access to this service, then
-                              approve its requests when asked.
+                              or with <code>perimeter run -- codex</code>. Choose
+                              a model available to your ChatGPT account. Grant
+                              your bunker access to this service, then approve
+                              its requests when asked.
                             </p>
                             <pre ref={code}>{text()}</pre>
                             <Copy text={text()} target={() => code} />
@@ -1380,89 +1391,6 @@ function Connection(props: { name: string }) {
         />
       </Show>
     </div>
-  );
-}
-// Creates a custom Slack app from a manifest, then says where to find its token.
-function SlackAppSetup(props: {
-  preset: string;
-  origin?: string;
-  open?: boolean;
-}) {
-  const nameId = createUniqueId();
-  const [name, setName] = createSignal(slack.SLACK_APP_NAME),
-    [access, setAccess] = createSignal<slack.SlackAccess>("write");
-  const manifest = () =>
-    JSON.stringify(
-      slack.slackManifest(props.preset, name(), access()),
-      null,
-      2,
-    );
-  let code!: HTMLPreElement;
-  return (
-    <details class="slack-app-setup" open={props.open}>
-      <summary>Create a Slack app for this service</summary>
-      <div class="form-fields">
-        <p class="muted field-help">
-          Slack opens with this app's name and permissions filled in. You choose
-          the workspace and approve the install.
-        </p>
-        <label for={nameId}>
-          App name
-          <input
-            id={nameId}
-            maxLength={35}
-            value={name()}
-            onInput={(e) => setName(e.currentTarget.value)}
-            autocomplete="off"
-          />
-        </label>
-        <Show when={props.preset === "slack"}>
-          <label>
-            App permissions
-            <select
-              value={access()}
-              onChange={(e) =>
-                setAccess(e.currentTarget.value as slack.SlackAccess)
-              }
-            >
-              <option value="write">
-                Read and post messages, reactions and files
-              </option>
-              <option value="read">Read channels, messages and files</option>
-            </select>
-          </label>
-        </Show>
-        <div class="form-actions">
-          <a
-            class="button primary"
-            href={slack.slackCreateURL(
-              props.preset,
-              name(),
-              access(),
-              props.origin,
-            )}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Create Slack app
-          </a>
-        </div>
-        <ol class="slack-app-steps">
-          <For each={slack.slackSteps(props.preset)}>
-            {(step) => <li>{step}</li>}
-          </For>
-        </ol>
-        <details class="agent-setup-usage">
-          <summary>Create it from the manifest yourself</summary>
-          <p>
-            In Slack's app page, choose Create New App, then From a manifest,
-            and paste this JSON.
-          </p>
-          <pre ref={code}>{manifest()}</pre>
-          <Copy text={manifest()} target={() => code} />
-        </details>
-      </div>
-    </details>
   );
 }
 // Match-only mode lets requests the service does not recognize through instead of failing closed,
