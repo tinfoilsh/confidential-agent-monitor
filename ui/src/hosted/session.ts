@@ -1,6 +1,7 @@
 import type { Clerk } from "@clerk/clerk-js/no-rhc";
 import { createSignal } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
+import { openChannel, type Session as OwnerSession } from "./channel";
 import { PERSONAL, UUID } from "./contract";
 import * as keys from "./keys";
 
@@ -9,6 +10,7 @@ export const SANDBOX_REPO = "tinfoilsh/confidential-agent-sandbox";
 const REFRESH_MS = 30_000;
 const FOCUS_REFRESH_MS = 5_000;
 const SIGN_OUT_CHANNEL = "tinfoil.manual-kek";
+const OWNER_SUBPROTOCOL = "tinfoil-owner-v1";
 
 export const STARTING = ["created", "pending", "deploying", "started"];
 
@@ -91,13 +93,12 @@ export function createSession(clerk: Clerk) {
   let inflight: { scope: AbortController; done: Promise<void> } | undefined;
   let lastRead = 0;
 
-  async function request(
-    path: string,
+  async function bearer(
     who: { user?: string; account: string },
-    init: Parameters<keys.Api>[1] = {},
-  ): Promise<unknown> {
+    signal?: AbortSignal,
+  ) {
     const token = await clerk.session?.getToken();
-    init.signal?.throwIfAborted();
+    signal?.throwIfAborted();
     // The token must still belong to the user and account the request was made for.
     if (
       !token ||
@@ -107,7 +108,15 @@ export function createSession(clerk: Clerk) {
       throw new keys.ApiError(401, {
         error: "Your account changed. Try again.",
       });
-    const response = await fetch(keys.TARGETS.api_origin + path, {
+    return token;
+  }
+  async function send(
+    path: string,
+    who: { user?: string; account: string },
+    init: Parameters<keys.Api>[1] = {},
+  ) {
+    const token = await bearer(who, init.signal);
+    return fetch(keys.TARGETS.api_origin + path, {
       method: init.method ?? "GET",
       signal: init.signal,
       cache: "no-store",
@@ -119,6 +128,13 @@ export function createSession(clerk: Clerk) {
       },
       body: init.body === undefined ? undefined : JSON.stringify(init.body),
     });
+  }
+  async function request(
+    path: string,
+    who: { user?: string; account: string },
+    init: Parameters<keys.Api>[1] = {},
+  ): Promise<unknown> {
+    const response = await send(path, who, init);
     const text = await response.text();
     let value: unknown = null;
     try {
@@ -264,6 +280,9 @@ export function createSession(clerk: Clerk) {
   // sign-out, starts no key action; storage refuses the writes of any other.
   function bind() {
     const current = signingOut || ended ? fenced : scope;
+    const who = { user: user()?.id, account: account() };
+    const within = (signal?: AbortSignal) =>
+      AbortSignal.any(signal ? [current.signal, signal] : [current.signal]);
     const live = () => current === scope && !current.signal.aborted;
     const gone = () => new Error("Your account changed. Start again.");
     return {
@@ -271,6 +290,21 @@ export function createSession(clerk: Clerk) {
       fence,
       account: account(),
       api: scoped(current),
+      fetch: (path: string, signal?: AbortSignal) =>
+        send(path, who, { signal: within(signal) }),
+      async channel(
+        path: string,
+        sessions: OwnerSession[],
+        signal?: AbortSignal,
+      ) {
+        const at = within(signal);
+        return openChannel(
+          keys.TARGETS.api_origin!.replace("https:", "wss:") + path,
+          sessions,
+          at,
+          [OWNER_SUBPROTOCOL, `bearer.${await bearer(who, at)}`],
+        );
+      },
       signal: current.signal,
       live,
       unlocked: () => (live() ? unlocked() : undefined),
