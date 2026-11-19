@@ -317,6 +317,7 @@ export type ConnectionAnswers = {
 export type OnboardingChoices = {
   services: { preset: string; level: Level; credential?: string }[];
   network: Exclude<Level, "read">;
+  registries: boolean;
 };
 
 export const LEVELS: { [L in Level]: string } = {
@@ -1653,6 +1654,25 @@ const unusedName = (view: View, base: string, suffixes: string[] = [""]) => {
   return name;
 };
 
+const PACKAGE_REGISTRY_HOSTS = [
+  "downloads.claude.ai",
+  "registry.npmjs.org",
+  "pypi.org",
+  "files.pythonhosted.org",
+  "archive.ubuntu.com",
+  "*.archive.ubuntu.com",
+  "security.ubuntu.com",
+  "ports.ubuntu.com",
+  "crates.io",
+  "static.crates.io",
+  "index.crates.io",
+  "proxy.golang.org",
+  "sum.golang.org",
+  "cache.nixos.org",
+];
+// Ubuntu's repositories are served over plain HTTP.
+const PACKAGE_REGISTRY_PORTS = [80, 443];
+
 function onboardingChanges(
   view: View,
   choices: OnboardingChoices,
@@ -1679,6 +1699,26 @@ function onboardingChanges(
     path: ["default_access", network],
     value: { level: choices.network },
   });
+  if (choices.registries) {
+    const registries = unusedName(view, "package-registries");
+    changes.push(
+      ...sourceChanges({
+        connections: {
+          [registries]: {
+            preset: "tcp",
+            contents: "anyone",
+            strangers: true,
+            sends: "anyone",
+            tcp: {
+              hosts: PACKAGE_REGISTRY_HOSTS,
+              ports: PACKAGE_REGISTRY_PORTS,
+            },
+          },
+        },
+      }),
+      { path: ["default_access", registries], value: { level: "allow" } },
+    );
+  }
   const credentials: { [connection: string]: Credentials } = {};
   const approveTools: string[] = [];
   const add = (

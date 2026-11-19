@@ -111,6 +111,7 @@ export function Onboarding(props: {
   const [keys, setKeys] = createStore<Record<string, string>>({});
   const [network, setNetwork] =
     createSignal<owner.OnboardingChoices["network"]>("ask");
+  const [registries, setRegistries] = createSignal(true);
   const [missing, setMissing] = createSignal("");
   const offered = () => SERVICES.filter((s) => m.view()!.presets[s.preset]);
   const chosen = () => offered().filter((s) => picked().includes(s.preset));
@@ -151,6 +152,7 @@ export function Onboarding(props: {
           credential: s.signIn ? undefined : keyOf(s),
         })),
         network: network(),
+        registries: registries(),
       },
       chosen()
         .filter((s) => s.signIn)
@@ -370,6 +372,21 @@ export function Onboarding(props: {
                 )}
               </For>
             </div>
+            <label class="network-option setting-toggle">
+              <span>
+                <strong>Allow package registries</strong>
+                <small>
+                  Allow npm, PyPI, Ubuntu repositories, and more without
+                  approval.
+                </small>
+              </span>
+              <input
+                type="checkbox"
+                role="switch"
+                checked={registries()}
+                onChange={(event) => setRegistries(event.currentTarget.checked)}
+              />
+            </label>
             {props.error}
             <button class="primary" disabled={props.busy}>
               {props.busy ? "Saving…" : "Finish setup"}
