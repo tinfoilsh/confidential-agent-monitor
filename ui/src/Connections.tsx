@@ -1679,10 +1679,8 @@ function MatchOnlySetting(props: { name: string }) {
                 !(await askConfirm({
                   title: `Use match-only mode for ${props.name}?`,
                   description:
-                    "The Perimeter will still limit this service to its hosts and substitute its credentials, " +
-                    "but it will no longer fail closed. Requests it does not recognize, including endpoints " +
-                    "its API definition does not know, are treated like Custom API requests (execute and send): " +
-                    "a bunker with Allow access can make them without asking. Recognized operations keep their permissions.",
+                    "The Perimeter will still proxy and substitute credentials, but it will no longer fail closed. " +
+                    "Unrecognized requests, including endpoints not in the definition, are treated like Custom API requests.",
                   confirmLabel: "Use match-only mode",
                   destructive: true,
                 }))
