@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	version2        = 2
 	version3        = 3
 	ownerPackage    = "sentinel"
 	ownerPolicy     = "network-default"
@@ -31,6 +32,9 @@ func upgradeV2(plain []byte) ([]byte, error) {
 	}
 	if v2.Version >= version3 {
 		return plain, nil
+	}
+	if v2.Version < version2 {
+		return nil, fmt.Errorf("version %d is no longer supported", v2.Version)
 	}
 	source, err := tomledit.Read(v2.Policy)
 	if err != nil {

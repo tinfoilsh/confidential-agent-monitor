@@ -111,14 +111,6 @@ func (s held) commit(ctx context.Context, next format.Document) error {
 	return nil
 }
 
-func v1Presets() map[string]bool {
-	declared := map[string]bool{}
-	for name, p := range presets {
-		declared[name] = p.Catalog.Connection != nil
-	}
-	return declared
-}
-
 func (s held) matchesStorageKey(key []byte) bool {
 	return subtle.ConstantTimeCompare(key, s.storageKey) == 1
 }
@@ -144,7 +136,7 @@ func (s *state) unlock(ctx context.Context, key []byte, minimum uint64) (bool, e
 		return false, err
 	}
 
-	doc, sealer, initialized, err := format.Load(ctx, s.bucket, key, minimum, v1Presets())
+	doc, sealer, initialized, err := format.Load(ctx, s.bucket, key, minimum)
 	if errors.Is(err, sealedlog.ErrKey) {
 		err = errOwner
 	}
