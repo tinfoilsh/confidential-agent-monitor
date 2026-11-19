@@ -26,6 +26,10 @@ func Compose(presets map[string]*catalog.Preset) error {
 			}
 		}
 		if p.Catalog.Defaults != nil {
+			var stated map[string]any
+			if json.Unmarshal(p.Catalog.Defaults, &stated) != nil || stated == nil {
+				return fmt.Errorf("preset %s: defaults must be an object", name)
+			}
 			continue
 		}
 		defaults := connectionDefaults{Contents: AudienceMe, Sends: AudienceMe, Strangers: true}
