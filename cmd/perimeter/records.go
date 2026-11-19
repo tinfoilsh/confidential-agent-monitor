@@ -343,7 +343,7 @@ func (s *state) proposal(st *settings, source string, p facts.Principal, target,
 	if _, err := config.ProposalChanges(p, changes, st.capable(current, capabilityPropose)); err != nil {
 		return "", nil, err
 	}
-	candidate, _, _, err := st.Edit(source, changes, st.lib)
+	candidate, _, _, err := st.Edit(source, changes, s.library(s.life, s.sealer))
 	if err == nil && candidate == source {
 		err = errors.New("proposal does not change policy")
 	}
@@ -381,7 +381,7 @@ func (s *state) proposePolicy(ctx context.Context, fingerprint string, input con
 		for _, target := range slices.Sorted(maps.Keys(groups)) {
 			candidate, raw, err := s.proposal(before, base.Policy, p, target, reason, groups[target])
 			if err == nil {
-				_, err = s.prepareSettings(ctx, before.lib, candidate, everyConnection, nil, before.authority, before.hostKey)
+				_, err = s.prepareSettings(ctx, s.library(ctx, s.sealer), candidate, everyConnection, nil, before.authority, before.hostKey)
 			}
 			if err != nil {
 				return nil, fmt.Errorf("service %s: %w", target, err)

@@ -1,7 +1,6 @@
 package config
 
 import (
-	"bytes"
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
@@ -9,26 +8,34 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 )
 
-// A catalog resolves fragments and replacements among its own presets only.
-func AddCatalog(prefix string, loaded, out map[string]*catalog.Preset) error {
-	for name, p := range loaded {
-		if !bytes.HasPrefix(p.Catalog.Defaults, []byte("{")) {
-			return fmt.Errorf("preset %s: catalog must be an object with defaults", name)
-		}
+type connectionDefaults struct {
+	Contents  string `json:"contents"`
+	Sends     string `json:"sends"`
+	Strangers bool   `json:"strangers"`
+}
+
+// A preset that states no defaults takes those of its protocol.
+func Compose(presets map[string]*catalog.Preset) error {
+	if err := catalog.Compose(presets); err != nil {
+		return err
+	}
+	for name, p := range presets {
 		for action, a := range p.Catalog.Actions {
 			if a.Effects != nil && !ValidEffects(a.Effects) {
 				return fmt.Errorf("preset %s: invalid effects for action %s", name, action)
 			}
 		}
-	}
-	if err := catalog.Compose(loaded); err != nil {
-		return err
-	}
-	for name, p := range loaded {
-		if p.Catalog.ReplacedBy != "" {
-			p.Catalog.ReplacedBy = prefix + p.Catalog.ReplacedBy
+		if p.Catalog.Defaults != nil {
+			continue
 		}
-		out[prefix+name] = p
+		defaults := connectionDefaults{Contents: AudienceMe, Sends: AudienceMe, Strangers: true}
+		switch {
+		case p.Catalog.Connection["mcp"] != nil:
+			defaults.Contents = AudienceTeam
+		case p.Catalog.Connection["http"] != nil:
+			defaults.Contents, defaults.Sends = AudienceTeam, AudienceAnyone
+		}
+		p.Catalog.Defaults, _ = json.Marshal(defaults)
 	}
 	return nil
 }
@@ -50,7 +57,7 @@ func CatalogEntries(cfg *Config, operations map[string]map[string]OperationSumma
 		used[connection.Preset] = true
 	}
 	entries := map[string]CatalogEntry{}
-	for name, p := range cfg.presets {
+	for name, p := range cfg.Presets {
 		metadata := *p.Catalog
 		entry := CatalogEntry{Catalog: &metadata, Title: p.Title}
 		if !used[name] {

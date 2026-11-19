@@ -152,8 +152,6 @@ const client: owner.OwnerApi = {
   enroll: unexpected,
   signIn: unexpected,
   finishSignIn: unexpected,
-  fetchCatalog: unexpected,
-  pinCatalog: unexpected,
   read: async () => structuredClone({ view, requests }),
   request: async (id: string) => {
     const request = requests.find((r) => r.id === id);

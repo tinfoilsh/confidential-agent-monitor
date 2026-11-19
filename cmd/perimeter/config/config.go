@@ -97,9 +97,13 @@ type Config struct {
 	Identities         map[string]Identity   `json:"identities"`
 	Policies           map[string]string     `json:"policies"`
 	Data               map[string]any        `json:"data"`
+	Catalogs           map[string]string     `json:"catalogs,omitempty"`
 	Principals         map[string]string     `json:"-"`
-	presets            map[string]*catalog.Preset
+
+	Presets map[string]*catalog.Preset `json:"-"`
 }
+
+type Library func(*Config) (map[string]*catalog.Preset, error)
 
 func validateEffects(name string, effects map[string]string) error {
 	for effect, mode := range effects {
@@ -120,7 +124,7 @@ func inheritModes(defaults, overrides map[string]string) map[string]string {
 	return merged
 }
 
-func Load(text string, presets map[string]*catalog.Preset) (*Config, error) {
+func Load(text string, presets Library) (*Config, error) {
 	if len(text) > maxPolicyBytes {
 		return nil, errors.New("policy source is too large")
 	}
@@ -128,10 +132,13 @@ func Load(text string, presets map[string]*catalog.Preset) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	cfg := &Config{Lattices: Lattices{Confidentiality: true}, presets: presets}
+	cfg := &Config{Lattices: Lattices{Confidentiality: true}}
 	raw, err := json.Marshal(decoded)
 	if err == nil {
 		err = facts.DecodeNumbers(raw, cfg)
+	}
+	if err == nil {
+		cfg.Presets, err = presets(cfg)
 	}
 	if err != nil {
 		return nil, err
@@ -241,7 +248,7 @@ func (c *Config) Reaches(identity, connection string) bool {
 
 func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	connection := c.Connections[name]
-	preset := c.presets[connection.Preset]
+	preset := c.Presets[connection.Preset]
 	if preset == nil {
 		return ConnectionSpec{}, fmt.Errorf("service %s: unknown preset %s", name, connection.Preset)
 	}
@@ -289,7 +296,7 @@ func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	return spec, nil
 }
 
-func (c *Config) Edit(source string, changes []tomledit.Change, presets map[string]*catalog.Preset) (edited string, rebuild func(connection string) bool, renamed map[string]string, err error) {
+func (c *Config) Edit(source string, changes []tomledit.Change, presets Library) (edited string, rebuild func(connection string) bool, renamed map[string]string, err error) {
 	edited, err = tomledit.Edit(source, changes)
 	if err != nil {
 		return "", nil, nil, err
@@ -358,7 +365,7 @@ func (c *Config) Effective() (string, error) {
 	}
 	ps := map[string]any{}
 	for _, connection := range c.Connections {
-		if ps[connection.Preset], err = facts.JSON[map[string]any](c.presets[connection.Preset]); err != nil {
+		if ps[connection.Preset], err = facts.JSON[map[string]any](c.Presets[connection.Preset]); err != nil {
 			return "", err
 		}
 	}

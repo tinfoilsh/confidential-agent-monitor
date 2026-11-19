@@ -17,8 +17,6 @@ const (
 	lockPath    = "sources.lock.json"
 	cacheDir    = ".cache"
 	shippedDir  = "../../connector/catalog/presets"
-
-	catalogFormat = 1
 )
 
 var camel = regexp.MustCompile(`([a-z0-9])([A-Z])`)
@@ -36,7 +34,7 @@ func load[T any](path string) (T, error) {
 	return v, err
 }
 
-// A catalog source serves this one file; a Perimeter pins its SHA-256.
+// A policy lists this one file under its SHA-256.
 func printCatalog(dir string) error {
 	files, err := filepath.Glob(filepath.Join(dir, "*.json"))
 	presets := map[string]json.RawMessage{}
@@ -48,7 +46,7 @@ func printCatalog(dir string) error {
 	if err != nil {
 		return err
 	}
-	return json.NewEncoder(os.Stdout).Encode(map[string]any{"format": catalogFormat, "presets": presets})
+	return json.NewEncoder(os.Stdout).Encode(presets)
 }
 
 func main() {

@@ -1,12 +1,12 @@
-Each preset has a `<name>.json` record with `catalog.defaults`. Connections select it with
-`"preset": "<name>"`. This directory is Tinfoil's catalog. `GOWORK=off go run . catalog <directory>`
-in `dev/presets` prints a directory's presets as one catalog file. After changing a preset here, set
-`tinfoilCatalogPin` in `cmd/perimeter/catalogs.go` to that file's SHA-256; the Catalog workflow
-publishes it. A new Perimeter starts at the version its build pins, and its owner reviews and pins
-later versions under **Permissions → Catalog**.
+Each preset has a `<name>.json` record. Connections select it with `"preset": "<name>"`. A preset
+without `catalog.defaults` takes those of its protocol. This directory is Tinfoil's catalog.
+`GOWORK=off go run . catalog <directory>` in `dev/presets` prints a directory's presets as one
+catalog file. After changing a preset here, set `tinfoilCatalogPin` in `cmd/perimeter/catalogs.go`
+to that file's SHA-256; the Catalog workflow publishes it.
 
-An owner can pin other catalog sources there too. A source is the URL of such a file. Its presets
-are named `<source>/<name>` and resolve fragments within the source.
+A policy's `catalogs` table lists the catalog files a Perimeter uses, each as
+`<SHA-256> = "<https URL>"`; without it, a Perimeter uses the catalog its build pins. A preset
+name belongs to one catalog only.
 
 For authoring, see [adding protocol presets](../../../dev/presets/README.md#adding-protocol-presets).
 Provider request definitions live in the JSON files; SDK scenarios and coverage

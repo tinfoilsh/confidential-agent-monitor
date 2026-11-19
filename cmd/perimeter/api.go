@@ -205,11 +205,6 @@ func (s *state) adminAPI() http.Handler {
 		return s.viewAfter(r, err)
 	})))
 
-	mux.Handle("POST /catalogs/{name}/fetch", s.ownerOnly(jsonHandler(maxDocumentBytes, s.reviewCatalog)))
-	mux.Handle("POST /catalogs/{name}", s.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, input catalogInput) (any, error) {
-		return s.viewAfter(r, s.pinCatalog(r.Context(), r.PathValue("name"), input))
-	})))
-
 	mux.Handle("POST /enroll", s.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, input map[string]config.Enrollment) (any, error) {
 		return s.viewAfter(r, s.enroll(r.Context(), input))
 	})))
@@ -423,7 +418,6 @@ type ownerView struct {
 	Status      map[string]core.Status         `json:"status"`
 	Labels      map[string]format.Label        `json:"labels"`
 	CatalogID   string                         `json:"catalog_id"`
-	Catalogs    map[string]format.Catalog      `json:"catalogs,omitempty"`
 	Presets     map[string]config.CatalogEntry `json:"presets,omitempty"`
 	Vocabulary  map[string]config.Obligations  `json:"vocabulary"`
 	Initialized bool                           `json:"initialized"`
@@ -433,7 +427,7 @@ func (s held) view(r *http.Request) (ownerView, error) {
 	st, doc := s.settings.Load(), s.doc
 	v := ownerView{Generation: doc.Generation, Revision: doc.Revision, HostKey: string(ssh.MarshalAuthorizedKey(st.hostKey.PublicKey())), HostID: s.hostID, CA: doc.Keys.CACert,
 		Fields: map[string][]fieldMetadata{}, Status: map[string]core.Status{}, Labels: map[string]format.Label{},
-		CatalogID: st.catalogID, Catalogs: doc.Catalogs, Presets: st.catalog, Vocabulary: config.Vocabulary}
+		CatalogID: st.catalogID, Presets: st.catalog, Vocabulary: config.Vocabulary}
 	if r.URL.Query().Get("catalog") == st.catalogID {
 		v.Presets = nil
 	}

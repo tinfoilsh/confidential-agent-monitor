@@ -106,18 +106,10 @@ export type ConnectionStatus = {
   error?: string;
   details?: { blocked?: number; changes?: string[]; pin?: Json };
 };
-export type CatalogSource = { url: string; pin: string };
-// What pinning a fetched catalog changes; services holds the changes to each service already set up.
-export type CatalogReview = {
-  pin: string;
-  presets: number;
-  services: Record<string, string[]>;
-};
 export type View = {
   generation: number;
   revision: number;
   catalog_id?: string;
-  catalogs?: Record<string, CatalogSource>;
   host_key: string;
   host_id: string;
   ca: string;
@@ -242,18 +234,6 @@ export type OwnerApi = {
       | { code?: string; client_id?: string; error?: string; cancel?: boolean },
     signal?: AbortSignal,
   ): Promise<View | { pending: true } | null>;
-  fetchCatalog(
-    name: string,
-    url: string,
-    signal?: AbortSignal,
-  ): Promise<CatalogReview>;
-  // An empty URL removes the source.
-  pinCatalog(
-    name: string,
-    url: string,
-    pin: string,
-    signal?: AbortSignal,
-  ): Promise<View>;
 };
 export type ShellOpen = {
   cols: number;
@@ -655,15 +635,6 @@ export function ownerApi(
         "POST",
         `/sign-in/${encodeURIComponent(state)}`,
         typeof result === "string" ? { code: result } : result,
-        signal,
-      ),
-    fetchCatalog: (name, url, signal) =>
-      post(`/catalogs/${encodeURIComponent(name)}/fetch`, { url }, signal),
-    pinCatalog: (name, url, pin, signal) =>
-      snapshot(
-        "POST",
-        `/catalogs/${encodeURIComponent(name)}`,
-        { url, pin, revision },
         signal,
       ),
   };

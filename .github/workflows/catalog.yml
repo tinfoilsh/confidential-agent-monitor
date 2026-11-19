@@ -33,10 +33,7 @@ jobs:
             echo "::error::cmd/perimeter/catalogs.go does not pin $pin"
             exit 1
           fi
-          cp catalog.json "$pin.json"
+          mv catalog.json "$pin.json"
           gh release view "$RELEASE" > /dev/null 2>&1 ||
-            gh release create "$RELEASE" --latest=false --title "Tinfoil catalog" --notes "Each catalog version under its SHA-256, and the latest as catalog.json."
+            gh release create "$RELEASE" --latest=false --title "Tinfoil catalog" --notes "Each catalog version under its SHA-256."
           gh release upload "$RELEASE" "$pin.json" --clobber
-          if [ "$GITHUB_REF_NAME" = main ]; then
-            gh release upload "$RELEASE" catalog.json --clobber
-          fi
