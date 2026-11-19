@@ -4,7 +4,7 @@
     "group": "protocol",
     "actions": {
       "read": {"title": "Run SELECT, SHOW and EXPLAIN", "effects": ["read"]},
-      "write": {"title": "Change data and schema", "effects": ["write"]}
+      "write": {"title": "Change data and schema", "effects": ["write", "delete", "admin", "execute"]}
     },
     "connection": {"postgres": {"url": "{url}"}},
     "fields": [

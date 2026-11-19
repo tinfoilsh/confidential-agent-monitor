@@ -7,7 +7,7 @@
       "subscribe": {"title": "Subscribe to topics", "effects": ["read"]},
       "receive": {"title": "Receive messages", "effects": ["read"]},
       "publish": {"title": "Publish messages", "effects": ["send"]},
-      "retain": {"title": "Store or clear retained messages", "effects": ["send", "write"]}
+      "retain": {"title": "Store or clear retained messages", "effects": ["send", "write", "delete"]}
     },
     "connection": {"mqtt": {"url": "{url}"}},
     "fields": [
