@@ -10,8 +10,6 @@ import {
   type JSX,
 } from "solid-js";
 import { createStore } from "solid-js/store";
-import gear from "@phosphor-icons/core/regular/gear.svg?raw";
-import gearOpen from "@phosphor-icons/core/fill/gear-fill.svg?raw";
 import * as owner from "./owner.js";
 import {
   askConfirm,
@@ -551,12 +549,12 @@ function CatalogSources() {
               required
               placeholder="https://github.com/acme/presets/releases/download/catalog/<SHA-256>.json"
               value={draft.url}
-              onInput={(e) =>
-                setDraft({
-                  url: e.currentTarget.value,
-                  pin: PIN_IN_URL.exec(e.currentTarget.value)?.[1] ?? draft.pin,
-                })
-              }
+              onInput={(e) => {
+                const pinIn = (url: string) => PIN_IN_URL.exec(url)?.[1];
+                const url = e.currentTarget.value;
+                const typed = draft.pin === pinIn(draft.url) ? "" : draft.pin;
+                setDraft({ url, pin: pinIn(url) ?? typed });
+              }}
             />
           </label>
           <label>
@@ -584,8 +582,8 @@ function CatalogSources() {
         each={Object.keys(catalogs())}
         fallback={
           <Show when={!adding()}>
-            <Empty title="You are only seeing built-in presets">
-              Add a source for more.
+            <Empty title="No preset sources configured" icon="crate">
+              You only have built-in presets. Add a source for more.
             </Empty>
           </Show>
         }
@@ -688,11 +686,7 @@ function Catalog() {
           aria-expanded={sources()}
           onClick={() => setSources(!sources())}
         >
-          <span
-            class="icon"
-            aria-hidden="true"
-            innerHTML={sources() ? gearOpen : gear}
-          />
+          <Icon name="setting" />
         </button>
       </div>
       <Show when={sources()}>
