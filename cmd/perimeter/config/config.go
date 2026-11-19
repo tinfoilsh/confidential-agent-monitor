@@ -258,11 +258,6 @@ func (c *Config) Spec(name string) (ConnectionSpec, error) {
 			actions[id] = map[string][]string{"effects": action.Effects}
 		}
 	}
-	if connection.MatchOnly {
-		if err := matchOnly(definition, actions); err != nil {
-			return ConnectionSpec{}, fmt.Errorf("service %s: %w", name, err)
-		}
-	}
 	definition["catalog"], _ = json.Marshal(map[string]any{"actions": actions, "fields": preset.Catalog.Fields})
 	spec.Definition, _ = json.Marshal(definition)
 
@@ -293,42 +288,6 @@ func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	options.Private = nil
 	spec.Options, _ = json.Marshal(options)
 	return spec, nil
-}
-
-// MatchOnlyAction is the one action of a match-only connection. Its effects are those of a Custom API request.
-const MatchOnlyAction = "request"
-
-var MatchOnlyEffects = []string{"execute", "send"}
-
-// A match-only connection keeps its preset's hosts, credential slots and origins but none of its operations:
-// every request within its addresses is one broad request instead of a reviewed operation or an unknown one.
-func matchOnly(definition map[string]json.RawMessage, actions map[string]map[string][]string) error {
-	var http map[string]json.RawMessage
-	if raw := definition["http"]; len(raw) != 0 && string(raw) != "null" {
-		if err := json.Unmarshal(raw, &http); err != nil {
-			return err
-		}
-	}
-	if http == nil {
-		http = map[string]json.RawMessage{}
-	}
-	delete(http, "format_suffixes")
-	delete(http, "trailing_slash")
-	http["operations"], _ = json.Marshal(map[string]any{MatchOnlyAction: map[string]any{
-		"action": MatchOnlyAction, "effects": MatchOnlyEffects, "method": "*", "origin": "*", "path": "*",
-		"open_params": true, "body": "any", "sends": SendsConnection,
-		"scope": map[string]any{
-			"origin": map[string]string{"from": "http", "at": "/origin"},
-			"method": map[string]string{"from": "http", "at": "/method"},
-			"path":   map[string]string{"from": "http", "at": "/path"},
-		},
-		"grant": []string{"origin"},
-	}})
-	var err error
-	definition["http"], err = json.Marshal(http)
-	clear(actions)
-	actions[MatchOnlyAction] = map[string][]string{"effects": MatchOnlyEffects}
-	return err
 }
 
 func (c *Config) Edit(source string, changes []tomledit.Change) (edited string, rebuild func(connection string) bool, renamed map[string]string, err error) {

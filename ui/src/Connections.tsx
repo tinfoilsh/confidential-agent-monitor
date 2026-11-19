@@ -1465,7 +1465,7 @@ function SlackAppSetup(props: {
     </details>
   );
 }
-// Match-only mode keeps host matching and credential substitution but drops reviewed operations,
+// Match-only mode lets requests the service does not recognize through instead of failing closed,
 // so the owner confirms turning it on.
 function MatchOnlySetting(props: { name: string }) {
   const m = useMonitor();
@@ -1477,9 +1477,9 @@ function MatchOnlySetting(props: { name: string }) {
           <span>
             <span class="setting-title">Match-only mode</span>
             <small>
-              Only route this service's hosts and substitute its credentials.
-              Requests are not checked against known API operations, and
-              unrecognized requests are not held for approval.
+              Only match this service's hosts and substitute its credentials.
+              Requests it does not recognize are treated like Custom API
+              requests instead of being held for approval.
             </small>
           </span>
           <input
@@ -1497,10 +1497,9 @@ function MatchOnlySetting(props: { name: string }) {
                   title: `Use match-only mode for ${props.name}?`,
                   description:
                     "The Perimeter will still limit this service to its hosts and substitute its credentials, " +
-                    "but it will stop recognizing API operations and will no longer fail closed. " +
-                    "Every request, including deletes, admin changes and endpoints it does not know, " +
-                    'becomes one "Any request" permission: a bunker with Allow access can make any of them without asking. ' +
-                    "Per-action permissions and Read-only access stop applying, and saved approvals for this service are removed.",
+                    "but it will no longer fail closed. Requests it does not recognize, including endpoints " +
+                    "its API definition does not know, are treated like Custom API requests (execute and send): " +
+                    "a bunker with Allow access can make them without asking. Recognized operations keep their permissions.",
                   confirmLabel: "Use match-only mode",
                   destructive: true,
                 }))
@@ -1515,9 +1514,8 @@ function MatchOnlySetting(props: { name: string }) {
         </label>
         <Show when={owner.matchOnly(m.view()!, props.name)}>
           <p class="connection-warning" role="note">
-            Match-only mode is on. This service's requests are not checked
-            against its API operations, so unrecognized requests are not held
-            for approval.
+            Match-only mode is on. Requests this service does not recognize are
+            not held for approval.
           </p>
         </Show>
       </div>
