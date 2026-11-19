@@ -237,6 +237,9 @@ func (s *state) adminAPI() http.Handler {
 		return s.viewAfter(r, s.answerRequest(r.Context(), r.PathValue("id"), req.Answer, req.Revision))
 	})))
 
+	mux.Handle("GET /catalogs/updates", s.ownerOnly(jsonHandler(0, func(r *http.Request, _ struct{}) (any, error) {
+		return s.catalogUpdates(r.Context())
+	})))
 	mux.Handle("GET /audit", s.ownerOnly(jsonHandler(0, func(r *http.Request, _ struct{}) (any, error) {
 		return s.readAuditPage(r.Context(), r.URL.Query().Get("before"))
 	})))

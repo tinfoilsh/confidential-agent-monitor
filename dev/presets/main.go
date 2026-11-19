@@ -5,11 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
 	"regexp"
 	"slices"
 	"strings"
 	"time"
+
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 )
 
 const (
@@ -32,21 +33,6 @@ func load[T any](path string) (T, error) {
 		err = json.Unmarshal(src, &v)
 	}
 	return v, err
-}
-
-// A policy lists this one file under its SHA-256.
-func printCatalog(dir string) error {
-	files, err := filepath.Glob(filepath.Join(dir, "*.json"))
-	presets := map[string]json.RawMessage{}
-	for _, file := range files {
-		if presets[strings.TrimSuffix(filepath.Base(file), ".json")], err = os.ReadFile(file); err != nil {
-			return err
-		}
-	}
-	if err != nil {
-		return err
-	}
-	return json.NewEncoder(os.Stdout).Encode(presets)
 }
 
 func main() {
@@ -104,7 +90,10 @@ func main() {
 			err = fmt.Errorf("catalog needs the directory of presets to print")
 			break
 		}
-		err = printCatalog(os.Args[2])
+		var raw []byte
+		if raw, err = catalog.File(os.DirFS(os.Args[2])); err == nil {
+			_, err = os.Stdout.Write(raw)
+		}
 	case "group":
 		err = groupShipped(os.Args[2:])
 	case "accept":

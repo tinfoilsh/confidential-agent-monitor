@@ -12,6 +12,8 @@ import (
 	"net/netip"
 	"net/url"
 	"regexp"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
@@ -24,6 +26,11 @@ const (
 	catalogPrefix   = "catalogs/"
 	catalogTimeout  = 5 * time.Minute
 	maxCatalogBytes = 64 << 20
+	updateTimeout   = 15 * time.Second
+
+	// The Catalog workflow publishes each version of connector/catalog/presets here and names the newest in latest.
+	tinfoilCatalogs = "https://github.com/tinfoilsh/confidential-agent-monitor/releases/download/catalog/"
+	latestCatalog   = "latest"
 )
 
 var (
@@ -75,7 +82,55 @@ func (s *state) readCatalog(ctx context.Context, sealer sealedlog.Sealer, allowe
 	return raw, err
 }
 
-// A policy that lists no catalogs uses the presets this build ships.
+var shippedPin = sync.OnceValues(func() (string, error) {
+	raw, err := catalog.File(catalog.Shipped)
+	return fmt.Sprintf("%x", sha256.Sum256(raw)), err
+})
+
+type catalogUpdate struct {
+	Pin     string `json:"pin,omitempty"`
+	URL     string `json:"url,omitempty"`
+	Error   string `json:"error,omitempty"`
+	Shipped bool   `json:"shipped,omitempty"`
+}
+
+// A catalog at <SHA-256>.json is followed through the latest file beside it, which names the newest digest.
+// The shipped presets follow Tinfoil's catalogs until the policy lists one of them.
+func (s *state) catalogUpdates(ctx context.Context) (map[string]catalogUpdate, error) {
+	shipped, err := shippedPin()
+	if err != nil {
+		return nil, err
+	}
+	st := s.settings.Load()
+	followed, tinfoil := map[string]string{}, false
+	for pin, source := range st.Catalogs {
+		if dir, ok := strings.CutSuffix(source, pin+".json"); ok {
+			followed[pin] = dir
+			tinfoil = tinfoil || dir == tinfoilCatalogs
+		}
+	}
+	if !tinfoil && followed[shipped] == "" {
+		followed[shipped] = tinfoilCatalogs
+	}
+	updates := map[string]catalogUpdate{}
+	for pin, dir := range followed {
+		each, cancel := context.WithTimeout(ctx, updateTimeout)
+		raw, err := fetchCatalog(each, st.AllowNetworks, dir+latestCatalog)
+		cancel()
+		latest := strings.TrimSpace(string(raw))
+		switch {
+		case err != nil:
+			updates[pin] = catalogUpdate{Error: err.Error()}
+		case !catalogDigest.MatchString(latest):
+			updates[pin] = catalogUpdate{Error: dir + latestCatalog + " does not name a SHA-256 digest"}
+		case latest != pin && st.Catalogs[latest] == "":
+			updates[pin] = catalogUpdate{Pin: latest, URL: dir + latest + ".json", Shipped: st.Catalogs[pin] == ""}
+		}
+	}
+	return updates, nil
+}
+
+// Listed catalogs add to the presets this build ships; a listed preset replaces the shipped one of its name.
 func (s *state) library(ctx context.Context, sealer sealedlog.Sealer) config.Library {
 	return func(cfg *config.Config) (map[string]*catalog.Preset, error) {
 		if st := s.settings.Load(); st != nil && maps.Equal(st.Catalogs, cfg.Catalogs) {
@@ -83,13 +138,11 @@ func (s *state) library(ctx context.Context, sealer sealedlog.Sealer) config.Lib
 		}
 		ctx, cancel := context.WithTimeout(ctx, catalogTimeout)
 		defer cancel()
-		presets := map[string]*catalog.Preset{}
-		if len(cfg.Catalogs) == 0 {
-			var err error
-			if presets, err = catalog.Load(catalog.Shipped); err != nil {
-				return nil, err
-			}
+		presets, err := catalog.Load(catalog.Shipped)
+		if err != nil {
+			return nil, err
 		}
+		listed := map[string]bool{}
 		for pin, source := range cfg.Catalogs {
 			raw, err := s.readCatalog(ctx, sealer, cfg.AllowNetworks, pin, source)
 			var file map[string]json.RawMessage
@@ -97,9 +150,10 @@ func (s *state) library(ctx context.Context, sealer sealedlog.Sealer) config.Lib
 				err = json.Unmarshal(raw, &file)
 			}
 			for name, preset := range file {
-				if presets[name] != nil || !presetName.MatchString(name) {
-					err = errors.New("a name is lowercase letters, digits and underscores, and belongs to one catalog")
+				if listed[name] || !presetName.MatchString(name) {
+					err = errors.New("a name is lowercase letters, digits and underscores, and belongs to one listed catalog")
 				} else {
+					listed[name] = true
 					presets[name], err = catalog.Decode(preset)
 				}
 				if err != nil {

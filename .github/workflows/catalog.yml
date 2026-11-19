@@ -7,6 +7,7 @@ on:
     branches: [main]
     paths:
       - connector/catalog/presets/**
+      - connector/catalog/*.go
       - dev/presets/**
 
 permissions: {}
@@ -67,3 +68,5 @@ jobs:
           # A version is never replaced; one already published under this digest is the same file.
           gh release upload "$RELEASE" "$PIN.json" ||
             gh release view "$RELEASE" --json assets --jq '.assets[].name' | grep -qxF "$PIN.json"
+          echo "$PIN" > latest
+          gh release upload "$RELEASE" latest --clobber

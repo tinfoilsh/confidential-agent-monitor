@@ -509,11 +509,22 @@ function CatalogDialog(props: { preset?: string; onClose: () => void }) {
 const PIN_SHOWN = 12;
 // The Catalog workflow publishes each catalog as <SHA-256>.json.
 const PIN_IN_URL = /\/([0-9a-f]{64})\.json$/;
-function CatalogSources() {
+function CatalogSources(props: {
+  updates: Record<string, owner.CatalogUpdate>;
+}) {
   const m = useMonitor();
   const [adding, setAdding] = createSignal(false);
   const [draft, setDraft] = createStore({ url: "", pin: "" });
   const catalogs = () => m.view()!.config.catalogs ?? {};
+  const builtIn = () =>
+    Object.values(props.updates).find((update) => update.shipped);
+  const move = (to: owner.CatalogUpdate, from?: string) => {
+    const changes: owner.Change[] = [
+      { path: ["catalogs", to.pin!], value: to.url! },
+    ];
+    if (from) changes.push({ path: ["catalogs", from], delete: true });
+    return m.edit(changes);
+  };
   return (
     <div class="resource-list collection-list">
       <div class="resource-heading">
@@ -598,6 +609,23 @@ function CatalogSources() {
           )}
         </Show>
       </Modal>
+      <Show when={builtIn()}>
+        {(update) => (
+          <div class="resource-row collection-row">
+            <Icon name="stack" />
+            <strong class="collection-name">Built-in presets</strong>
+            <span class="resource-meta">
+              <button
+                class="button"
+                disabled={m.busy()}
+                onClick={() => void move(update())}
+              >
+                Update
+              </button>
+            </span>
+          </div>
+        )}
+      </Show>
       <For
         each={Object.keys(catalogs())}
         fallback={
@@ -617,6 +645,28 @@ function CatalogSources() {
                     {catalogs()[pin]}
                   </strong>
                   <span class="resource-meta">
+                    <Show when={props.updates[pin]?.error}>
+                      {(error) => (
+                        <span class="muted" title={error()}>
+                          Could not check for updates
+                        </span>
+                      )}
+                    </Show>
+                    <Show
+                      when={
+                        props.updates[pin]?.pin ? props.updates[pin] : undefined
+                      }
+                    >
+                      {(update) => (
+                        <button
+                          class="button"
+                          disabled={m.busy()}
+                          onClick={() => void move(update(), pin)}
+                        >
+                          Update
+                        </button>
+                      )}
+                    </Show>
                     <code>{pin.slice(0, PIN_SHOWN)}</code>
                   </span>
                   <span class="collection-chevron">
@@ -670,6 +720,24 @@ function Catalog() {
     [query, setQuery] = m.search("connections");
   const [chosen, setChosen] = createSignal<string>();
   const [sources, setSources] = createSignal(false);
+  const catalogs = () => m.view()!.config.catalogs ?? {};
+  // The view shows an edit before the Perimeter saves it; the revision moves once it has.
+  const [checked] = createResource(
+    () => m.view()!.revision,
+    () =>
+      m
+        .api()!
+        .catalogUpdates()
+        .catch((): Record<string, owner.CatalogUpdate> => ({})),
+  );
+  // A check from before the last change can name a version that is listed by now.
+  const updates = createMemo(() =>
+    Object.fromEntries(
+      Object.entries(checked() ?? {}).filter(
+        ([, update]) => !update.pin || !(update.pin in catalogs()),
+      ),
+    ),
+  );
   const groups = createMemo(() => owner.catalog(m.view()!));
   const filtered = createMemo(() => {
     const search = query().toLowerCase();
@@ -697,6 +765,11 @@ function Catalog() {
               ?.click()
           }
         />
+        <Show when={Object.values(updates()).some((update) => update.pin)}>
+          <button class="button" onClick={() => setSources(true)}>
+            Update available
+          </button>
+        </Show>
         <button
           class="icon-button"
           aria-label="Catalog sources"
@@ -708,7 +781,7 @@ function Catalog() {
         </button>
       </div>
       <Show when={sources()}>
-        <CatalogSources />
+        <CatalogSources updates={updates()} />
       </Show>
       <For each={groups().map((g) => g.group)}>
         {(id) => {

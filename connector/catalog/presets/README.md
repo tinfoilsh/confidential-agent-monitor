@@ -2,11 +2,14 @@ Each preset has a `<name>.json` record. Connections select it with `"preset": "<
 without `catalog.defaults` takes those of its protocol. This directory is Tinfoil's catalog; a
 Perimeter ships with it. `GOWORK=off go run . catalog <directory>` in `dev/presets` prints a
 directory's presets as one catalog file, and the Catalog workflow publishes this directory's to
-the `catalog` release under its SHA-256.
+the `catalog` release under its SHA-256, with its digest in `latest`.
 
 A policy's `catalogs` table lists the catalog files a Perimeter uses, each as
-`<SHA-256> = "<https URL>"`; without it, a Perimeter uses the presets it ships with. A preset
-name belongs to one catalog only.
+`<SHA-256> = "<https URL>"`. They add to the presets it ships with, and a listed preset replaces
+the shipped one of its name; a name belongs to one listed catalog only. A catalog at
+`<SHA-256>.json` is followed: a `latest` file beside it names the newest digest, and the owner
+moves to it from the Catalog tab. The shipped presets follow Tinfoil's catalog the same way, until
+the policy lists one of its versions.
 
 For authoring, see [adding protocol presets](../../../dev/presets/README.md#adding-protocol-presets).
 Provider request definitions live in the JSON files; SDK scenarios and coverage

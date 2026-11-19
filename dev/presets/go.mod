@@ -1,6 +1,6 @@
 module github.com/tinfoilsh/confidential-agent-monitor/dev/presets
 
-go 1.27.1
+go 1.27.3
 
 require (
 	github.com/getkin/kin-openapi v0.149.0
@@ -28,6 +28,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.26.2 // indirect
 	github.com/oasdiff/yaml3 v0.0.14 // indirect
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.3 // indirect
+	github.com/tinfoilsh/confidential-agent-monitor v0.0.0
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.69.0 // indirect
 	go.opentelemetry.io/otel v1.45.0 // indirect
@@ -43,3 +44,5 @@ require (
 	google.golang.org/grpc v1.84.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 )
+
+replace github.com/tinfoilsh/confidential-agent-monitor => ../..
