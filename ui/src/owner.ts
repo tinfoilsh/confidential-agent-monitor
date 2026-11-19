@@ -1236,8 +1236,14 @@ const fieldsOf = (c?: Pick<Preset, "fields">) => c?.fields ?? [];
 // A field with no paths, such as an OAuth client ID, fills templates but is never stored on the connection.
 const plain = (c: Pick<Preset, "fields">) =>
   fieldsOf(c).filter((f) => !f.secret && paths(f).length);
-const fieldValue = (c: Connection | undefined, f: PresetField): Json =>
-  atPath(c, f.path ?? paths(f)[0]) ?? (f.list ? [] : f.json ? {} : "");
+const fieldValue = (
+  c: Connection | undefined,
+  f: PresetField,
+  preset?: Pick<Preset, "connection">,
+): Json =>
+  atPath(c, f.path ?? paths(f)[0]) ??
+  atPath(preset?.connection, f.path ?? paths(f)[0]) ??
+  (f.list ? [] : f.json ? {} : "");
 export const setupFields = (view: View, preset: string) =>
   fieldsOf(view.presets[preset]).filter((f) => !f.edit_only);
 export const clientFields = (view: View, name: string) =>
@@ -1245,7 +1251,7 @@ export const clientFields = (view: View, name: string) =>
 export const plainFields = (view: View, name: string) =>
   plain(presetOf(view, name)).map((f) => ({
     ...f,
-    value: fieldValue(connections(view)[name], f),
+    value: fieldValue(connections(view)[name], f, presetOf(view, name)),
   }));
 export const fieldText = (f: PresetField, value?: Json): string =>
   f.json
