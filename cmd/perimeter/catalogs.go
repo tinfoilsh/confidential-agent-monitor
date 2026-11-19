@@ -24,10 +24,6 @@ const (
 	catalogPrefix   = "catalogs/"
 	catalogTimeout  = 5 * time.Minute
 	maxCatalogBytes = 64 << 20
-
-	// The Catalog workflow publishes connector/catalog/presets under its SHA-256.
-	tinfoilCatalogPin = "b1e6d5dc703745b72830858e183a7edeb8c144e6f6c067e03d8243ab92486cac"
-	tinfoilCatalogs   = "https://github.com/tinfoilsh/confidential-agent-monitor/releases/download/catalog/"
 )
 
 var (
@@ -79,20 +75,22 @@ func (s *state) readCatalog(ctx context.Context, sealer sealedlog.Sealer, allowe
 	return raw, err
 }
 
-// A policy that lists no catalogs uses the one this build pins.
+// A policy that lists no catalogs uses the presets this build ships.
 func (s *state) library(ctx context.Context, sealer sealedlog.Sealer) config.Library {
 	return func(cfg *config.Config) (map[string]*catalog.Preset, error) {
 		if st := s.settings.Load(); st != nil && maps.Equal(st.Catalogs, cfg.Catalogs) {
 			return st.Presets, nil
 		}
-		sources := cfg.Catalogs
-		if len(sources) == 0 {
-			sources = map[string]string{tinfoilCatalogPin: tinfoilCatalogs + tinfoilCatalogPin + ".json"}
-		}
 		ctx, cancel := context.WithTimeout(ctx, catalogTimeout)
 		defer cancel()
 		presets := map[string]*catalog.Preset{}
-		for pin, source := range sources {
+		if len(cfg.Catalogs) == 0 {
+			var err error
+			if presets, err = catalog.Load(catalog.Shipped); err != nil {
+				return nil, err
+			}
+		}
+		for pin, source := range cfg.Catalogs {
 			raw, err := s.readCatalog(ctx, sealer, cfg.AllowNetworks, pin, source)
 			var file map[string]json.RawMessage
 			if err == nil {

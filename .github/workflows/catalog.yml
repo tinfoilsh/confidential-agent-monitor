@@ -8,7 +8,6 @@ on:
     paths:
       - connector/catalog/presets/**
       - dev/presets/**
-      - cmd/perimeter/catalogs.go
 
 permissions: {}
 
@@ -35,10 +34,6 @@ jobs:
           mkdir -p "$OUT"
           GOWORK=off go -C dev/presets run . catalog ../../connector/catalog/presets > "$OUT/catalog.json"
           pin=$(sha256sum "$OUT/catalog.json" | cut -d' ' -f1)
-          if ! grep -q "\"$pin\"" cmd/perimeter/catalogs.go; then
-            echo "::error::cmd/perimeter/catalogs.go does not pin $pin"
-            exit 1
-          fi
           mv "$OUT/catalog.json" "$OUT/$pin.json"
           echo "pin=$pin" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

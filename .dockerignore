@@ -4,7 +4,6 @@
 !go.sum
 !connector/
 !connector/**
-connector/catalog/presets/**
 !core/
 !core/**
 !ui/

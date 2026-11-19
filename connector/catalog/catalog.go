@@ -2,14 +2,21 @@ package catalog
 
 import (
 	"cmp"
+	"embed"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/fs"
 	"maps"
 	"regexp"
 	"slices"
 	"strings"
 )
+
+//go:embed presets/*.json
+var embedded embed.FS
+
+var Shipped, _ = fs.Sub(embedded, "presets")
 
 var fragmentKey = regexp.MustCompile(`\A[a-z][a-z0-9_]*\z`)
 
@@ -47,6 +54,21 @@ func Decode(raw []byte) (*Preset, error) {
 		return nil, errors.New("catalog must be an object")
 	}
 	return &p, nil
+}
+
+func Load(source fs.FS) (map[string]*Preset, error) {
+	presets := map[string]*Preset{}
+	files, _ := fs.Glob(source, "*.json")
+	for _, file := range files {
+		raw, err := fs.ReadFile(source, file)
+		if err == nil {
+			presets[strings.TrimSuffix(file, ".json")], err = Decode(raw)
+		}
+		if err != nil {
+			return nil, fmt.Errorf("preset %s: %w", file, err)
+		}
+	}
+	return presets, nil
 }
 
 type composite struct {
