@@ -516,11 +516,8 @@ function CatalogSources(props: {
   const [adding, setAdding] = createSignal(false);
   const [draft, setDraft] = createStore({ url: "", pin: "" });
   const catalogs = () => m.view()!.config.catalogs ?? {};
-  // The built-in presets are checked under a digest the policy does not list.
   const builtIn = () =>
-    Object.entries(props.updates).find(
-      ([pin, update]) => update.pin && !(pin in catalogs()),
-    )?.[1];
+    Object.values(props.updates).find((update) => update.shipped);
   const move = (to: owner.CatalogUpdate, from?: string) => {
     const changes: owner.Change[] = [
       { path: ["catalogs", to.pin!], value: to.url! },

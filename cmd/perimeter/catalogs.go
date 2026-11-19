@@ -88,9 +88,10 @@ var shippedPin = sync.OnceValues(func() (string, error) {
 })
 
 type catalogUpdate struct {
-	Pin   string `json:"pin,omitempty"`
-	URL   string `json:"url,omitempty"`
-	Error string `json:"error,omitempty"`
+	Pin     string `json:"pin,omitempty"`
+	URL     string `json:"url,omitempty"`
+	Error   string `json:"error,omitempty"`
+	Shipped bool   `json:"shipped,omitempty"`
 }
 
 // A catalog at <SHA-256>.json is followed through the latest file beside it, which names the newest digest.
@@ -108,14 +109,14 @@ func (s *state) catalogUpdates(ctx context.Context) (map[string]catalogUpdate, e
 			tinfoil = tinfoil || dir == tinfoilCatalogs
 		}
 	}
-	if !tinfoil {
+	if !tinfoil && followed[shipped] == "" {
 		followed[shipped] = tinfoilCatalogs
 	}
-	ctx, cancel := context.WithTimeout(ctx, updateTimeout)
-	defer cancel()
 	updates := map[string]catalogUpdate{}
 	for pin, dir := range followed {
-		raw, err := fetchCatalog(ctx, st.AllowNetworks, dir+latestCatalog)
+		each, cancel := context.WithTimeout(ctx, updateTimeout)
+		raw, err := fetchCatalog(each, st.AllowNetworks, dir+latestCatalog)
+		cancel()
 		latest := strings.TrimSpace(string(raw))
 		switch {
 		case err != nil:
@@ -123,7 +124,7 @@ func (s *state) catalogUpdates(ctx context.Context) (map[string]catalogUpdate, e
 		case !catalogDigest.MatchString(latest):
 			updates[pin] = catalogUpdate{Error: dir + latestCatalog + " does not name a SHA-256 digest"}
 		case latest != pin && st.Catalogs[latest] == "":
-			updates[pin] = catalogUpdate{Pin: latest, URL: dir + latest + ".json"}
+			updates[pin] = catalogUpdate{Pin: latest, URL: dir + latest + ".json", Shipped: st.Catalogs[pin] == ""}
 		}
 	}
 	return updates, nil

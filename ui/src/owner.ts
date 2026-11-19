@@ -109,7 +109,13 @@ export type ConnectionStatus = {
   details?: { blocked?: number; changes?: string[]; pin?: Json };
 };
 // The newer version a followed catalog can move to, by the SHA-256 it is at now.
-export type CatalogUpdate = { pin?: string; url?: string; error?: string };
+export type CatalogUpdate = {
+  pin?: string;
+  url?: string;
+  error?: string;
+  // The update is to the presets the Perimeter ships with, not to a listed source.
+  shipped?: boolean;
+};
 export type View = {
   generation: number;
   revision: number;

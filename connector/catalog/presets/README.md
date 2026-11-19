@@ -8,7 +8,8 @@ A policy's `catalogs` table lists the catalog files a Perimeter uses, each as
 `<SHA-256> = "<https URL>"`. They add to the presets it ships with, and a listed preset replaces
 the shipped one of its name; a name belongs to one listed catalog only. A catalog at
 `<SHA-256>.json` is followed: a `latest` file beside it names the newest digest, and the owner
-moves to it from the Catalog tab. The shipped presets follow Tinfoil's catalog the same way.
+moves to it from the Catalog tab. The shipped presets follow Tinfoil's catalog the same way, until
+the policy lists one of its versions.
 
 For authoring, see [adding protocol presets](../../../dev/presets/README.md#adding-protocol-presets).
 Provider request definitions live in the JSON files; SDK scenarios and coverage
