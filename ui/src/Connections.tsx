@@ -32,7 +32,7 @@ import {
 } from "./components";
 import { useMonitor } from "./monitor";
 import { AgentConnectionAccess } from "./Agents";
-import { NeedsApproval, SavedRules, ToolReview } from "./Approvals";
+import { SavedRules, ToolReview } from "./Approvals";
 
 const inCatalog =
   (search: string, group: { title: string }) =>
@@ -134,15 +134,12 @@ export function PermissionTabs(props: { view?: "catalog" | "rules" }) {
 export function Connections(props: {
   view?: "catalog" | "rules";
   expanded?: string;
-  proposal?: string;
 }) {
   return (
     <>
       <Show
         when={props.view}
-        fallback={
-          <MyConnections expanded={props.expanded} proposal={props.proposal} />
-        }
+        fallback={<MyConnections expanded={props.expanded} />}
       >
         <Show when={props.view === "catalog"} fallback={<SavedRules />}>
           <Catalog />
@@ -151,7 +148,7 @@ export function Connections(props: {
     </>
   );
 }
-function MyConnections(props: { expanded?: string; proposal?: string }) {
+function MyConnections(props: { expanded?: string }) {
   const m = useMonitor(),
     [query, setQuery] = m.search("connections");
   if (props.expanded) setQuery("");
@@ -188,7 +185,6 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
   });
   return (
     <>
-      <NeedsApproval proposal={props.proposal} />
       <div class="resource-list collection-list">
         <div class="resource-heading">
           <h2>
@@ -616,6 +612,18 @@ function ApiFields(props: {
     </>
   );
 }
+function LocalSignIn() {
+  const m = useMonitor();
+  return (
+    <div class="connection-warning" role="note">
+      <CopyField
+        label={`Sign-in unavailable on ${m.options.product?.name}. Open locally to sign in.`}
+        value={`tinfoil perimeter open ${m.options.perimeter}`}
+        copyLabel="Copy command"
+      />
+    </div>
+  );
+}
 export function AddConnection(props: { preset: string }) {
   const m = useMonitor();
   const preset = m.view()!.presets[props.preset];
@@ -690,13 +698,7 @@ export function AddConnection(props: { preset: string }) {
       >
         <ConnectionWarning warning={preset?.warning} />
         <Show when={fields.some((f) => f.oauth && !tokens[f.key] && local(f))}>
-          <div class="connection-warning" role="note">
-            <CopyField
-              label={`Sign-in unavailable on ${m.options.product?.name}. Open locally to sign in.`}
-              value={`tinfoil perimeter open ${m.options.perimeter}`}
-              copyLabel="Copy command"
-            />
-          </div>
+          <LocalSignIn />
         </Show>
         <label>
           Name
@@ -936,6 +938,16 @@ function ConnectionForm(props: { name: string; setup?: JSX.Element }) {
                   const status = () =>
                     field().status +
                     (field().account ? ` · ${field().account}` : "");
+                  const local = () =>
+                    !!m.options.product &&
+                    field().signIn &&
+                    owner.loopbackSignIn(field(), {
+                      ...Object.fromEntries(
+                        clientFields.map((c) => [c.key, ""]),
+                      ),
+                      ...values,
+                      ...clients,
+                    });
                   const signIn = () => (
                     <Show when={field().signIn}>
                       <button
@@ -1021,6 +1033,9 @@ function ConnectionForm(props: { name: string; setup?: JSX.Element }) {
                           <p class="muted field-help">{status()}</p>
                           <div class="form-actions">{signIn()}</div>
                         </div>
+                      </Show>
+                      <Show when={local()}>
+                        <LocalSignIn />
                       </Show>
                     </div>
                   );
@@ -1189,7 +1204,7 @@ function Connection(props: { name: string }) {
             <For
               each={owner.sandboxNames(m.view()!)}
               fallback={
-                <p class="muted">Enrol a bunker to use this service.</p>
+                <p class="muted">Enroll a bunker to use this service.</p>
               }
             >
               {(name) => (

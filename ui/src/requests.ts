@@ -55,7 +55,6 @@ export function createRequestLog(
     byId,
     pendingCount,
     requests,
-    proposals,
     pendingRequests,
     pendingProposals,
   };

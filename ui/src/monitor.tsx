@@ -577,7 +577,6 @@ function createMonitor(options: MonitorOptions) {
     credential,
     view,
     requests: log.requests,
-    proposals: log.proposals,
     pendingRequests: log.pendingRequests,
     pendingProposals: log.pendingProposals,
     recordsById: log.byId,

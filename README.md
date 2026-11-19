@@ -96,7 +96,8 @@ its link to the Perimeter.
 All need OpenSSH and GNU tar (`gtar` on macOS). Containers share their engine's
 kernel, and bwrap the host's. Setup asks for your Perimeter endpoint and owner
 credentials; its defaults reach a local Perimeter, and
-the passphrase you enter claims a fresh one. The [daemon](#run-a-perimeter-locally)
+the passphrase you enter claims a fresh one. Running it again for the same
+`--profile` replaces that profile and keeps its bunkers. The [daemon](#run-a-perimeter-locally)
 runs setup for you.
 See `perimeter --help` for stopping, exporting, and deleting bunkers.
 
@@ -163,7 +164,7 @@ In **Bunkers**, set each bunker's access to each service.
 Expand a service to override individual actions. Action and effect overrides
 use `off`, `ask`, and `allow`; `off` means Deny. Other policy checks still apply,
 and an approval cannot override an explicit denial. Pending requests appear at
-the top of **Permissions** and as notices on other pages.
+the top of **Activity** and as notices on other pages.
 
 Nothing is allowed by default. Besides this access, a request needs an owner
 policy in package `sentinel` that allows it. Onboarding writes one; a Perimeter

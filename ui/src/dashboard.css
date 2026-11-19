@@ -1719,9 +1719,6 @@ details[open] > summary > .collection-chevron {
 .tool-item-summary:hover {
   background: var(--subtle);
 }
-.tool-item[open] .tool-summary {
-  display: none;
-}
 .tool-item[open] > .tool-item-summary > .collection-chevron {
   transform: rotate(90deg);
 }

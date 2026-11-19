@@ -53,8 +53,8 @@ test("a lone tool still exposes its inherited permission control", async ({
 test("approval counts include every tool and update after approval", async ({
   page,
 }) => {
-  await page.goto("/app/tests/browser/terminal.html?review#connections");
-  const sidebar = page.locator('#tree a[href="#connections"] .nav-count');
+  await page.goto("/app/tests/browser/terminal.html?review#activity");
+  const sidebar = page.locator('#tree a[href="#activity"] .nav-count');
   const needsApproval = page.getByRole("region", { name: "Needs approval" });
   await expect(sidebar).toHaveText("3 waiting for approval");
   await expect(
@@ -71,9 +71,6 @@ test("approval counts include every tool and update after approval", async ({
   ).toBeVisible();
   await expect(page).toHaveTitle("(1) Perimeter");
   await expect(needsApproval.getByText("Connect to example.com")).toBeVisible();
-  await page.evaluate(() => {
-    location.hash = "#activity";
-  });
   await expect(
     page.getByRole("link", { name: /^Review \(\d+:\d{2}\)$/ }),
   ).toBeVisible();
@@ -326,26 +323,22 @@ for (const theme of ["light", "dark"] as const) {
           .evaluate((el) => el.scrollWidth - el.clientWidth),
       ).toBeLessThanOrEqual(TOLERANCE);
       expect(errors).toEqual([]);
-      await page.goto(
-        "/app/tests/browser/terminal.html?proposals#activity/proposals",
-      );
-      const history = page.locator(".proposal-history-row");
+      await page.goto("/app/tests/browser/terminal.html?proposals#activity");
+      const proposals = page
+        .locator(".request-list > .request-item")
+        .filter({ hasText: "Update network access" });
+      await expect(proposals).toHaveCount(2);
       await expect(
-        history.getByRole("link", { name: /Update network access/ }),
+        proposals.getByRole("link", { name: "Review", exact: true }),
       ).toBeVisible();
+      await proposals.last().locator("summary").click();
       await expect(
-        page.getByRole("link", { name: "Review in Permissions" }),
+        proposals.last().getByText("Access to network"),
       ).toBeVisible();
-      if (width === WIDTHS.at(-1)) {
-        const title = (await history.locator(".resource-link").boundingBox())!;
-        const meta = (await history.locator(".resource-meta").boundingBox())!;
-        expect(meta.x).toBeGreaterThanOrEqual(title.x + title.width);
-        expect(
-          Math.abs(title.y + title.height / 2 - meta.y - meta.height / 2),
-        ).toBeLessThanOrEqual(TOLERANCE);
-      }
       expect(
-        await history.evaluate((el) => el.scrollWidth - el.clientWidth),
+        await proposals
+          .last()
+          .evaluate((el) => el.scrollWidth - el.clientWidth),
       ).toBeLessThanOrEqual(TOLERANCE);
     });
   }

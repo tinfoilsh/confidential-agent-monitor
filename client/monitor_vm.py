@@ -991,8 +991,7 @@ def setup_launch(args):
     config_path = Path(args.client_config).expanduser().resolve()
     with launch_lock(config_path.with_suffix(".lock")):
         config = json.loads(private_read(config_path)) if config_path.exists() else {}
-        if name in config.get("launch_profiles", {}):
-            raise Error(f"launch profile {name!r} already exists; choose a new --profile to change its server or permissions")
+        existing = config.get("launch_profiles", {}).get(name, {})
         root = config_path.parent / "launch" / name
         root.mkdir(parents=True, exist_ok=True, mode=0o700)
         if not 1 <= args.cpus <= 32 or not 512 <= args.memory <= 65536 or not 2 <= args.disk_size <= 128:
@@ -1009,7 +1008,10 @@ def setup_launch(args):
                 key = getpass.getpass("Perimeter owner key or passphrase (saved only on this host): ")
             else:
                 raise Error("pass --owner-key-file pointing to an owner-only file")
-        owner, view, endpoint, _ = open_owner(source, root, key)
+        # Set up again, a profile may name another Perimeter; the earlier pins stay until it is saved.
+        with tempfile.TemporaryDirectory(dir=root, prefix=".perimeter-") as fresh:
+            owner, view, endpoint, _ = open_owner(source, Path(fresh), key)
+            pins = {pin.name: pin.read_bytes() for pin in Path(fresh).iterdir()}
         connections = view["config"].get("connections") or {}
         access = {}
         for item in args.access or []:
@@ -1019,14 +1021,20 @@ def setup_launch(args):
             access[service] = {"level": level}
         if args.tinfoil and name == "default":
             pair_computer(owner, view, endpoint, root)
+        for pin, data in pins.items():
+            private(root / pin, data)
         if key:
             private(root / "owner.key", key.encode())
-        profile = {"version": 3, "id": uuid.uuid4().hex, **source,
+        else:
+            (root / "owner.key").unlink(missing_ok=True)
+        # Bunkers are named after the profile's id, so keeping it keeps them.
+        profile = {"version": 3, "id": existing.get("id") or uuid.uuid4().hex, **source,
                    "root": str(root), "backend": args.backend, "cpus": args.cpus, "memory": args.memory,
                    "disk": args.disk_size, "access": access, "mcp": args.mcp}
         config.setdefault("launch_profiles", {})[name] = profile
         private(config_path, json.dumps(config, indent=2).encode() + b"\n")
-        print(f"Saved launch profile {name!r}." + (f" Owner key stays in {root / 'owner.key'}." if key else ""))
+        print(f"{'Replaced' if existing else 'Saved'} launch profile {name!r}."
+              + (f" Owner key stays in {root / 'owner.key'}." if key else ""))
         prefix = "perimeter" + (" --profile " + name if name != "default" else "")
         print(f"From a project directory, run: {prefix} launch AGENT, where AGENT is shell or one of "
               + ", ".join(json.loads(asset("agents.json"))))

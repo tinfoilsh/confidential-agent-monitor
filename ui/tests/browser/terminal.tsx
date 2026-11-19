@@ -98,8 +98,23 @@ if (new URLSearchParams(location.search).has("proposals")) {
         principal: { name: "new-bunker", key: "test-bunker" },
         connection: "network",
         service: "policy-proposal",
+        details: {
+          policy: {
+            source_diff:
+              '--- active/policy.toml\n+++ proposed/policy.toml\n@@ -1,2 +1,3 @@\n [connections.network.tcp]\n-hosts = ["*"]\n+hosts = ["registry.npmjs.org", "pypi.org"]',
+          },
+        },
       },
-      changes: [{ path: ["effects", "write"], value: "ask" }],
+      changes: [
+        {
+          path: ["connections", "network", "tcp", "hosts"],
+          value: ["registry.npmjs.org", "pypi.org"],
+        },
+        {
+          path: ["identities", "new-bunker", "connections", "network", "level"],
+          value: "ask",
+        },
+      ],
     });
 }
 if (new URLSearchParams(location.search).has("review")) {

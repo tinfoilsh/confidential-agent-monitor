@@ -455,6 +455,7 @@ describe("first setup", () => {
         { preset: "github", level: "ask" },
       ],
       network: "ask",
+      registries: false,
     });
     expect([method, path]).toEqual(["POST", "/policy/edits"]);
     expect(body.credentials).toEqual({
@@ -491,6 +492,7 @@ describe("first setup", () => {
       onboard({
         services: [{ preset: "tinfoil", level: "allow", credential: " " }],
         network: "off",
+        registries: false,
       }),
     ).rejects.toThrow("Choose a Tinfoil API key.");
   });
