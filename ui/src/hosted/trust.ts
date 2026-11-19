@@ -343,7 +343,7 @@ export async function verifyImage(
 ) {
   const repo = REPOS[workload];
   const response = await fetch(
-    `https://api.github.com/repos/tinfoilsh/${repo}/attestations/sha256:${digest}`,
+    `https://github-proxy.tinfoil.sh/repos/tinfoilsh/${repo}/attestations/sha256:${digest}`,
     {
       headers: {
         Accept: "application/vnd.github+json",
