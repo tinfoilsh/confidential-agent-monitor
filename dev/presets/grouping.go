@@ -12,20 +12,30 @@ import (
 
 var groupWord = regexp.MustCompile(`[^a-z0-9_]+`)
 var groupPath = regexp.MustCompile(`^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*$`)
-var groupVersion = regexp.MustCompile(`^(v?[0-9]+([.][0-9]+)*[a-z]*|[0-9]{4}-[0-9]{2}-[0-9]{2})$`)
+var groupVersion = regexp.MustCompile(`^(v?[0-9]+([.][0-9]+)*[a-z]*[0-9]*|[0-9]{4}(-[0-9]{2}-[0-9]{2}|Q[1-4]))(:|$)`)
+var groupScript = regexp.MustCompile(`[.](php|xro)$`)
+
+// A v1 suffix marks a versioned API name such as directory_v1; later ones such as alerts_v2 name successor resources.
+var groupSuffix = regexp.MustCompile(`([.](json|xml|php|xro)|_v1)$`)
+var acronymLetter = regexp.MustCompile(`[A-Z][0-9]+[A-Z]([^A-Za-z]|$)`)
+
+const graphqlGroup = "graphql"
 
 var groupVerbs = strings.Fields("get list read search query find create add update edit set put patch post delete remove cancel confirm approve reject archive unarchive close reopen merge lock unlock move copy rename restore enable disable send publish unpublish start stop restart retry resume pause abort run rerun execute trigger invoke dispatch deploy test verify validate check import export upload download accept transfer duplicate clone sync subscribe unsubscribe follow unfollow star unstar pin unpin mute unmute block unblock join leave invite share revoke grant reset regenerate rotate attach detach batch")
 
 func groupName(s string) string {
+	s = acronymLetter.ReplaceAllStringFunc(s, func(m string) string { return m[:1] + strings.ToLower(m[1:]) })
 	return strings.Trim(groupWord.ReplaceAllString(snake(s), "_"), "_")
 }
 
-func resourceWords(s string) string {
+func resourceWords(s string, trailing, readOnly bool) string {
 	parts := strings.Split(groupName(s), "_")
-	for len(parts) > 1 && slices.Contains(groupVerbs, parts[0]) {
-		parts = parts[1:]
+	verb := func(w string) bool { return slices.Contains(groupVerbs, w) && (!readOnly || readVerbs.MatchString(w)) }
+	stripped := false
+	for len(parts) > 1 && verb(parts[0]) {
+		parts, stripped = parts[1:], true
 	}
-	for len(parts) > 1 && slices.Contains(groupVerbs, parts[len(parts)-1]) {
+	for trailing && !stripped && len(parts) > 1 && verb(parts[len(parts)-1]) {
 		parts = parts[:len(parts)-1]
 	}
 	return strings.Join(parts, "_")
@@ -36,31 +46,38 @@ func actionResource(o specOp) string {
 		return o.Resource
 	}
 	if len(o.GraphQL) == 2 {
-		return resourceWords(o.GraphQL[1])
+		if resource := resourceWords(o.GraphQL[1], true, false); resource != "" {
+			return resource
+		}
 	}
 	var parts []string
 	segments := strings.Split(strings.Trim(o.Path, "/"), "/")
 	for i, raw := range segments {
-		if raw == "" || strings.Contains(raw, "{") || groupVersion.MatchString(raw) || slices.Contains([]string{"api", "rest", "rpc", "graphql", "upload", "download"}, raw) {
+		if i < strings.Count(o.Base, "/") || raw == "" || strings.Contains(raw, "{") || groupVersion.MatchString(raw) || i < len(segments)-1 && groupScript.MatchString(raw) || slices.Contains([]string{"api", "apis", "rest", "rpc", graphqlGroup, "upload", "download"}, raw) {
 			continue
 		}
-		raw = strings.TrimSuffix(strings.TrimSuffix(raw, ".json"), ".xml")
+		raw = groupSuffix.ReplaceAllString(raw, "")
 		raw, _, _ = strings.Cut(raw, ":")
+		dotted := strings.Contains(raw, ".")
 		for _, segment := range strings.Split(raw, ".") {
 			part := groupName(segment)
 			if part == "" {
 				continue
 			}
-			if i == len(segments)-1 {
+			if i == len(segments)-1 && !o.Parent {
 				if slices.Contains(groupVerbs, part) && len(parts) > 0 {
 					continue
 				}
-				part = resourceWords(part)
+				// A trailing verb acts on an existing item; a route read with GET only performs reads.
+				part = resourceWords(part, dotted || i > 0 && strings.Contains(segments[i-1], "{"), o.Readable && !dotted)
 			}
 			parts = append(parts, part)
 		}
 	}
 	if len(parts) == 0 {
+		if o.GraphQL != nil {
+			return graphqlGroup
+		}
 		for _, tag := range o.Tags {
 			if name := groupName(tag); name != "" && !slices.Contains([]string{"query", "mutation", "do_not_render"}, name) {
 				return name
@@ -92,8 +109,75 @@ func groupHints(ops []map[string]any, p parsed, provider string) map[string]spec
 				break
 			}
 		}
+		if _, exists := hints[id]; !exists {
+			route := operationSpec(op)
+			route.Body = "any"
+			for _, raw := range p.Ops {
+				o := normalizeProvider(provider, raw)
+				if sameRoute(route, o) {
+					hints[id] = o
+					break
+				}
+				if _, exists := hints[id]; !exists && o.Base != "" && o.Origin == route.Origin && strings.HasPrefix(route.Path, o.Base+"/") {
+					hints[id] = specOp{Base: o.Base}
+				}
+			}
+		}
 	}
 	return hints
+}
+
+func presetHints(ops []map[string]any, presets []string, sources map[string]source, lock lockFile, origins map[string]any, known map[string]parsed) (map[string]specOp, error) {
+	hints, groups := map[string]specOp{}, map[string]string{}
+	for _, key := range sortedKeys(sources) {
+		src := sources[key]
+		if !slices.ContainsFunc(strings.Split(src.Preset, ","), func(preset string) bool { return slices.Contains(presets, preset) }) || len(src.Specs) == 0 {
+			continue
+		}
+		p, ok := known[key]
+		if !ok {
+			var err error
+			if p, err = specOps(key, src, lock, origins); err != nil {
+				if len(src.Groups) > 0 {
+					return nil, err
+				}
+				fmt.Printf("%s: using shipped routes for grouping: %v\n", key, err)
+				continue
+			}
+		}
+		for id, hint := range groupHints(ops, p, key) {
+			if _, exists := hints[id]; !exists || hint.Path != "" {
+				hints[id] = hint
+			}
+		}
+		maps.Copy(groups, src.Groups)
+	}
+	for _, op := range ops {
+		id := op["id"].(string)
+		if group, ok := groups[id]; ok {
+			hint := hints[id]
+			hint.Resource = group
+			hints[id] = hint
+		}
+	}
+	return hints, nil
+}
+
+func markRoutes(ops []specOp) {
+	parents, readable := map[string]bool{}, map[string]bool{}
+	for _, o := range ops {
+		route := routeShape("", strings.TrimSuffix(o.Path, "/"))
+		for i, c := range route {
+			if c == '/' {
+				parents[route[:i]] = true
+			}
+		}
+		readable[route] = readable[route] || o.Method == "GET"
+	}
+	for i, o := range ops {
+		route := routeShape("", strings.TrimSuffix(o.Path, "/"))
+		ops[i].Parent, ops[i].Readable = parents[route], readable[route]
+	}
 }
 
 func actionTitle(s string) string {
@@ -141,7 +225,7 @@ func groupRecord(record map[string]any, hints map[string]specOp) int {
 		old := op["action"].(string)
 		o := operationSpec(op)
 		if hint, ok := hints[id]; ok {
-			o.Tags, o.Resource = hint.Tags, hint.Resource
+			o.Tags, o.Resource, o.Base, o.Parent, o.Readable = hint.Tags, hint.Resource, hint.Base, hint.Parent, hint.Readable
 		}
 		var verb string
 		switch effects := op["effects"].(type) {
@@ -151,13 +235,13 @@ func groupRecord(record map[string]any, hints map[string]specOp) int {
 			verb = effects[0]
 		}
 		parts := strings.Split(old, ".")
-		verbs := append(slices.Clone(effectOrder), "session", "open", "comment", "merge", "push", "use")
-		if strings.HasPrefix(old, actionResource(o)+".") && slices.Contains(verbs, parts[len(parts)-1]) {
-			verb = parts[len(parts)-1]
-		} else if slices.Contains(verbs, parts[0]) {
+		last := parts[len(parts)-1]
+		verbs := append(slices.Clone(effectOrder), "open", "comment", "merge", "push", "use")
+		// Effect-first names have at most two segments and lead with the effect when both are capabilities.
+		if len(parts) <= 2 && slices.Contains(verbs, parts[0]) && (parts[0] == verb || !slices.Contains(verbs, last)) {
 			verb = parts[0]
-		} else if slices.Contains(verbs, parts[len(parts)-1]) {
-			verb = parts[len(parts)-1]
+		} else if slices.Contains(verbs, last) {
+			verb = last
 		}
 		next := groupedAction(o, verb)
 		if _, ok := curated[old]; ok {
@@ -216,27 +300,16 @@ func groupShipped(only []string) error {
 		if len(ops) == 0 {
 			continue
 		}
-		hints := map[string]specOp{}
-		for _, key := range sortedKeys(sources) {
-			src := sources[key]
-			if !slices.Contains(strings.Split(src.Preset, ","), name) || len(src.Specs) == 0 {
-				continue
-			}
-			p, err := specOps(key, src, lock)
-			if err != nil {
-				if len(src.Groups) > 0 {
-					return err
-				}
-				fmt.Printf("%s: using shipped routes for grouping: %v\n", name, err)
-				continue
-			}
-			var records []map[string]any
-			for _, value := range ops {
-				records = append(records, value.(map[string]any))
-			}
-			for id, hint := range groupHints(records, p, key) {
-				hints[id] = hint
-			}
+		var records []map[string]any
+		for id, value := range ops {
+			op := maps.Clone(value.(map[string]any))
+			op["id"] = id
+			records = append(records, op)
+		}
+		origins, _ := httpSection(record)["origins"].(map[string]any)
+		hints, err := presetHints(records, []string{name}, sources, lock, origins, nil)
+		if err != nil {
+			return err
 		}
 		before, _ := json.Marshal(record)
 		count := groupRecord(record, hints)

@@ -4,6 +4,7 @@ go 1.27.1
 
 require (
 	github.com/getkin/kin-openapi v0.149.0
+	github.com/go-openapi/jsonpointer v0.22.5
 	github.com/oasdiff/yaml v0.1.1
 	github.com/rbretecher/go-postman-collection v0.9.0
 	github.com/vektah/gqlparser/v2 v2.5.60
@@ -20,7 +21,6 @@ require (
 	github.com/felixge/httpsnoop v1.1.0 // indirect
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-openapi/jsonpointer v0.22.5 // indirect
 	github.com/go-openapi/swag/jsonname v0.25.5 // indirect
 	github.com/google/s2a-go v0.1.10 // indirect
 	github.com/google/uuid v1.6.0 // indirect

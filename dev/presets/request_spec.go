@@ -1,16 +1,19 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"regexp"
 	"slices"
 	"strings"
 
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/oasdiff/yaml"
 )
 
-func requestDocument(src []byte, swagger bool) ([]byte, error) {
+func requestDocument(src []byte, swagger, pinned bool) ([]byte, error) {
 	var doc map[string]any
 	if err := json.Unmarshal(src, &doc); err != nil {
 		if _, err := yaml.Unmarshal(src, &doc, yaml.DecodeOpts{DisableTimestamps: true}); err != nil {
@@ -35,8 +38,8 @@ func requestDocument(src []byte, swagger bool) ([]byte, error) {
 	used := map[string]bool{}
 	missing := map[string]bool{}
 	external := map[string]bool{}
-	var walk func(any)
-	walk = func(v any) {
+	var walk func(any, string)
+	walk = func(v any, name string) {
 		switch x := v.(type) {
 		case map[string]any:
 			if ref, _ := x["$ref"].(string); ref != "" && !strings.HasPrefix(ref, "#") {
@@ -58,20 +61,24 @@ func requestDocument(src []byte, swagger bool) ([]byte, error) {
 					unresolved = append(unresolved, ref)
 					delete(x, "$ref")
 				}
-				walk(target)
+				walk(target, "")
 			}
-			for _, child := range x {
-				walk(child)
+			for key, child := range x {
+				if annotation(name, key) {
+					delete(x, key)
+					continue
+				}
+				walk(child, key)
 			}
 		case []any:
 			for _, child := range x {
-				walk(child)
+				walk(child, "")
 			}
 		}
 	}
-	walk(paths)
-	if len(external) > 0 {
-		return nil, fmt.Errorf("request schemas contain unpinned external references; vendor them into the locked specification: %s", strings.Join(sortedKeys(external), ", "))
+	walk(paths, "")
+	if len(external) > 0 && !pinned {
+		return nil, fmt.Errorf("request schemas contain unpinned external references; run update to lock relative ones: %s", strings.Join(sortedKeys(external), ", "))
 	}
 	if len(unresolved) > 0 {
 		slices.Sort(unresolved)
@@ -109,21 +116,53 @@ func requestDocument(src []byte, swagger bool) ([]byte, error) {
 	return json.Marshal(doc)
 }
 
-func requestPath(raw string) (string, map[string]any, error) {
-	path, query, hasQuery := strings.Cut(raw, "?")
-	if !hasQuery {
-		return path, nil, nil
-	}
-	values, err := url.ParseQuery(query)
-	if err != nil {
-		return "", nil, fmt.Errorf("path %q: %w", raw, err)
-	}
-	conditions := map[string]any{}
-	for key, value := range values {
-		if len(value) != 1 {
-			return "", nil, fmt.Errorf("path %q repeats query parameter %q", raw, key)
+// annotation reports whether key holds examples or extensions, which requests never need, rather than a property of that name.
+func annotation(parent, key string) bool {
+	return parent != "properties" && (key == "example" || key == "examples" || strings.HasPrefix(key, "x-"))
+}
+
+var colonParam = regexp.MustCompile(`(^|/):([A-Za-z_][A-Za-z0-9_]*)`)
+
+// requestPath splits a path key into its route, query conditions, and fragment, which may name a query variant.
+func requestPath(raw string) (string, map[string]any, map[string]any, error) {
+	target, fragment, _ := strings.Cut(strings.TrimSpace(raw), "#")
+	path, query, _ := strings.Cut(target, "?")
+	var sets [2]map[string]any
+	for i, part := range []string{query, fragment} {
+		if part == "" {
+			continue
 		}
-		conditions[key] = value[0]
+		values, err := url.ParseQuery(part)
+		if err != nil {
+			return "", nil, nil, fmt.Errorf("path %q: %w", raw, err)
+		}
+		sets[i] = map[string]any{}
+		for key, value := range values {
+			if len(value) != 1 {
+				return "", nil, nil, fmt.Errorf("path %q repeats query parameter %q", raw, key)
+			}
+			sets[i][key] = value[0]
+		}
 	}
-	return path, conditions, nil
+	return colonParam.ReplaceAllString(path, "$1{$2}"), sets[0], sets[1], nil
+}
+
+func bundle(src []byte, location string, files map[string][]byte) ([]byte, error) {
+	base, err := url.Parse(location)
+	if err != nil {
+		return nil, err
+	}
+	loader := openapi3.NewLoader()
+	loader.ReadFromURIFunc = func(_ *openapi3.Loader, u *url.URL) ([]byte, error) {
+		if src, ok := files[u.String()]; ok {
+			return src, nil
+		}
+		return nil, fmt.Errorf("%s is not locked; run update", u)
+	}
+	doc, err := loader.LoadFromDataWithPath(src, base)
+	if err != nil {
+		return nil, err
+	}
+	doc.InternalizeRefs(context.Background(), nil)
+	return doc.MarshalJSON()
 }
