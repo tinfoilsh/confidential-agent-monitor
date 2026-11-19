@@ -3,7 +3,6 @@ import { Verifier } from "@tinfoilsh/verifier";
 import { EnclaveHTTPClient } from "tinfoil";
 import type { ShellOpen, ShellOpener } from "../owner";
 import {
-  openChannel,
   openShell,
   rpcChannel,
   type OwnerChannel,
@@ -33,7 +32,6 @@ import {
 } from "./trust";
 
 const PROTOCOL = "sandbox-owner-v1";
-const OWNER_SUBPROTOCOL = "tinfoil-owner-v1";
 const ATTESTATION = "/.well-known/tinfoil-attestation";
 const OWNER_ATTESTATION = "/owner/attestation";
 const REGISTRY_ACCOUNT = "/api/config-registry/v2/account";
@@ -342,21 +340,17 @@ export async function openBunker(
     true,
   ))!;
   const account = (await scope.api(REGISTRY_ACCOUNT)) as { scope: string };
-  const container = `${keys.TARGETS.api_origin}/api/containers/${row.id}`;
+  const container = `/api/containers/${row.id}`;
   const route: Route = {
     mode: "perimeterless",
     registry: account.scope,
-    attest: async (nonce, at) =>
-      fetch(`${container}${OWNER_ATTESTATION}?nonce=${nonce}`, {
-        headers: { Authorization: `Bearer ${await scope.token()}` },
-        signal: at,
-      }),
-    open: async (session, at) =>
-      openChannel(
-        `${container.replace("https:", "wss:")}${OWNER_SOCKET}`,
+    attest: (nonce, at) =>
+      scope.fetch(`${container}${OWNER_ATTESTATION}?nonce=${nonce}`, at),
+    open: (session, at) =>
+      scope.channel(
+        `${container}${OWNER_SOCKET}`,
         [session],
         at ? AbortSignal.any([signal, at]) : signal,
-        [OWNER_SUBPROTOCOL, `bearer.${await scope.token()}`],
       ),
   };
   const sandbox = await sandboxClient(
