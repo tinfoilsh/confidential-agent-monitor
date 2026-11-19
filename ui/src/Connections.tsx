@@ -32,7 +32,7 @@ import {
 } from "./components";
 import { useMonitor } from "./monitor";
 import { AgentConnectionAccess } from "./Agents";
-import { NeedsApproval, SavedRules, ToolReview } from "./Approvals";
+import { SavedRules, ToolReview } from "./Approvals";
 
 const inCatalog =
   (search: string, group: { title: string }) =>
@@ -134,15 +134,12 @@ export function PermissionTabs(props: { view?: "catalog" | "rules" }) {
 export function Connections(props: {
   view?: "catalog" | "rules";
   expanded?: string;
-  proposal?: string;
 }) {
   return (
     <>
       <Show
         when={props.view}
-        fallback={
-          <MyConnections expanded={props.expanded} proposal={props.proposal} />
-        }
+        fallback={<MyConnections expanded={props.expanded} />}
       >
         <Show when={props.view === "catalog"} fallback={<SavedRules />}>
           <Catalog />
@@ -151,7 +148,7 @@ export function Connections(props: {
     </>
   );
 }
-function MyConnections(props: { expanded?: string; proposal?: string }) {
+function MyConnections(props: { expanded?: string }) {
   const m = useMonitor(),
     [query, setQuery] = m.search("connections");
   if (props.expanded) setQuery("");
@@ -188,7 +185,6 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
   });
   return (
     <>
-      <NeedsApproval proposal={props.proposal} />
       <div class="resource-list collection-list">
         <div class="resource-heading">
           <h2>

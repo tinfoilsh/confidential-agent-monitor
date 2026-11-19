@@ -15,7 +15,7 @@ import {
 } from "solid-js";
 import * as owner from "./owner.js";
 import { MonitorProvider, useMonitor, type MonitorOptions } from "./monitor";
-import { Activity, ActivityTabs, RequestDetail } from "./Activity";
+import { Activity, RequestDetail } from "./Activity";
 import { ApprovalToasts } from "./Approvals";
 import { Agents, AddAgent } from "./Agents";
 import { Connections, DeviceSignInDialog, PermissionTabs } from "./Connections";
@@ -121,7 +121,7 @@ function Shell() {
     onCleanup(() => resized.disconnect());
   };
   const count = (section: string) =>
-    section === "connections"
+    section === "activity"
       ? m.pendingCount()
       : section === "agents"
         ? Object.keys(m.view()?.config.identities ?? {}).length
@@ -133,15 +133,8 @@ function Shell() {
       ? name
       : undefined;
   };
-  // The Permissions list shows the same approvals the notices would.
-  const approvalsListed = () => {
-    const [kind, view] = parse(page());
-    return (
-      !shellShown() &&
-      (kind === "connection" ||
-        (kind === "connections" && view !== "catalog" && view !== "rules"))
-    );
-  };
+  // The Activity page lists the same approvals the notices would.
+  const approvalsListed = () => !shellShown() && kind() === "activity";
   const closeShell = (name: string) => {
     if (shellShown() === name) location.hash = "agents";
     m.closeShell(name);
@@ -160,10 +153,10 @@ function Shell() {
       <Show when={count(props.key)}>
         <small
           class="nav-count"
-          classList={{ "nav-attention": props.key === "connections" }}
+          classList={{ "nav-attention": props.key === "activity" }}
         >
           {count(props.key)}
-          <Show when={props.key === "connections"}>
+          <Show when={props.key === "activity"}>
             <span class="sr-only"> waiting for approval</span>
           </Show>
         </small>
@@ -297,11 +290,6 @@ function Shell() {
                     </div>
                   </div>
                   <Switch>
-                    <Match when={kind() === "activity"}>
-                      <div class="page-header-tabs">
-                        <ActivityTabs scope={parse(page())[1]} />
-                      </div>
-                    </Match>
                     <Match when={section() === "connections"}>
                       <div class="page-header-tabs">
                         <PermissionTabs view={permissionView()} />
@@ -421,7 +409,6 @@ function Page(props: { path: string }) {
       <Match when={kind === "connections"}>
         <Connections
           view={name === "catalog" || name === "rules" ? name : undefined}
-          proposal={name === "pending" ? request : undefined}
         />
       </Match>
       <Match when={kind === "connection"}>

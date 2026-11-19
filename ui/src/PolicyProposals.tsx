@@ -2,29 +2,17 @@ import { For, Show, createMemo, onMount } from "solid-js";
 import * as owner from "./owner.js";
 import {
   ConnectorIcon,
-  Empty,
   Icon,
   ResourceDisclosure,
   createRecord,
-  href,
 } from "./components";
 import { useMonitor } from "./monitor";
 import "./policy-proposals.css";
 
-const proposalTime = new Intl.DateTimeFormat(undefined, {
-  month: "numeric",
-  day: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-});
-const date = (value: string) => {
-  const parsed = new Date(value);
-  return Number.isNaN(parsed.valueOf()) ? value : proposalTime.format(parsed);
-};
 function ProposerByline(props: { proposal: owner.RequestRecord }) {
   return (
     <>
-      <strong>By {owner.isDevice(props.proposal.facts.principal.name) ? "Trusted Device" : "Bunker"}:</strong>{" "}
+      <strong>By {owner.isDevice(props.proposal.facts.principal.name) ? "trusted device" : "bunker"}:</strong>{" "}
       {props.proposal.facts.principal.name}
     </>
   );
@@ -40,21 +28,107 @@ const at = (value: unknown, path: string[]) => {
   }
   return current as owner.Json;
 };
-const valueText = (value: owner.Json | undefined) => {
-  if (value === undefined) return "Not set";
-  if (typeof value === "string") return value || "Empty";
-  return JSON.stringify(value, null, 2);
+type Leaf = { path: string[]; value?: owner.Json; removed?: boolean };
+type Item = {
+  label: string;
+  kind?: "level" | "mode" | "audience" | "trust" | "preset";
+  leaf: Leaf;
 };
-const pathLabel = (proposal: owner.RequestRecord, path: string[]) => {
-  if (path[0] === "identities")
-    return [`Bunker ${path[1]}`, ...path.slice(4)].join(" › ");
-  if (path[0] === "default_access")
-    return ["Default access", ...path.slice(2)].join(" › ");
-  if (path[0] === "connections" && path[1] === proposal.facts.connection)
-    return ["Service", ...path.slice(2)].join(" › ");
-  return path.join(" › ");
+// A change that sets a table sets every setting beneath it.
+const leaves = (change: owner.Change): Leaf[] => {
+  const value = change.value;
+  return !change.delete &&
+    value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    Object.keys(value).length
+    ? Object.entries(value).flatMap(([key, inner]) =>
+        leaves({ path: [...change.path, key], value: inner }),
+      )
+    : [{ path: change.path, value, removed: change.delete }];
 };
-const proposalPreset = (proposal: owner.RequestRecord, view: owner.View) => {
+const ALL_BUNKERS = "All bunkers";
+const AUDIENCES: { [A in owner.Audience]: string } = {
+  me: "Only me",
+  team: "My team",
+  anyone: "Anyone",
+};
+const LEVEL_NOTES: { [L in owner.Level]: string } = {
+  off: "Nothing is allowed.",
+  read: "Reads go through; changes are denied.",
+  ask: "Reads go through; changes ask you first.",
+  allow: "Recognized requests go through.",
+};
+// How a service handles data, as its settings name it.
+const ANSWERS: Record<string, Pick<Item, "label" | "kind">> = {
+  preset: { label: "Type", kind: "preset" },
+  contents: { label: "Confidentiality", kind: "audience" },
+  sends: { label: "Visibility", kind: "audience" },
+  strangers: { label: "Data source", kind: "trust" },
+};
+const accessItem = (
+  [kind, name]: string[],
+  leaf: Leaf,
+  actions: owner.Preset["actions"],
+): Item =>
+  kind === "actions" || kind === "effects"
+    ? {
+        label: (kind === "actions" && actions?.[name]?.title) || name,
+        kind: "mode",
+        leaf,
+      }
+    : { label: "Access", kind: kind === "level" ? "level" : undefined, leaf };
+// Every changed setting, split into the service's own setup and who may use it.
+function changeGroups(view: owner.View, record: owner.RequestRecord) {
+  const name = record.facts.connection;
+  const preset = view.presets[proposalPreset(record, view)];
+  const service: Item[] = [],
+    other: Item[] = [],
+    access = new Map<string, Item[]>();
+  const grant = (who: string, item: Item) =>
+    access.set(who, [...(access.get(who) ?? []), item]);
+  for (const leaf of (record.changes ?? []).flatMap(leaves)) {
+    const [root, a, b, c, ...rest] = leaf.path;
+    if (root === "connections" && a === name) {
+      const setting = leaf.path.slice(2).join("/");
+      const field = preset?.fields?.find((f) =>
+        (f.paths ?? [f.path ?? []]).some((p) => p.join("/") === setting),
+      );
+      service.push({
+        ...(ANSWERS[setting] ?? {
+          label: field?.label ?? leaf.path.slice(2).join(" › "),
+        }),
+        leaf,
+      });
+    } else if (root === "default_access" && a === name)
+      grant(ALL_BUNKERS, accessItem(leaf.path.slice(2), leaf, preset?.actions));
+    else if (root === "identities" && b === "connections" && c === name)
+      grant(a, accessItem(rest, leaf, preset?.actions));
+    else other.push({ label: leaf.path.join(" › "), leaf });
+  }
+  return { service, access: [...access], other };
+}
+const itemText = (view: owner.View, item: Item, value: owner.Json) =>
+  item.kind === "level"
+    ? (owner.LEVELS[value as owner.Level] ?? String(value))
+    : item.kind === "mode"
+      ? (owner.MODES[value as owner.Mode] ?? String(value))
+      : item.kind === "audience"
+        ? (AUDIENCES[value as owner.Audience] ?? String(value))
+        : item.kind === "trust"
+          ? value
+            ? "Untrusted"
+            : "Trusted"
+          : item.kind === "preset"
+            ? (view.presets[value as string]?.title ?? String(value))
+            : typeof value === "boolean"
+              ? value
+                ? "Yes"
+                : "No"
+              : typeof value === "object"
+                ? JSON.stringify(value, null, 2)
+                : String(value) || "Empty";
+export const proposalPreset = (proposal: owner.RequestRecord, view: owner.View) => {
   for (const change of proposal.changes ?? []) {
     if (
       change.path.join("/") ===
@@ -103,7 +177,7 @@ function ProposalBadge(props: { proposal: owner.RequestRecord }) {
   );
 }
 
-export function TechnicalDiff(props: { text: string }) {
+function TechnicalDiff(props: { text: string }) {
   const lines = () =>
     (props.text || "No source changes.")
       .split("\n")
@@ -130,118 +204,160 @@ export function TechnicalDiff(props: { text: string }) {
   );
 }
 
-function Change(props: {
-  proposal: owner.RequestRecord;
-  change: owner.Change;
-}) {
+function ChangeValue(props: { item: Item; before?: owner.Json }) {
   const m = useMonitor();
-  const before = () => at(m.view()!.config, props.change.path);
+  const after = () =>
+    props.item.leaf.removed ? undefined : props.item.leaf.value;
+  const list = (value?: owner.Json) => (Array.isArray(value) ? value : []);
+  const text = (value: owner.Json) => itemText(m.view()!, props.item, value);
   return (
-    <div class="proposal-change">
-      <strong class="proposal-path">
-        {pathLabel(props.proposal, props.change.path)}
-      </strong>
-      <div class="proposal-values">
-        <div>
-          <small>Current</small>
-          <pre>{valueText(before())}</pre>
-        </div>
-        <span class="proposal-arrow" aria-hidden="true">
-          →
+    <Show
+      when={Array.isArray(props.before) || Array.isArray(after())}
+      fallback={
+        <span class="proposal-value">
+          <Show
+            when={
+              props.before !== undefined &&
+              JSON.stringify(props.before) !== JSON.stringify(after())
+            }
+          >
+            <del>{text(props.before!)}</del>
+            <span aria-hidden="true">→</span>
+          </Show>
+          <Show
+            when={after() !== undefined}
+            fallback={<span class="diff-removed">Removed</span>}
+          >
+            <ins>{text(after()!)}</ins>
+          </Show>
         </span>
-        <div>
-          <small>Proposed</small>
-          <pre>
-            {props.change.delete ? "Remove" : valueText(props.change.value)}
-          </pre>
-        </div>
-      </div>
-    </div>
+      }
+    >
+      <span class="proposal-value proposal-chips">
+        <For
+          each={list(props.before).filter(
+            (entry) => !list(after()).includes(entry),
+          )}
+        >
+          {(entry) => <del class="badge diff-removed">{String(entry)}</del>}
+        </For>
+        <For each={list(after())}>
+          {(entry) => (
+            <span
+              class="badge"
+              classList={{
+                "diff-added":
+                  props.before !== undefined &&
+                  !list(props.before).includes(entry),
+              }}
+            >
+              {String(entry)}
+            </span>
+          )}
+        </For>
+      </span>
+    </Show>
   );
 }
 
-export function PolicyProposals() {
+// What a proposal changes, in the owner's terms, then the exact source diff.
+export function ProposalChanges(props: { record: owner.RequestRecord }) {
   const m = useMonitor();
-  const history = createMemo(() =>
-    m
-      .proposals()
-      .filter((record) => record.state !== "pending")
-      .sort((a, b) => Date.parse(b.time) - Date.parse(a.time)),
+  const groups = createMemo(() => changeGroups(m.view()!, props.record));
+  const preset = () => proposalPreset(props.record, m.view()!);
+  const added = () => groups().service.some((item) => item.kind === "preset");
+  const removed = () =>
+    groups().service.some((item) => item.leaf.path.length === 2);
+  const Facts = (facts: { items: Item[] }) => (
+    <ul class="proposal-facts">
+      <For each={facts.items}>
+        {(item) => (
+          <li>
+            <span class="proposal-label">{item.label}</span>
+            <ChangeValue
+              item={item}
+              // Only a pending proposal still applies to the settings shown as current.
+              before={
+                props.record.state === "pending"
+                  ? at(m.view()!.config, item.leaf.path)
+                  : undefined
+              }
+            />
+          </li>
+        )}
+      </For>
+    </ul>
   );
-  const total = () => m.pendingProposals().length + history().length;
   return (
-    <div id="list" class="resource-list proposal-list">
-      <div class="resource-heading">
-        <h2>
-          Proposed changes <span class="count">{total()}</span>
-        </h2>
-        <span>Updates every 5 seconds</span>
-      </div>
-      <Show
-        when={total()}
-        fallback={
-          <Empty
-            title={
-              !m.view() && m.loading()
-                ? "Loading proposals…"
-                : "No config proposals"
-            }
-            icon="policy"
-          >
-            Changes proposed by bunkers or trusted devices will appear here.
-          </Empty>
-        }
-      >
-        <For each={m.pendingProposals().map((proposal) => proposal.id)}>
-          {(id) => {
-            const proposal = () =>
-              m.pendingProposals().find((record) => record.id === id)!;
-            return (
-              <article class="resource-row activity-row">
-                <span class="resource-link">
-                  <ProposalSummary proposal={proposal()} />
-                </span>
-                <span class="resource-meta">
-                  <time datetime={proposal().time}>
-                    {date(proposal().time)}
-                  </time>
-                  <ProposalBadge proposal={proposal()} />
-                  <a class="button" href={href("connections", "pending", id)}>
-                    Review in Permissions <Icon name="arrow" />
-                  </a>
-                </span>
-              </article>
-            );
-          }}
-        </For>
-        <For each={history()}>
-          {(record) => (
-            <article class="resource-row activity-row proposal-history-row">
-              <a class="resource-link" href={href("request", record.id)}>
-                <ConnectorIcon connection={record.facts.connection} />
-                <span>
-                  <strong>
-                    {reasonPreview(record.facts.title || "Proposed change")}
-                  </strong>
-                  <small>
-                    {record.facts.connection || "Policy"} ·{" "}
-                    {record.facts.principal.key
-                      ? record.facts.principal.name
-                      : "Owner API"}
-                  </small>
-                </span>
-              </a>
-              <span class="resource-meta">
-                <time datetime={record.time}>{date(record.time)}</time>
-                <span class="request-state" data-state={record.state}>
-                  {owner.reviewStatus(record)}
-                </span>
-              </span>
-            </article>
-          )}
-        </For>
+    <>
+      <Show when={groups().service.length}>
+        <section class="proposal-group">
+          <header class="proposal-service">
+            <ConnectorIcon preset={preset()} />
+            <span class="proposal-summary">
+              <strong>{props.record.facts.connection}</strong>
+              <small>{m.view()!.presets[preset()]?.title}</small>
+            </span>
+            <span
+              class="badge"
+              classList={{ "status-new": added(), "status-denied": removed() }}
+            >
+              {added()
+                ? "New service"
+                : removed()
+                  ? "Removes this service"
+                  : "Changes settings"}
+            </span>
+          </header>
+          <Facts
+            items={groups().service.filter(
+              (item) => item.kind !== "preset" && item.leaf.path.length > 2,
+            )}
+          />
+        </section>
       </Show>
-    </div>
+      <Show when={groups().access.length}>
+        <section class="proposal-group">
+          <h4>Access to {props.record.facts.connection}</h4>
+          <For each={groups().access}>
+            {([who, items]) => (
+              <div class="proposal-access">
+                <Icon
+                  name={
+                    who === ALL_BUNKERS
+                      ? "agents"
+                      : owner.isDevice(who)
+                        ? "devices"
+                        : "sandboxes"
+                  }
+                />
+                <strong title={who}>{who}</strong>
+                <Facts items={items} />
+                <For each={items.filter((item) => item.kind === "level")}>
+                  {(item) => (
+                    <small>{LEVEL_NOTES[item.leaf.value as owner.Level]}</small>
+                  )}
+                </For>
+              </div>
+            )}
+          </For>
+        </section>
+      </Show>
+      <Show when={groups().other.length}>
+        <section class="proposal-group">
+          <h4>Other settings</h4>
+          <Facts items={groups().other} />
+        </section>
+      </Show>
+      <Show when={props.record.facts.details?.policy}>
+        {(policy) => (
+          <details class="proposal-diff">
+            <summary>Source diff</summary>
+            <TechnicalDiff text={policy().source_diff} />
+          </details>
+        )}
+      </Show>
+    </>
   );
 }
 
@@ -254,6 +370,17 @@ export function ConnectionProposals(props: { id?: string }) {
         const summary = document.querySelector<HTMLElement>(
           ".proposal-connection-item[open] > summary",
         );
+        // The page header and the list's heading stick over whatever scrolls to the top.
+        const sticky = [
+          document.getElementById("page-header"),
+          summary
+            ?.closest(".resource-list")
+            ?.querySelector(".resource-heading"),
+        ].reduce(
+          (height, el) => height + ((el as HTMLElement)?.offsetHeight ?? 0),
+          0,
+        );
+        if (summary) summary.style.scrollMarginTop = `${sticky}px`;
         summary?.scrollIntoView({ block: "start" });
         summary?.focus();
       });
@@ -305,7 +432,7 @@ function ConnectionProposalDetail(props: { proposal: owner.RequestRecord }) {
   const loaded = () => (full.error ? undefined : full());
   const decide = async (decision: "once" | "deny") => {
     if (m.busy() || !loaded()) return;
-    if (await m.decide(props.proposal, decision)) location.hash = "#connections";
+    if (await m.decide(props.proposal, decision)) location.hash = "#activity";
   };
   return (
     <div class="proposal-card proposal-card-inline">
@@ -333,18 +460,8 @@ function ConnectionProposalDetail(props: { proposal: owner.RequestRecord }) {
             </p>
           )}
         </Show>
-        <div class="proposal-change-list">
-          <For each={loaded()?.changes}>
-            {(change) => <Change proposal={props.proposal} change={change} />}
-          </For>
-        </div>
         <Show when={loaded()} fallback={!full.error && <p class="muted">Loading changes…</p>}>
-          {(proposal) => (
-            <details class="proposal-diff" open>
-              <summary>Technical TOML diff</summary>
-              <TechnicalDiff text={proposal().facts.details?.policy?.source_diff ?? ""} />
-            </details>
-          )}
+          {(proposal) => <ProposalChanges record={proposal()} />}
         </Show>
       </div>
       <footer class="proposal-decision decision-buttons">

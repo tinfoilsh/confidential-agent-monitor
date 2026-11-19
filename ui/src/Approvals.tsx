@@ -163,13 +163,15 @@ function ProposalApproval(props: {
       onClose={props.onClose}
     >
       <div class="decision-buttons">
-        <a
-          class="button"
-          href={href("connections", "pending", props.proposal.id)}
+        <button
+          type="button"
+          onClick={() => {
+            location.hash = href("activity", "pending", props.proposal.id);
+          }}
         >
-          Review change
+          Review request
           <Icon name="arrow" />
-        </a>
+        </button>
       </div>
     </ApprovalNotice>
   );
@@ -293,15 +295,7 @@ export function NeedsApproval(props: { proposal?: string }) {
         }
       >
         <div class="resource-list">
-          <Empty
-            title="Proposal no longer pending"
-            icon="policy"
-            action={
-              <a class="button" href="#activity/proposals">
-                View proposal history
-              </a>
-            }
-          >
+          <Empty title="Proposal no longer pending" icon="policy">
             It may have been reviewed, become outdated, or been discarded when
             the Perimeter restarted.
           </Empty>

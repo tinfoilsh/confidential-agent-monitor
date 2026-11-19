@@ -164,7 +164,7 @@ In **Bunkers**, set each bunker's access to each service.
 Expand a service to override individual actions. Action and effect overrides
 use `off`, `ask`, and `allow`; `off` means Deny. Other policy checks still apply,
 and an approval cannot override an explicit denial. Pending requests appear at
-the top of **Permissions** and as notices on other pages.
+the top of **Activity** and as notices on other pages.
 
 Nothing is allowed by default. Besides this access, a request needs an owner
 policy in package `sentinel` that allows it. Onboarding writes one; a Perimeter

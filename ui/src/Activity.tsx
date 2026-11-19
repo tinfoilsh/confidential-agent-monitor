@@ -1,4 +1,4 @@
-import { For, Show, createMemo, onCleanup, onMount } from "solid-js";
+import { For, Show, createMemo, onCleanup, onMount, type JSX } from "solid-js";
 import * as owner from "./owner.js";
 import {
   ConnectorIcon,
@@ -7,11 +7,10 @@ import {
   ResourceDisclosure,
   createRecord,
   href,
-  TabBar,
 } from "./components";
 import { useMonitor } from "./monitor";
-import { PolicyProposals, TechnicalDiff } from "./PolicyProposals";
-import { ApprovalActions } from "./Approvals";
+import { ProposalChanges, proposalPreset } from "./PolicyProposals";
+import { ApprovalActions, NeedsApproval } from "./Approvals";
 
 const PAGE = 50;
 const HOLD_SCROLL_PX = 100;
@@ -40,31 +39,36 @@ export function Badge(props: { state: string; record: owner.RequestRecord }) {
     </Show>
   );
 }
-// Shown in the page header, so the views stay in reach while the page scrolls.
-export function ActivityTabs(props: { scope?: string }) {
+export function Activity(props: { scope?: string; name?: string }) {
   return (
-    <TabBar
-      class="page-tabs"
-      label="Activity views"
-      value={props.scope === "proposals" ? "proposals" : "requests"}
-      options={[
-        { value: "requests", label: "Requests", href: "#activity" },
-        {
-          value: "proposals",
-          label: "Config proposals",
-          href: "#activity/proposals",
-        },
-      ]}
-    />
+    <>
+      <NeedsApproval
+        proposal={props.scope === "pending" ? props.name : undefined}
+      />
+      <Requests expanded={props.scope === "request" ? props.name : undefined} />
+    </>
   );
 }
-export function Activity(props: { scope?: string; name?: string }) {
-  const proposals = () => props.scope === "proposals";
-  const request = () => props.scope === "request" ? props.name : undefined;
+// What waits for an answer is listed at the top of the Activity page.
+function ReviewLink(props: {
+  record: owner.RequestRecord;
+  class?: string;
+  children: JSX.Element;
+}) {
   return (
-    <Show when={proposals()} fallback={<Requests expanded={request()} />}>
-      <PolicyProposals />
-    </Show>
+    <a
+      class={props.class}
+      href={
+        owner.isProposal(props.record)
+          ? href("activity", "pending", props.record.id)
+          : "#activity"
+      }
+      onClick={() => {
+        document.getElementById("workspace")!.scrollTop = 0;
+      }}
+    >
+      {props.children}
+    </a>
   );
 }
 function Requests(props: { expanded?: string }) {
@@ -72,7 +76,9 @@ function Requests(props: { expanded?: string }) {
   const page = () => m.activity.page,
     setPage = (value: number) => m.setActivity("page", value),
     anchor = () => m.activity.anchor;
-  const filtered = createMemo(() => owner.ordered(m.requests(), m.dismissed()));
+  const filtered = createMemo(() =>
+    owner.ordered([...m.recordsById().values()], m.dismissed()),
+  );
   const held = createMemo(() =>
     anchor()
       ? filtered().filter((r) => Date.parse(r.time) <= anchor())
@@ -84,7 +90,10 @@ function Requests(props: { expanded?: string }) {
     for (const r of held()) {
       if (
         r.id !== props.expanded &&
-        head?.facts.connection === r.facts.connection &&
+        !owner.isProposal(r) &&
+        head &&
+        !owner.isProposal(head) &&
+        head.facts.connection === r.facts.connection &&
         head.facts.principal.name === r.facts.principal.name
       )
         stacks.get(head.id)!.push(r.id);
@@ -226,12 +235,22 @@ function RequestRow(props: { id: string; stack: string[]; open?: boolean }) {
         <>
           <span class="resource-link">
             <span class="icon-stack" data-stacked={props.stack.length > 1}>
-              <ConnectorIcon connection={record().facts.connection} />
+              <Show
+                when={owner.isProposal(record())}
+                fallback={
+                  <ConnectorIcon connection={record().facts.connection} />
+                }
+              >
+                <ConnectorIcon preset={proposalPreset(record(), m.view()!)} />
+              </Show>
             </span>
             <strong title={owner.requestTitle(record())}>
               <span class="sr-only">Request: </span>
               {owner.requestTitle(record())}
             </strong>
+            <Show when={owner.isProposal(record())}>
+              <span class="badge">Proposal</span>
+            </Show>
           </span>
           <span class="count request-count">
             <span class="sr-only">Request count: </span>
@@ -251,13 +270,13 @@ function RequestRow(props: { id: string; stack: string[]; open?: boolean }) {
             <span class="sr-only">Status: </span>
             <Badge state={record().state} record={record()} />
             <Show when={record().state === "pending"}>
-              <a
-                class="review-link"
-                href="#connections"
-                title={`Review in Permissions · ${owner.timeLeft(record(), m.now())} left`}
-              >
-                Review ({owner.timeLeft(record(), m.now())})
-              </a>
+              <ReviewLink record={record()} class="review-link">
+                Review
+                <Show when={!owner.isProposal(record())}>
+                  {" "}
+                  ({owner.timeLeft(record(), m.now())})
+                </Show>
+              </ReviewLink>
             </Show>
           </span>
           <time dateTime={timestamp()} title={requestDate.format(time())}>
@@ -435,7 +454,7 @@ export function RequestDetail(props: {
                     </Show>
                     <Show when={state() === "pending"}>
                       {" "}
-                      <a href="#connections">Answer in Permissions</a>
+                      <ReviewLink record={r()}>Answer it</ReviewLink>
                     </Show>
                   </dd>
                 </div>
@@ -451,13 +470,8 @@ export function RequestDetail(props: {
               <Show when={full.loading}>
                 <p class="muted">Loading request details…</p>
               </Show>
-              <Show when={r().facts.details?.policy}>
-                {(policy) => (
-                  <>
-                    <h3>Source changes</h3>
-                    <TechnicalDiff text={policy().source_diff} />
-                  </>
-                )}
+              <Show when={owner.isProposal(r())}>
+                <ProposalChanges record={r()} />
               </Show>
               <Show
                 when={
