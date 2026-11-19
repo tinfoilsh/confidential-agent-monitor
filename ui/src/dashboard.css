@@ -1447,9 +1447,6 @@ details[open] > summary > .collection-chevron {
   .activity-row .resource-link {
     grid-area: name;
   }
-  .request-list .resource-link > .badge {
-    display: none;
-  }
   .request-origin {
     grid-area: origin;
     display: flex;

@@ -248,9 +248,6 @@ function RequestRow(props: { id: string; stack: string[]; open?: boolean }) {
               <span class="sr-only">Request: </span>
               {owner.requestTitle(record())}
             </strong>
-            <Show when={owner.isProposal(record())}>
-              <span class="badge">Proposal</span>
-            </Show>
           </span>
           <span class="count request-count">
             <span class="sr-only">Request count: </span>
