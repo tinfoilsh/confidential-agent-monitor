@@ -1407,7 +1407,7 @@ function MatchOnlySetting(props: { name: string }) {
             <small>
               Only match this service's hosts and substitute its credentials.
               Requests it does not recognize are treated like Custom API
-              requests instead of being held for approval.
+              requests.
             </small>
           </span>
           <input
@@ -1443,7 +1443,8 @@ function MatchOnlySetting(props: { name: string }) {
         <Show when={owner.matchOnly(m.view()!, props.name)}>
           <p class="connection-warning" role="note">
             Match-only mode is on. Requests this service does not recognize are
-            not held for approval.
+            treated like Custom API requests, so access and effect settings
+            still apply.
           </p>
         </Show>
       </div>
