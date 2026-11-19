@@ -39,7 +39,7 @@ func shippedDefaults(name string, p *catalog.Preset) connectionDefaults {
 		return privateDefaults
 	case "github":
 		return teamPrivateDefaults
-	case "slack_socket_mode":
+	case "datadog", "slack_socket_mode":
 		return teamDefaults
 	}
 	switch {

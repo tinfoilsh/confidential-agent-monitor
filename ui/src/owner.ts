@@ -50,6 +50,7 @@ export type Identity = {
 // A connection's one key that is not a setting is its connector's kind, holding the setup.
 const SETTINGS = [
   "preset",
+  "match_only",
   "effects",
   "policy_options",
   "contents",
@@ -58,6 +59,7 @@ const SETTINGS = [
 ];
 export type Connection = {
   preset: string;
+  match_only?: boolean;
   effects?: Record<string, Mode>;
   contents: Audience;
   sends: Audience;
@@ -772,8 +774,37 @@ export const kindOf = (c?: Connection) =>
 export const setupOf = (c?: Connection) =>
   c?.[kindOf(c)!] as { [key: string]: Json } | undefined;
 const UNKNOWN_PRESET = { title: "Service" };
-export const presetOf = (view: View, name: string): Omit<Preset, "defaults"> =>
-  view.presets[connections(view)[name]?.preset] ?? UNKNOWN_PRESET;
+// Mirrors config.MatchOnlyAction: a match-only service has one broad action in place of its preset's operations.
+export const MATCH_ONLY_ACTION = "request";
+const MATCH_ONLY_ACTIONS: Record<string, PresetAction> = {
+  [MATCH_ONLY_ACTION]: {
+    title: "Any request (match-only)",
+    effects: ["execute", "send"],
+  },
+};
+export const matchOnly = (view: View, name: string) =>
+  !!connections(view)[name]?.match_only;
+// One match-only copy per preset object keeps cached effect groups stable across reads.
+const matchOnlyPresets = new WeakMap<object, Omit<Preset, "defaults">>();
+export const presetOf = (
+  view: View,
+  name: string,
+): Omit<Preset, "defaults"> => {
+  const preset =
+    view.presets[connections(view)[name]?.preset] ?? UNKNOWN_PRESET;
+  if (!matchOnly(view, name)) return preset;
+  let copy = matchOnlyPresets.get(preset);
+  if (!copy)
+    matchOnlyPresets.set(
+      preset,
+      (copy = {
+        ...preset,
+        actions: MATCH_ONLY_ACTIONS,
+        operations: undefined,
+      }),
+    );
+  return copy;
+};
 const fill = (text: string, scope?: { [key: string]: any }) =>
   text.replace(/\{(\w+)\}/g, (m, k) => scope?.[k] ?? m);
 const filled = <T>(c: T, values?: { [key: string]: any }): T =>
@@ -932,28 +963,31 @@ export function ruleTitle(view: View, r: Rule) {
 export const actionsOf = (
   view: View,
   name: string,
-): { [action: string]: PresetAction } => ({
-  ...groupsOf(view, name),
-  ...presetOf(view, name).actions,
-  ...Object.fromEntries(
-    (
-      (
-        setupOf(connections(view)[name])?.pin as
-          | {
-              tools?: {
-                name: string;
-                title?: string;
-                annotations?: { readOnlyHint?: boolean };
-              }[];
-            }
-          | undefined
-      )?.tools ?? []
-    ).map((t) => [
-      `${t.annotations?.readOnlyHint ? "read" : "use"}.${t.name}`,
-      { title: t.title || t.name },
-    ]),
-  ),
-});
+): { [action: string]: PresetAction } =>
+  matchOnly(view, name)
+    ? { ...MATCH_ONLY_ACTIONS }
+    : {
+        ...groupsOf(view, name),
+        ...presetOf(view, name).actions,
+        ...Object.fromEntries(
+          (
+            (
+              setupOf(connections(view)[name])?.pin as
+                | {
+                    tools?: {
+                      name: string;
+                      title?: string;
+                      annotations?: { readOnlyHint?: boolean };
+                    }[];
+                  }
+                | undefined
+            )?.tools ?? []
+          ).map((t) => [
+            `${t.annotations?.readOnlyHint ? "read" : "use"}.${t.name}`,
+            { title: t.title || t.name },
+          ]),
+        ),
+      };
 // Record operations also contribute permission groups to their preset.
 const operationsOf = (view: View, name: string) =>
   Object.values(presetOf(view, name).operations ?? {});
@@ -1061,7 +1095,9 @@ export function actionTree(view: View, name: string): ActionNode[] {
 export const levelsOf = (c?: Connection) =>
   (Object.entries(LEVELS) as [Level, string][]).filter(
     ([l]) =>
-      !["custom_api", "tcp", BUNKERS].includes(c?.preset ?? "") || l !== "read",
+      (!["custom_api", "tcp", BUNKERS].includes(c?.preset ?? "") &&
+        !c?.match_only) ||
+      l !== "read",
   );
 
 export function agentAccess(view: View, name: string, only?: string) {
@@ -1938,6 +1974,12 @@ export const edits = {
     sourceChanges({
       identities: { [name]: { connections: { [connection]: access } } },
     }),
+  // Saved approvals for the service are dropped by the server, since its requests are described differently.
+  setMatchOnly: (name: string, on: boolean): Change[] => [
+    on
+      ? { path: ["connections", name, "match_only"], value: true }
+      : { path: ["connections", name, "match_only"], delete: true },
+  ],
   setEffect: (effect: string, mode?: Mode): Change[] => [
     {
       path: ["effects", effect],

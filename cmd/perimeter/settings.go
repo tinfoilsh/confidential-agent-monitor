@@ -177,7 +177,7 @@ func (s *state) prepareSettings(ctx context.Context, source string, rebuild func
 		}
 		if exists && c.Protocol == spec.Protocol && !rebuild(name) && len(credentials[name]) == 0 {
 			next.connections[name] = c
-			operations[next.Connections[name].Preset] = c.Operations
+			describeOperations(operations, next.Connections[name], c.Operations)
 			if status[name].State != core.Ready {
 				plan.updates = append(plan.updates, name)
 			}
@@ -187,7 +187,7 @@ func (s *state) prepareSettings(ctx context.Context, source string, rebuild func
 		if err != nil {
 			return nil, fmt.Errorf("service %s: %w", name, err)
 		}
-		operations[next.Connections[name].Preset] = p.Operations
+		describeOperations(operations, next.Connections[name], p.Operations)
 		handles := map[string]*credential.Value{}
 		for _, secret := range p.SecretNames {
 			handles[secret] = nil
@@ -432,4 +432,11 @@ func (s *state) enroll(ctx context.Context, identities map[string]config.Enrollm
 	return s.writeSettings(ctx, settingsWrite{derive: func(h held) ([]tomledit.Change, error) {
 		return h.settings.Load().Enroll(identities, h.doc.Enrolled, identityAttributes)
 	}})
+}
+
+// The catalog lists a preset's own operations; a match-only connection replaces them with its one request.
+func describeOperations(into map[string]map[string]config.OperationSummary, c config.Connection, ops map[string]config.OperationSummary) {
+	if !c.MatchOnly {
+		into[c.Preset] = ops
+	}
 }

@@ -33,6 +33,7 @@ import {
 import { useMonitor } from "./monitor";
 import { AgentConnectionAccess } from "./Agents";
 import { SavedRules, ToolReview } from "./Approvals";
+import * as slack from "./slack";
 
 const inCatalog =
   (search: string, group: { title: string }) =>
@@ -244,6 +245,11 @@ function MyConnections(props: { expanded?: string }) {
                         </span>
                       </Show>
                       <span class="resource-meta">
+                        <Show when={owner.matchOnly(m.view()!, name)}>
+                          <span class="service-status" data-state="match-only">
+                            Match-only
+                          </span>
+                        </Show>
                         <Show when={status()}>
                           {(status) => (
                             <span
@@ -335,8 +341,8 @@ function GlobalPermissions() {
           <span>
             <span class="setting-title">Allow AI inference without asking</span>
             <small>
-              Paid model calls (Tinfoil, OpenAI, …) go through without
-              approval. Other payments still ask.
+              Paid model calls (Tinfoil, OpenAI, …) go through without approval.
+              Other payments still ask.
             </small>
           </span>
           <input
@@ -545,9 +551,15 @@ function Catalog() {
   );
 }
 function ConnectionWarning(props: { warning?: string }) {
-  return <Show when={props.warning}>
-    {(warning) => <p class="connection-warning" role="note">{warning()}</p>}
-  </Show>;
+  return (
+    <Show when={props.warning}>
+      {(warning) => (
+        <p class="connection-warning" role="note">
+          {warning()}
+        </p>
+      )}
+    </Show>
+  );
 }
 
 function ApiFields(props: {
@@ -699,6 +711,9 @@ export function AddConnection(props: { preset: string }) {
         <ConnectionWarning warning={preset?.warning} />
         <Show when={fields.some((f) => f.oauth && !tokens[f.key] && local(f))}>
           <LocalSignIn />
+        </Show>
+        <Show when={slack.SLACK_APP_PRESETS.includes(props.preset)}>
+          <SlackAppSetup preset={props.preset} origin={values.origin} open />
         </Show>
         <label>
           Name
@@ -1150,6 +1165,8 @@ function Connection(props: { name: string }) {
   });
   const codex = () => owner.codexSetup(m.view()!, props.name);
   const url = () => owner.serviceURL(m.view()!, props.name);
+  const slackApp = () =>
+    slack.SLACK_APP_PRESETS.includes(connection()?.preset ?? "");
   const tinfoil = createMemo(() => owner.tinfoilSetup(m.view()!, props.name));
   const review = createMemo(() => {
     const review = owner.review(m.view()!, props.name);
@@ -1218,11 +1235,27 @@ function Connection(props: { name: string }) {
             </For>
           </div>
         </section>
+        <MatchOnlySetting name={props.name} />
         <ConnectionForm
           name={props.name}
           setup={
-            <Show when={tinfoil() || setups().length || codex() || url()}>
+            <Show
+              when={
+                tinfoil() || setups().length || codex() || url() || slackApp()
+              }
+            >
               <div class="connection-setup">
+                <Show when={slackApp()}>
+                  <SlackAppSetup
+                    preset={connection()!.preset}
+                    origin={
+                      (
+                        connection()!.policy_options as
+                          { origin?: string } | undefined
+                      )?.origin
+                    }
+                  />
+                </Show>
                 <Show when={url()}>
                   {(url) => (
                     <CopyField
@@ -1319,10 +1352,10 @@ function Connection(props: { name: string }) {
                             <p>
                               Save this in <code>~/.codex/config.toml</code>,
                               then run Codex in your Perimeter-connected bunker
-                              or with <code>perimeter run -- codex</code>. Choose
-                              a model available to your ChatGPT account. Grant
-                              your bunker access to this service, then approve
-                              its requests when asked.
+                              or with <code>perimeter run -- codex</code>.
+                              Choose a model available to your ChatGPT account.
+                              Grant your bunker access to this service, then
+                              approve its requests when asked.
                             </p>
                             <pre ref={code}>{text()}</pre>
                             <Copy text={text()} target={() => code} />
@@ -1347,6 +1380,148 @@ function Connection(props: { name: string }) {
         />
       </Show>
     </div>
+  );
+}
+// Creates a custom Slack app from a manifest, then says where to find its token.
+function SlackAppSetup(props: {
+  preset: string;
+  origin?: string;
+  open?: boolean;
+}) {
+  const nameId = createUniqueId();
+  const [name, setName] = createSignal(slack.SLACK_APP_NAME),
+    [access, setAccess] = createSignal<slack.SlackAccess>("write");
+  const manifest = () =>
+    JSON.stringify(
+      slack.slackManifest(props.preset, name(), access()),
+      null,
+      2,
+    );
+  let code!: HTMLPreElement;
+  return (
+    <details class="slack-app-setup" open={props.open}>
+      <summary>Create a Slack app for this service</summary>
+      <div class="form-fields">
+        <p class="muted field-help">
+          Slack opens with this app's name and permissions filled in. You choose
+          the workspace and approve the install.
+        </p>
+        <label for={nameId}>
+          App name
+          <input
+            id={nameId}
+            maxLength={35}
+            value={name()}
+            onInput={(e) => setName(e.currentTarget.value)}
+            autocomplete="off"
+          />
+        </label>
+        <Show when={props.preset === "slack"}>
+          <label>
+            App permissions
+            <select
+              value={access()}
+              onChange={(e) =>
+                setAccess(e.currentTarget.value as slack.SlackAccess)
+              }
+            >
+              <option value="write">
+                Read and post messages, reactions and files
+              </option>
+              <option value="read">Read channels, messages and files</option>
+            </select>
+          </label>
+        </Show>
+        <div class="form-actions">
+          <a
+            class="button primary"
+            href={slack.slackCreateURL(
+              props.preset,
+              name(),
+              access(),
+              props.origin,
+            )}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Create Slack app
+          </a>
+        </div>
+        <ol class="slack-app-steps">
+          <For each={slack.slackSteps(props.preset)}>
+            {(step) => <li>{step}</li>}
+          </For>
+        </ol>
+        <details class="agent-setup-usage">
+          <summary>Create it from the manifest yourself</summary>
+          <p>
+            In Slack's app page, choose Create New App, then From a manifest,
+            and paste this JSON.
+          </p>
+          <pre ref={code}>{manifest()}</pre>
+          <Copy text={manifest()} target={() => code} />
+        </details>
+      </div>
+    </details>
+  );
+}
+// Match-only mode keeps host matching and credential substitution but drops reviewed operations,
+// so the owner confirms turning it on.
+function MatchOnlySetting(props: { name: string }) {
+  const m = useMonitor();
+  return (
+    <section class="connection-section" aria-label="Request matching">
+      <SectionHeading title="Request matching" />
+      <div class="settings-group">
+        <label class="settings-card setting-toggle">
+          <span>
+            <span class="setting-title">Match-only mode</span>
+            <small>
+              Only route this service's hosts and substitute its credentials.
+              Requests are not checked against known API operations, and
+              unrecognized requests are not held for approval.
+            </small>
+          </span>
+          <input
+            type="checkbox"
+            role="switch"
+            aria-label={`Match-only mode for ${props.name}`}
+            checked={owner.matchOnly(m.view()!, props.name)}
+            disabled={m.busy()}
+            onChange={async (e) => {
+              const toggle = e.currentTarget,
+                on = toggle.checked;
+              if (
+                on &&
+                !(await askConfirm({
+                  title: `Use match-only mode for ${props.name}?`,
+                  description:
+                    "The Perimeter will still limit this service to its hosts and substitute its credentials, " +
+                    "but it will stop recognizing API operations and will no longer fail closed. " +
+                    "Every request, including deletes, admin changes and endpoints it does not know, " +
+                    'becomes one "Any request" permission: a bunker with Allow access can make any of them without asking. ' +
+                    "Per-action permissions and Read-only access stop applying, and saved approvals for this service are removed.",
+                  confirmLabel: "Use match-only mode",
+                  destructive: true,
+                }))
+              ) {
+                toggle.checked = false;
+                return;
+              }
+              if (!(await m.edit(owner.edits.setMatchOnly(props.name, on))))
+                toggle.checked = owner.matchOnly(m.view()!, props.name);
+            }}
+          />
+        </label>
+        <Show when={owner.matchOnly(m.view()!, props.name)}>
+          <p class="connection-warning" role="note">
+            Match-only mode is on. This service's requests are not checked
+            against its API operations, so unrecognized requests are not held
+            for approval.
+          </p>
+        </Show>
+      </div>
+    </section>
   );
 }
 function ServiceMenu(props: { name: string }) {

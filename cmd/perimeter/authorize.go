@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"maps"
 	"slices"
 	"strings"
@@ -91,7 +92,31 @@ func (st *settings) observe(connection string, event facts.Event) (requestFacts,
 	if o.Operation != nil {
 		f.Operation = presets[st.Connections[connection].Preset].Catalog.Resolve(o.Operation.ID, o.Operation.Action, o.Operation.Effects)
 	}
+	if st.Connections[connection].MatchOnly && err == nil {
+		matchOnly(&f, presets[st.Connections[connection].Preset].Title)
+	}
 	return f, err
+}
+
+// A match-only connection describes every valid request as its one broad request, sent to the connection's audience.
+// Sign-ins keep their own description, and invalid requests stay refused.
+func matchOnly(f *requestFacts, title string) {
+	if f.Operation != nil && slices.Contains(f.Operation.Effects, "session") {
+		return
+	}
+	// The one operation's name says nothing, so an HTTP request is titled by what it asks for.
+	var details struct {
+		HTTP *struct{ Method, Host, Path string } `json:"http"`
+	}
+	if raw, err := json.Marshal(f.Details); err == nil && json.Unmarshal(raw, &details) == nil && details.HTTP != nil && details.HTTP.Method != "" {
+		f.Title = fmt.Sprintf("%s: %s %s%s", cmp.Or(title, "Service"), details.HTTP.Method, details.HTTP.Host, details.HTTP.Path)
+	}
+	if f.Operation == nil || f.Operation.Action != config.MatchOnlyAction {
+		f.Operation = &catalog.Operation{ID: config.MatchOnlyAction, Action: config.MatchOnlyAction, Effects: slices.Clone(config.MatchOnlyEffects), Lineage: []string{config.MatchOnlyAction}}
+	}
+	if f.Context.Sends == "" {
+		f.Context.Sends = config.SendsConnection
+	}
 }
 
 func (st *settings) decide(ctx context.Context, p facts.Principal, connection string, gr *grant) (*record, error) {

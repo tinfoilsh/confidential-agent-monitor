@@ -1368,6 +1368,10 @@ details[open] > summary > .collection-chevron {
   background: color-mix(in srgb, var(--warn) 8%, var(--card));
   color: var(--warn);
 }
+.service-status[data-state="match-only"] {
+  background: color-mix(in srgb, var(--warn) 8%, var(--card));
+  color: var(--warn);
+}
 .service-status[data-state="error"] {
   background: color-mix(in srgb, var(--bad) 8%, var(--card));
   color: var(--bad);
@@ -2435,6 +2439,10 @@ button.access-toggle:hover:not(:disabled) {
 }
 .connection-settings > :only-child {
   grid-column: 1 / -1;
+}
+/* A tall setup column, such as an open Slack app guide, leaves the settings beside it at the top. */
+.connection-settings > * {
+  align-self: start;
 }
 .connection-settings label {
   color: var(--muted);
@@ -3588,4 +3596,25 @@ td {
 }
 .key-pill .icon-button {
   padding: 2px;
+}
+
+.slack-app-setup {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.slack-app-setup > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.slack-app-setup[open] > summary {
+  margin-bottom: 10px;
+}
+.slack-app-steps {
+  margin: 0;
+  padding-left: 20px;
+}
+.slack-app-setup pre {
+  max-height: 240px;
+  overflow: auto;
 }
