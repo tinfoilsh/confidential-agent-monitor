@@ -1,7 +1,41 @@
 {
-  "title": "Google Slides",
   "catalog": {
-    "group": "api",
+    "actions": {
+      "presentations": {
+        "title": "Presentations"
+      },
+      "presentations.pages": {
+        "title": "Pages"
+      },
+      "presentations.pages.read": {
+        "title": "Read"
+      },
+      "presentations.pages.thumbnail": {
+        "title": "Thumbnail"
+      },
+      "presentations.pages.thumbnail.read": {
+        "title": "Read"
+      },
+      "presentations.read": {
+        "title": "Read"
+      },
+      "presentations.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://slides.googleapis.com",
+            "path": "/v1",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
     "fields": [
       {
         "hint": "Leave empty to use Tinfoil's app",
@@ -16,21 +50,36 @@
         "paths": [],
         "secret": true
       },
-      {"key": "token", "label": "Google Slides account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "default_client": {"client_id": "355716529673-semtjk51liuh2uc8mo8cgd3v7v7lgi68.apps.googleusercontent.com", "client_secret": "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", "loopback": true}, "prompt": "consent", "scope": "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/presentations"}}
+      {
+        "credential": true,
+        "key": "token",
+        "label": "Google Slides account",
+        "oauth": {
+          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
+          "client_id": "{client_id}",
+          "client_secret": "{client_secret}",
+          "default_client": {
+            "client_id": "355716529673-semtjk51liuh2uc8mo8cgd3v7v7lgi68.apps.googleusercontent.com",
+            "client_secret": "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",
+            "loopback": true
+          },
+          "prompt": "consent",
+          "scope": "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/presentations",
+          "token_url": "https://oauth2.googleapis.com/token"
+        },
+        "secret": true
+      }
     ],
-    "connection": {"http": {"slots": [{"value": "token", "origin": "https://slides.googleapis.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}},
-    "actions": {
-      "read": {"title": "Read everything the account can see"},
-      "write.presentations": {"title": "Write: presentations"}
-    }
+    "group": "api"
   },
+  "title": "Google Slides",
   "http": {
     "operations": {
-      "presentations.batchUpdate": {"action":"write.presentations","effects":["write"],"method":"POST","origin":"https://slides.googleapis.com","path":"/v1/presentations/{presentationId}:batchUpdate","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"presentationId":{"from":"path","at":"presentationId"}}},
-      "presentations.create": {"action":"write.presentations","effects":["write"],"method":"POST","origin":"https://slides.googleapis.com","path":"/v1/presentations","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}},
-      "presentations.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://slides.googleapis.com","path":"/v1/presentations/{presentationsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","commentsViewMode"],"scope":{"presentationsId":{"from":"path","at":"presentationsId"}}},
-      "presentations.pages.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://slides.googleapis.com","path":"/v1/presentations/{presentationId}/pages/{pageObjectId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","commentsViewMode"],"scope":{"presentationId":{"from":"path","at":"presentationId"},"pageObjectId":{"from":"path","at":"pageObjectId"}}},
-      "presentations.pages.getThumbnail": {"action":"read","effects":["read"],"method":"GET","origin":"https://slides.googleapis.com","path":"/v1/presentations/{presentationId}/pages/{pageObjectId}/thumbnail","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","thumbnailProperties.mimeType","thumbnailProperties.thumbnailSize"],"scope":{"presentationId":{"from":"path","at":"presentationId"},"pageObjectId":{"from":"path","at":"pageObjectId"}}}
+      "presentations.batchUpdate": {"action":"presentations.write","body":"json","effects":["write","send"],"method":"POST","origin":"https://slides.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/presentations/{presentationId}:batchUpdate","scope":{"presentationId":{"at":"presentationId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "presentations.create": {"action":"presentations.write","body":"json","effects":["write"],"method":"POST","origin":"https://slides.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/presentations","scope":{}},
+      "presentations.get": {"action":"presentations.read","effects":["read"],"method":"GET","origin":"https://slides.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","commentsViewMode"],"path":"/v1/presentations/{presentationsId}","scope":{"presentationsId":{"at":"presentationsId","from":"path"}}},
+      "presentations.pages.get": {"action":"presentations.pages.read","effects":["read"],"method":"GET","origin":"https://slides.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","commentsViewMode"],"path":"/v1/presentations/{presentationId}/pages/{pageObjectId}","scope":{"pageObjectId":{"at":"pageObjectId","from":"path"},"presentationId":{"at":"presentationId","from":"path"}}},
+      "presentations.pages.getThumbnail": {"action":"presentations.pages.thumbnail.read","effects":["read"],"method":"GET","origin":"https://slides.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","thumbnailProperties.mimeType","thumbnailProperties.thumbnailSize"],"path":"/v1/presentations/{presentationId}/pages/{pageObjectId}/thumbnail","scope":{"pageObjectId":{"at":"pageObjectId","from":"path"},"presentationId":{"at":"presentationId","from":"path"}}}
     }
   }
 }

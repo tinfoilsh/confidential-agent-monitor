@@ -1,7 +1,281 @@
 {
-  "title": "Google Books",
   "catalog": {
-    "group": "api",
+    "actions": {
+      "books": {
+        "title": "Books"
+      },
+      "books.cloudloading": {
+        "title": "Cloudloading"
+      },
+      "books.cloudloading.book": {
+        "title": "Book"
+      },
+      "books.cloudloading.book.delete": {
+        "title": "Delete"
+      },
+      "books.cloudloading.book.write": {
+        "title": "Create and edit"
+      },
+      "books.dictionary": {
+        "title": "Dictionary"
+      },
+      "books.dictionary.offline_metadata": {
+        "title": "Offline metadata"
+      },
+      "books.dictionary.offline_metadata.read": {
+        "title": "Read"
+      },
+      "books.familysharing": {
+        "title": "Familysharing"
+      },
+      "books.familysharing.family_info": {
+        "title": "Family info"
+      },
+      "books.familysharing.family_info.read": {
+        "title": "Read"
+      },
+      "books.familysharing.share": {
+        "title": "Share"
+      },
+      "books.familysharing.unshare": {
+        "title": "Unshare"
+      },
+      "books.familysharing.unshare.share": {
+        "title": "Share"
+      },
+      "books.myconfig": {
+        "title": "Myconfig"
+      },
+      "books.myconfig.release_download_access": {
+        "title": "Release download access"
+      },
+      "books.myconfig.release_download_access.write": {
+        "title": "Create and edit"
+      },
+      "books.myconfig.request_access": {
+        "title": "Request access"
+      },
+      "books.myconfig.request_access.write": {
+        "title": "Create and edit"
+      },
+      "books.myconfig.user_settings": {
+        "title": "User settings"
+      },
+      "books.myconfig.user_settings.read": {
+        "title": "Read"
+      },
+      "books.myconfig.user_settings.write": {
+        "title": "Create and edit"
+      },
+      "books.myconfig.volume_licenses": {
+        "title": "Volume licenses"
+      },
+      "books.myconfig.volume_licenses.write": {
+        "title": "Create and edit"
+      },
+      "books.mylibrary": {
+        "title": "Mylibrary"
+      },
+      "books.mylibrary.annotations": {
+        "title": "Annotations"
+      },
+      "books.mylibrary.annotations.delete": {
+        "title": "Delete"
+      },
+      "books.mylibrary.annotations.read": {
+        "title": "Read"
+      },
+      "books.mylibrary.annotations.summary": {
+        "title": "Summary"
+      },
+      "books.mylibrary.annotations.summary.read": {
+        "title": "Read"
+      },
+      "books.mylibrary.annotations.write": {
+        "title": "Create and edit"
+      },
+      "books.mylibrary.bookshelves": {
+        "title": "Bookshelves"
+      },
+      "books.mylibrary.bookshelves.clear_volumes": {
+        "title": "Clear volumes"
+      },
+      "books.mylibrary.bookshelves.clear_volumes.delete": {
+        "title": "Delete"
+      },
+      "books.mylibrary.bookshelves.read": {
+        "title": "Read"
+      },
+      "books.mylibrary.bookshelves.volume": {
+        "title": "Volume"
+      },
+      "books.mylibrary.bookshelves.volume.delete": {
+        "title": "Delete"
+      },
+      "books.mylibrary.bookshelves.volume.write": {
+        "title": "Create and edit"
+      },
+      "books.mylibrary.bookshelves.volumes": {
+        "title": "Volumes"
+      },
+      "books.mylibrary.bookshelves.volumes.read": {
+        "title": "Read"
+      },
+      "books.mylibrary.readingpositions": {
+        "title": "Readingpositions"
+      },
+      "books.mylibrary.readingpositions.position": {
+        "title": "Position"
+      },
+      "books.mylibrary.readingpositions.position.write": {
+        "title": "Create and edit"
+      },
+      "books.mylibrary.readingpositions.read": {
+        "title": "Read"
+      },
+      "books.notification": {
+        "title": "Notification"
+      },
+      "books.notification.read": {
+        "title": "Read"
+      },
+      "books.onboarding": {
+        "title": "Onboarding"
+      },
+      "books.onboarding.categories": {
+        "title": "Categories"
+      },
+      "books.onboarding.categories.read": {
+        "title": "Read"
+      },
+      "books.onboarding.category_volumes": {
+        "title": "Category volumes"
+      },
+      "books.onboarding.category_volumes.read": {
+        "title": "Read"
+      },
+      "books.personalizedstream": {
+        "title": "Personalizedstream"
+      },
+      "books.personalizedstream.read": {
+        "title": "Read"
+      },
+      "books.promooffer": {
+        "title": "Promooffer"
+      },
+      "books.promooffer.dismiss": {
+        "title": "Dismiss"
+      },
+      "books.promooffer.dismiss.write": {
+        "title": "Create and edit"
+      },
+      "books.promooffer.read": {
+        "title": "Read"
+      },
+      "books.promooffer.write": {
+        "title": "Create and edit"
+      },
+      "books.series": {
+        "title": "Series"
+      },
+      "books.series.membership": {
+        "title": "Membership"
+      },
+      "books.series.membership.read": {
+        "title": "Read"
+      },
+      "books.series.read": {
+        "title": "Read"
+      },
+      "books.users": {
+        "title": "Users"
+      },
+      "books.users.bookshelves": {
+        "title": "Bookshelves"
+      },
+      "books.users.bookshelves.read": {
+        "title": "Read"
+      },
+      "books.users.bookshelves.volumes": {
+        "title": "Volumes"
+      },
+      "books.users.bookshelves.volumes.read": {
+        "title": "Read"
+      },
+      "books.volumes": {
+        "title": "Volumes"
+      },
+      "books.volumes.associated": {
+        "title": "Associated"
+      },
+      "books.volumes.associated.read": {
+        "title": "Read"
+      },
+      "books.volumes.layers": {
+        "title": "Layers"
+      },
+      "books.volumes.layers.annotations": {
+        "title": "Annotations"
+      },
+      "books.volumes.layers.annotations.read": {
+        "title": "Read"
+      },
+      "books.volumes.layers.data": {
+        "title": "Data"
+      },
+      "books.volumes.layers.data.read": {
+        "title": "Read"
+      },
+      "books.volumes.layers.read": {
+        "title": "Read"
+      },
+      "books.volumes.layersummary": {
+        "title": "Layersummary"
+      },
+      "books.volumes.layersummary.read": {
+        "title": "Read"
+      },
+      "books.volumes.mybooks": {
+        "title": "Mybooks"
+      },
+      "books.volumes.mybooks.read": {
+        "title": "Read"
+      },
+      "books.volumes.read": {
+        "title": "Read"
+      },
+      "books.volumes.recommended": {
+        "title": "Recommended"
+      },
+      "books.volumes.recommended.rate": {
+        "title": "Rate"
+      },
+      "books.volumes.recommended.rate.write": {
+        "title": "Create and edit"
+      },
+      "books.volumes.recommended.read": {
+        "title": "Read"
+      },
+      "books.volumes.useruploaded": {
+        "title": "Useruploaded"
+      },
+      "books.volumes.useruploaded.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://books.googleapis.com",
+            "path": "/books/v1",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
     "fields": [
       {
         "hint": "Leave empty to use Tinfoil's app",
@@ -16,83 +290,82 @@
         "paths": [],
         "secret": true
       },
-      {"key": "token", "label": "Google Books account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "default_client": {"client_id": "355716529673-semtjk51liuh2uc8mo8cgd3v7v7lgi68.apps.googleusercontent.com", "client_secret": "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", "loopback": true}, "prompt": "consent", "scope": "https://www.googleapis.com/auth/books"}}
+      {
+        "credential": true,
+        "key": "token",
+        "label": "Google Books account",
+        "oauth": {
+          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
+          "client_id": "{client_id}",
+          "client_secret": "{client_secret}",
+          "default_client": {
+            "client_id": "355716529673-semtjk51liuh2uc8mo8cgd3v7v7lgi68.apps.googleusercontent.com",
+            "client_secret": "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",
+            "loopback": true
+          },
+          "prompt": "consent",
+          "scope": "https://www.googleapis.com/auth/books",
+          "token_url": "https://oauth2.googleapis.com/token"
+        },
+        "secret": true
+      }
     ],
-    "connection": {"http": {"slots": [{"value": "token", "origin": "https://books.googleapis.com", "path": "/books/v1", "header": "Authorization", "prefix": "Bearer "}]}},
-    "actions": {
-      "delete.annotations": {"title": "Delete: annotations"},
-      "delete.clear_volumes": {"title": "Delete: clear volumes"},
-      "delete.delete_book": {"title": "Delete: delete book"},
-      "delete.remove_volume": {"title": "Delete: remove volume"},
-      "publish.release_download_access": {"title": "Publish: release download access"},
-      "read": {"title": "Read everything the account can see"},
-      "share.share": {"title": "Share: share"},
-      "share.unshare": {"title": "Share: unshare"},
-      "write.accept": {"title": "Write: accept"},
-      "write.add_book": {"title": "Write: add book"},
-      "write.add_volume": {"title": "Write: add volume"},
-      "write.annotations": {"title": "Write: annotations"},
-      "write.bookshelves": {"title": "Write: bookshelves"},
-      "write.dismiss": {"title": "Write: dismiss"},
-      "write.rate": {"title": "Write: rate"},
-      "write.request_access": {"title": "Write: request access"},
-      "write.set_position": {"title": "Write: set position"},
-      "write.summary": {"title": "Write: summary"},
-      "write.sync_volume_licenses": {"title": "Write: sync volume licenses"},
-      "write.update_book": {"title": "Write: update book"},
-      "write.update_user_settings": {"title": "Write: update user settings"}
-    }
+    "group": "api"
   },
+  "title": "Google Books",
   "http": {
     "operations": {
-      "bookshelves.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/users/{userId}/bookshelves/{shelf}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source"],"scope":{"userId":{"from":"path","at":"userId"},"shelf":{"from":"path","at":"shelf"}}},
-      "bookshelves.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/users/{userId}/bookshelves","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source"],"scope":{"userId":{"from":"path","at":"userId"}}},
-      "bookshelves.volumes.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/users/{userId}/bookshelves/{shelf}/volumes","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","showPreorders","source","startIndex"],"scope":{"userId":{"from":"path","at":"userId"},"shelf":{"from":"path","at":"shelf"}}},
-      "cloudloading.addBook": {"action":"write.add_book","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/cloudloading/addBook","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","drive_document_id","mime_type","name","upload_client_token"],"scope":{}},
-      "cloudloading.deleteBook": {"action":"delete.delete_book","effects":["delete"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/cloudloading/deleteBook","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","volumeId"],"scope":{}},
-      "cloudloading.updateBook": {"action":"write.update_book","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/cloudloading/updateBook","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}},
-      "dictionary.listOfflineMetadata": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/dictionary/listOfflineMetadata","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","cpksver"],"scope":{}},
-      "familysharing.getFamilyInfo": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/familysharing/getFamilyInfo","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source"],"scope":{}},
-      "familysharing.share": {"action":"share.share","effects":["share"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/familysharing/share","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","docId","source","volumeId"],"scope":{}},
-      "familysharing.unshare": {"action":"share.unshare","effects":["share"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/familysharing/unshare","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","docId","source","volumeId"],"scope":{}},
-      "layers.annotationData.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/volumes/{volumeId}/layers/{layerId}/data/{annotationDataId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","allowWebDefinitions","contentVersion","h","locale","scale","source","w"],"scope":{"volumeId":{"from":"path","at":"volumeId"},"layerId":{"from":"path","at":"layerId"},"annotationDataId":{"from":"path","at":"annotationDataId"}}},
-      "layers.annotationData.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/volumes/{volumeId}/layers/{layerId}/data","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","annotationDataId","contentVersion","h","locale","maxResults","pageToken","scale","source","updatedMax","updatedMin","w"],"scope":{"volumeId":{"from":"path","at":"volumeId"},"layerId":{"from":"path","at":"layerId"}}},
-      "layers.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/volumes/{volumeId}/layersummary/{summaryId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","contentVersion","source"],"scope":{"volumeId":{"from":"path","at":"volumeId"},"summaryId":{"from":"path","at":"summaryId"}}},
-      "layers.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/volumes/{volumeId}/layersummary","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","contentVersion","maxResults","pageToken","source"],"scope":{"volumeId":{"from":"path","at":"volumeId"}}},
-      "layers.volumeAnnotations.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/volumes/{volumeId}/layers/{layerId}/annotations/{annotationId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","locale","source"],"scope":{"volumeId":{"from":"path","at":"volumeId"},"layerId":{"from":"path","at":"layerId"},"annotationId":{"from":"path","at":"annotationId"}}},
-      "layers.volumeAnnotations.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/volumes/{volumeId}/layers/{layerId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","contentVersion","endOffset","endPosition","locale","maxResults","pageToken","showDeleted","source","startOffset","startPosition","updatedMax","updatedMin","volumeAnnotationsVersion"],"scope":{"volumeId":{"from":"path","at":"volumeId"},"layerId":{"from":"path","at":"layerId"}}},
-      "myconfig.getUserSettings": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/myconfig/getUserSettings","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","country"],"scope":{}},
-      "myconfig.releaseDownloadAccess": {"action":"publish.release_download_access","effects":["publish"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/myconfig/releaseDownloadAccess","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","cpksver","locale","source","volumeIds"],"scope":{}},
-      "myconfig.requestAccess": {"action":"write.request_access","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/myconfig/requestAccess","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","cpksver","licenseTypes","locale","nonce","source","volumeId"],"scope":{}},
-      "myconfig.syncVolumeLicenses": {"action":"write.sync_volume_licenses","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/myconfig/syncVolumeLicenses","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","cpksver","features","includeNonComicsSeries","locale","nonce","showPreorders","source","volumeIds"],"scope":{}},
-      "myconfig.updateUserSettings": {"action":"write.update_user_settings","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/myconfig/updateUserSettings","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}},
-      "mylibrary.annotations.delete": {"action":"delete.annotations","effects":["delete"],"method":"DELETE","origin":"https://books.googleapis.com","path":"/books/v1/mylibrary/annotations/{annotationId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source"],"scope":{"annotationId":{"from":"path","at":"annotationId"}}},
-      "mylibrary.annotations.insert": {"action":"write.annotations","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/mylibrary/annotations","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","annotationId","country","showOnlySummaryInResponse","source"],"body":"json","scope":{}},
-      "mylibrary.annotations.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/mylibrary/annotations","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","contentVersion","layerId","layerIds","maxResults","pageToken","showDeleted","source","updatedMax","updatedMin","volumeId"],"scope":{}},
-      "mylibrary.annotations.summary": {"action":"write.summary","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/mylibrary/annotations/summary","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","layerIds","source","volumeId"],"scope":{}},
-      "mylibrary.annotations.update": {"action":"write.annotations","effects":["write"],"method":"PUT","origin":"https://books.googleapis.com","path":"/books/v1/mylibrary/annotations/{annotationId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source"],"body":"json","scope":{"annotationId":{"from":"path","at":"annotationId"}}},
-      "mylibrary.bookshelves.addVolume": {"action":"write.add_volume","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/mylibrary/bookshelves/{shelf}/addVolume","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","reason","source","volumeId"],"scope":{"shelf":{"from":"path","at":"shelf"}}},
-      "mylibrary.bookshelves.clearVolumes": {"action":"delete.clear_volumes","effects":["delete"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/mylibrary/bookshelves/{shelf}/clearVolumes","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source"],"scope":{"shelf":{"from":"path","at":"shelf"}}},
-      "mylibrary.bookshelves.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/mylibrary/bookshelves/{shelf}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source"],"scope":{"shelf":{"from":"path","at":"shelf"}}},
-      "mylibrary.bookshelves.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/mylibrary/bookshelves","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source"],"scope":{}},
-      "mylibrary.bookshelves.moveVolume": {"action":"write.bookshelves","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/mylibrary/bookshelves/{shelf}/moveVolume","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source","volumeId","volumePosition"],"scope":{"shelf":{"from":"path","at":"shelf"}}},
-      "mylibrary.bookshelves.removeVolume": {"action":"delete.remove_volume","effects":["delete"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/mylibrary/bookshelves/{shelf}/removeVolume","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","reason","source","volumeId"],"scope":{"shelf":{"from":"path","at":"shelf"}}},
-      "mylibrary.bookshelves.volumes.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/mylibrary/bookshelves/{shelf}/volumes","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","country","maxResults","projection","q","showPreorders","source","startIndex"],"scope":{"shelf":{"from":"path","at":"shelf"}}},
-      "mylibrary.readingpositions.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/mylibrary/readingpositions/{volumeId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","contentVersion","source"],"scope":{"volumeId":{"from":"path","at":"volumeId"}}},
-      "mylibrary.readingpositions.setPosition": {"action":"write.set_position","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/mylibrary/readingpositions/{volumeId}/setPosition","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","action","contentVersion","deviceCookie","position","source","timestamp"],"scope":{"volumeId":{"from":"path","at":"volumeId"}}},
-      "notification.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/notification/get","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","locale","notification_id","source"],"scope":{}},
-      "onboarding.listCategories": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/onboarding/listCategories","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","locale"],"scope":{}},
-      "onboarding.listCategoryVolumes": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/onboarding/listCategoryVolumes","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","categoryId","locale","maxAllowedMaturityRating","pageSize","pageToken"],"scope":{}},
-      "personalizedstream.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/personalizedstream/get","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","locale","maxAllowedMaturityRating","source"],"scope":{}},
-      "promooffer.accept": {"action":"write.accept","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/promooffer/accept","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","androidId","device","manufacturer","model","offerId","product","serial","volumeId"],"scope":{}},
-      "promooffer.dismiss": {"action":"write.dismiss","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/promooffer/dismiss","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","androidId","device","manufacturer","model","offerId","product","serial"],"scope":{}},
-      "promooffer.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/promooffer/get","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","androidId","device","manufacturer","model","product","serial"],"scope":{}},
-      "series.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/series/get","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","series_id"],"scope":{}},
-      "series.membership.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/series/membership/get","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","page_size","page_token","series_id"],"scope":{}},
-      "volumes.associated.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/volumes/{volumeId}/associated","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","association","locale","maxAllowedMaturityRating","source"],"scope":{"volumeId":{"from":"path","at":"volumeId"}}},
-      "volumes.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/volumes/{volumeId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","country","includeNonComicsSeries","partner","projection","source","user_library_consistent_read","acquireMethod","locale","maxResults","processingState","startIndex","maxAllowedMaturityRating","volumeId"],"scope":{"volumeId":{"from":"path","at":"volumeId"}}},
-      "volumes.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","path":"/books/v1/volumes","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","download","filter","langRestrict","libraryRestrict","maxAllowedMaturityRating","maxResults","orderBy","partner","printType","projection","q","showPreorders","source","startIndex"],"scope":{}},
-      "volumes.recommended.rate": {"action":"write.rate","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","path":"/books/v1/volumes/recommended/rate","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","locale","rating","source","volumeId"],"scope":{}}
+      "bookshelves.get": {"action":"books.users.bookshelves.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source"],"path":"/books/v1/users/{userId}/bookshelves/{shelf}","scope":{"shelf":{"at":"shelf","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "bookshelves.list": {"action":"books.users.bookshelves.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source"],"path":"/books/v1/users/{userId}/bookshelves","scope":{"userId":{"at":"userId","from":"path"}}},
+      "bookshelves.volumes.list": {"action":"books.users.bookshelves.volumes.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","showPreorders","source","startIndex"],"path":"/books/v1/users/{userId}/bookshelves/{shelf}/volumes","scope":{"shelf":{"at":"shelf","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "cloudloading.addBook": {"action":"books.cloudloading.book.write","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","drive_document_id","mime_type","name","upload_client_token"],"path":"/books/v1/cloudloading/addBook","scope":{}},
+      "cloudloading.deleteBook": {"action":"books.cloudloading.book.delete","effects":["delete"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","volumeId"],"path":"/books/v1/cloudloading/deleteBook","scope":{}},
+      "cloudloading.updateBook": {"action":"books.cloudloading.book.write","body":"json","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/books/v1/cloudloading/updateBook","scope":{}},
+      "dictionary.listOfflineMetadata": {"action":"books.dictionary.offline_metadata.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","cpksver"],"path":"/books/v1/dictionary/listOfflineMetadata","scope":{}},
+      "familysharing.getFamilyInfo": {"action":"books.familysharing.family_info.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source"],"path":"/books/v1/familysharing/getFamilyInfo","scope":{}},
+      "familysharing.share": {"action":"books.familysharing.share","effects":["share"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","docId","source","volumeId"],"path":"/books/v1/familysharing/share","scope":{}},
+      "familysharing.unshare": {"action":"books.familysharing.unshare.share","effects":["share"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","docId","source","volumeId"],"path":"/books/v1/familysharing/unshare","scope":{}},
+      "layers.annotationData.get": {"action":"books.volumes.layers.data.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","allowWebDefinitions","contentVersion","h","locale","scale","source","w"],"path":"/books/v1/volumes/{volumeId}/layers/{layerId}/data/{annotationDataId}","scope":{"annotationDataId":{"at":"annotationDataId","from":"path"},"layerId":{"at":"layerId","from":"path"},"volumeId":{"at":"volumeId","from":"path"}}},
+      "layers.annotationData.list": {"action":"books.volumes.layers.data.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","annotationDataId","contentVersion","h","locale","maxResults","pageToken","scale","source","updatedMax","updatedMin","w"],"path":"/books/v1/volumes/{volumeId}/layers/{layerId}/data","scope":{"layerId":{"at":"layerId","from":"path"},"volumeId":{"at":"volumeId","from":"path"}}},
+      "layers.get": {"action":"books.volumes.layersummary.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","contentVersion","source"],"path":"/books/v1/volumes/{volumeId}/layersummary/{summaryId}","scope":{"summaryId":{"at":"summaryId","from":"path"},"volumeId":{"at":"volumeId","from":"path"}}},
+      "layers.list": {"action":"books.volumes.layersummary.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","contentVersion","maxResults","pageToken","source"],"path":"/books/v1/volumes/{volumeId}/layersummary","scope":{"volumeId":{"at":"volumeId","from":"path"}}},
+      "layers.volumeAnnotations.get": {"action":"books.volumes.layers.annotations.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","locale","source"],"path":"/books/v1/volumes/{volumeId}/layers/{layerId}/annotations/{annotationId}","scope":{"annotationId":{"at":"annotationId","from":"path"},"layerId":{"at":"layerId","from":"path"},"volumeId":{"at":"volumeId","from":"path"}}},
+      "layers.volumeAnnotations.list": {"action":"books.volumes.layers.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","contentVersion","endOffset","endPosition","locale","maxResults","pageToken","showDeleted","source","startOffset","startPosition","updatedMax","updatedMin","volumeAnnotationsVersion"],"path":"/books/v1/volumes/{volumeId}/layers/{layerId}","scope":{"layerId":{"at":"layerId","from":"path"},"volumeId":{"at":"volumeId","from":"path"}}},
+      "myconfig.getUserSettings": {"action":"books.myconfig.user_settings.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","country"],"path":"/books/v1/myconfig/getUserSettings","scope":{}},
+      "myconfig.releaseDownloadAccess": {"action":"books.myconfig.release_download_access.write","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","cpksver","locale","source","volumeIds"],"path":"/books/v1/myconfig/releaseDownloadAccess","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "myconfig.requestAccess": {"action":"books.myconfig.request_access.write","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","cpksver","licenseTypes","locale","nonce","source","volumeId"],"path":"/books/v1/myconfig/requestAccess","scope":{}},
+      "myconfig.syncVolumeLicenses": {"action":"books.myconfig.volume_licenses.write","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","cpksver","features","includeNonComicsSeries","locale","nonce","showPreorders","source","volumeIds"],"path":"/books/v1/myconfig/syncVolumeLicenses","scope":{}},
+      "myconfig.updateUserSettings": {"action":"books.myconfig.user_settings.write","body":"json","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/books/v1/myconfig/updateUserSettings","scope":{}},
+      "mylibrary.annotations.delete": {"action":"books.mylibrary.annotations.delete","effects":["delete"],"method":"DELETE","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source"],"path":"/books/v1/mylibrary/annotations/{annotationId}","scope":{"annotationId":{"at":"annotationId","from":"path"}}},
+      "mylibrary.annotations.insert": {"action":"books.mylibrary.annotations.write","body":"json","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","annotationId","country","showOnlySummaryInResponse","source"],"path":"/books/v1/mylibrary/annotations","scope":{}},
+      "mylibrary.annotations.list": {"action":"books.mylibrary.annotations.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","contentVersion","layerId","layerIds","maxResults","pageToken","showDeleted","source","updatedMax","updatedMin","volumeId"],"path":"/books/v1/mylibrary/annotations","scope":{}},
+      "mylibrary.annotations.summary": {"action":"books.mylibrary.annotations.summary.read","effects":["read"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","layerIds","source","volumeId"],"path":"/books/v1/mylibrary/annotations/summary","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "mylibrary.annotations.update": {"action":"books.mylibrary.annotations.write","body":"json","effects":["write"],"method":"PUT","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source"],"path":"/books/v1/mylibrary/annotations/{annotationId}","scope":{"annotationId":{"at":"annotationId","from":"path"}}},
+      "mylibrary.bookshelves.addVolume": {"action":"books.mylibrary.bookshelves.volume.write","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","reason","source","volumeId"],"path":"/books/v1/mylibrary/bookshelves/{shelf}/addVolume","scope":{"shelf":{"at":"shelf","from":"path"}}},
+      "mylibrary.bookshelves.clearVolumes": {"action":"books.mylibrary.bookshelves.clear_volumes.delete","effects":["delete"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source"],"path":"/books/v1/mylibrary/bookshelves/{shelf}/clearVolumes","scope":{"shelf":{"at":"shelf","from":"path"}}},
+      "mylibrary.bookshelves.get": {"action":"books.mylibrary.bookshelves.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source"],"path":"/books/v1/mylibrary/bookshelves/{shelf}","scope":{"shelf":{"at":"shelf","from":"path"}}},
+      "mylibrary.bookshelves.list": {"action":"books.mylibrary.bookshelves.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source"],"path":"/books/v1/mylibrary/bookshelves","scope":{}},
+      "mylibrary.bookshelves.moveVolume": {"action":"books.mylibrary.bookshelves.volume.write","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","source","volumeId","volumePosition"],"path":"/books/v1/mylibrary/bookshelves/{shelf}/moveVolume","scope":{"shelf":{"at":"shelf","from":"path"}}},
+      "mylibrary.bookshelves.removeVolume": {"action":"books.mylibrary.bookshelves.volume.delete","effects":["delete"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","reason","source","volumeId"],"path":"/books/v1/mylibrary/bookshelves/{shelf}/removeVolume","scope":{"shelf":{"at":"shelf","from":"path"}}},
+      "mylibrary.bookshelves.volumes.list": {"action":"books.mylibrary.bookshelves.volumes.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","country","maxResults","projection","q","showPreorders","source","startIndex"],"path":"/books/v1/mylibrary/bookshelves/{shelf}/volumes","scope":{"shelf":{"at":"shelf","from":"path"}}},
+      "mylibrary.readingpositions.get": {"action":"books.mylibrary.readingpositions.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","contentVersion","source"],"path":"/books/v1/mylibrary/readingpositions/{volumeId}","scope":{"volumeId":{"at":"volumeId","from":"path"}}},
+      "mylibrary.readingpositions.setPosition": {"action":"books.mylibrary.readingpositions.position.write","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","action","contentVersion","deviceCookie","position","source","timestamp"],"path":"/books/v1/mylibrary/readingpositions/{volumeId}/setPosition","scope":{"volumeId":{"at":"volumeId","from":"path"}}},
+      "notification.get": {"action":"books.notification.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","locale","notification_id","source"],"path":"/books/v1/notification/get","scope":{}},
+      "onboarding.listCategories": {"action":"books.onboarding.categories.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","locale"],"path":"/books/v1/onboarding/listCategories","scope":{}},
+      "onboarding.listCategoryVolumes": {"action":"books.onboarding.category_volumes.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","categoryId","locale","maxAllowedMaturityRating","pageSize","pageToken"],"path":"/books/v1/onboarding/listCategoryVolumes","scope":{}},
+      "personalizedstream.get": {"action":"books.personalizedstream.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","locale","maxAllowedMaturityRating","source"],"path":"/books/v1/personalizedstream/get","scope":{}},
+      "promooffer.accept": {"action":"books.promooffer.write","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","androidId","device","manufacturer","model","offerId","product","serial","volumeId"],"path":"/books/v1/promooffer/accept","scope":{}},
+      "promooffer.dismiss": {"action":"books.promooffer.dismiss.write","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","androidId","device","manufacturer","model","offerId","product","serial"],"path":"/books/v1/promooffer/dismiss","scope":{}},
+      "promooffer.get": {"action":"books.promooffer.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","androidId","device","manufacturer","model","product","serial"],"path":"/books/v1/promooffer/get","scope":{}},
+      "series.get": {"action":"books.series.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","series_id"],"path":"/books/v1/series/get","scope":{}},
+      "series.membership.get": {"action":"books.series.membership.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","page_size","page_token","series_id"],"path":"/books/v1/series/membership/get","scope":{}},
+      "volumes.associated.list": {"action":"books.volumes.associated.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","association","locale","maxAllowedMaturityRating","source"],"path":"/books/v1/volumes/{volumeId}/associated","scope":{"volumeId":{"at":"volumeId","from":"path"}}},
+      "volumes.get": {"action":"books.volumes.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","country","includeNonComicsSeries","partner","projection","source","user_library_consistent_read"],"path":"/books/v1/volumes/{volumeId}","path_patterns":{"volumeId":"[^mru].*|m(?:|[^y].*|y(?:|[^b].*|b(?:|[^o].*|o(?:|[^o].*|o(?:|[^k].*|k(?:|[^s].*|s.+))))))|r(?:|[^e].*|e(?:|[^c].*|c(?:|[^o].*|o(?:|[^m].*|m(?:|[^m].*|m(?:|[^e].*|e(?:|[^n].*|n(?:|[^d].*|d(?:|[^e].*|e(?:|[^d].*|d.+))))))))))|u(?:|[^s].*|s(?:|[^e].*|e(?:|[^r].*|r(?:|[^u].*|u(?:|[^p].*|p(?:|[^l].*|l(?:|[^o].*|o(?:|[^a].*|a(?:|[^d].*|d(?:|[^e].*|e(?:|[^d].*|d.+)))))))))))"},"scope":{"volumeId":{"at":"volumeId","from":"path"}}},
+      "volumes.list": {"action":"books.volumes.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","download","filter","langRestrict","libraryRestrict","maxAllowedMaturityRating","maxResults","orderBy","partner","printType","projection","q","showPreorders","source","startIndex"],"path":"/books/v1/volumes","scope":{}},
+      "volumes.mybooks.list": {"action":"books.volumes.mybooks.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","acquireMethod","country","locale","maxResults","processingState","source","startIndex"],"path":"/books/v1/volumes/mybooks","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "volumes.recommended.list": {"action":"books.volumes.recommended.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","locale","maxAllowedMaturityRating","source"],"path":"/books/v1/volumes/recommended","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "volumes.recommended.rate": {"action":"books.volumes.recommended.rate.write","effects":["write"],"method":"POST","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","locale","rating","source","volumeId"],"path":"/books/v1/volumes/recommended/rate","scope":{}},
+      "volumes.useruploaded.list": {"action":"books.volumes.useruploaded.read","effects":["read"],"method":"GET","origin":"https://books.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","locale","maxResults","processingState","source","startIndex","volumeId"],"path":"/books/v1/volumes/useruploaded","scope":{"query":{"at":"","from":"query","type":"object"}}}
     }
   }
 }

@@ -1,421 +1,1624 @@
 {
-  "title": "Grafana",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your Grafana origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://example.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "admin.groups": {"title": "Admin: groups"},
-      "admin.members": {"title": "Admin: members"},
-      "admin.org": {"title": "Admin: org"},
-      "admin.orgs": {"title": "Admin: orgs"},
-      "admin.policies": {"title": "Admin: policies"},
-      "admin.roles": {"title": "Admin: roles"},
-      "admin.settings": {"title": "Admin: settings"},
-      "admin.teams": {"title": "Admin: teams"},
-      "admin.token": {"title": "Admin: token"},
-      "admin.tokens": {"title": "Admin: tokens"},
-      "admin.user": {"title": "Admin: user"},
-      "admin.users": {"title": "Admin: users"},
-      "delete.alert_rules": {"title": "Delete: alert rules"},
-      "delete.annotations": {"title": "Delete: annotations"},
-      "delete.contact_points": {"title": "Delete: contact points"},
-      "delete.correlations": {"title": "Delete: correlations"},
-      "delete.folders": {"title": "Delete: folders"},
-      "delete.groups": {"title": "Delete: groups"},
-      "delete.invites": {"title": "Delete: invites"},
-      "delete.library_elements": {"title": "Delete: library elements"},
-      "delete.mass_delete": {"title": "Delete: mass delete"},
-      "delete.members": {"title": "Delete: members"},
-      "delete.migration": {"title": "Delete: migration"},
-      "delete.mute_timings": {"title": "Delete: mute timings"},
-      "delete.name": {"title": "Delete: name"},
-      "delete.orgs": {"title": "Delete: orgs"},
-      "delete.playlists": {"title": "Delete: playlists"},
-      "delete.policies": {"title": "Delete: policies"},
-      "delete.public_dashboards": {"title": "Delete: public dashboards"},
-      "delete.query_history": {"title": "Delete: query history"},
-      "delete.recording_rules": {"title": "Delete: recording rules"},
-      "delete.reports": {"title": "Delete: reports"},
-      "delete.roles": {"title": "Delete: roles"},
-      "delete.rule_groups": {"title": "Delete: rule groups"},
-      "delete.rules": {"title": "Delete: rules"},
-      "delete.serviceaccounts": {"title": "Delete: serviceaccounts"},
-      "delete.snapshots": {"title": "Delete: snapshots"},
-      "delete.sso_settings": {"title": "Delete: sso settings"},
-      "delete.star": {"title": "Delete: star"},
-      "delete.teams": {"title": "Delete: teams"},
-      "delete.templates": {"title": "Delete: templates"},
-      "delete.token": {"title": "Delete: token"},
-      "delete.tokens": {"title": "Delete: tokens"},
-      "delete.uid": {"title": "Delete: uid"},
-      "delete.users": {"title": "Delete: users"},
-      "read": {"title": "Read everything the account can see"},
-      "send.email": {"title": "Send: email"},
-      "send.test_email": {"title": "Send: test email"},
-      "share.invites": {"title": "Share: invites"},
-      "share.permissions": {"title": "Share: permissions"},
-      "share.revoke_auth_token": {"title": "Share: revoke auth token"},
-      "share.users": {"title": "Share: users"},
-      "write.access_control": {"title": "Write: access control"},
-      "write.acs": {"title": "Write: acs"},
-      "write.address": {"title": "Write: address"},
-      "write.alert_rules": {"title": "Write: alert rules"},
-      "write.annotations": {"title": "Write: annotations"},
-      "write.built_in_roles": {"title": "Write: built in roles"},
-      "write.cache": {"title": "Write: cache"},
-      "write.clean": {"title": "Write: clean"},
-      "write.contact_points": {"title": "Write: contact points"},
-      "write.correlations": {"title": "Write: correlations"},
-      "write.datasources": {"title": "Write: datasources"},
-      "write.db": {"title": "Write: db"},
-      "write.folders": {"title": "Write: folders"},
-      "write.graphite": {"title": "Write: graphite"},
-      "write.import": {"title": "Write: import"},
-      "write.interpolate": {"title": "Write: interpolate"},
-      "write.library_elements": {"title": "Write: library elements"},
-      "write.logout": {"title": "Write: logout"},
-      "write.migration": {"title": "Write: migration"},
-      "write.mute_timings": {"title": "Write: mute timings"},
-      "write.password": {"title": "Write: password"},
-      "write.playlists": {"title": "Write: playlists"},
-      "write.preferences": {"title": "Write: preferences"},
-      "write.public_dashboards": {"title": "Write: public dashboards"},
-      "write.query_history": {"title": "Write: query history"},
-      "write.quotas": {"title": "Write: quotas"},
-      "write.recording_rules": {"title": "Write: recording rules"},
-      "write.reload": {"title": "Write: reload"},
-      "write.renew": {"title": "Write: renew"},
-      "write.reports": {"title": "Write: reports"},
-      "write.rule_groups": {"title": "Write: rule groups"},
-      "write.rules": {"title": "Write: rules"},
-      "write.serviceaccounts": {"title": "Write: serviceaccounts"},
-      "write.slo": {"title": "Write: slo"},
-      "write.snapshot": {"title": "Write: snapshot"},
-      "write.snapshots": {"title": "Write: snapshots"},
-      "write.sso_settings": {"title": "Write: sso settings"},
-      "write.star": {"title": "Write: star"},
-      "write.sync": {"title": "Write: sync"},
-      "write.templates": {"title": "Write: templates"},
-      "write.uid": {"title": "Write: uid"},
-      "write.using": {"title": "Write: using"},
-      "write.writer": {"title": "Write: writer"}
-    }
+      "access_control": {
+        "title": "Access control"
+      },
+      "access_control.built_in_roles": {
+        "title": "Built in roles"
+      },
+      "access_control.built_in_roles.write": {
+        "title": "Create and edit"
+      },
+      "access_control.description": {
+        "title": "Description"
+      },
+      "access_control.description.read": {
+        "title": "Read"
+      },
+      "access_control.read": {
+        "title": "Read"
+      },
+      "access_control.roles": {
+        "title": "Roles"
+      },
+      "access_control.roles.admin": {
+        "title": "Manage"
+      },
+      "access_control.roles.assignments": {
+        "title": "Assignments"
+      },
+      "access_control.roles.assignments.admin": {
+        "title": "Manage"
+      },
+      "access_control.roles.assignments.read": {
+        "title": "Read"
+      },
+      "access_control.roles.delete": {
+        "title": "Delete"
+      },
+      "access_control.roles.read": {
+        "title": "Read"
+      },
+      "access_control.status": {
+        "title": "Status"
+      },
+      "access_control.status.read": {
+        "title": "Read"
+      },
+      "access_control.teams": {
+        "title": "Teams"
+      },
+      "access_control.teams.admin": {
+        "title": "Manage"
+      },
+      "access_control.teams.roles": {
+        "title": "Roles"
+      },
+      "access_control.teams.roles.admin": {
+        "title": "Manage"
+      },
+      "access_control.teams.roles.delete": {
+        "title": "Delete"
+      },
+      "access_control.teams.roles.read": {
+        "title": "Read"
+      },
+      "access_control.users": {
+        "title": "Users"
+      },
+      "access_control.users.admin": {
+        "title": "Manage"
+      },
+      "access_control.users.roles": {
+        "title": "Roles"
+      },
+      "access_control.users.roles.admin": {
+        "title": "Manage"
+      },
+      "access_control.users.roles.delete": {
+        "title": "Delete"
+      },
+      "access_control.users.roles.read": {
+        "title": "Read"
+      },
+      "access_control.write": {
+        "title": "Create and edit"
+      },
+      "admin": {
+        "title": "Manage"
+      },
+      "admin.ldap": {
+        "title": "Ldap"
+      },
+      "admin.ldap.read": {
+        "title": "Read"
+      },
+      "admin.ldap.reload": {
+        "title": "Reload"
+      },
+      "admin.ldap.reload.write": {
+        "title": "Create and edit"
+      },
+      "admin.ldap.status": {
+        "title": "Status"
+      },
+      "admin.ldap.status.read": {
+        "title": "Read"
+      },
+      "admin.ldap.sync": {
+        "title": "Sync"
+      },
+      "admin.ldap.sync.write": {
+        "title": "Create and edit"
+      },
+      "admin.ldap_sync_status": {
+        "title": "Ldap sync status"
+      },
+      "admin.ldap_sync_status.read": {
+        "title": "Read"
+      },
+      "admin.provisioning": {
+        "title": "Provisioning"
+      },
+      "admin.provisioning.access_control": {
+        "title": "Access control"
+      },
+      "admin.provisioning.access_control.reload": {
+        "title": "Reload"
+      },
+      "admin.provisioning.access_control.reload.write": {
+        "title": "Create and edit"
+      },
+      "admin.provisioning.dashboards": {
+        "title": "Dashboards"
+      },
+      "admin.provisioning.dashboards.reload": {
+        "title": "Reload"
+      },
+      "admin.provisioning.dashboards.reload.write": {
+        "title": "Create and edit"
+      },
+      "admin.provisioning.datasources": {
+        "title": "Datasources"
+      },
+      "admin.provisioning.datasources.reload": {
+        "title": "Reload"
+      },
+      "admin.provisioning.datasources.reload.write": {
+        "title": "Create and edit"
+      },
+      "admin.provisioning.plugins": {
+        "title": "Plugins"
+      },
+      "admin.provisioning.plugins.reload": {
+        "title": "Reload"
+      },
+      "admin.provisioning.plugins.reload.write": {
+        "title": "Create and edit"
+      },
+      "admin.settings": {
+        "title": "Settings"
+      },
+      "admin.settings.read": {
+        "title": "Read"
+      },
+      "admin.stats": {
+        "title": "Stats"
+      },
+      "admin.stats.read": {
+        "title": "Read"
+      },
+      "admin.users": {
+        "title": "Users"
+      },
+      "admin.users.admin": {
+        "title": "Manage"
+      },
+      "admin.users.auth_token": {
+        "title": "Auth token"
+      },
+      "admin.users.auth_token.admin": {
+        "title": "Manage"
+      },
+      "admin.users.auth_tokens": {
+        "title": "Auth tokens"
+      },
+      "admin.users.auth_tokens.read": {
+        "title": "Read"
+      },
+      "admin.users.delete": {
+        "title": "Delete"
+      },
+      "admin.users.logout": {
+        "title": "Logout"
+      },
+      "admin.users.logout.write": {
+        "title": "Create and edit"
+      },
+      "admin.users.password": {
+        "title": "Password"
+      },
+      "admin.users.password.admin": {
+        "title": "Manage"
+      },
+      "admin.users.permissions": {
+        "title": "Permissions"
+      },
+      "admin.users.permissions.admin": {
+        "title": "Manage"
+      },
+      "admin.users.quotas": {
+        "title": "Quotas"
+      },
+      "admin.users.quotas.read": {
+        "title": "Read"
+      },
+      "admin.users.quotas.write": {
+        "title": "Create and edit"
+      },
+      "annotations": {
+        "title": "Annotations"
+      },
+      "annotations.delete": {
+        "title": "Delete"
+      },
+      "annotations.graphite": {
+        "title": "Graphite"
+      },
+      "annotations.graphite.write": {
+        "title": "Create and edit"
+      },
+      "annotations.mass_delete": {
+        "title": "Mass delete"
+      },
+      "annotations.mass_delete.delete": {
+        "title": "Delete"
+      },
+      "annotations.read": {
+        "title": "Read"
+      },
+      "annotations.tags": {
+        "title": "Tags"
+      },
+      "annotations.tags.read": {
+        "title": "Read"
+      },
+      "annotations.write": {
+        "title": "Create and edit"
+      },
+      "anonymous": {
+        "title": "Anonymous"
+      },
+      "anonymous.devices": {
+        "title": "Devices"
+      },
+      "anonymous.devices.read": {
+        "title": "Read"
+      },
+      "anonymous.read": {
+        "title": "Read"
+      },
+      "cloudmigration": {
+        "title": "Cloudmigration"
+      },
+      "cloudmigration.migration": {
+        "title": "Migration"
+      },
+      "cloudmigration.migration.delete": {
+        "title": "Delete"
+      },
+      "cloudmigration.migration.read": {
+        "title": "Read"
+      },
+      "cloudmigration.migration.snapshot": {
+        "title": "Snapshot"
+      },
+      "cloudmigration.migration.snapshot.read": {
+        "title": "Read"
+      },
+      "cloudmigration.migration.snapshot.write": {
+        "title": "Create and edit"
+      },
+      "cloudmigration.migration.snapshots": {
+        "title": "Snapshots"
+      },
+      "cloudmigration.migration.snapshots.read": {
+        "title": "Read"
+      },
+      "cloudmigration.migration.write": {
+        "title": "Create and edit"
+      },
+      "cloudmigration.resources": {
+        "title": "Resources"
+      },
+      "cloudmigration.resources.dependencies": {
+        "title": "Dependencies"
+      },
+      "cloudmigration.resources.dependencies.read": {
+        "title": "Read"
+      },
+      "cloudmigration.token": {
+        "title": "Token"
+      },
+      "cloudmigration.token.admin": {
+        "title": "Manage"
+      },
+      "cloudmigration.token.delete": {
+        "title": "Delete"
+      },
+      "cloudmigration.token.read": {
+        "title": "Read"
+      },
+      "convert": {
+        "title": "Convert"
+      },
+      "convert.prom": {
+        "title": "Prom"
+      },
+      "convert.prom.rules": {
+        "title": "Rules"
+      },
+      "convert.prom.rules.delete": {
+        "title": "Delete"
+      },
+      "convert.prom.rules.read": {
+        "title": "Read"
+      },
+      "convert.prom.rules.write": {
+        "title": "Create and edit"
+      },
+      "convert.prometheus": {
+        "title": "Prometheus"
+      },
+      "convert.prometheus.config": {
+        "title": "Config"
+      },
+      "convert.prometheus.config.rules": {
+        "title": "Rules"
+      },
+      "convert.prometheus.config.rules.delete": {
+        "title": "Delete"
+      },
+      "convert.prometheus.config.rules.read": {
+        "title": "Read"
+      },
+      "convert.prometheus.config.rules.write": {
+        "title": "Create and edit"
+      },
+      "dashboard": {
+        "title": "Dashboard"
+      },
+      "dashboard.grafana": {
+        "title": "Grafana"
+      },
+      "dashboard.grafana.app": {
+        "title": "App"
+      },
+      "dashboard.grafana.app.read": {
+        "title": "Read"
+      },
+      "dashboard.snapshots": {
+        "title": "Snapshots"
+      },
+      "dashboard.snapshots.read": {
+        "title": "Read"
+      },
+      "dashboards": {
+        "title": "Dashboards"
+      },
+      "dashboards.db": {
+        "title": "Db"
+      },
+      "dashboards.db.write": {
+        "title": "Create and edit"
+      },
+      "dashboards.home": {
+        "title": "Home"
+      },
+      "dashboards.home.read": {
+        "title": "Read"
+      },
+      "dashboards.interpolate": {
+        "title": "Interpolate"
+      },
+      "dashboards.interpolate.write": {
+        "title": "Create and edit"
+      },
+      "dashboards.public_dashboards": {
+        "title": "Public dashboards"
+      },
+      "dashboards.public_dashboards.read": {
+        "title": "Read"
+      },
+      "dashboards.tags": {
+        "title": "Tags"
+      },
+      "dashboards.tags.read": {
+        "title": "Read"
+      },
+      "dashboards.uid": {
+        "title": "Uid"
+      },
+      "dashboards.uid.delete": {
+        "title": "Delete"
+      },
+      "dashboards.uid.permissions": {
+        "title": "Permissions"
+      },
+      "dashboards.uid.permissions.read": {
+        "title": "Read"
+      },
+      "dashboards.uid.permissions.share": {
+        "title": "Share"
+      },
+      "dashboards.uid.public_dashboards": {
+        "title": "Public dashboards"
+      },
+      "dashboards.uid.public_dashboards.delete": {
+        "title": "Delete"
+      },
+      "dashboards.uid.public_dashboards.publish": {
+        "title": "Publish"
+      },
+      "dashboards.uid.public_dashboards.read": {
+        "title": "Read"
+      },
+      "dashboards.uid.read": {
+        "title": "Read"
+      },
+      "dashboards.uid.versions": {
+        "title": "Versions"
+      },
+      "dashboards.uid.versions.read": {
+        "title": "Read"
+      },
+      "dashboards.uid.write": {
+        "title": "Create and edit"
+      },
+      "dashboards.write": {
+        "title": "Create and edit"
+      },
+      "datasources": {
+        "title": "Datasources"
+      },
+      "datasources.cache": {
+        "title": "Cache"
+      },
+      "datasources.cache.clean": {
+        "title": "Clean"
+      },
+      "datasources.cache.clean.write": {
+        "title": "Create and edit"
+      },
+      "datasources.cache.read": {
+        "title": "Read"
+      },
+      "datasources.cache.write": {
+        "title": "Create and edit"
+      },
+      "datasources.correlations": {
+        "title": "Correlations"
+      },
+      "datasources.correlations.read": {
+        "title": "Read"
+      },
+      "datasources.id": {
+        "title": "Id"
+      },
+      "datasources.id.read": {
+        "title": "Read"
+      },
+      "datasources.name": {
+        "title": "Name"
+      },
+      "datasources.name.delete": {
+        "title": "Delete"
+      },
+      "datasources.name.read": {
+        "title": "Read"
+      },
+      "datasources.proxy": {
+        "title": "Proxy"
+      },
+      "datasources.proxy.uid": {
+        "title": "Uid"
+      },
+      "datasources.proxy.uid.delete": {
+        "title": "Delete"
+      },
+      "datasources.proxy.uid.read": {
+        "title": "Read"
+      },
+      "datasources.proxy.uid.write": {
+        "title": "Create and edit"
+      },
+      "datasources.read": {
+        "title": "Read"
+      },
+      "datasources.uid": {
+        "title": "Uid"
+      },
+      "datasources.uid.correlations": {
+        "title": "Correlations"
+      },
+      "datasources.uid.correlations.delete": {
+        "title": "Delete"
+      },
+      "datasources.uid.correlations.read": {
+        "title": "Read"
+      },
+      "datasources.uid.correlations.write": {
+        "title": "Create and edit"
+      },
+      "datasources.uid.delete": {
+        "title": "Delete"
+      },
+      "datasources.uid.health": {
+        "title": "Health"
+      },
+      "datasources.uid.health.read": {
+        "title": "Read"
+      },
+      "datasources.uid.lbac": {
+        "title": "Lbac"
+      },
+      "datasources.uid.lbac.teams": {
+        "title": "Teams"
+      },
+      "datasources.uid.lbac.teams.admin": {
+        "title": "Manage"
+      },
+      "datasources.uid.lbac.teams.read": {
+        "title": "Read"
+      },
+      "datasources.uid.read": {
+        "title": "Read"
+      },
+      "datasources.uid.resources": {
+        "title": "Resources"
+      },
+      "datasources.uid.resources.labels": {
+        "title": "Labels"
+      },
+      "datasources.uid.resources.labels.read": {
+        "title": "Read"
+      },
+      "datasources.uid.resources.read": {
+        "title": "Read"
+      },
+      "datasources.uid.write": {
+        "title": "Create and edit"
+      },
+      "datasources.write": {
+        "title": "Create and edit"
+      },
+      "ds": {
+        "title": "Ds"
+      },
+      "ds.execute": {
+        "title": "Run"
+      },
+      "folders": {
+        "title": "Folders"
+      },
+      "folders.counts": {
+        "title": "Counts"
+      },
+      "folders.counts.read": {
+        "title": "Read"
+      },
+      "folders.delete": {
+        "title": "Delete"
+      },
+      "folders.permissions": {
+        "title": "Permissions"
+      },
+      "folders.permissions.read": {
+        "title": "Read"
+      },
+      "folders.permissions.share": {
+        "title": "Share"
+      },
+      "folders.read": {
+        "title": "Read"
+      },
+      "folders.write": {
+        "title": "Create and edit"
+      },
+      "frontend": {
+        "title": "Frontend"
+      },
+      "frontend.settings": {
+        "title": "Settings"
+      },
+      "frontend.settings.read": {
+        "title": "Read"
+      },
+      "health": {
+        "title": "Health"
+      },
+      "health.read": {
+        "title": "Read"
+      },
+      "library_elements": {
+        "title": "Library elements"
+      },
+      "library_elements.connections": {
+        "title": "Connections"
+      },
+      "library_elements.connections.read": {
+        "title": "Read"
+      },
+      "library_elements.delete": {
+        "title": "Delete"
+      },
+      "library_elements.name": {
+        "title": "Name"
+      },
+      "library_elements.name.read": {
+        "title": "Read"
+      },
+      "library_elements.read": {
+        "title": "Read"
+      },
+      "library_elements.write": {
+        "title": "Create and edit"
+      },
+      "licensing": {
+        "title": "Licensing"
+      },
+      "licensing.custom_permissions": {
+        "title": "Custom permissions"
+      },
+      "licensing.custom_permissions.read": {
+        "title": "Read"
+      },
+      "licensing.custom_permissions_csv": {
+        "title": "Custom permissions csv"
+      },
+      "licensing.custom_permissions_csv.read": {
+        "title": "Read"
+      },
+      "licensing.read": {
+        "title": "Read"
+      },
+      "licensing.refresh_stats": {
+        "title": "Refresh stats"
+      },
+      "licensing.refresh_stats.read": {
+        "title": "Read"
+      },
+      "licensing.token": {
+        "title": "Token"
+      },
+      "licensing.token.admin": {
+        "title": "Manage"
+      },
+      "licensing.token.delete": {
+        "title": "Delete"
+      },
+      "licensing.token.read": {
+        "title": "Read"
+      },
+      "licensing.token.renew": {
+        "title": "Renew"
+      },
+      "licensing.token.renew.admin": {
+        "title": "Manage"
+      },
+      "logout": {
+        "title": "Logout"
+      },
+      "logout.saml": {
+        "title": "Saml"
+      },
+      "logout.saml.read": {
+        "title": "Read"
+      },
+      "org": {
+        "title": "Org"
+      },
+      "org.address": {
+        "title": "Address"
+      },
+      "org.address.write": {
+        "title": "Create and edit"
+      },
+      "org.admin": {
+        "title": "Manage"
+      },
+      "org.invites": {
+        "title": "Invites"
+      },
+      "org.invites.delete": {
+        "title": "Delete"
+      },
+      "org.invites.read": {
+        "title": "Read"
+      },
+      "org.invites.send": {
+        "title": "Send"
+      },
+      "org.preferences": {
+        "title": "Preferences"
+      },
+      "org.preferences.read": {
+        "title": "Read"
+      },
+      "org.preferences.write": {
+        "title": "Create and edit"
+      },
+      "org.quotas": {
+        "title": "Quotas"
+      },
+      "org.quotas.read": {
+        "title": "Read"
+      },
+      "org.read": {
+        "title": "Read"
+      },
+      "org.users": {
+        "title": "Users"
+      },
+      "org.users.admin": {
+        "title": "Manage"
+      },
+      "org.users.delete": {
+        "title": "Delete"
+      },
+      "org.users.lookup": {
+        "title": "Lookup"
+      },
+      "org.users.lookup.read": {
+        "title": "Read"
+      },
+      "org.users.read": {
+        "title": "Read"
+      },
+      "orgs": {
+        "title": "Organizations"
+      },
+      "orgs.address": {
+        "title": "Address"
+      },
+      "orgs.address.write": {
+        "title": "Create and edit"
+      },
+      "orgs.admin": {
+        "title": "Manage"
+      },
+      "orgs.delete": {
+        "title": "Delete"
+      },
+      "orgs.name": {
+        "title": "Name"
+      },
+      "orgs.name.read": {
+        "title": "Read"
+      },
+      "orgs.quotas": {
+        "title": "Quotas"
+      },
+      "orgs.quotas.read": {
+        "title": "Read"
+      },
+      "orgs.quotas.write": {
+        "title": "Create and edit"
+      },
+      "orgs.read": {
+        "title": "Read"
+      },
+      "orgs.users": {
+        "title": "Users"
+      },
+      "orgs.users.admin": {
+        "title": "Manage"
+      },
+      "orgs.users.delete": {
+        "title": "Delete"
+      },
+      "orgs.users.read": {
+        "title": "Read"
+      },
+      "playlists": {
+        "title": "Playlists"
+      },
+      "playlists.delete": {
+        "title": "Delete"
+      },
+      "playlists.items": {
+        "title": "Items"
+      },
+      "playlists.items.read": {
+        "title": "Read"
+      },
+      "playlists.read": {
+        "title": "Read"
+      },
+      "playlists.write": {
+        "title": "Create and edit"
+      },
+      "provisioning": {
+        "title": "Provisioning"
+      },
+      "provisioning.alert_rules": {
+        "title": "Alert rules"
+      },
+      "provisioning.alert_rules.delete": {
+        "title": "Delete"
+      },
+      "provisioning.alert_rules.read": {
+        "title": "Read"
+      },
+      "provisioning.alert_rules.write": {
+        "title": "Create and edit"
+      },
+      "provisioning.contact_points": {
+        "title": "Contact points"
+      },
+      "provisioning.contact_points.delete": {
+        "title": "Delete"
+      },
+      "provisioning.contact_points.read": {
+        "title": "Read"
+      },
+      "provisioning.contact_points.write": {
+        "title": "Create and edit"
+      },
+      "provisioning.folder": {
+        "title": "Folder"
+      },
+      "provisioning.folder.rule_groups": {
+        "title": "Rule groups"
+      },
+      "provisioning.folder.rule_groups.delete": {
+        "title": "Delete"
+      },
+      "provisioning.folder.rule_groups.read": {
+        "title": "Read"
+      },
+      "provisioning.folder.rule_groups.write": {
+        "title": "Create and edit"
+      },
+      "provisioning.mute_timings": {
+        "title": "Mute timings"
+      },
+      "provisioning.mute_timings.delete": {
+        "title": "Delete"
+      },
+      "provisioning.mute_timings.read": {
+        "title": "Read"
+      },
+      "provisioning.mute_timings.write": {
+        "title": "Create and edit"
+      },
+      "provisioning.policies": {
+        "title": "Policies"
+      },
+      "provisioning.policies.admin": {
+        "title": "Manage"
+      },
+      "provisioning.policies.delete": {
+        "title": "Delete"
+      },
+      "provisioning.policies.read": {
+        "title": "Read"
+      },
+      "provisioning.templates": {
+        "title": "Templates"
+      },
+      "provisioning.templates.delete": {
+        "title": "Delete"
+      },
+      "provisioning.templates.read": {
+        "title": "Read"
+      },
+      "provisioning.templates.write": {
+        "title": "Create and edit"
+      },
+      "public": {
+        "title": "Public"
+      },
+      "public.dashboards": {
+        "title": "Dashboards"
+      },
+      "public.dashboards.annotations": {
+        "title": "Annotations"
+      },
+      "public.dashboards.annotations.read": {
+        "title": "Read"
+      },
+      "public.dashboards.panels": {
+        "title": "Panels"
+      },
+      "public.dashboards.panels.read": {
+        "title": "Read"
+      },
+      "public.dashboards.read": {
+        "title": "Read"
+      },
+      "query_history": {
+        "title": "Query history"
+      },
+      "query_history.delete": {
+        "title": "Delete"
+      },
+      "query_history.read": {
+        "title": "Read"
+      },
+      "query_history.star": {
+        "title": "Star"
+      },
+      "query_history.star.delete": {
+        "title": "Delete"
+      },
+      "query_history.star.write": {
+        "title": "Create and edit"
+      },
+      "query_history.write": {
+        "title": "Create and edit"
+      },
+      "recording_rules": {
+        "title": "Recording rules"
+      },
+      "recording_rules.delete": {
+        "title": "Delete"
+      },
+      "recording_rules.read": {
+        "title": "Read"
+      },
+      "recording_rules.write": {
+        "title": "Create and edit"
+      },
+      "recording_rules.writer": {
+        "title": "Writer"
+      },
+      "recording_rules.writer.delete": {
+        "title": "Delete"
+      },
+      "recording_rules.writer.read": {
+        "title": "Read"
+      },
+      "recording_rules.writer.write": {
+        "title": "Create and edit"
+      },
+      "reports": {
+        "title": "Reports"
+      },
+      "reports.dashboards": {
+        "title": "Dashboards"
+      },
+      "reports.dashboards.read": {
+        "title": "Read"
+      },
+      "reports.delete": {
+        "title": "Delete"
+      },
+      "reports.email": {
+        "title": "Email"
+      },
+      "reports.email.send": {
+        "title": "Send"
+      },
+      "reports.images": {
+        "title": "Images"
+      },
+      "reports.images.read": {
+        "title": "Read"
+      },
+      "reports.read": {
+        "title": "Read"
+      },
+      "reports.render": {
+        "title": "Render"
+      },
+      "reports.render.csvs": {
+        "title": "Csvs"
+      },
+      "reports.render.csvs.read": {
+        "title": "Read"
+      },
+      "reports.render.pdfs": {
+        "title": "Pdfs"
+      },
+      "reports.render.pdfs.read": {
+        "title": "Read"
+      },
+      "reports.settings": {
+        "title": "Settings"
+      },
+      "reports.settings.admin": {
+        "title": "Manage"
+      },
+      "reports.settings.read": {
+        "title": "Read"
+      },
+      "reports.write": {
+        "title": "Create and edit"
+      },
+      "saml": {
+        "title": "Saml"
+      },
+      "saml.acs": {
+        "title": "Acs"
+      },
+      "saml.acs.write": {
+        "title": "Create and edit"
+      },
+      "saml.metadata": {
+        "title": "Metadata"
+      },
+      "saml.metadata.read": {
+        "title": "Read"
+      },
+      "saml.slo": {
+        "title": "Slo"
+      },
+      "saml.slo.read": {
+        "title": "Read"
+      },
+      "saml.slo.write": {
+        "title": "Create and edit"
+      },
+      "search": {
+        "title": "Search"
+      },
+      "search.read": {
+        "title": "Read"
+      },
+      "search.sorting": {
+        "title": "Sorting"
+      },
+      "search.sorting.read": {
+        "title": "Read"
+      },
+      "serviceaccounts": {
+        "title": "Serviceaccounts"
+      },
+      "serviceaccounts.admin": {
+        "title": "Manage"
+      },
+      "serviceaccounts.delete": {
+        "title": "Delete"
+      },
+      "serviceaccounts.read": {
+        "title": "Read"
+      },
+      "serviceaccounts.tokens": {
+        "title": "Tokens"
+      },
+      "serviceaccounts.tokens.admin": {
+        "title": "Manage"
+      },
+      "serviceaccounts.tokens.delete": {
+        "title": "Delete"
+      },
+      "serviceaccounts.tokens.read": {
+        "title": "Read"
+      },
+      "signing_keys": {
+        "title": "Signing keys"
+      },
+      "signing_keys.keys": {
+        "title": "Keys"
+      },
+      "signing_keys.keys.read": {
+        "title": "Read"
+      },
+      "snapshot": {
+        "title": "Snapshot"
+      },
+      "snapshot.shared_options": {
+        "title": "Shared options"
+      },
+      "snapshot.shared_options.read": {
+        "title": "Read"
+      },
+      "snapshots": {
+        "title": "Snapshots"
+      },
+      "snapshots.delete": {
+        "title": "Delete"
+      },
+      "snapshots.publish": {
+        "title": "Publish"
+      },
+      "snapshots.read": {
+        "title": "Read"
+      },
+      "snapshots_delete": {
+        "title": "Snapshots delete"
+      },
+      "snapshots_delete.delete": {
+        "title": "Delete"
+      },
+      "sso_settings": {
+        "title": "Sso settings"
+      },
+      "sso_settings.delete": {
+        "title": "Delete"
+      },
+      "sso_settings.read": {
+        "title": "Read"
+      },
+      "sso_settings.write": {
+        "title": "Create and edit"
+      },
+      "teams": {
+        "title": "Teams"
+      },
+      "teams.admin": {
+        "title": "Manage"
+      },
+      "teams.delete": {
+        "title": "Delete"
+      },
+      "teams.groups": {
+        "title": "Groups"
+      },
+      "teams.groups.admin": {
+        "title": "Manage"
+      },
+      "teams.groups.delete": {
+        "title": "Delete"
+      },
+      "teams.groups.read": {
+        "title": "Read"
+      },
+      "teams.members": {
+        "title": "Members"
+      },
+      "teams.members.admin": {
+        "title": "Manage"
+      },
+      "teams.members.delete": {
+        "title": "Delete"
+      },
+      "teams.members.read": {
+        "title": "Read"
+      },
+      "teams.preferences": {
+        "title": "Preferences"
+      },
+      "teams.preferences.read": {
+        "title": "Read"
+      },
+      "teams.preferences.write": {
+        "title": "Create and edit"
+      },
+      "teams.read": {
+        "title": "Read"
+      },
+      "user": {
+        "title": "Account"
+      },
+      "user.admin": {
+        "title": "Manage"
+      },
+      "user.auth_token": {
+        "title": "Auth token"
+      },
+      "user.auth_token.admin": {
+        "title": "Manage"
+      },
+      "user.auth_tokens": {
+        "title": "Auth tokens"
+      },
+      "user.auth_tokens.read": {
+        "title": "Read"
+      },
+      "user.email": {
+        "title": "Email"
+      },
+      "user.email.read": {
+        "title": "Read"
+      },
+      "user.orgs": {
+        "title": "Organizations"
+      },
+      "user.orgs.read": {
+        "title": "Read"
+      },
+      "user.password": {
+        "title": "Password"
+      },
+      "user.password.write": {
+        "title": "Create and edit"
+      },
+      "user.preferences": {
+        "title": "Preferences"
+      },
+      "user.preferences.read": {
+        "title": "Read"
+      },
+      "user.preferences.write": {
+        "title": "Create and edit"
+      },
+      "user.quotas": {
+        "title": "Quotas"
+      },
+      "user.quotas.read": {
+        "title": "Read"
+      },
+      "user.read": {
+        "title": "Read"
+      },
+      "user.stars": {
+        "title": "Stars"
+      },
+      "user.stars.dashboard": {
+        "title": "Dashboard"
+      },
+      "user.stars.dashboard.uid": {
+        "title": "Uid"
+      },
+      "user.stars.dashboard.uid.delete": {
+        "title": "Delete"
+      },
+      "user.stars.dashboard.uid.write": {
+        "title": "Create and edit"
+      },
+      "user.teams": {
+        "title": "Teams"
+      },
+      "user.teams.read": {
+        "title": "Read"
+      },
+      "user.using": {
+        "title": "Using"
+      },
+      "user.using.write": {
+        "title": "Create and edit"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.admin": {
+        "title": "Manage"
+      },
+      "users.lookup": {
+        "title": "Lookup"
+      },
+      "users.lookup.read": {
+        "title": "Read"
+      },
+      "users.orgs": {
+        "title": "Organizations"
+      },
+      "users.orgs.read": {
+        "title": "Read"
+      },
+      "users.read": {
+        "title": "Read"
+      },
+      "users.teams": {
+        "title": "Teams"
+      },
+      "users.teams.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://example.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Your Grafana origin (https://host)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Grafana",
   "http": {
     "operations": {
-      "RouteConvertPrometheusCortexDeleteNamespace": {"action":"delete.rules","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/convert/api/prom/rules/{NamespaceTitle}","scope":{"NamespaceTitle":{"from":"path","at":"NamespaceTitle"}}},
-      "RouteConvertPrometheusCortexDeleteRuleGroup": {"action":"delete.rules","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/convert/api/prom/rules/{NamespaceTitle}/{Group}","scope":{"NamespaceTitle":{"from":"path","at":"NamespaceTitle"},"Group":{"from":"path","at":"Group"}}},
-      "RouteConvertPrometheusCortexGetNamespace": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/convert/api/prom/rules/{NamespaceTitle}","scope":{"NamespaceTitle":{"from":"path","at":"NamespaceTitle"}}},
-      "RouteConvertPrometheusCortexGetRuleGroup": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/convert/api/prom/rules/{NamespaceTitle}/{Group}","scope":{"NamespaceTitle":{"from":"path","at":"NamespaceTitle"},"Group":{"from":"path","at":"Group"}}},
-      "RouteConvertPrometheusCortexGetRules": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/convert/api/prom/rules","scope":{}},
-      "RouteConvertPrometheusCortexPostRuleGroup": {"action":"write.rules","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/convert/api/prom/rules/{NamespaceTitle}","body":"any","scope":{"NamespaceTitle":{"from":"path","at":"NamespaceTitle"}}},
-      "RouteConvertPrometheusCortexPostRuleGroups": {"action":"write.rules","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/convert/api/prom/rules","scope":{}},
-      "RouteConvertPrometheusDeleteNamespace": {"action":"delete.rules","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/convert/prometheus/config/v1/rules/{NamespaceTitle}","scope":{"NamespaceTitle":{"from":"path","at":"NamespaceTitle"}}},
-      "RouteConvertPrometheusDeleteRuleGroup": {"action":"delete.rules","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/convert/prometheus/config/v1/rules/{NamespaceTitle}/{Group}","scope":{"NamespaceTitle":{"from":"path","at":"NamespaceTitle"},"Group":{"from":"path","at":"Group"}}},
-      "RouteConvertPrometheusGetNamespace": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/convert/prometheus/config/v1/rules/{NamespaceTitle}","scope":{"NamespaceTitle":{"from":"path","at":"NamespaceTitle"}}},
-      "RouteConvertPrometheusGetRuleGroup": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/convert/prometheus/config/v1/rules/{NamespaceTitle}/{Group}","scope":{"NamespaceTitle":{"from":"path","at":"NamespaceTitle"},"Group":{"from":"path","at":"Group"}}},
-      "RouteConvertPrometheusGetRules": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/convert/prometheus/config/v1/rules","scope":{}},
-      "RouteConvertPrometheusPostRuleGroup": {"action":"write.rules","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/convert/prometheus/config/v1/rules/{NamespaceTitle}","body":"any","scope":{"NamespaceTitle":{"from":"path","at":"NamespaceTitle"}}},
-      "RouteConvertPrometheusPostRuleGroups": {"action":"write.rules","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/convert/prometheus/config/v1/rules","scope":{}},
-      "RouteDeleteAlertRule": {"action":"delete.alert_rules","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/provisioning/alert-rules/{UID}","scope":{"UID":{"from":"path","at":"UID"}}},
-      "RouteDeleteAlertRuleGroup": {"action":"delete.rule_groups","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/provisioning/folder/{FolderUID}/rule-groups/{Group}","scope":{"FolderUID":{"from":"path","at":"FolderUID"},"Group":{"from":"path","at":"Group"}}},
-      "RouteDeleteContactpoints": {"action":"delete.contact_points","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/provisioning/contact-points/{UID}","scope":{"UID":{"from":"path","at":"UID"}}},
-      "RouteDeleteMuteTiming": {"action":"delete.mute_timings","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/provisioning/mute-timings/{name}","params":["version"],"scope":{"name":{"from":"path","at":"name"}}},
-      "RouteDeleteTemplate": {"action":"delete.templates","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/provisioning/templates/{name}","params":["version"],"scope":{"name":{"from":"path","at":"name"}}},
-      "RouteExportMuteTiming": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/mute-timings/{name}/export","params":["download","format"],"scope":{"name":{"from":"path","at":"name"}}},
-      "RouteGetAlertRule": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/alert-rules/{UID}","params":["download","format","folderUid","group","ruleUid"],"scope":{"UID":{"from":"path","at":"UID"}}},
-      "RouteGetAlertRuleExport": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/alert-rules/{UID}/export","params":["download","format"],"scope":{"UID":{"from":"path","at":"UID"}}},
-      "RouteGetAlertRuleGroup": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/folder/{FolderUID}/rule-groups/{Group}","scope":{"FolderUID":{"from":"path","at":"FolderUID"},"Group":{"from":"path","at":"Group"}}},
-      "RouteGetAlertRuleGroupExport": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/folder/{FolderUID}/rule-groups/{Group}/export","params":["download","format"],"scope":{"FolderUID":{"from":"path","at":"FolderUID"},"Group":{"from":"path","at":"Group"}}},
-      "RouteGetAlertRules": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/alert-rules","scope":{}},
-      "RouteGetContactpoints": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/contact-points","params":["name"],"scope":{}},
-      "RouteGetContactpointsExport": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/contact-points/export","params":["download","format","decrypt","name"],"scope":{}},
-      "RouteGetMuteTiming": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/mute-timings/{name}","params":["download","format"],"scope":{"name":{"from":"path","at":"name"}}},
-      "RouteGetMuteTimings": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/mute-timings","scope":{}},
-      "RouteGetPolicyTree": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/policies","scope":{}},
-      "RouteGetPolicyTreeExport": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/policies/export","scope":{}},
-      "RouteGetTemplate": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/templates/{name}","scope":{"name":{"from":"path","at":"name"}}},
-      "RouteGetTemplates": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/templates","scope":{}},
-      "RoutePostAlertRule": {"action":"write.alert_rules","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/provisioning/alert-rules","body":"any","scope":{}},
-      "RoutePostContactpoints": {"action":"write.contact_points","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/provisioning/contact-points","body":"any","scope":{}},
-      "RoutePostMuteTiming": {"action":"write.mute_timings","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/provisioning/mute-timings","body":"any","scope":{}},
-      "RoutePutAlertRule": {"action":"write.alert_rules","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/provisioning/alert-rules/{UID}","body":"any","scope":{"UID":{"from":"path","at":"UID"}}},
-      "RoutePutAlertRuleGroup": {"action":"write.rule_groups","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/provisioning/folder/{FolderUID}/rule-groups/{Group}","body":"any","scope":{"FolderUID":{"from":"path","at":"FolderUID"},"Group":{"from":"path","at":"Group"}}},
-      "RoutePutContactpoint": {"action":"write.contact_points","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/provisioning/contact-points/{UID}","body":"any","scope":{"UID":{"from":"path","at":"UID"}}},
-      "RoutePutMuteTiming": {"action":"write.mute_timings","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/provisioning/mute-timings/{name}","body":"any","scope":{"name":{"from":"path","at":"name"}}},
-      "RoutePutPolicyTree": {"action":"admin.policies","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/v1/provisioning/policies","body":"any","scope":{}},
-      "RoutePutTemplate": {"action":"write.templates","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/provisioning/templates/{name}","body":"any","scope":{"name":{"from":"path","at":"name"}}},
-      "RouteResetPolicyTree": {"action":"delete.policies","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/provisioning/policies","scope":{}},
-      "SearchDevices": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/anonymous/search","scope":{}},
-      "addDataSource": {"action":"write.datasources","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/datasources","body":"json","scope":{}},
-      "addOrgInvite": {"action":"share.invites","effects":["share"],"method":"POST","origin":"{origin}","path":"/api/org/invites","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "addOrgUser": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/orgs/{org_id}/users","body":"json","scope":{"org_id":{"from":"path","at":"org_id"}}},
-      "addOrgUserToCurrentOrg": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/org/users","body":"json","scope":{}},
-      "addTeamGroupApi": {"action":"admin.groups","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/teams/{teamId}/groups","body":"json","scope":{"teamId":{"from":"path","at":"teamId"}}},
-      "addTeamMember": {"action":"admin.members","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/teams/{team_id}/members","body":"json","scope":{"team_id":{"from":"path","at":"team_id"},"userId":{"from":"body","at":"/userId","type":"number"}}},
-      "addTeamRole": {"action":"admin.roles","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/access-control/teams/{teamId}/roles","body":"json","scope":{"teamId":{"from":"path","at":"teamId"}}},
-      "addUserRole": {"action":"admin.roles","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/access-control/users/{userId}/roles","body":"json","scope":{"userId":{"from":"path","at":"userId"}}},
-      "adminCreateUser": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/admin/users","body":"json","scope":{}},
-      "adminDeleteUser": {"action":"delete.users","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/admin/users/{user_id}","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "adminDisableUser": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/admin/users/{user_id}/disable","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "adminEnableUser": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/admin/users/{user_id}/enable","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "adminGetSettings": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/admin/settings","scope":{}},
-      "adminGetStats": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/admin/stats","scope":{}},
-      "adminGetUserAuthTokens": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/admin/users/{user_id}/auth-tokens","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "adminLogoutUser": {"action":"write.logout","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/admin/users/{user_id}/logout","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "adminProvisioningReloadAccessControl": {"action":"write.reload","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/admin/provisioning/access-control/reload","scope":{}},
-      "adminProvisioningReloadDashboards": {"action":"write.reload","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/admin/provisioning/dashboards/reload","scope":{}},
-      "adminProvisioningReloadDatasources": {"action":"write.reload","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/admin/provisioning/datasources/reload","scope":{}},
-      "adminProvisioningReloadPlugins": {"action":"write.reload","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/admin/provisioning/plugins/reload","scope":{}},
-      "adminRevokeUserAuthToken": {"action":"share.users","effects":["share"],"method":"POST","origin":"{origin}","path":"/api/admin/users/{user_id}/revoke-auth-token","body":"json","scope":{"user_id":{"from":"path","at":"user_id"},"request":{"from":"body","at":"","type":"object"}},"grant":["user_id"]},
-      "adminUpdateUserPassword": {"action":"write.password","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/admin/users/{user_id}/password","body":"json","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "adminUpdateUserPermissions": {"action":"share.permissions","effects":["share"],"method":"PUT","origin":"{origin}","path":"/api/admin/users/{user_id}/permissions","body":"json","scope":{"user_id":{"from":"path","at":"user_id"},"request":{"from":"body","at":"","type":"object"}},"grant":["user_id"]},
-      "callDatasourceResourceWithUID": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/uid/{uid}/resources/{datasource_proxy_route}","scope":{"uid":{"from":"path","at":"uid"},"datasource_proxy_route":{"from":"path","at":"datasource_proxy_route"}}},
-      "cancelSnapshot": {"action":"write.snapshot","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/cloudmigration/migration/{uid}/snapshot/{snapshotUid}/cancel","scope":{"uid":{"from":"path","at":"uid"},"snapshotUid":{"from":"path","at":"snapshotUid"}}},
-      "changeUserPassword": {"action":"write.password","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/user/password","body":"json","scope":{}},
-      "checkDatasourceHealthWithUID": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/uid/{uid}/health","scope":{"uid":{"from":"path","at":"uid"}}},
-      "cleanDataSourceCache": {"action":"write.clean","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/datasources/{dataSourceUID}/cache/clean","scope":{"dataSourceUID":{"from":"path","at":"dataSourceUID"}}},
-      "createCloudMigrationToken": {"action":"admin.token","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/cloudmigration/token","scope":{}},
-      "createCorrelation": {"action":"write.correlations","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/datasources/uid/{sourceUID}/correlations","body":"json","scope":{"sourceUID":{"from":"path","at":"sourceUID"}}},
-      "createDashboardSnapshot": {"action":"write.snapshots","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/snapshots","body":"json","scope":{}},
-      "createFolder": {"action":"write.folders","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/folders","body":"json","scope":{}},
-      "createLibraryElement": {"action":"write.library_elements","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/library-elements","body":"json","scope":{}},
-      "createOrg": {"action":"admin.orgs","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/orgs","body":"json","scope":{}},
-      "createPlaylist": {"action":"write.playlists","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/playlists","body":"json","scope":{}},
-      "createPublicDashboard": {"action":"write.public_dashboards","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/dashboards/uid/{dashboardUid}/public-dashboards","body":"json","scope":{"dashboardUid":{"from":"path","at":"dashboardUid"}}},
-      "createQuery": {"action":"write.query_history","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/query-history","body":"json","scope":{}},
-      "createRecordingRule": {"action":"write.recording_rules","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/recording-rules","body":"json","scope":{}},
-      "createRecordingRuleWriteTarget": {"action":"write.writer","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/recording-rules/writer","body":"json","scope":{}},
-      "createReport": {"action":"write.reports","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/reports","body":"json","scope":{}},
-      "createRole": {"action":"admin.roles","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/access-control/roles","body":"json","scope":{}},
-      "createServiceAccount": {"action":"write.serviceaccounts","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/serviceaccounts","body":"any","scope":{}},
-      "createSession": {"action":"write.migration","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/cloudmigration/migration","body":"json","scope":{}},
-      "createSnapshot": {"action":"write.snapshot","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/cloudmigration/migration/{uid}/snapshot","body":"json","scope":{"uid":{"from":"path","at":"uid"}}},
-      "createTeam": {"action":"admin.teams","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/teams","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "createToken": {"action":"admin.tokens","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/serviceaccounts/{serviceAccountId}/tokens","body":"any","scope":{"serviceAccountId":{"from":"path","at":"serviceAccountId"}}},
-      "datasourceProxyDELETEByUIDcalls": {"action":"delete.uid","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/datasources/proxy/uid/{uid}/{datasource_proxy_route}","scope":{"uid":{"from":"path","at":"uid"},"datasource_proxy_route":{"from":"path","at":"datasource_proxy_route"}}},
-      "datasourceProxyGETByUIDcalls": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/proxy/uid/{uid}/{datasource_proxy_route}","scope":{"uid":{"from":"path","at":"uid"},"datasource_proxy_route":{"from":"path","at":"datasource_proxy_route"}}},
-      "datasourceProxyPOSTByUIDcalls": {"action":"write.uid","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/datasources/proxy/uid/{uid}/{datasource_proxy_route}","body":"json","scope":{"uid":{"from":"path","at":"uid"},"datasource_proxy_route":{"from":"path","at":"datasource_proxy_route"}}},
-      "deleteAnnotationByID": {"action":"delete.annotations","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/annotations/{annotation_id}","scope":{"annotation_id":{"from":"path","at":"annotation_id"}}},
-      "deleteCloudMigrationToken": {"action":"delete.token","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/cloudmigration/token/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "deleteCorrelation": {"action":"delete.correlations","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/datasources/uid/{uid}/correlations/{correlationUID}","scope":{"uid":{"from":"path","at":"uid"},"correlationUID":{"from":"path","at":"correlationUID"}}},
-      "deleteDashboardByUID": {"action":"delete.uid","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/dashboards/uid/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "deleteDashboardSnapshot": {"action":"delete.snapshots","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/snapshots/{key}","scope":{"key":{"from":"path","at":"key"}}},
-      "deleteDashboardSnapshotByDeleteKey": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/snapshots-delete/{deleteKey}","scope":{"deleteKey":{"from":"path","at":"deleteKey"}}},
-      "deleteDataSourceByName": {"action":"delete.name","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/datasources/name/{name}","scope":{"name":{"from":"path","at":"name"}}},
-      "deleteDataSourceByUID": {"action":"delete.uid","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/datasources/uid/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "deleteFolder": {"action":"delete.folders","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/folders/{folder_uid}","params":["forceDeleteRules"],"scope":{"folder_uid":{"from":"path","at":"folder_uid"}}},
-      "deleteLibraryElementByUID": {"action":"delete.library_elements","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/library-elements/{library_element_uid}","scope":{"library_element_uid":{"from":"path","at":"library_element_uid"}}},
-      "deleteLicenseToken": {"action":"delete.token","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/licensing/token","body":"json","scope":{}},
-      "deleteOrgByID": {"action":"delete.orgs","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/orgs/{org_id}","scope":{"org_id":{"from":"path","at":"org_id"}}},
-      "deletePlaylist": {"action":"delete.playlists","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/playlists/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "deletePublicDashboard": {"action":"delete.public_dashboards","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/dashboards/uid/{dashboardUid}/public-dashboards/{uid}","scope":{"dashboardUid":{"from":"path","at":"dashboardUid"},"uid":{"from":"path","at":"uid"}}},
-      "deleteQuery": {"action":"delete.query_history","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/query-history/{query_history_uid}","scope":{"query_history_uid":{"from":"path","at":"query_history_uid"}}},
-      "deleteRecordingRule": {"action":"delete.recording_rules","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/recording-rules/{recordingRuleID}","scope":{"recordingRuleID":{"from":"path","at":"recordingRuleID"}}},
-      "deleteReport": {"action":"delete.reports","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/reports/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteRole": {"action":"delete.roles","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/access-control/roles/{roleUID}","params":["force","global"],"scope":{"roleUID":{"from":"path","at":"roleUID"}}},
-      "deleteServiceAccount": {"action":"delete.serviceaccounts","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/serviceaccounts/{serviceAccountId}","scope":{"serviceAccountId":{"from":"path","at":"serviceAccountId"}}},
-      "deleteSession": {"action":"delete.migration","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/cloudmigration/migration/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "deleteTeamByID": {"action":"delete.teams","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/teams/{team_id}","scope":{"team_id":{"from":"path","at":"team_id"}}},
-      "deleteToken": {"action":"delete.tokens","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/serviceaccounts/{serviceAccountId}/tokens/{tokenId}","scope":{"serviceAccountId":{"from":"path","at":"serviceAccountId"},"tokenId":{"from":"path","at":"tokenId"}}},
-      "disableDataSourceCache": {"action":"write.cache","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/datasources/{dataSourceUID}/cache/disable","params":["dataSourceType"],"scope":{"dataSourceUID":{"from":"path","at":"dataSourceUID"}}},
-      "enableDataSourceCache": {"action":"write.cache","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/datasources/{dataSourceUID}/cache/enable","params":["dataSourceType"],"scope":{"dataSourceUID":{"from":"path","at":"dataSourceUID"}}},
-      "getAccessControlStatus": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/access-control/status","scope":{}},
-      "getAnnotationByID": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/annotations/{annotation_id}","params":["tag","limit"],"scope":{"annotation_id":{"from":"path","at":"annotation_id"}}},
-      "getAnnotations": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/annotations","params":["from","to","userId","userUID","alertId","alertUID","dashboardId","dashboardUID","panelId","limit","tags","type","matchAny"],"scope":{}},
-      "getCloudMigrationToken": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cloudmigration/token","scope":{}},
-      "getCorrelation": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/uid/{sourceUID}/correlations/{correlationUID}","scope":{"sourceUID":{"from":"path","at":"sourceUID"},"correlationUID":{"from":"path","at":"correlationUID"}}},
-      "getCorrelations": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/correlations","params":["limit","page","sourceUID"],"scope":{}},
-      "getCorrelationsBySourceUID": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/uid/{sourceUID}/correlations","scope":{"sourceUID":{"from":"path","at":"sourceUID"}}},
-      "getCurrentOrg": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/org","scope":{}},
-      "getCurrentOrgQuota": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/org/quotas","scope":{}},
-      "getCustomPermissionsCSV": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/licensing/custom-permissions-csv","scope":{}},
-      "getCustomPermissionsReport": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/licensing/custom-permissions","scope":{}},
-      "getDashboardByUID": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/dashboards/uid/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "getDashboardPermissionsListByUID": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/dashboards/uid/{uid}/permissions","scope":{"uid":{"from":"path","at":"uid"}}},
-      "getDashboardSnapshot": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/snapshots/{key}","scope":{"key":{"from":"path","at":"key"}}},
-      "getDashboardTags": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/dashboards/tags","scope":{}},
-      "getDashboardVersionByUID": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/dashboards/uid/{uid}/versions/{DashboardVersionID}","scope":{"uid":{"from":"path","at":"uid"},"DashboardVersionID":{"from":"path","at":"DashboardVersionID"}}},
-      "getDashboardVersionsByUID": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/dashboards/uid/{uid}/versions","params":["limit","start"],"scope":{"uid":{"from":"path","at":"uid"}}},
-      "getDataSourceByName": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/name/{name}","scope":{"name":{"from":"path","at":"name"}}},
-      "getDataSourceByUID": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/uid/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "getDataSourceIdByName": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/id/{name}","params":["dataSourceType"],"scope":{"name":{"from":"path","at":"name"}}},
-      "getDataSources": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources","scope":{}},
-      "getFolderByUID": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/folders/{folder_uid}","scope":{"folder_uid":{"from":"path","at":"folder_uid"}}},
-      "getFolderDescendantCounts": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/folders/{folder_uid}/counts","scope":{"folder_uid":{"from":"path","at":"folder_uid"}}},
-      "getFolderPermissionList": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/folders/{folder_uid}/permissions","scope":{"folder_uid":{"from":"path","at":"folder_uid"}}},
-      "getFolders": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/folders","params":["limit","page","parentUid","permission"],"scope":{}},
-      "getHealth": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/health","scope":{}},
-      "getFrontendSettings": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/frontend/settings","scope":{}},
-      "getDashboardAPIGroup": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/apis/dashboard.grafana.app","scope":{}},
-      "datasourceLokiLabels": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/proxy/uid/{uid}/loki/api/v1/labels","params":["start","end","since","query"],"scope":{"uid":{"from":"path","at":"uid"},"query":{"from":"query","at":"","type":"object"}}},
-      "datasourceLokiLabelValues": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/proxy/uid/{uid}/loki/api/v1/label/{label}/values","params":["start","end","since","query"],"scope":{"uid":{"from":"path","at":"uid"},"label":{"from":"path","at":"label"},"query":{"from":"query","at":"","type":"object"}}},
-      "datasourceLokiIndexStats": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/proxy/uid/{uid}/loki/api/v1/index/stats","params":["start","end","query"],"scope":{"uid":{"from":"path","at":"uid"},"query":{"from":"query","at":"","type":"object"}}},
-      "datasourceLokiPatterns": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/proxy/uid/{uid}/loki/api/v1/patterns","params":["start","end","query","step"],"scope":{"uid":{"from":"path","at":"uid"},"query":{"from":"query","at":"","type":"object"}}},
-      "datasourcePrometheusLabels": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/uid/{uid}/resources/api/v1/labels","params":["start","end","match[]","limit"],"scope":{"uid":{"from":"path","at":"uid"},"query":{"from":"query","at":"","type":"object"}}},
-      "datasourcePrometheusLabels.form": {"action":"read","effects":["read"],"method":"POST","body":"form","origin":"{origin}","path":"/api/datasources/uid/{uid}/resources/api/v1/labels","params":["start","end","match[]","limit"],"scope":{"uid":{"from":"path","at":"uid"},"query":{"from":"query","at":"","type":"object"},"request":{"from":"form","at":"","type":"object"}}},
-      "datasourcePrometheusLabelValues": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/uid/{uid}/resources/api/v1/label/{label}/values","params":["start","end","match[]","limit"],"scope":{"uid":{"from":"path","at":"uid"},"label":{"from":"path","at":"label"},"query":{"from":"query","at":"","type":"object"}}},
-      "datasourcePrometheusMetadata": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/uid/{uid}/resources/api/v1/metadata","params":["limit","limit_per_metric","metric"],"scope":{"uid":{"from":"path","at":"uid"},"query":{"from":"query","at":"","type":"object"}}},
-      "getHomeDashboard": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/dashboards/home","scope":{}},
-      "getLibraryElementByName": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/library-elements/name/{library_element_name}","scope":{"library_element_name":{"from":"path","at":"library_element_name"}}},
-      "getLibraryElementByUID": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/library-elements/{library_element_uid}","scope":{"library_element_uid":{"from":"path","at":"library_element_uid"}}},
-      "getLibraryElementConnections": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/library-elements/{library_element_uid}/connections/","scope":{"library_element_uid":{"from":"path","at":"library_element_uid"}}},
-      "getLibraryElements": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/library-elements","params":["searchString","kind","sortDirection","typeFilter","excludeUid","folderFilter","folderFilterUIDs","perPage","page"],"scope":{}},
-      "getLicenseToken": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/licensing/token","scope":{}},
-      "getMetadata": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/saml/metadata","scope":{}},
-      "getOrgByID": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/orgs/{org_id}","scope":{"org_id":{"from":"path","at":"org_id"}}},
-      "getOrgByName": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/orgs/name/{org_name}","scope":{"org_name":{"from":"path","at":"org_name"}}},
-      "getOrgPreferences": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/org/preferences","scope":{}},
-      "getOrgUsersForCurrentOrg": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/org/users","params":["query","limit"],"scope":{}},
-      "getOrgUsersForCurrentOrgLookup": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/org/users/lookup","params":["query","limit"],"scope":{}},
-      "getPendingOrgInvites": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/org/invites","scope":{}},
-      "getPlaylist": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/playlists/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "getPlaylistItems": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/playlists/{uid}/items","scope":{"uid":{"from":"path","at":"uid"}}},
-      "getProviderSettings": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/sso-settings/{key}","scope":{"key":{"from":"path","at":"key"}}},
-      "getPublicAnnotations": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/public/dashboards/{accessToken}/annotations","scope":{"accessToken":{"from":"path","at":"accessToken"}}},
-      "getPublicDashboard": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/dashboards/uid/{dashboardUid}/public-dashboards","scope":{"dashboardUid":{"from":"path","at":"dashboardUid"}}},
-      "getRecordingRuleWriteTarget": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/recording-rules/writer","scope":{}},
-      "getReport": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/reports/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getReports": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/reports","scope":{}},
-      "getReportsByDashboardUID": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/reports/dashboards/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "getResourceDependencies": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cloudmigration/resources/dependencies","scope":{}},
-      "getResourcePermissions": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/access-control/{resource}/{resourceID}","scope":{"resource":{"from":"path","at":"resource"},"resourceID":{"from":"path","at":"resourceID"}}},
-      "getRoleAssignments": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/access-control/roles/{roleUID}/assignments","scope":{"roleUID":{"from":"path","at":"roleUID"}}},
-      "getSAMLLogout": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/logout/saml","scope":{}},
-      "getSLO": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/saml/slo","scope":{}},
-      "getSession": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cloudmigration/migration/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "getSessionList": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cloudmigration/migration","scope":{}},
-      "getSettingsImage": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/reports/images/:image","scope":{}},
-      "getShapshotList": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cloudmigration/migration/{uid}/snapshots","params":["page","limit","sort"],"scope":{"uid":{"from":"path","at":"uid"}}},
-      "getSharingOptions": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/snapshot/shared-options","scope":{}},
-      "getSignedInUser": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/user","scope":{}},
-      "getSignedInUserOrgList": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/user/orgs","scope":{}},
-      "getSignedInUserTeamList": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/user/teams","scope":{}},
-      "getSnapshot": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cloudmigration/migration/{uid}/snapshot/{snapshotUid}","params":["resultPage","resultLimit","resultSortColumn","resultSortOrder","errorsOnly"],"scope":{"uid":{"from":"path","at":"uid"},"snapshotUid":{"from":"path","at":"snapshotUid"}}},
-      "getStatus": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/licensing/check","scope":{}},
-      "getSyncStatus": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/admin/ldap-sync-status","scope":{}},
-      "getTeamByID": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/teams/{team_id}","params":["accesscontrol","page","perpage","name","query","sort"],"scope":{"team_id":{"from":"path","at":"team_id"}}},
-      "getTeamGroupsApi": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/teams/{teamId}/groups","scope":{"teamId":{"from":"path","at":"teamId"}}},
-      "getTeamLBACRulesApi": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/uid/{uid}/lbac/teams","scope":{"uid":{"from":"path","at":"uid"}}},
-      "getTeamMembers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/teams/{team_id}/members","scope":{"team_id":{"from":"path","at":"team_id"}}},
-      "getTeamPreferences": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/teams/{team_id}/preferences","scope":{"team_id":{"from":"path","at":"team_id"}}},
-      "getUserAuthTokens": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/user/auth-tokens","scope":{}},
-      "getUserByID": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/users/{user_id}","params":["loginOrEmail"],"scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "getUserFromLDAP": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/admin/ldap/{user_name}","scope":{"user_name":{"from":"path","at":"user_name"}}},
-      "getUserOrgList": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/users/{user_id}/orgs","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "getUserPreferences": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/user/preferences","scope":{}},
-      "getUserQuota": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/admin/users/{user_id}/quotas","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "getUserQuotas": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/user/quotas","scope":{}},
-      "getUserTeams": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/users/{user_id}/teams","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "importDashboard": {"action":"write.import","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/dashboards/import","body":"json","scope":{}},
-      "interpolateDashboard": {"action":"write.interpolate","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/dashboards/interpolate","scope":{}},
-      "listAllProvidersSettings": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/sso-settings","scope":{}},
-      "listDevices": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/anonymous/devices","scope":{}},
-      "listPublicDashboards": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/dashboards/public-dashboards","scope":{}},
-      "listRecordingRules": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/recording-rules","scope":{}},
-      "listRoles": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/access-control/roles","params":["delegatable","includeHidden","targetOrgId"],"scope":{}},
-      "listSortOptions": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/search/sorting","scope":{}},
-      "listTeamRoles": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/access-control/teams/{teamId}/roles","params":["targetOrgId"],"scope":{"teamId":{"from":"path","at":"teamId"}}},
-      "listTeamsRoles": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/access-control/teams/roles/search","body":"json","scope":{}},
-      "listTokens": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/serviceaccounts/{serviceAccountId}/tokens","scope":{"serviceAccountId":{"from":"path","at":"serviceAccountId"}}},
-      "listUserRoles": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/access-control/users/{userId}/roles","params":["includeHidden","targetOrgId"],"scope":{"userId":{"from":"path","at":"userId"}}},
-      "listUsersRoles": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/access-control/users/roles/search","body":"json","scope":{}},
-      "massDeleteAnnotations": {"action":"delete.mass_delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/annotations/mass-delete","body":"json","scope":{}},
-      "moveFolder": {"action":"write.folders","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/folders/{folder_uid}/move","body":"json","scope":{"folder_uid":{"from":"path","at":"folder_uid"}}},
-      "patchAnnotation": {"action":"write.annotations","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/annotations/{annotation_id}","body":"json","scope":{"annotation_id":{"from":"path","at":"annotation_id"}}},
-      "patchOrgPreferences": {"action":"write.preferences","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/org/preferences","body":"json","scope":{}},
-      "patchProviderSettings": {"action":"write.sso_settings","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/sso-settings/{key}","body":"json","scope":{"key":{"from":"path","at":"key"}}},
-      "patchQueryComment": {"action":"write.query_history","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/query-history/{query_history_uid}","body":"json","scope":{"query_history_uid":{"from":"path","at":"query_history_uid"}}},
-      "patchUserPreferences": {"action":"write.preferences","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/user/preferences","body":"json","scope":{}},
-      "postACS": {"action":"write.acs","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/saml/acs","params":["RelayState"],"scope":{}},
-      "postAnnotation": {"action":"write.annotations","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/annotations","body":"json","scope":{}},
-      "postDashboard": {"action":"write.db","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/dashboards/db","body":"json","scope":{}},
-      "postGraphiteAnnotation": {"action":"write.graphite","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/annotations/graphite","body":"json","scope":{}},
-      "postLicenseToken": {"action":"admin.token","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/licensing/token","body":"json","scope":{}},
-      "postRenewLicenseToken": {"action":"write.renew","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/licensing/token/renew","body":"json","scope":{}},
-      "postSLO": {"action":"write.slo","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/saml/slo","params":["SAMLRequest","SAMLResponse"],"scope":{}},
-      "postSyncUserWithLDAP": {"action":"write.sync","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/admin/ldap/sync/{user_id}","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "queryMetricsWithExpressions": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/ds/query","body":"json","scope":{}},
-      "queryPublicDashboard": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/public/dashboards/{accessToken}/panels/{panelId}/query","scope":{"accessToken":{"from":"path","at":"accessToken"},"panelId":{"from":"path","at":"panelId"}}},
-      "refreshLicenseStats": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/licensing/refresh-stats","scope":{}},
-      "reloadLDAPCfg": {"action":"write.reload","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/admin/ldap/reload","scope":{}},
-      "removeOrgUser": {"action":"delete.users","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/orgs/{org_id}/users/{user_id}","scope":{"org_id":{"from":"path","at":"org_id"},"user_id":{"from":"path","at":"user_id"}}},
-      "removeOrgUserForCurrentOrg": {"action":"delete.users","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/org/users/{user_id}","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "removeProviderSettings": {"action":"delete.sso_settings","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/sso-settings/{key}","scope":{"key":{"from":"path","at":"key"}}},
-      "removeTeamGroupApiQuery": {"action":"delete.groups","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/teams/{teamId}/groups","params":["groupId"],"scope":{"teamId":{"from":"path","at":"teamId"}}},
-      "removeTeamMember": {"action":"delete.members","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/teams/{team_id}/members/{user_id}","scope":{"team_id":{"from":"path","at":"team_id"},"user_id":{"from":"path","at":"user_id"}}},
-      "removeTeamRole": {"action":"delete.roles","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/access-control/teams/{teamId}/roles/{roleUID}","scope":{"teamId":{"from":"path","at":"teamId"},"roleUID":{"from":"path","at":"roleUID"}}},
-      "removeUserRole": {"action":"delete.roles","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/access-control/users/{userId}/roles/{roleUID}","params":["global"],"scope":{"userId":{"from":"path","at":"userId"},"roleUID":{"from":"path","at":"roleUID"}}},
-      "renderReportCSVs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/reports/render/csvs","params":["dashboards","title"],"scope":{}},
-      "renderReportPDFs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/reports/render/pdfs","params":["dashboards","orientation","layout","title","scaleFactor","includeTables"],"scope":{}},
-      "restoreDashboardVersionByUID": {"action":"write.uid","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/dashboards/uid/{uid}/restore","body":"json","scope":{"uid":{"from":"path","at":"uid"}}},
-      "retrieveJWKS": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/signing-keys/keys","scope":{}},
-      "retrieveServiceAccount": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/serviceaccounts/{serviceAccountId}","params":["Disabled","expiredTokens","query","perpage","page"],"scope":{"serviceAccountId":{"from":"path","at":"serviceAccountId"}}},
-      "revokeInvite": {"action":"delete.invites","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/org/invites/{invitation_code}/revoke","scope":{"invitation_code":{"from":"path","at":"invitation_code"}}},
-      "revokeUserAuthToken": {"action":"share.revoke_auth_token","effects":["share"],"method":"POST","origin":"{origin}","path":"/api/user/revoke-auth-token","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "saveReportSettings": {"action":"admin.settings","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/reports/settings","body":"json","scope":{}},
-      "search": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/search","params":["query","tag","type","dashboardIds","dashboardUIDs","folderIds","folderUIDs","starred","limit","page","permission","sort","deleted"],"scope":{}},
-      "searchDashboardSnapshots": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/dashboard/snapshots","params":["query","limit"],"scope":{}},
-      "searchOrgUsers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/orgs/{org_id}/users/search","scope":{"org_id":{"from":"path","at":"org_id"}}},
-      "searchOrgs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/orgs","params":["page","perpage","name","query"],"scope":{}},
-      "searchPlaylists": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/playlists","params":["query","limit"],"scope":{}},
-      "searchQueries": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/query-history","params":["datasourceUid","searchString","onlyStarred","sort","page","limit","from","to"],"scope":{}},
-      "searchTeamGroups": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/teams/{teamId}/groups/search","params":["page","perpage","query","name"],"scope":{"teamId":{"from":"path","at":"teamId"}}},
-      "searchUsers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/users","params":["perpage","page"],"scope":{}},
-      "sendReport": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/api/reports/email","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "sendTestEmail": {"action":"send.test_email","effects":["send"],"method":"POST","origin":"{origin}","path":"/api/reports/test-email","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "setDataSourceCacheConfig": {"action":"write.cache","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/datasources/{dataSourceUID}/cache","params":["dataSourceType"],"body":"json","scope":{"dataSourceUID":{"from":"path","at":"dataSourceUID"}}},
-      "setResourcePermissions": {"action":"write.access_control","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/access-control/{resource}/{resourceID}","body":"json","scope":{"resource":{"from":"path","at":"resource"},"resourceID":{"from":"path","at":"resourceID"}}},
-      "setResourcePermissionsForBuiltInRole": {"action":"write.built_in_roles","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/access-control/{resource}/{resourceID}/builtInRoles/{builtInRole}","body":"json","scope":{"resource":{"from":"path","at":"resource"},"resourceID":{"from":"path","at":"resourceID"},"builtInRole":{"from":"path","at":"builtInRole"}}},
-      "setResourcePermissionsForTeam": {"action":"admin.teams","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/access-control/{resource}/{resourceID}/teams/{teamID}","body":"json","scope":{"resource":{"from":"path","at":"resource"},"resourceID":{"from":"path","at":"resourceID"},"teamID":{"from":"path","at":"teamID"}}},
-      "setResourcePermissionsForUser": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/access-control/{resource}/{resourceID}/users/{userID}","body":"json","scope":{"resource":{"from":"path","at":"resource"},"resourceID":{"from":"path","at":"resourceID"},"userID":{"from":"path","at":"userID"}}},
-      "setRoleAssignments": {"action":"admin.roles","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/access-control/roles/{roleUID}/assignments","body":"json","scope":{"roleUID":{"from":"path","at":"roleUID"}}},
-      "setTeamMemberships": {"action":"admin.members","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/teams/{team_id}/members","body":"json","scope":{"team_id":{"from":"path","at":"team_id"}}},
-      "setTeamRoles": {"action":"admin.roles","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/access-control/teams/{teamId}/roles","params":["targetOrgId"],"body":"json","scope":{"teamId":{"from":"path","at":"teamId"}}},
-      "setUserRoles": {"action":"admin.roles","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/access-control/users/{userId}/roles","params":["targetOrgId"],"body":"json","scope":{"userId":{"from":"path","at":"userId"}}},
-      "starDashboardByUID": {"action":"write.uid","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/user/stars/dashboard/uid/{dashboard_uid}","scope":{"dashboard_uid":{"from":"path","at":"dashboard_uid"}}},
-      "starQuery": {"action":"write.star","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/query-history/star/{query_history_uid}","scope":{"query_history_uid":{"from":"path","at":"query_history_uid"}}},
-      "testCreateRecordingRule": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/recording-rules/test","body":"json","scope":{}},
-      "unstarDashboardByUID": {"action":"delete.uid","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/user/stars/dashboard/uid/{dashboard_uid}","scope":{"dashboard_uid":{"from":"path","at":"dashboard_uid"}}},
-      "unstarQuery": {"action":"delete.star","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/query-history/star/{query_history_uid}","scope":{"query_history_uid":{"from":"path","at":"query_history_uid"}}},
-      "updateAnnotation": {"action":"write.annotations","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/annotations/{annotation_id}","body":"json","scope":{"annotation_id":{"from":"path","at":"annotation_id"}}},
-      "updateCorrelation": {"action":"write.correlations","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/datasources/uid/{sourceUID}/correlations/{correlationUID}","body":"any","scope":{"sourceUID":{"from":"path","at":"sourceUID"},"correlationUID":{"from":"path","at":"correlationUID"}}},
-      "updateCurrentOrg": {"action":"admin.org","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/org","body":"json","scope":{}},
-      "updateCurrentOrgAddress": {"action":"write.address","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/org/address","body":"json","scope":{}},
-      "updateDashboardPermissionsByUID": {"action":"share.permissions","effects":["share"],"method":"POST","origin":"{origin}","path":"/api/dashboards/uid/{uid}/permissions","body":"json","scope":{"uid":{"from":"path","at":"uid"},"request":{"from":"body","at":"","type":"object"}},"grant":["uid"]},
-      "updateDataSourceByUID": {"action":"write.uid","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/datasources/uid/{uid}","body":"json","scope":{"uid":{"from":"path","at":"uid"}}},
-      "updateFolder": {"action":"write.folders","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/folders/{folder_uid}","body":"json","scope":{"folder_uid":{"from":"path","at":"folder_uid"}}},
-      "updateFolderPermissions": {"action":"share.permissions","effects":["share"],"method":"POST","origin":"{origin}","path":"/api/folders/{folder_uid}/permissions","body":"json","scope":{"folder_uid":{"from":"path","at":"folder_uid"},"request":{"from":"body","at":"","type":"object"}},"grant":["folder_uid"]},
-      "updateLibraryElement": {"action":"write.library_elements","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/library-elements/{library_element_uid}","body":"json","scope":{"library_element_uid":{"from":"path","at":"library_element_uid"}}},
-      "updateOrg": {"action":"admin.orgs","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/orgs/{org_id}","body":"json","scope":{"org_id":{"from":"path","at":"org_id"}}},
-      "updateOrgAddress": {"action":"write.address","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/orgs/{org_id}/address","body":"json","scope":{"org_id":{"from":"path","at":"org_id"}}},
-      "updateOrgPreferences": {"action":"write.preferences","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/org/preferences","body":"json","scope":{}},
-      "updateOrgQuota": {"action":"write.quotas","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/orgs/{org_id}/quotas/{quota_target}","body":"json","scope":{"org_id":{"from":"path","at":"org_id"},"quota_target":{"from":"path","at":"quota_target"}}},
-      "updateOrgUser": {"action":"admin.users","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/orgs/{org_id}/users/{user_id}","body":"json","scope":{"org_id":{"from":"path","at":"org_id"},"user_id":{"from":"path","at":"user_id"}}},
-      "updateOrgUserForCurrentOrg": {"action":"admin.users","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/org/users/{user_id}","body":"json","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "updatePlaylist": {"action":"write.playlists","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/playlists/{uid}","body":"json","scope":{"uid":{"from":"path","at":"uid"}}},
-      "updateProviderSettings": {"action":"write.sso_settings","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/sso-settings/{key}","body":"json","scope":{"key":{"from":"path","at":"key"}}},
-      "updatePublicDashboard": {"action":"write.public_dashboards","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/dashboards/uid/{dashboardUid}/public-dashboards/{uid}","body":"json","scope":{"dashboardUid":{"from":"path","at":"dashboardUid"},"uid":{"from":"path","at":"uid"}}},
-      "updateRecordingRule": {"action":"write.recording_rules","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/recording-rules","body":"json","scope":{}},
-      "updateReport": {"action":"write.reports","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/reports/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "updateRole": {"action":"admin.roles","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/access-control/roles/{roleUID}","body":"json","scope":{"roleUID":{"from":"path","at":"roleUID"},"displayName":{"from":"body","at":"/displayName"}}},
-      "updateServiceAccount": {"action":"write.serviceaccounts","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/serviceaccounts/{serviceAccountId}","body":"any","scope":{"serviceAccountId":{"from":"path","at":"serviceAccountId"}}},
-      "updateSignedInUser": {"action":"admin.user","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/user","body":"json","scope":{}},
-      "updateTeam": {"action":"admin.teams","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/teams/{team_id}","body":"json","scope":{"team_id":{"from":"path","at":"team_id"}}},
-      "updateTeamLBACRulesApi": {"action":"admin.teams","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/datasources/uid/{uid}/lbac/teams","body":"any","scope":{"uid":{"from":"path","at":"uid"}}},
-      "updateTeamMember": {"action":"admin.members","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/teams/{team_id}/members/{user_id}","body":"json","scope":{"team_id":{"from":"path","at":"team_id"},"user_id":{"from":"path","at":"user_id"}}},
-      "updateTeamPreferences": {"action":"write.preferences","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/teams/{team_id}/preferences","body":"json","scope":{"team_id":{"from":"path","at":"team_id"}}},
-      "updateUser": {"action":"admin.users","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/users/{user_id}","body":"json","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "updateUserEmail": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/user/email/update","scope":{}},
-      "updateUserPreferences": {"action":"write.preferences","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/user/preferences","body":"json","scope":{}},
-      "updateUserQuota": {"action":"write.quotas","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/admin/users/{user_id}/quotas/{quota_target}","body":"json","scope":{"user_id":{"from":"path","at":"user_id"},"quota_target":{"from":"path","at":"quota_target"}}},
-      "uploadSnapshot": {"action":"write.snapshot","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/cloudmigration/migration/{uid}/snapshot/{snapshotUid}/upload","scope":{"uid":{"from":"path","at":"uid"},"snapshotUid":{"from":"path","at":"snapshotUid"}}},
-      "userSetUsingOrg": {"action":"write.using","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/user/using/{org_id}","scope":{"org_id":{"from":"path","at":"org_id"}}},
-      "viewPublicDashboard": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/public/dashboards/{accessToken}","scope":{"accessToken":{"from":"path","at":"accessToken"}}}
+      "RouteConvertPrometheusCortexDeleteNamespace": {"action":"convert.prom.rules.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/convert/api/prom/rules/{NamespaceTitle}","scope":{"NamespaceTitle":{"at":"NamespaceTitle","from":"path"}}},
+      "RouteConvertPrometheusCortexDeleteRuleGroup": {"action":"convert.prom.rules.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/convert/api/prom/rules/{NamespaceTitle}/{Group}","scope":{"Group":{"at":"Group","from":"path"},"NamespaceTitle":{"at":"NamespaceTitle","from":"path"}}},
+      "RouteConvertPrometheusCortexGetNamespace": {"action":"convert.prom.rules.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/convert/api/prom/rules/{NamespaceTitle}","scope":{"NamespaceTitle":{"at":"NamespaceTitle","from":"path"}}},
+      "RouteConvertPrometheusCortexGetRuleGroup": {"action":"convert.prom.rules.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/convert/api/prom/rules/{NamespaceTitle}/{Group}","scope":{"Group":{"at":"Group","from":"path"},"NamespaceTitle":{"at":"NamespaceTitle","from":"path"}}},
+      "RouteConvertPrometheusCortexGetRules": {"action":"convert.prom.rules.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/convert/api/prom/rules","scope":{}},
+      "RouteConvertPrometheusCortexPostRuleGroup": {"action":"convert.prom.rules.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/convert/api/prom/rules/{NamespaceTitle}","scope":{"NamespaceTitle":{"at":"NamespaceTitle","from":"path"}}},
+      "RouteConvertPrometheusCortexPostRuleGroups": {"action":"convert.prom.rules.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/convert/api/prom/rules","scope":{}},
+      "RouteConvertPrometheusDeleteNamespace": {"action":"convert.prometheus.config.rules.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/convert/prometheus/config/v1/rules/{NamespaceTitle}","scope":{"NamespaceTitle":{"at":"NamespaceTitle","from":"path"}}},
+      "RouteConvertPrometheusDeleteRuleGroup": {"action":"convert.prometheus.config.rules.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/convert/prometheus/config/v1/rules/{NamespaceTitle}/{Group}","scope":{"Group":{"at":"Group","from":"path"},"NamespaceTitle":{"at":"NamespaceTitle","from":"path"}}},
+      "RouteConvertPrometheusGetNamespace": {"action":"convert.prometheus.config.rules.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/convert/prometheus/config/v1/rules/{NamespaceTitle}","scope":{"NamespaceTitle":{"at":"NamespaceTitle","from":"path"}}},
+      "RouteConvertPrometheusGetRuleGroup": {"action":"convert.prometheus.config.rules.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/convert/prometheus/config/v1/rules/{NamespaceTitle}/{Group}","scope":{"Group":{"at":"Group","from":"path"},"NamespaceTitle":{"at":"NamespaceTitle","from":"path"}}},
+      "RouteConvertPrometheusGetRules": {"action":"convert.prometheus.config.rules.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/convert/prometheus/config/v1/rules","scope":{}},
+      "RouteConvertPrometheusPostRuleGroup": {"action":"convert.prometheus.config.rules.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/convert/prometheus/config/v1/rules/{NamespaceTitle}","scope":{"NamespaceTitle":{"at":"NamespaceTitle","from":"path"}}},
+      "RouteConvertPrometheusPostRuleGroups": {"action":"convert.prometheus.config.rules.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/convert/prometheus/config/v1/rules","scope":{}},
+      "RouteDeleteAlertRule": {"action":"provisioning.alert_rules.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/provisioning/alert-rules/{UID}","scope":{"UID":{"at":"UID","from":"path"}}},
+      "RouteDeleteAlertRuleGroup": {"action":"provisioning.folder.rule_groups.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/provisioning/folder/{FolderUID}/rule-groups/{Group}","scope":{"FolderUID":{"at":"FolderUID","from":"path"},"Group":{"at":"Group","from":"path"}}},
+      "RouteDeleteContactpoints": {"action":"provisioning.contact_points.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/provisioning/contact-points/{UID}","scope":{"UID":{"at":"UID","from":"path"}}},
+      "RouteDeleteMuteTiming": {"action":"provisioning.mute_timings.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["version"],"path":"/api/v1/provisioning/mute-timings/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "RouteDeleteTemplate": {"action":"provisioning.templates.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["version"],"path":"/api/v1/provisioning/templates/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "RouteExportMuteTiming": {"action":"provisioning.mute_timings.read","effects":["read"],"method":"GET","origin":"{origin}","params":["download","format"],"path":"/api/v1/provisioning/mute-timings/{name}/export","scope":{"name":{"at":"name","from":"path"}}},
+      "RouteExportMuteTimings": {"action":"provisioning.mute_timings.read","effects":["read"],"method":"GET","origin":"{origin}","params":["download","format"],"path":"/api/v1/provisioning/mute-timings/export","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "RouteGetAlertRule": {"action":"provisioning.alert_rules.read","effects":["read"],"method":"GET","origin":"{origin}","params":["download","format","folderUid","group","ruleUid"],"path":"/api/v1/provisioning/alert-rules/{UID}","path_patterns":{"UID":"[^e].*|e(?:|[^x].*|x(?:|[^p].*|p(?:|[^o].*|o(?:|[^r].*|r(?:|[^t].*|t.+)))))"},"scope":{"UID":{"at":"UID","from":"path"}}},
+      "RouteGetAlertRuleExport": {"action":"provisioning.alert_rules.read","effects":["read"],"method":"GET","origin":"{origin}","params":["download","format"],"path":"/api/v1/provisioning/alert-rules/{UID}/export","scope":{"UID":{"at":"UID","from":"path"}}},
+      "RouteGetAlertRuleGroup": {"action":"provisioning.folder.rule_groups.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/folder/{FolderUID}/rule-groups/{Group}","scope":{"FolderUID":{"at":"FolderUID","from":"path"},"Group":{"at":"Group","from":"path"}}},
+      "RouteGetAlertRuleGroupExport": {"action":"provisioning.folder.rule_groups.read","effects":["read"],"method":"GET","origin":"{origin}","params":["download","format"],"path":"/api/v1/provisioning/folder/{FolderUID}/rule-groups/{Group}/export","scope":{"FolderUID":{"at":"FolderUID","from":"path"},"Group":{"at":"Group","from":"path"}}},
+      "RouteGetAlertRules": {"action":"provisioning.alert_rules.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/alert-rules","scope":{}},
+      "RouteGetAlertRulesExport": {"action":"provisioning.alert_rules.read","effects":["read"],"method":"GET","origin":"{origin}","params":["download","format","folderUid","group","ruleUid"],"path":"/api/v1/provisioning/alert-rules/export","scope":{"folderUid":{"at":"folderUid","from":"query","optional":true},"group":{"at":"group","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"ruleUid":{"at":"ruleUid","from":"query","optional":true}}},
+      "RouteGetContactpoints": {"action":"provisioning.contact_points.read","effects":["read"],"method":"GET","origin":"{origin}","params":["name"],"path":"/api/v1/provisioning/contact-points","scope":{}},
+      "RouteGetContactpointsExport": {"action":"provisioning.contact_points.read","effects":["read"],"method":"GET","origin":"{origin}","params":["download","format","decrypt","name"],"path":"/api/v1/provisioning/contact-points/export","scope":{}},
+      "RouteGetMuteTiming": {"action":"provisioning.mute_timings.read","effects":["read"],"method":"GET","origin":"{origin}","params":["download","format"],"path":"/api/v1/provisioning/mute-timings/{name}","path_patterns":{"name":"[^e].*|e(?:|[^x].*|x(?:|[^p].*|p(?:|[^o].*|o(?:|[^r].*|r(?:|[^t].*|t.+)))))"},"scope":{"name":{"at":"name","from":"path"}}},
+      "RouteGetMuteTimings": {"action":"provisioning.mute_timings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/mute-timings","scope":{}},
+      "RouteGetPolicyTree": {"action":"provisioning.policies.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/policies","scope":{}},
+      "RouteGetPolicyTreeExport": {"action":"provisioning.policies.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/policies/export","scope":{}},
+      "RouteGetTemplate": {"action":"provisioning.templates.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/templates/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "RouteGetTemplates": {"action":"provisioning.templates.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/provisioning/templates","scope":{}},
+      "RoutePostAlertRule": {"action":"provisioning.alert_rules.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/provisioning/alert-rules","scope":{}},
+      "RoutePostContactpoints": {"action":"provisioning.contact_points.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/provisioning/contact-points","scope":{}},
+      "RoutePostMuteTiming": {"action":"provisioning.mute_timings.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/provisioning/mute-timings","scope":{}},
+      "RoutePutAlertRule": {"action":"provisioning.alert_rules.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/provisioning/alert-rules/{UID}","scope":{"UID":{"at":"UID","from":"path"}}},
+      "RoutePutAlertRuleGroup": {"action":"provisioning.folder.rule_groups.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/provisioning/folder/{FolderUID}/rule-groups/{Group}","scope":{"FolderUID":{"at":"FolderUID","from":"path"},"Group":{"at":"Group","from":"path"}}},
+      "RoutePutContactpoint": {"action":"provisioning.contact_points.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/provisioning/contact-points/{UID}","scope":{"UID":{"at":"UID","from":"path"}}},
+      "RoutePutMuteTiming": {"action":"provisioning.mute_timings.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/provisioning/mute-timings/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "RoutePutPolicyTree": {"action":"provisioning.policies.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/v1/provisioning/policies","scope":{}},
+      "RoutePutTemplate": {"action":"provisioning.templates.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/provisioning/templates/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "RouteResetPolicyTree": {"action":"provisioning.policies.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/provisioning/policies","scope":{}},
+      "SearchDevices": {"action":"anonymous.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/anonymous/search","scope":{}},
+      "addDataSource": {"action":"datasources.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/datasources","scope":{}},
+      "addOrgInvite": {"action":"org.invites.send","body":"json","effects":["send","share"],"method":"POST","origin":"{origin}","path":"/api/org/invites","scope":{"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "addOrgUser": {"action":"orgs.users.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","path":"/api/orgs/{org_id}/users","scope":{"org_id":{"at":"org_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "addOrgUserToCurrentOrg": {"action":"org.users.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","path":"/api/org/users","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "addTeamGroupApi": {"action":"teams.groups.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/teams/{teamId}/groups","scope":{"teamId":{"at":"teamId","from":"path"}}},
+      "addTeamMember": {"action":"teams.members.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","path":"/api/teams/{team_id}/members","scope":{"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"},"userId":{"at":"/userId","from":"body","type":"number"}}},
+      "addTeamRole": {"action":"access_control.teams.roles.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/access-control/teams/{teamId}/roles","scope":{"teamId":{"at":"teamId","from":"path"}}},
+      "addUserRole": {"action":"access_control.users.roles.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/access-control/users/{userId}/roles","scope":{"userId":{"at":"userId","from":"path"}}},
+      "adminCreateUser": {"action":"admin.users.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/admin/users","scope":{}},
+      "adminDeleteUser": {"action":"admin.users.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/admin/users/{user_id}","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "adminDisableUser": {"action":"admin.users.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/admin/users/{user_id}/disable","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "adminEnableUser": {"action":"admin.users.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/admin/users/{user_id}/enable","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "adminGetSettings": {"action":"admin.settings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/admin/settings","scope":{}},
+      "adminGetStats": {"action":"admin.stats.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/admin/stats","scope":{}},
+      "adminGetUserAuthTokens": {"action":"admin.users.auth_tokens.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/admin/users/{user_id}/auth-tokens","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "adminLogoutUser": {"action":"admin.users.logout.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/admin/users/{user_id}/logout","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "adminProvisioningReloadAccessControl": {"action":"admin.provisioning.access_control.reload.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/admin/provisioning/access-control/reload","scope":{}},
+      "adminProvisioningReloadDashboards": {"action":"admin.provisioning.dashboards.reload.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/admin/provisioning/dashboards/reload","scope":{}},
+      "adminProvisioningReloadDatasources": {"action":"admin.provisioning.datasources.reload.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/admin/provisioning/datasources/reload","scope":{}},
+      "adminProvisioningReloadPlugins": {"action":"admin.provisioning.plugins.reload.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/admin/provisioning/plugins/reload","scope":{}},
+      "adminRevokeUserAuthToken": {"action":"admin.users.auth_token.admin","body":"json","effects":["admin"],"grant":["user_id"],"method":"POST","origin":"{origin}","path":"/api/admin/users/{user_id}/revoke-auth-token","scope":{"authTokenId":{"at":"/authTokenId","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"user_id","from":"path"}}},
+      "adminUpdateUserPassword": {"action":"admin.users.password.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/admin/users/{user_id}/password","scope":{"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"user_id","from":"path"}}},
+      "adminUpdateUserPermissions": {"action":"admin.users.permissions.admin","body":"json","effects":["admin"],"grant":["user_id"],"method":"PUT","origin":"{origin}","path":"/api/admin/users/{user_id}/permissions","scope":{"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"user_id","from":"path"}}},
+      "callDatasourceResourceWithUID": {"action":"datasources.uid.resources.read","effects":["read"],"method":"GET","open_params":true,"origin":"{origin}","path":"/api/datasources/uid/{uid}/resources/{datasource_proxy_route*}","scope":{"datasource_proxy_route":{"at":"datasource_proxy_route","from":"path"},"uid":{"at":"uid","from":"path"}}},
+      "cancelSnapshot": {"action":"cloudmigration.migration.snapshot.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/cloudmigration/migration/{uid}/snapshot/{snapshotUid}/cancel","scope":{"snapshotUid":{"at":"snapshotUid","from":"path"},"uid":{"at":"uid","from":"path"}}},
+      "changeUserPassword": {"action":"user.password.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/user/password","scope":{}},
+      "checkDatasourceHealthWithUID": {"action":"datasources.uid.health.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/uid/{uid}/health","scope":{"uid":{"at":"uid","from":"path"}}},
+      "cleanDataSourceCache": {"action":"datasources.cache.clean.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/datasources/{dataSourceUID}/cache/clean","scope":{"dataSourceUID":{"at":"dataSourceUID","from":"path"}}},
+      "createCloudMigrationToken": {"action":"cloudmigration.token.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/cloudmigration/token","scope":{}},
+      "createCorrelation": {"action":"datasources.uid.correlations.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/datasources/uid/{sourceUID}/correlations","scope":{"sourceUID":{"at":"sourceUID","from":"path"}}},
+      "createDashboardSnapshot": {"action":"snapshots.publish","body":"json","effects":["publish"],"method":"POST","origin":"{origin}","path":"/api/snapshots","scope":{"deleteKey":{"at":"/deleteKey","from":"body","optional":true},"key":{"at":"/key","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createFolder": {"action":"folders.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/folders","scope":{}},
+      "createLibraryElement": {"action":"library_elements.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/library-elements","scope":{}},
+      "createOrg": {"action":"orgs.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/orgs","scope":{}},
+      "createPlaylist": {"action":"playlists.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/playlists","scope":{}},
+      "createPublicDashboard": {"action":"dashboards.uid.public_dashboards.publish","body":"json","effects":["publish"],"method":"POST","origin":"{origin}","path":"/api/dashboards/uid/{dashboardUid}/public-dashboards","scope":{"dashboardUid":{"at":"dashboardUid","from":"path"},"request":{"at":"","from":"body","type":"object"},"uid":{"at":"/uid","from":"body","optional":true}}},
+      "createQuery": {"action":"query_history.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/query-history","scope":{}},
+      "createRecordingRule": {"action":"recording_rules.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/recording-rules","scope":{}},
+      "createRecordingRuleWriteTarget": {"action":"recording_rules.writer.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/recording-rules/writer","scope":{}},
+      "createReport": {"action":"reports.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/reports","scope":{}},
+      "createRole": {"action":"access_control.roles.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/access-control/roles","scope":{}},
+      "createServiceAccount": {"action":"serviceaccounts.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/serviceaccounts","scope":{}},
+      "createSession": {"action":"cloudmigration.migration.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/cloudmigration/migration","scope":{}},
+      "createSnapshot": {"action":"cloudmigration.migration.snapshot.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/cloudmigration/migration/{uid}/snapshot","scope":{"uid":{"at":"uid","from":"path"}}},
+      "createTeam": {"action":"teams.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/teams","scope":{"name":{"at":"/name","from":"body"}}},
+      "createToken": {"action":"serviceaccounts.tokens.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/serviceaccounts/{serviceAccountId}/tokens","scope":{"serviceAccountId":{"at":"serviceAccountId","from":"path"}}},
+      "datasourcePrometheusLabels.form": {"action":"datasources.uid.resources.labels.read","body":"form","effects":["read"],"method":"POST","origin":"{origin}","params":["start","end","match[]","limit"],"path":"/api/datasources/uid/{uid}/resources/api/v1/labels","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"},"uid":{"at":"uid","from":"path"}}},
+      "datasourcePrometheusQuery.form": {"action":"datasources.proxy.uid.read","body":"form","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/datasources/proxy/uid/{uid}/api/v1/{endpoint}","path_patterns":{"endpoint":"query|query_range|query_exemplars|series|labels"},"scope":{"endpoint":{"at":"endpoint","from":"path"},"request":{"at":"","from":"form","type":"object"},"uid":{"at":"uid","from":"path"}}},
+      "datasourceProxyDELETEByUIDcalls": {"action":"datasources.proxy.uid.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/datasources/proxy/uid/{uid}/{datasource_proxy_route*}","scope":{"datasource_proxy_route":{"at":"datasource_proxy_route","from":"path"},"uid":{"at":"uid","from":"path"}}},
+      "datasourceProxyGETByUIDcalls": {"action":"datasources.proxy.uid.read","effects":["read"],"method":"GET","open_params":true,"origin":"{origin}","path":"/api/datasources/proxy/uid/{uid}/{datasource_proxy_route*}","scope":{"datasource_proxy_route":{"at":"datasource_proxy_route","from":"path"},"uid":{"at":"uid","from":"path"}}},
+      "datasourceProxyPOSTByUIDcalls": {"action":"datasources.proxy.uid.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/datasources/proxy/uid/{uid}/{datasource_proxy_route*}","scope":{"datasource_proxy_route":{"at":"datasource_proxy_route","from":"path"},"uid":{"at":"uid","from":"path"}}},
+      "deleteAnnotationByID": {"action":"annotations.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/annotations/{annotation_id}","scope":{"annotation_id":{"at":"annotation_id","from":"path"}}},
+      "deleteCloudMigrationToken": {"action":"cloudmigration.token.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/cloudmigration/token/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "deleteCorrelation": {"action":"datasources.uid.correlations.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/datasources/uid/{uid}/correlations/{correlationUID}","scope":{"correlationUID":{"at":"correlationUID","from":"path"},"uid":{"at":"uid","from":"path"}}},
+      "deleteDashboardByUID": {"action":"dashboards.uid.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/dashboards/uid/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "deleteDashboardSnapshot": {"action":"snapshots.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/snapshots/{key}","scope":{"key":{"at":"key","from":"path"}}},
+      "deleteDashboardSnapshotByDeleteKey": {"action":"snapshots_delete.delete","effects":["delete"],"method":"GET","origin":"{origin}","path":"/api/snapshots-delete/{deleteKey}","scope":{"deleteKey":{"at":"deleteKey","from":"path"}}},
+      "deleteDataSourceByName": {"action":"datasources.name.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/datasources/name/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "deleteDataSourceByUID": {"action":"datasources.uid.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/datasources/uid/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "deleteFolder": {"action":"folders.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["forceDeleteRules"],"path":"/api/folders/{folder_uid}","scope":{"folder_uid":{"at":"folder_uid","from":"path"}}},
+      "deleteLibraryElementByUID": {"action":"library_elements.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/library-elements/{library_element_uid}","scope":{"library_element_uid":{"at":"library_element_uid","from":"path"}}},
+      "deleteLicenseToken": {"action":"licensing.token.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/licensing/token","scope":{}},
+      "deleteOrgByID": {"action":"orgs.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/orgs/{org_id}","scope":{"org_id":{"at":"org_id","from":"path"}}},
+      "deletePlaylist": {"action":"playlists.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/playlists/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "deletePublicDashboard": {"action":"dashboards.uid.public_dashboards.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/dashboards/uid/{dashboardUid}/public-dashboards/{uid}","scope":{"dashboardUid":{"at":"dashboardUid","from":"path"},"uid":{"at":"uid","from":"path"}}},
+      "deleteQuery": {"action":"query_history.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/query-history/{query_history_uid}","scope":{"query_history_uid":{"at":"query_history_uid","from":"path"}}},
+      "deleteRecordingRule": {"action":"recording_rules.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/recording-rules/{recordingRuleID}","path_patterns":{"recordingRuleID":"[0-9]+"},"scope":{"recordingRuleID":{"at":"recordingRuleID","from":"path"}}},
+      "deleteRecordingRuleWriteTarget": {"action":"recording_rules.writer.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/recording-rules/writer","scope":{}},
+      "deleteReport": {"action":"reports.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/reports/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteRole": {"action":"access_control.roles.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force","global"],"path":"/api/access-control/roles/{roleUID}","scope":{"roleUID":{"at":"roleUID","from":"path"}}},
+      "deleteServiceAccount": {"action":"serviceaccounts.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/serviceaccounts/{serviceAccountId}","scope":{"serviceAccountId":{"at":"serviceAccountId","from":"path"}}},
+      "deleteSession": {"action":"cloudmigration.migration.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/cloudmigration/migration/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "deleteTeamByID": {"action":"teams.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/teams/{team_id}","scope":{"team_id":{"at":"team_id","from":"path"}}},
+      "deleteToken": {"action":"serviceaccounts.tokens.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/serviceaccounts/{serviceAccountId}/tokens/{tokenId}","scope":{"serviceAccountId":{"at":"serviceAccountId","from":"path"},"tokenId":{"at":"tokenId","from":"path"}}},
+      "disableDataSourceCache": {"action":"datasources.cache.write","effects":["write"],"method":"POST","origin":"{origin}","params":["dataSourceType"],"path":"/api/datasources/{dataSourceUID}/cache/disable","scope":{"dataSourceUID":{"at":"dataSourceUID","from":"path"}}},
+      "enableDataSourceCache": {"action":"datasources.cache.write","effects":["write"],"method":"POST","origin":"{origin}","params":["dataSourceType"],"path":"/api/datasources/{dataSourceUID}/cache/enable","scope":{"dataSourceUID":{"at":"dataSourceUID","from":"path"}}},
+      "getAccessControlStatus": {"action":"access_control.status.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/access-control/status","scope":{}},
+      "getAnnotationByID": {"action":"annotations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["tag","limit"],"path":"/api/annotations/{annotation_id}","path_patterns":{"annotation_id":"[^t].*|t(?:|[^a].*|a(?:|[^g].*|g(?:|[^s].*|s.+)))"},"scope":{"annotation_id":{"at":"annotation_id","from":"path"}}},
+      "getAnnotationTags": {"action":"annotations.tags.read","effects":["read"],"method":"GET","origin":"{origin}","params":["tag","limit"],"path":"/api/annotations/tags","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getAnnotations": {"action":"annotations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["from","to","userId","userUID","alertId","alertUID","dashboardId","dashboardUID","panelId","limit","tags","type","matchAny"],"path":"/api/annotations","scope":{}},
+      "getCloudMigrationToken": {"action":"cloudmigration.token.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cloudmigration/token","scope":{}},
+      "getCorrelation": {"action":"datasources.uid.correlations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/uid/{sourceUID}/correlations/{correlationUID}","scope":{"correlationUID":{"at":"correlationUID","from":"path"},"sourceUID":{"at":"sourceUID","from":"path"}}},
+      "getCorrelations": {"action":"datasources.correlations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","page","sourceUID"],"path":"/api/datasources/correlations","scope":{}},
+      "getCorrelationsBySourceUID": {"action":"datasources.uid.correlations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/uid/{sourceUID}/correlations","scope":{"sourceUID":{"at":"sourceUID","from":"path"}}},
+      "getCurrentOrg": {"action":"org.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/org","scope":{}},
+      "getCurrentOrgQuota": {"action":"org.quotas.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/org/quotas","scope":{}},
+      "getCustomPermissionsCSV": {"action":"licensing.custom_permissions_csv.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/licensing/custom-permissions-csv","scope":{}},
+      "getCustomPermissionsReport": {"action":"licensing.custom_permissions.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/licensing/custom-permissions","scope":{}},
+      "getDashboardAPIGroup": {"action":"dashboard.grafana.app.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/apis/dashboard.grafana.app","scope":{}},
+      "getDashboardByUID": {"action":"dashboards.uid.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/dashboards/uid/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "getDashboardPermissionsListByUID": {"action":"dashboards.uid.permissions.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/dashboards/uid/{uid}/permissions","scope":{"uid":{"at":"uid","from":"path"}}},
+      "getDashboardSnapshot": {"action":"snapshots.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/snapshots/{key}","scope":{"key":{"at":"key","from":"path"}}},
+      "getDashboardTags": {"action":"dashboards.tags.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/dashboards/tags","scope":{}},
+      "getDashboardVersionByUID": {"action":"dashboards.uid.versions.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/dashboards/uid/{uid}/versions/{DashboardVersionID}","scope":{"DashboardVersionID":{"at":"DashboardVersionID","from":"path"},"uid":{"at":"uid","from":"path"}}},
+      "getDashboardVersionsByUID": {"action":"dashboards.uid.versions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","start"],"path":"/api/dashboards/uid/{uid}/versions","scope":{"uid":{"at":"uid","from":"path"}}},
+      "getDataSourceByName": {"action":"datasources.name.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/name/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "getDataSourceByUID": {"action":"datasources.uid.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/uid/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "getDataSourceCacheConfig": {"action":"datasources.cache.read","effects":["read"],"method":"GET","origin":"{origin}","params":["dataSourceType"],"path":"/api/datasources/{dataSourceUID}/cache","path_patterns":{"dataSourceUID":"[^inu].*|i(?:|[^d].*|d.+)|n(?:|[^a].*|a(?:|[^m].*|m(?:|[^e].*|e.+)))|u(?:|[^i].*|i(?:|[^d].*|d.+))"},"scope":{"dataSourceUID":{"at":"dataSourceUID","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getDataSourceIdByName": {"action":"datasources.id.read","effects":["read"],"method":"GET","origin":"{origin}","params":["dataSourceType"],"path":"/api/datasources/id/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "getDataSources": {"action":"datasources.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources","scope":{}},
+      "getFolderByUID": {"action":"folders.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/folders/{folder_uid}","scope":{"folder_uid":{"at":"folder_uid","from":"path"}}},
+      "getFolderDescendantCounts": {"action":"folders.counts.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/folders/{folder_uid}/counts","scope":{"folder_uid":{"at":"folder_uid","from":"path"}}},
+      "getFolderPermissionList": {"action":"folders.permissions.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/folders/{folder_uid}/permissions","scope":{"folder_uid":{"at":"folder_uid","from":"path"}}},
+      "getFolders": {"action":"folders.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","page","parentUid","permission"],"path":"/api/folders","scope":{}},
+      "getFrontendSettings": {"action":"frontend.settings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/frontend/settings","scope":{}},
+      "getHealth": {"action":"health.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/health","scope":{}},
+      "getHomeDashboard": {"action":"dashboards.home.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/dashboards/home","scope":{}},
+      "getLDAPStatus": {"action":"admin.ldap.status.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/admin/ldap/status","scope":{}},
+      "getLibraryElementByName": {"action":"library_elements.name.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/library-elements/name/{library_element_name}","scope":{"library_element_name":{"at":"library_element_name","from":"path"}}},
+      "getLibraryElementByUID": {"action":"library_elements.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/library-elements/{library_element_uid}","scope":{"library_element_uid":{"at":"library_element_uid","from":"path"}}},
+      "getLibraryElementConnections": {"action":"library_elements.connections.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/library-elements/{library_element_uid}/connections/","scope":{"library_element_uid":{"at":"library_element_uid","from":"path"}}},
+      "getLibraryElements": {"action":"library_elements.read","effects":["read"],"method":"GET","origin":"{origin}","params":["searchString","kind","sortDirection","typeFilter","excludeUid","folderFilter","folderFilterUIDs","perPage","page"],"path":"/api/library-elements","scope":{}},
+      "getLicenseToken": {"action":"licensing.token.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/licensing/token","scope":{}},
+      "getMetadata": {"action":"saml.metadata.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/saml/metadata","scope":{}},
+      "getOrgByID": {"action":"orgs.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/orgs/{org_id}","scope":{"org_id":{"at":"org_id","from":"path"}}},
+      "getOrgByName": {"action":"orgs.name.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/orgs/name/{org_name}","scope":{"org_name":{"at":"org_name","from":"path"}}},
+      "getOrgPreferences": {"action":"org.preferences.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/org/preferences","scope":{}},
+      "getOrgQuota": {"action":"orgs.quotas.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/orgs/{org_id}/quotas","path_patterns":{"org_id":"[0-9]+"},"scope":{"org_id":{"at":"org_id","from":"path"}}},
+      "getOrgUsers": {"action":"orgs.users.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/orgs/{org_id}/users","path_patterns":{"org_id":"[0-9]+"},"scope":{"org_id":{"at":"org_id","from":"path"}}},
+      "getOrgUsersForCurrentOrg": {"action":"org.users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["query","limit"],"path":"/api/org/users","scope":{}},
+      "getOrgUsersForCurrentOrgLookup": {"action":"org.users.lookup.read","effects":["read"],"method":"GET","origin":"{origin}","params":["query","limit"],"path":"/api/org/users/lookup","scope":{}},
+      "getPendingOrgInvites": {"action":"org.invites.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/org/invites","scope":{}},
+      "getPlaylist": {"action":"playlists.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/playlists/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "getPlaylistItems": {"action":"playlists.items.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/playlists/{uid}/items","scope":{"uid":{"at":"uid","from":"path"}}},
+      "getProviderSettings": {"action":"sso_settings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/sso-settings/{key}","scope":{"key":{"at":"key","from":"path"}}},
+      "getPublicAnnotations": {"action":"public.dashboards.annotations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/public/dashboards/{accessToken}/annotations","scope":{"accessToken":{"at":"accessToken","from":"path"}}},
+      "getPublicDashboard": {"action":"dashboards.uid.public_dashboards.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/dashboards/uid/{dashboardUid}/public-dashboards","scope":{"dashboardUid":{"at":"dashboardUid","from":"path"}}},
+      "getRecordingRuleWriteTarget": {"action":"recording_rules.writer.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/recording-rules/writer","scope":{}},
+      "getReport": {"action":"reports.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/reports/{id}","path_patterns":{"id":"[0-9]+"},"scope":{"id":{"at":"id","from":"path"}}},
+      "getReportSettings": {"action":"reports.settings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/reports/settings","scope":{}},
+      "getReports": {"action":"reports.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/reports","scope":{}},
+      "getReportsByDashboardUID": {"action":"reports.dashboards.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/reports/dashboards/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "getResourceDependencies": {"action":"cloudmigration.resources.dependencies.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cloudmigration/resources/dependencies","scope":{}},
+      "getResourceDescription": {"action":"access_control.description.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/access-control/{resource}/description","path_patterns":{"resource":"[^r].*|r(?:|[^o].*|o(?:|[^l].*|l(?:|[^e].*|e(?:|[^s].*|s.+))))"},"scope":{"resource":{"at":"resource","from":"path"}}},
+      "getResourcePermissions": {"action":"access_control.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/access-control/{resource}/{resourceID}","path_patterns":{"resource":"[^r].*|r(?:|[^o].*|o(?:|[^l].*|l(?:|[^e].*|e(?:|[^s].*|s.+))))","resourceID":"[^d].*|d(?:|[^e].*|e(?:|[^s].*|s(?:|[^c].*|c(?:|[^r].*|r(?:|[^i].*|i(?:|[^p].*|p(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n.+))))))))))"},"scope":{"resource":{"at":"resource","from":"path"},"resourceID":{"at":"resourceID","from":"path"}}},
+      "getRole": {"action":"access_control.roles.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/access-control/roles/{roleUID}","scope":{"roleUID":{"at":"roleUID","from":"path"}}},
+      "getRoleAssignments": {"action":"access_control.roles.assignments.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/access-control/roles/{roleUID}/assignments","scope":{"roleUID":{"at":"roleUID","from":"path"}}},
+      "getSAMLLogout": {"action":"logout.saml.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/logout/saml","scope":{}},
+      "getSLO": {"action":"saml.slo.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/saml/slo","scope":{}},
+      "getSession": {"action":"cloudmigration.migration.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cloudmigration/migration/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "getSessionList": {"action":"cloudmigration.migration.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cloudmigration/migration","scope":{}},
+      "getSettingsImage": {"action":"reports.images.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/reports/images/{image}","scope":{"image":{"at":"image","from":"path"}}},
+      "getShapshotList": {"action":"cloudmigration.migration.snapshots.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","limit","sort"],"path":"/api/cloudmigration/migration/{uid}/snapshots","scope":{"uid":{"at":"uid","from":"path"}}},
+      "getSharingOptions": {"action":"snapshot.shared_options.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/snapshot/shared-options","scope":{}},
+      "getSignedInUser": {"action":"user.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/user","scope":{}},
+      "getSignedInUserOrgList": {"action":"user.orgs.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/user/orgs","scope":{}},
+      "getSignedInUserTeamList": {"action":"user.teams.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/user/teams","scope":{}},
+      "getSnapshot": {"action":"cloudmigration.migration.snapshot.read","effects":["read"],"method":"GET","origin":"{origin}","params":["resultPage","resultLimit","resultSortColumn","resultSortOrder","errorsOnly"],"path":"/api/cloudmigration/migration/{uid}/snapshot/{snapshotUid}","scope":{"snapshotUid":{"at":"snapshotUid","from":"path"},"uid":{"at":"uid","from":"path"}}},
+      "getStatus": {"action":"licensing.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/licensing/check","scope":{}},
+      "getSyncStatus": {"action":"admin.ldap_sync_status.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/admin/ldap-sync-status","scope":{}},
+      "getTeamByID": {"action":"teams.read","effects":["read"],"method":"GET","origin":"{origin}","params":["accesscontrol","page","perpage","name","query","sort"],"path":"/api/teams/{team_id}","path_patterns":{"team_id":"[^s].*|s(?:|[^e].*|e(?:|[^a].*|a(?:|[^r].*|r(?:|[^c].*|c(?:|[^h].*|h.+)))))"},"scope":{"team_id":{"at":"team_id","from":"path"}}},
+      "getTeamGroupsApi": {"action":"teams.groups.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/teams/{teamId}/groups","scope":{"teamId":{"at":"teamId","from":"path"}}},
+      "getTeamLBACRulesApi": {"action":"datasources.uid.lbac.teams.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/datasources/uid/{uid}/lbac/teams","scope":{"uid":{"at":"uid","from":"path"}}},
+      "getTeamMembers": {"action":"teams.members.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/teams/{team_id}/members","scope":{"team_id":{"at":"team_id","from":"path"}}},
+      "getTeamPreferences": {"action":"teams.preferences.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/teams/{team_id}/preferences","scope":{"team_id":{"at":"team_id","from":"path"}}},
+      "getUserAuthTokens": {"action":"user.auth_tokens.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/user/auth-tokens","scope":{}},
+      "getUserByID": {"action":"users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["loginOrEmail"],"path":"/api/users/{user_id}","path_patterns":{"user_id":"[0-9]+"},"scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "getUserByLoginOrEmail": {"action":"users.lookup.read","effects":["read"],"method":"GET","origin":"{origin}","params":["loginOrEmail"],"path":"/api/users/lookup","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getUserFromLDAP": {"action":"admin.ldap.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/admin/ldap/{user_name}","path_patterns":{"user_name":"[^s].*|s(?:|[^t].*|t(?:|[^a].*|a(?:|[^t].*|t(?:|[^u].*|u(?:|[^s].*|s.+)))))"},"scope":{"user_name":{"at":"user_name","from":"path"}}},
+      "getUserOrgList": {"action":"users.orgs.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/users/{user_id}/orgs","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "getUserPreferences": {"action":"user.preferences.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/user/preferences","scope":{}},
+      "getUserQuota": {"action":"admin.users.quotas.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/admin/users/{user_id}/quotas","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "getUserQuotas": {"action":"user.quotas.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/user/quotas","scope":{}},
+      "getUserTeams": {"action":"users.teams.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/users/{user_id}/teams","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "importDashboard": {"action":"dashboards.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/dashboards/import","scope":{}},
+      "interpolateDashboard": {"action":"dashboards.interpolate.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/dashboards/interpolate","scope":{}},
+      "listAllProvidersSettings": {"action":"sso_settings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/sso-settings","scope":{}},
+      "listDevices": {"action":"anonymous.devices.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/anonymous/devices","scope":{}},
+      "listPublicDashboards": {"action":"dashboards.public_dashboards.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/dashboards/public-dashboards","scope":{}},
+      "listRecordingRules": {"action":"recording_rules.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/recording-rules","scope":{}},
+      "listRoles": {"action":"access_control.roles.read","effects":["read"],"method":"GET","origin":"{origin}","params":["delegatable","includeHidden","targetOrgId"],"path":"/api/access-control/roles","scope":{}},
+      "listSortOptions": {"action":"search.sorting.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/search/sorting","scope":{}},
+      "listTeamRoles": {"action":"access_control.teams.roles.read","effects":["read"],"method":"GET","origin":"{origin}","params":["targetOrgId"],"path":"/api/access-control/teams/{teamId}/roles","scope":{"teamId":{"at":"teamId","from":"path"}}},
+      "listTeamsRoles": {"action":"access_control.teams.roles.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/access-control/teams/roles/search","scope":{}},
+      "listTokens": {"action":"serviceaccounts.tokens.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/serviceaccounts/{serviceAccountId}/tokens","scope":{"serviceAccountId":{"at":"serviceAccountId","from":"path"}}},
+      "listUserRoles": {"action":"access_control.users.roles.read","effects":["read"],"method":"GET","origin":"{origin}","params":["includeHidden","targetOrgId"],"path":"/api/access-control/users/{userId}/roles","scope":{"userId":{"at":"userId","from":"path"}}},
+      "listUsersRoles": {"action":"access_control.users.roles.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/access-control/users/roles/search","scope":{}},
+      "massDeleteAnnotations": {"action":"annotations.mass_delete.delete","body":"json","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/annotations/mass-delete","scope":{}},
+      "moveFolder": {"action":"folders.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/folders/{folder_uid}/move","scope":{"folder_uid":{"at":"folder_uid","from":"path"}}},
+      "patchAnnotation": {"action":"annotations.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/annotations/{annotation_id}","scope":{"annotation_id":{"at":"annotation_id","from":"path"}}},
+      "patchOrgPreferences": {"action":"org.preferences.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/org/preferences","scope":{}},
+      "patchProviderSettings": {"action":"sso_settings.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/sso-settings/{key}","scope":{"key":{"at":"key","from":"path"}}},
+      "patchQueryComment": {"action":"query_history.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/query-history/{query_history_uid}","scope":{"query_history_uid":{"at":"query_history_uid","from":"path"}}},
+      "patchUserPreferences": {"action":"user.preferences.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/user/preferences","scope":{}},
+      "postACS": {"action":"saml.acs.write","effects":["write"],"method":"POST","origin":"{origin}","params":["RelayState"],"path":"/api/saml/acs","scope":{}},
+      "postAnnotation": {"action":"annotations.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/annotations","scope":{}},
+      "postDashboard": {"action":"dashboards.db.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/dashboards/db","scope":{}},
+      "postGraphiteAnnotation": {"action":"annotations.graphite.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/annotations/graphite","scope":{}},
+      "postLicenseToken": {"action":"licensing.token.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/licensing/token","scope":{}},
+      "postRenewLicenseToken": {"action":"licensing.token.renew.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/licensing/token/renew","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "postSLO": {"action":"saml.slo.write","effects":["write"],"method":"POST","origin":"{origin}","params":["SAMLRequest","SAMLResponse"],"path":"/api/saml/slo","scope":{}},
+      "postSyncUserWithLDAP": {"action":"admin.ldap.sync.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/admin/ldap/sync/{user_id}","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "queryMetricsWithExpressions": {"action":"ds.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/ds/query","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "queryPublicDashboard": {"action":"public.dashboards.panels.read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/public/dashboards/{accessToken}/panels/{panelId}/query","scope":{"accessToken":{"at":"accessToken","from":"path"},"panelId":{"at":"panelId","from":"path"}}},
+      "refreshLicenseStats": {"action":"licensing.refresh_stats.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/licensing/refresh-stats","scope":{}},
+      "reloadLDAPCfg": {"action":"admin.ldap.reload.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/admin/ldap/reload","scope":{}},
+      "removeOrgUser": {"action":"orgs.users.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/orgs/{org_id}/users/{user_id}","scope":{"org_id":{"at":"org_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+      "removeOrgUserForCurrentOrg": {"action":"org.users.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/org/users/{user_id}","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "removeProviderSettings": {"action":"sso_settings.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/sso-settings/{key}","scope":{"key":{"at":"key","from":"path"}}},
+      "removeTeamGroupApiQuery": {"action":"teams.groups.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["groupId"],"path":"/api/teams/{teamId}/groups","scope":{"teamId":{"at":"teamId","from":"path"}}},
+      "removeTeamMember": {"action":"teams.members.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/teams/{team_id}/members/{user_id}","scope":{"team_id":{"at":"team_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+      "removeTeamRole": {"action":"access_control.teams.roles.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/access-control/teams/{teamId}/roles/{roleUID}","scope":{"roleUID":{"at":"roleUID","from":"path"},"teamId":{"at":"teamId","from":"path"}}},
+      "removeUserRole": {"action":"access_control.users.roles.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["global"],"path":"/api/access-control/users/{userId}/roles/{roleUID}","scope":{"roleUID":{"at":"roleUID","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "renderReportCSVs": {"action":"reports.render.csvs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["dashboards","title"],"path":"/api/reports/render/csvs","scope":{}},
+      "renderReportPDFs": {"action":"reports.render.pdfs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["dashboards","orientation","layout","title","scaleFactor","includeTables"],"path":"/api/reports/render/pdfs","scope":{}},
+      "restoreDashboardVersionByUID": {"action":"dashboards.uid.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/dashboards/uid/{uid}/restore","scope":{"uid":{"at":"uid","from":"path"}}},
+      "retrieveJWKS": {"action":"signing_keys.keys.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/signing-keys/keys","scope":{}},
+      "retrieveServiceAccount": {"action":"serviceaccounts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Disabled","expiredTokens","query","perpage","page"],"path":"/api/serviceaccounts/{serviceAccountId}","path_patterns":{"serviceAccountId":"[0-9]+"},"scope":{"serviceAccountId":{"at":"serviceAccountId","from":"path"}}},
+      "revokeInvite": {"action":"org.invites.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/org/invites/{invitation_code}/revoke","scope":{"invitation_code":{"at":"invitation_code","from":"path"}}},
+      "revokeUserAuthToken": {"action":"user.auth_token.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/user/revoke-auth-token","scope":{"authTokenId":{"at":"/authTokenId","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "saveReportSettings": {"action":"reports.settings.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/reports/settings","scope":{}},
+      "search": {"action":"search.read","effects":["read"],"method":"GET","origin":"{origin}","params":["query","tag","type","dashboardIds","dashboardUIDs","folderIds","folderUIDs","starred","limit","page","permission","sort","deleted"],"path":"/api/search","scope":{}},
+      "searchDashboardSnapshots": {"action":"dashboard.snapshots.read","effects":["read"],"method":"GET","origin":"{origin}","params":["query","limit"],"path":"/api/dashboard/snapshots","scope":{}},
+      "searchOrgServiceAccountsWithPaging": {"action":"serviceaccounts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["Disabled","expiredTokens","query","perpage","page"],"path":"/api/serviceaccounts/search","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "searchOrgUsers": {"action":"orgs.users.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/orgs/{org_id}/users/search","scope":{"org_id":{"at":"org_id","from":"path"}}},
+      "searchOrgs": {"action":"orgs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","perpage","name","query"],"path":"/api/orgs","scope":{}},
+      "searchPlaylists": {"action":"playlists.read","effects":["read"],"method":"GET","origin":"{origin}","params":["query","limit"],"path":"/api/playlists","scope":{}},
+      "searchQueries": {"action":"query_history.read","effects":["read"],"method":"GET","origin":"{origin}","params":["datasourceUid","searchString","onlyStarred","sort","page","limit","from","to"],"path":"/api/query-history","scope":{}},
+      "searchTeamGroups": {"action":"teams.groups.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","perpage","query","name"],"path":"/api/teams/{teamId}/groups/search","scope":{"teamId":{"at":"teamId","from":"path"}}},
+      "searchTeams": {"action":"teams.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","perpage","name","query","accesscontrol","sort"],"path":"/api/teams/search","scope":{"name":{"at":"name","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "searchUsers": {"action":"users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["perpage","page"],"path":"/api/users","scope":{}},
+      "searchUsersWithPaging": {"action":"users.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/users/search","scope":{}},
+      "sendReport": {"action":"reports.email.send","body":"json","effects":["send"],"method":"POST","origin":"{origin}","path":"/api/reports/email","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "sendTestEmail": {"action":"reports.email.send","body":"json","effects":["send"],"method":"POST","origin":"{origin}","path":"/api/reports/test-email","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "setDataSourceCacheConfig": {"action":"datasources.cache.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["dataSourceType"],"path":"/api/datasources/{dataSourceUID}/cache","scope":{"dataSourceUID":{"at":"dataSourceUID","from":"path"}}},
+      "setResourcePermissions": {"action":"access_control.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/access-control/{resource}/{resourceID}","scope":{"resource":{"at":"resource","from":"path"},"resourceID":{"at":"resourceID","from":"path"}}},
+      "setResourcePermissionsForBuiltInRole": {"action":"access_control.built_in_roles.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/access-control/{resource}/{resourceID}/builtInRoles/{builtInRole}","scope":{"builtInRole":{"at":"builtInRole","from":"path"},"resource":{"at":"resource","from":"path"},"resourceID":{"at":"resourceID","from":"path"}}},
+      "setResourcePermissionsForTeam": {"action":"access_control.teams.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","path":"/api/access-control/{resource}/{resourceID}/teams/{teamID}","scope":{"request":{"at":"","from":"body","type":"object"},"resource":{"at":"resource","from":"path"},"resourceID":{"at":"resourceID","from":"path"},"teamID":{"at":"teamID","from":"path"}}},
+      "setResourcePermissionsForUser": {"action":"access_control.users.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","path":"/api/access-control/{resource}/{resourceID}/users/{userID}","scope":{"request":{"at":"","from":"body","type":"object"},"resource":{"at":"resource","from":"path"},"resourceID":{"at":"resourceID","from":"path"},"userID":{"at":"userID","from":"path"}}},
+      "setRoleAssignments": {"action":"access_control.roles.assignments.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/access-control/roles/{roleUID}/assignments","scope":{"roleUID":{"at":"roleUID","from":"path"}}},
+      "setTeamMemberships": {"action":"teams.members.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/teams/{team_id}/members","scope":{"team_id":{"at":"team_id","from":"path"}}},
+      "setTeamRoles": {"action":"access_control.teams.roles.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","params":["targetOrgId"],"path":"/api/access-control/teams/{teamId}/roles","scope":{"teamId":{"at":"teamId","from":"path"}}},
+      "setUserRoles": {"action":"access_control.users.roles.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","params":["targetOrgId"],"path":"/api/access-control/users/{userId}/roles","scope":{"userId":{"at":"userId","from":"path"}}},
+      "starDashboardByUID": {"action":"user.stars.dashboard.uid.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/user/stars/dashboard/uid/{dashboard_uid}","scope":{"dashboard_uid":{"at":"dashboard_uid","from":"path"}}},
+      "starQuery": {"action":"query_history.star.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/query-history/star/{query_history_uid}","scope":{"query_history_uid":{"at":"query_history_uid","from":"path"}}},
+      "testCreateRecordingRule": {"action":"recording_rules.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/recording-rules/test","scope":{}},
+      "unstarDashboardByUID": {"action":"user.stars.dashboard.uid.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/user/stars/dashboard/uid/{dashboard_uid}","scope":{"dashboard_uid":{"at":"dashboard_uid","from":"path"}}},
+      "unstarQuery": {"action":"query_history.star.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/query-history/star/{query_history_uid}","scope":{"query_history_uid":{"at":"query_history_uid","from":"path"}}},
+      "updateAnnotation": {"action":"annotations.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/annotations/{annotation_id}","scope":{"annotation_id":{"at":"annotation_id","from":"path"}}},
+      "updateCorrelation": {"action":"datasources.uid.correlations.write","body":"any","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/datasources/uid/{sourceUID}/correlations/{correlationUID}","scope":{"correlationUID":{"at":"correlationUID","from":"path"},"sourceUID":{"at":"sourceUID","from":"path"}}},
+      "updateCurrentOrg": {"action":"org.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/org","scope":{}},
+      "updateCurrentOrgAddress": {"action":"org.address.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/org/address","scope":{}},
+      "updateDashboardPermissionsByUID": {"action":"dashboards.uid.permissions.share","body":"json","effects":["share"],"grant":["uid"],"method":"POST","origin":"{origin}","path":"/api/dashboards/uid/{uid}/permissions","scope":{"request":{"at":"","from":"body","type":"object"},"uid":{"at":"uid","from":"path"}}},
+      "updateDataSourceByUID": {"action":"datasources.uid.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/datasources/uid/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "updateFolder": {"action":"folders.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/folders/{folder_uid}","scope":{"folder_uid":{"at":"folder_uid","from":"path"}}},
+      "updateFolderPermissions": {"action":"folders.permissions.share","body":"json","effects":["share"],"grant":["folder_uid"],"method":"POST","origin":"{origin}","path":"/api/folders/{folder_uid}/permissions","scope":{"folder_uid":{"at":"folder_uid","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateLibraryElement": {"action":"library_elements.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/library-elements/{library_element_uid}","scope":{"library_element_uid":{"at":"library_element_uid","from":"path"}}},
+      "updateOrg": {"action":"orgs.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/orgs/{org_id}","scope":{"org_id":{"at":"org_id","from":"path"}}},
+      "updateOrgAddress": {"action":"orgs.address.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/orgs/{org_id}/address","scope":{"org_id":{"at":"org_id","from":"path"}}},
+      "updateOrgPreferences": {"action":"org.preferences.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/org/preferences","scope":{}},
+      "updateOrgQuota": {"action":"orgs.quotas.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/orgs/{org_id}/quotas/{quota_target}","scope":{"org_id":{"at":"org_id","from":"path"},"quota_target":{"at":"quota_target","from":"path"}}},
+      "updateOrgUser": {"action":"orgs.users.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/orgs/{org_id}/users/{user_id}","scope":{"org_id":{"at":"org_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+      "updateOrgUserForCurrentOrg": {"action":"org.users.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/org/users/{user_id}","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "updatePlaylist": {"action":"playlists.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/playlists/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "updateProviderSettings": {"action":"sso_settings.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/sso-settings/{key}","scope":{"key":{"at":"key","from":"path"}}},
+      "updatePublicDashboard": {"action":"dashboards.uid.public_dashboards.publish","body":"json","effects":["publish"],"method":"PATCH","origin":"{origin}","path":"/api/dashboards/uid/{dashboardUid}/public-dashboards/{uid}","scope":{"body.uid":{"at":"/uid","from":"body","optional":true},"dashboardUid":{"at":"dashboardUid","from":"path"},"request":{"at":"","from":"body","type":"object"},"uid":{"at":"uid","from":"path"}}},
+      "updateRecordingRule": {"action":"recording_rules.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/recording-rules","scope":{}},
+      "updateReport": {"action":"reports.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/reports/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateRole": {"action":"access_control.roles.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/access-control/roles/{roleUID}","scope":{"displayName":{"at":"/displayName","from":"body"},"roleUID":{"at":"roleUID","from":"path"}}},
+      "updateServiceAccount": {"action":"serviceaccounts.admin","body":"any","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/serviceaccounts/{serviceAccountId}","scope":{"serviceAccountId":{"at":"serviceAccountId","from":"path"}}},
+      "updateSignedInUser": {"action":"user.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/user","scope":{}},
+      "updateTeam": {"action":"teams.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/teams/{team_id}","scope":{"team_id":{"at":"team_id","from":"path"}}},
+      "updateTeamLBACRulesApi": {"action":"datasources.uid.lbac.teams.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/datasources/uid/{uid}/lbac/teams","scope":{"uid":{"at":"uid","from":"path"}}},
+      "updateTeamMember": {"action":"teams.members.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/teams/{team_id}/members/{user_id}","scope":{"team_id":{"at":"team_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+      "updateTeamPreferences": {"action":"teams.preferences.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/teams/{team_id}/preferences","scope":{"team_id":{"at":"team_id","from":"path"}}},
+      "updateUser": {"action":"users.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/users/{user_id}","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "updateUserEmail": {"action":"user.email.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/user/email/update","scope":{}},
+      "updateUserPreferences": {"action":"user.preferences.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/user/preferences","scope":{}},
+      "updateUserQuota": {"action":"admin.users.quotas.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/admin/users/{user_id}/quotas/{quota_target}","scope":{"quota_target":{"at":"quota_target","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+      "uploadSnapshot": {"action":"cloudmigration.migration.snapshot.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/cloudmigration/migration/{uid}/snapshot/{snapshotUid}/upload","scope":{"snapshotUid":{"at":"snapshotUid","from":"path"},"uid":{"at":"uid","from":"path"}}},
+      "userSetUsingOrg": {"action":"user.using.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/user/using/{org_id}","scope":{"org_id":{"at":"org_id","from":"path"}}},
+      "viewPublicDashboard": {"action":"public.dashboards.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/public/dashboards/{accessToken}","scope":{"accessToken":{"at":"accessToken","from":"path"}}}
     }
   }
 }

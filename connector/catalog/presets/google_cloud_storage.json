@@ -1,8 +1,317 @@
 {
-  "title": "Google Cloud Storage",
   "catalog": {
-    "replaced_by": "google_cloud",
-    "group": "api",
+    "actions": {
+      "storage": {
+        "title": "Storage"
+      },
+      "storage.b": {
+        "title": "B"
+      },
+      "storage.b.acl": {
+        "title": "Acl"
+      },
+      "storage.b.acl.delete": {
+        "title": "Delete"
+      },
+      "storage.b.acl.read": {
+        "title": "Read"
+      },
+      "storage.b.acl.share": {
+        "title": "Share"
+      },
+      "storage.b.anywhere_caches": {
+        "title": "Anywhere caches"
+      },
+      "storage.b.anywhere_caches.read": {
+        "title": "Read"
+      },
+      "storage.b.anywhere_caches.write": {
+        "title": "Create and edit"
+      },
+      "storage.b.default_object_acl": {
+        "title": "Default object acl"
+      },
+      "storage.b.default_object_acl.delete": {
+        "title": "Delete"
+      },
+      "storage.b.default_object_acl.read": {
+        "title": "Read"
+      },
+      "storage.b.default_object_acl.share": {
+        "title": "Share"
+      },
+      "storage.b.delete": {
+        "title": "Delete"
+      },
+      "storage.b.folders": {
+        "title": "Folders"
+      },
+      "storage.b.folders.delete": {
+        "title": "Delete"
+      },
+      "storage.b.folders.read": {
+        "title": "Read"
+      },
+      "storage.b.folders.recursive": {
+        "title": "Recursive"
+      },
+      "storage.b.folders.recursive.delete": {
+        "title": "Delete"
+      },
+      "storage.b.folders.rename_to": {
+        "title": "Rename to"
+      },
+      "storage.b.folders.rename_to.folders": {
+        "title": "Folders"
+      },
+      "storage.b.folders.rename_to.folders.write": {
+        "title": "Create and edit"
+      },
+      "storage.b.folders.write": {
+        "title": "Create and edit"
+      },
+      "storage.b.iam": {
+        "title": "Iam"
+      },
+      "storage.b.iam.read": {
+        "title": "Read"
+      },
+      "storage.b.iam.share": {
+        "title": "Share"
+      },
+      "storage.b.iam.test_permissions": {
+        "title": "Test permissions"
+      },
+      "storage.b.iam.test_permissions.read": {
+        "title": "Read"
+      },
+      "storage.b.managed_folders": {
+        "title": "Managed folders"
+      },
+      "storage.b.managed_folders.delete": {
+        "title": "Delete"
+      },
+      "storage.b.managed_folders.iam": {
+        "title": "Iam"
+      },
+      "storage.b.managed_folders.iam.read": {
+        "title": "Read"
+      },
+      "storage.b.managed_folders.iam.share": {
+        "title": "Share"
+      },
+      "storage.b.managed_folders.iam.test_permissions": {
+        "title": "Test permissions"
+      },
+      "storage.b.managed_folders.iam.test_permissions.read": {
+        "title": "Read"
+      },
+      "storage.b.managed_folders.read": {
+        "title": "Read"
+      },
+      "storage.b.managed_folders.write": {
+        "title": "Create and edit"
+      },
+      "storage.b.notification_configs": {
+        "title": "Notification configs"
+      },
+      "storage.b.notification_configs.delete": {
+        "title": "Delete"
+      },
+      "storage.b.notification_configs.read": {
+        "title": "Read"
+      },
+      "storage.b.notification_configs.write": {
+        "title": "Create and edit"
+      },
+      "storage.b.o": {
+        "title": "O"
+      },
+      "storage.b.o.acl": {
+        "title": "Acl"
+      },
+      "storage.b.o.acl.delete": {
+        "title": "Delete"
+      },
+      "storage.b.o.acl.read": {
+        "title": "Read"
+      },
+      "storage.b.o.acl.share": {
+        "title": "Share"
+      },
+      "storage.b.o.bulk_restore": {
+        "title": "Bulk restore"
+      },
+      "storage.b.o.bulk_restore.write": {
+        "title": "Create and edit"
+      },
+      "storage.b.o.compose": {
+        "title": "Compose"
+      },
+      "storage.b.o.compose.share": {
+        "title": "Share"
+      },
+      "storage.b.o.compose.write": {
+        "title": "Create and edit"
+      },
+      "storage.b.o.copy_to": {
+        "title": "Copy to"
+      },
+      "storage.b.o.copy_to.b": {
+        "title": "B"
+      },
+      "storage.b.o.copy_to.b.o": {
+        "title": "O"
+      },
+      "storage.b.o.copy_to.b.o.share": {
+        "title": "Share"
+      },
+      "storage.b.o.copy_to.b.o.write": {
+        "title": "Create and edit"
+      },
+      "storage.b.o.delete": {
+        "title": "Delete"
+      },
+      "storage.b.o.iam": {
+        "title": "Iam"
+      },
+      "storage.b.o.iam.read": {
+        "title": "Read"
+      },
+      "storage.b.o.iam.share": {
+        "title": "Share"
+      },
+      "storage.b.o.iam.test_permissions": {
+        "title": "Test permissions"
+      },
+      "storage.b.o.iam.test_permissions.read": {
+        "title": "Read"
+      },
+      "storage.b.o.move_to": {
+        "title": "Move to"
+      },
+      "storage.b.o.move_to.o": {
+        "title": "O"
+      },
+      "storage.b.o.move_to.o.write": {
+        "title": "Create and edit"
+      },
+      "storage.b.o.read": {
+        "title": "Read"
+      },
+      "storage.b.o.rewrite_to": {
+        "title": "Rewrite to"
+      },
+      "storage.b.o.rewrite_to.b": {
+        "title": "B"
+      },
+      "storage.b.o.rewrite_to.b.o": {
+        "title": "O"
+      },
+      "storage.b.o.rewrite_to.b.o.share": {
+        "title": "Share"
+      },
+      "storage.b.o.rewrite_to.b.o.write": {
+        "title": "Create and edit"
+      },
+      "storage.b.o.share": {
+        "title": "Share"
+      },
+      "storage.b.o.view_full_context": {
+        "title": "View full context"
+      },
+      "storage.b.o.view_full_context.read": {
+        "title": "Read"
+      },
+      "storage.b.o.write": {
+        "title": "Create and edit"
+      },
+      "storage.b.operations": {
+        "title": "Operations"
+      },
+      "storage.b.operations.advance_relocate_bucket": {
+        "title": "Advance relocate bucket"
+      },
+      "storage.b.operations.advance_relocate_bucket.write": {
+        "title": "Create and edit"
+      },
+      "storage.b.operations.read": {
+        "title": "Read"
+      },
+      "storage.b.operations.write": {
+        "title": "Create and edit"
+      },
+      "storage.b.rapid_caches": {
+        "title": "Rapid caches"
+      },
+      "storage.b.rapid_caches.read": {
+        "title": "Read"
+      },
+      "storage.b.rapid_caches.write": {
+        "title": "Create and edit"
+      },
+      "storage.b.read": {
+        "title": "Read"
+      },
+      "storage.b.relocate": {
+        "title": "Relocate"
+      },
+      "storage.b.relocate.write": {
+        "title": "Create and edit"
+      },
+      "storage.b.retention_policy": {
+        "title": "Retention policy"
+      },
+      "storage.b.retention_policy.write": {
+        "title": "Create and edit"
+      },
+      "storage.b.share": {
+        "title": "Share"
+      },
+      "storage.b.storage_layout": {
+        "title": "Storage layout"
+      },
+      "storage.b.storage_layout.read": {
+        "title": "Read"
+      },
+      "storage.b.write": {
+        "title": "Create and edit"
+      },
+      "storage.projects": {
+        "title": "Projects"
+      },
+      "storage.projects.hmac_keys": {
+        "title": "Hmac keys"
+      },
+      "storage.projects.hmac_keys.admin": {
+        "title": "Manage"
+      },
+      "storage.projects.hmac_keys.delete": {
+        "title": "Delete"
+      },
+      "storage.projects.hmac_keys.read": {
+        "title": "Read"
+      },
+      "storage.projects.service_account": {
+        "title": "Service account"
+      },
+      "storage.projects.service_account.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://storage.googleapis.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
     "fields": [
       {
         "key": "client_id",
@@ -15,130 +324,128 @@
         "paths": [],
         "secret": true
       },
-      {"key": "token", "label": "Google Cloud Storage account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloud-platform.read-only https://www.googleapis.com/auth/devstorage.full_control https://www.googleapis.com/auth/devstorage.read_only https://www.googleapis.com/auth/devstorage.read_write"}}
+      {
+        "credential": true,
+        "key": "token",
+        "label": "Google Cloud Storage account",
+        "oauth": {
+          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
+          "client_id": "{client_id}",
+          "client_secret": "{client_secret}",
+          "scope": "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloud-platform.read-only https://www.googleapis.com/auth/devstorage.full_control https://www.googleapis.com/auth/devstorage.read_only https://www.googleapis.com/auth/devstorage.read_write",
+          "token_url": "https://oauth2.googleapis.com/token"
+        },
+        "secret": true
+      }
     ],
-    "connection": {"http": {"slots": [{"value": "token", "origin": "https://storage.googleapis.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
-    "actions": {
-      "delete.acl": {"title": "Delete: acl"},
-      "delete.b": {"title": "Delete: b"},
-      "delete.default_object_acl": {"title": "Delete: default object acl"},
-      "delete.delete_recursive": {"title": "Delete: delete recursive"},
-      "delete.folders": {"title": "Delete: folders"},
-      "delete.hmac_keys": {"title": "Delete: hmac keys"},
-      "delete.managed_folders": {"title": "Delete: managed folders"},
-      "delete.notification_configs": {"title": "Delete: notification configs"},
-      "delete.o": {"title": "Delete: o"},
-      "read": {"title": "Read everything the account can see"},
-      "share.acl": {"title": "Share: acl"},
-      "write.advance_relocate_bucket": {"title": "Write: advance relocate bucket"},
-      "write.anywhere_caches": {"title": "Write: anywhere caches"},
-      "write.b": {"title": "Write: b"},
-      "write.bulk_restore": {"title": "Write: bulk restore"},
-      "write.compose": {"title": "Write: compose"},
-      "write.default_object_acl": {"title": "Write: default object acl"},
-      "write.folders": {"title": "Write: folders"},
-      "write.hmac_keys": {"title": "Write: hmac keys"},
-      "write.iam": {"title": "Write: iam"},
-      "write.managed_folders": {"title": "Write: managed folders"},
-      "write.notification_configs": {"title": "Write: notification configs"},
-      "write.o": {"title": "Write: o"},
-      "write.operations": {"title": "Write: operations"},
-      "write.rapid_caches": {"title": "Write: rapid caches"},
-      "write.relocate": {"title": "Write: relocate"},
-      "write.stop": {"title": "Write: stop"}
-    }
+    "group": "api",
+    "replaced_by": "google_cloud"
   },
+  "title": "Google Cloud Storage",
   "http": {
     "operations": {
-      "anywhereCaches.disable": {"action":"write.anywhere_caches","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/anywhereCaches/{anywhereCacheId}/disable","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp"],"scope":{"bucket":{"from":"path","at":"bucket"},"anywhereCacheId":{"from":"path","at":"anywhereCacheId"}}},
-      "anywhereCaches.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/anywhereCaches/{anywhereCacheId}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp"],"scope":{"bucket":{"from":"path","at":"bucket"},"anywhereCacheId":{"from":"path","at":"anywhereCacheId"}}},
-      "anywhereCaches.insert": {"action":"write.anywhere_caches","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/anywhereCaches","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "anywhereCaches.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/anywhereCaches","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","pageSize","pageToken"],"scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "anywhereCaches.pause": {"action":"write.anywhere_caches","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/anywhereCaches/{anywhereCacheId}/pause","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp"],"scope":{"bucket":{"from":"path","at":"bucket"},"anywhereCacheId":{"from":"path","at":"anywhereCacheId"}}},
-      "anywhereCaches.resume": {"action":"write.anywhere_caches","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/anywhereCaches/{anywhereCacheId}/resume","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp"],"scope":{"bucket":{"from":"path","at":"bucket"},"anywhereCacheId":{"from":"path","at":"anywhereCacheId"}}},
-      "anywhereCaches.update": {"action":"write.anywhere_caches","effects":["write"],"method":"PATCH","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/anywhereCaches/{anywhereCacheId}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"},"anywhereCacheId":{"from":"path","at":"anywhereCacheId"}}},
-      "bucketAccessControls.delete": {"action":"delete.acl","effects":["delete"],"method":"DELETE","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/acl/{entity}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"entity":{"from":"path","at":"entity"}}},
-      "bucketAccessControls.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/acl/{entity}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"entity":{"from":"path","at":"entity"}}},
-      "bucketAccessControls.insert": {"action":"share.acl","effects":["share"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/acl","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"},"request":{"from":"body","at":"","type":"object"}},"grant":["bucket"]},
-      "bucketAccessControls.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/acl","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "bucketAccessControls.patch": {"action":"share.acl","effects":["share"],"method":"PATCH","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/acl/{entity}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"},"entity":{"from":"path","at":"entity"},"request":{"from":"body","at":"","type":"object"}},"grant":["bucket","entity"]},
-      "bucketAccessControls.update": {"action":"share.acl","effects":["share"],"method":"PUT","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/acl/{entity}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"},"entity":{"from":"path","at":"entity"},"request":{"from":"body","at":"","type":"object"}},"grant":["bucket","entity"]},
-      "buckets.delete": {"action":"delete.b","effects":["delete"],"method":"DELETE","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "buckets.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","ifMetagenerationMatch","ifMetagenerationNotMatch","projection","softDeleted","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "buckets.getIamPolicy": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/iam","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","optionsRequestedPolicyVersion","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "buckets.getStorageLayout": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/storageLayout","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","prefix"],"scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "buckets.insert": {"action":"write.b","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","enableObjectRetention","predefinedAcl","predefinedDefaultObjectAcl","project","projection","userProject"],"body":"json","scope":{}},
-      "buckets.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","maxResults","pageToken","prefix","project","projection","returnPartialSuccess","softDeleted","userProject"],"scope":{}},
-      "buckets.lockRetentionPolicy": {"action":"write.b","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/lockRetentionPolicy","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "buckets.operations.advanceRelocateBucket": {"action":"write.advance_relocate_bucket","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/operations/{operationId}/advanceRelocateBucket","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"},"operationId":{"from":"path","at":"operationId"}}},
-      "buckets.operations.cancel": {"action":"write.operations","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/operations/{operationId}/cancel","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp"],"scope":{"bucket":{"from":"path","at":"bucket"},"operationId":{"from":"path","at":"operationId"}}},
-      "buckets.operations.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/operations/{operationId}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp"],"scope":{"bucket":{"from":"path","at":"bucket"},"operationId":{"from":"path","at":"operationId"}}},
-      "buckets.operations.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/operations","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","filter","pageSize","pageToken"],"scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "buckets.patch": {"action":"write.b","effects":["write"],"method":"PATCH","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch","predefinedAcl","predefinedDefaultObjectAcl","projection","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "buckets.relocate": {"action":"write.relocate","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/relocate","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "buckets.restore": {"action":"write.b","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/restore","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","projection","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "buckets.setIamPolicy": {"action":"write.iam","effects":["write"],"method":"PUT","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/iam","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "buckets.testIamPermissions": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/iam/testPermissions","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","permissions","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "buckets.update": {"action":"write.b","effects":["write"],"method":"PUT","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch","predefinedAcl","predefinedDefaultObjectAcl","projection","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "channels.stop": {"action":"write.stop","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/channels/stop","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp"],"body":"json","scope":{}},
-      "defaultObjectAccessControls.delete": {"action":"delete.default_object_acl","effects":["delete"],"method":"DELETE","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/defaultObjectAcl/{entity}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"entity":{"from":"path","at":"entity"}}},
-      "defaultObjectAccessControls.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/defaultObjectAcl/{entity}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"entity":{"from":"path","at":"entity"}}},
-      "defaultObjectAccessControls.insert": {"action":"write.default_object_acl","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/defaultObjectAcl","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "defaultObjectAccessControls.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/defaultObjectAcl","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "defaultObjectAccessControls.patch": {"action":"write.default_object_acl","effects":["write"],"method":"PATCH","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/defaultObjectAcl/{entity}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"},"entity":{"from":"path","at":"entity"}}},
-      "defaultObjectAccessControls.update": {"action":"write.default_object_acl","effects":["write"],"method":"PUT","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/defaultObjectAcl/{entity}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"},"entity":{"from":"path","at":"entity"}}},
-      "folders.delete": {"action":"delete.folders","effects":["delete"],"method":"DELETE","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/folders/{folder}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch"],"scope":{"bucket":{"from":"path","at":"bucket"},"folder":{"from":"path","at":"folder"}}},
-      "folders.deleteRecursive": {"action":"delete.delete_recursive","effects":["delete"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/folders/{folder}/deleteRecursive","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch"],"scope":{"bucket":{"from":"path","at":"bucket"},"folder":{"from":"path","at":"folder"}}},
-      "folders.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/folders/{folder}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch"],"scope":{"bucket":{"from":"path","at":"bucket"},"folder":{"from":"path","at":"folder"}}},
-      "folders.insert": {"action":"write.folders","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/folders","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","recursive"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "folders.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/folders","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","delimiter","endOffset","pageSize","pageToken","prefix","startOffset"],"scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "folders.rename": {"action":"write.folders","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/folders/{sourceFolder}/renameTo/folders/{destinationFolder}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifSourceMetagenerationMatch","ifSourceMetagenerationNotMatch"],"scope":{"bucket":{"from":"path","at":"bucket"},"sourceFolder":{"from":"path","at":"sourceFolder"},"destinationFolder":{"from":"path","at":"destinationFolder"}}},
-      "managedFolders.delete": {"action":"delete.managed_folders","effects":["delete"],"method":"DELETE","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/managedFolders/{managedFolder}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","allowNonEmpty","ifMetagenerationMatch","ifMetagenerationNotMatch"],"scope":{"bucket":{"from":"path","at":"bucket"},"managedFolder":{"from":"path","at":"managedFolder"}}},
-      "managedFolders.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/managedFolders/{managedFolder}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch"],"scope":{"bucket":{"from":"path","at":"bucket"},"managedFolder":{"from":"path","at":"managedFolder"}}},
-      "managedFolders.getIamPolicy": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/managedFolders/{managedFolder}/iam","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","optionsRequestedPolicyVersion","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"managedFolder":{"from":"path","at":"managedFolder"}}},
-      "managedFolders.insert": {"action":"write.managed_folders","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/managedFolders","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "managedFolders.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/managedFolders","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","pageSize","pageToken","prefix"],"scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "managedFolders.setIamPolicy": {"action":"write.iam","effects":["write"],"method":"PUT","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/managedFolders/{managedFolder}/iam","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"},"managedFolder":{"from":"path","at":"managedFolder"}}},
-      "managedFolders.testIamPermissions": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/managedFolders/{managedFolder}/iam/testPermissions","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","permissions","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"managedFolder":{"from":"path","at":"managedFolder"}}},
-      "managedFolders.update": {"action":"write.managed_folders","effects":["write"],"method":"PATCH","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/managedFolders/{managedFolder}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"},"managedFolder":{"from":"path","at":"managedFolder"}}},
-      "notifications.delete": {"action":"delete.notification_configs","effects":["delete"],"method":"DELETE","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/notificationConfigs/{notification}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"notification":{"from":"path","at":"notification"}}},
-      "notifications.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/notificationConfigs/{notification}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"notification":{"from":"path","at":"notification"}}},
-      "notifications.insert": {"action":"write.notification_configs","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/notificationConfigs","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "notifications.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/notificationConfigs","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "objectAccessControls.delete": {"action":"delete.acl","effects":["delete"],"method":"DELETE","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o/{object}/acl/{entity}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"object":{"from":"path","at":"object"},"entity":{"from":"path","at":"entity"}}},
-      "objectAccessControls.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o/{object}/acl/{entity}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"object":{"from":"path","at":"object"},"entity":{"from":"path","at":"entity"}}},
-      "objectAccessControls.insert": {"action":"share.acl","effects":["share"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o/{object}/acl","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"},"object":{"from":"path","at":"object"},"request":{"from":"body","at":"","type":"object"}},"grant":["bucket","object"]},
-      "objectAccessControls.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o/{object}/acl","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"object":{"from":"path","at":"object"}}},
-      "objectAccessControls.patch": {"action":"share.acl","effects":["share"],"method":"PATCH","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o/{object}/acl/{entity}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"},"object":{"from":"path","at":"object"},"entity":{"from":"path","at":"entity"},"request":{"from":"body","at":"","type":"object"}},"grant":["bucket","object","entity"]},
-      "objectAccessControls.update": {"action":"share.acl","effects":["share"],"method":"PUT","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o/{object}/acl/{entity}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"},"object":{"from":"path","at":"object"},"entity":{"from":"path","at":"entity"},"request":{"from":"body","at":"","type":"object"}},"grant":["bucket","object","entity"]},
-      "objects.bulkRestore": {"action":"write.bulk_restore","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o/bulkRestore","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "objects.compose": {"action":"write.compose","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{destinationBucket}/o/{destinationObject}/compose","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","destinationPredefinedAcl","dropContextGroups","ifGenerationMatch","ifMetagenerationMatch","kmsKeyName","userProject"],"body":"json","scope":{"destinationBucket":{"from":"path","at":"destinationBucket"},"destinationObject":{"from":"path","at":"destinationObject"}}},
-      "objects.copy": {"action":"write.o","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{sourceBucket}/o/{sourceObject}/copyTo/b/{destinationBucket}/o/{destinationObject}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","destinationKmsKeyName","destinationPredefinedAcl","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","ifSourceGenerationMatch","ifSourceGenerationNotMatch","ifSourceMetagenerationMatch","ifSourceMetagenerationNotMatch","projection","sourceGeneration","userProject"],"body":"json","scope":{"sourceBucket":{"from":"path","at":"sourceBucket"},"sourceObject":{"from":"path","at":"sourceObject"},"destinationBucket":{"from":"path","at":"destinationBucket"},"destinationObject":{"from":"path","at":"destinationObject"}}},
-      "objects.delete": {"action":"delete.o","effects":["delete"],"method":"DELETE","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o/{object}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"object":{"from":"path","at":"object"}}},
-      "objects.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o/{object}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","projection","restoreToken","softDeleted","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"object":{"from":"path","at":"object"}}},
-      "objects.getIamPolicy": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o/{object}/iam","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"object":{"from":"path","at":"object"}}},
-      "objects.insert": {"action":"write.o","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","contentEncoding","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","kmsKeyName","name","predefinedAcl","projection","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "objects.insert.upload": {"action":"write.o","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/upload/storage/v1/b/{bucket}/o","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","contentEncoding","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","kmsKeyName","name","predefinedAcl","projection","userProject","uploadType"],"body":"any","scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "objects.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","delimiter","endOffset","filter","includeFoldersAsPrefixes","includeTrailingDelimiter","matchGlob","maxResults","pageToken","prefix","projection","softDeleted","startOffset","userProject","versions"],"scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "objects.move": {"action":"write.o","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o/{sourceObject}/moveTo/o/{destinationObject}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","ifSourceGenerationMatch","ifSourceGenerationNotMatch","ifSourceMetagenerationMatch","ifSourceMetagenerationNotMatch","projection","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"sourceObject":{"from":"path","at":"sourceObject"},"destinationObject":{"from":"path","at":"destinationObject"}}},
-      "objects.patch": {"action":"write.o","effects":["write"],"method":"PATCH","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o/{object}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","overrideUnlockedRetention","predefinedAcl","projection","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"},"object":{"from":"path","at":"object"}}},
-      "objects.restore": {"action":"write.o","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o/{object}/restore","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","copySourceAcl","generation","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","projection","restoreToken","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"object":{"from":"path","at":"object"}}},
-      "objects.rewrite": {"action":"write.o","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{sourceBucket}/o/{sourceObject}/rewriteTo/b/{destinationBucket}/o/{destinationObject}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","destinationKmsKeyName","destinationPredefinedAcl","dropContextGroups","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","ifSourceGenerationMatch","ifSourceGenerationNotMatch","ifSourceMetagenerationMatch","ifSourceMetagenerationNotMatch","maxBytesRewrittenPerCall","projection","rewriteToken","sourceGeneration","userProject"],"body":"json","scope":{"sourceBucket":{"from":"path","at":"sourceBucket"},"sourceObject":{"from":"path","at":"sourceObject"},"destinationBucket":{"from":"path","at":"destinationBucket"},"destinationObject":{"from":"path","at":"destinationObject"}}},
-      "objects.setIamPolicy": {"action":"write.iam","effects":["write"],"method":"PUT","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o/{object}/iam","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"},"object":{"from":"path","at":"object"}}},
-      "objects.testIamPermissions": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o/{object}/iam/testPermissions","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","permissions","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"object":{"from":"path","at":"object"}}},
-      "objects.update": {"action":"write.o","effects":["write"],"method":"PUT","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o/{object}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","overrideUnlockedRetention","predefinedAcl","projection","userProject"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"},"object":{"from":"path","at":"object"}}},
-      "objects.viewFullContext": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/o/{object}/viewFullContext","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","contextKey","generation","userProject"],"scope":{"bucket":{"from":"path","at":"bucket"},"object":{"from":"path","at":"object"}}},
-      "projects.hmacKeys.create": {"action":"write.hmac_keys","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/projects/{projectId}/hmacKeys","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","serviceAccountEmail","userProject"],"scope":{"projectId":{"from":"path","at":"projectId"}}},
-      "projects.hmacKeys.delete": {"action":"delete.hmac_keys","effects":["delete"],"method":"DELETE","origin":"https://storage.googleapis.com","path":"/storage/v1/projects/{projectId}/hmacKeys/{accessId}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"scope":{"projectId":{"from":"path","at":"projectId"},"accessId":{"from":"path","at":"accessId"}}},
-      "projects.hmacKeys.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/projects/{projectId}/hmacKeys/{accessId}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"scope":{"projectId":{"from":"path","at":"projectId"},"accessId":{"from":"path","at":"accessId"}}},
-      "projects.hmacKeys.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/projects/{projectId}/hmacKeys","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","maxResults","pageToken","serviceAccountEmail","showDeletedKeys","userProject"],"scope":{"projectId":{"from":"path","at":"projectId"}}},
-      "projects.hmacKeys.update": {"action":"write.hmac_keys","effects":["write"],"method":"PUT","origin":"https://storage.googleapis.com","path":"/storage/v1/projects/{projectId}/hmacKeys/{accessId}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"body":"json","scope":{"projectId":{"from":"path","at":"projectId"},"accessId":{"from":"path","at":"accessId"}}},
-      "projects.serviceAccount.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/projects/{projectId}/serviceAccount","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject"],"scope":{"projectId":{"from":"path","at":"projectId"}}},
-      "rapidCaches.disable": {"action":"write.rapid_caches","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/rapidCaches/{rapidCacheId}/disable","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp"],"scope":{"bucket":{"from":"path","at":"bucket"},"rapidCacheId":{"from":"path","at":"rapidCacheId"}}},
-      "rapidCaches.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/rapidCaches/{rapidCacheId}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp"],"scope":{"bucket":{"from":"path","at":"bucket"},"rapidCacheId":{"from":"path","at":"rapidCacheId"}}},
-      "rapidCaches.insert": {"action":"write.rapid_caches","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/rapidCaches","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "rapidCaches.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/rapidCaches","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","pageSize","pageToken"],"scope":{"bucket":{"from":"path","at":"bucket"}}},
-      "rapidCaches.update": {"action":"write.rapid_caches","effects":["write"],"method":"PATCH","origin":"https://storage.googleapis.com","path":"/storage/v1/b/{bucket}/rapidCaches/{rapidCacheId}","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp"],"body":"json","scope":{"bucket":{"from":"path","at":"bucket"},"rapidCacheId":{"from":"path","at":"rapidCacheId"}}}
+      "anywhereCaches.disable": {"action":"storage.b.anywhere_caches.write","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/anywhereCaches/{anywhereCacheId}/disable","scope":{"anywhereCacheId":{"at":"anywhereCacheId","from":"path"},"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "anywhereCaches.get": {"action":"storage.b.anywhere_caches.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/anywhereCaches/{anywhereCacheId}","scope":{"anywhereCacheId":{"at":"anywhereCacheId","from":"path"},"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "anywhereCaches.insert": {"action":"storage.b.anywhere_caches.write","body":"json","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/anywhereCaches","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "anywhereCaches.list": {"action":"storage.b.anywhere_caches.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","pageSize","pageToken","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/anywhereCaches","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "anywhereCaches.resume": {"action":"storage.b.anywhere_caches.write","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/anywhereCaches/{anywhereCacheId}/resume","scope":{"anywhereCacheId":{"at":"anywhereCacheId","from":"path"},"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "anywhereCaches.update": {"action":"storage.b.anywhere_caches.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/anywhereCaches/{anywhereCacheId}","scope":{"anywhereCacheId":{"at":"anywhereCacheId","from":"path"},"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "bucketAccessControls.delete": {"action":"storage.b.acl.delete","effects":["delete","share"],"method":"DELETE","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/acl/{entity}","scope":{"bucket":{"at":"bucket","from":"path"},"entity":{"at":"entity","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "bucketAccessControls.get": {"action":"storage.b.acl.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/acl/{entity}","scope":{"bucket":{"at":"bucket","from":"path"},"entity":{"at":"entity","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "bucketAccessControls.insert": {"action":"storage.b.acl.share","body":"json","effects":["share"],"grant":["bucket"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/acl","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "bucketAccessControls.list": {"action":"storage.b.acl.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/acl","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "bucketAccessControls.patch": {"action":"storage.b.acl.share","body":"json","effects":["share"],"grant":["bucket","entity"],"method":"PATCH","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/acl/{entity}","scope":{"bucket":{"at":"bucket","from":"path"},"entity":{"at":"entity","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "bucketAccessControls.update": {"action":"storage.b.acl.share","body":"json","effects":["share"],"grant":["bucket","entity"],"method":"PUT","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/acl/{entity}","scope":{"bucket":{"at":"bucket","from":"path"},"entity":{"at":"entity","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "buckets.delete": {"action":"storage.b.delete","effects":["delete"],"method":"DELETE","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.get": {"action":"storage.b.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","ifMetagenerationMatch","ifMetagenerationNotMatch","projection","softDeleted","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.getIamPolicy": {"action":"storage.b.iam.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","optionsRequestedPolicyVersion","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/iam","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.getStorageLayout": {"action":"storage.b.storage_layout.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","prefix","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/storageLayout","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.insert": {"action":"storage.b.write","body":"json","effects":["write"],"fields":{"/acl":null,"/defaultObjectAcl":null,"/iamConfiguration":null},"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","enableObjectRetention","project","projection","userProject","$.xgafv","callback"],"path":"/storage/v1/b","query":{"predefinedAcl":null,"predefinedDefaultObjectAcl":null},"scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.insert.predefinedAcl": {"action":"storage.b.share","body":"json","effects":["share","write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","enableObjectRetention","project","projection","userProject","$.xgafv","callback"],"path":"/storage/v1/b","query":{"predefinedAcl":true},"scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.insert.predefinedDefaultObjectAcl": {"action":"storage.b.share","body":"json","effects":["share","write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","enableObjectRetention","project","projection","userProject","$.xgafv","callback"],"path":"/storage/v1/b","query":{"predefinedAcl":null,"predefinedDefaultObjectAcl":true},"scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.list": {"action":"storage.b.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","maxResults","pageToken","prefix","project","projection","returnPartialSuccess","softDeleted","userProject","$.xgafv","callback"],"path":"/storage/v1/b","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.lockRetentionPolicy": {"action":"storage.b.retention_policy.write","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/lockRetentionPolicy","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.operations.advanceRelocateBucket": {"action":"storage.b.operations.advance_relocate_bucket.write","body":"json","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/operations/{operationId}/advanceRelocateBucket","scope":{"bucket":{"at":"bucket","from":"path"},"operationId":{"at":"operationId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.operations.cancel": {"action":"storage.b.operations.write","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/operations/{operationId}/cancel","scope":{"bucket":{"at":"bucket","from":"path"},"operationId":{"at":"operationId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.operations.get": {"action":"storage.b.operations.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/operations/{operationId}","scope":{"bucket":{"at":"bucket","from":"path"},"operationId":{"at":"operationId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.operations.list": {"action":"storage.b.operations.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","filter","pageSize","pageToken","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/operations","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.patch": {"action":"storage.b.write","body":"json","effects":["write"],"fields":{"/acl":null,"/defaultObjectAcl":null,"/iamConfiguration":null},"method":"PATCH","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch","projection","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}","query":{"predefinedAcl":null,"predefinedDefaultObjectAcl":null},"scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.patch.predefinedAcl": {"action":"storage.b.share","body":"json","effects":["share","write"],"method":"PATCH","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch","projection","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}","query":{"predefinedAcl":true},"scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.patch.predefinedDefaultObjectAcl": {"action":"storage.b.share","body":"json","effects":["share","write"],"method":"PATCH","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch","projection","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}","query":{"predefinedAcl":null,"predefinedDefaultObjectAcl":true},"scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.relocate": {"action":"storage.b.relocate.write","body":"json","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/relocate","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.restore": {"action":"storage.b.write","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","projection","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/restore","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.setIamPolicy": {"action":"storage.b.iam.share","body":"json","effects":["share"],"method":"PUT","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/iam","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "buckets.testIamPermissions": {"action":"storage.b.iam.test_permissions.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","permissions","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/iam/testPermissions","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.update": {"action":"storage.b.write","body":"json","effects":["write"],"fields":{"/acl":null,"/defaultObjectAcl":null,"/iamConfiguration":null},"method":"PUT","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch","projection","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}","query":{"predefinedAcl":null,"predefinedDefaultObjectAcl":null},"scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.update.predefinedAcl": {"action":"storage.b.share","body":"json","effects":["share","write"],"method":"PUT","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch","projection","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}","query":{"predefinedAcl":true},"scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "buckets.update.predefinedDefaultObjectAcl": {"action":"storage.b.share","body":"json","effects":["share","write"],"method":"PUT","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch","projection","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}","query":{"predefinedAcl":null,"predefinedDefaultObjectAcl":true},"scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "defaultObjectAccessControls.delete": {"action":"storage.b.default_object_acl.delete","effects":["delete","share"],"method":"DELETE","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/defaultObjectAcl/{entity}","scope":{"bucket":{"at":"bucket","from":"path"},"entity":{"at":"entity","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "defaultObjectAccessControls.get": {"action":"storage.b.default_object_acl.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/defaultObjectAcl/{entity}","scope":{"bucket":{"at":"bucket","from":"path"},"entity":{"at":"entity","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "defaultObjectAccessControls.insert": {"action":"storage.b.default_object_acl.share","body":"json","effects":["share"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/defaultObjectAcl","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "defaultObjectAccessControls.list": {"action":"storage.b.default_object_acl.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/defaultObjectAcl","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "defaultObjectAccessControls.patch": {"action":"storage.b.default_object_acl.share","body":"json","effects":["share"],"method":"PATCH","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/defaultObjectAcl/{entity}","scope":{"bucket":{"at":"bucket","from":"path"},"entity":{"at":"entity","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "defaultObjectAccessControls.update": {"action":"storage.b.default_object_acl.share","body":"json","effects":["share"],"method":"PUT","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/defaultObjectAcl/{entity}","scope":{"bucket":{"at":"bucket","from":"path"},"entity":{"at":"entity","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "folders.delete": {"action":"storage.b.folders.delete","effects":["delete"],"method":"DELETE","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/folders/{folder}","scope":{"bucket":{"at":"bucket","from":"path"},"folder":{"at":"folder","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "folders.deleteRecursive": {"action":"storage.b.folders.recursive.delete","effects":["delete"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/folders/{folder}/deleteRecursive","scope":{"bucket":{"at":"bucket","from":"path"},"folder":{"at":"folder","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "folders.get": {"action":"storage.b.folders.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/folders/{folder}","scope":{"bucket":{"at":"bucket","from":"path"},"folder":{"at":"folder","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "folders.insert": {"action":"storage.b.folders.write","body":"json","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","recursive","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/folders","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "folders.list": {"action":"storage.b.folders.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","delimiter","endOffset","pageSize","pageToken","prefix","startOffset","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/folders","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "folders.rename": {"action":"storage.b.folders.rename_to.folders.write","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifSourceMetagenerationMatch","ifSourceMetagenerationNotMatch","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/folders/{sourceFolder}/renameTo/folders/{destinationFolder}","scope":{"bucket":{"at":"bucket","from":"path"},"destinationFolder":{"at":"destinationFolder","from":"path"},"query":{"at":"","from":"query","type":"object"},"sourceFolder":{"at":"sourceFolder","from":"path"}}},
+      "managedFolders.delete": {"action":"storage.b.managed_folders.delete","effects":["delete"],"method":"DELETE","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","allowNonEmpty","ifMetagenerationMatch","ifMetagenerationNotMatch","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/managedFolders/{managedFolder}","scope":{"bucket":{"at":"bucket","from":"path"},"managedFolder":{"at":"managedFolder","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "managedFolders.get": {"action":"storage.b.managed_folders.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/managedFolders/{managedFolder}","scope":{"bucket":{"at":"bucket","from":"path"},"managedFolder":{"at":"managedFolder","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "managedFolders.getIamPolicy": {"action":"storage.b.managed_folders.iam.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","optionsRequestedPolicyVersion","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/managedFolders/{managedFolder}/iam","scope":{"bucket":{"at":"bucket","from":"path"},"managedFolder":{"at":"managedFolder","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "managedFolders.insert": {"action":"storage.b.managed_folders.write","body":"json","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/managedFolders","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "managedFolders.list": {"action":"storage.b.managed_folders.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","pageSize","pageToken","prefix","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/managedFolders","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "managedFolders.setIamPolicy": {"action":"storage.b.managed_folders.iam.share","body":"json","effects":["share"],"method":"PUT","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/managedFolders/{managedFolder}/iam","scope":{"bucket":{"at":"bucket","from":"path"},"managedFolder":{"at":"managedFolder","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "managedFolders.testIamPermissions": {"action":"storage.b.managed_folders.iam.test_permissions.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","permissions","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/managedFolders/{managedFolder}/iam/testPermissions","scope":{"bucket":{"at":"bucket","from":"path"},"managedFolder":{"at":"managedFolder","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "managedFolders.update": {"action":"storage.b.managed_folders.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifMetagenerationMatch","ifMetagenerationNotMatch","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/managedFolders/{managedFolder}","scope":{"bucket":{"at":"bucket","from":"path"},"managedFolder":{"at":"managedFolder","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "notifications.delete": {"action":"storage.b.notification_configs.delete","effects":["delete"],"method":"DELETE","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/notificationConfigs/{notification}","scope":{"bucket":{"at":"bucket","from":"path"},"notification":{"at":"notification","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "notifications.get": {"action":"storage.b.notification_configs.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/notificationConfigs/{notification}","scope":{"bucket":{"at":"bucket","from":"path"},"notification":{"at":"notification","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "notifications.insert": {"action":"storage.b.notification_configs.write","body":"json","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/notificationConfigs","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "notifications.list": {"action":"storage.b.notification_configs.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/notificationConfigs","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objectAccessControls.delete": {"action":"storage.b.o.acl.delete","effects":["delete","share"],"method":"DELETE","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{object}/acl/{entity}","scope":{"bucket":{"at":"bucket","from":"path"},"entity":{"at":"entity","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objectAccessControls.get": {"action":"storage.b.o.acl.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{object}/acl/{entity}","scope":{"bucket":{"at":"bucket","from":"path"},"entity":{"at":"entity","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objectAccessControls.insert": {"action":"storage.b.o.acl.share","body":"json","effects":["share"],"grant":["bucket","object"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{object}/acl","scope":{"bucket":{"at":"bucket","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "objectAccessControls.list": {"action":"storage.b.o.acl.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{object}/acl","scope":{"bucket":{"at":"bucket","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objectAccessControls.patch": {"action":"storage.b.o.acl.share","body":"json","effects":["share"],"grant":["bucket","object","entity"],"method":"PATCH","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{object}/acl/{entity}","scope":{"bucket":{"at":"bucket","from":"path"},"entity":{"at":"entity","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "objectAccessControls.update": {"action":"storage.b.o.acl.share","body":"json","effects":["share"],"grant":["bucket","object","entity"],"method":"PUT","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{object}/acl/{entity}","scope":{"bucket":{"at":"bucket","from":"path"},"entity":{"at":"entity","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "objects.bulkRestore": {"action":"storage.b.o.bulk_restore.write","body":"json","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/bulkRestore","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.compose": {"action":"storage.b.o.compose.write","body":"json","effects":["write"],"fields":{"/destination/acl":null},"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","dropContextGroups","ifGenerationMatch","ifMetagenerationMatch","kmsKeyName","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{destinationBucket}/o/{destinationObject}/compose","query":{"destinationPredefinedAcl":null},"scope":{"destinationBucket":{"at":"destinationBucket","from":"path"},"destinationObject":{"at":"destinationObject","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.compose.predefinedAcl": {"action":"storage.b.o.compose.share","body":"json","effects":["share","write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","dropContextGroups","ifGenerationMatch","ifMetagenerationMatch","kmsKeyName","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{destinationBucket}/o/{destinationObject}/compose","query":{"destinationPredefinedAcl":true},"scope":{"destinationBucket":{"at":"destinationBucket","from":"path"},"destinationObject":{"at":"destinationObject","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.copy": {"action":"storage.b.o.copy_to.b.o.write","body":"json","effects":["write"],"fields":{"/acl":null},"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","destinationKmsKeyName","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","ifSourceGenerationMatch","ifSourceGenerationNotMatch","ifSourceMetagenerationMatch","ifSourceMetagenerationNotMatch","projection","sourceGeneration","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{sourceBucket}/o/{sourceObject}/copyTo/b/{destinationBucket}/o/{destinationObject}","query":{"destinationPredefinedAcl":null},"scope":{"destinationBucket":{"at":"destinationBucket","from":"path"},"destinationObject":{"at":"destinationObject","from":"path"},"query":{"at":"","from":"query","type":"object"},"sourceBucket":{"at":"sourceBucket","from":"path"},"sourceObject":{"at":"sourceObject","from":"path"}}},
+      "objects.copy.predefinedAcl": {"action":"storage.b.o.copy_to.b.o.share","body":"json","effects":["share","write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","destinationKmsKeyName","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","ifSourceGenerationMatch","ifSourceGenerationNotMatch","ifSourceMetagenerationMatch","ifSourceMetagenerationNotMatch","projection","sourceGeneration","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{sourceBucket}/o/{sourceObject}/copyTo/b/{destinationBucket}/o/{destinationObject}","query":{"destinationPredefinedAcl":true},"scope":{"destinationBucket":{"at":"destinationBucket","from":"path"},"destinationObject":{"at":"destinationObject","from":"path"},"query":{"at":"","from":"query","type":"object"},"sourceBucket":{"at":"sourceBucket","from":"path"},"sourceObject":{"at":"sourceObject","from":"path"}}},
+      "objects.delete": {"action":"storage.b.o.delete","effects":["delete"],"method":"DELETE","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{object}","scope":{"bucket":{"at":"bucket","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.download": {"action":"storage.b.o.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","projection","restoreToken","softDeleted","userProject","$.xgafv","callback"],"path":"/download/storage/v1/b/{bucket}/o/{object}","scope":{"bucket":{"at":"bucket","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.get": {"action":"storage.b.o.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","projection","restoreToken","softDeleted","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{object}","scope":{"bucket":{"at":"bucket","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.getIamPolicy": {"action":"storage.b.o.iam.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{object}/iam","scope":{"bucket":{"at":"bucket","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.insert": {"action":"storage.b.o.write","body":"json","effects":["write"],"fields":{"/acl":null},"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","contentEncoding","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","kmsKeyName","name","projection","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o","query":{"predefinedAcl":null},"scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.insert.predefinedAcl": {"action":"storage.b.o.share","body":"json","effects":["share","write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","contentEncoding","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","kmsKeyName","name","projection","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o","query":{"predefinedAcl":true},"scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.insert.upload": {"action":"storage.b.o.write","body":"any","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","contentEncoding","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","kmsKeyName","name","projection","userProject","$.xgafv","callback","upload_id"],"path":"/upload/storage/v1/b/{bucket}/o","query":{"predefinedAcl":null},"scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.insert.upload.predefinedAcl": {"action":"storage.b.o.share","body":"any","effects":["share","write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","contentEncoding","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","kmsKeyName","name","projection","userProject","$.xgafv","callback","upload_id"],"path":"/upload/storage/v1/b/{bucket}/o","query":{"predefinedAcl":true},"scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.insert.upload.session": {"action":"storage.b.o.write","body":"any","effects":["write"],"method":"PUT","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","contentEncoding","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","kmsKeyName","name","predefinedAcl","projection","userProject","$.xgafv","callback"],"path":"/upload/storage/v1/b/{bucket}/o","query":{"upload_id":true},"scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.list": {"action":"storage.b.o.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","delimiter","endOffset","filter","includeFoldersAsPrefixes","includeTrailingDelimiter","matchGlob","maxResults","pageToken","prefix","projection","softDeleted","startOffset","userProject","versions","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.move": {"action":"storage.b.o.move_to.o.write","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","ifSourceGenerationMatch","ifSourceGenerationNotMatch","ifSourceMetagenerationMatch","ifSourceMetagenerationNotMatch","projection","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{sourceObject}/moveTo/o/{destinationObject}","scope":{"bucket":{"at":"bucket","from":"path"},"destinationObject":{"at":"destinationObject","from":"path"},"query":{"at":"","from":"query","type":"object"},"sourceObject":{"at":"sourceObject","from":"path"}}},
+      "objects.patch": {"action":"storage.b.o.write","body":"json","effects":["write"],"fields":{"/acl":null},"method":"PATCH","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","overrideUnlockedRetention","projection","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{object}","query":{"predefinedAcl":null},"scope":{"bucket":{"at":"bucket","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.patch.predefinedAcl": {"action":"storage.b.o.share","body":"json","effects":["share","write"],"method":"PATCH","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","overrideUnlockedRetention","projection","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{object}","query":{"predefinedAcl":true},"scope":{"bucket":{"at":"bucket","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.restore": {"action":"storage.b.o.write","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","copySourceAcl","generation","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","projection","restoreToken","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{object}/restore","scope":{"bucket":{"at":"bucket","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.rewrite": {"action":"storage.b.o.rewrite_to.b.o.write","body":"json","effects":["write"],"fields":{"/acl":null},"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","destinationKmsKeyName","dropContextGroups","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","ifSourceGenerationMatch","ifSourceGenerationNotMatch","ifSourceMetagenerationMatch","ifSourceMetagenerationNotMatch","maxBytesRewrittenPerCall","projection","rewriteToken","sourceGeneration","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{sourceBucket}/o/{sourceObject}/rewriteTo/b/{destinationBucket}/o/{destinationObject}","query":{"destinationPredefinedAcl":null},"scope":{"destinationBucket":{"at":"destinationBucket","from":"path"},"destinationObject":{"at":"destinationObject","from":"path"},"query":{"at":"","from":"query","type":"object"},"sourceBucket":{"at":"sourceBucket","from":"path"},"sourceObject":{"at":"sourceObject","from":"path"}}},
+      "objects.rewrite.predefinedAcl": {"action":"storage.b.o.rewrite_to.b.o.share","body":"json","effects":["share","write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","destinationKmsKeyName","dropContextGroups","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","ifSourceGenerationMatch","ifSourceGenerationNotMatch","ifSourceMetagenerationMatch","ifSourceMetagenerationNotMatch","maxBytesRewrittenPerCall","projection","rewriteToken","sourceGeneration","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{sourceBucket}/o/{sourceObject}/rewriteTo/b/{destinationBucket}/o/{destinationObject}","query":{"destinationPredefinedAcl":true},"scope":{"destinationBucket":{"at":"destinationBucket","from":"path"},"destinationObject":{"at":"destinationObject","from":"path"},"query":{"at":"","from":"query","type":"object"},"sourceBucket":{"at":"sourceBucket","from":"path"},"sourceObject":{"at":"sourceObject","from":"path"}}},
+      "objects.setIamPolicy": {"action":"storage.b.o.iam.share","body":"json","effects":["share"],"method":"PUT","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{object}/iam","scope":{"bucket":{"at":"bucket","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "objects.testIamPermissions": {"action":"storage.b.o.iam.test_permissions.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","permissions","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{object}/iam/testPermissions","scope":{"bucket":{"at":"bucket","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.update": {"action":"storage.b.o.write","body":"json","effects":["write"],"fields":{"/acl":null},"method":"PUT","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","overrideUnlockedRetention","projection","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{object}","query":{"predefinedAcl":null},"scope":{"bucket":{"at":"bucket","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.update.predefinedAcl": {"action":"storage.b.o.share","body":"json","effects":["share","write"],"method":"PUT","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","generation","ifGenerationMatch","ifGenerationNotMatch","ifMetagenerationMatch","ifMetagenerationNotMatch","overrideUnlockedRetention","projection","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{object}","query":{"predefinedAcl":true},"scope":{"bucket":{"at":"bucket","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.viewFullContext": {"action":"storage.b.o.view_full_context.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","contextKey","generation","userProject","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/o/{object}/viewFullContext","scope":{"bucket":{"at":"bucket","from":"path"},"object":{"at":"object","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "projects.hmacKeys.create": {"action":"storage.projects.hmac_keys.admin","effects":["admin"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","serviceAccountEmail","userProject","$.xgafv","callback"],"path":"/storage/v1/projects/{projectId}/hmacKeys","scope":{"projectId":{"at":"projectId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "projects.hmacKeys.delete": {"action":"storage.projects.hmac_keys.delete","effects":["delete","admin"],"method":"DELETE","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/projects/{projectId}/hmacKeys/{accessId}","scope":{"accessId":{"at":"accessId","from":"path"},"projectId":{"at":"projectId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "projects.hmacKeys.get": {"action":"storage.projects.hmac_keys.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/projects/{projectId}/hmacKeys/{accessId}","scope":{"accessId":{"at":"accessId","from":"path"},"projectId":{"at":"projectId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "projects.hmacKeys.list": {"action":"storage.projects.hmac_keys.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","maxResults","pageToken","serviceAccountEmail","showDeletedKeys","userProject","$.xgafv","callback"],"path":"/storage/v1/projects/{projectId}/hmacKeys","scope":{"projectId":{"at":"projectId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "projects.hmacKeys.update": {"action":"storage.projects.hmac_keys.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/projects/{projectId}/hmacKeys/{accessId}","scope":{"accessId":{"at":"accessId","from":"path"},"projectId":{"at":"projectId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "projects.serviceAccount.get": {"action":"storage.projects.service_account.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","userProject","$.xgafv","callback"],"path":"/storage/v1/projects/{projectId}/serviceAccount","scope":{"projectId":{"at":"projectId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "rapidCaches.disable": {"action":"storage.b.rapid_caches.write","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/rapidCaches/{rapidCacheId}/disable","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"},"rapidCacheId":{"at":"rapidCacheId","from":"path"}}},
+      "rapidCaches.get": {"action":"storage.b.rapid_caches.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/rapidCaches/{rapidCacheId}","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"},"rapidCacheId":{"at":"rapidCacheId","from":"path"}}},
+      "rapidCaches.insert": {"action":"storage.b.rapid_caches.write","body":"json","effects":["write"],"method":"POST","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/rapidCaches","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "rapidCaches.list": {"action":"storage.b.rapid_caches.read","effects":["read"],"method":"GET","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","pageSize","pageToken","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/rapidCaches","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "rapidCaches.update": {"action":"storage.b.rapid_caches.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://storage.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","uploadType","userIp","$.xgafv","callback"],"path":"/storage/v1/b/{bucket}/rapidCaches/{rapidCacheId}","scope":{"bucket":{"at":"bucket","from":"path"},"query":{"at":"","from":"query","type":"object"},"rapidCacheId":{"at":"rapidCacheId","from":"path"}}}
     }
   }
 }

@@ -1,40 +1,469 @@
 {
-  "title": "Zoho CRM",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "client_id", "label": "OAuth client ID", "paths": []},
-      {"key": "client_secret", "label": "OAuth client secret", "secret": true, "paths": []},
-      {"key": "token", "label": "Zoho CRM account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.zoho.com/oauth/v2/auth", "token_url": "https://accounts.zoho.com/oauth/v2/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "ZohoCRM.modules.ALL ZohoCRM.settings.all ZohoCRM.users.all"}}
-    ],
-    "connection": {"http": {"slots": [{"value": "token", "origin": "https://www.zohoapis.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "delete.fields": {"title": "Delete: fields"},
-      "delete.records": {"title": "Delete: records"},
-      "execute.actions": {"title": "Execute: actions"},
-      "read": {"title": "Read everything the account can see"},
-      "write.fields": {"title": "Write: fields"},
-      "write.records": {"title": "Write: records"},
-      "write.upsert": {"title": "Write: upsert"}
-    }
+      "actions": {
+        "title": "Actions"
+      },
+      "actions.change_owner": {
+        "title": "Change owner"
+      },
+      "actions.change_owner.write": {
+        "title": "Create and edit"
+      },
+      "actions.count": {
+        "title": "Count"
+      },
+      "actions.count.read": {
+        "title": "Read"
+      },
+      "actions.mail": {
+        "title": "Mail"
+      },
+      "actions.mail.send": {
+        "title": "Send"
+      },
+      "actions.tags": {
+        "title": "Tags"
+      },
+      "actions.tags.delete": {
+        "title": "Delete"
+      },
+      "actions.tags.write": {
+        "title": "Create and edit"
+      },
+      "actions.write": {
+        "title": "Create and edit"
+      },
+      "attachments": {
+        "title": "Attachments"
+      },
+      "attachments.delete": {
+        "title": "Delete"
+      },
+      "attachments.read": {
+        "title": "Read"
+      },
+      "attachments.write": {
+        "title": "Create and edit"
+      },
+      "bulk": {
+        "title": "Bulk"
+      },
+      "bulk.read": {
+        "title": "Read"
+      },
+      "coql": {
+        "title": "Coql"
+      },
+      "coql.read": {
+        "title": "Read"
+      },
+      "deleted": {
+        "title": "Deleted"
+      },
+      "deleted.read": {
+        "title": "Read"
+      },
+      "files": {
+        "title": "Files"
+      },
+      "files.read": {
+        "title": "Read"
+      },
+      "files.write": {
+        "title": "Create and edit"
+      },
+      "leads": {
+        "title": "Leads"
+      },
+      "leads.actions": {
+        "title": "Actions"
+      },
+      "leads.actions.convert": {
+        "title": "Convert"
+      },
+      "leads.actions.convert.write": {
+        "title": "Create and edit"
+      },
+      "notes": {
+        "title": "Notes"
+      },
+      "notes.delete": {
+        "title": "Delete"
+      },
+      "notes.read": {
+        "title": "Read"
+      },
+      "notes.write": {
+        "title": "Create and edit"
+      },
+      "org": {
+        "title": "Org"
+      },
+      "org.read": {
+        "title": "Read"
+      },
+      "records": {
+        "title": "Records"
+      },
+      "records.delete": {
+        "title": "Delete"
+      },
+      "records.read": {
+        "title": "Read"
+      },
+      "records.write": {
+        "title": "Create and edit"
+      },
+      "related_records": {
+        "title": "Related records"
+      },
+      "related_records.delete": {
+        "title": "Delete"
+      },
+      "related_records.read": {
+        "title": "Read"
+      },
+      "related_records.write": {
+        "title": "Create and edit"
+      },
+      "search": {
+        "title": "Search"
+      },
+      "search.read": {
+        "title": "Read"
+      },
+      "settings": {
+        "title": "Settings"
+      },
+      "settings.custom_views": {
+        "title": "Custom views"
+      },
+      "settings.custom_views.actions": {
+        "title": "Actions"
+      },
+      "settings.custom_views.actions.change_sort": {
+        "title": "Change sort"
+      },
+      "settings.custom_views.actions.change_sort.write": {
+        "title": "Create and edit"
+      },
+      "settings.custom_views.delete": {
+        "title": "Delete"
+      },
+      "settings.custom_views.read": {
+        "title": "Read"
+      },
+      "settings.custom_views.write": {
+        "title": "Create and edit"
+      },
+      "settings.email_templates": {
+        "title": "Email templates"
+      },
+      "settings.email_templates.read": {
+        "title": "Read"
+      },
+      "settings.emails": {
+        "title": "Emails"
+      },
+      "settings.emails.actions": {
+        "title": "Actions"
+      },
+      "settings.emails.actions.from_addresses": {
+        "title": "From addresses"
+      },
+      "settings.emails.actions.from_addresses.read": {
+        "title": "Read"
+      },
+      "settings.fields": {
+        "title": "Fields"
+      },
+      "settings.fields.actions": {
+        "title": "Actions"
+      },
+      "settings.fields.actions.scheduled_jobs": {
+        "title": "Scheduled jobs"
+      },
+      "settings.fields.actions.scheduled_jobs.read": {
+        "title": "Read"
+      },
+      "settings.fields.delete": {
+        "title": "Delete"
+      },
+      "settings.fields.read": {
+        "title": "Read"
+      },
+      "settings.fields.write": {
+        "title": "Create and edit"
+      },
+      "settings.layouts": {
+        "title": "Layouts"
+      },
+      "settings.layouts.delete": {
+        "title": "Delete"
+      },
+      "settings.layouts.read": {
+        "title": "Read"
+      },
+      "settings.layouts.write": {
+        "title": "Create and edit"
+      },
+      "settings.module": {
+        "title": "Module"
+      },
+      "settings.module.actions": {
+        "title": "Actions"
+      },
+      "settings.module.actions.generate_link": {
+        "title": "Generate link"
+      },
+      "settings.module.actions.generate_link.read": {
+        "title": "Read"
+      },
+      "settings.modules": {
+        "title": "Modules"
+      },
+      "settings.modules.read": {
+        "title": "Read"
+      },
+      "settings.modules.write": {
+        "title": "Create and edit"
+      },
+      "settings.related_lists": {
+        "title": "Related lists"
+      },
+      "settings.related_lists.read": {
+        "title": "Read"
+      },
+      "settings.tags": {
+        "title": "Tags"
+      },
+      "settings.tags.actions": {
+        "title": "Actions"
+      },
+      "settings.tags.actions.delete": {
+        "title": "Delete"
+      },
+      "settings.tags.actions.records_count": {
+        "title": "Records count"
+      },
+      "settings.tags.actions.records_count.read": {
+        "title": "Read"
+      },
+      "settings.tags.delete": {
+        "title": "Delete"
+      },
+      "settings.tags.read": {
+        "title": "Read"
+      },
+      "settings.tags.write": {
+        "title": "Create and edit"
+      },
+      "upsert": {
+        "title": "Upsert"
+      },
+      "upsert.write": {
+        "title": "Create and edit"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.admin": {
+        "title": "Manage"
+      },
+      "users.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://*.zohoapis.com",
+            "path": "/crm",
+            "prefix": "Zoho-oauthtoken ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://*.zohoapis.eu",
+            "path": "/crm",
+            "prefix": "Zoho-oauthtoken ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://*.zohoapis.in",
+            "path": "/crm",
+            "prefix": "Zoho-oauthtoken ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://*.zohoapis.com.au",
+            "path": "/crm",
+            "prefix": "Zoho-oauthtoken ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://*.zohoapis.jp",
+            "path": "/crm",
+            "prefix": "Zoho-oauthtoken ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://*.zohoapis.ca",
+            "path": "/crm",
+            "prefix": "Zoho-oauthtoken ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://*.zohoapis.com.cn",
+            "path": "/crm",
+            "prefix": "Zoho-oauthtoken ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://*.zohoapis.sa",
+            "path": "/crm",
+            "prefix": "Zoho-oauthtoken ",
+            "value": "token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "client_id",
+        "label": "OAuth client ID",
+        "paths": []
+      },
+      {
+        "key": "client_secret",
+        "label": "OAuth client secret",
+        "paths": [],
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "token",
+        "label": "Zoho CRM account",
+        "oauth": {
+          "auth_url": "https://accounts.zoho.com/oauth/v2/auth",
+          "client_id": "{client_id}",
+          "client_secret": "{client_secret}",
+          "scope": "ZohoCRM.modules.ALL ZohoCRM.settings.all ZohoCRM.users.all ZohoCRM.org.ALL ZohoCRM.coql.READ ZohoCRM.send_mail.all.CREATE ZohoCRM.Files.CREATE ZohoCRM.Files.READ",
+          "token_url": "https://accounts.zoho.com/oauth/v2/token"
+        },
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Zoho CRM",
   "http": {
+    "origins": {"api":["https://{env}.zohoapis.com","https://{env}.zohoapis.eu","https://{env}.zohoapis.in","https://{env}.zohoapis.com.au","https://{env}.zohoapis.jp","https://{env}.zohoapis.ca","https://{env}.zohoapis.com.cn","https://{env}.zohoapis.sa"]},
     "operations": {
-      "cloneRecord": {"action":"execute.actions","effects":["execute"],"method":"POST","origin":"https://www.zohoapis.com","path":"/{module}/{recordId}/actions/clone","body":"json","scope":{"module":{"from":"path","at":"module"},"recordId":{"from":"path","at":"recordId"}}},
-      "createFields": {"action":"write.fields","effects":["write"],"method":"POST","origin":"https://www.zohoapis.com","path":"/settings/fields","params":["module"],"body":"json","scope":{}},
-      "createRecords": {"action":"write.records","effects":["write"],"method":"POST","origin":"https://www.zohoapis.com","path":"/{module}","body":"json","scope":{"module":{"from":"path","at":"module"}}},
-      "deleteCustomField": {"action":"delete.fields","effects":["delete"],"method":"DELETE","origin":"https://www.zohoapis.com","path":"/settings/fields/{fieldId}","params":["module"],"scope":{"fieldId":{"from":"path","at":"fieldId"}}},
-      "deleteRecord": {"action":"delete.records","effects":["delete"],"method":"DELETE","origin":"https://www.zohoapis.com","path":"/{module}/{recordId}","scope":{"module":{"from":"path","at":"module"},"recordId":{"from":"path","at":"recordId"}}},
-      "deleteRecords": {"action":"delete.records","effects":["delete"],"method":"DELETE","origin":"https://www.zohoapis.com","path":"/{module}","params":["ids"],"scope":{"module":{"from":"path","at":"module"}}},
-      "getFieldsWithID": {"action":"read","effects":["read"],"method":"GET","origin":"https://www.zohoapis.com","path":"/settings/fields/{fieldId}","params":["module","include","type"],"scope":{"fieldId":{"from":"path","at":"fieldId"}}},
-      "getRecord": {"action":"read","effects":["read"],"method":"GET","origin":"https://www.zohoapis.com","path":"/{module}/{recordId}","params":["type","page","per_page","module","include"],"scope":{"module":{"from":"path","at":"module"},"recordId":{"from":"path","at":"recordId"}}},
-      "getRecords": {"action":"read","effects":["read"],"method":"GET","origin":"https://www.zohoapis.com","path":"/{module}","params":["fields","territory_id","ids","cvid","filters","cross_filters","filterId","per_page","page","page_token","sort_order","sort_by","converted","include_child"],"scope":{"module":{"from":"path","at":"module"}}},
-      "getScheduledJobs": {"action":"read","effects":["read"],"method":"GET","origin":"https://www.zohoapis.com","path":"/settings/fields/{fieldId}/actions/scheduled_jobs","params":["job_id","module","page","per_page"],"scope":{"fieldId":{"from":"path","at":"fieldId"}}},
-      "putFieldsWithId": {"action":"write.fields","effects":["write"],"method":"PATCH","origin":"https://www.zohoapis.com","path":"/settings/fields/{fieldId}","params":["module"],"body":"json","scope":{"fieldId":{"from":"path","at":"fieldId"}}},
-      "updateField": {"action":"write.fields","effects":["write"],"method":"PATCH","origin":"https://www.zohoapis.com","path":"/settings/fields","params":["module"],"body":"json","scope":{}},
-      "updateRecord": {"action":"write.records","effects":["write"],"method":"PUT","origin":"https://www.zohoapis.com","path":"/{module}/{recordId}","body":"json","scope":{"module":{"from":"path","at":"module"},"recordId":{"from":"path","at":"recordId"}}},
-      "updateRecords": {"action":"write.records","effects":["write"],"method":"PUT","origin":"https://www.zohoapis.com","path":"/{module}","body":"json","scope":{"module":{"from":"path","at":"module"}}},
-      "upsertRecords": {"action":"write.upsert","effects":["write"],"method":"POST","origin":"https://www.zohoapis.com","path":"/{module}/upsert","body":"json","scope":{"module":{"from":"path","at":"module"}}}
+      "bulkSearchRecords": {"action":"bulk.read","effects":["read"],"method":"POST","origin":"{api}","params":["approval_state","criteria","converted","word","email","phone","fields","page","per_page","sort_by","sort_order","type"],"path":"/crm/{version}/{module}/bulk/search","scope":{"email":{"at":"email","from":"query","optional":true},"module":{"at":"module","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "changeOwnerBulk": {"action":"actions.change_owner.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","params":["ids","notify","owner_id","related_modules"],"path":"/crm/{version}/{module}/actions/change_owner","scope":{"body.ids":{"at":"/ids","from":"body","type":"array"},"ids":{"at":"ids","from":"query","optional":true},"module":{"at":"module","from":"path"},"owner_id":{"at":"owner_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "changeSingleRecordOwner": {"action":"actions.change_owner.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","params":["notify","owner_id","related_modules"],"path":"/crm/{version}/{module}/{record}/actions/change_owner","scope":{"module":{"at":"module","from":"path"},"owner_id":{"at":"owner_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"record":{"at":"record","from":"path"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "changeSort": {"action":"settings.custom_views.actions.change_sort.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","params":["module"],"path":"/crm/{version}/settings/custom_views/actions/change_sort","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "changeSortById": {"action":"settings.custom_views.actions.change_sort.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","params":["module"],"path":"/crm/{version}/settings/custom_views/{id}/actions/change_sort","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "cloneRecord": {"action":"actions.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/crm/{version}/{module}/{recordId}/actions/clone","scope":{"module":{"at":"module","from":"path"},"recordId":{"at":"recordId","from":"path"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "convertLead": {"action":"leads.actions.convert.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/crm/{version}/Leads/{leadId}/actions/convert","scope":{"leadId":{"at":"leadId","from":"path"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "createCustomView": {"action":"settings.custom_views.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","params":["module"],"path":"/crm/{version}/settings/custom_views","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "createFields": {"action":"settings.fields.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","params":["module"],"path":"/crm/{version}/settings/fields","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "createModules": {"action":"settings.modules.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/crm/{version}/settings/modules","scope":{"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "createNotesModule": {"action":"notes.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/crm/{version}/Notes","scope":{"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "createRecords": {"action":"records.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/crm/{version}/{module}","path_patterns":{"module":"[^Ncfu].*|N(?:|[^o].*|o(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))|c(?:|[^o].*|o(?:|[^q].*|q(?:|[^l].*|l.+)))|f(?:|[^i].*|i(?:|[^l].*|l(?:|[^e].*|e(?:|[^s].*|s.+))))|u(?:|[^s].*|s(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))"},"scope":{"module":{"at":"module","from":"path"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "createTags": {"action":"settings.tags.write","effects":["write"],"method":"POST","origin":"{api}","params":["module"],"path":"/crm/{version}/settings/tags","scope":{"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "createTags.json.8c6283657141": {"action":"settings.tags.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","params":["module"],"path":"/crm/{version}/settings/tags","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "createUser": {"action":"users.admin","effects":["admin","share"],"method":"POST","origin":"{api}","path":"/crm/{version}/users","scope":{"version":{"at":"version","from":"path"}}},
+      "createUser.json.2c4fc097cfb8": {"action":"users.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{api}","path":"/crm/{version}/users","scope":{"request":{"at":"","from":"body","type":"object"},"users":{"at":"/users","from":"body","type":"array"},"version":{"at":"version","from":"path"}}},
+      "deleteAttachment": {"action":"attachments.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/crm/{version}/{moduleApiName}/{recordId}/Attachments/{id}","scope":{"id":{"at":"id","from":"path"},"moduleApiName":{"at":"moduleApiName","from":"path"},"recordId":{"at":"recordId","from":"path"},"version":{"at":"version","from":"path"}}},
+      "deleteCustomField": {"action":"settings.fields.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["module"],"path":"/crm/{version}/settings/fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "deleteCustomView": {"action":"settings.custom_views.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["ids","module"],"path":"/crm/{version}/settings/custom_views","scope":{"ids":{"at":"ids","from":"query"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "deleteLayout": {"action":"settings.layouts.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["module","transfer_to","pipeline","stage"],"path":"/crm/{version}/settings/layouts/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "deleteNoteById": {"action":"notes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/crm/{version}/Notes/{id}","scope":{"id":{"at":"id","from":"path"},"version":{"at":"version","from":"path"}}},
+      "deleteNotesModule": {"action":"notes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["ids"],"path":"/crm/{version}/Notes","scope":{"ids":{"at":"ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "deleteRecord": {"action":"records.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/crm/{version}/{module}/{recordId}","path_patterns":{"module":"[^Nsu].*|N(?:|[^o].*|o(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))|s(?:|[^e].*|e(?:|[^t].*|t(?:|[^t].*|t(?:|[^i].*|i(?:|[^n].*|n(?:|[^g].*|g(?:|[^s].*|s.+)))))))|u(?:|[^s].*|s(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))"},"scope":{"module":{"at":"module","from":"path"},"recordId":{"at":"recordId","from":"path"},"version":{"at":"version","from":"path"}}},
+      "deleteRecords": {"action":"records.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["ids"],"path":"/crm/{version}/{module}","path_patterns":{"module":"[^N].*|N(?:|[^o].*|o(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))"},"scope":{"ids":{"at":"ids","from":"query","optional":true},"module":{"at":"module","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "deleteTags": {"action":"settings.tags.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/crm/{version}/settings/tags/{id}","scope":{"id":{"at":"id","from":"path"},"version":{"at":"version","from":"path"}}},
+      "deleteUser": {"action":"users.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","path":"/crm/{version}/users/{user}","scope":{"user":{"at":"user","from":"path"},"version":{"at":"version","from":"path"}}},
+      "delinkRelatedRecords": {"action":"related_records.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["ids"],"path":"/crm/{version}/{parentRecordModule}/{parentRecord}/{relatedList}","path_patterns":{"parentRecord":"[0-9]+"},"scope":{"ids":{"at":"ids","from":"query"},"parentRecord":{"at":"parentRecord","from":"path"},"parentRecordModule":{"at":"parentRecordModule","from":"path"},"query":{"at":"","from":"query","type":"object"},"relatedList":{"at":"relatedList","from":"path"},"version":{"at":"version","from":"path"}}},
+      "delinkSpecificRelatedRecord": {"action":"related_records.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/crm/{version}/{parentRecordModule}/{parentRecord}/{relatedList}/{record}","path_patterns":{"relatedList":"[^A].*|A(?:|[^t].*|t(?:|[^t].*|t(?:|[^a].*|a(?:|[^c].*|c(?:|[^h].*|h(?:|[^m].*|m(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+))))))))))"},"scope":{"parentRecord":{"at":"parentRecord","from":"path"},"parentRecordModule":{"at":"parentRecordModule","from":"path"},"record":{"at":"record","from":"path"},"relatedList":{"at":"relatedList","from":"path"},"version":{"at":"version","from":"path"}}},
+      "executeCOQLQuery": {"action":"coql.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/crm/{version}/coql","scope":{"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getAttachmentById": {"action":"attachments.read","effects":["read"],"method":"GET","origin":"{api}","path":"/crm/{version}/{moduleApiName}/{recordId}/Attachments/{id}","path_patterns":{"recordId":"[^d].*|d(?:|[^e].*|e(?:|[^l].*|l(?:|[^e].*|e(?:|[^t].*|t(?:|[^e].*|e(?:|[^d].*|d.+))))))"},"scope":{"id":{"at":"id","from":"path"},"moduleApiName":{"at":"moduleApiName","from":"path"},"recordId":{"at":"recordId","from":"path"},"version":{"at":"version","from":"path"}}},
+      "getAttachments": {"action":"attachments.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/crm/{version}/{moduleApiName}/{recordId}/Attachments","scope":{"moduleApiName":{"at":"moduleApiName","from":"path"},"query":{"at":"","from":"query","type":"object"},"recordId":{"at":"recordId","from":"path"},"version":{"at":"version","from":"path"}}},
+      "getCustomViewById": {"action":"settings.custom_views.read","effects":["read"],"method":"GET","origin":"{api}","params":["module","include_inner_details"],"path":"/crm/{version}/settings/custom_views/{id}","path_patterns":{"id":"[^A].*|A(?:|[^t].*|t(?:|[^t].*|t(?:|[^a].*|a(?:|[^c].*|c(?:|[^h].*|h(?:|[^m].*|m(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+))))))))))"},"scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getCustomViews": {"action":"settings.custom_views.read","effects":["read"],"method":"GET","origin":"{api}","params":["module","filters","page","per_page","ids","scope","favourite"],"path":"/crm/{version}/settings/custom_views","scope":{"ids":{"at":"ids","from":"query"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getDeletedRecords": {"action":"deleted.read","effects":["read"],"method":"GET","origin":"{api}","params":["type","page","per_page"],"path":"/crm/{version}/{module}/deleted","path_patterns":{"module":"[^Nu].*|N(?:|[^o].*|o(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))|u(?:|[^s].*|s(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))"},"scope":{"module":{"at":"module","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getDeletedRelatedRecord": {"action":"deleted.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields","page","perPage"],"path":"/crm/{version}/{parentRecordModule}/deleted/{parentRecord}/{relatedList}","scope":{"page":{"at":"page","from":"query","optional":true},"parentRecord":{"at":"parentRecord","from":"path"},"parentRecordModule":{"at":"parentRecordModule","from":"path"},"query":{"at":"","from":"query","type":"object"},"relatedList":{"at":"relatedList","from":"path"},"version":{"at":"version","from":"path"}}},
+      "getEmailTemplates": {"action":"settings.email_templates.read","effects":["read"],"method":"GET","origin":"{api}","params":["module","per_page","page"],"path":"/crm/{version}/settings/email_templates","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getFields": {"action":"settings.fields.read","effects":["read"],"method":"GET","origin":"{api}","params":["module","include","type"],"path":"/crm/{version}/settings/fields","scope":{"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getFieldsWithID": {"action":"settings.fields.read","effects":["read"],"method":"GET","origin":"{api}","params":["module","include","type"],"path":"/crm/{version}/settings/fields/{fieldId}","path_patterns":{"fieldId":"[^A].*|A(?:|[^t].*|t(?:|[^t].*|t(?:|[^a].*|a(?:|[^c].*|c(?:|[^h].*|h(?:|[^m].*|m(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+))))))))))"},"scope":{"fieldId":{"at":"fieldId","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getFile": {"action":"files.read","effects":["read"],"method":"GET","origin":"{api}","params":["id"],"path":"/crm/{version}/files","scope":{"id":{"at":"id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getFromAddresses": {"action":"settings.emails.actions.from_addresses.read","effects":["read"],"method":"GET","origin":"{api}","path":"/crm/{version}/settings/emails/actions/from_addresses","scope":{"version":{"at":"version","from":"path"}}},
+      "getGenerateLink": {"action":"settings.module.actions.generate_link.read","effects":["read"],"method":"GET","origin":"{api}","path":"/crm/{version}/settings/module/{moduleid}/actions/generate_link","scope":{"moduleid":{"at":"moduleid","from":"path"},"version":{"at":"version","from":"path"}}},
+      "getLayoutById": {"action":"settings.layouts.read","effects":["read"],"method":"GET","origin":"{api}","params":["module","mode","include","include_inner_details","include_element_types"],"path":"/crm/{version}/settings/layouts/{id}","path_patterns":{"id":"[0-9]{1,19}"},"scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getLayouts": {"action":"settings.layouts.read","effects":["read"],"method":"GET","origin":"{api}","params":["module","mode","include","include_inner_details","include_element_types"],"path":"/crm/{version}/settings/layouts","scope":{"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getModuleByApiName": {"action":"settings.modules.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields","include_inner_details"],"path":"/crm/{version}/settings/modules/{moduleIdentifier}","path_patterns":{"moduleIdentifier":"[^A].*|A(?:|[^t].*|t(?:|[^t].*|t(?:|[^a].*|a(?:|[^c].*|c(?:|[^h].*|h(?:|[^m].*|m(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+))))))))))"},"scope":{"moduleIdentifier":{"at":"moduleIdentifier","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getModules": {"action":"settings.modules.read","effects":["read"],"method":"GET","origin":"{api}","params":["status","feature_name","include","fields"],"path":"/crm/{version}/settings/modules","scope":{"feature_name":{"at":"feature_name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getNoteById": {"action":"notes.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/crm/{version}/Notes/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getNotesModule": {"action":"notes.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields","ids","per_page","page","page_token","sort_order","sort_by"],"path":"/crm/{version}/Notes","scope":{"ids":{"at":"ids","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getOrganization": {"action":"org.read","effects":["read"],"method":"GET","origin":"{api}","path":"/crm/{version}/org","scope":{"version":{"at":"version","from":"path"}}},
+      "getRecord": {"action":"records.read","effects":["read"],"method":"GET","origin":"{api}","path":"/crm/{version}/{module}/{recordId}","path_patterns":{"module":"[^Nsu].*|N(?:|[^o].*|o(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))|s(?:|[^e].*|e(?:|[^t].*|t(?:|[^t].*|t(?:|[^i].*|i(?:|[^n].*|n(?:|[^g].*|g(?:|[^s].*|s.+)))))))|u(?:|[^s].*|s(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))","recordId":"[^ds].*|d(?:|[^e].*|e(?:|[^l].*|l(?:|[^e].*|e(?:|[^t].*|t(?:|[^e].*|e(?:|[^d].*|d.+))))))|s(?:|[^e].*|e(?:|[^a].*|a(?:|[^r].*|r(?:|[^c].*|c(?:|[^h].*|h.+)))))"},"scope":{"module":{"at":"module","from":"path"},"recordId":{"at":"recordId","from":"path"},"version":{"at":"version","from":"path"}}},
+      "getRecordCount": {"action":"actions.count.read","effects":["read"],"method":"GET","origin":"{api}","params":["email","phone","word","cvid","criteria","filters","include_filters","cross_filters","converted","approved","page","per_page","type"],"path":"/crm/{version}/{moduleApiName}/actions/count","scope":{"cvid":{"at":"cvid","from":"query","optional":true},"email":{"at":"email","from":"query","optional":true},"moduleApiName":{"at":"moduleApiName","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getRecords": {"action":"records.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields","territory_id","ids","cvid","filters","cross_filters","filterId","per_page","page","page_token","sort_order","sort_by","converted","include_child"],"path":"/crm/{version}/{module}","path_patterns":{"module":"[^Nfou].*|N(?:|[^o].*|o(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))|f(?:|[^i].*|i(?:|[^l].*|l(?:|[^e].*|e(?:|[^s].*|s.+))))|o(?:|[^r].*|r(?:|[^g].*|g.+))|u(?:|[^s].*|s(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))"},"scope":{"cvid":{"at":"cvid","from":"query","optional":true},"filterId":{"at":"filterId","from":"query","optional":true},"ids":{"at":"ids","from":"query","optional":true},"module":{"at":"module","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"territory_id":{"at":"territory_id","from":"query","optional":true},"version":{"at":"version","from":"path"}}},
+      "getRelatedLists": {"action":"settings.related_lists.read","effects":["read"],"method":"GET","origin":"{api}","params":["module","layout_id","status","extra_properties","include_inner_details"],"path":"/crm/{version}/settings/related_lists","scope":{"layout_id":{"at":"layout_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getRelatedRecord": {"action":"related_records.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields"],"path":"/crm/{version}/{parentRecordModule}/{parentRecord}/{relatedList}/{record}","path_patterns":{"parentRecord":"[0-9]+","relatedList":"[^A].*|A(?:|[^t].*|t(?:|[^t].*|t(?:|[^a].*|a(?:|[^c].*|c(?:|[^h].*|h(?:|[^m].*|m(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+))))))))))"},"scope":{"parentRecord":{"at":"parentRecord","from":"path"},"parentRecordModule":{"at":"parentRecordModule","from":"path"},"query":{"at":"","from":"query","type":"object"},"record":{"at":"record","from":"path"},"relatedList":{"at":"relatedList","from":"path"},"version":{"at":"version","from":"path"}}},
+      "getRelatedRecords": {"action":"related_records.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields","page","perPage","page_token","ids","sort_order","sort_by","converted","approved","approval_state","filters"],"path":"/crm/{version}/{parentRecordModule}/{parentRecord}/{relatedList}","path_patterns":{"parentRecord":"[0-9]+","relatedList":"[^A].*|A(?:|[^t].*|t(?:|[^t].*|t(?:|[^a].*|a(?:|[^c].*|c(?:|[^h].*|h(?:|[^m].*|m(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+))))))))))"},"scope":{"ids":{"at":"ids","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"parentRecord":{"at":"parentRecord","from":"path"},"parentRecordModule":{"at":"parentRecordModule","from":"path"},"query":{"at":"","from":"query","type":"object"},"relatedList":{"at":"relatedList","from":"path"},"version":{"at":"version","from":"path"}}},
+      "getScheduledJobs": {"action":"settings.fields.actions.scheduled_jobs.read","effects":["read"],"method":"GET","origin":"{api}","params":["job_id","module","page","per_page"],"path":"/crm/{version}/settings/fields/{fieldId}/actions/scheduled_jobs","scope":{"fieldId":{"at":"fieldId","from":"path"},"job_id":{"at":"job_id","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getSingleUser": {"action":"users.read","effects":["read"],"method":"GET","origin":"{api}","params":["fields","type__s"],"path":"/crm/{version}/users/{user}","scope":{"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"path"},"version":{"at":"version","from":"path"}}},
+      "getTagRecordsCount": {"action":"settings.tags.actions.records_count.read","effects":["read"],"method":"GET","origin":"{api}","params":["id","module"],"path":"/crm/{version}/settings/tags/{id}/actions/records_count","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"query.id":{"at":"id","from":"query","optional":true},"version":{"at":"version","from":"path"}}},
+      "getTags": {"action":"settings.tags.read","effects":["read"],"method":"GET","origin":"{api}","params":["module","include"],"path":"/crm/{version}/settings/tags","scope":{"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "getUsers": {"action":"users.read","effects":["read"],"method":"GET","origin":"{api}","params":["type","page","per_page","include_lite_users","role_id","query_id","child_data","ids","fields","type__s"],"path":"/crm/{version}/users","scope":{"ids":{"at":"ids","from":"query","optional":true},"include_lite_users":{"at":"include_lite_users","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"query_id":{"at":"query_id","from":"query","optional":true},"role_id":{"at":"role_id","from":"query","optional":true},"version":{"at":"version","from":"path"}}},
+      "mergeTags": {"action":"settings.tags.actions.delete","effects":["delete","write"],"method":"POST","origin":"{api}","path":"/crm/{version}/settings/tags/{id}/actions/merge","scope":{"id":{"at":"id","from":"path"},"version":{"at":"version","from":"path"}}},
+      "mergeTags.json.d788a25af435": {"action":"settings.tags.actions.delete","body":"json","effects":["delete","write"],"method":"POST","origin":"{api}","path":"/crm/{version}/settings/tags/{id}/actions/merge","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "postAddTags": {"action":"actions.tags.write","effects":["write"],"method":"POST","origin":"{api}","path":"/crm/{version}/{module}/actions/add_tags","scope":{"module":{"at":"module","from":"path"},"version":{"at":"version","from":"path"}}},
+      "postAddTags.json.d0fe54fe4a2c": {"action":"actions.tags.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/crm/{version}/{module}/actions/add_tags","scope":{"module":{"at":"module","from":"path"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "postAddTagsWithId": {"action":"actions.tags.write","effects":["write"],"method":"POST","origin":"{api}","params":["over_write"],"path":"/crm/{version}/{module}/{id}/actions/add_tags","scope":{"id":{"at":"id","from":"path"},"module":{"at":"module","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "postAddTagsWithId.json.8e2790883519": {"action":"actions.tags.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","params":["over_write"],"path":"/crm/{version}/{module}/{id}/actions/add_tags","scope":{"id":{"at":"id","from":"path"},"module":{"at":"module","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "postRemoveTags": {"action":"actions.tags.delete","effects":["delete"],"method":"POST","origin":"{api}","params":["module"],"path":"/crm/{version}/{module}/actions/remove_tags","scope":{"module":{"at":"module","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "postRemoveTags.json.b90749070f55": {"action":"actions.tags.delete","body":"json","effects":["delete"],"method":"POST","origin":"{api}","params":["module"],"path":"/crm/{version}/{module}/actions/remove_tags","scope":{"module":{"at":"module","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "postRemoveTagsWithId": {"action":"actions.tags.delete","effects":["delete"],"method":"POST","origin":"{api}","path":"/crm/{version}/{module}/{id}/actions/remove_tags","scope":{"id":{"at":"id","from":"path"},"module":{"at":"module","from":"path"},"version":{"at":"version","from":"path"}}},
+      "postRemoveTagsWithId.json.08d70575287b": {"action":"actions.tags.delete","body":"json","effects":["delete"],"method":"POST","origin":"{api}","path":"/crm/{version}/{module}/{id}/actions/remove_tags","scope":{"id":{"at":"id","from":"path"},"module":{"at":"module","from":"path"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "putFieldsWithId": {"action":"settings.fields.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","params":["module"],"path":"/crm/{version}/settings/fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "searchRecords": {"action":"search.read","effects":["read"],"method":"GET","origin":"{api}","params":["approval_state","criteria","converted","word","email","phone","fields","page","per_page","sort_by","sort_order","type","include_lite_users","role_id"],"path":"/crm/{version}/{module}/search","path_patterns":{"module":"[^Nu].*|N(?:|[^o].*|o(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))|u(?:|[^s].*|s(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))"},"scope":{"email":{"at":"email","from":"query","optional":true},"include_lite_users":{"at":"include_lite_users","from":"query","optional":true},"module":{"at":"module","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"role_id":{"at":"role_id","from":"query","optional":true},"version":{"at":"version","from":"path"}}},
+      "sendMail": {"action":"actions.mail.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/crm/{version}/{moduleName}/{id}/actions/send_mail","scope":{"id":{"at":"id","from":"path"},"moduleName":{"at":"moduleName","from":"path"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "updateCustomView": {"action":"settings.custom_views.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","params":["module"],"path":"/crm/{version}/settings/custom_views/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "updateCustomViewsBulk": {"action":"settings.custom_views.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","params":["module"],"path":"/crm/{version}/settings/custom_views","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "updateField": {"action":"settings.fields.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","params":["module"],"path":"/crm/{version}/settings/fields","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "updateLayout": {"action":"settings.layouts.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","params":["module"],"path":"/crm/{version}/settings/layouts/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "updateModuleByApiName": {"action":"settings.modules.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/crm/{version}/settings/modules/{moduleIdentifier}","scope":{"moduleIdentifier":{"at":"moduleIdentifier","from":"path"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "updateModules": {"action":"settings.modules.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/crm/{version}/settings/modules","scope":{"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "updateNoteById": {"action":"notes.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/crm/{version}/Notes/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "updateNotesModule": {"action":"notes.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/crm/{version}/Notes","scope":{"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "updateRecord": {"action":"records.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/crm/{version}/{module}/{recordId}","path_patterns":{"module":"[^Nsu].*|N(?:|[^o].*|o(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))|s(?:|[^e].*|e(?:|[^t].*|t(?:|[^t].*|t(?:|[^i].*|i(?:|[^n].*|n(?:|[^g].*|g(?:|[^s].*|s.+)))))))|u(?:|[^s].*|s(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))"},"scope":{"module":{"at":"module","from":"path"},"recordId":{"at":"recordId","from":"path"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "updateRecords": {"action":"records.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/crm/{version}/{module}","path_patterns":{"module":"[^Nu].*|N(?:|[^o].*|o(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))|u(?:|[^s].*|s(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))"},"scope":{"module":{"at":"module","from":"path"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "updateRelatedRecords": {"action":"related_records.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/crm/{version}/{parentRecordModule}/{parentRecord}/{relatedList}","path_patterns":{"parentRecord":"[0-9]+"},"scope":{"parentRecord":{"at":"parentRecord","from":"path"},"parentRecordModule":{"at":"parentRecordModule","from":"path"},"relatedList":{"at":"relatedList","from":"path"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "updateSingleUser": {"action":"users.admin","effects":["admin"],"method":"PUT","origin":"{api}","path":"/crm/{version}/users/{user}","scope":{"user":{"at":"user","from":"path"},"version":{"at":"version","from":"path"}}},
+      "updateSingleUser.json.609f8674eb45": {"action":"users.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/crm/{version}/users/{user}","scope":{"request":{"at":"","from":"body","type":"object"},"user":{"at":"user","from":"path"},"users":{"at":"/users","from":"body","type":"array"},"version":{"at":"version","from":"path"}}},
+      "updateSpecificRelatedRecord": {"action":"related_records.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/crm/{version}/{parentRecordModule}/{parentRecord}/{relatedList}/{record}","path_patterns":{"parentRecord":"[0-9]+"},"scope":{"parentRecord":{"at":"parentRecord","from":"path"},"parentRecordModule":{"at":"parentRecordModule","from":"path"},"record":{"at":"record","from":"path"},"relatedList":{"at":"relatedList","from":"path"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "updateTagById": {"action":"settings.tags.write","effects":["write"],"method":"PUT","origin":"{api}","params":["module","id"],"path":"/crm/{version}/settings/tags/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"query.id":{"at":"id","from":"query"},"version":{"at":"version","from":"path"}}},
+      "updateTagById.json.4bb24299f866": {"action":"settings.tags.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","params":["module","id"],"path":"/crm/{version}/settings/tags/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"query.id":{"at":"id","from":"query"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "updateTags": {"action":"settings.tags.write","effects":["write"],"method":"PUT","origin":"{api}","params":["module"],"path":"/crm/{version}/settings/tags","scope":{"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "updateTags.json.22b1eee0bf08": {"action":"settings.tags.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","params":["module"],"path":"/crm/{version}/settings/tags","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "updateUser": {"action":"users.admin","effects":["admin"],"method":"PUT","origin":"{api}","path":"/crm/{version}/users","scope":{"version":{"at":"version","from":"path"}}},
+      "updateUser.json.25ca34041f66": {"action":"users.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/crm/{version}/users","scope":{"request":{"at":"","from":"body","type":"object"},"users":{"at":"/users","from":"body","type":"array"},"version":{"at":"version","from":"path"}}},
+      "uploadAttachment": {"action":"attachments.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/crm/{version}/{moduleApiName}/{recordId}/Attachments","scope":{"moduleApiName":{"at":"moduleApiName","from":"path"},"recordId":{"at":"recordId","from":"path"},"version":{"at":"version","from":"path"}}},
+      "uploadFiles": {"action":"files.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","params":["inline"],"path":"/crm/{version}/files","scope":{"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "upsertRecords": {"action":"upsert.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/crm/{version}/{module}/upsert","scope":{"lar_id":{"at":"/lar_id","from":"body","optional":true},"module":{"at":"module","from":"path"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}}
     }
   }
 }

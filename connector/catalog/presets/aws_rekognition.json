@@ -1,100 +1,171 @@
 {
-  "title": "AWS Rekognition",
   "catalog": {
-    "replaced_by": "aws",
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["http", "slots", 0, "sigv4", "region"]},
-      {"key": "access_key", "label": "Access key ID", "secret": true, "credential": true},
-      {"key": "secret_key", "label": "Secret access key", "secret": true, "credential": true},
-      {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/", "sigv4": {"service": "rekognition", "region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}},
     "actions": {
-      "generate.rekognition": {"title": "Generate: rekognition"},
-      "read": {"title": "Read everything the account can see"},
-      "write.rekognition": {"title": "Write: rekognition"}
-    }
+      "rekognition": {
+        "title": "Rekognition"
+      },
+      "rekognition.delete": {
+        "title": "Delete"
+      },
+      "rekognition.generate": {
+        "title": "Generate"
+      },
+      "rekognition.read": {
+        "title": "Read"
+      },
+      "rekognition.share": {
+        "title": "Share"
+      },
+      "rekognition.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "origin": "https://example.com",
+            "path": "/",
+            "sigv4": {
+              "region": "us-east-1",
+              "secret": "secret_key",
+              "service": "rekognition",
+              "session": "session_token"
+            },
+            "value": "access_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Service endpoint (https://service.region.amazonaws.com)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "key": "region",
+        "label": "Region (e.g. us-east-1)",
+        "path": [
+          "http",
+          "slots",
+          0,
+          "sigv4",
+          "region"
+        ]
+      },
+      {
+        "credential": true,
+        "key": "access_key",
+        "label": "Access key ID",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "secret_key",
+        "label": "Secret access key",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "session_token",
+        "label": "Session token (temporary credentials only)",
+        "secret": true
+      }
+    ],
+    "group": "api",
+    "replaced_by": "aws"
   },
+  "title": "AWS Rekognition",
   "http": {
     "origins": {"origin":["https://rekognition-fips.{region}.amazonaws.com","https://rekognition.{region}.amazonaws.com"]},
     "operations": {
-      "AssociateFaces": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.AssociateFaces"},"body":"any","scope":{}},
-      "CompareFaces": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.CompareFaces"},"body":"any","scope":{}},
-      "CopyProjectVersion": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.CopyProjectVersion"},"body":"any","scope":{}},
-      "CreateCollection": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.CreateCollection"},"body":"any","scope":{}},
-      "CreateDataset": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.CreateDataset"},"body":"any","scope":{}},
-      "CreateFaceLivenessSession": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.CreateFaceLivenessSession"},"body":"any","scope":{}},
-      "CreateProject": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.CreateProject"},"body":"any","scope":{}},
-      "CreateProjectVersion": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.CreateProjectVersion"},"body":"any","scope":{}},
-      "CreateStreamProcessor": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.CreateStreamProcessor"},"body":"any","scope":{}},
-      "CreateUser": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.CreateUser"},"body":"any","scope":{}},
-      "DeleteCollection": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DeleteCollection"},"body":"any","scope":{}},
-      "DeleteDataset": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DeleteDataset"},"body":"any","scope":{}},
-      "DeleteFaces": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DeleteFaces"},"body":"any","scope":{}},
-      "DeleteProject": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DeleteProject"},"body":"any","scope":{}},
-      "DeleteProjectPolicy": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DeleteProjectPolicy"},"body":"any","scope":{}},
-      "DeleteProjectVersion": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DeleteProjectVersion"},"body":"any","scope":{}},
-      "DeleteStreamProcessor": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DeleteStreamProcessor"},"body":"any","scope":{}},
-      "DeleteUser": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DeleteUser"},"body":"any","scope":{}},
-      "DescribeCollection": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DescribeCollection"},"body":"any","scope":{}},
-      "DescribeDataset": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DescribeDataset"},"body":"any","scope":{}},
-      "DescribeProjectVersions": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DescribeProjectVersions"},"body":"any","scope":{}},
-      "DescribeProjects": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DescribeProjects"},"body":"any","scope":{}},
-      "DescribeStreamProcessor": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DescribeStreamProcessor"},"body":"any","scope":{}},
-      "DetectCustomLabels": {"action":"generate.rekognition","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DetectCustomLabels"},"body":"any","scope":{}},
-      "DetectFaces": {"action":"generate.rekognition","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DetectFaces"},"body":"any","scope":{}},
-      "DetectLabels": {"action":"generate.rekognition","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DetectLabels"},"body":"any","scope":{}},
-      "DetectModerationLabels": {"action":"generate.rekognition","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DetectModerationLabels"},"body":"any","scope":{}},
-      "DetectProtectiveEquipment": {"action":"generate.rekognition","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DetectProtectiveEquipment"},"body":"any","scope":{}},
-      "DetectText": {"action":"generate.rekognition","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DetectText"},"body":"any","scope":{}},
-      "DisassociateFaces": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DisassociateFaces"},"body":"any","scope":{}},
-      "DistributeDatasetEntries": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.DistributeDatasetEntries"},"body":"any","scope":{}},
-      "GetCelebrityInfo": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.GetCelebrityInfo"},"body":"any","scope":{}},
-      "GetCelebrityRecognition": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.GetCelebrityRecognition"},"body":"any","scope":{}},
-      "GetContentModeration": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.GetContentModeration"},"body":"any","scope":{}},
-      "GetFaceDetection": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.GetFaceDetection"},"body":"any","scope":{}},
-      "GetFaceLivenessSessionResults": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.GetFaceLivenessSessionResults"},"body":"any","scope":{}},
-      "GetFaceSearch": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.GetFaceSearch"},"body":"any","scope":{}},
-      "GetLabelDetection": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.GetLabelDetection"},"body":"any","scope":{}},
-      "GetMediaAnalysisJob": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.GetMediaAnalysisJob"},"body":"any","scope":{}},
-      "GetPersonTracking": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.GetPersonTracking"},"body":"any","scope":{}},
-      "GetSegmentDetection": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.GetSegmentDetection"},"body":"any","scope":{}},
-      "GetTextDetection": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.GetTextDetection"},"body":"any","scope":{}},
-      "IndexFaces": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.IndexFaces"},"body":"any","scope":{}},
-      "ListCollections": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.ListCollections"},"body":"any","scope":{}},
-      "ListDatasetEntries": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.ListDatasetEntries"},"body":"any","scope":{}},
-      "ListDatasetLabels": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.ListDatasetLabels"},"body":"any","scope":{}},
-      "ListFaces": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.ListFaces"},"body":"any","scope":{}},
-      "ListMediaAnalysisJobs": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.ListMediaAnalysisJobs"},"body":"any","scope":{}},
-      "ListProjectPolicies": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.ListProjectPolicies"},"body":"any","scope":{}},
-      "ListStreamProcessors": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.ListStreamProcessors"},"body":"any","scope":{}},
-      "ListTagsForResource": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.ListTagsForResource"},"body":"any","scope":{}},
-      "ListUsers": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.ListUsers"},"body":"any","scope":{}},
-      "PutProjectPolicy": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.PutProjectPolicy"},"body":"any","scope":{}},
-      "RecognizeCelebrities": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.RecognizeCelebrities"},"body":"any","scope":{}},
-      "SearchFaces": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.SearchFaces"},"body":"any","scope":{}},
-      "SearchFacesByImage": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.SearchFacesByImage"},"body":"any","scope":{}},
-      "SearchUsers": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.SearchUsers"},"body":"any","scope":{}},
-      "SearchUsersByImage": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.SearchUsersByImage"},"body":"any","scope":{}},
-      "StartCelebrityRecognition": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.StartCelebrityRecognition"},"body":"any","scope":{}},
-      "StartContentModeration": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.StartContentModeration"},"body":"any","scope":{}},
-      "StartFaceDetection": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.StartFaceDetection"},"body":"any","scope":{}},
-      "StartFaceSearch": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.StartFaceSearch"},"body":"any","scope":{}},
-      "StartLabelDetection": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.StartLabelDetection"},"body":"any","scope":{}},
-      "StartMediaAnalysisJob": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.StartMediaAnalysisJob"},"body":"any","scope":{}},
-      "StartPersonTracking": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.StartPersonTracking"},"body":"any","scope":{}},
-      "StartProjectVersion": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.StartProjectVersion"},"body":"any","scope":{}},
-      "StartSegmentDetection": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.StartSegmentDetection"},"body":"any","scope":{}},
-      "StartStreamProcessor": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.StartStreamProcessor"},"body":"any","scope":{}},
-      "StartTextDetection": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.StartTextDetection"},"body":"any","scope":{}},
-      "StopProjectVersion": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.StopProjectVersion"},"body":"any","scope":{}},
-      "StopStreamProcessor": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.StopStreamProcessor"},"body":"any","scope":{}},
-      "TagResource": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.TagResource"},"body":"any","scope":{}},
-      "UntagResource": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.UntagResource"},"body":"any","scope":{}},
-      "UpdateDatasetEntries": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.UpdateDatasetEntries"},"body":"any","scope":{}},
-      "UpdateStreamProcessor": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.UpdateStreamProcessor"},"body":"any","scope":{}}
+      "AssociateFaces": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.AssociateFaces"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CompareFaces": {"action":"rekognition.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"RekognitionService.CompareFaces"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CopyProjectVersion": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.CopyProjectVersion"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateCollection": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.CreateCollection"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateDataset": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.CreateDataset"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateFaceLivenessSession": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.CreateFaceLivenessSession"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateProject": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.CreateProject"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateProjectVersion": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.CreateProjectVersion"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateStreamProcessor": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.CreateStreamProcessor"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateUser": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.CreateUser"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteCollection": {"action":"rekognition.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"RekognitionService.DeleteCollection"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteDataset": {"action":"rekognition.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"RekognitionService.DeleteDataset"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteFaces": {"action":"rekognition.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"RekognitionService.DeleteFaces"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteProject": {"action":"rekognition.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"RekognitionService.DeleteProject"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteProjectPolicy": {"action":"rekognition.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"RekognitionService.DeleteProjectPolicy"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteProjectVersion": {"action":"rekognition.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"RekognitionService.DeleteProjectVersion"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteStreamProcessor": {"action":"rekognition.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"RekognitionService.DeleteStreamProcessor"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteUser": {"action":"rekognition.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"RekognitionService.DeleteUser"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeCollection": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.DescribeCollection"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeDataset": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.DescribeDataset"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeProjectVersions": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.DescribeProjectVersions"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeProjects": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.DescribeProjects"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeStreamProcessor": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.DescribeStreamProcessor"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DetectCustomLabels": {"action":"rekognition.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"RekognitionService.DetectCustomLabels"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DetectFaces": {"action":"rekognition.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"RekognitionService.DetectFaces"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DetectLabels": {"action":"rekognition.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"RekognitionService.DetectLabels"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DetectModerationLabels": {"action":"rekognition.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"RekognitionService.DetectModerationLabels"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DetectProtectiveEquipment": {"action":"rekognition.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"RekognitionService.DetectProtectiveEquipment"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DetectText": {"action":"rekognition.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"RekognitionService.DetectText"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DisassociateFaces": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.DisassociateFaces"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DistributeDatasetEntries": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.DistributeDatasetEntries"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetCelebrityInfo": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.GetCelebrityInfo"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetCelebrityRecognition": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.GetCelebrityRecognition"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetContentModeration": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.GetContentModeration"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetFaceDetection": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.GetFaceDetection"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetFaceLivenessSessionResults": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.GetFaceLivenessSessionResults"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetFaceSearch": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.GetFaceSearch"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetLabelDetection": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.GetLabelDetection"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetMediaAnalysisJob": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.GetMediaAnalysisJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetPersonTracking": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.GetPersonTracking"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetSegmentDetection": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.GetSegmentDetection"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetTextDetection": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.GetTextDetection"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "IndexFaces": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.IndexFaces"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListCollections": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.ListCollections"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListDatasetEntries": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.ListDatasetEntries"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListDatasetLabels": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.ListDatasetLabels"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListFaces": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.ListFaces"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListMediaAnalysisJobs": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.ListMediaAnalysisJobs"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListProjectPolicies": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.ListProjectPolicies"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListStreamProcessors": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.ListStreamProcessors"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListTagsForResource": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.ListTagsForResource"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListUsers": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.ListUsers"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "PutProjectPolicy": {"action":"rekognition.share","body":"any","effects":["share"],"headers":{"X-Amz-Target":"RekognitionService.PutProjectPolicy"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "RecognizeCelebrities": {"action":"rekognition.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"RekognitionService.RecognizeCelebrities"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "SearchFaces": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.SearchFaces"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "SearchFacesByImage": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.SearchFacesByImage"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "SearchUsers": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.SearchUsers"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "SearchUsersByImage": {"action":"rekognition.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"RekognitionService.SearchUsersByImage"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartCelebrityRecognition": {"action":"rekognition.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"RekognitionService.StartCelebrityRecognition"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartContentModeration": {"action":"rekognition.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"RekognitionService.StartContentModeration"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartFaceDetection": {"action":"rekognition.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"RekognitionService.StartFaceDetection"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartFaceSearch": {"action":"rekognition.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"RekognitionService.StartFaceSearch"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartLabelDetection": {"action":"rekognition.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"RekognitionService.StartLabelDetection"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartMediaAnalysisJob": {"action":"rekognition.generate","body":"any","effects":["generate","write"],"headers":{"X-Amz-Target":"RekognitionService.StartMediaAnalysisJob"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartPersonTracking": {"action":"rekognition.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"RekognitionService.StartPersonTracking"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartProjectVersion": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.StartProjectVersion"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartSegmentDetection": {"action":"rekognition.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"RekognitionService.StartSegmentDetection"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartStreamProcessor": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.StartStreamProcessor"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartTextDetection": {"action":"rekognition.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"RekognitionService.StartTextDetection"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StopProjectVersion": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.StopProjectVersion"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StopStreamProcessor": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.StopStreamProcessor"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "TagResource": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.TagResource"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UntagResource": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.UntagResource"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UpdateDatasetEntries": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.UpdateDatasetEntries"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UpdateStreamProcessor": {"action":"rekognition.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"RekognitionService.UpdateStreamProcessor"},"method":"POST","origin":"{origin}","path":"/","scope":{}}
     }
   }
 }

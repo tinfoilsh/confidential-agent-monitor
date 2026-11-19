@@ -1,246 +1,1153 @@
 {
-  "title": "Zoom",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "access_token", "label": "JWT Token", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_token", "origin": "https://api.zoom.us", "path": "/v2", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "admin.settings": {"title": "Admin: settings"},
-      "delete.devices": {"title": "Delete: devices"},
-      "delete.mac_addresses": {"title": "Delete: mac addresses"},
-      "delete.meeting_summary": {"title": "Delete: meeting summary"},
-      "delete.meetings": {"title": "Delete: meetings"},
-      "delete.messages": {"title": "Delete: messages"},
-      "delete.name_tags": {"title": "Delete: name tags"},
-      "delete.open_apps": {"title": "Delete: open apps"},
-      "delete.panelists": {"title": "Delete: panelists"},
-      "delete.past_meetings": {"title": "Delete: past meetings"},
-      "delete.phones": {"title": "Delete: phones"},
-      "delete.polls": {"title": "Delete: polls"},
-      "delete.recordings": {"title": "Delete: recordings"},
-      "delete.registrants": {"title": "Delete: registrants"},
-      "delete.survey": {"title": "Delete: survey"},
-      "delete.tracking_fields": {"title": "Delete: tracking fields"},
-      "delete.transcript": {"title": "Delete: transcript"},
-      "delete.tsp": {"title": "Delete: tsp"},
-      "delete.virtual_backgrounds": {"title": "Delete: virtual backgrounds"},
-      "delete.wallpaper": {"title": "Delete: wallpaper"},
-      "delete.webinars": {"title": "Delete: webinars"},
-      "read": {"title": "Read everything the account can see"},
-      "share.meetings": {"title": "Share: meetings"},
-      "share.webinars": {"title": "Share: webinars"},
-      "write.archive_files": {"title": "Write: archive files"},
-      "write.assignment": {"title": "Write: assignment"},
-      "write.batch_polls": {"title": "Write: batch polls"},
-      "write.batch_registrants": {"title": "Write: batch registrants"},
-      "write.devices": {"title": "Write: devices"},
-      "write.events": {"title": "Write: events"},
-      "write.livestream": {"title": "Write: livestream"},
-      "write.meeting_templates": {"title": "Write: meeting templates"},
-      "write.meetings": {"title": "Write: meetings"},
-      "write.messages": {"title": "Write: messages"},
-      "write.name_tags": {"title": "Write: name tags"},
-      "write.open_apps": {"title": "Write: open apps"},
-      "write.panelists": {"title": "Write: panelists"},
-      "write.phones": {"title": "Write: phones"},
-      "write.polls": {"title": "Write: polls"},
-      "write.questions": {"title": "Write: questions"},
-      "write.registrants": {"title": "Write: registrants"},
-      "write.status": {"title": "Write: status"},
-      "write.survey": {"title": "Write: survey"},
-      "write.tracking_fields": {"title": "Write: tracking fields"},
-      "write.tsp": {"title": "Write: tsp"},
-      "write.upgrade": {"title": "Write: upgrade"},
-      "write.virtual_backgrounds": {"title": "Write: virtual backgrounds"},
-      "write.wallpaper": {"title": "Write: wallpaper"},
-      "write.webinar_templates": {"title": "Write: webinar templates"},
-      "write.webinars": {"title": "Write: webinars"}
-    }
+      "archive_files": {
+        "title": "Archive files"
+      },
+      "archive_files.audit": {
+        "title": "Audit"
+      },
+      "archive_files.audit.read": {
+        "title": "Read"
+      },
+      "archive_files.read": {
+        "title": "Read"
+      },
+      "archive_files.statistics": {
+        "title": "Statistics"
+      },
+      "archive_files.statistics.read": {
+        "title": "Read"
+      },
+      "archive_files.write": {
+        "title": "Create and edit"
+      },
+      "devices": {
+        "title": "Devices"
+      },
+      "devices.assign_group": {
+        "title": "Assign group"
+      },
+      "devices.assign_group.write": {
+        "title": "Create and edit"
+      },
+      "devices.assignment": {
+        "title": "Assignment"
+      },
+      "devices.assignment.write": {
+        "title": "Create and edit"
+      },
+      "devices.delete": {
+        "title": "Delete"
+      },
+      "devices.groups": {
+        "title": "Groups"
+      },
+      "devices.groups.read": {
+        "title": "Read"
+      },
+      "devices.read": {
+        "title": "Read"
+      },
+      "devices.write": {
+        "title": "Create and edit"
+      },
+      "devices.zpa": {
+        "title": "Zpa"
+      },
+      "devices.zpa.assignment": {
+        "title": "Assignment"
+      },
+      "devices.zpa.assignment.write": {
+        "title": "Create and edit"
+      },
+      "devices.zpa.settings": {
+        "title": "Settings"
+      },
+      "devices.zpa.settings.read": {
+        "title": "Read"
+      },
+      "devices.zpa.upgrade": {
+        "title": "Upgrade"
+      },
+      "devices.zpa.upgrade.write": {
+        "title": "Create and edit"
+      },
+      "devices.zpa.vendors": {
+        "title": "Vendors"
+      },
+      "devices.zpa.vendors.mac_addresses": {
+        "title": "Mac addresses"
+      },
+      "devices.zpa.vendors.mac_addresses.delete": {
+        "title": "Delete"
+      },
+      "devices.zpa.zdm_groups": {
+        "title": "Zdm groups"
+      },
+      "devices.zpa.zdm_groups.versions": {
+        "title": "Versions"
+      },
+      "devices.zpa.zdm_groups.versions.read": {
+        "title": "Read"
+      },
+      "h323": {
+        "title": "H323"
+      },
+      "h323.devices": {
+        "title": "Devices"
+      },
+      "h323.devices.delete": {
+        "title": "Delete"
+      },
+      "h323.devices.read": {
+        "title": "Read"
+      },
+      "h323.devices.write": {
+        "title": "Create and edit"
+      },
+      "live_meetings": {
+        "title": "Live meetings"
+      },
+      "live_meetings.chat": {
+        "title": "Chat"
+      },
+      "live_meetings.chat.messages": {
+        "title": "Messages"
+      },
+      "live_meetings.chat.messages.delete": {
+        "title": "Delete"
+      },
+      "live_meetings.chat.messages.write": {
+        "title": "Create and edit"
+      },
+      "live_meetings.events": {
+        "title": "Events"
+      },
+      "live_meetings.events.send": {
+        "title": "Send"
+      },
+      "live_meetings.rtms_app": {
+        "title": "Rtms app"
+      },
+      "live_meetings.rtms_app.status": {
+        "title": "Status"
+      },
+      "live_meetings.rtms_app.status.send": {
+        "title": "Send"
+      },
+      "live_webinars": {
+        "title": "Live webinars"
+      },
+      "live_webinars.chat": {
+        "title": "Chat"
+      },
+      "live_webinars.chat.messages": {
+        "title": "Messages"
+      },
+      "live_webinars.chat.messages.delete": {
+        "title": "Delete"
+      },
+      "meetings": {
+        "title": "Meetings"
+      },
+      "meetings.delete": {
+        "title": "Delete"
+      },
+      "meetings.invitation": {
+        "title": "Invitation"
+      },
+      "meetings.invitation.read": {
+        "title": "Read"
+      },
+      "meetings.jointoken": {
+        "title": "Jointoken"
+      },
+      "meetings.jointoken.live_streaming": {
+        "title": "Live streaming"
+      },
+      "meetings.jointoken.live_streaming.read": {
+        "title": "Read"
+      },
+      "meetings.jointoken.local_archiving": {
+        "title": "Local archiving"
+      },
+      "meetings.jointoken.local_archiving.read": {
+        "title": "Read"
+      },
+      "meetings.jointoken.local_recording": {
+        "title": "Local recording"
+      },
+      "meetings.jointoken.local_recording.read": {
+        "title": "Read"
+      },
+      "meetings.links": {
+        "title": "Links"
+      },
+      "meetings.links.share": {
+        "title": "Share"
+      },
+      "meetings.livestream": {
+        "title": "Livestream"
+      },
+      "meetings.livestream.read": {
+        "title": "Read"
+      },
+      "meetings.livestream.status": {
+        "title": "Status"
+      },
+      "meetings.livestream.status.publish": {
+        "title": "Publish"
+      },
+      "meetings.livestream.write": {
+        "title": "Create and edit"
+      },
+      "meetings.meeting_summaries": {
+        "title": "Meeting summaries"
+      },
+      "meetings.meeting_summaries.read": {
+        "title": "Read"
+      },
+      "meetings.meeting_summary": {
+        "title": "Meeting summary"
+      },
+      "meetings.meeting_summary.delete": {
+        "title": "Delete"
+      },
+      "meetings.meeting_summary.read": {
+        "title": "Read"
+      },
+      "meetings.open_apps": {
+        "title": "Open apps"
+      },
+      "meetings.open_apps.delete": {
+        "title": "Delete"
+      },
+      "meetings.open_apps.write": {
+        "title": "Create and edit"
+      },
+      "meetings.polls": {
+        "title": "Polls"
+      },
+      "meetings.polls.delete": {
+        "title": "Delete"
+      },
+      "meetings.polls.read": {
+        "title": "Read"
+      },
+      "meetings.polls.write": {
+        "title": "Create and edit"
+      },
+      "meetings.read": {
+        "title": "Read"
+      },
+      "meetings.recordings": {
+        "title": "Recordings"
+      },
+      "meetings.recordings.analytics_details": {
+        "title": "Analytics details"
+      },
+      "meetings.recordings.analytics_details.read": {
+        "title": "Read"
+      },
+      "meetings.recordings.analytics_summary": {
+        "title": "Analytics summary"
+      },
+      "meetings.recordings.analytics_summary.read": {
+        "title": "Read"
+      },
+      "meetings.recordings.delete": {
+        "title": "Delete"
+      },
+      "meetings.recordings.read": {
+        "title": "Read"
+      },
+      "meetings.recordings.registrants": {
+        "title": "Registrants"
+      },
+      "meetings.recordings.registrants.questions": {
+        "title": "Questions"
+      },
+      "meetings.recordings.registrants.questions.read": {
+        "title": "Read"
+      },
+      "meetings.recordings.registrants.questions.write": {
+        "title": "Create and edit"
+      },
+      "meetings.recordings.registrants.read": {
+        "title": "Read"
+      },
+      "meetings.recordings.registrants.share": {
+        "title": "Share"
+      },
+      "meetings.recordings.registrants.status": {
+        "title": "Status"
+      },
+      "meetings.recordings.registrants.status.share": {
+        "title": "Share"
+      },
+      "meetings.recordings.settings": {
+        "title": "Settings"
+      },
+      "meetings.recordings.settings.read": {
+        "title": "Read"
+      },
+      "meetings.recordings.settings.share": {
+        "title": "Share"
+      },
+      "meetings.recordings.status": {
+        "title": "Status"
+      },
+      "meetings.recordings.status.write": {
+        "title": "Create and edit"
+      },
+      "meetings.registrants": {
+        "title": "Registrants"
+      },
+      "meetings.registrants.delete": {
+        "title": "Delete"
+      },
+      "meetings.registrants.questions": {
+        "title": "Questions"
+      },
+      "meetings.registrants.questions.read": {
+        "title": "Read"
+      },
+      "meetings.registrants.questions.write": {
+        "title": "Create and edit"
+      },
+      "meetings.registrants.read": {
+        "title": "Read"
+      },
+      "meetings.registrants.send": {
+        "title": "Send"
+      },
+      "meetings.registrants.status": {
+        "title": "Status"
+      },
+      "meetings.registrants.status.send": {
+        "title": "Send"
+      },
+      "meetings.sip_dialing": {
+        "title": "Sip dialing"
+      },
+      "meetings.sip_dialing.read": {
+        "title": "Read"
+      },
+      "meetings.status": {
+        "title": "Status"
+      },
+      "meetings.status.write": {
+        "title": "Create and edit"
+      },
+      "meetings.survey": {
+        "title": "Survey"
+      },
+      "meetings.survey.delete": {
+        "title": "Delete"
+      },
+      "meetings.survey.read": {
+        "title": "Read"
+      },
+      "meetings.survey.write": {
+        "title": "Create and edit"
+      },
+      "meetings.token": {
+        "title": "Token"
+      },
+      "meetings.token.read": {
+        "title": "Read"
+      },
+      "meetings.transcript": {
+        "title": "Transcript"
+      },
+      "meetings.transcript.delete": {
+        "title": "Delete"
+      },
+      "meetings.transcript.read": {
+        "title": "Read"
+      },
+      "meetings.write": {
+        "title": "Create and edit"
+      },
+      "past_meetings": {
+        "title": "Past meetings"
+      },
+      "past_meetings.archive_files": {
+        "title": "Archive files"
+      },
+      "past_meetings.archive_files.delete": {
+        "title": "Delete"
+      },
+      "past_meetings.archive_files.read": {
+        "title": "Read"
+      },
+      "past_meetings.instances": {
+        "title": "Instances"
+      },
+      "past_meetings.instances.read": {
+        "title": "Read"
+      },
+      "past_meetings.participants": {
+        "title": "Participants"
+      },
+      "past_meetings.participants.read": {
+        "title": "Read"
+      },
+      "past_meetings.polls": {
+        "title": "Polls"
+      },
+      "past_meetings.polls.read": {
+        "title": "Read"
+      },
+      "past_meetings.qa": {
+        "title": "Qa"
+      },
+      "past_meetings.qa.read": {
+        "title": "Read"
+      },
+      "past_meetings.read": {
+        "title": "Read"
+      },
+      "past_webinars": {
+        "title": "Past webinars"
+      },
+      "past_webinars.absentees": {
+        "title": "Absentees"
+      },
+      "past_webinars.absentees.read": {
+        "title": "Read"
+      },
+      "past_webinars.instances": {
+        "title": "Instances"
+      },
+      "past_webinars.instances.read": {
+        "title": "Read"
+      },
+      "past_webinars.participants": {
+        "title": "Participants"
+      },
+      "past_webinars.participants.read": {
+        "title": "Read"
+      },
+      "past_webinars.polls": {
+        "title": "Polls"
+      },
+      "past_webinars.polls.read": {
+        "title": "Read"
+      },
+      "past_webinars.qa": {
+        "title": "Qa"
+      },
+      "past_webinars.qa.read": {
+        "title": "Read"
+      },
+      "rec": {
+        "title": "Rec"
+      },
+      "rec.read": {
+        "title": "Read"
+      },
+      "report": {
+        "title": "Report"
+      },
+      "report.activities": {
+        "title": "Activities"
+      },
+      "report.activities.read": {
+        "title": "Read"
+      },
+      "report.billing": {
+        "title": "Billing"
+      },
+      "report.billing.invoices": {
+        "title": "Invoices"
+      },
+      "report.billing.invoices.read": {
+        "title": "Read"
+      },
+      "report.billing.read": {
+        "title": "Read"
+      },
+      "report.cloud_recording": {
+        "title": "Cloud recording"
+      },
+      "report.cloud_recording.read": {
+        "title": "Read"
+      },
+      "report.daily": {
+        "title": "Daily"
+      },
+      "report.daily.read": {
+        "title": "Read"
+      },
+      "report.disclaimer": {
+        "title": "Disclaimer"
+      },
+      "report.disclaimer.read": {
+        "title": "Read"
+      },
+      "report.history_meetings": {
+        "title": "History meetings"
+      },
+      "report.history_meetings.read": {
+        "title": "Read"
+      },
+      "report.meeting_activities": {
+        "title": "Meeting activities"
+      },
+      "report.meeting_activities.read": {
+        "title": "Read"
+      },
+      "report.meetings": {
+        "title": "Meetings"
+      },
+      "report.meetings.participants": {
+        "title": "Participants"
+      },
+      "report.meetings.participants.read": {
+        "title": "Read"
+      },
+      "report.meetings.polls": {
+        "title": "Polls"
+      },
+      "report.meetings.polls.read": {
+        "title": "Read"
+      },
+      "report.meetings.qa": {
+        "title": "Qa"
+      },
+      "report.meetings.qa.read": {
+        "title": "Read"
+      },
+      "report.meetings.read": {
+        "title": "Read"
+      },
+      "report.meetings.survey": {
+        "title": "Survey"
+      },
+      "report.meetings.survey.read": {
+        "title": "Read"
+      },
+      "report.operationlogs": {
+        "title": "Operationlogs"
+      },
+      "report.operationlogs.read": {
+        "title": "Read"
+      },
+      "report.remote_support": {
+        "title": "Remote support"
+      },
+      "report.remote_support.read": {
+        "title": "Read"
+      },
+      "report.telephone": {
+        "title": "Telephone"
+      },
+      "report.telephone.read": {
+        "title": "Read"
+      },
+      "report.upcoming_events": {
+        "title": "Upcoming events"
+      },
+      "report.upcoming_events.read": {
+        "title": "Read"
+      },
+      "report.users": {
+        "title": "Users"
+      },
+      "report.users.meetings": {
+        "title": "Meetings"
+      },
+      "report.users.meetings.read": {
+        "title": "Read"
+      },
+      "report.users.read": {
+        "title": "Read"
+      },
+      "report.webinars": {
+        "title": "Webinars"
+      },
+      "report.webinars.participants": {
+        "title": "Participants"
+      },
+      "report.webinars.participants.read": {
+        "title": "Read"
+      },
+      "report.webinars.polls": {
+        "title": "Polls"
+      },
+      "report.webinars.polls.read": {
+        "title": "Read"
+      },
+      "report.webinars.qa": {
+        "title": "Qa"
+      },
+      "report.webinars.qa.read": {
+        "title": "Read"
+      },
+      "report.webinars.read": {
+        "title": "Read"
+      },
+      "report.webinars.survey": {
+        "title": "Survey"
+      },
+      "report.webinars.survey.read": {
+        "title": "Read"
+      },
+      "sip_phones": {
+        "title": "Sip phones"
+      },
+      "sip_phones.phones": {
+        "title": "Phones"
+      },
+      "sip_phones.phones.delete": {
+        "title": "Delete"
+      },
+      "sip_phones.phones.read": {
+        "title": "Read"
+      },
+      "sip_phones.phones.write": {
+        "title": "Create and edit"
+      },
+      "tracking_fields": {
+        "title": "Tracking fields"
+      },
+      "tracking_fields.delete": {
+        "title": "Delete"
+      },
+      "tracking_fields.read": {
+        "title": "Read"
+      },
+      "tracking_fields.write": {
+        "title": "Create and edit"
+      },
+      "tsp": {
+        "title": "Tsp"
+      },
+      "tsp.read": {
+        "title": "Read"
+      },
+      "tsp.write": {
+        "title": "Create and edit"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.meeting_summaries": {
+        "title": "Meeting summaries"
+      },
+      "users.meeting_summaries.read": {
+        "title": "Read"
+      },
+      "users.meeting_templates": {
+        "title": "Meeting templates"
+      },
+      "users.meeting_templates.read": {
+        "title": "Read"
+      },
+      "users.meeting_templates.write": {
+        "title": "Create and edit"
+      },
+      "users.meetings": {
+        "title": "Meetings"
+      },
+      "users.meetings.read": {
+        "title": "Read"
+      },
+      "users.meetings.write": {
+        "title": "Create and edit"
+      },
+      "users.pac": {
+        "title": "Pac"
+      },
+      "users.pac.read": {
+        "title": "Read"
+      },
+      "users.recordings": {
+        "title": "Recordings"
+      },
+      "users.recordings.read": {
+        "title": "Read"
+      },
+      "users.tsp": {
+        "title": "Tsp"
+      },
+      "users.tsp.admin": {
+        "title": "Manage"
+      },
+      "users.tsp.delete": {
+        "title": "Delete"
+      },
+      "users.tsp.read": {
+        "title": "Read"
+      },
+      "users.tsp.settings": {
+        "title": "Settings"
+      },
+      "users.tsp.settings.admin": {
+        "title": "Manage"
+      },
+      "users.tsp.write": {
+        "title": "Create and edit"
+      },
+      "users.upcoming_meetings": {
+        "title": "Upcoming meetings"
+      },
+      "users.upcoming_meetings.read": {
+        "title": "Read"
+      },
+      "users.webinar_templates": {
+        "title": "Webinar templates"
+      },
+      "users.webinar_templates.read": {
+        "title": "Read"
+      },
+      "users.webinar_templates.write": {
+        "title": "Create and edit"
+      },
+      "users.webinars": {
+        "title": "Webinars"
+      },
+      "users.webinars.read": {
+        "title": "Read"
+      },
+      "users.webinars.write": {
+        "title": "Create and edit"
+      },
+      "webinars": {
+        "title": "Webinars"
+      },
+      "webinars.branding": {
+        "title": "Branding"
+      },
+      "webinars.branding.name_tags": {
+        "title": "Name tags"
+      },
+      "webinars.branding.name_tags.delete": {
+        "title": "Delete"
+      },
+      "webinars.branding.name_tags.write": {
+        "title": "Create and edit"
+      },
+      "webinars.branding.read": {
+        "title": "Read"
+      },
+      "webinars.branding.virtual_backgrounds": {
+        "title": "Virtual backgrounds"
+      },
+      "webinars.branding.virtual_backgrounds.delete": {
+        "title": "Delete"
+      },
+      "webinars.branding.virtual_backgrounds.write": {
+        "title": "Create and edit"
+      },
+      "webinars.branding.wallpaper": {
+        "title": "Wallpaper"
+      },
+      "webinars.branding.wallpaper.delete": {
+        "title": "Delete"
+      },
+      "webinars.branding.wallpaper.write": {
+        "title": "Create and edit"
+      },
+      "webinars.delete": {
+        "title": "Delete"
+      },
+      "webinars.jointoken": {
+        "title": "Jointoken"
+      },
+      "webinars.jointoken.live_streaming": {
+        "title": "Live streaming"
+      },
+      "webinars.jointoken.live_streaming.read": {
+        "title": "Read"
+      },
+      "webinars.jointoken.local_archiving": {
+        "title": "Local archiving"
+      },
+      "webinars.jointoken.local_archiving.read": {
+        "title": "Read"
+      },
+      "webinars.jointoken.local_recording": {
+        "title": "Local recording"
+      },
+      "webinars.jointoken.local_recording.read": {
+        "title": "Read"
+      },
+      "webinars.links": {
+        "title": "Links"
+      },
+      "webinars.links.share": {
+        "title": "Share"
+      },
+      "webinars.livestream": {
+        "title": "Livestream"
+      },
+      "webinars.livestream.read": {
+        "title": "Read"
+      },
+      "webinars.livestream.status": {
+        "title": "Status"
+      },
+      "webinars.livestream.status.publish": {
+        "title": "Publish"
+      },
+      "webinars.livestream.write": {
+        "title": "Create and edit"
+      },
+      "webinars.panelists": {
+        "title": "Panelists"
+      },
+      "webinars.panelists.delete": {
+        "title": "Delete"
+      },
+      "webinars.panelists.read": {
+        "title": "Read"
+      },
+      "webinars.panelists.send": {
+        "title": "Send"
+      },
+      "webinars.polls": {
+        "title": "Polls"
+      },
+      "webinars.polls.delete": {
+        "title": "Delete"
+      },
+      "webinars.polls.read": {
+        "title": "Read"
+      },
+      "webinars.polls.write": {
+        "title": "Create and edit"
+      },
+      "webinars.read": {
+        "title": "Read"
+      },
+      "webinars.registrants": {
+        "title": "Registrants"
+      },
+      "webinars.registrants.delete": {
+        "title": "Delete"
+      },
+      "webinars.registrants.questions": {
+        "title": "Questions"
+      },
+      "webinars.registrants.questions.read": {
+        "title": "Read"
+      },
+      "webinars.registrants.questions.write": {
+        "title": "Create and edit"
+      },
+      "webinars.registrants.read": {
+        "title": "Read"
+      },
+      "webinars.registrants.send": {
+        "title": "Send"
+      },
+      "webinars.registrants.status": {
+        "title": "Status"
+      },
+      "webinars.registrants.status.send": {
+        "title": "Send"
+      },
+      "webinars.sip_dialing": {
+        "title": "Sip dialing"
+      },
+      "webinars.sip_dialing.read": {
+        "title": "Read"
+      },
+      "webinars.status": {
+        "title": "Status"
+      },
+      "webinars.status.write": {
+        "title": "Create and edit"
+      },
+      "webinars.survey": {
+        "title": "Survey"
+      },
+      "webinars.survey.delete": {
+        "title": "Delete"
+      },
+      "webinars.survey.read": {
+        "title": "Read"
+      },
+      "webinars.survey.write": {
+        "title": "Create and edit"
+      },
+      "webinars.token": {
+        "title": "Token"
+      },
+      "webinars.token.read": {
+        "title": "Read"
+      },
+      "webinars.tracking_sources": {
+        "title": "Tracking sources"
+      },
+      "webinars.tracking_sources.read": {
+        "title": "Read"
+      },
+      "webinars.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.zoom.us",
+            "path": "/v2",
+            "prefix": "Bearer ",
+            "value": "access_token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://*.zoom.us",
+            "path": "/v2",
+            "prefix": "Bearer ",
+            "value": "access_token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://*.zoomgov.com",
+            "path": "/v2",
+            "prefix": "Bearer ",
+            "value": "access_token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://zoom.us",
+            "path": "/rec",
+            "prefix": "Bearer ",
+            "value": "access_token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://*.zoom.us",
+            "path": "/rec",
+            "prefix": "Bearer ",
+            "value": "access_token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://zoomgov.com",
+            "path": "/rec",
+            "prefix": "Bearer ",
+            "value": "access_token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://*.zoomgov.com",
+            "path": "/rec",
+            "prefix": "Bearer ",
+            "value": "access_token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "access_token",
+        "label": "OAuth access token",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Zoom",
   "http": {
+    "origins": {"api":["https://{host}.zoom.us","https://{host}.zoomgov.com"],"rec":["https://zoom.us","https://zoomgov.com","https://{host}.zoom.us","https://{host}.zoomgov.com"]},
     "operations": {
-      "Assigndevicetoauser/commonarea": {"action":"write.assignment","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/devices/zpa/assignment","body":"any","scope":{}},
-      "DeleteMeetingTranscript": {"action":"delete.transcript","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/transcript","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "DeleteZpaDeviceByVendorAndMacAddress": {"action":"delete.mac_addresses","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/devices/zpa/vendors/{vendor}/mac_addresses/{macAddress}","scope":{"vendor":{"from":"path","at":"vendor"},"macAddress":{"from":"path","at":"macAddress"}}},
-      "Deletemeetingorwebinarsummary": {"action":"delete.meeting_summary","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/meeting_summary","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "EnableSIPPhonePhones": {"action":"write.phones","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/sip_phones/phones","body":"any","scope":{}},
-      "GetMeetingTranscript": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/transcript","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "GetZpaDeviceListProfileSettingOfaUser": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/devices/zpa/settings","params":["user_id"],"scope":{}},
-      "GetZpaVersioninfo": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/devices/zpa/zdm_groups/{zdmGroupId}/versions","scope":{"zdmGroupId":{"from":"path","at":"zdmGroupId"}}},
-      "Getameetingsummary": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/meeting_summary","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "Getdisclaimerreport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/disclaimer","params":["from","to","search_value","disclaimer_type","group_id","page_size","next_page_token"],"scope":{}},
-      "Gethistorymeetingandwebinarlist": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/history_meetings","params":["from","to","date_type","meeting_type","report_type","search_key","page_size","next_page_token","group_id","meeting_feature"],"scope":{}},
-      "Getremotesupportreport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/remote_support","params":["from","to","next_page_token","page_size"],"scope":{}},
-      "ListSIPPhonePhones": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/sip_phones/phones","params":["search_key","page_size","next_page_token"],"scope":{}},
-      "ListUserMeetingSummaries": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/users/{userId}/meeting_summaries","params":["page_size","next_page_token","from","to","time_filter_field"],"scope":{"userId":{"from":"path","at":"userId"}}},
-      "UpdateSIPPhonePhones": {"action":"write.phones","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/sip_phones/phones/{phoneId}","body":"any","scope":{"phoneId":{"from":"path","at":"phoneId"}}},
-      "UpgradeZpas/app": {"action":"write.upgrade","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/devices/zpa/upgrade","body":"any","scope":{}},
-      "addBatchRegistrants": {"action":"write.batch_registrants","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/batch_registrants","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "addBatchWebinarRegistrants": {"action":"write.batch_registrants","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/batch_registrants","body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "addDevice": {"action":"write.devices","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/devices","body":"any","scope":{}},
-      "analytics_details": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/recordings/analytics_details","params":["page_size","next_page_token","from","to","type"],"scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "analytics_summary": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/recordings/analytics_summary","params":["from","to"],"scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "assginGroup": {"action":"write.devices","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/devices/{deviceId}/assign_group","params":["group_id"],"scope":{"deviceId":{"from":"path","at":"deviceId"},"group_id":{"from":"query","at":"group_id"}}},
-      "changeDeviceAssociation": {"action":"write.devices","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/devices/{deviceId}/assignment","body":"any","scope":{"deviceId":{"from":"path","at":"deviceId"}}},
-      "createBatchPolls": {"action":"write.batch_polls","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/batch_polls","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "createWebinarBrandingNameTag": {"action":"write.name_tags","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/branding/name_tags","body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "deleteArchivedFiles": {"action":"delete.past_meetings","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/past_meetings/{meetingUUID}/archive_files","scope":{"meetingUUID":{"from":"path","at":"meetingUUID"}}},
-      "deleteDevice": {"action":"delete.devices","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/devices/{deviceId}","scope":{"deviceId":{"from":"path","at":"deviceId"}}},
-      "deleteMeetingChatMessageById": {"action":"delete.messages","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/live_meetings/{meetingId}/chat/messages/{messageId}","params":["file_ids"],"scope":{"meetingId":{"from":"path","at":"meetingId"},"messageId":{"from":"path","at":"messageId"}}},
-      "deleteSIPPhonePhones": {"action":"delete.phones","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/sip_phones/phones/{phoneId}","scope":{"phoneId":{"from":"path","at":"phoneId"}}},
-      "deleteWebinarBrandingNameTag": {"action":"delete.name_tags","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/branding/name_tags","params":["name_tag_ids"],"scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "deleteWebinarBrandingVB": {"action":"delete.virtual_backgrounds","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/branding/virtual_backgrounds","params":["ids"],"scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "deleteWebinarBrandingWallpaper": {"action":"delete.wallpaper","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/branding/wallpaper","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "deleteWebinarChatMessageById": {"action":"delete.messages","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/live_webinars/{webinarId}/chat/messages/{messageId}","params":["file_ids"],"scope":{"webinarId":{"from":"path","at":"webinarId"},"messageId":{"from":"path","at":"messageId"}}},
-      "deleteWebinarRegistrant": {"action":"delete.registrants","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/registrants/{registrantId}","params":["occurrence_id"],"scope":{"webinarId":{"from":"path","at":"webinarId"},"registrantId":{"from":"path","at":"registrantId"}}},
-      "deviceCreate": {"action":"write.devices","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/h323/devices","body":"any","scope":{}},
-      "deviceDelete": {"action":"delete.devices","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/h323/devices/{deviceId}","scope":{"deviceId":{"from":"path","at":"deviceId"}}},
-      "deviceList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/h323/devices","params":["page_size","page_number","next_page_token"],"scope":{}},
-      "deviceUpdate": {"action":"write.devices","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/h323/devices/{deviceId}","body":"any","scope":{"deviceId":{"from":"path","at":"deviceId"}}},
-      "getArchivedFileStatistics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/archive_files/statistics","params":["from","to"],"scope":{}},
-      "getArchivedFiles": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/past_meetings/{meetingUUID}/archive_files","scope":{"meetingUUID":{"from":"path","at":"meetingUUID"}}},
-      "getBillingInvoicesReports": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/billing/invoices","params":["billing_id"],"scope":{"billing_id":{"from":"query","at":"billing_id"}}},
-      "getBillingReport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/billing","scope":{}},
-      "getDevice": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/devices/{deviceId}","params":["page_size","next_page_token"],"scope":{"deviceId":{"from":"path","at":"deviceId"}}},
-      "getMeetingLiveStreamDetails": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/livestream","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "getSipDialingWithPasscode": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/sip_dialing","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "getTrackingSources": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/tracking_sources","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "getWebinarBranding": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/branding","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "getWebinarLiveStreamDetails": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/livestream","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "getWebinarSipDialingWithPasscode": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/sip_dialing","body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "inMeetingControl": {"action":"write.events","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/live_meetings/{meetingId}/events","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "listArchiveFileDownloadAudit": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/archive_files/download_audit","params":["page_size","next_page_token","from","to"],"scope":{}},
-      "listArchivedFiles": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/archive_files","params":["page_size","next_page_token","from","to","query_date_type","group_id","group_ids"],"scope":{}},
-      "listDevices": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/devices","params":["search_text","platform_os","is_enrolled_in_zdm","device_type","device_vendor","device_model","device_status","page_size","next_page_token"],"scope":{}},
-      "listMeetingTemplates": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/users/{userId}/meeting_templates","scope":{"userId":{"from":"path","at":"userId"}}},
-      "listPastMeetingPolls": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/past_meetings/{meetingId}/polls","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "listPastMeetingQA": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/past_meetings/{meetingId}/qa","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "listPastWebinarPollResults": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/past_webinars/{webinarId}/polls","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "listPastWebinarQA": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/past_webinars/{webinarId}/qa","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "listUpcomingMeeting": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/users/{userId}/upcoming_meetings","scope":{"userId":{"from":"path","at":"userId"}}},
-      "listWebinarParticipants": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/past_webinars/{webinarId}/participants","params":["page_size","next_page_token"],"scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "listWebinarTemplates": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/users/{userId}/webinar_templates","scope":{"userId":{"from":"path","at":"userId"}}},
-      "meeting": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}","params":["occurrence_id","show_previous_occurrences","page_size","next_page_token","from","to","time_filter_field"],"scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingAppAdd": {"action":"write.open_apps","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/open_apps","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingAppDelete": {"action":"delete.open_apps","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/open_apps","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingCreate": {"action":"write.meetings","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/users/{userId}/meetings","body":"any","scope":{"userId":{"from":"path","at":"userId"}}},
-      "meetingDelete": {"action":"delete.meetings","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}","params":["occurrence_id","schedule_for_reminder","cancel_meeting_reminder"],"scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingInvitation": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/invitation","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingInviteLinksCreate": {"action":"share.meetings","effects":["share"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/invite_links","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingLiveStreamStatusUpdate": {"action":"write.status","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/livestream/status","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingLiveStreamUpdate": {"action":"write.livestream","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/livestream","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingLiveStreamingJoinToken": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/jointoken/live_streaming","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingLocalArchivingArchiveToken": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/jointoken/local_archiving","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingLocalRecordingJoinToken": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/jointoken/local_recording","params":["bypass_waiting_room"],"scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingPollCreate": {"action":"write.polls","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/polls","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingPollDelete": {"action":"delete.polls","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/polls/{pollId}","scope":{"meetingId":{"from":"path","at":"meetingId"},"pollId":{"from":"path","at":"pollId"}}},
-      "meetingPollGet": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/polls/{pollId}","scope":{"meetingId":{"from":"path","at":"meetingId"},"pollId":{"from":"path","at":"pollId"}}},
-      "meetingPollUpdate": {"action":"write.polls","effects":["write"],"method":"PUT","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/polls/{pollId}","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"},"pollId":{"from":"path","at":"pollId"}}},
-      "meetingPolls": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/polls","params":["anonymous"],"scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingRTMSStatusUpdate": {"action":"write.status","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/live_meetings/{meetingId}/rtms_app/status","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingRecordingRegistrantCreate": {"action":"write.registrants","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/recordings/registrants","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingRecordingRegistrants": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/recordings/registrants","params":["status","page_size","page_number","next_page_token"],"scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingRegistrantCreate": {"action":"write.registrants","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/registrants","params":["occurrence_ids"],"body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingRegistrantGet": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/registrants/{registrantId}","scope":{"meetingId":{"from":"path","at":"meetingId"},"registrantId":{"from":"path","at":"registrantId"}}},
-      "meetingRegistrantQuestionUpdate": {"action":"write.questions","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/registrants/questions","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingRegistrantStatus": {"action":"write.status","effects":["write"],"method":"PUT","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/registrants/status","params":["occurrence_id"],"body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingRegistrants": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/registrants","params":["occurrence_id","status","page_size","page_number","next_page_token"],"scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingStatus": {"action":"write.status","effects":["write"],"method":"PUT","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/status","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingSurveyDelete": {"action":"delete.survey","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/survey","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingSurveyGet": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/survey","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingSurveyUpdate": {"action":"write.survey","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/survey","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingTemplateCreate": {"action":"write.meeting_templates","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/users/{userId}/meeting_templates","body":"any","scope":{"userId":{"from":"path","at":"userId"}}},
-      "meetingToken": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/token","params":["type"],"scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingUpdate": {"action":"write.meetings","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}","params":["occurrence_id"],"body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "meetingregistrantdelete": {"action":"delete.registrants","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/registrants/{registrantId}","params":["occurrence_id"],"scope":{"meetingId":{"from":"path","at":"meetingId"},"registrantId":{"from":"path","at":"registrantId"}}},
-      "meetings": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/users/{userId}/meetings","params":["type","page_size","next_page_token","page_number","from","to","timezone"],"scope":{"userId":{"from":"path","at":"userId"}}},
-      "pastMeetingDetails": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/past_meetings/{meetingId}","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "pastMeetingParticipants": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/past_meetings/{meetingId}/participants","params":["page_size","next_page_token"],"scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "pastMeetings": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/past_meetings/{meetingId}/instances","params":["from","to"],"scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "pastWebinars": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/past_webinars/{webinarId}/instances","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "recordingDelete": {"action":"delete.recordings","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/recordings","params":["action"],"scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "recordingDeleteOne": {"action":"delete.recordings","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/recordings/{recordingId}","params":["action"],"scope":{"meetingId":{"from":"path","at":"meetingId"},"recordingId":{"from":"path","at":"recordingId"}}},
-      "recordingGet": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/recordings","params":["include_fields","ttl"],"scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "recordingRegistrantQuestionUpdate": {"action":"write.questions","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/recordings/registrants/questions","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "recordingRegistrantsQuestionsGet": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/recordings/registrants/questions","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "recordingSettingUpdate": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/recordings/settings","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "recordingSettingsUpdate": {"action":"admin.settings","effects":["admin"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/recordings/settings","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "recordingStatusUpdate": {"action":"write.status","effects":["write"],"method":"PUT","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingUUID}/recordings/status","body":"any","scope":{"meetingUUID":{"from":"path","at":"meetingUUID"}}},
-      "recordingStatusUpdateOne": {"action":"write.status","effects":["write"],"method":"PUT","origin":"https://api.zoom.us","path":"/v2/meetings/{meetingId}/recordings/{recordingId}/status","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"},"recordingId":{"from":"path","at":"recordingId"}}},
-      "recordingsList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/users/{userId}/recordings","params":["page_size","next_page_token","mc","trash","from","to","trash_type","meeting_id","zra_status","recording_source_type"],"scope":{"userId":{"from":"path","at":"userId"}}},
-      "reportCloudRecording": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/cloud_recording","params":["from","to","group_id"],"scope":{}},
-      "reportDaily": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/daily","params":["year","month","group_id"],"scope":{}},
-      "reportMeetingDetails": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/meetings/{meetingId}","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "reportMeetingParticipants": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/meetings/{meetingId}/participants","params":["page_size","next_page_token","include_fields"],"scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "reportMeetingPolls": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/meetings/{meetingId}/polls","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "reportMeetingQA": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/meetings/{meetingId}/qa","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "reportMeetingSurvey": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/meetings/{meetingId}/survey","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "reportMeetingactivitylogs": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/meeting_activities","params":["from","to","page_size","next_page_token","meeting_number","search_key","activity_type"],"scope":{}},
-      "reportMeetings": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/users/{userId}/meetings","params":["from","to","page_size","next_page_token","type"],"scope":{"userId":{"from":"path","at":"userId"}}},
-      "reportOperationLogs": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/operationlogs","params":["from","to","page_size","next_page_token","category_type"],"scope":{}},
-      "reportSignInSignOutActivities": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/activities","params":["from","to","page_size","next_page_token"],"scope":{}},
-      "reportTelephone": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/telephone","params":["type","query_date_type","from","to","page_size","page_number","next_page_token"],"scope":{}},
-      "reportUpcomingEvents": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/upcoming_events","params":["from","to","page_size","next_page_token","type","group_id"],"scope":{}},
-      "reportUsers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/users","params":["type","from","to","page_size","page_number","next_page_token","group_id"],"scope":{}},
-      "reportWebinarDetails": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/webinars/{webinarId}","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "reportWebinarParticipants": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/webinars/{webinarId}/participants","params":["page_size","next_page_token","include_fields"],"scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "reportWebinarPolls": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/webinars/{webinarId}/polls","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "reportWebinarQA": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/webinars/{webinarId}/qa","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "reportWebinarSurvey": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/report/webinars/{webinarId}/survey","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "setWebinarBrandingVB": {"action":"write.virtual_backgrounds","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/branding/virtual_backgrounds","params":["id","set_default_for_all_panelists"],"scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "trackingfieldCreate": {"action":"write.tracking_fields","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/tracking_fields","body":"any","scope":{}},
-      "trackingfieldDelete": {"action":"delete.tracking_fields","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/tracking_fields/{fieldId}","scope":{"fieldId":{"from":"path","at":"fieldId"}}},
-      "trackingfieldGet": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/tracking_fields/{fieldId}","scope":{"fieldId":{"from":"path","at":"fieldId"}}},
-      "trackingfieldList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/tracking_fields","scope":{}},
-      "trackingfieldUpdate": {"action":"write.tracking_fields","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/tracking_fields/{fieldId}","body":"any","scope":{"fieldId":{"from":"path","at":"fieldId"}}},
-      "tsp": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/tsp","scope":{}},
-      "tspUpdate": {"action":"write.tsp","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/tsp","body":"any","scope":{}},
-      "updateArchivedFile": {"action":"write.archive_files","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/archive_files/{fileId}","body":"any","scope":{"fileId":{"from":"path","at":"fileId"}}},
-      "updateDevice": {"action":"write.devices","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/devices/{deviceId}","body":"any","scope":{"deviceId":{"from":"path","at":"deviceId"}}},
-      "updateMeetingChatMessageById": {"action":"write.messages","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/live_meetings/{meetingId}/chat/messages/{messageId}","body":"any","scope":{"meetingId":{"from":"path","at":"meetingId"},"messageId":{"from":"path","at":"messageId"}}},
-      "updateWebinarBrandingNameTag": {"action":"write.name_tags","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/branding/name_tags/{nameTagId}","body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"},"nameTagId":{"from":"path","at":"nameTagId"}}},
-      "uploadWebinarBrandingVB": {"action":"write.virtual_backgrounds","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/branding/virtual_backgrounds","body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "uploadWebinarBrandingWallpaper": {"action":"write.wallpaper","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/branding/wallpaper","body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "userPACs": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/users/{userId}/pac","scope":{"userId":{"from":"path","at":"userId"}}},
-      "userTSP": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/users/{userId}/tsp/{tspId}","scope":{"userId":{"from":"path","at":"userId"},"tspId":{"from":"path","at":"tspId"}}},
-      "userTSPCreate": {"action":"write.tsp","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/users/{userId}/tsp","body":"any","scope":{"userId":{"from":"path","at":"userId"}}},
-      "userTSPDelete": {"action":"delete.tsp","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/users/{userId}/tsp/{tspId}","scope":{"userId":{"from":"path","at":"userId"},"tspId":{"from":"path","at":"tspId"}}},
-      "userTSPUpdate": {"action":"admin.settings","effects":["admin"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/users/{userId}/tsp/{tspId}","body":"any","scope":{"userId":{"from":"path","at":"userId"},"tspId":{"from":"path","at":"tspId"}}},
-      "userTSPs": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/users/{userId}/tsp","scope":{"userId":{"from":"path","at":"userId"}}},
-      "webinar": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}","params":["occurrence_id","show_previous_occurrences"],"scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarAbsentees": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/past_webinars/{webinarId}/absentees","params":["occurrence_id","page_size","next_page_token"],"scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarCreate": {"action":"write.webinars","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/users/{userId}/webinars","body":"any","scope":{"userId":{"from":"path","at":"userId"}}},
-      "webinarDelete": {"action":"delete.webinars","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}","params":["occurrence_id","cancel_webinar_reminder"],"scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarInviteLinksCreate": {"action":"share.webinars","effects":["share"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/invite_links","body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarLiveStreamStatusUpdate": {"action":"write.status","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/livestream/status","body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarLiveStreamUpdate": {"action":"write.livestream","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/livestream","body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarLiveStreamingJoinToken": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/jointoken/live_streaming","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarLocalArchivingArchiveToken": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/jointoken/local_archiving","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarLocalRecordingJoinToken": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/jointoken/local_recording","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarPanelistCreate": {"action":"write.panelists","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/panelists","body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarPanelistDelete": {"action":"delete.panelists","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/panelists/{panelistId}","scope":{"webinarId":{"from":"path","at":"webinarId"},"panelistId":{"from":"path","at":"panelistId"}}},
-      "webinarPanelists": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/panelists","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarPanelistsDelete": {"action":"delete.panelists","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/panelists","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarPollCreate": {"action":"write.polls","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/polls","body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarPollDelete": {"action":"delete.polls","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/polls/{pollId}","scope":{"webinarId":{"from":"path","at":"webinarId"},"pollId":{"from":"path","at":"pollId"}}},
-      "webinarPollGet": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/polls/{pollId}","scope":{"webinarId":{"from":"path","at":"webinarId"},"pollId":{"from":"path","at":"pollId"}}},
-      "webinarPollUpdate": {"action":"write.polls","effects":["write"],"method":"PUT","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/polls/{pollId}","body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"},"pollId":{"from":"path","at":"pollId"}}},
-      "webinarPolls": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/polls","params":["anonymous"],"scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarRegistrantCreate": {"action":"write.registrants","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/registrants","params":["occurrence_ids"],"body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarRegistrantGet": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/registrants/{registrantId}","params":["occurrence_id"],"scope":{"webinarId":{"from":"path","at":"webinarId"},"registrantId":{"from":"path","at":"registrantId"}}},
-      "webinarRegistrantQuestionUpdate": {"action":"write.questions","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/registrants/questions","body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarRegistrantStatus": {"action":"write.status","effects":["write"],"method":"PUT","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/registrants/status","params":["occurrence_id"],"body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarRegistrants": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/registrants","params":["occurrence_id","status","tracking_source_id","page_size","page_number","next_page_token"],"scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarStatus": {"action":"write.status","effects":["write"],"method":"PUT","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/status","body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarSurveyDelete": {"action":"delete.survey","effects":["delete"],"method":"DELETE","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/survey","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarSurveyGet": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/survey","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarSurveyUpdate": {"action":"write.survey","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/survey","body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarTemplateCreate": {"action":"write.webinar_templates","effects":["write"],"method":"POST","origin":"https://api.zoom.us","path":"/v2/users/{userId}/webinar_templates","body":"any","scope":{"userId":{"from":"path","at":"userId"}}},
-      "webinarToken": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}/token","params":["type"],"scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinarUpdate": {"action":"write.webinars","effects":["write"],"method":"PATCH","origin":"https://api.zoom.us","path":"/v2/webinars/{webinarId}","params":["occurrence_id"],"body":"any","scope":{"webinarId":{"from":"path","at":"webinarId"}}},
-      "webinars": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.zoom.us","path":"/v2/users/{userId}/webinars","params":["type","page_size","page_number","include_events_webinar"],"scope":{"userId":{"from":"path","at":"userId"}}}
+      "Assigndevicetoauser/commonarea": {"action":"devices.zpa.assignment.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/devices/zpa/assignment","scope":{}},
+      "DeleteMeetingTranscript": {"action":"meetings.transcript.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/meetings/{meetingId}/transcript","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "DeleteZpaDeviceByVendorAndMacAddress": {"action":"devices.zpa.vendors.mac_addresses.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/devices/zpa/vendors/{vendor}/mac_addresses/{macAddress}","scope":{"macAddress":{"at":"macAddress","from":"path"},"vendor":{"at":"vendor","from":"path"}}},
+      "Deletemeetingorwebinarsummary": {"action":"meetings.meeting_summary.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/meetings/{meetingId}/meeting_summary","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "EnableSIPPhonePhones": {"action":"sip_phones.phones.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/sip_phones/phones","scope":{}},
+      "GetMeetingTranscript": {"action":"meetings.transcript.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/meetings/{meetingId}/transcript","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "GetZpaDeviceListProfileSettingOfaUser": {"action":"devices.zpa.settings.read","effects":["read"],"method":"GET","origin":"{api}","params":["user_id"],"path":"/v2/devices/zpa/settings","scope":{}},
+      "GetZpaVersioninfo": {"action":"devices.zpa.zdm_groups.versions.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/devices/zpa/zdm_groups/{zdmGroupId}/versions","scope":{"zdmGroupId":{"at":"zdmGroupId","from":"path"}}},
+      "Getameetingsummary": {"action":"meetings.meeting_summary.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/meetings/{meetingId}/meeting_summary","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "Getdisclaimerreport": {"action":"report.disclaimer.read","effects":["read"],"method":"GET","origin":"{api}","params":["from","to","search_value","disclaimer_type","group_id","page_size","next_page_token"],"path":"/v2/report/disclaimer","scope":{}},
+      "Gethistorymeetingandwebinarlist": {"action":"report.history_meetings.read","effects":["read"],"method":"GET","origin":"{api}","params":["from","to","date_type","meeting_type","report_type","search_key","page_size","next_page_token","group_id","meeting_feature"],"path":"/v2/report/history_meetings","scope":{}},
+      "Getremotesupportreport": {"action":"report.remote_support.read","effects":["read"],"method":"GET","origin":"{api}","params":["from","to","next_page_token","page_size"],"path":"/v2/report/remote_support","scope":{}},
+      "Getzdmgroupinfo": {"action":"devices.groups.read","effects":["read"],"method":"GET","origin":"{api}","params":["page_size","next_page_token"],"path":"/v2/devices/groups","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "ListSIPPhonePhones": {"action":"sip_phones.phones.read","effects":["read"],"method":"GET","origin":"{api}","params":["search_key","page_size","next_page_token"],"path":"/v2/sip_phones/phones","scope":{}},
+      "ListUserMeetingSummaries": {"action":"users.meeting_summaries.read","effects":["read"],"method":"GET","origin":"{api}","params":["page_size","next_page_token","from","to","time_filter_field"],"path":"/v2/users/{userId}/meeting_summaries","scope":{"userId":{"at":"userId","from":"path"}}},
+      "Listmeetingsummaries": {"action":"meetings.meeting_summaries.read","effects":["read"],"method":"GET","origin":"{api}","params":["page_size","next_page_token","from","to","time_filter_field"],"path":"/v2/meetings/meeting_summaries","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "UpdateSIPPhonePhones": {"action":"sip_phones.phones.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v2/sip_phones/phones/{phoneId}","scope":{"phoneId":{"at":"phoneId","from":"path"}}},
+      "UpgradeZpas/app": {"action":"devices.zpa.upgrade.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/devices/zpa/upgrade","scope":{}},
+      "addBatchRegistrants": {"action":"meetings.registrants.send","body":"any","effects":["send","write"],"method":"POST","origin":"{api}","path":"/v2/meetings/{meetingId}/batch_registrants","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "addBatchWebinarRegistrants": {"action":"webinars.registrants.send","body":"any","effects":["send","write"],"method":"POST","origin":"{api}","path":"/v2/webinars/{webinarId}/batch_registrants","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "addDevice": {"action":"devices.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/devices","scope":{}},
+      "analytics_details": {"action":"meetings.recordings.analytics_details.read","effects":["read"],"method":"GET","origin":"{api}","params":["page_size","next_page_token","from","to","type"],"path":"/v2/meetings/{meetingId}/recordings/analytics_details","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "analytics_summary": {"action":"meetings.recordings.analytics_summary.read","effects":["read"],"method":"GET","origin":"{api}","params":["from","to"],"path":"/v2/meetings/{meetingId}/recordings/analytics_summary","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "assginGroup": {"action":"devices.assign_group.write","effects":["write"],"method":"PATCH","origin":"{api}","params":["group_id"],"path":"/v2/devices/{deviceId}/assign_group","scope":{"deviceId":{"at":"deviceId","from":"path"},"group_id":{"at":"group_id","from":"query"}}},
+      "changeDeviceAssociation": {"action":"devices.assignment.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v2/devices/{deviceId}/assignment","scope":{"deviceId":{"at":"deviceId","from":"path"}}},
+      "createBatchPolls": {"action":"meetings.polls.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/meetings/{meetingId}/batch_polls","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "createWebinarBrandingNameTag": {"action":"webinars.branding.name_tags.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/webinars/{webinarId}/branding/name_tags","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "deleteArchivedFiles": {"action":"past_meetings.archive_files.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/past_meetings/{meetingUUID}/archive_files","scope":{"meetingUUID":{"at":"meetingUUID","from":"path"}}},
+      "deleteDevice": {"action":"devices.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/devices/{deviceId}","scope":{"deviceId":{"at":"deviceId","from":"path"}}},
+      "deleteMeetingChatMessageById": {"action":"live_meetings.chat.messages.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["file_ids"],"path":"/v2/live_meetings/{meetingId}/chat/messages/{messageId}","scope":{"meetingId":{"at":"meetingId","from":"path"},"messageId":{"at":"messageId","from":"path"}}},
+      "deleteSIPPhonePhones": {"action":"sip_phones.phones.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/sip_phones/phones/{phoneId}","scope":{"phoneId":{"at":"phoneId","from":"path"}}},
+      "deleteWebinarBrandingNameTag": {"action":"webinars.branding.name_tags.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["name_tag_ids"],"path":"/v2/webinars/{webinarId}/branding/name_tags","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "deleteWebinarBrandingVB": {"action":"webinars.branding.virtual_backgrounds.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["ids"],"path":"/v2/webinars/{webinarId}/branding/virtual_backgrounds","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "deleteWebinarBrandingWallpaper": {"action":"webinars.branding.wallpaper.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/webinars/{webinarId}/branding/wallpaper","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "deleteWebinarChatMessageById": {"action":"live_webinars.chat.messages.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["file_ids"],"path":"/v2/live_webinars/{webinarId}/chat/messages/{messageId}","scope":{"messageId":{"at":"messageId","from":"path"},"webinarId":{"at":"webinarId","from":"path"}}},
+      "deleteWebinarRegistrant": {"action":"webinars.registrants.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["occurrence_id"],"path":"/v2/webinars/{webinarId}/registrants/{registrantId}","scope":{"registrantId":{"at":"registrantId","from":"path"},"webinarId":{"at":"webinarId","from":"path"}}},
+      "deviceCreate": {"action":"h323.devices.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/h323/devices","scope":{}},
+      "deviceDelete": {"action":"h323.devices.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/h323/devices/{deviceId}","scope":{"deviceId":{"at":"deviceId","from":"path"}}},
+      "deviceList": {"action":"h323.devices.read","effects":["read"],"method":"GET","origin":"{api}","params":["page_size","page_number","next_page_token"],"path":"/v2/h323/devices","scope":{}},
+      "deviceUpdate": {"action":"h323.devices.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v2/h323/devices/{deviceId}","scope":{"deviceId":{"at":"deviceId","from":"path"}}},
+      "getArchivedFileStatistics": {"action":"archive_files.statistics.read","effects":["read"],"method":"GET","origin":"{api}","params":["from","to"],"path":"/v2/archive_files/statistics","scope":{}},
+      "getArchivedFiles": {"action":"past_meetings.archive_files.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/past_meetings/{meetingUUID}/archive_files","scope":{"meetingUUID":{"at":"meetingUUID","from":"path"}}},
+      "getBillingInvoicesReports": {"action":"report.billing.invoices.read","effects":["read"],"method":"GET","origin":"{api}","params":["billing_id"],"path":"/v2/report/billing/invoices","scope":{"billing_id":{"at":"billing_id","from":"query"}}},
+      "getBillingReport": {"action":"report.billing.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/report/billing","scope":{}},
+      "getDevice": {"action":"devices.read","effects":["read"],"method":"GET","origin":"{api}","params":["page_size","next_page_token"],"path":"/v2/devices/{deviceId}","path_patterns":{"deviceId":"[^g].*|g(?:|[^r].*|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))"},"scope":{"deviceId":{"at":"deviceId","from":"path"}}},
+      "getMeetingLiveStreamDetails": {"action":"meetings.livestream.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/meetings/{meetingId}/livestream","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "getSipDialingWithPasscode": {"action":"meetings.sip_dialing.read","body":"any","effects":["read"],"method":"POST","origin":"{api}","path":"/v2/meetings/{meetingId}/sip_dialing","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "getTrackingSources": {"action":"webinars.tracking_sources.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/webinars/{webinarId}/tracking_sources","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "getWebinarBranding": {"action":"webinars.branding.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/webinars/{webinarId}/branding","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "getWebinarLiveStreamDetails": {"action":"webinars.livestream.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/webinars/{webinarId}/livestream","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "getWebinarSipDialingWithPasscode": {"action":"webinars.sip_dialing.read","body":"any","effects":["read"],"method":"POST","origin":"{api}","path":"/v2/webinars/{webinarId}/sip_dialing","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "inMeetingControl": {"action":"live_meetings.events.send","body":"any","effects":["send","write"],"method":"PATCH","origin":"{api}","path":"/v2/live_meetings/{meetingId}/events","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "listArchiveFileDownloadAudit": {"action":"archive_files.audit.read","effects":["read"],"method":"GET","origin":"{api}","params":["page_size","next_page_token","from","to"],"path":"/v2/archive_files/download_audit","scope":{}},
+      "listArchivedFiles": {"action":"archive_files.read","effects":["read"],"method":"GET","origin":"{api}","params":["page_size","next_page_token","from","to","query_date_type","group_id","group_ids","file_type"],"path":"/v2/archive_files","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listDevices": {"action":"devices.read","effects":["read"],"method":"GET","origin":"{api}","params":["search_text","platform_os","is_enrolled_in_zdm","device_type","device_vendor","device_model","device_status","page_size","next_page_token"],"path":"/v2/devices","scope":{}},
+      "listMeetingTemplates": {"action":"users.meeting_templates.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/users/{userId}/meeting_templates","scope":{"userId":{"at":"userId","from":"path"}}},
+      "listPastMeetingPolls": {"action":"past_meetings.polls.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/past_meetings/{meetingId}/polls","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "listPastMeetingQA": {"action":"past_meetings.qa.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/past_meetings/{meetingId}/qa","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "listPastWebinarPollResults": {"action":"past_webinars.polls.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/past_webinars/{webinarId}/polls","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "listPastWebinarQA": {"action":"past_webinars.qa.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/past_webinars/{webinarId}/qa","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "listUpcomingMeeting": {"action":"users.upcoming_meetings.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/users/{userId}/upcoming_meetings","scope":{"userId":{"at":"userId","from":"path"}}},
+      "listWebinarParticipants": {"action":"past_webinars.participants.read","effects":["read"],"method":"GET","origin":"{api}","params":["page_size","next_page_token"],"path":"/v2/past_webinars/{webinarId}/participants","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "listWebinarTemplates": {"action":"users.webinar_templates.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/users/{userId}/webinar_templates","scope":{"userId":{"at":"userId","from":"path"}}},
+      "meeting": {"action":"meetings.read","effects":["read"],"method":"GET","origin":"{api}","params":["occurrence_id","show_previous_occurrences","page_size","next_page_token","from","to","time_filter_field"],"path":"/v2/meetings/{meetingId}","path_patterns":{"meetingId":"[0-9]+"},"scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingAppAdd": {"action":"meetings.open_apps.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/meetings/{meetingId}/open_apps","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingAppDelete": {"action":"meetings.open_apps.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["app_id"],"path":"/v2/meetings/{meetingId}/open_apps","scope":{"meetingId":{"at":"meetingId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "meetingCreate": {"action":"users.meetings.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/users/{userId}/meetings","scope":{"userId":{"at":"userId","from":"path"}}},
+      "meetingDelete": {"action":"meetings.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["occurrence_id","schedule_for_reminder","cancel_meeting_reminder"],"path":"/v2/meetings/{meetingId}","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingInvitation": {"action":"meetings.invitation.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/meetings/{meetingId}/invitation","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingInviteLinksCreate": {"action":"meetings.links.share","body":"any","effects":["share"],"method":"POST","origin":"{api}","path":"/v2/meetings/{meetingId}/invite_links","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingLiveStreamStatusUpdate": {"action":"meetings.livestream.status.publish","body":"any","effects":["publish"],"method":"PATCH","origin":"{api}","path":"/v2/meetings/{meetingId}/livestream/status","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingLiveStreamUpdate": {"action":"meetings.livestream.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v2/meetings/{meetingId}/livestream","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingLiveStreamingJoinToken": {"action":"meetings.jointoken.live_streaming.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/meetings/{meetingId}/jointoken/live_streaming","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingLocalArchivingArchiveToken": {"action":"meetings.jointoken.local_archiving.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/meetings/{meetingId}/jointoken/local_archiving","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingLocalRecordingJoinToken": {"action":"meetings.jointoken.local_recording.read","effects":["read"],"method":"GET","origin":"{api}","params":["bypass_waiting_room"],"path":"/v2/meetings/{meetingId}/jointoken/local_recording","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingPollCreate": {"action":"meetings.polls.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/meetings/{meetingId}/polls","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingPollDelete": {"action":"meetings.polls.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/meetings/{meetingId}/polls/{pollId}","scope":{"meetingId":{"at":"meetingId","from":"path"},"pollId":{"at":"pollId","from":"path"}}},
+      "meetingPollGet": {"action":"meetings.polls.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/meetings/{meetingId}/polls/{pollId}","scope":{"meetingId":{"at":"meetingId","from":"path"},"pollId":{"at":"pollId","from":"path"}}},
+      "meetingPollUpdate": {"action":"meetings.polls.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v2/meetings/{meetingId}/polls/{pollId}","scope":{"meetingId":{"at":"meetingId","from":"path"},"pollId":{"at":"pollId","from":"path"}}},
+      "meetingPolls": {"action":"meetings.polls.read","effects":["read"],"method":"GET","origin":"{api}","params":["anonymous"],"path":"/v2/meetings/{meetingId}/polls","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingRTMSStatusUpdate": {"action":"live_meetings.rtms_app.status.send","body":"any","effects":["send","write"],"method":"PATCH","origin":"{api}","path":"/v2/live_meetings/{meetingId}/rtms_app/status","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingRecordingRegistrantCreate": {"action":"meetings.recordings.registrants.share","body":"any","effects":["share"],"method":"POST","origin":"{api}","path":"/v2/meetings/{meetingId}/recordings/registrants","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingRecordingRegistrantStatus": {"action":"meetings.recordings.registrants.status.share","effects":["share"],"method":"PUT","origin":"{api}","path":"/v2/meetings/{meetingId}/recordings/registrants/status","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingRecordingRegistrantStatus.json.b1236bad7085": {"action":"meetings.recordings.registrants.status.share","body":"json","effects":["share"],"method":"PUT","origin":"{api}","path":"/v2/meetings/{meetingId}/recordings/registrants/status","scope":{"meetingId":{"at":"meetingId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "meetingRecordingRegistrants": {"action":"meetings.recordings.registrants.read","effects":["read"],"method":"GET","origin":"{api}","params":["status","page_size","page_number","next_page_token"],"path":"/v2/meetings/{meetingId}/recordings/registrants","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingRegistrantCreate": {"action":"meetings.registrants.send","body":"any","effects":["send","write"],"method":"POST","origin":"{api}","params":["occurrence_ids"],"path":"/v2/meetings/{meetingId}/registrants","scope":{"meetingId":{"at":"meetingId","from":"path"},"occurrence_ids":{"at":"occurrence_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "meetingRegistrantGet": {"action":"meetings.registrants.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/meetings/{meetingId}/registrants/{registrantId}","path_patterns":{"registrantId":"[^q].*|q(?:|[^u].*|u(?:|[^e].*|e(?:|[^s].*|s(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s.+))))))))"},"scope":{"meetingId":{"at":"meetingId","from":"path"},"registrantId":{"at":"registrantId","from":"path"}}},
+      "meetingRegistrantQuestionUpdate": {"action":"meetings.registrants.questions.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v2/meetings/{meetingId}/registrants/questions","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingRegistrantStatus": {"action":"meetings.registrants.status.send","body":"any","effects":["send","write"],"method":"PUT","origin":"{api}","params":["occurrence_id"],"path":"/v2/meetings/{meetingId}/registrants/status","scope":{"meetingId":{"at":"meetingId","from":"path"},"occurrence_id":{"at":"occurrence_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "meetingRegistrants": {"action":"meetings.registrants.read","effects":["read"],"method":"GET","origin":"{api}","params":["occurrence_id","status","page_size","page_number","next_page_token"],"path":"/v2/meetings/{meetingId}/registrants","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingRegistrantsQuestionsGet": {"action":"meetings.registrants.questions.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/meetings/{meetingId}/registrants/questions","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingStatus": {"action":"meetings.status.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v2/meetings/{meetingId}/status","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingSurveyDelete": {"action":"meetings.survey.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/meetings/{meetingId}/survey","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingSurveyGet": {"action":"meetings.survey.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/meetings/{meetingId}/survey","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingSurveyUpdate": {"action":"meetings.survey.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v2/meetings/{meetingId}/survey","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingTemplateCreate": {"action":"users.meeting_templates.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/users/{userId}/meeting_templates","scope":{"userId":{"at":"userId","from":"path"}}},
+      "meetingToken": {"action":"meetings.token.read","effects":["read"],"method":"GET","origin":"{api}","params":["type"],"path":"/v2/meetings/{meetingId}/token","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingUpdate": {"action":"meetings.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","params":["occurrence_id"],"path":"/v2/meetings/{meetingId}","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "meetingregistrantdelete": {"action":"meetings.registrants.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["occurrence_id"],"path":"/v2/meetings/{meetingId}/registrants/{registrantId}","scope":{"meetingId":{"at":"meetingId","from":"path"},"registrantId":{"at":"registrantId","from":"path"}}},
+      "meetings": {"action":"users.meetings.read","effects":["read"],"method":"GET","origin":"{api}","params":["type","page_size","next_page_token","page_number","from","to","timezone"],"path":"/v2/users/{userId}/meetings","scope":{"userId":{"at":"userId","from":"path"}}},
+      "pastMeetingDetails": {"action":"past_meetings.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/past_meetings/{meetingId}","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "pastMeetingParticipants": {"action":"past_meetings.participants.read","effects":["read"],"method":"GET","origin":"{api}","params":["page_size","next_page_token"],"path":"/v2/past_meetings/{meetingId}/participants","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "pastMeetings": {"action":"past_meetings.instances.read","effects":["read"],"method":"GET","origin":"{api}","params":["from","to"],"path":"/v2/past_meetings/{meetingId}/instances","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "pastWebinars": {"action":"past_webinars.instances.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/past_webinars/{webinarId}/instances","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "recordingDelete": {"action":"meetings.recordings.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["action"],"path":"/v2/meetings/{meetingId}/recordings","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "recordingDeleteOne": {"action":"meetings.recordings.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["action"],"path":"/v2/meetings/{meetingId}/recordings/{recordingId}","scope":{"meetingId":{"at":"meetingId","from":"path"},"recordingId":{"at":"recordingId","from":"path"}}},
+      "recordingDownload": {"action":"rec.read","effects":["read"],"method":"GET","open_params":true,"origin":"{rec}","path":"/rec/{path*}","scope":{"path":{"at":"path","from":"path"}}},
+      "recordingGet": {"action":"meetings.recordings.read","effects":["read"],"method":"GET","origin":"{api}","params":["include_fields","ttl"],"path":"/v2/meetings/{meetingId}/recordings","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "recordingRegistrantQuestionUpdate": {"action":"meetings.recordings.registrants.questions.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v2/meetings/{meetingId}/recordings/registrants/questions","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "recordingRegistrantsQuestionsGet": {"action":"meetings.recordings.registrants.questions.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/meetings/{meetingId}/recordings/registrants/questions","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "recordingSettingUpdate": {"action":"meetings.recordings.settings.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/meetings/{meetingId}/recordings/settings","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "recordingSettingsUpdate": {"action":"meetings.recordings.settings.share","body":"any","effects":["share","write"],"method":"PATCH","origin":"{api}","path":"/v2/meetings/{meetingId}/recordings/settings","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "recordingStatusUpdate": {"action":"meetings.recordings.status.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v2/meetings/{meetingUUID}/recordings/status","scope":{"meetingUUID":{"at":"meetingUUID","from":"path"}}},
+      "recordingStatusUpdateOne": {"action":"meetings.recordings.status.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v2/meetings/{meetingId}/recordings/{recordingId}/status","path_patterns":{"recordingId":"[^r].*|r(?:|[^e].*|e(?:|[^g].*|g(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^r].*|r(?:|[^a].*|a(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+))))))))))"},"scope":{"meetingId":{"at":"meetingId","from":"path"},"recordingId":{"at":"recordingId","from":"path"}}},
+      "recordingsList": {"action":"users.recordings.read","effects":["read"],"method":"GET","origin":"{api}","params":["page_size","next_page_token","mc","trash","from","to","trash_type","meeting_id","zra_status","recording_source_type"],"path":"/v2/users/{userId}/recordings","scope":{"userId":{"at":"userId","from":"path"}}},
+      "reportCloudRecording": {"action":"report.cloud_recording.read","effects":["read"],"method":"GET","origin":"{api}","params":["from","to","group_id"],"path":"/v2/report/cloud_recording","scope":{}},
+      "reportDaily": {"action":"report.daily.read","effects":["read"],"method":"GET","origin":"{api}","params":["year","month","group_id"],"path":"/v2/report/daily","scope":{}},
+      "reportMeetingDetails": {"action":"report.meetings.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/report/meetings/{meetingId}","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "reportMeetingParticipants": {"action":"report.meetings.participants.read","effects":["read"],"method":"GET","origin":"{api}","params":["page_size","next_page_token","include_fields"],"path":"/v2/report/meetings/{meetingId}/participants","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "reportMeetingPolls": {"action":"report.meetings.polls.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/report/meetings/{meetingId}/polls","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "reportMeetingQA": {"action":"report.meetings.qa.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/report/meetings/{meetingId}/qa","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "reportMeetingSurvey": {"action":"report.meetings.survey.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/report/meetings/{meetingId}/survey","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "reportMeetingactivitylogs": {"action":"report.meeting_activities.read","effects":["read"],"method":"GET","origin":"{api}","params":["from","to","page_size","next_page_token","meeting_number","search_key","activity_type"],"path":"/v2/report/meeting_activities","scope":{}},
+      "reportMeetings": {"action":"report.users.meetings.read","effects":["read"],"method":"GET","origin":"{api}","params":["from","to","page_size","next_page_token","type"],"path":"/v2/report/users/{userId}/meetings","scope":{"userId":{"at":"userId","from":"path"}}},
+      "reportOperationLogs": {"action":"report.operationlogs.read","effects":["read"],"method":"GET","origin":"{api}","params":["from","to","page_size","next_page_token","category_type"],"path":"/v2/report/operationlogs","scope":{}},
+      "reportSignInSignOutActivities": {"action":"report.activities.read","effects":["read"],"method":"GET","origin":"{api}","params":["from","to","page_size","next_page_token"],"path":"/v2/report/activities","scope":{}},
+      "reportTelephone": {"action":"report.telephone.read","effects":["read"],"method":"GET","origin":"{api}","params":["type","query_date_type","from","to","page_size","page_number","next_page_token"],"path":"/v2/report/telephone","scope":{}},
+      "reportUpcomingEvents": {"action":"report.upcoming_events.read","effects":["read"],"method":"GET","origin":"{api}","params":["from","to","page_size","next_page_token","type","group_id"],"path":"/v2/report/upcoming_events","scope":{}},
+      "reportUsers": {"action":"report.users.read","effects":["read"],"method":"GET","origin":"{api}","params":["type","from","to","page_size","page_number","next_page_token","group_id"],"path":"/v2/report/users","scope":{}},
+      "reportWebinarDetails": {"action":"report.webinars.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/report/webinars/{webinarId}","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "reportWebinarParticipants": {"action":"report.webinars.participants.read","effects":["read"],"method":"GET","origin":"{api}","params":["page_size","next_page_token","include_fields"],"path":"/v2/report/webinars/{webinarId}/participants","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "reportWebinarPolls": {"action":"report.webinars.polls.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/report/webinars/{webinarId}/polls","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "reportWebinarQA": {"action":"report.webinars.qa.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/report/webinars/{webinarId}/qa","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "reportWebinarSurvey": {"action":"report.webinars.survey.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/report/webinars/{webinarId}/survey","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "setWebinarBrandingVB": {"action":"webinars.branding.virtual_backgrounds.write","effects":["write"],"method":"PATCH","origin":"{api}","params":["id","set_default_for_all_panelists"],"path":"/v2/webinars/{webinarId}/branding/virtual_backgrounds","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "trackingfieldCreate": {"action":"tracking_fields.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/tracking_fields","scope":{}},
+      "trackingfieldDelete": {"action":"tracking_fields.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/tracking_fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"}}},
+      "trackingfieldGet": {"action":"tracking_fields.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/tracking_fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"}}},
+      "trackingfieldList": {"action":"tracking_fields.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/tracking_fields","scope":{}},
+      "trackingfieldUpdate": {"action":"tracking_fields.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v2/tracking_fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"}}},
+      "tsp": {"action":"tsp.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/tsp","scope":{}},
+      "tspUpdate": {"action":"tsp.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v2/tsp","scope":{}},
+      "tspUrlUpdate": {"action":"users.tsp.settings.admin","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/v2/users/{userId}/tsp/settings","scope":{"userId":{"at":"userId","from":"path"}}},
+      "tspUrlUpdate.json.ed26c2d66550": {"action":"users.tsp.settings.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/v2/users/{userId}/tsp/settings","scope":{"audio_url":{"at":"/audio_url","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "updateArchivedFile": {"action":"archive_files.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v2/archive_files/{fileId}","scope":{"fileId":{"at":"fileId","from":"path"}}},
+      "updateDevice": {"action":"devices.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v2/devices/{deviceId}","scope":{"deviceId":{"at":"deviceId","from":"path"}}},
+      "updateMeetingChatMessageById": {"action":"live_meetings.chat.messages.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v2/live_meetings/{meetingId}/chat/messages/{messageId}","scope":{"meetingId":{"at":"meetingId","from":"path"},"messageId":{"at":"messageId","from":"path"}}},
+      "updateWebinarBrandingNameTag": {"action":"webinars.branding.name_tags.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v2/webinars/{webinarId}/branding/name_tags/{nameTagId}","scope":{"nameTagId":{"at":"nameTagId","from":"path"},"webinarId":{"at":"webinarId","from":"path"}}},
+      "uploadWebinarBrandingVB": {"action":"webinars.branding.virtual_backgrounds.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/webinars/{webinarId}/branding/virtual_backgrounds","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "uploadWebinarBrandingWallpaper": {"action":"webinars.branding.wallpaper.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/webinars/{webinarId}/branding/wallpaper","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "userPACs": {"action":"users.pac.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/users/{userId}/pac","scope":{"userId":{"at":"userId","from":"path"}}},
+      "userTSP": {"action":"users.tsp.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/users/{userId}/tsp/{tspId}","scope":{"tspId":{"at":"tspId","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "userTSPCreate": {"action":"users.tsp.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/users/{userId}/tsp","scope":{"userId":{"at":"userId","from":"path"}}},
+      "userTSPDelete": {"action":"users.tsp.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/users/{userId}/tsp/{tspId}","scope":{"tspId":{"at":"tspId","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "userTSPUpdate": {"action":"users.tsp.admin","body":"any","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/v2/users/{userId}/tsp/{tspId}","path_patterns":{"tspId":"1|2"},"scope":{"tspId":{"at":"tspId","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "userTSPs": {"action":"users.tsp.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/users/{userId}/tsp","scope":{"userId":{"at":"userId","from":"path"}}},
+      "webinar": {"action":"webinars.read","effects":["read"],"method":"GET","origin":"{api}","params":["occurrence_id","show_previous_occurrences"],"path":"/v2/webinars/{webinarId}","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarAbsentees": {"action":"past_webinars.absentees.read","effects":["read"],"method":"GET","origin":"{api}","params":["occurrence_id","page_size","next_page_token"],"path":"/v2/past_webinars/{webinarId}/absentees","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarCreate": {"action":"users.webinars.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/users/{userId}/webinars","scope":{"userId":{"at":"userId","from":"path"}}},
+      "webinarDelete": {"action":"webinars.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["occurrence_id","cancel_webinar_reminder"],"path":"/v2/webinars/{webinarId}","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarInviteLinksCreate": {"action":"webinars.links.share","body":"any","effects":["share"],"method":"POST","origin":"{api}","path":"/v2/webinars/{webinarId}/invite_links","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarLiveStreamStatusUpdate": {"action":"webinars.livestream.status.publish","body":"any","effects":["publish"],"method":"PATCH","origin":"{api}","path":"/v2/webinars/{webinarId}/livestream/status","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarLiveStreamUpdate": {"action":"webinars.livestream.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v2/webinars/{webinarId}/livestream","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarLiveStreamingJoinToken": {"action":"webinars.jointoken.live_streaming.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/webinars/{webinarId}/jointoken/live_streaming","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarLocalArchivingArchiveToken": {"action":"webinars.jointoken.local_archiving.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/webinars/{webinarId}/jointoken/local_archiving","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarLocalRecordingJoinToken": {"action":"webinars.jointoken.local_recording.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/webinars/{webinarId}/jointoken/local_recording","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarPanelistCreate": {"action":"webinars.panelists.send","body":"any","effects":["send","share"],"method":"POST","origin":"{api}","path":"/v2/webinars/{webinarId}/panelists","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarPanelistDelete": {"action":"webinars.panelists.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/webinars/{webinarId}/panelists/{panelistId}","scope":{"panelistId":{"at":"panelistId","from":"path"},"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarPanelists": {"action":"webinars.panelists.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/webinars/{webinarId}/panelists","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarPanelistsDelete": {"action":"webinars.panelists.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/webinars/{webinarId}/panelists","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarPollCreate": {"action":"webinars.polls.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/webinars/{webinarId}/polls","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarPollDelete": {"action":"webinars.polls.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/webinars/{webinarId}/polls/{pollId}","scope":{"pollId":{"at":"pollId","from":"path"},"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarPollGet": {"action":"webinars.polls.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/webinars/{webinarId}/polls/{pollId}","scope":{"pollId":{"at":"pollId","from":"path"},"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarPollUpdate": {"action":"webinars.polls.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v2/webinars/{webinarId}/polls/{pollId}","scope":{"pollId":{"at":"pollId","from":"path"},"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarPolls": {"action":"webinars.polls.read","effects":["read"],"method":"GET","origin":"{api}","params":["anonymous"],"path":"/v2/webinars/{webinarId}/polls","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarRegistrantCreate": {"action":"webinars.registrants.send","body":"any","effects":["send","write"],"method":"POST","origin":"{api}","params":["occurrence_ids"],"path":"/v2/webinars/{webinarId}/registrants","scope":{"occurrence_ids":{"at":"occurrence_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarRegistrantGet": {"action":"webinars.registrants.read","effects":["read"],"method":"GET","origin":"{api}","params":["occurrence_id"],"path":"/v2/webinars/{webinarId}/registrants/{registrantId}","path_patterns":{"registrantId":"[^q].*|q(?:|[^u].*|u(?:|[^e].*|e(?:|[^s].*|s(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s.+))))))))"},"scope":{"registrantId":{"at":"registrantId","from":"path"},"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarRegistrantQuestionUpdate": {"action":"webinars.registrants.questions.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v2/webinars/{webinarId}/registrants/questions","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarRegistrantStatus": {"action":"webinars.registrants.status.send","body":"any","effects":["send","write"],"method":"PUT","origin":"{api}","params":["occurrence_id"],"path":"/v2/webinars/{webinarId}/registrants/status","scope":{"occurrence_id":{"at":"occurrence_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarRegistrants": {"action":"webinars.registrants.read","effects":["read"],"method":"GET","origin":"{api}","params":["occurrence_id","status","tracking_source_id","page_size","page_number","next_page_token"],"path":"/v2/webinars/{webinarId}/registrants","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarRegistrantsQuestionsGet": {"action":"webinars.registrants.questions.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/webinars/{webinarId}/registrants/questions","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarStatus": {"action":"webinars.status.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v2/webinars/{webinarId}/status","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarSurveyDelete": {"action":"webinars.survey.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/webinars/{webinarId}/survey","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarSurveyGet": {"action":"webinars.survey.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/webinars/{webinarId}/survey","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarSurveyUpdate": {"action":"webinars.survey.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v2/webinars/{webinarId}/survey","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarTemplateCreate": {"action":"users.webinar_templates.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/users/{userId}/webinar_templates","scope":{"userId":{"at":"userId","from":"path"}}},
+      "webinarToken": {"action":"webinars.token.read","effects":["read"],"method":"GET","origin":"{api}","params":["type"],"path":"/v2/webinars/{webinarId}/token","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinarUpdate": {"action":"webinars.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","params":["occurrence_id"],"path":"/v2/webinars/{webinarId}","scope":{"webinarId":{"at":"webinarId","from":"path"}}},
+      "webinars": {"action":"users.webinars.read","effects":["read"],"method":"GET","origin":"{api}","params":["type","page_size","page_number","include_events_webinar"],"path":"/v2/users/{userId}/webinars","scope":{"userId":{"at":"userId","from":"path"}}}
     }
   }
 }

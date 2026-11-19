@@ -1,47 +1,165 @@
 {
-  "title": "Moonshot Kimi",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.moonshot.ai", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "delete.files": {"title": "Delete: files"},
-      "generate.batches": {"title": "Generate: batches"},
-      "generate.completions": {"title": "Generate: completions"},
-      "generate.estimate_token_count": {"title": "Generate: estimate token count"},
-      "generate.fetch": {"title": "Generate: fetch"},
-      "generate.files": {"title": "Generate: files"},
-      "generate.responses": {"title": "Generate: responses"},
-      "generate.search": {"title": "Generate: search"},
-      "generate.search_pro": {"title": "Generate: search pro"},
-      "generate.verify": {"title": "Generate: verify"},
-      "read": {"title": "Read everything the account can see"},
-      "send.messages": {"title": "Send: messages"}
-    }
+      "anthropic": {
+        "title": "Anthropic"
+      },
+      "anthropic.messages": {
+        "title": "Messages"
+      },
+      "anthropic.messages.generate": {
+        "title": "Generate"
+      },
+      "batches": {
+        "title": "Batches"
+      },
+      "batches.generate": {
+        "title": "Generate"
+      },
+      "batches.read": {
+        "title": "Read"
+      },
+      "batches.write": {
+        "title": "Create and edit"
+      },
+      "chat": {
+        "title": "Chat"
+      },
+      "chat.completions": {
+        "title": "Completions"
+      },
+      "chat.completions.generate": {
+        "title": "Generate"
+      },
+      "files": {
+        "title": "Files"
+      },
+      "files.content": {
+        "title": "Content"
+      },
+      "files.content.read": {
+        "title": "Read"
+      },
+      "files.delete": {
+        "title": "Delete"
+      },
+      "files.read": {
+        "title": "Read"
+      },
+      "files.write": {
+        "title": "Create and edit"
+      },
+      "models": {
+        "title": "Models"
+      },
+      "models.read": {
+        "title": "Read"
+      },
+      "responses": {
+        "title": "Responses"
+      },
+      "responses.generate": {
+        "title": "Generate"
+      },
+      "signatures": {
+        "title": "Signatures"
+      },
+      "signatures.read": {
+        "title": "Read"
+      },
+      "tokenizers": {
+        "title": "Tokenizers"
+      },
+      "tokenizers.estimate_token_count": {
+        "title": "Estimate token count"
+      },
+      "tokenizers.estimate_token_count.read": {
+        "title": "Read"
+      },
+      "tools": {
+        "title": "Tools"
+      },
+      "tools.fetch": {
+        "title": "Fetch"
+      },
+      "tools.fetch.read": {
+        "title": "Read"
+      },
+      "tools.pro": {
+        "title": "Pro"
+      },
+      "tools.pro.read": {
+        "title": "Read"
+      },
+      "tools.read": {
+        "title": "Read"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.me": {
+        "title": "Me"
+      },
+      "users.me.balance": {
+        "title": "Balance"
+      },
+      "users.me.balance.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.moonshot.ai",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api.moonshot.cn",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Moonshot Kimi",
   "http": {
+    "origins": {"api":["https://api.moonshot.ai","https://api.moonshot.cn"]},
     "operations": {
-      "DELETE /v1/files/{file_id}": {"action":"delete.files","effects":["delete"],"method":"DELETE","origin":"https://api.moonshot.ai","path":"/v1/files/{file_id}","scope":{"file_id":{"from":"path","at":"file_id"}}},
-      "GET /v1/batches": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.moonshot.ai","path":"/v1/batches","params":["after","limit"],"scope":{}},
-      "GET /v1/batches/{batch_id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.moonshot.ai","path":"/v1/batches/{batch_id}","scope":{"batch_id":{"from":"path","at":"batch_id"}}},
-      "GET /v1/files": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.moonshot.ai","path":"/v1/files","scope":{}},
-      "GET /v1/files/{file_id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.moonshot.ai","path":"/v1/files/{file_id}","scope":{"file_id":{"from":"path","at":"file_id"}}},
-      "GET /v1/files/{file_id}/content": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.moonshot.ai","path":"/v1/files/{file_id}/content","scope":{"file_id":{"from":"path","at":"file_id"}}},
-      "GET /v1/models": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.moonshot.ai","path":"/v1/models","scope":{}},
-      "GET /v1/users/me/balance": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.moonshot.ai","path":"/v1/users/me/balance","scope":{}},
-      "POST /anthropic/v1/messages": {"action":"send.messages","effects":["send"],"method":"POST","origin":"https://api.moonshot.ai","path":"/anthropic/v1/messages","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "POST /v1/batches": {"action":"generate.batches","effects":["generate"],"method":"POST","origin":"https://api.moonshot.ai","path":"/v1/batches","body":"json","scope":{"input_file_id":{"from":"body","at":"/input_file_id"}}},
-      "POST /v1/batches/{batch_id}/cancel": {"action":"generate.batches","effects":["generate"],"method":"POST","origin":"https://api.moonshot.ai","path":"/v1/batches/{batch_id}/cancel","scope":{"batch_id":{"from":"path","at":"batch_id"}}},
-      "POST /v1/chat/completions": {"action":"generate.completions","effects":["generate"],"method":"POST","origin":"https://api.moonshot.ai","path":"/v1/chat/completions","body":"json","scope":{}},
-      "POST /v1/files": {"action":"generate.files","effects":["generate"],"method":"POST","origin":"https://api.moonshot.ai","path":"/v1/files","body":"any","scope":{}},
-      "POST /v1/responses": {"action":"generate.responses","effects":["generate"],"method":"POST","origin":"https://api.moonshot.ai","path":"/v1/responses","body":"json","scope":{}},
-      "POST /v1/signatures/verify": {"action":"generate.verify","effects":["generate"],"method":"POST","origin":"https://api.moonshot.ai","path":"/v1/signatures/verify","body":"json","scope":{}},
-      "POST /v1/tokenizers/estimate-token-count": {"action":"generate.estimate_token_count","effects":["generate"],"method":"POST","origin":"https://api.moonshot.ai","path":"/v1/tokenizers/estimate-token-count","body":"json","scope":{}},
-      "POST /v1/tools/fetch": {"action":"generate.fetch","effects":["generate"],"method":"POST","origin":"https://api.moonshot.ai","path":"/v1/tools/fetch","body":"json","scope":{"url":{"from":"body","at":"/url"}}},
-      "POST /v1/tools/search": {"action":"generate.search","effects":["generate"],"method":"POST","origin":"https://api.moonshot.ai","path":"/v1/tools/search","body":"json","scope":{}},
-      "POST /v1/tools/search_pro": {"action":"generate.search_pro","effects":["generate"],"method":"POST","origin":"https://api.moonshot.ai","path":"/v1/tools/search_pro","body":"json","scope":{}}
+      "DELETE /v1/files/{file_id}": {"action":"files.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v1/files/{file_id}","scope":{"file_id":{"at":"file_id","from":"path"}}},
+      "GET /v1/batches": {"action":"batches.read","effects":["read"],"method":"GET","origin":"{api}","params":["after","limit"],"path":"/v1/batches","scope":{}},
+      "GET /v1/batches/{batch_id}": {"action":"batches.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/batches/{batch_id}","scope":{"batch_id":{"at":"batch_id","from":"path"}}},
+      "GET /v1/files": {"action":"files.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/files","scope":{}},
+      "GET /v1/files/{file_id}": {"action":"files.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/files/{file_id}","scope":{"file_id":{"at":"file_id","from":"path"}}},
+      "GET /v1/files/{file_id}/content": {"action":"files.content.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/files/{file_id}/content","scope":{"file_id":{"at":"file_id","from":"path"}}},
+      "GET /v1/models": {"action":"models.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/models","scope":{}},
+      "GET /v1/users/me/balance": {"action":"users.me.balance.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/users/me/balance","scope":{}},
+      "POST /anthropic/v1/messages": {"action":"anthropic.messages.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/anthropic/v1/messages","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v1/batches": {"action":"batches.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/batches","scope":{"input_file_id":{"at":"/input_file_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v1/batches/{batch_id}/cancel": {"action":"batches.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v1/batches/{batch_id}/cancel","scope":{"batch_id":{"at":"batch_id","from":"path"}}},
+      "POST /v1/chat/completions": {"action":"chat.completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/chat/completions","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v1/files": {"action":"files.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v1/files","scope":{}},
+      "POST /v1/responses": {"action":"responses.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/responses","scope":{"prompt_cache_key":{"at":"/prompt_cache_key","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v1/signatures/verify": {"action":"signatures.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/v1/signatures/verify","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v1/tokenizers/estimate-token-count": {"action":"tokenizers.estimate_token_count.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/v1/tokenizers/estimate-token-count","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v1/tools/fetch": {"action":"tools.fetch.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/v1/tools/fetch","scope":{"request":{"at":"","from":"body","type":"object"},"url":{"at":"/url","from":"body"}}},
+      "POST /v1/tools/search": {"action":"tools.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/v1/tools/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v1/tools/search_pro": {"action":"tools.pro.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/v1/tools/search_pro","scope":{"request":{"at":"","from":"body","type":"object"},"sites":{"at":"/sites","from":"body","optional":true,"type":"array"}}}
     }
   }
 }

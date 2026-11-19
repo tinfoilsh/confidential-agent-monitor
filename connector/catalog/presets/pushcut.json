@@ -1,25 +1,134 @@
 {
-  "title": "Pushcut",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.pushcut.io", "path": "/v1", "header": "API-Key"}]}},
     "actions": {
-      "admin.subscriptions": {"title": "Admin: subscriptions"},
-      "delete.subscriptions": {"title": "Delete: subscriptions"},
-      "read": {"title": "Read everything the account can see"},
-      "send.notifications": {"title": "Send: notifications"}
-    }
+      "devices": {
+        "title": "Devices"
+      },
+      "devices.read": {
+        "title": "Read"
+      },
+      "execute": {
+        "title": "Run"
+      },
+      "execute.execute": {
+        "title": "Run"
+      },
+      "execution": {
+        "title": "Execution"
+      },
+      "execution.write": {
+        "title": "Create and edit"
+      },
+      "images": {
+        "title": "Images"
+      },
+      "images.write": {
+        "title": "Create and edit"
+      },
+      "logged_notifications": {
+        "title": "Logged notifications"
+      },
+      "logged_notifications.read": {
+        "title": "Read"
+      },
+      "notifications": {
+        "title": "Notifications"
+      },
+      "notifications.read": {
+        "title": "Read"
+      },
+      "notifications.send": {
+        "title": "Send"
+      },
+      "servers": {
+        "title": "Servers"
+      },
+      "servers.read": {
+        "title": "Read"
+      },
+      "submitted_notifications": {
+        "title": "Submitted notifications"
+      },
+      "submitted_notifications.delete": {
+        "title": "Delete"
+      },
+      "subscriptions": {
+        "title": "Subscriptions"
+      },
+      "subscriptions.admin": {
+        "title": "Manage"
+      },
+      "subscriptions.delete": {
+        "title": "Delete"
+      },
+      "subscriptions.read": {
+        "title": "Read"
+      },
+      "widget_designs": {
+        "title": "Widget designs"
+      },
+      "widget_designs.read": {
+        "title": "Read"
+      },
+      "widgets": {
+        "title": "Widgets"
+      },
+      "widgets.read": {
+        "title": "Read"
+      },
+      "widgets.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "API-Key",
+            "origin": "https://api.pushcut.io",
+            "path": "/v1",
+            "value": "api_key"
+          },
+          {
+            "header": "API-Key",
+            "origin": "https://api.pushcut.io",
+            "path": "/v2",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Pushcut",
   "http": {
     "operations": {
-      "ActionExecuted": {"action":"admin.subscriptions","effects":["admin"],"method":"POST","origin":"https://api.pushcut.io","path":"/v1/subscriptions","body":"json","scope":{"url":{"from":"body","at":"/url"},"actionName":{"from":"body","at":"/actionName"}}},
-      "DeleteSubscription": {"action":"delete.subscriptions","effects":["delete"],"method":"DELETE","origin":"https://api.pushcut.io","path":"/v1/subscriptions/{subscriptionId}","scope":{"subscriptionId":{"from":"path","at":"subscriptionId"}}},
-      "GetDevices": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.pushcut.io","path":"/v1/devices","scope":{}},
-      "GetNotifications": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.pushcut.io","path":"/v1/notifications","scope":{}},
-      "SendNotification": {"action":"send.notifications","effects":["send"],"method":"POST","origin":"https://api.pushcut.io","path":"/v1/notifications/{notificationName}","body":"json","scope":{"notificationName":{"from":"path","at":"notificationName"},"request":{"from":"body","at":"","type":"object"}},"grant":["notificationName"]}
+      "ActionExecuted": {"action":"subscriptions.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.pushcut.io","path":"/v1/subscriptions","scope":{"actionName":{"at":"/actionName","from":"body"},"url":{"at":"/url","from":"body"}}},
+      "CancelExecution": {"action":"execution.write","effects":["write"],"method":"POST","origin":"https://api.pushcut.io","params":["identifier"],"path":"/v1/cancelExecution","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "CancelNotification": {"action":"submitted_notifications.delete","effects":["delete"],"method":"DELETE","origin":"https://api.pushcut.io","params":["devices","onlyScheduled"],"path":"/v1/submittedNotifications/{notificationId}","scope":{"notificationId":{"at":"notificationId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "DeleteSubscription": {"action":"subscriptions.delete","effects":["delete"],"method":"DELETE","origin":"https://api.pushcut.io","path":"/v1/subscriptions/{subscriptionId}","scope":{"subscriptionId":{"at":"subscriptionId","from":"path"}}},
+      "Execute": {"action":"execute.execute","body":"json","effects":["execute"],"method":"POST","origin":"https://api.pushcut.io","params":["shortcut","homekit","timeout","delay","identifier","input","serverId"],"path":"/v1/execute","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "Execute.none": {"action":"execute.execute","effects":["execute"],"method":"POST","origin":"https://api.pushcut.io","params":["shortcut","homekit","timeout","delay","identifier","input","serverId"],"path":"/v1/execute","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GetDevices": {"action":"devices.read","effects":["read"],"method":"GET","origin":"https://api.pushcut.io","path":"/v1/devices","scope":{}},
+      "GetNotifications": {"action":"notifications.read","effects":["read"],"method":"GET","origin":"https://api.pushcut.io","path":"/v1/notifications","scope":{}},
+      "GetSubscriptions": {"action":"subscriptions.read","effects":["read"],"method":"GET","origin":"https://api.pushcut.io","path":"/v1/subscriptions","scope":{}},
+      "GetWidgetDesign": {"action":"widget_designs.read","effects":["read"],"method":"GET","origin":"https://api.pushcut.io","path":"/v1/widgetDesigns/{designId}","scope":{"designId":{"at":"designId","from":"path"}}},
+      "GetWidgetDesigns": {"action":"widget_designs.read","effects":["read"],"method":"GET","origin":"https://api.pushcut.io","path":"/v1/widgetDesigns","scope":{}},
+      "GetWidgets": {"action":"widgets.read","effects":["read"],"method":"GET","origin":"https://api.pushcut.io","path":"/v1/widgets","scope":{}},
+      "ListLoggedNotifications": {"action":"logged_notifications.read","effects":["read"],"method":"GET","origin":"https://api.pushcut.io","path":"/v2/loggedNotifications","scope":{}},
+      "ListServers": {"action":"servers.read","effects":["read"],"method":"GET","origin":"https://api.pushcut.io","path":"/v2/servers","scope":{}},
+      "MoveImage": {"action":"images.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.pushcut.io","path":"/v1/images/{imageName}/move","scope":{"imageName":{"at":"imageName","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "SendNotification": {"action":"notifications.send","body":"json","effects":["send"],"grant":["notificationName"],"method":"POST","origin":"https://api.pushcut.io","path":"/v1/notifications/{notificationName}","scope":{"notificationName":{"at":"notificationName","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "UpdateWidget": {"action":"widgets.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.pushcut.io","path":"/v1/widgets/{widgetName}","scope":{"request":{"at":"","from":"body","type":"object"},"widgetName":{"at":"widgetName","from":"path"}}},
+      "UploadImage": {"action":"images.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.pushcut.io","path":"/v1/images/{imageName}","scope":{"imageName":{"at":"imageName","from":"path"},"request":{"at":"","from":"body","type":"object"}}}
     }
   }
 }

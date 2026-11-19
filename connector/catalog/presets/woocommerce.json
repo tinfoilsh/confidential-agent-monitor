@@ -7,8 +7,107 @@
       "wp_json.wc": {
         "title": "Wc"
       },
+      "wp_json.wc.coupons": {
+        "title": "Coupons"
+      },
+      "wp_json.wc.coupons.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wc.coupons.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.coupons.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wc.customers": {
+        "title": "Customers"
+      },
+      "wp_json.wc.customers.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wc.customers.downloads": {
+        "title": "Downloads"
+      },
+      "wp_json.wc.customers.downloads.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.customers.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.customers.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wc.data": {
+        "title": "Data"
+      },
+      "wp_json.wc.data.continents": {
+        "title": "Continents"
+      },
+      "wp_json.wc.data.continents.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.data.countries": {
+        "title": "Countries"
+      },
+      "wp_json.wc.data.countries.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.data.currencies": {
+        "title": "Currencies"
+      },
+      "wp_json.wc.data.currencies.current": {
+        "title": "Current"
+      },
+      "wp_json.wc.data.currencies.current.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.data.currencies.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.data.read": {
+        "title": "Read"
+      },
       "wp_json.wc.orders": {
         "title": "Orders"
+      },
+      "wp_json.wc.orders.actions": {
+        "title": "Actions"
+      },
+      "wp_json.wc.orders.actions.email_templates": {
+        "title": "Email templates"
+      },
+      "wp_json.wc.orders.actions.email_templates.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.orders.actions.send_email": {
+        "title": "Send email"
+      },
+      "wp_json.wc.orders.actions.send_email.send": {
+        "title": "Send"
+      },
+      "wp_json.wc.orders.actions.send_order_details": {
+        "title": "Send order details"
+      },
+      "wp_json.wc.orders.actions.send_order_details.send": {
+        "title": "Send"
+      },
+      "wp_json.wc.orders.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wc.orders.notes": {
+        "title": "Notes"
+      },
+      "wp_json.wc.orders.notes.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wc.orders.notes.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.orders.notes.send": {
+        "title": "Send"
+      },
+      "wp_json.wc.orders.notes.write": {
+        "title": "Create and edit"
       },
       "wp_json.wc.orders.read": {
         "title": "Read"
@@ -16,14 +115,74 @@
       "wp_json.wc.orders.refunds": {
         "title": "Refunds"
       },
+      "wp_json.wc.orders.refunds.delete": {
+        "title": "Delete"
+      },
       "wp_json.wc.orders.refunds.pay": {
         "title": "Make payments"
+      },
+      "wp_json.wc.orders.refunds.read": {
+        "title": "Read"
       },
       "wp_json.wc.orders.write": {
         "title": "Create and edit"
       },
+      "wp_json.wc.payment_gateways": {
+        "title": "Payment gateways"
+      },
+      "wp_json.wc.payment_gateways.admin": {
+        "title": "Manage"
+      },
+      "wp_json.wc.payment_gateways.read": {
+        "title": "Read"
+      },
       "wp_json.wc.products": {
         "title": "Products"
+      },
+      "wp_json.wc.products.attributes": {
+        "title": "Attributes"
+      },
+      "wp_json.wc.products.attributes.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wc.products.attributes.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.products.attributes.terms": {
+        "title": "Terms"
+      },
+      "wp_json.wc.products.attributes.terms.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wc.products.attributes.terms.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.products.attributes.terms.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wc.products.attributes.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wc.products.categories": {
+        "title": "Categories"
+      },
+      "wp_json.wc.products.categories.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wc.products.categories.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.products.categories.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wc.products.custom_fields": {
+        "title": "Custom fields"
+      },
+      "wp_json.wc.products.custom_fields.names": {
+        "title": "Names"
+      },
+      "wp_json.wc.products.custom_fields.names.read": {
+        "title": "Read"
       },
       "wp_json.wc.products.delete": {
         "title": "Delete"
@@ -31,8 +190,215 @@
       "wp_json.wc.products.read": {
         "title": "Read"
       },
+      "wp_json.wc.products.reviews": {
+        "title": "Reviews"
+      },
+      "wp_json.wc.products.reviews.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wc.products.reviews.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.products.reviews.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wc.products.shipping_classes": {
+        "title": "Shipping classes"
+      },
+      "wp_json.wc.products.shipping_classes.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wc.products.shipping_classes.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.products.shipping_classes.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wc.products.tags": {
+        "title": "Tags"
+      },
+      "wp_json.wc.products.tags.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wc.products.tags.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.products.tags.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wc.products.variations": {
+        "title": "Variations"
+      },
+      "wp_json.wc.products.variations.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wc.products.variations.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.products.variations.write": {
+        "title": "Create and edit"
+      },
       "wp_json.wc.products.write": {
         "title": "Create and edit"
+      },
+      "wp_json.wc.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.refunds": {
+        "title": "Refunds"
+      },
+      "wp_json.wc.refunds.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.reports": {
+        "title": "Reports"
+      },
+      "wp_json.wc.reports.coupons": {
+        "title": "Coupons"
+      },
+      "wp_json.wc.reports.coupons.totals": {
+        "title": "Totals"
+      },
+      "wp_json.wc.reports.coupons.totals.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.reports.customers": {
+        "title": "Customers"
+      },
+      "wp_json.wc.reports.customers.totals": {
+        "title": "Totals"
+      },
+      "wp_json.wc.reports.customers.totals.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.reports.orders": {
+        "title": "Orders"
+      },
+      "wp_json.wc.reports.orders.totals": {
+        "title": "Totals"
+      },
+      "wp_json.wc.reports.orders.totals.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.reports.products": {
+        "title": "Products"
+      },
+      "wp_json.wc.reports.products.totals": {
+        "title": "Totals"
+      },
+      "wp_json.wc.reports.products.totals.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.reports.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.reports.reviews": {
+        "title": "Reviews"
+      },
+      "wp_json.wc.reports.reviews.totals": {
+        "title": "Totals"
+      },
+      "wp_json.wc.reports.reviews.totals.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.reports.sales": {
+        "title": "Sales"
+      },
+      "wp_json.wc.reports.sales.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.reports.top_sellers": {
+        "title": "Top sellers"
+      },
+      "wp_json.wc.reports.top_sellers.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.settings": {
+        "title": "Settings"
+      },
+      "wp_json.wc.settings.admin": {
+        "title": "Manage"
+      },
+      "wp_json.wc.settings.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.shipping": {
+        "title": "Shipping"
+      },
+      "wp_json.wc.shipping.zones": {
+        "title": "Zones"
+      },
+      "wp_json.wc.shipping.zones.admin": {
+        "title": "Manage"
+      },
+      "wp_json.wc.shipping.zones.locations": {
+        "title": "Locations"
+      },
+      "wp_json.wc.shipping.zones.locations.admin": {
+        "title": "Manage"
+      },
+      "wp_json.wc.shipping.zones.locations.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.shipping.zones.methods": {
+        "title": "Methods"
+      },
+      "wp_json.wc.shipping.zones.methods.admin": {
+        "title": "Manage"
+      },
+      "wp_json.wc.shipping.zones.methods.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.shipping.zones.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.shipping_methods": {
+        "title": "Shipping methods"
+      },
+      "wp_json.wc.shipping_methods.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.system_status": {
+        "title": "System status"
+      },
+      "wp_json.wc.system_status.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.system_status.tools": {
+        "title": "Tools"
+      },
+      "wp_json.wc.system_status.tools.execute": {
+        "title": "Run"
+      },
+      "wp_json.wc.system_status.tools.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.taxes": {
+        "title": "Taxes"
+      },
+      "wp_json.wc.taxes.admin": {
+        "title": "Manage"
+      },
+      "wp_json.wc.taxes.classes": {
+        "title": "Classes"
+      },
+      "wp_json.wc.taxes.classes.admin": {
+        "title": "Manage"
+      },
+      "wp_json.wc.taxes.classes.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.taxes.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.webhooks": {
+        "title": "Webhooks"
+      },
+      "wp_json.wc.webhooks.admin": {
+        "title": "Manage"
+      },
+      "wp_json.wc.webhooks.read": {
+        "title": "Read"
       }
     },
     "connection": {
@@ -41,13 +407,13 @@
           {
             "basic": "user",
             "origin": "https://example.com",
-            "path": "/wp-json/wc/v3",
+            "path": "/wp-json/wc",
             "value": "consumer_key"
           },
           {
             "basic": "password",
             "origin": "https://example.com",
-            "path": "/wp-json/wc/v3",
+            "path": "/wp-json/wc",
             "value": "consumer_secret"
           }
         ]
@@ -56,7 +422,7 @@
     "fields": [
       {
         "key": "origin",
-        "label": "Your store's site URL (https://yourstore.example.com)",
+        "label": "Your store's site URL (https://yourstore.example.com or https://example.com/shop)",
         "paths": [
           [
             "policy_options",
@@ -94,14 +460,147 @@
   "title": "WooCommerce",
   "http": {
     "operations": {
-      "orders.list": {"action":"wp_json.wc.orders.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","per_page","status"],"path":"/wp-json/wc/v3/orders","scope":{}},
-      "orders.refunds.create": {"action":"wp_json.wc.orders.refunds.pay","body":"json","effects":["pay"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/v3/orders/{order}/refunds","scope":{"order":{"at":"order","from":"path"},"refund":{"at":"","from":"body","type":"object"}}},
-      "orders.update": {"action":"wp_json.wc.orders.write","body":"json","effects":["write","pay","send"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/v3/orders/{order}","scope":{"changes":{"at":"","from":"body","type":"object"},"order":{"at":"order","from":"path"}}},
-      "products.create": {"action":"wp_json.wc.products.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/v3/products","scope":{"product":{"at":"","from":"body","type":"object"}}},
-      "products.delete": {"action":"wp_json.wc.products.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/v3/products/{product}","scope":{"product":{"at":"product","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-      "products.get": {"action":"wp_json.wc.products.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wp-json/wc/v3/products/{product}","scope":{"product":{"at":"product","from":"path"}}},
-      "products.list": {"action":"wp_json.wc.products.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","per_page","search","status"],"path":"/wp-json/wc/v3/products","scope":{}},
-      "products.update": {"action":"wp_json.wc.products.write","body":"json","effects":["write","publish"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/v3/products/{product}","scope":{"changes":{"at":"","from":"body","type":"object"},"product":{"at":"product","from":"path"}}}
+      "coupons.batch": {"action":"wp_json.wc.coupons.write","body":"json","effects":["write","delete"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/coupons/batch","path_patterns":{"version":"v1|v2|v3"},"scope":{"batch":{"at":"","from":"body","type":"object"}}},
+      "coupons.create": {"action":"wp_json.wc.coupons.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/coupons","path_patterns":{"version":"v1|v2|v3"},"scope":{"data":{"at":"","from":"body","type":"object"}}},
+      "coupons.delete": {"action":"wp_json.wc.coupons.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/{version}/coupons/{coupon}","path_patterns":{"coupon":"[0-9]+","version":"v1|v2|v3"},"scope":{"coupon":{"at":"coupon","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "coupons.get": {"action":"wp_json.wc.coupons.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/coupons/{coupon}","path_patterns":{"coupon":"[0-9]+","version":"v1|v2|v3"},"scope":{"coupon":{"at":"coupon","from":"path"}}},
+      "coupons.list": {"action":"wp_json.wc.coupons.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","after","before","code","context","dates_are_gmt","exclude","include","modified_after","modified_before","offset","order","orderby","page","per_page","search"],"path":"/wp-json/wc/{version}/coupons","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "coupons.update": {"action":"wp_json.wc.coupons.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/coupons/{coupon}","path_patterns":{"coupon":"[0-9]+","version":"v1|v2|v3"},"scope":{"changes":{"at":"","from":"body","type":"object"},"coupon":{"at":"coupon","from":"path"}}},
+      "customers.batch": {"action":"wp_json.wc.customers.write","body":"json","effects":["write","delete","send"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/customers/batch","path_patterns":{"version":"v1|v2|v3"},"scope":{"batch":{"at":"","from":"body","type":"object"}}},
+      "customers.create": {"action":"wp_json.wc.customers.write","body":"json","effects":["write","send"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/customers","path_patterns":{"version":"v1|v2|v3"},"scope":{"data":{"at":"","from":"body","type":"object"}}},
+      "customers.delete": {"action":"wp_json.wc.customers.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force","reassign"],"path":"/wp-json/wc/{version}/customers/{customer}","path_patterns":{"customer":"[0-9]+","version":"v1|v2|v3"},"scope":{"customer":{"at":"customer","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "customers.downloads.list": {"action":"wp_json.wc.customers.downloads.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/customers/{customer}/downloads","path_patterns":{"customer":"[0-9]+","version":"v1|v2|v3"},"scope":{"customer":{"at":"customer","from":"path"}}},
+      "customers.get": {"action":"wp_json.wc.customers.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/customers/{customer}","path_patterns":{"customer":"[0-9]+","version":"v1|v2|v3"},"scope":{"customer":{"at":"customer","from":"path"}}},
+      "customers.list": {"action":"wp_json.wc.customers.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","email","exclude","include","offset","order","orderby","page","per_page","role","search"],"path":"/wp-json/wc/{version}/customers","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "customers.update": {"action":"wp_json.wc.customers.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/customers/{customer}","path_patterns":{"customer":"[0-9]+","version":"v1|v2|v3"},"scope":{"changes":{"at":"","from":"body","type":"object"},"customer":{"at":"customer","from":"path"}}},
+      "data.continents.get": {"action":"wp_json.wc.data.continents.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/data/continents/{location}","path_patterns":{"version":"v1|v2|v3"},"scope":{"location":{"at":"location","from":"path"}}},
+      "data.continents.list": {"action":"wp_json.wc.data.continents.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/data/continents","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "data.countries.get": {"action":"wp_json.wc.data.countries.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/data/countries/{location}","path_patterns":{"version":"v1|v2|v3"},"scope":{"location":{"at":"location","from":"path"}}},
+      "data.countries.list": {"action":"wp_json.wc.data.countries.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/data/countries","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "data.currencies.current.get": {"action":"wp_json.wc.data.currencies.current.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/data/currencies/current","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "data.currencies.get": {"action":"wp_json.wc.data.currencies.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/data/currencies/{currency}","path_patterns":{"currency":"[A-Za-z]{3}","version":"v1|v2|v3"},"scope":{"currency":{"at":"currency","from":"path"}}},
+      "data.currencies.list": {"action":"wp_json.wc.data.currencies.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/data/currencies","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "data.list": {"action":"wp_json.wc.data.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/data","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "index": {"action":"wp_json.wc.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "orders.actions.email_templates.list": {"action":"wp_json.wc.orders.actions.email_templates.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/orders/{order}/actions/email_templates","path_patterns":{"order":"[0-9]+","version":"v1|v2|v3"},"scope":{"order":{"at":"order","from":"path"}}},
+      "orders.actions.send_email": {"action":"wp_json.wc.orders.actions.send_email.send","body":"json","effects":["send"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/orders/{order}/actions/send_email","path_patterns":{"order":"[0-9]+","version":"v1|v2|v3"},"scope":{"order":{"at":"order","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "orders.actions.send_order_details": {"action":"wp_json.wc.orders.actions.send_order_details.send","body":"json","effects":["send"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/orders/{order}/actions/send_order_details","path_patterns":{"order":"[0-9]+","version":"v1|v2|v3"},"scope":{"order":{"at":"order","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "orders.batch": {"action":"wp_json.wc.orders.write","body":"json","effects":["write","delete","pay","send"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/orders/batch","path_patterns":{"version":"v1|v2|v3"},"scope":{"batch":{"at":"","from":"body","type":"object"}}},
+      "orders.create": {"action":"wp_json.wc.orders.write","body":"json","effects":["write","send"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/orders","path_patterns":{"version":"v1|v2|v3"},"scope":{"data":{"at":"","from":"body","type":"object"}}},
+      "orders.delete": {"action":"wp_json.wc.orders.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/{version}/orders/{order}","path_patterns":{"order":"[0-9]+","version":"v1|v2|v3"},"scope":{"order":{"at":"order","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "orders.get": {"action":"wp_json.wc.orders.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","dp"],"path":"/wp-json/wc/{version}/orders/{order}","path_patterns":{"order":"[0-9]+","version":"v1|v2|v3"},"scope":{"order":{"at":"order","from":"path"}}},
+      "orders.list": {"action":"wp_json.wc.orders.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","after","before","context","created_via","customer","dates_are_gmt","dp","exclude","include","modified_after","modified_before","offset","order","orderby","page","parent","parent_exclude","per_page","product","search","status"],"path":"/wp-json/wc/{version}/orders","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "orders.notes.create": {"action":"wp_json.wc.orders.notes.write","body":"json","effects":["write"],"fields":{"/customer_note":null},"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/orders/{order}/notes","path_patterns":{"order":"[0-9]+","version":"v1|v2|v3"},"scope":{"data":{"at":"","from":"body","type":"object"},"order":{"at":"order","from":"path"}}},
+      "orders.notes.create.customer": {"action":"wp_json.wc.orders.notes.send","body":"json","effects":["send","write"],"fields":{"/customer_note":true},"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/orders/{order}/notes","path_patterns":{"order":"[0-9]+","version":"v1|v2|v3"},"scope":{"data":{"at":"","from":"body","type":"object"},"order":{"at":"order","from":"path"}}},
+      "orders.notes.create.private": {"action":"wp_json.wc.orders.notes.write","body":"json","effects":["write"],"fields":{"/customer_note":false},"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/orders/{order}/notes","path_patterns":{"order":"[0-9]+","version":"v1|v2|v3"},"scope":{"data":{"at":"","from":"body","type":"object"},"order":{"at":"order","from":"path"}}},
+      "orders.notes.delete": {"action":"wp_json.wc.orders.notes.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/{version}/orders/{order}/notes/{note}","path_patterns":{"note":"[0-9]+","order":"[0-9]+","version":"v1|v2|v3"},"scope":{"note":{"at":"note","from":"path"},"order":{"at":"order","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "orders.notes.get": {"action":"wp_json.wc.orders.notes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/orders/{order}/notes/{note}","path_patterns":{"note":"[0-9]+","order":"[0-9]+","version":"v1|v2|v3"},"scope":{"note":{"at":"note","from":"path"},"order":{"at":"order","from":"path"}}},
+      "orders.notes.list": {"action":"wp_json.wc.orders.notes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","type"],"path":"/wp-json/wc/{version}/orders/{order}/notes","path_patterns":{"order":"[0-9]+","version":"v1|v2|v3"},"scope":{"order":{"at":"order","from":"path"}}},
+      "orders.refunds.create": {"action":"wp_json.wc.orders.refunds.pay","body":"json","effects":["pay","send"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/orders/{order}/refunds","path_patterns":{"order":"[0-9]+","version":"v1|v2|v3"},"scope":{"order":{"at":"order","from":"path"},"refund":{"at":"","from":"body","type":"object"}}},
+      "orders.refunds.delete": {"action":"wp_json.wc.orders.refunds.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/{version}/orders/{order}/refunds/{refund}","path_patterns":{"order":"[0-9]+","refund":"[0-9]+","version":"v1|v2|v3"},"scope":{"order":{"at":"order","from":"path"},"query":{"at":"","from":"query","type":"object"},"refund":{"at":"refund","from":"path"}}},
+      "orders.refunds.get": {"action":"wp_json.wc.orders.refunds.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","dp"],"path":"/wp-json/wc/{version}/orders/{order}/refunds/{refund}","path_patterns":{"order":"[0-9]+","refund":"[0-9]+","version":"v1|v2|v3"},"scope":{"order":{"at":"order","from":"path"},"refund":{"at":"refund","from":"path"}}},
+      "orders.refunds.list": {"action":"wp_json.wc.orders.refunds.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","after","before","context","dates_are_gmt","dp","exclude","include","offset","order","orderby","page","parent","parent_exclude","per_page","search"],"path":"/wp-json/wc/{version}/orders/{order}/refunds","path_patterns":{"order":"[0-9]+","version":"v1|v2|v3"},"scope":{"order":{"at":"order","from":"path"}}},
+      "orders.refunds.preview": {"action":"wp_json.wc.orders.refunds.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/orders/{order}/refunds/preview","path_patterns":{"order":"[0-9]+","version":"v1|v2|v3"},"scope":{"order":{"at":"order","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "orders.update": {"action":"wp_json.wc.orders.write","body":"json","effects":["write","pay","send"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/orders/{order}","path_patterns":{"order":"[0-9]+","version":"v1|v2|v3"},"scope":{"changes":{"at":"","from":"body","type":"object"},"order":{"at":"order","from":"path"}}},
+      "payment_gateways.get": {"action":"wp_json.wc.payment_gateways.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/payment_gateways/{gateway}","path_patterns":{"version":"v1|v2|v3"},"scope":{"gateway":{"at":"gateway","from":"path"}}},
+      "payment_gateways.list": {"action":"wp_json.wc.payment_gateways.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/payment_gateways","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "payment_gateways.update": {"action":"wp_json.wc.payment_gateways.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/payment_gateways/{gateway}","path_patterns":{"version":"v1|v2|v3"},"scope":{"changes":{"at":"","from":"body","type":"object"},"gateway":{"at":"gateway","from":"path"}}},
+      "products.attributes.batch": {"action":"wp_json.wc.products.attributes.write","body":"json","effects":["write","delete"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/products/attributes/batch","path_patterns":{"version":"v1|v2|v3"},"scope":{"batch":{"at":"","from":"body","type":"object"}}},
+      "products.attributes.create": {"action":"wp_json.wc.products.attributes.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/products/attributes","path_patterns":{"version":"v1|v2|v3"},"scope":{"data":{"at":"","from":"body","type":"object"}}},
+      "products.attributes.delete": {"action":"wp_json.wc.products.attributes.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/{version}/products/attributes/{attribute}","path_patterns":{"attribute":"[0-9]+","version":"v1|v2|v3"},"scope":{"attribute":{"at":"attribute","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "products.attributes.get": {"action":"wp_json.wc.products.attributes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/products/attributes/{attribute}","path_patterns":{"attribute":"[0-9]+","version":"v1|v2|v3"},"scope":{"attribute":{"at":"attribute","from":"path"}}},
+      "products.attributes.list": {"action":"wp_json.wc.products.attributes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/products/attributes","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "products.attributes.terms.batch": {"action":"wp_json.wc.products.attributes.terms.write","body":"json","effects":["write","delete"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/products/attributes/{attribute}/terms/batch","path_patterns":{"attribute":"[0-9]+","version":"v1|v2|v3"},"scope":{"attribute":{"at":"attribute","from":"path"},"batch":{"at":"","from":"body","type":"object"}}},
+      "products.attributes.terms.create": {"action":"wp_json.wc.products.attributes.terms.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/products/attributes/{attribute}/terms","path_patterns":{"attribute":"[0-9]+","version":"v1|v2|v3"},"scope":{"attribute":{"at":"attribute","from":"path"},"data":{"at":"","from":"body","type":"object"}}},
+      "products.attributes.terms.delete": {"action":"wp_json.wc.products.attributes.terms.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/{version}/products/attributes/{attribute}/terms/{term}","path_patterns":{"attribute":"[0-9]+","term":"[0-9]+","version":"v1|v2|v3"},"scope":{"attribute":{"at":"attribute","from":"path"},"query":{"at":"","from":"query","type":"object"},"term":{"at":"term","from":"path"}}},
+      "products.attributes.terms.get": {"action":"wp_json.wc.products.attributes.terms.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/products/attributes/{attribute}/terms/{term}","path_patterns":{"attribute":"[0-9]+","term":"[0-9]+","version":"v1|v2|v3"},"scope":{"attribute":{"at":"attribute","from":"path"},"term":{"at":"term","from":"path"}}},
+      "products.attributes.terms.list": {"action":"wp_json.wc.products.attributes.terms.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","exclude","hide_empty","include","order","orderby","page","parent","per_page","product","search","slug"],"path":"/wp-json/wc/{version}/products/attributes/{attribute}/terms","path_patterns":{"attribute":"[0-9]+","version":"v1|v2|v3"},"scope":{"attribute":{"at":"attribute","from":"path"}}},
+      "products.attributes.terms.update": {"action":"wp_json.wc.products.attributes.terms.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/products/attributes/{attribute}/terms/{term}","path_patterns":{"attribute":"[0-9]+","term":"[0-9]+","version":"v1|v2|v3"},"scope":{"attribute":{"at":"attribute","from":"path"},"changes":{"at":"","from":"body","type":"object"},"term":{"at":"term","from":"path"}}},
+      "products.attributes.update": {"action":"wp_json.wc.products.attributes.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/products/attributes/{attribute}","path_patterns":{"attribute":"[0-9]+","version":"v1|v2|v3"},"scope":{"attribute":{"at":"attribute","from":"path"},"changes":{"at":"","from":"body","type":"object"}}},
+      "products.batch": {"action":"wp_json.wc.products.write","body":"json","effects":["write","publish","delete"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/products/batch","path_patterns":{"version":"v1|v2|v3"},"scope":{"batch":{"at":"","from":"body","type":"object"}}},
+      "products.categories.batch": {"action":"wp_json.wc.products.categories.write","body":"json","effects":["write","delete"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/products/categories/batch","path_patterns":{"version":"v1|v2|v3"},"scope":{"batch":{"at":"","from":"body","type":"object"}}},
+      "products.categories.create": {"action":"wp_json.wc.products.categories.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/products/categories","path_patterns":{"version":"v1|v2|v3"},"scope":{"data":{"at":"","from":"body","type":"object"}}},
+      "products.categories.delete": {"action":"wp_json.wc.products.categories.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/{version}/products/categories/{category}","path_patterns":{"category":"[0-9]+","version":"v1|v2|v3"},"scope":{"category":{"at":"category","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "products.categories.get": {"action":"wp_json.wc.products.categories.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/products/categories/{category}","path_patterns":{"category":"[0-9]+","version":"v1|v2|v3"},"scope":{"category":{"at":"category","from":"path"}}},
+      "products.categories.list": {"action":"wp_json.wc.products.categories.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","exclude","hide_empty","include","order","orderby","page","parent","per_page","product","search","slug"],"path":"/wp-json/wc/{version}/products/categories","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "products.categories.update": {"action":"wp_json.wc.products.categories.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/products/categories/{category}","path_patterns":{"category":"[0-9]+","version":"v1|v2|v3"},"scope":{"category":{"at":"category","from":"path"},"changes":{"at":"","from":"body","type":"object"}}},
+      "products.create": {"action":"wp_json.wc.products.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/products","path_patterns":{"version":"v1|v2|v3"},"scope":{"product":{"at":"","from":"body","type":"object"}}},
+      "products.custom_fields.names.list": {"action":"wp_json.wc.products.custom_fields.names.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/products/custom-fields/names","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "products.delete": {"action":"wp_json.wc.products.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/{version}/products/{product}","path_patterns":{"product":"[0-9]+","version":"v1|v2|v3"},"scope":{"product":{"at":"product","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "products.duplicate": {"action":"wp_json.wc.products.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/products/{product}/duplicate","path_patterns":{"product":"[0-9]+","version":"v1|v2|v3"},"scope":{"product":{"at":"product","from":"path"}}},
+      "products.get": {"action":"wp_json.wc.products.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/products/{product}","path_patterns":{"product":"[0-9]+","version":"v1|v2|v3"},"scope":{"product":{"at":"product","from":"path"}}},
+      "products.list": {"action":"wp_json.wc.products.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","after","attribute","attribute_term","before","category","context","dates_are_gmt","downloadable","exclude","exclude_status","exclude_types","featured","include","include_status","include_types","max_price","min_price","modified_after","modified_before","offset","on_sale","order","orderby","page","parent","parent_exclude","per_page","search","search_fields","shipping_class","sku","slug","status","stock_status","tag","tax_class","type","virtual"],"path":"/wp-json/wc/{version}/products","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "products.reviews.batch": {"action":"wp_json.wc.products.reviews.write","body":"json","effects":["write","publish","delete"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/products/reviews/batch","path_patterns":{"version":"v1|v2|v3"},"scope":{"batch":{"at":"","from":"body","type":"object"}}},
+      "products.reviews.create": {"action":"wp_json.wc.products.reviews.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/products/reviews","path_patterns":{"version":"v1|v2|v3"},"scope":{"data":{"at":"","from":"body","type":"object"}}},
+      "products.reviews.delete": {"action":"wp_json.wc.products.reviews.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/{version}/products/reviews/{review}","path_patterns":{"review":"[0-9]+","version":"v1|v2|v3"},"scope":{"query":{"at":"","from":"query","type":"object"},"review":{"at":"review","from":"path"}}},
+      "products.reviews.get": {"action":"wp_json.wc.products.reviews.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/products/reviews/{review}","path_patterns":{"review":"[0-9]+","version":"v1|v2|v3"},"scope":{"review":{"at":"review","from":"path"}}},
+      "products.reviews.list": {"action":"wp_json.wc.products.reviews.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","after","before","context","dates_are_gmt","exclude","include","offset","order","orderby","page","per_page","product","reviewer","reviewer_email","reviewer_exclude","search","status"],"path":"/wp-json/wc/{version}/products/reviews","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "products.reviews.update": {"action":"wp_json.wc.products.reviews.write","body":"json","effects":["write","publish"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/products/reviews/{review}","path_patterns":{"review":"[0-9]+","version":"v1|v2|v3"},"scope":{"changes":{"at":"","from":"body","type":"object"},"review":{"at":"review","from":"path"}}},
+      "products.shipping_classes.batch": {"action":"wp_json.wc.products.shipping_classes.write","body":"json","effects":["write","delete"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/products/shipping_classes/batch","path_patterns":{"version":"v1|v2|v3"},"scope":{"batch":{"at":"","from":"body","type":"object"}}},
+      "products.shipping_classes.create": {"action":"wp_json.wc.products.shipping_classes.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/products/shipping_classes","path_patterns":{"version":"v1|v2|v3"},"scope":{"data":{"at":"","from":"body","type":"object"}}},
+      "products.shipping_classes.delete": {"action":"wp_json.wc.products.shipping_classes.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/{version}/products/shipping_classes/{shipping_class}","path_patterns":{"shipping_class":"[0-9]+","version":"v1|v2|v3"},"scope":{"query":{"at":"","from":"query","type":"object"},"shipping_class":{"at":"shipping_class","from":"path"}}},
+      "products.shipping_classes.get": {"action":"wp_json.wc.products.shipping_classes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/products/shipping_classes/{shipping_class}","path_patterns":{"shipping_class":"[0-9]+","version":"v1|v2|v3"},"scope":{"shipping_class":{"at":"shipping_class","from":"path"}}},
+      "products.shipping_classes.list": {"action":"wp_json.wc.products.shipping_classes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","exclude","hide_empty","include","offset","order","orderby","page","per_page","product","search","slug"],"path":"/wp-json/wc/{version}/products/shipping_classes","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "products.shipping_classes.update": {"action":"wp_json.wc.products.shipping_classes.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/products/shipping_classes/{shipping_class}","path_patterns":{"shipping_class":"[0-9]+","version":"v1|v2|v3"},"scope":{"changes":{"at":"","from":"body","type":"object"},"shipping_class":{"at":"shipping_class","from":"path"}}},
+      "products.tags.batch": {"action":"wp_json.wc.products.tags.write","body":"json","effects":["write","delete"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/products/tags/batch","path_patterns":{"version":"v1|v2|v3"},"scope":{"batch":{"at":"","from":"body","type":"object"}}},
+      "products.tags.create": {"action":"wp_json.wc.products.tags.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/products/tags","path_patterns":{"version":"v1|v2|v3"},"scope":{"data":{"at":"","from":"body","type":"object"}}},
+      "products.tags.delete": {"action":"wp_json.wc.products.tags.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/{version}/products/tags/{tag}","path_patterns":{"tag":"[0-9]+","version":"v1|v2|v3"},"scope":{"query":{"at":"","from":"query","type":"object"},"tag":{"at":"tag","from":"path"}}},
+      "products.tags.get": {"action":"wp_json.wc.products.tags.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/products/tags/{tag}","path_patterns":{"tag":"[0-9]+","version":"v1|v2|v3"},"scope":{"tag":{"at":"tag","from":"path"}}},
+      "products.tags.list": {"action":"wp_json.wc.products.tags.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","exclude","hide_empty","include","offset","order","orderby","page","per_page","product","search","slug"],"path":"/wp-json/wc/{version}/products/tags","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "products.tags.update": {"action":"wp_json.wc.products.tags.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/products/tags/{tag}","path_patterns":{"tag":"[0-9]+","version":"v1|v2|v3"},"scope":{"changes":{"at":"","from":"body","type":"object"},"tag":{"at":"tag","from":"path"}}},
+      "products.update": {"action":"wp_json.wc.products.write","body":"json","effects":["write","publish"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/products/{product}","path_patterns":{"product":"[0-9]+","version":"v1|v2|v3"},"scope":{"changes":{"at":"","from":"body","type":"object"},"product":{"at":"product","from":"path"}}},
+      "products.variations.batch": {"action":"wp_json.wc.products.variations.write","body":"json","effects":["write","publish","delete"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/products/{product}/variations/batch","path_patterns":{"product":"[0-9]+","version":"v1|v2|v3"},"scope":{"batch":{"at":"","from":"body","type":"object"},"product":{"at":"product","from":"path"}}},
+      "products.variations.create": {"action":"wp_json.wc.products.variations.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/products/{product}/variations","path_patterns":{"product":"[0-9]+","version":"v1|v2|v3"},"scope":{"data":{"at":"","from":"body","type":"object"},"product":{"at":"product","from":"path"}}},
+      "products.variations.delete": {"action":"wp_json.wc.products.variations.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/{version}/products/{product}/variations/{variation}","path_patterns":{"product":"[0-9]+","variation":"[0-9]+","version":"v1|v2|v3"},"scope":{"product":{"at":"product","from":"path"},"query":{"at":"","from":"query","type":"object"},"variation":{"at":"variation","from":"path"}}},
+      "products.variations.get": {"action":"wp_json.wc.products.variations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/products/{product}/variations/{variation}","path_patterns":{"product":"[0-9]+","variation":"[0-9]+","version":"v1|v2|v3"},"scope":{"product":{"at":"product","from":"path"},"variation":{"at":"variation","from":"path"}}},
+      "products.variations.list": {"action":"wp_json.wc.products.variations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","after","before","context","dates_are_gmt","downloadable","exclude","exclude_status","include","include_status","max_price","min_price","offset","on_sale","order","orderby","page","parent","parent_exclude","per_page","search","sku","slug","status","stock_status","tax_class","virtual"],"path":"/wp-json/wc/{version}/products/{product}/variations","path_patterns":{"product":"[0-9]+","version":"v1|v2|v3"},"scope":{"product":{"at":"product","from":"path"}}},
+      "products.variations.update": {"action":"wp_json.wc.products.variations.write","body":"json","effects":["write","publish"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/products/{product}/variations/{variation}","path_patterns":{"product":"[0-9]+","variation":"[0-9]+","version":"v1|v2|v3"},"scope":{"changes":{"at":"","from":"body","type":"object"},"product":{"at":"product","from":"path"},"variation":{"at":"variation","from":"path"}}},
+      "refunds.list": {"action":"wp_json.wc.refunds.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","after","before","context","dp","exclude","include","offset","order","orderby","page","parent","parent_exclude","per_page","search"],"path":"/wp-json/wc/{version}/refunds","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "reports.coupons.totals.list": {"action":"wp_json.wc.reports.coupons.totals.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/reports/coupons/totals","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "reports.customers.totals.list": {"action":"wp_json.wc.reports.customers.totals.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/reports/customers/totals","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "reports.list": {"action":"wp_json.wc.reports.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/reports","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "reports.orders.totals.list": {"action":"wp_json.wc.reports.orders.totals.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/reports/orders/totals","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "reports.products.totals.list": {"action":"wp_json.wc.reports.products.totals.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/reports/products/totals","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "reports.reviews.totals.list": {"action":"wp_json.wc.reports.reviews.totals.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/reports/reviews/totals","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "reports.sales.list": {"action":"wp_json.wc.reports.sales.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","date_max","date_min","period"],"path":"/wp-json/wc/{version}/reports/sales","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "reports.top_sellers.list": {"action":"wp_json.wc.reports.top_sellers.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context","date_max","date_min","period"],"path":"/wp-json/wc/{version}/reports/top_sellers","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "settings.batch": {"action":"wp_json.wc.settings.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/settings/{group}/batch","path_patterns":{"version":"v1|v2|v3"},"scope":{"batch":{"at":"","from":"body","type":"object"},"group":{"at":"group","from":"path"}}},
+      "settings.get": {"action":"wp_json.wc.settings.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/settings/{group}","path_patterns":{"version":"v1|v2|v3"},"scope":{"group":{"at":"group","from":"path"}}},
+      "settings.list": {"action":"wp_json.wc.settings.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/settings","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "settings.update": {"action":"wp_json.wc.settings.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/settings/{group}/{setting}","path_patterns":{"version":"v1|v2|v3"},"scope":{"changes":{"at":"","from":"body","type":"object"},"group":{"at":"group","from":"path"},"setting":{"at":"setting","from":"path"}}},
+      "shipping.zones.create": {"action":"wp_json.wc.shipping.zones.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/shipping/zones","path_patterns":{"version":"v1|v2|v3"},"scope":{"data":{"at":"","from":"body","type":"object"}}},
+      "shipping.zones.delete": {"action":"wp_json.wc.shipping.zones.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/{version}/shipping/zones/{zone}","path_patterns":{"version":"v1|v2|v3","zone":"[0-9]+"},"scope":{"query":{"at":"","from":"query","type":"object"},"zone":{"at":"zone","from":"path"}}},
+      "shipping.zones.get": {"action":"wp_json.wc.shipping.zones.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/shipping/zones/{zone}","path_patterns":{"version":"v1|v2|v3","zone":"[0-9]+"},"scope":{"zone":{"at":"zone","from":"path"}}},
+      "shipping.zones.list": {"action":"wp_json.wc.shipping.zones.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/shipping/zones","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "shipping.zones.locations.list": {"action":"wp_json.wc.shipping.zones.locations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/shipping/zones/{zone}/locations","path_patterns":{"version":"v1|v2|v3","zone":"[0-9]+"},"scope":{"zone":{"at":"zone","from":"path"}}},
+      "shipping.zones.locations.update": {"action":"wp_json.wc.shipping.zones.locations.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/shipping/zones/{zone}/locations","path_patterns":{"version":"v1|v2|v3","zone":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"zone":{"at":"zone","from":"path"}}},
+      "shipping.zones.methods.create": {"action":"wp_json.wc.shipping.zones.methods.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/shipping/zones/{zone}/methods","path_patterns":{"version":"v1|v2|v3","zone":"[0-9]+"},"scope":{"data":{"at":"","from":"body","type":"object"},"zone":{"at":"zone","from":"path"}}},
+      "shipping.zones.methods.delete": {"action":"wp_json.wc.shipping.zones.methods.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/{version}/shipping/zones/{zone}/methods/{method}","path_patterns":{"method":"[0-9]+","version":"v1|v2|v3","zone":"[0-9]+"},"scope":{"method":{"at":"method","from":"path"},"query":{"at":"","from":"query","type":"object"},"zone":{"at":"zone","from":"path"}}},
+      "shipping.zones.methods.get": {"action":"wp_json.wc.shipping.zones.methods.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/shipping/zones/{zone}/methods/{method}","path_patterns":{"method":"[0-9]+","version":"v1|v2|v3","zone":"[0-9]+"},"scope":{"method":{"at":"method","from":"path"},"zone":{"at":"zone","from":"path"}}},
+      "shipping.zones.methods.list": {"action":"wp_json.wc.shipping.zones.methods.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/shipping/zones/{zone}/methods","path_patterns":{"version":"v1|v2|v3","zone":"[0-9]+"},"scope":{"zone":{"at":"zone","from":"path"}}},
+      "shipping.zones.methods.update": {"action":"wp_json.wc.shipping.zones.methods.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/shipping/zones/{zone}/methods/{method}","path_patterns":{"method":"[0-9]+","version":"v1|v2|v3","zone":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"method":{"at":"method","from":"path"},"zone":{"at":"zone","from":"path"}}},
+      "shipping.zones.update": {"action":"wp_json.wc.shipping.zones.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/shipping/zones/{zone}","path_patterns":{"version":"v1|v2|v3","zone":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"zone":{"at":"zone","from":"path"}}},
+      "shipping_methods.get": {"action":"wp_json.wc.shipping_methods.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/shipping_methods/{shipping_method}","path_patterns":{"version":"v1|v2|v3"},"scope":{"shipping_method":{"at":"shipping_method","from":"path"}}},
+      "shipping_methods.list": {"action":"wp_json.wc.shipping_methods.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/shipping_methods","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "system_status.list": {"action":"wp_json.wc.system_status.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/system_status","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "system_status.tools.get": {"action":"wp_json.wc.system_status.tools.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/system_status/tools/{tool}","path_patterns":{"version":"v1|v2|v3"},"scope":{"tool":{"at":"tool","from":"path"}}},
+      "system_status.tools.list": {"action":"wp_json.wc.system_status.tools.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/system_status/tools","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "system_status.tools.update": {"action":"wp_json.wc.system_status.tools.execute","body":"json","effects":["admin","delete","execute"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/system_status/tools/{tool}","path_patterns":{"version":"v1|v2|v3"},"scope":{"changes":{"at":"","from":"body","type":"object"},"tool":{"at":"tool","from":"path"}}},
+      "taxes.batch": {"action":"wp_json.wc.taxes.admin","body":"json","effects":["admin","delete"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/taxes/batch","path_patterns":{"version":"v1|v2|v3"},"scope":{"batch":{"at":"","from":"body","type":"object"}}},
+      "taxes.classes.create": {"action":"wp_json.wc.taxes.classes.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/taxes/classes","path_patterns":{"version":"v1|v2|v3"},"scope":{"data":{"at":"","from":"body","type":"object"}}},
+      "taxes.classes.delete": {"action":"wp_json.wc.taxes.classes.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/{version}/taxes/classes/{slug}","path_patterns":{"version":"v1|v2|v3"},"scope":{"query":{"at":"","from":"query","type":"object"},"slug":{"at":"slug","from":"path"}}},
+      "taxes.classes.list": {"action":"wp_json.wc.taxes.classes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/taxes/classes","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "taxes.create": {"action":"wp_json.wc.taxes.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/taxes","path_patterns":{"version":"v1|v2|v3"},"scope":{"data":{"at":"","from":"body","type":"object"}}},
+      "taxes.delete": {"action":"wp_json.wc.taxes.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/{version}/taxes/{tax}","path_patterns":{"tax":"[0-9]+","version":"v1|v2|v3"},"scope":{"query":{"at":"","from":"query","type":"object"},"tax":{"at":"tax","from":"path"}}},
+      "taxes.get": {"action":"wp_json.wc.taxes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/taxes/{tax}","path_patterns":{"tax":"[0-9]+","version":"v1|v2|v3"},"scope":{"tax":{"at":"tax","from":"path"}}},
+      "taxes.list": {"action":"wp_json.wc.taxes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","class","context","offset","order","orderby","page","per_page"],"path":"/wp-json/wc/{version}/taxes","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "taxes.update": {"action":"wp_json.wc.taxes.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/taxes/{tax}","path_patterns":{"tax":"[0-9]+","version":"v1|v2|v3"},"scope":{"changes":{"at":"","from":"body","type":"object"},"tax":{"at":"tax","from":"path"}}},
+      "webhooks.batch": {"action":"wp_json.wc.webhooks.admin","body":"json","effects":["admin","share","delete"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/webhooks/batch","path_patterns":{"version":"v1|v2|v3"},"scope":{"batch":{"at":"","from":"body","type":"object"}}},
+      "webhooks.create": {"action":"wp_json.wc.webhooks.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/{version}/webhooks","path_patterns":{"version":"v1|v2|v3"},"scope":{"data":{"at":"","from":"body","type":"object"}}},
+      "webhooks.delete": {"action":"wp_json.wc.webhooks.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/{version}/webhooks/{webhook}","path_patterns":{"version":"v1|v2|v3","webhook":"[0-9]+"},"scope":{"query":{"at":"","from":"query","type":"object"},"webhook":{"at":"webhook","from":"path"}}},
+      "webhooks.get": {"action":"wp_json.wc.webhooks.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","context"],"path":"/wp-json/wc/{version}/webhooks/{webhook}","path_patterns":{"version":"v1|v2|v3","webhook":"[0-9]+"},"scope":{"webhook":{"at":"webhook","from":"path"}}},
+      "webhooks.list": {"action":"wp_json.wc.webhooks.read","effects":["read"],"method":"GET","origin":"{origin}","params":["_embed","_fields","after","before","context","dates_are_gmt","exclude","include","offset","order","orderby","page","per_page","search","status"],"path":"/wp-json/wc/{version}/webhooks","path_patterns":{"version":"v1|v2|v3"},"scope":{}},
+      "webhooks.update": {"action":"wp_json.wc.webhooks.admin","body":"json","effects":["admin","share"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/{version}/webhooks/{webhook}","path_patterns":{"version":"v1|v2|v3","webhook":"[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"webhook":{"at":"webhook","from":"path"}}}
     }
   }
 }

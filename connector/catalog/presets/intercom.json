@@ -4,11 +4,20 @@
       "admins": {
         "title": "Admins"
       },
+      "admins.activity_log_event_types": {
+        "title": "Activity log event types"
+      },
+      "admins.activity_log_event_types.read": {
+        "title": "Read"
+      },
       "admins.activity_logs": {
         "title": "Activity logs"
       },
       "admins.activity_logs.read": {
         "title": "Read"
+      },
+      "admins.admin": {
+        "title": "Manage"
       },
       "admins.away": {
         "title": "Away"
@@ -19,17 +28,131 @@
       "admins.read": {
         "title": "Read"
       },
+      "ai": {
+        "title": "Ai"
+      },
+      "ai.content_import_sources": {
+        "title": "Content import sources"
+      },
+      "ai.content_import_sources.delete": {
+        "title": "Delete"
+      },
+      "ai.content_import_sources.read": {
+        "title": "Read"
+      },
+      "ai.content_import_sources.write": {
+        "title": "Create and edit"
+      },
+      "ai.external_pages": {
+        "title": "External pages"
+      },
+      "ai.external_pages.delete": {
+        "title": "Delete"
+      },
+      "ai.external_pages.read": {
+        "title": "Read"
+      },
+      "ai.external_pages.tags": {
+        "title": "Tags"
+      },
+      "ai.external_pages.tags.delete": {
+        "title": "Delete"
+      },
+      "ai.external_pages.tags.write": {
+        "title": "Create and edit"
+      },
+      "ai.external_pages.write": {
+        "title": "Create and edit"
+      },
       "articles": {
         "title": "Articles"
       },
       "articles.delete": {
         "title": "Delete"
       },
+      "articles.draft": {
+        "title": "Draft"
+      },
+      "articles.draft.publish": {
+        "title": "Publish"
+      },
+      "articles.draft.read": {
+        "title": "Read"
+      },
+      "articles.draft.write": {
+        "title": "Create and edit"
+      },
       "articles.read": {
+        "title": "Read"
+      },
+      "articles.tags": {
+        "title": "Tags"
+      },
+      "articles.tags.delete": {
+        "title": "Delete"
+      },
+      "articles.tags.write": {
+        "title": "Create and edit"
+      },
+      "articles.versions": {
+        "title": "Versions"
+      },
+      "articles.versions.read": {
         "title": "Read"
       },
       "articles.write": {
         "title": "Create and edit"
+      },
+      "audiences": {
+        "title": "Audiences"
+      },
+      "audiences.delete": {
+        "title": "Delete"
+      },
+      "audiences.read": {
+        "title": "Read"
+      },
+      "audiences.write": {
+        "title": "Create and edit"
+      },
+      "auth_tokens": {
+        "title": "Auth tokens"
+      },
+      "auth_tokens.admin": {
+        "title": "Manage"
+      },
+      "auth_tokens.read": {
+        "title": "Read"
+      },
+      "away_status_reasons": {
+        "title": "Away status reasons"
+      },
+      "away_status_reasons.read": {
+        "title": "Read"
+      },
+      "brands": {
+        "title": "Brands"
+      },
+      "brands.read": {
+        "title": "Read"
+      },
+      "calls": {
+        "title": "Calls"
+      },
+      "calls.read": {
+        "title": "Read"
+      },
+      "calls.recording": {
+        "title": "Recording"
+      },
+      "calls.recording.read": {
+        "title": "Read"
+      },
+      "calls.transcript": {
+        "title": "Transcript"
+      },
+      "calls.transcript.read": {
+        "title": "Read"
       },
       "companies": {
         "title": "Companies"
@@ -42,6 +165,15 @@
       },
       "companies.delete": {
         "title": "Delete"
+      },
+      "companies.notes": {
+        "title": "Notes"
+      },
+      "companies.notes.read": {
+        "title": "Read"
+      },
+      "companies.notes.write": {
+        "title": "Create and edit"
       },
       "companies.read": {
         "title": "Read"
@@ -64,6 +196,36 @@
       "contacts": {
         "title": "Contacts"
       },
+      "contacts.activities": {
+        "title": "Activities"
+      },
+      "contacts.activities.read": {
+        "title": "Read"
+      },
+      "contacts.banners": {
+        "title": "Banners"
+      },
+      "contacts.banners.dismiss": {
+        "title": "Dismiss"
+      },
+      "contacts.banners.dismiss.write": {
+        "title": "Create and edit"
+      },
+      "contacts.banners.read": {
+        "title": "Read"
+      },
+      "contacts.bulk": {
+        "title": "Bulk"
+      },
+      "contacts.bulk.delete": {
+        "title": "Delete"
+      },
+      "contacts.bulk.read": {
+        "title": "Read"
+      },
+      "contacts.bulk.write": {
+        "title": "Create and edit"
+      },
       "contacts.companies": {
         "title": "Companies"
       },
@@ -79,14 +241,56 @@
       "contacts.delete": {
         "title": "Delete"
       },
+      "contacts.deleted": {
+        "title": "Deleted"
+      },
+      "contacts.deleted.read": {
+        "title": "Read"
+      },
+      "contacts.find_by_external_id": {
+        "title": "Find by external id"
+      },
+      "contacts.find_by_external_id.read": {
+        "title": "Read"
+      },
+      "contacts.granted_companies": {
+        "title": "Granted companies"
+      },
+      "contacts.granted_companies.delete": {
+        "title": "Delete"
+      },
+      "contacts.granted_companies.read": {
+        "title": "Read"
+      },
+      "contacts.granted_companies.write": {
+        "title": "Create and edit"
+      },
+      "contacts.merge": {
+        "title": "Merge"
+      },
+      "contacts.merge.delete": {
+        "title": "Delete"
+      },
+      "contacts.merge.preview": {
+        "title": "Preview"
+      },
+      "contacts.merge.preview.read": {
+        "title": "Read"
+      },
+      "contacts.merge_histories": {
+        "title": "Merge histories"
+      },
+      "contacts.merge_histories.read": {
+        "title": "Read"
+      },
       "contacts.notes": {
         "title": "Notes"
       },
       "contacts.notes.read": {
         "title": "Read"
       },
-      "contacts.notes.send": {
-        "title": "Send"
+      "contacts.notes.write": {
+        "title": "Create and edit"
       },
       "contacts.read": {
         "title": "Read"
@@ -100,14 +304,14 @@
       "contacts.subscriptions": {
         "title": "Subscriptions"
       },
-      "contacts.subscriptions.admin": {
-        "title": "Manage"
-      },
       "contacts.subscriptions.delete": {
         "title": "Delete"
       },
       "contacts.subscriptions.read": {
         "title": "Read"
+      },
+      "contacts.subscriptions.write": {
+        "title": "Create and edit"
       },
       "contacts.tags": {
         "title": "Tags"
@@ -127,11 +331,41 @@
       "content": {
         "title": "Content"
       },
+      "content.bulk_actions": {
+        "title": "Bulk actions"
+      },
+      "content.bulk_actions.write": {
+        "title": "Create and edit"
+      },
       "content.data": {
         "title": "Data"
       },
       "content.data.read": {
         "title": "Read"
+      },
+      "content.read": {
+        "title": "Read"
+      },
+      "content_snippets": {
+        "title": "Content snippets"
+      },
+      "content_snippets.delete": {
+        "title": "Delete"
+      },
+      "content_snippets.read": {
+        "title": "Read"
+      },
+      "content_snippets.tags": {
+        "title": "Tags"
+      },
+      "content_snippets.tags.delete": {
+        "title": "Delete"
+      },
+      "content_snippets.tags.write": {
+        "title": "Create and edit"
+      },
+      "content_snippets.write": {
+        "title": "Create and edit"
       },
       "conversations": {
         "title": "Conversations"
@@ -141,6 +375,27 @@
       },
       "conversations.assignment_rules.execute": {
         "title": "Run"
+      },
+      "conversations.attributes": {
+        "title": "Attributes"
+      },
+      "conversations.attributes.delete": {
+        "title": "Delete"
+      },
+      "conversations.attributes.options": {
+        "title": "Options"
+      },
+      "conversations.attributes.options.delete": {
+        "title": "Delete"
+      },
+      "conversations.attributes.options.write": {
+        "title": "Create and edit"
+      },
+      "conversations.attributes.read": {
+        "title": "Read"
+      },
+      "conversations.attributes.write": {
+        "title": "Create and edit"
       },
       "conversations.convert": {
         "title": "Convert"
@@ -157,10 +412,37 @@
       "conversations.customers.write": {
         "title": "Create and edit"
       },
+      "conversations.delete": {
+        "title": "Delete"
+      },
+      "conversations.deleted": {
+        "title": "Deleted"
+      },
+      "conversations.deleted.read": {
+        "title": "Read"
+      },
+      "conversations.handling_events": {
+        "title": "Handling events"
+      },
+      "conversations.handling_events.read": {
+        "title": "Read"
+      },
+      "conversations.hitl_events": {
+        "title": "Hitl events"
+      },
+      "conversations.hitl_events.read": {
+        "title": "Read"
+      },
       "conversations.parts": {
         "title": "Parts"
       },
       "conversations.parts.write": {
+        "title": "Create and edit"
+      },
+      "conversations.rating": {
+        "title": "Rating"
+      },
+      "conversations.rating.write": {
         "title": "Create and edit"
       },
       "conversations.read": {
@@ -169,14 +451,29 @@
       "conversations.redact": {
         "title": "Redact"
       },
-      "conversations.redact.write": {
-        "title": "Create and edit"
+      "conversations.redact.delete": {
+        "title": "Delete"
       },
       "conversations.reply": {
         "title": "Reply"
       },
       "conversations.reply.send": {
         "title": "Send"
+      },
+      "conversations.side_conversations": {
+        "title": "Side conversations"
+      },
+      "conversations.side_conversations.read": {
+        "title": "Read"
+      },
+      "conversations.stream": {
+        "title": "Stream"
+      },
+      "conversations.stream.token": {
+        "title": "Token"
+      },
+      "conversations.stream.token.admin": {
+        "title": "Manage"
       },
       "conversations.tags": {
         "title": "Tags"
@@ -187,7 +484,25 @@
       "conversations.tags.write": {
         "title": "Create and edit"
       },
+      "conversations.team_handling_segments": {
+        "title": "Team handling segments"
+      },
+      "conversations.team_handling_segments.read": {
+        "title": "Read"
+      },
       "conversations.write": {
+        "title": "Create and edit"
+      },
+      "custom_object_instances": {
+        "title": "Custom object instances"
+      },
+      "custom_object_instances.delete": {
+        "title": "Delete"
+      },
+      "custom_object_instances.read": {
+        "title": "Read"
+      },
+      "custom_object_instances.write": {
         "title": "Create and edit"
       },
       "data_attributes": {
@@ -198,6 +513,69 @@
       },
       "data_attributes.write": {
         "title": "Create and edit"
+      },
+      "data_connectors": {
+        "title": "Data connectors"
+      },
+      "data_connectors.admin": {
+        "title": "Manage"
+      },
+      "data_connectors.delete": {
+        "title": "Delete"
+      },
+      "data_connectors.execution_results": {
+        "title": "Execution results"
+      },
+      "data_connectors.execution_results.read": {
+        "title": "Read"
+      },
+      "data_connectors.read": {
+        "title": "Read"
+      },
+      "data_connectors.versions": {
+        "title": "Versions"
+      },
+      "data_connectors.versions.admin": {
+        "title": "Manage"
+      },
+      "data_connectors.versions.read": {
+        "title": "Read"
+      },
+      "dynamic_contents": {
+        "title": "Dynamic contents"
+      },
+      "dynamic_contents.delete": {
+        "title": "Delete"
+      },
+      "dynamic_contents.read": {
+        "title": "Read"
+      },
+      "dynamic_contents.write": {
+        "title": "Create and edit"
+      },
+      "ecommerce": {
+        "title": "Ecommerce"
+      },
+      "ecommerce.connectors": {
+        "title": "Connectors"
+      },
+      "ecommerce.connectors.catalog": {
+        "title": "Catalog"
+      },
+      "ecommerce.connectors.catalog.write": {
+        "title": "Create and edit"
+      },
+      "ecommerce.connectors.events": {
+        "title": "Events"
+      },
+      "ecommerce.connectors.events.write": {
+        "title": "Create and edit"
+      },
+      "emails": {
+        "title": "Emails"
+      },
+      "emails.read": {
+        "title": "Read"
       },
       "events": {
         "title": "Events"
@@ -235,6 +613,117 @@
       "export.content.data.write": {
         "title": "Create and edit"
       },
+      "export.reporting_data": {
+        "title": "Reporting data"
+      },
+      "export.reporting_data.datasets": {
+        "title": "Datasets"
+      },
+      "export.reporting_data.datasets.read": {
+        "title": "Read"
+      },
+      "export.reporting_data.enqueue": {
+        "title": "Enqueue"
+      },
+      "export.reporting_data.enqueue.write": {
+        "title": "Create and edit"
+      },
+      "export.reporting_data.read": {
+        "title": "Read"
+      },
+      "export.workflows": {
+        "title": "Workflows"
+      },
+      "export.workflows.read": {
+        "title": "Read"
+      },
+      "fin": {
+        "title": "Fin"
+      },
+      "fin.ask": {
+        "title": "Ask"
+      },
+      "fin.ask.generate": {
+        "title": "Generate"
+      },
+      "fin.capabilities": {
+        "title": "Capabilities"
+      },
+      "fin.capabilities.read": {
+        "title": "Read"
+      },
+      "fin.csat": {
+        "title": "Csat"
+      },
+      "fin.csat.write": {
+        "title": "Create and edit"
+      },
+      "fin.escalate": {
+        "title": "Escalate"
+      },
+      "fin.escalate.write": {
+        "title": "Create and edit"
+      },
+      "fin.generate": {
+        "title": "Generate"
+      },
+      "fin.procedures": {
+        "title": "Procedures"
+      },
+      "fin.procedures.execute": {
+        "title": "Run"
+      },
+      "fin.reply": {
+        "title": "Reply"
+      },
+      "fin.reply.generate": {
+        "title": "Generate"
+      },
+      "fin_voice": {
+        "title": "Fin voice"
+      },
+      "fin_voice.collect": {
+        "title": "Collect"
+      },
+      "fin_voice.collect.read": {
+        "title": "Read"
+      },
+      "fin_voice.conversation": {
+        "title": "Conversation"
+      },
+      "fin_voice.conversation.read": {
+        "title": "Read"
+      },
+      "fin_voice.external_id": {
+        "title": "External id"
+      },
+      "fin_voice.external_id.read": {
+        "title": "Read"
+      },
+      "fin_voice.phone_number": {
+        "title": "Phone number"
+      },
+      "fin_voice.phone_number.read": {
+        "title": "Read"
+      },
+      "fin_voice.register": {
+        "title": "Register"
+      },
+      "fin_voice.register.write": {
+        "title": "Create and edit"
+      },
+      "folders": {
+        "title": "Folders"
+      },
+      "folders.delete": {
+        "title": "Delete"
+      },
+      "folders.read": {
+        "title": "Read"
+      },
+      "folders.write": {
+        "title": "Create and edit"
+      },
       "help_center": {
         "title": "Help center"
       },
@@ -256,6 +745,63 @@
       "help_center.help_centers.read": {
         "title": "Read"
       },
+      "help_center.help_centers.redirects": {
+        "title": "Redirects"
+      },
+      "help_center.help_centers.redirects.delete": {
+        "title": "Delete"
+      },
+      "help_center.help_centers.redirects.read": {
+        "title": "Read"
+      },
+      "help_center.help_centers.redirects.write": {
+        "title": "Create and edit"
+      },
+      "internal_articles": {
+        "title": "Internal articles"
+      },
+      "internal_articles.delete": {
+        "title": "Delete"
+      },
+      "internal_articles.read": {
+        "title": "Read"
+      },
+      "internal_articles.tags": {
+        "title": "Tags"
+      },
+      "internal_articles.tags.delete": {
+        "title": "Delete"
+      },
+      "internal_articles.tags.write": {
+        "title": "Create and edit"
+      },
+      "internal_articles.write": {
+        "title": "Create and edit"
+      },
+      "ip_allowlist": {
+        "title": "Ip allowlist"
+      },
+      "ip_allowlist.admin": {
+        "title": "Manage"
+      },
+      "ip_allowlist.read": {
+        "title": "Read"
+      },
+      "jobs": {
+        "title": "Jobs"
+      },
+      "jobs.status": {
+        "title": "Status"
+      },
+      "jobs.status.read": {
+        "title": "Read"
+      },
+      "macros": {
+        "title": "Macros"
+      },
+      "macros.read": {
+        "title": "Read"
+      },
       "me": {
         "title": "Me"
       },
@@ -267,6 +813,21 @@
       },
       "messages.send": {
         "title": "Send"
+      },
+      "messages.status": {
+        "title": "Status"
+      },
+      "messages.status.read": {
+        "title": "Read"
+      },
+      "messages.whatsapp": {
+        "title": "Whatsapp"
+      },
+      "messages.whatsapp.status": {
+        "title": "Status"
+      },
+      "messages.whatsapp.status.read": {
+        "title": "Read"
       },
       "news": {
         "title": "News"
@@ -298,14 +859,53 @@
       "notes": {
         "title": "Notes"
       },
+      "notes.delete": {
+        "title": "Delete"
+      },
       "notes.read": {
         "title": "Read"
+      },
+      "office_hours_schedules": {
+        "title": "Office hours schedules"
+      },
+      "office_hours_schedules.delete": {
+        "title": "Delete"
+      },
+      "office_hours_schedules.office_hours_exceptions": {
+        "title": "Office hours exceptions"
+      },
+      "office_hours_schedules.office_hours_exceptions.delete": {
+        "title": "Delete"
+      },
+      "office_hours_schedules.office_hours_exceptions.read": {
+        "title": "Read"
+      },
+      "office_hours_schedules.office_hours_exceptions.write": {
+        "title": "Create and edit"
+      },
+      "office_hours_schedules.read": {
+        "title": "Read"
+      },
+      "office_hours_schedules.write": {
+        "title": "Create and edit"
       },
       "phone_call_redirects": {
         "title": "Phone call redirects"
       },
       "phone_call_redirects.send": {
         "title": "Send"
+      },
+      "reporting_data": {
+        "title": "Reporting data"
+      },
+      "reporting_data.read": {
+        "title": "Read"
+      },
+      "roles": {
+        "title": "Roles"
+      },
+      "roles.read": {
+        "title": "Read"
       },
       "segments": {
         "title": "Segments"
@@ -334,7 +934,19 @@
       "teams": {
         "title": "Teams"
       },
+      "teams.metrics": {
+        "title": "Metrics"
+      },
+      "teams.metrics.read": {
+        "title": "Read"
+      },
       "teams.read": {
+        "title": "Read"
+      },
+      "ticket_states": {
+        "title": "Ticket states"
+      },
+      "ticket_states.read": {
         "title": "Read"
       },
       "ticket_types": {
@@ -354,6 +966,30 @@
       },
       "tickets": {
         "title": "Tickets"
+      },
+      "tickets.change_type": {
+        "title": "Change type"
+      },
+      "tickets.change_type.write": {
+        "title": "Create and edit"
+      },
+      "tickets.delete": {
+        "title": "Delete"
+      },
+      "tickets.enqueue": {
+        "title": "Enqueue"
+      },
+      "tickets.enqueue.write": {
+        "title": "Create and edit"
+      },
+      "tickets.linked_conversations": {
+        "title": "Linked conversations"
+      },
+      "tickets.linked_conversations.delete": {
+        "title": "Delete"
+      },
+      "tickets.linked_conversations.write": {
+        "title": "Create and edit"
       },
       "tickets.read": {
         "title": "Read"
@@ -401,15 +1037,29 @@
             "path": "/",
             "prefix": "Bearer ",
             "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api.eu.intercom.io",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api.au.intercom.io",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "token"
           }
         ]
       }
     },
     "fields": [
       {
+        "credential": true,
         "key": "token",
         "label": "Access token",
-        "credential": true,
         "secret": true
       }
     ],
@@ -417,162 +1067,370 @@
   },
   "title": "Intercom",
   "http": {
+    "origins": {"api":["https://api.intercom.io","https://api.eu.intercom.io","https://api.au.intercom.io"]},
     "operations": {
-      "ArchiveContact": {"action":"contacts.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/archive","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
-      "CreateContact": {"action":"contacts.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/contacts","scope":{}},
-      "ListAttachedContacts": {"action":"companies.contacts.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","params":["page","per_page"],"path":"/companies/{company_id}/contacts","scope":{"company_id":{"at":"company_id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-      "ListAttachedSegmentsForCompanies": {"action":"companies.segments.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/companies/{company_id}/segments","scope":{"company_id":{"at":"company_id","from":"path"}}},
-      "MergeContact": {"action":"contacts.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/contacts/merge","scope":{}},
-      "MergeContact.json.5eba82ae8f46": {"action":"contacts.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/contacts/merge","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "RetrieveACompanyById": {"action":"companies.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/companies/{company_id}","scope":{"company_id":{"at":"company_id","from":"path"}}},
-      "SearchContacts": {"action":"contacts.read","effects":["read"],"method":"POST","origin":"https://api.intercom.io","path":"/contacts/search","scope":{}},
-      "SearchContacts.json.1fd752623249": {"action":"contacts.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.intercom.io","path":"/contacts/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "UnarchiveContact": {"action":"contacts.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/unarchive","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
-      "UpdateCompany": {"action":"companies.write","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/companies/{company_id}","scope":{"company_id":{"at":"company_id","from":"path"}}},
-      "UpdateContact": {"action":"contacts.write","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/contacts/{contact_id}","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
-      "attachContactToACompany": {"action":"contacts.companies.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/companies","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
-      "attachContactToACompany.json.f6fa799ea758": {"action":"contacts.companies.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/companies","scope":{"contact_id":{"at":"contact_id","from":"path"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
-      "attachContactToConversation": {"action":"conversations.customers.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/customers","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
-      "attachContactToConversation.json.293d0850c267": {"action":"conversations.customers.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/customers","scope":{"admin_id":{"at":"/admin_id","from":"body","optional":true},"conversation_id":{"at":"conversation_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "attachSubscriptionTypeToContact": {"action":"contacts.subscriptions.admin","effects":["admin"],"method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/subscriptions","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
-      "attachSubscriptionTypeToContact.json.d81c712d2cc2": {"action":"contacts.subscriptions.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/subscriptions","scope":{"contact_id":{"at":"contact_id","from":"path"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
-      "attachTagToContact": {"action":"contacts.tags.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/tags","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
-      "attachTagToContact.json.81dbbcbffa1f": {"action":"contacts.tags.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/tags","scope":{"contact_id":{"at":"contact_id","from":"path"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
-      "attachTagToConversation": {"action":"conversations.tags.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/tags","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
-      "attachTagToConversation.json.9229b3434acd": {"action":"conversations.tags.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/tags","scope":{"admin_id":{"at":"/admin_id","from":"body"},"conversation_id":{"at":"conversation_id","from":"path"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
-      "attachTagToTicket": {"action":"tickets.tags.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}/tags","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
-      "attachTagToTicket.json.3cdb5dfeab9b": {"action":"tickets.tags.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}/tags","scope":{"admin_id":{"at":"/admin_id","from":"body"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"},"ticket_id":{"at":"ticket_id","from":"path"}}},
-      "autoAssignConversation": {"action":"conversations.assignment_rules.execute","effects":["execute"],"method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/run_assignment_rules","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
-      "cancelDataExport": {"action":"export.cancel.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/export/cancel/{job_identifier}","scope":{"job_identifier":{"at":"job_identifier","from":"path"}}},
-      "contacts.create": {"action":"contacts.write","body":"json","effects":["write"],"headers":{"Intercom-Version":"2.16"},"method":"POST","origin":"https://api.intercom.io","path":"/contacts","scope":{"contact":{"at":"","from":"body","type":"object"}}},
-      "contacts.delete": {"action":"contacts.delete","effects":["delete"],"headers":{"Intercom-Version":"2.16"},"method":"DELETE","origin":"https://api.intercom.io","path":"/contacts/{contact}","scope":{"contact":{"at":"contact","from":"path"}}},
-      "contacts.get": {"action":"contacts.read","effects":["read"],"headers":{"Intercom-Version":"2.16"},"method":"GET","origin":"https://api.intercom.io","path":"/contacts/{contact}","scope":{"contact":{"at":"contact","from":"path"}}},
-      "contacts.list": {"action":"contacts.read","effects":["read"],"headers":{"Intercom-Version":"2.16"},"method":"GET","origin":"https://api.intercom.io","params":["per_page","starting_after"],"path":"/contacts","scope":{}},
-      "contacts.update": {"action":"contacts.write","body":"json","effects":["write"],"headers":{"Intercom-Version":"2.16"},"method":"PUT","origin":"https://api.intercom.io","path":"/contacts/{contact}","scope":{"changes":{"at":"","from":"body","type":"object"},"contact":{"at":"contact","from":"path"}}},
-      "conversations.get": {"action":"conversations.read","effects":["read"],"headers":{"Intercom-Version":"2.16"},"method":"GET","origin":"https://api.intercom.io","path":"/conversations/{conversation}","scope":{"conversation":{"at":"conversation","from":"path"}}},
-      "conversations.list": {"action":"conversations.read","effects":["read"],"headers":{"Intercom-Version":"2.16"},"method":"GET","origin":"https://api.intercom.io","params":["per_page","starting_after"],"path":"/conversations","scope":{}},
-      "conversations.reply": {"action":"conversations.reply.send","body":"json","effects":["send"],"headers":{"Intercom-Version":"2.16"},"method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation}/reply","scope":{"conversation":{"at":"conversation","from":"path"},"reply":{"at":"","from":"body","type":"object"}}},
-      "convertConversationToTicket": {"action":"conversations.convert.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/convert","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
-      "convertConversationToTicket.json.fd8eb50f053c": {"action":"conversations.convert.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/convert","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"ticket_type_id":{"at":"/ticket_type_id","from":"body"}}},
-      "convertVisitor": {"action":"visitors.convert.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/visitors/convert","scope":{}},
-      "convertVisitor.json.9c4ed184584e": {"action":"visitors.convert.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/visitors/convert","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "createArticle": {"action":"articles.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/articles","scope":{}},
-      "createArticle.json.fe5e88a17ae8": {"action":"articles.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/articles","scope":{"author_id":{"at":"/author_id","from":"body","type":"number"},"parent_id":{"at":"/parent_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
-      "createCollection": {"action":"help_center.collections.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/help_center/collections","scope":{}},
-      "createCollection.json.1f08cf44577c": {"action":"help_center.collections.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/help_center/collections","scope":{"help_center_id":{"at":"/help_center_id","from":"body","optional":true,"type":"number"},"name":{"at":"/name","from":"body"},"parent_id":{"at":"/parent_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
-      "createConversation": {"action":"conversations.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/conversations","scope":{}},
-      "createConversation.json.43048216ba50": {"action":"conversations.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/conversations","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "createDataAttribute": {"action":"data_attributes.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/data_attributes","scope":{}},
-      "createDataAttribute.json.311a9fefa638": {"action":"data_attributes.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/data_attributes","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
-      "createDataEvent": {"action":"events.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/events","scope":{}},
-      "createDataEvent.json.500901532370": {"action":"events.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/events","scope":{"email":{"at":"/email","from":"body","optional":true},"event_name":{"at":"/event_name","from":"body","optional":true},"id":{"at":"/id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","optional":true}}},
-      "createDataExport": {"action":"export.content.data.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/export/content/data","scope":{}},
-      "createDataExport.json.81799637a2a1": {"action":"export.content.data.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/export/content/data","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "createMessage": {"action":"messages.send","effects":["send"],"method":"POST","origin":"https://api.intercom.io","path":"/messages","scope":{}},
-      "createMessage.json.a33aed1ab095": {"action":"messages.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.intercom.io","path":"/messages","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "createNewsItem": {"action":"news.news_items.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/news/news_items","scope":{}},
-      "createNewsItem.json.ef4a17bfaff9": {"action":"news.news_items.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/news/news_items","scope":{"request":{"at":"","from":"body","type":"object"},"sender_id":{"at":"/sender_id","from":"body","type":"number"}}},
-      "createNote": {"action":"contacts.notes.send","effects":["send"],"method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/notes","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
-      "createNote.json.70a49b0946a8": {"action":"contacts.notes.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/notes","scope":{"admin_id":{"at":"/admin_id","from":"body","optional":true},"contact_id":{"at":"contact_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "createOrUpdateCompany": {"action":"companies.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/companies","scope":{}},
-      "createOrUpdateCompany.json.8e8f978d3cab": {"action":"companies.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/companies","scope":{"company_id":{"at":"/company_id","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
-      "createPhoneSwitch": {"action":"phone_call_redirects.send","effects":["send"],"method":"POST","origin":"https://api.intercom.io","path":"/phone_call_redirects","scope":{}},
-      "createPhoneSwitch.json.0ab2b47b485c": {"action":"phone_call_redirects.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.intercom.io","path":"/phone_call_redirects","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "createTag": {"action":"tags.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/tags","scope":{}},
-      "createTag.json.1f3dba19c781": {"action":"tags.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/tags","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "createTicket": {"action":"tickets.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/tickets","scope":{}},
-      "createTicket.json.4150391b7ecb": {"action":"tickets.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/tickets","scope":{"company_id":{"at":"/company_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"ticket_type_id":{"at":"/ticket_type_id","from":"body"}}},
-      "createTicketType": {"action":"ticket_types.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/ticket_types","scope":{}},
-      "createTicketType.json.791dd42b552d": {"action":"ticket_types.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/ticket_types","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
-      "createTicketTypeAttribute": {"action":"ticket_types.attributes.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/ticket_types/{ticket_type_id}/attributes","scope":{"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
-      "createTicketTypeAttribute.json.a60d219e8ff5": {"action":"ticket_types.attributes.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/ticket_types/{ticket_type_id}/attributes","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
-      "dataEventSummaries": {"action":"events.summaries.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/events/summaries","scope":{}},
-      "dataEventSummaries.json.fefc86f4485d": {"action":"events.summaries.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/events/summaries","scope":{"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","optional":true}}},
-      "deleteArticle": {"action":"articles.delete","effects":["delete"],"method":"DELETE","origin":"https://api.intercom.io","path":"/articles/{article_id}","scope":{"article_id":{"at":"article_id","from":"path"}}},
-      "deleteCollection": {"action":"help_center.collections.delete","effects":["delete"],"method":"DELETE","origin":"https://api.intercom.io","path":"/help_center/collections/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"}}},
-      "deleteCompany": {"action":"companies.delete","effects":["delete"],"method":"DELETE","origin":"https://api.intercom.io","path":"/companies/{company_id}","scope":{"company_id":{"at":"company_id","from":"path"}}},
-      "deleteNewsItem": {"action":"news.news_items.delete","effects":["delete"],"method":"DELETE","origin":"https://api.intercom.io","path":"/news/news_items/{news_item_id}","scope":{"news_item_id":{"at":"news_item_id","from":"path"}}},
-      "deleteTag": {"action":"tags.delete","effects":["delete"],"method":"DELETE","origin":"https://api.intercom.io","path":"/tags/{tag_id}","scope":{"tag_id":{"at":"tag_id","from":"path"}}},
-      "detachContactFromACompany": {"action":"contacts.companies.delete","effects":["delete"],"method":"DELETE","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/companies/{company_id}","scope":{"company_id":{"at":"company_id","from":"path"},"contact_id":{"at":"contact_id","from":"path"}}},
-      "detachContactFromConversation": {"action":"conversations.customers.delete","effects":["delete"],"method":"DELETE","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/customers/{contact_id}","scope":{"contact_id":{"at":"contact_id","from":"path"},"conversation_id":{"at":"conversation_id","from":"path"}}},
-      "detachContactFromConversation.json.43edde3c8074": {"action":"conversations.customers.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/customers/{contact_id}","scope":{"admin_id":{"at":"/admin_id","from":"body"},"contact_id":{"at":"contact_id","from":"path"},"conversation_id":{"at":"conversation_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "detachSubscriptionTypeToContact": {"action":"contacts.subscriptions.delete","effects":["delete"],"method":"DELETE","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/subscriptions/{subscription_id}","scope":{"contact_id":{"at":"contact_id","from":"path"},"subscription_id":{"at":"subscription_id","from":"path"}}},
-      "detachTagFromContact": {"action":"contacts.tags.delete","effects":["delete"],"method":"DELETE","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/tags/{tag_id}","scope":{"contact_id":{"at":"contact_id","from":"path"},"tag_id":{"at":"tag_id","from":"path"}}},
-      "detachTagFromConversation": {"action":"conversations.tags.delete","effects":["delete"],"method":"DELETE","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/tags/{tag_id}","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"tag_id":{"at":"tag_id","from":"path"}}},
-      "detachTagFromConversation.json.26fd60ab1ae2": {"action":"conversations.tags.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/tags/{tag_id}","scope":{"admin_id":{"at":"/admin_id","from":"body"},"conversation_id":{"at":"conversation_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"tag_id":{"at":"tag_id","from":"path"}}},
-      "detachTagFromTicket": {"action":"tickets.tags.delete","effects":["delete"],"method":"DELETE","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}/tags/{tag_id}","scope":{"tag_id":{"at":"tag_id","from":"path"},"ticket_id":{"at":"ticket_id","from":"path"}}},
-      "detachTagFromTicket.json.e49eaaf0011c": {"action":"tickets.tags.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}/tags/{tag_id}","scope":{"admin_id":{"at":"/admin_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"tag_id":{"at":"tag_id","from":"path"},"ticket_id":{"at":"ticket_id","from":"path"}}},
-      "downloadDataExport": {"action":"content.data.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/download/content/data/{job_identifier}","scope":{"job_identifier":{"at":"job_identifier","from":"path"}}},
-      "findTag": {"action":"tags.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/tags/{tag_id}","scope":{"tag_id":{"at":"tag_id","from":"path"}}},
-      "getDataExport": {"action":"export.content.data.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/export/content/data/{job_identifier}","scope":{"job_identifier":{"at":"job_identifier","from":"path"}}},
-      "getTicket": {"action":"tickets.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
-      "getTicketType": {"action":"ticket_types.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/ticket_types/{ticket_type_id}","scope":{"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
-      "identifyAdmin": {"action":"me.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/me","scope":{}},
-      "lisDataEvents": {"action":"events.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","params":["filter","type","summary","per_page"],"path":"/events","scope":{"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-      "listActivityLogs": {"action":"admins.activity_logs.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","params":["created_at_after","created_at_before"],"path":"/admins/activity_logs","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "listAdmins": {"action":"admins.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","params":["display_avatar"],"path":"/admins","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "listAllCollections": {"action":"help_center.collections.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","params":["page","per_page"],"path":"/help_center/collections","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-      "listAllCompanies": {"action":"companies.read","effects":["read"],"method":"POST","origin":"https://api.intercom.io","params":["page","per_page","order"],"path":"/companies/list","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-      "listArticles": {"action":"articles.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","params":["page","per_page"],"path":"/articles","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-      "listCompaniesForAContact": {"action":"contacts.companies.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","params":["page","per_page"],"path":"/contacts/{contact_id}/companies","scope":{"contact_id":{"at":"contact_id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-      "listDataAttributes": {"action":"data_attributes.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","params":["model","include_archived"],"path":"/data_attributes","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "listHelpCenters": {"action":"help_center.help_centers.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","params":["page","per_page"],"path":"/help_center/help_centers","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-      "listLiveNewsfeedItems": {"action":"news.newsfeeds.items.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/news/newsfeeds/{newsfeed_id}/items","scope":{"newsfeed_id":{"at":"newsfeed_id","from":"path"}}},
-      "listNewsItems": {"action":"news.news_items.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/news/news_items","scope":{}},
-      "listNewsfeeds": {"action":"news.newsfeeds.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/news/newsfeeds","scope":{}},
-      "listNotes": {"action":"contacts.notes.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","params":["page","per_page"],"path":"/contacts/{contact_id}/notes","scope":{"contact_id":{"at":"contact_id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-      "listSegments": {"action":"segments.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","params":["include_count"],"path":"/segments","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "listSegmentsForAContact": {"action":"contacts.segments.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/segments","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
-      "listSubscriptionTypes": {"action":"subscription_types.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/subscription_types","scope":{}},
-      "listSubscriptionsForAContact": {"action":"contacts.subscriptions.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/subscriptions","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
-      "listTags": {"action":"tags.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/tags","scope":{}},
-      "listTagsForAContact": {"action":"contacts.tags.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/tags","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
-      "listTeams": {"action":"teams.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/teams","scope":{}},
-      "listTicketTypes": {"action":"ticket_types.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/ticket_types","scope":{}},
-      "manageConversation": {"action":"conversations.parts.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/parts","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
-      "manageConversation.json.7eaa940ceca6": {"action":"conversations.parts.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/parts","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "redactConversation": {"action":"conversations.redact.write","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/conversations/redact","scope":{}},
-      "redactConversation.json.54a78b73bf6f": {"action":"conversations.redact.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.intercom.io","path":"/conversations/redact","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "replyConversation": {"action":"conversations.reply.send","effects":["send"],"method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/reply","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
-      "replyTicket": {"action":"tickets.reply.send","effects":["send"],"method":"POST","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}/reply","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
-      "replyTicket.json.1b68b582559a": {"action":"tickets.reply.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}/reply","scope":{"request":{"at":"","from":"body","type":"object"},"ticket_id":{"at":"ticket_id","from":"path"}}},
-      "retrieveAdmin": {"action":"admins.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/admins/{admin_id}","scope":{"admin_id":{"at":"admin_id","from":"path"}}},
-      "retrieveArticle": {"action":"articles.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/articles/{article_id}","scope":{"article_id":{"at":"article_id","from":"path"}}},
-      "retrieveCollection": {"action":"help_center.collections.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/help_center/collections/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"}}},
-      "retrieveCompany": {"action":"companies.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","params":["name","company_id","tag_id","segment_id","page","per_page"],"path":"/companies","scope":{"company_id":{"at":"company_id","from":"query","optional":true},"name":{"at":"name","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"segment_id":{"at":"segment_id","from":"query","optional":true},"tag_id":{"at":"tag_id","from":"query","optional":true}}},
-      "retrieveHelpCenter": {"action":"help_center.help_centers.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/help_center/help_centers/{help_center_id}","scope":{"help_center_id":{"at":"help_center_id","from":"path"}}},
-      "retrieveNewsItem": {"action":"news.news_items.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/news/news_items/{news_item_id}","scope":{"news_item_id":{"at":"news_item_id","from":"path"}}},
-      "retrieveNewsfeed": {"action":"news.newsfeeds.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/news/newsfeeds/{newsfeed_id}","scope":{"newsfeed_id":{"at":"newsfeed_id","from":"path"}}},
-      "retrieveNote": {"action":"notes.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/notes/{note_id}","scope":{"note_id":{"at":"note_id","from":"path"}}},
-      "retrieveSegment": {"action":"segments.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/segments/{segment_id}","scope":{"segment_id":{"at":"segment_id","from":"path"}}},
-      "retrieveTeam": {"action":"teams.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","path":"/teams/{team_id}","scope":{"team_id":{"at":"team_id","from":"path"}}},
-      "retrieveVisitorWithUserId": {"action":"visitors.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","params":["user_id"],"path":"/visitors","scope":{"query":{"at":"","from":"query","type":"object"},"user_id":{"at":"user_id","from":"query"}}},
-      "scrollOverAllCompanies": {"action":"companies.scroll.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","params":["scroll_param"],"path":"/companies/scroll","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "searchArticles": {"action":"articles.read","effects":["read"],"method":"GET","origin":"https://api.intercom.io","params":["phrase","state","help_center_id","highlight"],"path":"/articles/search","scope":{"help_center_id":{"at":"help_center_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-      "searchConversations": {"action":"conversations.read","effects":["read"],"method":"POST","origin":"https://api.intercom.io","path":"/conversations/search","scope":{}},
-      "searchConversations.json.2dae9fb238d3": {"action":"conversations.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.intercom.io","path":"/conversations/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "searchTickets": {"action":"tickets.read","effects":["read"],"method":"POST","origin":"https://api.intercom.io","path":"/tickets/search","scope":{}},
-      "searchTickets.json.6249ef3edf0f": {"action":"tickets.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.intercom.io","path":"/tickets/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "setAwayAdmin": {"action":"admins.away.write","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/admins/{admin_id}/away","scope":{"admin_id":{"at":"admin_id","from":"path"}}},
-      "setAwayAdmin.json.3ab91141446d": {"action":"admins.away.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/admins/{admin_id}/away","scope":{"admin_id":{"at":"admin_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "updateArticle": {"action":"articles.write","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/articles/{article_id}","scope":{"article_id":{"at":"article_id","from":"path"}}},
-      "updateArticle.json.9667ef75e3fe": {"action":"articles.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/articles/{article_id}","scope":{"article_id":{"at":"article_id","from":"path"},"author_id":{"at":"/author_id","from":"body","optional":true,"type":"number"},"parent_id":{"at":"/parent_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
-      "updateCollection": {"action":"help_center.collections.write","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/help_center/collections/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"}}},
-      "updateCollection.json.9401c308fca3": {"action":"help_center.collections.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/help_center/collections/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"parent_id":{"at":"/parent_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
-      "updateConversation": {"action":"conversations.write","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","params":["display_as"],"path":"/conversations/{conversation_id}","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-      "updateConversation.json.5cb6bdc1a5a8": {"action":"conversations.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","params":["display_as"],"path":"/conversations/{conversation_id}","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-      "updateDataAttribute": {"action":"data_attributes.write","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/data_attributes/{data_attribute_id}","scope":{"data_attribute_id":{"at":"data_attribute_id","from":"path"}}},
-      "updateDataAttribute.json.eb4fccd874e3": {"action":"data_attributes.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/data_attributes/{data_attribute_id}","scope":{"data_attribute_id":{"at":"data_attribute_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "updateNewsItem": {"action":"news.news_items.write","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/news/news_items/{news_item_id}","scope":{"news_item_id":{"at":"news_item_id","from":"path"}}},
-      "updateNewsItem.json.1fb89a45cea4": {"action":"news.news_items.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/news/news_items/{news_item_id}","scope":{"news_item_id":{"at":"news_item_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"sender_id":{"at":"/sender_id","from":"body","type":"number"}}},
-      "updateTicket": {"action":"tickets.write","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
-      "updateTicket.json.fa53d95ae614": {"action":"tickets.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}","scope":{"request":{"at":"","from":"body","type":"object"},"ticket_id":{"at":"ticket_id","from":"path"}}},
-      "updateTicketType": {"action":"ticket_types.write","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/ticket_types/{ticket_type_id}","scope":{"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
-      "updateTicketType.json.0c3420272e18": {"action":"ticket_types.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/ticket_types/{ticket_type_id}","scope":{"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
-      "updateTicketTypeAttribute": {"action":"ticket_types.attributes.write","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/ticket_types/{ticket_type_id}/attributes/{attribute_id}","scope":{"attribute_id":{"at":"attribute_id","from":"path"},"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
-      "updateTicketTypeAttribute.json.1d63bc7a5226": {"action":"ticket_types.attributes.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/ticket_types/{ticket_type_id}/attributes/{attribute_id}","scope":{"attribute_id":{"at":"attribute_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
-      "updateVisitor": {"action":"visitors.write","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/visitors","scope":{}},
-      "updateVisitor.json.756629b0d844": {"action":"visitors.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.intercom.io","path":"/visitors","scope":{"id":{"at":"/id","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","optional":true}}}
+      "ArchiveContact": {"action":"contacts.write","effects":["write"],"method":"POST","origin":"{api}","path":"/contacts/{contact_id}/archive","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+      "BlockContact": {"action":"contacts.write","effects":["write"],"method":"POST","origin":"{api}","path":"/contacts/{contact_id}/block","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+      "BulkCreateContacts": {"action":"contacts.bulk.write","effects":["write"],"method":"POST","origin":"{api}","path":"/contacts/bulk","scope":{}},
+      "BulkCreateContacts.json.a2bb183fd671": {"action":"contacts.bulk.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/contacts/bulk","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "BulkDeleteContacts": {"action":"contacts.bulk.delete","effects":["delete"],"method":"POST","origin":"{api}","path":"/contacts/bulk/delete","scope":{}},
+      "BulkDeleteContacts.json.d9e01a008d3e": {"action":"contacts.bulk.delete","body":"json","effects":["delete"],"method":"POST","origin":"{api}","path":"/contacts/bulk/delete","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "BulkUpdateContacts": {"action":"contacts.bulk.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/contacts/bulk","scope":{}},
+      "BulkUpdateContacts.json.d8878bb8a307": {"action":"contacts.bulk.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/contacts/bulk","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "CreateContact": {"action":"contacts.write","effects":["write"],"method":"POST","origin":"{api}","path":"/contacts","scope":{}},
+      "GET /download/reporting_data/{job_identifier}": {"action":"reporting_data.read","effects":["read"],"method":"GET","origin":"{api}","path":"/download/reporting_data/{job_identifier}","scope":{"job_identifier":{"at":"job_identifier","from":"path"}}},
+      "GET /export/reporting_data/get_datasets": {"action":"export.reporting_data.datasets.read","effects":["read"],"method":"GET","origin":"{api}","path":"/export/reporting_data/get_datasets","scope":{}},
+      "GET /export/reporting_data/{job_identifier}": {"action":"export.reporting_data.read","effects":["read"],"method":"GET","origin":"{api}","path":"/export/reporting_data/{job_identifier}","path_patterns":{"job_identifier":"[^g].*|g(?:|[^e].*|e(?:|[^t].*|t(?:|[^_].*|_(?:|[^d].*|d(?:|[^a].*|a(?:|[^t].*|t(?:|[^a].*|a(?:|[^s].*|s(?:|[^e].*|e(?:|[^t].*|t(?:|[^s].*|s.+)))))))))))"},"scope":{"job_identifier":{"at":"job_identifier","from":"path"}}},
+      "ListAttachedContacts": {"action":"companies.contacts.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page","include_merge_history","starting_after"],"path":"/companies/{company_id}/contacts","scope":{"company_id":{"at":"company_id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "ListAttachedSegmentsForCompanies": {"action":"companies.segments.read","effects":["read"],"method":"GET","origin":"{api}","path":"/companies/{company_id}/segments","scope":{"company_id":{"at":"company_id","from":"path"}}},
+      "ListContactActivities": {"action":"contacts.activities.read","effects":["read"],"method":"GET","origin":"{api}","params":["per_page","starting_after"],"path":"/contacts/activities","scope":{"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "ListContactMergeHistory": {"action":"contacts.merge_histories.read","effects":["read"],"method":"GET","origin":"{api}","params":["cursor","per_page","order"],"path":"/contacts/{id}/merge_histories","path_patterns":{"id":"[^bf].*|b(?:|[^u].*|u(?:|[^l].*|l(?:|[^k].*|k.+)))|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^d].*|d(?:|[^_].*|_(?:|[^b].*|b(?:|[^y].*|y(?:|[^_].*|_(?:|[^e].*|e(?:|[^x].*|x(?:|[^t].*|t(?:|[^e].*|e(?:|[^r].*|r(?:|[^n].*|n(?:|[^a].*|a(?:|[^l].*|l(?:|[^_].*|_(?:|[^i].*|i(?:|[^d].*|d.+))))))))))))))))))"},"scope":{"id":{"at":"id","from":"path"},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "MergeContact": {"action":"contacts.merge.delete","effects":["delete","write"],"method":"POST","origin":"{api}","params":["include_merge_history"],"path":"/contacts/merge","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "MergeContact.json.5eba82ae8f46": {"action":"contacts.merge.delete","body":"json","effects":["delete","write"],"method":"POST","origin":"{api}","params":["include_merge_history"],"path":"/contacts/merge","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /export/reporting_data/enqueue": {"action":"export.reporting_data.enqueue.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/export/reporting_data/enqueue","scope":{"attribute_ids":{"at":"/attribute_ids","from":"body","type":"array"},"dataset_id":{"at":"/dataset_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "PreviewMergeContact": {"action":"contacts.merge.preview.read","effects":["read"],"method":"POST","origin":"{api}","path":"/contacts/merge/preview","scope":{}},
+      "PreviewMergeContact.json.ec199ed2c60e": {"action":"contacts.merge.preview.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/contacts/merge/preview","scope":{"custom_attribute_names":{"at":"/custom_attribute_names","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "RetrieveACompanyById": {"action":"companies.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page","type"],"path":"/companies/{company_id}","path_patterns":{"company_id":"[^s].*|s(?:|[^c].*|c(?:|[^r].*|r(?:|[^o].*|o(?:|[^l].*|l(?:|[^l].*|l.+)))))"},"scope":{"company_id":{"at":"company_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "RetrieveDataConnector": {"action":"data_connectors.read","effects":["read"],"method":"GET","origin":"{api}","params":["state_version"],"path":"/data_connectors/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "RetrieveWhatsAppMessageStatus": {"action":"messages.whatsapp.status.read","effects":["read"],"method":"GET","origin":"{api}","params":["message_id"],"path":"/messages/whatsapp/status","scope":{"message_id":{"at":"message_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "SearchContacts": {"action":"contacts.read","effects":["read"],"method":"POST","origin":"{api}","params":["escape_identity","include_merge_history"],"path":"/contacts/search","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "SearchContacts.json.1fd752623249": {"action":"contacts.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","params":["escape_identity","include_merge_history"],"path":"/contacts/search","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "ShowBulkUpdateContactsJob": {"action":"contacts.bulk.read","effects":["read"],"method":"GET","origin":"{api}","path":"/contacts/bulk/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "ShowContactByExternalId": {"action":"contacts.find_by_external_id.read","effects":["read"],"method":"GET","origin":"{api}","params":["include_merge_history","escape_identity"],"path":"/contacts/find_by_external_id/{external_id}","scope":{"external_id":{"at":"external_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "UnarchiveContact": {"action":"contacts.write","effects":["write"],"method":"POST","origin":"{api}","path":"/contacts/{contact_id}/unarchive","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+      "UpdateCompany": {"action":"companies.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/companies/{company_id}","scope":{"company_id":{"at":"company_id","from":"path"}}},
+      "UpdateCompany.json.9c20e0ffce7c": {"action":"companies.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/companies/{company_id}","scope":{"company_id":{"at":"company_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "UpdateContact": {"action":"contacts.write","effects":["write"],"method":"PUT","origin":"{api}","params":["include_merge_history"],"path":"/contacts/{contact_id}","path_patterns":{"contact_id":"[^b].*|b(?:|[^u].*|u(?:|[^l].*|l(?:|[^k].*|k.+)))"},"scope":{"contact_id":{"at":"contact_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "askFin": {"action":"fin.ask.generate","body":"json","effects":["generate"],"method":"POST","origin":"{api}","path":"/fin/ask","scope":{"conversation_id":{"at":"/conversation_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "attachContactToACompany": {"action":"contacts.companies.write","effects":["write"],"method":"POST","origin":"{api}","path":"/contacts/{contact_id}/companies","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+      "attachContactToACompany.json.f6fa799ea758": {"action":"contacts.companies.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/contacts/{contact_id}/companies","scope":{"contact_id":{"at":"contact_id","from":"path"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "attachContactToConversation": {"action":"conversations.customers.write","effects":["write"],"method":"POST","origin":"{api}","path":"/conversations/{conversation_id}/customers","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
+      "attachContactToConversation.json.293d0850c267": {"action":"conversations.customers.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/conversations/{conversation_id}/customers","scope":{"admin_id":{"at":"/admin_id","from":"body","optional":true},"conversation_id":{"at":"conversation_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "attachSubscriptionTypeToContact": {"action":"contacts.subscriptions.write","effects":["write"],"method":"POST","origin":"{api}","path":"/contacts/{contact_id}/subscriptions","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+      "attachSubscriptionTypeToContact.json.d81c712d2cc2": {"action":"contacts.subscriptions.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/contacts/{contact_id}/subscriptions","scope":{"contact_id":{"at":"contact_id","from":"path"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "attachTagToArticle": {"action":"articles.tags.write","effects":["write"],"method":"POST","origin":"{api}","path":"/articles/{article_id}/tags","scope":{"article_id":{"at":"article_id","from":"path"}}},
+      "attachTagToArticle.json.33b43a1e7d1c": {"action":"articles.tags.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/articles/{article_id}/tags","scope":{"admin_id":{"at":"/admin_id","from":"body","optional":true},"article_id":{"at":"article_id","from":"path"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "attachTagToContact": {"action":"contacts.tags.write","effects":["write"],"method":"POST","origin":"{api}","path":"/contacts/{contact_id}/tags","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+      "attachTagToContact.json.81dbbcbffa1f": {"action":"contacts.tags.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/contacts/{contact_id}/tags","scope":{"contact_id":{"at":"contact_id","from":"path"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "attachTagToContentSnippet": {"action":"content_snippets.tags.write","effects":["write"],"method":"POST","origin":"{api}","path":"/content_snippets/{content_snippet_id}/tags","scope":{"content_snippet_id":{"at":"content_snippet_id","from":"path"}}},
+      "attachTagToContentSnippet.json.b549590cbd75": {"action":"content_snippets.tags.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/content_snippets/{content_snippet_id}/tags","scope":{"admin_id":{"at":"/admin_id","from":"body","optional":true},"content_snippet_id":{"at":"content_snippet_id","from":"path"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "attachTagToConversation": {"action":"conversations.tags.write","effects":["write"],"method":"POST","origin":"{api}","path":"/conversations/{conversation_id}/tags","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
+      "attachTagToConversation.json.9229b3434acd": {"action":"conversations.tags.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/conversations/{conversation_id}/tags","scope":{"admin_id":{"at":"/admin_id","from":"body"},"conversation_id":{"at":"conversation_id","from":"path"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "attachTagToExternalPage": {"action":"ai.external_pages.tags.write","effects":["write"],"method":"POST","origin":"{api}","path":"/ai/external_pages/{external_page_id}/tags","scope":{"external_page_id":{"at":"external_page_id","from":"path"}}},
+      "attachTagToExternalPage.json.f7ddba1e3ce0": {"action":"ai.external_pages.tags.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/ai/external_pages/{external_page_id}/tags","scope":{"admin_id":{"at":"/admin_id","from":"body","optional":true},"external_page_id":{"at":"external_page_id","from":"path"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "attachTagToInternalArticle": {"action":"internal_articles.tags.write","effects":["write"],"method":"POST","origin":"{api}","path":"/internal_articles/{internal_article_id}/tags","scope":{"internal_article_id":{"at":"internal_article_id","from":"path"}}},
+      "attachTagToInternalArticle.json.1538bddc04d8": {"action":"internal_articles.tags.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/internal_articles/{internal_article_id}/tags","scope":{"admin_id":{"at":"/admin_id","from":"body","optional":true},"id":{"at":"/id","from":"body"},"internal_article_id":{"at":"internal_article_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "attachTagToTicket": {"action":"tickets.tags.write","effects":["write"],"method":"POST","origin":"{api}","path":"/tickets/{ticket_id}/tags","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "attachTagToTicket.json.3cdb5dfeab9b": {"action":"tickets.tags.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/tickets/{ticket_id}/tags","scope":{"admin_id":{"at":"/admin_id","from":"body"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"},"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "autoAssignConversation": {"action":"conversations.assignment_rules.execute","effects":["execute"],"method":"POST","origin":"{api}","path":"/conversations/{conversation_id}/run_assignment_rules","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
+      "bulkContentActions": {"action":"content.bulk_actions.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/content/bulk_actions","scope":{"content_ids":{"at":"/content_ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "cancelDataExport": {"action":"export.cancel.write","effects":["write"],"method":"POST","origin":"{api}","path":"/export/cancel/{job_identifier}","scope":{"job_identifier":{"at":"job_identifier","from":"path"}}},
+      "changeTicketType": {"action":"tickets.change_type.write","effects":["write"],"method":"POST","origin":"{api}","path":"/tickets/{ticket_id}/change_type","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "changeTicketType.json.4dc4f7a2bbce": {"action":"tickets.change_type.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/tickets/{ticket_id}/change_type","scope":{"request":{"at":"","from":"body","type":"object"},"ticket_id":{"at":"ticket_id","from":"path"},"ticket_state_id":{"at":"/ticket_state_id","from":"body"},"ticket_type_id":{"at":"/ticket_type_id","from":"body"}}},
+      "collectFinVoiceCallByExternalId": {"action":"fin_voice.external_id.read","effects":["read"],"method":"GET","origin":"{api}","path":"/fin_voice/external_id/{external_id}","scope":{"external_id":{"at":"external_id","from":"path"}}},
+      "collectFinVoiceCallById": {"action":"fin_voice.collect.read","effects":["read"],"method":"GET","origin":"{api}","path":"/fin_voice/collect/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "collectFinVoiceCallByPhoneNumber": {"action":"fin_voice.phone_number.read","effects":["read"],"method":"GET","origin":"{api}","path":"/fin_voice/phone_number/{phone_number}","scope":{"phone_number":{"at":"phone_number","from":"path"}}},
+      "collectFinVoiceCallsByConversationId": {"action":"fin_voice.conversation.read","effects":["read"],"method":"GET","origin":"{api}","path":"/fin_voice/conversation/{conversation_id}","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
+      "contacts.create": {"action":"contacts.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/contacts","scope":{"contact":{"at":"","from":"body","type":"object"}}},
+      "contacts.delete": {"action":"contacts.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/contacts/{contact}","scope":{"contact":{"at":"contact","from":"path"}}},
+      "contacts.get": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"{api}","params":["escape_identity","include_merge_history"],"path":"/contacts/{contact}","path_patterns":{"contact":"[^ad].*|a(?:|[^c].*|c(?:|[^t].*|t(?:|[^i].*|i(?:|[^v].*|v(?:|[^i].*|i(?:|[^t].*|t(?:|[^i].*|i(?:|[^e].*|e(?:|[^s].*|s.+)))))))))|d(?:|[^e].*|e(?:|[^l].*|l(?:|[^e].*|e(?:|[^t].*|t(?:|[^e].*|e(?:|[^d].*|d.+))))))"},"scope":{"contact":{"at":"contact","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "contacts.list": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"{api}","params":["per_page","starting_after","escape_identity","include_merge_history"],"path":"/contacts","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "contacts.update": {"action":"contacts.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","params":["include_merge_history"],"path":"/contacts/{contact}","path_patterns":{"contact":"[^b].*|b(?:|[^u].*|u(?:|[^l].*|l(?:|[^k].*|k.+)))"},"scope":{"changes":{"at":"","from":"body","type":"object"},"contact":{"at":"contact","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "conversations.get": {"action":"conversations.read","effects":["read"],"method":"GET","origin":"{api}","params":["display_as","exclude_part_types","include_email_history","include_monitors","include_part_types","include_scorecards","include_translations","page","parts_created_after","parts_created_before","per_page"],"path":"/conversations/{conversation}","path_patterns":{"conversation":"[^ad].*|a(?:|[^t].*|t(?:|[^t].*|t(?:|[^r].*|r(?:|[^i].*|i(?:|[^b].*|b(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))))))|d(?:|[^e].*|e(?:|[^l].*|l(?:|[^e].*|e(?:|[^t].*|t(?:|[^e].*|e(?:|[^d].*|d.+))))))"},"scope":{"conversation":{"at":"conversation","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "conversations.list": {"action":"conversations.read","effects":["read"],"method":"GET","origin":"{api}","params":["per_page","starting_after","include_monitors","include_scorecards"],"path":"/conversations","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "conversations.reply": {"action":"conversations.reply.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/conversations/{conversation}/reply","scope":{"conversation":{"at":"conversation","from":"path"},"reply":{"at":"","from":"body","type":"object"}}},
+      "convertConversationToTicket": {"action":"conversations.convert.write","effects":["write"],"method":"POST","origin":"{api}","path":"/conversations/{conversation_id}/convert","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
+      "convertConversationToTicket.json.fd8eb50f053c": {"action":"conversations.convert.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/conversations/{conversation_id}/convert","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"ticket_type_id":{"at":"/ticket_type_id","from":"body"}}},
+      "convertVisitor": {"action":"visitors.convert.write","effects":["write"],"method":"POST","origin":"{api}","path":"/visitors/convert","scope":{}},
+      "convertVisitor.json.9c4ed184584e": {"action":"visitors.convert.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/visitors/convert","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createArticle": {"action":"articles.write","effects":["write"],"method":"POST","origin":"{api}","path":"/articles","scope":{}},
+      "createArticle.json.fe5e88a17ae8": {"action":"articles.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/articles","scope":{"author_id":{"at":"/author_id","from":"body","type":"number"},"parent_id":{"at":"/parent_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "createAudience": {"action":"audiences.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/audiences","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createAuthToken": {"action":"auth_tokens.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/auth_tokens","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"request_header_key":{"at":"/request_header_key","from":"body","optional":true}}},
+      "createCollection": {"action":"help_center.collections.write","effects":["write"],"method":"POST","origin":"{api}","path":"/help_center/collections","scope":{}},
+      "createCollection.json.1f08cf44577c": {"action":"help_center.collections.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/help_center/collections","scope":{"help_center_id":{"at":"/help_center_id","from":"body","optional":true,"type":"number"},"name":{"at":"/name","from":"body"},"parent_id":{"at":"/parent_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createCompanyNote": {"action":"companies.notes.write","effects":["write"],"method":"POST","origin":"{api}","path":"/companies/{company_id}/notes","scope":{"company_id":{"at":"company_id","from":"path"}}},
+      "createCompanyNote.json.6556235dfb0f": {"action":"companies.notes.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/companies/{company_id}/notes","scope":{"admin_id":{"at":"/admin_id","from":"body","optional":true},"company_id":{"at":"company_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createContentImportSource": {"action":"ai.content_import_sources.write","effects":["write"],"method":"POST","origin":"{api}","path":"/ai/content_import_sources","scope":{}},
+      "createContentImportSource.json.fd6e70ed1389": {"action":"ai.content_import_sources.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/ai/content_import_sources","scope":{"request":{"at":"","from":"body","type":"object"},"url":{"at":"/url","from":"body"}}},
+      "createContentSnippet": {"action":"content_snippets.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/content_snippets","scope":{"audience_ids":{"at":"/audience_ids","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "createConversation": {"action":"conversations.write","effects":["write"],"method":"POST","origin":"{api}","path":"/conversations","scope":{}},
+      "createConversation.json.43048216ba50": {"action":"conversations.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/conversations","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createConversationAttribute": {"action":"conversations.attributes.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/conversations/attributes","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createConversationAttributeOption": {"action":"conversations.attributes.options.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/conversations/attributes/{id}/options","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createConversationStreamToken": {"action":"conversations.stream.token.admin","effects":["admin"],"method":"POST","origin":"{api}","path":"/conversations/stream/token","scope":{}},
+      "createConversationStreamToken.json.fb18ce8cdebc": {"action":"conversations.stream.token.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/conversations/stream/token","scope":{"external_id":{"at":"/external_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createCustomObjectInstances": {"action":"custom_object_instances.write","effects":["write"],"method":"POST","origin":"{api}","path":"/custom_object_instances/{custom_object_type_identifier}","scope":{"custom_object_type_identifier":{"at":"custom_object_type_identifier","from":"path"}}},
+      "createCustomObjectInstances.json.8264b63ab84b": {"action":"custom_object_instances.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/custom_object_instances/{custom_object_type_identifier}","scope":{"custom_object_type_identifier":{"at":"custom_object_type_identifier","from":"path"},"external_id":{"at":"/external_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createDataAttribute": {"action":"data_attributes.write","effects":["write"],"method":"POST","origin":"{api}","path":"/data_attributes","scope":{}},
+      "createDataAttribute.json.311a9fefa638": {"action":"data_attributes.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/data_attributes","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createDataConnector": {"action":"data_connectors.admin","effects":["admin"],"method":"POST","origin":"{api}","path":"/data_connectors","scope":{}},
+      "createDataConnector.json.3ab2202c97fa": {"action":"data_connectors.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/data_connectors","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"token_ids":{"at":"/token_ids","from":"body","optional":true,"type":"array"},"url":{"at":"/url","from":"body","optional":true}}},
+      "createDataEvent": {"action":"events.write","effects":["write"],"method":"POST","origin":"{api}","path":"/events","scope":{}},
+      "createDataEvent.json.500901532370": {"action":"events.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/events","scope":{"email":{"at":"/email","from":"body","optional":true},"event_name":{"at":"/event_name","from":"body","optional":true},"id":{"at":"/id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","optional":true}}},
+      "createDataExport": {"action":"export.content.data.write","effects":["write"],"method":"POST","origin":"{api}","path":"/export/content/data","scope":{}},
+      "createDataExport.json.81799637a2a1": {"action":"export.content.data.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/export/content/data","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createDynamicContent": {"action":"dynamic_contents.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/dynamic_contents","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createExternalPage": {"action":"ai.external_pages.write","effects":["write"],"method":"POST","origin":"{api}","path":"/ai/external_pages","scope":{}},
+      "createExternalPage.json.f74805507ee6": {"action":"ai.external_pages.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/ai/external_pages","scope":{"audience_ids":{"at":"/audience_ids","from":"body","optional":true,"type":"array"},"external_id":{"at":"/external_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"source_id":{"at":"/source_id","from":"body","type":"number"},"url":{"at":"/url","from":"body","optional":true}}},
+      "createFolder": {"action":"folders.write","effects":["write"],"method":"POST","origin":"{api}","path":"/folders","scope":{}},
+      "createFolder.json.7fc82fdd948c": {"action":"folders.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/folders","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createHelpCenterRedirect": {"action":"help_center.help_centers.redirects.write","effects":["write"],"method":"POST","origin":"{api}","path":"/help_center/help_centers/{help_center_id}/redirects","scope":{"help_center_id":{"at":"help_center_id","from":"path"}}},
+      "createHelpCenterRedirect.json.5aeb423e2b85": {"action":"help_center.help_centers.redirects.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/help_center/help_centers/{help_center_id}/redirects","scope":{"from_url":{"at":"/from_url","from":"body"},"help_center_id":{"at":"help_center_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"target_id":{"at":"/target_id","from":"body","optional":true}}},
+      "createInternalArticle": {"action":"internal_articles.write","effects":["write"],"method":"POST","origin":"{api}","path":"/internal_articles","scope":{}},
+      "createInternalArticle.json.823111c069d9": {"action":"internal_articles.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/internal_articles","scope":{"audience_ids":{"at":"/audience_ids","from":"body","optional":true,"type":"array"},"author_id":{"at":"/author_id","from":"body","type":"number"},"folder_id":{"at":"/folder_id","from":"body","optional":true,"type":"number"},"owner_id":{"at":"/owner_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "createMessage": {"action":"messages.send","effects":["send"],"method":"POST","origin":"{api}","path":"/messages","scope":{}},
+      "createMessage.json.a33aed1ab095": {"action":"messages.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/messages","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createNewsItem": {"action":"news.news_items.write","effects":["write"],"method":"POST","origin":"{api}","path":"/news/news_items","scope":{}},
+      "createNewsItem.json.ef4a17bfaff9": {"action":"news.news_items.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/news/news_items","scope":{"request":{"at":"","from":"body","type":"object"},"sender_id":{"at":"/sender_id","from":"body","type":"number"}}},
+      "createNote": {"action":"contacts.notes.write","effects":["write"],"method":"POST","origin":"{api}","path":"/contacts/{contact_id}/notes","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+      "createNote.json.70a49b0946a8": {"action":"contacts.notes.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/contacts/{contact_id}/notes","scope":{"admin_id":{"at":"/admin_id","from":"body","optional":true},"contact_id":{"at":"contact_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createOfficeHoursException": {"action":"office_hours_schedules.office_hours_exceptions.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/office_hours_schedules/{office_hours_schedule_id}/office_hours_exceptions","scope":{"name":{"at":"/name","from":"body","optional":true},"office_hours_schedule_id":{"at":"office_hours_schedule_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createOfficeHoursSchedule": {"action":"office_hours_schedules.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/office_hours_schedules","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"time_zone_name":{"at":"/time_zone_name","from":"body","optional":true}}},
+      "createOrUpdateCompany": {"action":"companies.write","effects":["write"],"method":"POST","origin":"{api}","path":"/companies","scope":{}},
+      "createOrUpdateCompany.json.8e8f978d3cab": {"action":"companies.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/companies","scope":{"company_id":{"at":"/company_id","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createPhoneSwitch": {"action":"phone_call_redirects.send","effects":["send"],"method":"POST","origin":"{api}","path":"/phone_call_redirects","scope":{}},
+      "createPhoneSwitch.json.0ab2b47b485c": {"action":"phone_call_redirects.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/phone_call_redirects","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createTag": {"action":"tags.write","effects":["write"],"method":"POST","origin":"{api}","path":"/tags","scope":{}},
+      "createTag.json.1f3dba19c781": {"action":"tags.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/tags","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createTicket": {"action":"tickets.write","effects":["write"],"method":"POST","origin":"{api}","path":"/tickets","scope":{}},
+      "createTicket.json.4150391b7ecb": {"action":"tickets.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/tickets","scope":{"company_id":{"at":"/company_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"ticket_type_id":{"at":"/ticket_type_id","from":"body"}}},
+      "createTicketType": {"action":"ticket_types.write","effects":["write"],"method":"POST","origin":"{api}","path":"/ticket_types","scope":{}},
+      "createTicketType.json.791dd42b552d": {"action":"ticket_types.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/ticket_types","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createTicketTypeAttribute": {"action":"ticket_types.attributes.write","effects":["write"],"method":"POST","origin":"{api}","path":"/ticket_types/{ticket_type_id}/attributes","scope":{"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
+      "createTicketTypeAttribute.json.a60d219e8ff5": {"action":"ticket_types.attributes.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/ticket_types/{ticket_type_id}/attributes","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
+      "dataEventSummaries": {"action":"events.summaries.write","effects":["write"],"method":"POST","origin":"{api}","path":"/events/summaries","scope":{}},
+      "dataEventSummaries.json.fefc86f4485d": {"action":"events.summaries.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/events/summaries","scope":{"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","optional":true}}},
+      "deleteArticle": {"action":"articles.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/articles/{article_id}","scope":{"article_id":{"at":"article_id","from":"path"}}},
+      "deleteAudience": {"action":"audiences.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/audiences/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteCollection": {"action":"help_center.collections.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/help_center/collections/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"}}},
+      "deleteCompany": {"action":"companies.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/companies/{company_id}","scope":{"company_id":{"at":"company_id","from":"path"}}},
+      "deleteContentImportSource": {"action":"ai.content_import_sources.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/ai/content_import_sources/{source_id}","scope":{"source_id":{"at":"source_id","from":"path"}}},
+      "deleteContentSnippet": {"action":"content_snippets.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/content_snippets/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteConversation": {"action":"conversations.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["retain_metrics"],"path":"/conversations/{conversation_id}","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteConversationAttribute": {"action":"conversations.attributes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/conversations/attributes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteConversationAttributeOption": {"action":"conversations.attributes.options.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/conversations/attributes/{id}/options/{option_id}","scope":{"id":{"at":"id","from":"path"},"option_id":{"at":"option_id","from":"path"}}},
+      "deleteCustomObjectInstancesByExternalId": {"action":"custom_object_instances.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["external_id"],"path":"/custom_object_instances/{custom_object_type_identifier}","scope":{"custom_object_type_identifier":{"at":"custom_object_type_identifier","from":"path"},"external_id":{"at":"external_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteCustomObjectInstancesById": {"action":"custom_object_instances.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/custom_object_instances/{custom_object_type_identifier}/{custom_object_instance_id}","scope":{"custom_object_instance_id":{"at":"custom_object_instance_id","from":"path"},"custom_object_type_identifier":{"at":"custom_object_type_identifier","from":"path"}}},
+      "deleteDataConnector": {"action":"data_connectors.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/data_connectors/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteDynamicContent": {"action":"dynamic_contents.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/dynamic_contents/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteExternalPage": {"action":"ai.external_pages.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/ai/external_pages/{page_id}","scope":{"page_id":{"at":"page_id","from":"path"}}},
+      "deleteFolder": {"action":"folders.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/folders/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteHelpCenterRedirect": {"action":"help_center.help_centers.redirects.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/help_center/help_centers/{help_center_id}/redirects/{id}","scope":{"help_center_id":{"at":"help_center_id","from":"path"},"id":{"at":"id","from":"path"}}},
+      "deleteInternalArticle": {"action":"internal_articles.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/internal_articles/{internal_article_id}","scope":{"internal_article_id":{"at":"internal_article_id","from":"path"}}},
+      "deleteNewsItem": {"action":"news.news_items.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/news/news_items/{news_item_id}","scope":{"news_item_id":{"at":"news_item_id","from":"path"}}},
+      "deleteNote": {"action":"notes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/notes/{note_id}","scope":{"note_id":{"at":"note_id","from":"path"}}},
+      "deleteOfficeHoursException": {"action":"office_hours_schedules.office_hours_exceptions.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/office_hours_schedules/{office_hours_schedule_id}/office_hours_exceptions/{id}","scope":{"id":{"at":"id","from":"path"},"office_hours_schedule_id":{"at":"office_hours_schedule_id","from":"path"}}},
+      "deleteOfficeHoursSchedule": {"action":"office_hours_schedules.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/office_hours_schedules/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteTag": {"action":"tags.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/tags/{tag_id}","scope":{"tag_id":{"at":"tag_id","from":"path"}}},
+      "deleteTicket": {"action":"tickets.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/tickets/{ticket_id}","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "detachContactFromACompany": {"action":"contacts.companies.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/contacts/{contact_id}/companies/{company_id}","scope":{"company_id":{"at":"company_id","from":"path"},"contact_id":{"at":"contact_id","from":"path"}}},
+      "detachContactFromConversation": {"action":"conversations.customers.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/conversations/{conversation_id}/customers/{contact_id}","scope":{"contact_id":{"at":"contact_id","from":"path"},"conversation_id":{"at":"conversation_id","from":"path"}}},
+      "detachContactFromConversation.json.43edde3c8074": {"action":"conversations.customers.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/conversations/{conversation_id}/customers/{contact_id}","scope":{"admin_id":{"at":"/admin_id","from":"body"},"contact_id":{"at":"contact_id","from":"path"},"conversation_id":{"at":"conversation_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "detachSubscriptionTypeToContact": {"action":"contacts.subscriptions.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/contacts/{contact_id}/subscriptions/{subscription_id}","scope":{"contact_id":{"at":"contact_id","from":"path"},"subscription_id":{"at":"subscription_id","from":"path"}}},
+      "detachTagFromArticle": {"action":"articles.tags.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/articles/{article_id}/tags/{id}","scope":{"article_id":{"at":"article_id","from":"path"},"id":{"at":"id","from":"path"}}},
+      "detachTagFromContact": {"action":"contacts.tags.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/contacts/{contact_id}/tags/{tag_id}","scope":{"contact_id":{"at":"contact_id","from":"path"},"tag_id":{"at":"tag_id","from":"path"}}},
+      "detachTagFromContentSnippet": {"action":"content_snippets.tags.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["admin_id"],"path":"/content_snippets/{content_snippet_id}/tags/{id}","scope":{"admin_id":{"at":"admin_id","from":"query","optional":true},"content_snippet_id":{"at":"content_snippet_id","from":"path"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "detachTagFromConversation": {"action":"conversations.tags.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/conversations/{conversation_id}/tags/{tag_id}","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"tag_id":{"at":"tag_id","from":"path"}}},
+      "detachTagFromConversation.json.26fd60ab1ae2": {"action":"conversations.tags.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/conversations/{conversation_id}/tags/{tag_id}","scope":{"admin_id":{"at":"/admin_id","from":"body"},"conversation_id":{"at":"conversation_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"tag_id":{"at":"tag_id","from":"path"}}},
+      "detachTagFromExternalPage": {"action":"ai.external_pages.tags.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/ai/external_pages/{external_page_id}/tags/{id}","scope":{"external_page_id":{"at":"external_page_id","from":"path"},"id":{"at":"id","from":"path"}}},
+      "detachTagFromInternalArticle": {"action":"internal_articles.tags.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["admin_id"],"path":"/internal_articles/{internal_article_id}/tags/{id}","scope":{"admin_id":{"at":"admin_id","from":"query","optional":true},"id":{"at":"id","from":"path"},"internal_article_id":{"at":"internal_article_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "detachTagFromTicket": {"action":"tickets.tags.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/tickets/{ticket_id}/tags/{tag_id}","scope":{"tag_id":{"at":"tag_id","from":"path"},"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "detachTagFromTicket.json.e49eaaf0011c": {"action":"tickets.tags.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/tickets/{ticket_id}/tags/{tag_id}","scope":{"admin_id":{"at":"/admin_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"tag_id":{"at":"tag_id","from":"path"},"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "dismissContactBanner": {"action":"contacts.banners.dismiss.write","effects":["write"],"method":"POST","origin":"{api}","path":"/contacts/{id}/banners/{view_id}/dismiss","scope":{"id":{"at":"id","from":"path"},"view_id":{"at":"view_id","from":"path"}}},
+      "downloadDataExport": {"action":"content.data.read","effects":["read"],"method":"GET","origin":"{api}","path":"/download/content/data/{job_identifier}","scope":{"job_identifier":{"at":"job_identifier","from":"path"}}},
+      "enqueueCreateTicket": {"action":"tickets.enqueue.write","effects":["write"],"method":"POST","origin":"{api}","path":"/tickets/enqueue","scope":{}},
+      "enqueueCreateTicket.json.2343ad4cb53d": {"action":"tickets.enqueue.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/tickets/enqueue","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "escalateFinConversation": {"action":"fin.escalate.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/fin/escalate","scope":{"conversation_id":{"at":"/conversation_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "exportWorkflow": {"action":"export.workflows.read","effects":["read"],"method":"GET","origin":"{api}","path":"/export/workflows/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "findTag": {"action":"tags.read","effects":["read"],"method":"GET","origin":"{api}","path":"/tags/{tag_id}","scope":{"tag_id":{"at":"tag_id","from":"path"}}},
+      "getContentImportSource": {"action":"ai.content_import_sources.read","effects":["read"],"method":"GET","origin":"{api}","path":"/ai/content_import_sources/{source_id}","scope":{"source_id":{"at":"source_id","from":"path"}}},
+      "getContentSnippet": {"action":"content_snippets.read","effects":["read"],"method":"GET","origin":"{api}","path":"/content_snippets/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getConversationAttribute": {"action":"conversations.attributes.read","effects":["read"],"method":"GET","origin":"{api}","path":"/conversations/attributes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getCustomObjectInstancesById": {"action":"custom_object_instances.read","effects":["read"],"method":"GET","origin":"{api}","path":"/custom_object_instances/{custom_object_type_identifier}/{custom_object_instance_id}","scope":{"custom_object_instance_id":{"at":"custom_object_instance_id","from":"path"},"custom_object_type_identifier":{"at":"custom_object_type_identifier","from":"path"}}},
+      "getDataExport": {"action":"export.content.data.read","effects":["read"],"method":"GET","origin":"{api}","path":"/export/content/data/{job_identifier}","scope":{"job_identifier":{"at":"job_identifier","from":"path"}}},
+      "getDynamicContent": {"action":"dynamic_contents.read","effects":["read"],"method":"GET","origin":"{api}","path":"/dynamic_contents/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getExternalPage": {"action":"ai.external_pages.read","effects":["read"],"method":"GET","origin":"{api}","path":"/ai/external_pages/{page_id}","scope":{"page_id":{"at":"page_id","from":"path"}}},
+      "getIpAllowlist": {"action":"ip_allowlist.read","effects":["read"],"method":"GET","origin":"{api}","path":"/ip_allowlist","scope":{}},
+      "getMacro": {"action":"macros.read","effects":["read"],"method":"GET","origin":"{api}","path":"/macros/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getOfficeHoursException": {"action":"office_hours_schedules.office_hours_exceptions.read","effects":["read"],"method":"GET","origin":"{api}","path":"/office_hours_schedules/{office_hours_schedule_id}/office_hours_exceptions/{id}","scope":{"id":{"at":"id","from":"path"},"office_hours_schedule_id":{"at":"office_hours_schedule_id","from":"path"}}},
+      "getOfficeHoursSchedule": {"action":"office_hours_schedules.read","effects":["read"],"method":"GET","origin":"{api}","path":"/office_hours_schedules/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getSubscriptionType": {"action":"subscription_types.read","effects":["read"],"method":"GET","origin":"{api}","path":"/subscription_types/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getTeamMetrics": {"action":"teams.metrics.read","effects":["read"],"method":"GET","origin":"{api}","params":["idle_threshold"],"path":"/teams/{team_id}/metrics","scope":{"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+      "getTicket": {"action":"tickets.read","effects":["read"],"method":"GET","origin":"{api}","path":"/tickets/{ticket_id}","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "getTicketType": {"action":"ticket_types.read","effects":["read"],"method":"GET","origin":"{api}","path":"/ticket_types/{ticket_type_id}","scope":{"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
+      "getWhatsAppMessageStatus": {"action":"messages.status.read","effects":["read"],"method":"GET","origin":"{api}","params":["ruleset_id","per_page","starting_after"],"path":"/messages/status","scope":{"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"ruleset_id":{"at":"ruleset_id","from":"query"}}},
+      "identifyAdmin": {"action":"me.read","effects":["read"],"method":"GET","origin":"{api}","path":"/me","scope":{}},
+      "jobsStatus": {"action":"jobs.status.read","effects":["read"],"method":"GET","origin":"{api}","path":"/jobs/status/{job_id}","scope":{"job_id":{"at":"job_id","from":"path"}}},
+      "linkConversationToTicket": {"action":"tickets.linked_conversations.write","effects":["write"],"method":"POST","origin":"{api}","path":"/tickets/{ticket_id}/linked_conversations","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "linkConversationToTicket.json.f96111111a62": {"action":"tickets.linked_conversations.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/tickets/{ticket_id}/linked_conversations","scope":{"conversation_id":{"at":"/conversation_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "lisDataEvents": {"action":"events.read","effects":["read"],"method":"GET","origin":"{api}","params":["filter","type","summary","per_page","before","since"],"path":"/events","scope":{"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listActivityLogEventTypes": {"action":"admins.activity_log_event_types.read","effects":["read"],"method":"GET","origin":"{api}","path":"/admins/activity_log_event_types","scope":{}},
+      "listActivityLogs": {"action":"admins.activity_logs.read","effects":["read"],"method":"GET","origin":"{api}","params":["created_at_after","created_at_before","page","per_page"],"path":"/admins/activity_logs","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listAdmins": {"action":"admins.read","effects":["read"],"method":"GET","origin":"{api}","params":["display_avatar"],"path":"/admins","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listAllCollections": {"action":"help_center.collections.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page","help_center_id"],"path":"/help_center/collections","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listAllCompanies": {"action":"companies.read","effects":["read"],"method":"POST","origin":"{api}","params":["page","per_page","order"],"path":"/companies/list","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listArticleVersions": {"action":"articles.versions.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page","locale"],"path":"/articles/{article_id}/versions","scope":{"article_id":{"at":"article_id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listArticles": {"action":"articles.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page"],"path":"/articles","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listAudiences": {"action":"audiences.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page"],"path":"/audiences","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listAuthTokens": {"action":"auth_tokens.read","effects":["read"],"method":"GET","origin":"{api}","params":["per_page","starting_after"],"path":"/auth_tokens","scope":{"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listAwayStatusReasons": {"action":"away_status_reasons.read","effects":["read"],"method":"GET","origin":"{api}","path":"/away_status_reasons","scope":{}},
+      "listBrands": {"action":"brands.read","effects":["read"],"method":"GET","origin":"{api}","path":"/brands","scope":{}},
+      "listCalls": {"action":"calls.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page"],"path":"/calls","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listCallsWithTranscripts": {"action":"calls.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/calls/search","scope":{"conversation_ids":{"at":"/conversation_ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "listCompaniesForAContact": {"action":"contacts.companies.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page","order"],"path":"/contacts/{contact_id}/companies","path_patterns":{"contact_id":"[^bf].*|b(?:|[^u].*|u(?:|[^l].*|l(?:|[^k].*|k.+)))|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^d].*|d(?:|[^_].*|_(?:|[^b].*|b(?:|[^y].*|y(?:|[^_].*|_(?:|[^e].*|e(?:|[^x].*|x(?:|[^t].*|t(?:|[^e].*|e(?:|[^r].*|r(?:|[^n].*|n(?:|[^a].*|a(?:|[^l].*|l(?:|[^_].*|_(?:|[^i].*|i(?:|[^d].*|d.+))))))))))))))))))"},"scope":{"contact_id":{"at":"contact_id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listCompanyNotes": {"action":"companies.notes.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page","order"],"path":"/companies/{company_id}/notes","scope":{"company_id":{"at":"company_id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listContactBanners": {"action":"contacts.banners.read","effects":["read"],"method":"GET","origin":"{api}","path":"/contacts/{id}/banners","path_patterns":{"id":"[^bf].*|b(?:|[^u].*|u(?:|[^l].*|l(?:|[^k].*|k.+)))|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^d].*|d(?:|[^_].*|_(?:|[^b].*|b(?:|[^y].*|y(?:|[^_].*|_(?:|[^e].*|e(?:|[^x].*|x(?:|[^t].*|t(?:|[^e].*|e(?:|[^r].*|r(?:|[^n].*|n(?:|[^a].*|a(?:|[^l].*|l(?:|[^_].*|_(?:|[^i].*|i(?:|[^d].*|d.+))))))))))))))))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "listContentImportSources": {"action":"ai.content_import_sources.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page"],"path":"/ai/content_import_sources","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listContentSnippets": {"action":"content_snippets.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page"],"path":"/content_snippets","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listConversationAttributes": {"action":"conversations.attributes.read","effects":["read"],"method":"GET","origin":"{api}","params":["include_archived"],"path":"/conversations/attributes","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listCustomObjectInstances": {"action":"custom_object_instances.read","effects":["read"],"method":"GET","origin":"{api}","params":["references_contact_id","references_conversation_id","external_id","page","per_page"],"path":"/custom_object_instances/{custom_object_type_identifier}","scope":{"custom_object_type_identifier":{"at":"custom_object_type_identifier","from":"path"},"external_id":{"at":"external_id","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"references_contact_id":{"at":"references_contact_id","from":"query","optional":true},"references_conversation_id":{"at":"references_conversation_id","from":"query","optional":true}}},
+      "listDataAttributes": {"action":"data_attributes.read","effects":["read"],"method":"GET","origin":"{api}","params":["model","include_archived"],"path":"/data_attributes","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listDataConnectorExecutionResults": {"action":"data_connectors.execution_results.read","effects":["read"],"method":"GET","origin":"{api}","params":["per_page","starting_after","success","error_type","start_ts","end_ts","include_bodies"],"path":"/data_connectors/{data_connector_id}/execution_results","scope":{"data_connector_id":{"at":"data_connector_id","from":"path"},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listDataConnectorVersions": {"action":"data_connectors.versions.read","effects":["read"],"method":"GET","origin":"{api}","params":["per_page","starting_after"],"path":"/data_connectors/{id}/versions","scope":{"id":{"at":"id","from":"path"},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listDataConnectors": {"action":"data_connectors.read","effects":["read"],"method":"GET","origin":"{api}","params":["per_page","starting_after"],"path":"/data_connectors","scope":{"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listDeletedContacts": {"action":"contacts.deleted.read","effects":["read"],"method":"GET","origin":"{api}","params":["per_page","page","escape_identity"],"path":"/contacts/deleted","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listDeletedConversationIds": {"action":"conversations.deleted.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page","order"],"path":"/conversations/deleted","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listDynamicContents": {"action":"dynamic_contents.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page"],"path":"/dynamic_contents","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listEmails": {"action":"emails.read","effects":["read"],"method":"GET","origin":"{api}","path":"/emails","scope":{}},
+      "listExternalPages": {"action":"ai.external_pages.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page"],"path":"/ai/external_pages","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listFinCapabilities": {"action":"fin.capabilities.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/fin/capabilities","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "listFolders": {"action":"folders.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page","parent_folder_id"],"path":"/folders","scope":{"page":{"at":"page","from":"query","optional":true},"parent_folder_id":{"at":"parent_folder_id","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listGrantedCompaniesForAContact": {"action":"contacts.granted_companies.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page","order"],"path":"/contacts/{contact_id}/granted_companies","path_patterns":{"contact_id":"[^bf].*|b(?:|[^u].*|u(?:|[^l].*|l(?:|[^k].*|k.+)))|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^d].*|d(?:|[^_].*|_(?:|[^b].*|b(?:|[^y].*|y(?:|[^_].*|_(?:|[^e].*|e(?:|[^x].*|x(?:|[^t].*|t(?:|[^e].*|e(?:|[^r].*|r(?:|[^n].*|n(?:|[^a].*|a(?:|[^l].*|l(?:|[^_].*|_(?:|[^i].*|i(?:|[^d].*|d.+))))))))))))))))))"},"scope":{"contact_id":{"at":"contact_id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listHandlingEvents": {"action":"conversations.handling_events.read","effects":["read"],"method":"GET","origin":"{api}","path":"/conversations/{id}/handling_events","path_patterns":{"id":"[^a].*|a(?:|[^t].*|t(?:|[^t].*|t(?:|[^r].*|r(?:|[^i].*|i(?:|[^b].*|b(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "listHelpCenterRedirects": {"action":"help_center.help_centers.redirects.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page"],"path":"/help_center/help_centers/{help_center_id}/redirects","scope":{"help_center_id":{"at":"help_center_id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listHelpCenters": {"action":"help_center.help_centers.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page"],"path":"/help_center/help_centers","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listHitlEvents": {"action":"conversations.hitl_events.read","effects":["read"],"method":"GET","origin":"{api}","path":"/conversations/{id}/hitl_events","path_patterns":{"id":"[^a].*|a(?:|[^t].*|t(?:|[^t].*|t(?:|[^r].*|r(?:|[^i].*|i(?:|[^b].*|b(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "listInternalArticles": {"action":"internal_articles.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page"],"path":"/internal_articles","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listLiveNewsfeedItems": {"action":"news.newsfeeds.items.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page"],"path":"/news/newsfeeds/{newsfeed_id}/items","scope":{"newsfeed_id":{"at":"newsfeed_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listMacros": {"action":"macros.read","effects":["read"],"method":"GET","origin":"{api}","params":["per_page","starting_after","updated_since"],"path":"/macros","scope":{"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listNewsItems": {"action":"news.news_items.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page"],"path":"/news/news_items","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listNewsfeeds": {"action":"news.newsfeeds.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page"],"path":"/news/newsfeeds","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listNotes": {"action":"contacts.notes.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page","order"],"path":"/contacts/{contact_id}/notes","path_patterns":{"contact_id":"[^bf].*|b(?:|[^u].*|u(?:|[^l].*|l(?:|[^k].*|k.+)))|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^d].*|d(?:|[^_].*|_(?:|[^b].*|b(?:|[^y].*|y(?:|[^_].*|_(?:|[^e].*|e(?:|[^x].*|x(?:|[^t].*|t(?:|[^e].*|e(?:|[^r].*|r(?:|[^n].*|n(?:|[^a].*|a(?:|[^l].*|l(?:|[^_].*|_(?:|[^i].*|i(?:|[^d].*|d.+))))))))))))))))))"},"scope":{"contact_id":{"at":"contact_id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listOfficeHoursExceptions": {"action":"office_hours_schedules.office_hours_exceptions.read","effects":["read"],"method":"GET","origin":"{api}","path":"/office_hours_schedules/{office_hours_schedule_id}/office_hours_exceptions","scope":{"office_hours_schedule_id":{"at":"office_hours_schedule_id","from":"path"}}},
+      "listOfficeHoursSchedules": {"action":"office_hours_schedules.read","effects":["read"],"method":"GET","origin":"{api}","path":"/office_hours_schedules","scope":{}},
+      "listRoles": {"action":"roles.read","effects":["read"],"method":"GET","origin":"{api}","path":"/roles","scope":{}},
+      "listSegments": {"action":"segments.read","effects":["read"],"method":"GET","origin":"{api}","params":["include_count","type"],"path":"/segments","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listSegmentsForAContact": {"action":"contacts.segments.read","effects":["read"],"method":"GET","origin":"{api}","path":"/contacts/{contact_id}/segments","path_patterns":{"contact_id":"[^bf].*|b(?:|[^u].*|u(?:|[^l].*|l(?:|[^k].*|k.+)))|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^d].*|d(?:|[^_].*|_(?:|[^b].*|b(?:|[^y].*|y(?:|[^_].*|_(?:|[^e].*|e(?:|[^x].*|x(?:|[^t].*|t(?:|[^e].*|e(?:|[^r].*|r(?:|[^n].*|n(?:|[^a].*|a(?:|[^l].*|l(?:|[^_].*|_(?:|[^i].*|i(?:|[^d].*|d.+))))))))))))))))))"},"scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+      "listSideConversations": {"action":"conversations.side_conversations.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","per_page"],"path":"/conversations/{id}/side_conversations","path_patterns":{"id":"[^a].*|a(?:|[^t].*|t(?:|[^t].*|t(?:|[^r].*|r(?:|[^i].*|i(?:|[^b].*|b(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))))))"},"scope":{"id":{"at":"id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listSubscriptionTypes": {"action":"subscription_types.read","effects":["read"],"method":"GET","origin":"{api}","path":"/subscription_types","scope":{}},
+      "listSubscriptionsForAContact": {"action":"contacts.subscriptions.read","effects":["read"],"method":"GET","origin":"{api}","path":"/contacts/{contact_id}/subscriptions","path_patterns":{"contact_id":"[^bf].*|b(?:|[^u].*|u(?:|[^l].*|l(?:|[^k].*|k.+)))|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^d].*|d(?:|[^_].*|_(?:|[^b].*|b(?:|[^y].*|y(?:|[^_].*|_(?:|[^e].*|e(?:|[^x].*|x(?:|[^t].*|t(?:|[^e].*|e(?:|[^r].*|r(?:|[^n].*|n(?:|[^a].*|a(?:|[^l].*|l(?:|[^_].*|_(?:|[^i].*|i(?:|[^d].*|d.+))))))))))))))))))"},"scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+      "listTags": {"action":"tags.read","effects":["read"],"method":"GET","origin":"{api}","params":["company_id","email","id","name","taggable_id","taggable_type","user_id"],"path":"/tags","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listTagsForAContact": {"action":"contacts.tags.read","effects":["read"],"method":"GET","origin":"{api}","path":"/contacts/{contact_id}/tags","path_patterns":{"contact_id":"[^bf].*|b(?:|[^u].*|u(?:|[^l].*|l(?:|[^k].*|k.+)))|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^d].*|d(?:|[^_].*|_(?:|[^b].*|b(?:|[^y].*|y(?:|[^_].*|_(?:|[^e].*|e(?:|[^x].*|x(?:|[^t].*|t(?:|[^e].*|e(?:|[^r].*|r(?:|[^n].*|n(?:|[^a].*|a(?:|[^l].*|l(?:|[^_].*|_(?:|[^i].*|i(?:|[^d].*|d.+))))))))))))))))))"},"scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+      "listTeamHandlingSegments": {"action":"conversations.team_handling_segments.read","effects":["read"],"method":"GET","origin":"{api}","path":"/conversations/{id}/team_handling_segments","path_patterns":{"id":"[^a].*|a(?:|[^t].*|t(?:|[^t].*|t(?:|[^r].*|r(?:|[^i].*|i(?:|[^b].*|b(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "listTeams": {"action":"teams.read","effects":["read"],"method":"GET","origin":"{api}","path":"/teams","scope":{}},
+      "listTicketStates": {"action":"ticket_states.read","effects":["read"],"method":"GET","origin":"{api}","path":"/ticket_states","scope":{}},
+      "listTicketTypes": {"action":"ticket_types.read","effects":["read"],"method":"GET","origin":"{api}","path":"/ticket_types","scope":{}},
+      "manageConversation": {"action":"conversations.parts.write","effects":["write"],"method":"POST","origin":"{api}","path":"/conversations/{conversation_id}/parts","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
+      "manageConversation.json.7eaa940ceca6": {"action":"conversations.parts.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/conversations/{conversation_id}/parts","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "mergeConversation": {"action":"conversations.delete","effects":["delete","write"],"method":"POST","origin":"{api}","path":"/conversations/{id}/merge","scope":{"id":{"at":"id","from":"path"}}},
+      "mergeConversation.json.cb4a634eab78": {"action":"conversations.delete","body":"json","effects":["delete","write"],"method":"POST","origin":"{api}","path":"/conversations/{id}/merge","scope":{"id":{"at":"id","from":"path"},"merge_into_conversation_id":{"at":"/merge_into_conversation_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "publishArticleDraft": {"action":"articles.draft.publish","effects":["publish"],"method":"POST","origin":"{api}","path":"/articles/{id}/draft/publish","scope":{"id":{"at":"id","from":"path"}}},
+      "publishArticleDraft.json.c9f873a532c4": {"action":"articles.draft.publish","body":"json","effects":["publish"],"method":"POST","origin":"{api}","path":"/articles/{id}/draft/publish","scope":{"author_id":{"at":"/author_id","from":"body","optional":true,"type":"number"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "rateConversation": {"action":"conversations.rating.write","effects":["write"],"method":"POST","origin":"{api}","path":"/conversations/{conversation_id}/rating","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
+      "rateConversation.json.383b264863d4": {"action":"conversations.rating.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/conversations/{conversation_id}/rating","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"intercom_user_id":{"at":"/intercom_user_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "redactConversation": {"action":"conversations.redact.delete","effects":["delete"],"method":"POST","origin":"{api}","path":"/conversations/redact","scope":{}},
+      "redactConversation.json.54a78b73bf6f": {"action":"conversations.redact.delete","body":"json","effects":["delete"],"method":"POST","origin":"{api}","path":"/conversations/redact","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "registerFinVoiceCall": {"action":"fin_voice.register.write","effects":["write"],"method":"POST","origin":"{api}","path":"/fin_voice/register","scope":{}},
+      "registerFinVoiceCall.json.52cb59c6aa31": {"action":"fin_voice.register.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/fin_voice/register","scope":{"call_id":{"at":"/call_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"vendor_internal_id":{"at":"/vendor_internal_id","from":"body","optional":true}}},
+      "removeAdmin": {"action":"admins.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","params":["admin_id","reassign_messages_admin_id","reassign_owner_admin_id","reassign_articles_author_id","reassign_conversations_admin_id","reassign_replies_teams"],"path":"/admins/remove","scope":{"admin_id":{"at":"admin_id","from":"query"},"query":{"at":"","from":"query","type":"object"},"reassign_articles_author_id":{"at":"reassign_articles_author_id","from":"query"},"reassign_conversations_admin_id":{"at":"reassign_conversations_admin_id","from":"query"},"reassign_messages_admin_id":{"at":"reassign_messages_admin_id","from":"query"},"reassign_owner_admin_id":{"at":"reassign_owner_admin_id","from":"query"},"reassign_replies_teams":{"at":"reassign_replies_teams","from":"query","optional":true}}},
+      "removeGrantedCompanyFromAContact": {"action":"contacts.granted_companies.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/contacts/{contact_id}/granted_companies/{company_id}","scope":{"company_id":{"at":"company_id","from":"path"},"contact_id":{"at":"contact_id","from":"path"}}},
+      "replaceGrantedCompaniesForAContact": {"action":"contacts.granted_companies.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/contacts/{contact_id}/granted_companies","scope":{"company_ids":{"at":"/company_ids","from":"body","type":"array"},"contact_id":{"at":"contact_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "replyConversation": {"action":"conversations.reply.send","effects":["send"],"method":"POST","origin":"{api}","path":"/conversations/{conversation_id}/reply","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
+      "replyTicket": {"action":"tickets.reply.send","effects":["send"],"method":"POST","origin":"{api}","path":"/tickets/{ticket_id}/reply","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "replyTicket.json.1b68b582559a": {"action":"tickets.reply.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/tickets/{ticket_id}/reply","scope":{"request":{"at":"","from":"body","type":"object"},"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "replyToFin": {"action":"fin.reply.generate","body":"json","effects":["generate","write"],"method":"POST","origin":"{api}","path":"/fin/reply","scope":{"conversation_id":{"at":"/conversation_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "retrieveAdmin": {"action":"admins.read","effects":["read"],"method":"GET","origin":"{api}","path":"/admins/{admin_id}","path_patterns":{"admin_id":"[0-9]+"},"scope":{"admin_id":{"at":"admin_id","from":"path"}}},
+      "retrieveArticle": {"action":"articles.read","effects":["read"],"method":"GET","origin":"{api}","path":"/articles/{article_id}","path_patterns":{"article_id":"[0-9]+"},"scope":{"article_id":{"at":"article_id","from":"path"}}},
+      "retrieveArticleDraft": {"action":"articles.draft.read","effects":["read"],"method":"GET","origin":"{api}","path":"/articles/{id}/draft","scope":{"id":{"at":"id","from":"path"}}},
+      "retrieveArticleVersion": {"action":"articles.versions.read","effects":["read"],"method":"GET","origin":"{api}","params":["locale"],"path":"/articles/{article_id}/versions/{id}","scope":{"article_id":{"at":"article_id","from":"path"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "retrieveAudience": {"action":"audiences.read","effects":["read"],"method":"GET","origin":"{api}","path":"/audiences/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "retrieveAuthToken": {"action":"auth_tokens.read","effects":["read"],"method":"GET","origin":"{api}","path":"/auth_tokens/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "retrieveBrand": {"action":"brands.read","effects":["read"],"method":"GET","origin":"{api}","path":"/brands/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "retrieveCollection": {"action":"help_center.collections.read","effects":["read"],"method":"GET","origin":"{api}","path":"/help_center/collections/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"}}},
+      "retrieveCompany": {"action":"companies.read","effects":["read"],"method":"GET","origin":"{api}","params":["name","company_id","tag_id","segment_id","page","per_page","type"],"path":"/companies","scope":{"company_id":{"at":"company_id","from":"query","optional":true},"name":{"at":"name","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"segment_id":{"at":"segment_id","from":"query","optional":true},"tag_id":{"at":"tag_id","from":"query","optional":true}}},
+      "retrieveDataConnectorVersion": {"action":"data_connectors.versions.read","effects":["read"],"method":"GET","origin":"{api}","path":"/data_connectors/{id}/versions/{version_id}","scope":{"id":{"at":"id","from":"path"},"version_id":{"at":"version_id","from":"path"}}},
+      "retrieveEmail": {"action":"emails.read","effects":["read"],"method":"GET","origin":"{api}","path":"/emails/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "retrieveFolder": {"action":"folders.read","effects":["read"],"method":"GET","origin":"{api}","path":"/folders/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "retrieveHelpCenter": {"action":"help_center.help_centers.read","effects":["read"],"method":"GET","origin":"{api}","path":"/help_center/help_centers/{help_center_id}","scope":{"help_center_id":{"at":"help_center_id","from":"path"}}},
+      "retrieveHelpCenterRedirect": {"action":"help_center.help_centers.redirects.read","effects":["read"],"method":"GET","origin":"{api}","path":"/help_center/help_centers/{help_center_id}/redirects/{id}","scope":{"help_center_id":{"at":"help_center_id","from":"path"},"id":{"at":"id","from":"path"}}},
+      "retrieveInternalArticle": {"action":"internal_articles.read","effects":["read"],"method":"GET","origin":"{api}","path":"/internal_articles/{internal_article_id}","path_patterns":{"internal_article_id":"[0-9]+"},"scope":{"internal_article_id":{"at":"internal_article_id","from":"path"}}},
+      "retrieveNewsItem": {"action":"news.news_items.read","effects":["read"],"method":"GET","origin":"{api}","path":"/news/news_items/{news_item_id}","scope":{"news_item_id":{"at":"news_item_id","from":"path"}}},
+      "retrieveNewsfeed": {"action":"news.newsfeeds.read","effects":["read"],"method":"GET","origin":"{api}","path":"/news/newsfeeds/{newsfeed_id}","scope":{"newsfeed_id":{"at":"newsfeed_id","from":"path"}}},
+      "retrieveNote": {"action":"notes.read","effects":["read"],"method":"GET","origin":"{api}","path":"/notes/{note_id}","scope":{"note_id":{"at":"note_id","from":"path"}}},
+      "retrieveRole": {"action":"roles.read","effects":["read"],"method":"GET","origin":"{api}","path":"/roles/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "retrieveSegment": {"action":"segments.read","effects":["read"],"method":"GET","origin":"{api}","params":["include_count"],"path":"/segments/{segment_id}","scope":{"query":{"at":"","from":"query","type":"object"},"segment_id":{"at":"segment_id","from":"path"}}},
+      "retrieveTeam": {"action":"teams.read","effects":["read"],"method":"GET","origin":"{api}","path":"/teams/{team_id}","scope":{"team_id":{"at":"team_id","from":"path"}}},
+      "retrieveVisitorWithUserId": {"action":"visitors.read","effects":["read"],"method":"GET","origin":"{api}","params":["user_id"],"path":"/visitors","scope":{"query":{"at":"","from":"query","type":"object"},"user_id":{"at":"user_id","from":"query"}}},
+      "revokeConversationStreamTokens": {"action":"conversations.stream.token.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","params":["external_id"],"path":"/conversations/stream/token","scope":{"external_id":{"at":"external_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "runFinProcedure": {"action":"fin.procedures.execute","body":"json","effects":["execute"],"method":"POST","origin":"{api}","path":"/fin/procedures/{procedure_id}/run","scope":{"conversation_id":{"at":"/conversation_id","from":"body"},"procedure_id":{"at":"procedure_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "scrollOverAllCompanies": {"action":"companies.scroll.read","effects":["read"],"method":"GET","origin":"{api}","params":["scroll_param"],"path":"/companies/scroll","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "searchActivityLogs": {"action":"admins.activity_logs.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/admins/activity_logs/search","scope":{"page":{"at":"/page","from":"body","optional":true,"type":"number"},"per_page":{"at":"/per_page","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "searchArticles": {"action":"articles.read","effects":["read"],"method":"GET","origin":"{api}","params":["phrase","state","help_center_id","highlight","page","per_page"],"path":"/articles/search","scope":{"help_center_id":{"at":"help_center_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "searchCompanies": {"action":"companies.read","effects":["read"],"method":"POST","origin":"{api}","path":"/companies/search","scope":{}},
+      "searchCompanies.json.4bcbe75b5413": {"action":"companies.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/companies/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "searchContent": {"action":"content.read","effects":["read"],"method":"GET","origin":"{api}","params":["query","page","per_page","states","locales","tag_ids","tag_operator","any_tag_ids","folder_ids","folder_entity_type","content_types","copilot_state","fin_service_state","fin_sales_state","created_by_ids","last_updated_by_ids","created_at_after","created_at_before","updated_at_after","updated_at_before"],"path":"/content/search","scope":{"any_tag_ids":{"at":"any_tag_ids","from":"query","optional":true},"created_by_ids":{"at":"created_by_ids","from":"query","optional":true},"folder_ids":{"at":"folder_ids","from":"query","optional":true},"last_updated_by_ids":{"at":"last_updated_by_ids","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"tag_ids":{"at":"tag_ids","from":"query","optional":true}}},
+      "searchConversations": {"action":"conversations.read","effects":["read"],"method":"POST","origin":"{api}","params":["include_monitors","include_scorecards"],"path":"/conversations/search","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "searchConversations.json.2dae9fb238d3": {"action":"conversations.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","params":["include_monitors","include_scorecards"],"path":"/conversations/search","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "searchInternalArticles": {"action":"internal_articles.read","effects":["read"],"method":"GET","origin":"{api}","params":["folder_id","page","per_page"],"path":"/internal_articles/search","scope":{"folder_id":{"at":"folder_id","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "searchTickets": {"action":"tickets.read","effects":["read"],"method":"POST","origin":"{api}","path":"/tickets/search","scope":{}},
+      "searchTickets.json.6249ef3edf0f": {"action":"tickets.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/tickets/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "setAwayAdmin": {"action":"admins.away.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/admins/{admin_id}/away","scope":{"admin_id":{"at":"admin_id","from":"path"}}},
+      "setAwayAdmin.json.3ab91141446d": {"action":"admins.away.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/admins/{admin_id}/away","scope":{"admin_id":{"at":"admin_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "showCall": {"action":"calls.read","effects":["read"],"method":"GET","origin":"{api}","path":"/calls/{call_id}","scope":{"call_id":{"at":"call_id","from":"path"}}},
+      "showCallRecording": {"action":"calls.recording.read","effects":["read"],"method":"GET","origin":"{api}","path":"/calls/{call_id}/recording","scope":{"call_id":{"at":"call_id","from":"path"}}},
+      "showCallTranscript": {"action":"calls.transcript.read","effects":["read"],"method":"GET","origin":"{api}","path":"/calls/{id}/transcript","scope":{"id":{"at":"id","from":"path"}}},
+      "showDataConnectorExecutionResult": {"action":"data_connectors.execution_results.read","effects":["read"],"method":"GET","origin":"{api}","path":"/data_connectors/{data_connector_id}/execution_results/{id}","scope":{"data_connector_id":{"at":"data_connector_id","from":"path"},"id":{"at":"id","from":"path"}}},
+      "stageArticleDraft": {"action":"articles.draft.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/articles/{id}/draft","scope":{"id":{"at":"id","from":"path"}}},
+      "stageArticleDraft.json.2a56994abcfa": {"action":"articles.draft.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/articles/{id}/draft","scope":{"audience_ids":{"at":"/audience_ids","from":"body","optional":true,"type":"array"},"author_id":{"at":"/author_id","from":"body","optional":true,"type":"number"},"folder_id":{"at":"/folder_id","from":"body","optional":true,"type":"number"},"id":{"at":"id","from":"path"},"parent_id":{"at":"/parent_id","from":"body","optional":true},"parent_ids":{"at":"/parent_ids","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "startFinConversation": {"action":"fin.generate","body":"json","effects":["generate","write"],"method":"POST","origin":"{api}","path":"/fin/start","scope":{"conversation_id":{"at":"/conversation_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "submitEcommerceProductEvent": {"action":"ecommerce.connectors.events.write","effects":["write"],"method":"POST","origin":"{api}","path":"/ecommerce/connectors/{import_source_id}/events","scope":{"import_source_id":{"at":"import_source_id","from":"path"}}},
+      "submitEcommerceProductEvent.json.4d4f8b90422d": {"action":"ecommerce.connectors.events.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/ecommerce/connectors/{import_source_id}/events","scope":{"import_source_id":{"at":"import_source_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "submitFinCsat": {"action":"fin.csat.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/fin/csat","scope":{"conversation_id":{"at":"/conversation_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "unlinkConversationFromTicket": {"action":"tickets.linked_conversations.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/tickets/{ticket_id}/linked_conversations/{id}","scope":{"id":{"at":"id","from":"path"},"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "updateArticle": {"action":"articles.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/articles/{article_id}","scope":{"article_id":{"at":"article_id","from":"path"}}},
+      "updateArticle.json.9667ef75e3fe": {"action":"articles.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/articles/{article_id}","scope":{"article_id":{"at":"article_id","from":"path"},"author_id":{"at":"/author_id","from":"body","optional":true,"type":"number"},"parent_id":{"at":"/parent_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateAudience": {"action":"audiences.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/audiences/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateAudience.json.5877d02519d2": {"action":"audiences.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/audiences/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateAuthToken": {"action":"auth_tokens.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/auth_tokens/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"request_header_key":{"at":"/request_header_key","from":"body","optional":true}}},
+      "updateCollection": {"action":"help_center.collections.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/help_center/collections/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"}}},
+      "updateCollection.json.9401c308fca3": {"action":"help_center.collections.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/help_center/collections/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"parent_id":{"at":"/parent_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateContentImportSource": {"action":"ai.content_import_sources.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/ai/content_import_sources/{source_id}","scope":{"source_id":{"at":"source_id","from":"path"}}},
+      "updateContentImportSource.json.adb2b8b52b16": {"action":"ai.content_import_sources.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/ai/content_import_sources/{source_id}","scope":{"request":{"at":"","from":"body","type":"object"},"source_id":{"at":"source_id","from":"path"},"url":{"at":"/url","from":"body"}}},
+      "updateContentSnippet": {"action":"content_snippets.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/content_snippets/{id}","scope":{"audience_ids":{"at":"/audience_ids","from":"body","optional":true,"type":"array"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateConversation": {"action":"conversations.write","effects":["write"],"method":"PUT","origin":"{api}","params":["display_as"],"path":"/conversations/{conversation_id}","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateConversation.json.5cb6bdc1a5a8": {"action":"conversations.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","params":["display_as"],"path":"/conversations/{conversation_id}","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateConversationAttribute": {"action":"conversations.attributes.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/conversations/attributes/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"visible_to_team_ids":{"at":"/visible_to_team_ids","from":"body","optional":true,"type":"array"}}},
+      "updateConversationAttributeOption": {"action":"conversations.attributes.options.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/conversations/attributes/{id}/options/{option_id}","scope":{"id":{"at":"id","from":"path"},"option_id":{"at":"option_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateDataAttribute": {"action":"data_attributes.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/data_attributes/{data_attribute_id}","scope":{"data_attribute_id":{"at":"data_attribute_id","from":"path"}}},
+      "updateDataAttribute.json.eb4fccd874e3": {"action":"data_attributes.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/data_attributes/{data_attribute_id}","scope":{"data_attribute_id":{"at":"data_attribute_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateDataConnector": {"action":"data_connectors.admin","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/data_connectors/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateDataConnector.json.07724a557c16": {"action":"data_connectors.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/data_connectors/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"token_ids":{"at":"/token_ids","from":"body","optional":true,"type":"array"},"url":{"at":"/url","from":"body","optional":true}}},
+      "updateDataConnectorVersion": {"action":"data_connectors.versions.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/data_connectors/{id}/versions/{version_id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"version_id":{"at":"version_id","from":"path"}}},
+      "updateDynamicContent": {"action":"dynamic_contents.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/dynamic_contents/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateExternalPage": {"action":"ai.external_pages.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/ai/external_pages/{page_id}","scope":{"page_id":{"at":"page_id","from":"path"}}},
+      "updateExternalPage.json.f77a9f4e215b": {"action":"ai.external_pages.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/ai/external_pages/{page_id}","scope":{"audience_ids":{"at":"/audience_ids","from":"body","optional":true,"type":"array"},"external_id":{"at":"/external_id","from":"body"},"page_id":{"at":"page_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"source_id":{"at":"/source_id","from":"body","type":"number"},"url":{"at":"/url","from":"body","optional":true}}},
+      "updateFolder": {"action":"folders.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/folders/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateFolder.json.7d4e4959e218": {"action":"folders.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/folders/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateInternalArticle": {"action":"internal_articles.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/internal_articles/{internal_article_id}","scope":{"internal_article_id":{"at":"internal_article_id","from":"path"}}},
+      "updateInternalArticle.json.a47c521cfab5": {"action":"internal_articles.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/internal_articles/{internal_article_id}","scope":{"audience_ids":{"at":"/audience_ids","from":"body","optional":true,"type":"array"},"author_id":{"at":"/author_id","from":"body","optional":true,"type":"number"},"folder_id":{"at":"/folder_id","from":"body","optional":true,"type":"number"},"internal_article_id":{"at":"internal_article_id","from":"path"},"owner_id":{"at":"/owner_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateIpAllowlist": {"action":"ip_allowlist.admin","effects":["admin"],"method":"PUT","origin":"{api}","path":"/ip_allowlist","scope":{}},
+      "updateIpAllowlist.json.6bb28bd7580d": {"action":"ip_allowlist.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/ip_allowlist","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "updateNewsItem": {"action":"news.news_items.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/news/news_items/{news_item_id}","scope":{"news_item_id":{"at":"news_item_id","from":"path"}}},
+      "updateNewsItem.json.1fb89a45cea4": {"action":"news.news_items.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/news/news_items/{news_item_id}","scope":{"news_item_id":{"at":"news_item_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"sender_id":{"at":"/sender_id","from":"body","type":"number"}}},
+      "updateOfficeHoursException": {"action":"office_hours_schedules.office_hours_exceptions.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/office_hours_schedules/{office_hours_schedule_id}/office_hours_exceptions/{id}","scope":{"id":{"at":"id","from":"path"},"office_hours_schedule_id":{"at":"office_hours_schedule_id","from":"path"}}},
+      "updateOfficeHoursException.json.86a67e2560f2": {"action":"office_hours_schedules.office_hours_exceptions.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/office_hours_schedules/{office_hours_schedule_id}/office_hours_exceptions/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"office_hours_schedule_id":{"at":"office_hours_schedule_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateOfficeHoursSchedule": {"action":"office_hours_schedules.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/office_hours_schedules/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateOfficeHoursSchedule.json.357422eab938": {"action":"office_hours_schedules.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/office_hours_schedules/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"time_zone_name":{"at":"/time_zone_name","from":"body","optional":true}}},
+      "updateTicket": {"action":"tickets.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/tickets/{ticket_id}","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "updateTicket.json.fa53d95ae614": {"action":"tickets.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/tickets/{ticket_id}","scope":{"request":{"at":"","from":"body","type":"object"},"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "updateTicketType": {"action":"ticket_types.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/ticket_types/{ticket_type_id}","scope":{"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
+      "updateTicketType.json.0c3420272e18": {"action":"ticket_types.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/ticket_types/{ticket_type_id}","scope":{"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
+      "updateTicketTypeAttribute": {"action":"ticket_types.attributes.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/ticket_types/{ticket_type_id}/attributes/{attribute_id}","scope":{"attribute_id":{"at":"attribute_id","from":"path"},"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
+      "updateTicketTypeAttribute.json.1d63bc7a5226": {"action":"ticket_types.attributes.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/ticket_types/{ticket_type_id}/attributes/{attribute_id}","scope":{"attribute_id":{"at":"attribute_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
+      "updateVisitor": {"action":"visitors.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/visitors","scope":{}},
+      "updateVisitor.json.756629b0d844": {"action":"visitors.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/visitors","scope":{"id":{"at":"/id","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","optional":true}}},
+      "uploadEcommerceCatalog": {"action":"ecommerce.connectors.catalog.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/ecommerce/connectors/{import_source_id}/catalog","scope":{"import_source_id":{"at":"import_source_id","from":"path"}}}
     }
   }
 }

@@ -1,8 +1,167 @@
 {
-  "title": "Google Translate",
   "catalog": {
-    "replaced_by": "google_cloud",
-    "group": "api",
+    "actions": {
+      "language": {
+        "title": "Language"
+      },
+      "language.translate": {
+        "title": "Translate"
+      },
+      "language.translate.detect": {
+        "title": "Detect"
+      },
+      "language.translate.detect.generate": {
+        "title": "Generate"
+      },
+      "language.translate.generate": {
+        "title": "Generate"
+      },
+      "language.translate.languages": {
+        "title": "Languages"
+      },
+      "language.translate.languages.read": {
+        "title": "Read"
+      },
+      "projects": {
+        "title": "Projects"
+      },
+      "projects.generate": {
+        "title": "Generate"
+      },
+      "projects.locations": {
+        "title": "Locations"
+      },
+      "projects.locations.adaptive_mt_datasets": {
+        "title": "Adaptive mt datasets"
+      },
+      "projects.locations.adaptive_mt_datasets.adaptive_mt_files": {
+        "title": "Adaptive mt files"
+      },
+      "projects.locations.adaptive_mt_datasets.adaptive_mt_files.adaptive_mt_sentences": {
+        "title": "Adaptive mt sentences"
+      },
+      "projects.locations.adaptive_mt_datasets.adaptive_mt_files.adaptive_mt_sentences.read": {
+        "title": "Read"
+      },
+      "projects.locations.adaptive_mt_datasets.adaptive_mt_files.delete": {
+        "title": "Delete"
+      },
+      "projects.locations.adaptive_mt_datasets.adaptive_mt_files.read": {
+        "title": "Read"
+      },
+      "projects.locations.adaptive_mt_datasets.adaptive_mt_sentences": {
+        "title": "Adaptive mt sentences"
+      },
+      "projects.locations.adaptive_mt_datasets.adaptive_mt_sentences.read": {
+        "title": "Read"
+      },
+      "projects.locations.adaptive_mt_datasets.delete": {
+        "title": "Delete"
+      },
+      "projects.locations.adaptive_mt_datasets.read": {
+        "title": "Read"
+      },
+      "projects.locations.adaptive_mt_datasets.write": {
+        "title": "Create and edit"
+      },
+      "projects.locations.datasets": {
+        "title": "Datasets"
+      },
+      "projects.locations.datasets.delete": {
+        "title": "Delete"
+      },
+      "projects.locations.datasets.examples": {
+        "title": "Examples"
+      },
+      "projects.locations.datasets.examples.read": {
+        "title": "Read"
+      },
+      "projects.locations.datasets.read": {
+        "title": "Read"
+      },
+      "projects.locations.datasets.write": {
+        "title": "Create and edit"
+      },
+      "projects.locations.generate": {
+        "title": "Generate"
+      },
+      "projects.locations.glossaries": {
+        "title": "Glossaries"
+      },
+      "projects.locations.glossaries.delete": {
+        "title": "Delete"
+      },
+      "projects.locations.glossaries.glossary_entries": {
+        "title": "Glossary entries"
+      },
+      "projects.locations.glossaries.glossary_entries.delete": {
+        "title": "Delete"
+      },
+      "projects.locations.glossaries.glossary_entries.read": {
+        "title": "Read"
+      },
+      "projects.locations.glossaries.glossary_entries.write": {
+        "title": "Create and edit"
+      },
+      "projects.locations.glossaries.read": {
+        "title": "Read"
+      },
+      "projects.locations.glossaries.write": {
+        "title": "Create and edit"
+      },
+      "projects.locations.models": {
+        "title": "Models"
+      },
+      "projects.locations.models.delete": {
+        "title": "Delete"
+      },
+      "projects.locations.models.read": {
+        "title": "Read"
+      },
+      "projects.locations.models.write": {
+        "title": "Create and edit"
+      },
+      "projects.locations.operations": {
+        "title": "Operations"
+      },
+      "projects.locations.operations.delete": {
+        "title": "Delete"
+      },
+      "projects.locations.operations.read": {
+        "title": "Read"
+      },
+      "projects.locations.operations.write": {
+        "title": "Create and edit"
+      },
+      "projects.locations.read": {
+        "title": "Read"
+      },
+      "projects.locations.supported_languages": {
+        "title": "Supported languages"
+      },
+      "projects.locations.supported_languages.read": {
+        "title": "Read"
+      },
+      "projects.supported_languages": {
+        "title": "Supported languages"
+      },
+      "projects.supported_languages.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://translation.googleapis.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
     "fields": [
       {
         "key": "client_id",
@@ -15,83 +174,83 @@
         "paths": [],
         "secret": true
       },
-      {"key": "token", "label": "Google Translate account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/cloud-translation"}}
+      {
+        "credential": true,
+        "key": "token",
+        "label": "Google Translate account",
+        "oauth": {
+          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
+          "client_id": "{client_id}",
+          "client_secret": "{client_secret}",
+          "scope": "https://www.googleapis.com/auth/cloud-translation",
+          "token_url": "https://oauth2.googleapis.com/token"
+        },
+        "secret": true
+      }
     ],
-    "connection": {"http": {"slots": [{"value": "token", "origin": "https://translation.googleapis.com", "path": "/v3", "header": "Authorization", "prefix": "Bearer "}]}},
-    "actions": {
-      "delete.adaptive_mt_datasets": {"title": "Delete: adaptive mt datasets"},
-      "delete.adaptive_mt_files": {"title": "Delete: adaptive mt files"},
-      "delete.datasets": {"title": "Delete: datasets"},
-      "delete.glossaries": {"title": "Delete: glossaries"},
-      "delete.glossary_entries": {"title": "Delete: glossary entries"},
-      "delete.models": {"title": "Delete: models"},
-      "delete.operations": {"title": "Delete: operations"},
-      "generate.locations": {"title": "Generate: locations"},
-      "generate.projects": {"title": "Generate: projects"},
-      "read": {"title": "Read everything the account can see"},
-      "write.adaptive_mt_datasets": {"title": "Write: adaptive mt datasets"},
-      "write.datasets": {"title": "Write: datasets"},
-      "write.glossaries": {"title": "Write: glossaries"},
-      "write.glossary_entries": {"title": "Write: glossary entries"},
-      "write.locations": {"title": "Write: locations"},
-      "write.models": {"title": "Write: models"},
-      "write.operations": {"title": "Write: operations"},
-      "write.projects": {"title": "Write: projects"}
-    }
+    "group": "api",
+    "replaced_by": "google_cloud"
   },
+  "title": "Google Translate",
   "http": {
+    "sensitive_query": ["bearer_token"],
     "operations": {
-      "projects.detectLanguage": {"action":"generate.projects","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}:detectLanguage","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"}}},
-      "projects.getSupportedLanguages": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/supportedLanguages","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","displayLanguageCode","model"],"scope":{"projectsId":{"from":"path","at":"projectsId"}}},
-      "projects.locations.adaptiveMtDatasets.adaptiveMtFiles.adaptiveMtSentences.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}/adaptiveMtFiles/{adaptiveMtFilesId}/adaptiveMtSentences","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"adaptiveMtDatasetsId":{"from":"path","at":"adaptiveMtDatasetsId"},"adaptiveMtFilesId":{"from":"path","at":"adaptiveMtFilesId"}}},
-      "projects.locations.adaptiveMtDatasets.adaptiveMtFiles.delete": {"action":"delete.adaptive_mt_files","effects":["delete"],"method":"DELETE","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}/adaptiveMtFiles/{adaptiveMtFilesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"adaptiveMtDatasetsId":{"from":"path","at":"adaptiveMtDatasetsId"},"adaptiveMtFilesId":{"from":"path","at":"adaptiveMtFilesId"}}},
-      "projects.locations.adaptiveMtDatasets.adaptiveMtFiles.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}/adaptiveMtFiles/{adaptiveMtFilesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"adaptiveMtDatasetsId":{"from":"path","at":"adaptiveMtDatasetsId"},"adaptiveMtFilesId":{"from":"path","at":"adaptiveMtFilesId"}}},
-      "projects.locations.adaptiveMtDatasets.adaptiveMtFiles.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}/adaptiveMtFiles","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"adaptiveMtDatasetsId":{"from":"path","at":"adaptiveMtDatasetsId"}}},
-      "projects.locations.adaptiveMtDatasets.adaptiveMtSentences.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}/adaptiveMtSentences","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"adaptiveMtDatasetsId":{"from":"path","at":"adaptiveMtDatasetsId"}}},
-      "projects.locations.adaptiveMtDatasets.create": {"action":"write.adaptive_mt_datasets","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.adaptiveMtDatasets.delete": {"action":"delete.adaptive_mt_datasets","effects":["delete"],"method":"DELETE","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"adaptiveMtDatasetsId":{"from":"path","at":"adaptiveMtDatasetsId"}}},
-      "projects.locations.adaptiveMtDatasets.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"adaptiveMtDatasetsId":{"from":"path","at":"adaptiveMtDatasetsId"}}},
-      "projects.locations.adaptiveMtDatasets.importAdaptiveMtFile": {"action":"write.adaptive_mt_datasets","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}:importAdaptiveMtFile","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"adaptiveMtDatasetsId":{"from":"path","at":"adaptiveMtDatasetsId"}}},
-      "projects.locations.adaptiveMtDatasets.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.adaptiveMtTranslate": {"action":"generate.locations","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}:adaptiveMtTranslate","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.batchTranslateDocument": {"action":"generate.locations","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}:batchTranslateDocument","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.batchTranslateText": {"action":"generate.locations","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}:batchTranslateText","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.datasets.create": {"action":"write.datasets","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/datasets","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.datasets.delete": {"action":"delete.datasets","effects":["delete"],"method":"DELETE","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"datasetsId":{"from":"path","at":"datasetsId"}}},
-      "projects.locations.datasets.examples.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/examples","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"datasetsId":{"from":"path","at":"datasetsId"}}},
-      "projects.locations.datasets.exportData": {"action":"read","effects":["read"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:exportData","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"datasetsId":{"from":"path","at":"datasetsId"}}},
-      "projects.locations.datasets.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"datasetsId":{"from":"path","at":"datasetsId"}}},
-      "projects.locations.datasets.importData": {"action":"write.datasets","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:importData","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"datasetsId":{"from":"path","at":"datasetsId"}}},
-      "projects.locations.datasets.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/datasets","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.detectLanguage": {"action":"generate.locations","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}:detectLanguage","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.getSupportedLanguages": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/supportedLanguages","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","displayLanguageCode","model"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.glossaries.create": {"action":"write.glossaries","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.glossaries.delete": {"action":"delete.glossaries","effects":["delete"],"method":"DELETE","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"glossariesId":{"from":"path","at":"glossariesId"}}},
-      "projects.locations.glossaries.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"glossariesId":{"from":"path","at":"glossariesId"}}},
-      "projects.locations.glossaries.glossaryEntries.create": {"action":"write.glossary_entries","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/glossaryEntries","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"glossariesId":{"from":"path","at":"glossariesId"}}},
-      "projects.locations.glossaries.glossaryEntries.delete": {"action":"delete.glossary_entries","effects":["delete"],"method":"DELETE","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/glossaryEntries/{glossaryEntriesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"glossariesId":{"from":"path","at":"glossariesId"},"glossaryEntriesId":{"from":"path","at":"glossaryEntriesId"}}},
-      "projects.locations.glossaries.glossaryEntries.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/glossaryEntries/{glossaryEntriesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"glossariesId":{"from":"path","at":"glossariesId"},"glossaryEntriesId":{"from":"path","at":"glossaryEntriesId"}}},
-      "projects.locations.glossaries.glossaryEntries.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/glossaryEntries","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"glossariesId":{"from":"path","at":"glossariesId"}}},
-      "projects.locations.glossaries.glossaryEntries.patch": {"action":"write.glossary_entries","effects":["write"],"method":"PATCH","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/glossaryEntries/{glossaryEntriesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"glossariesId":{"from":"path","at":"glossariesId"},"glossaryEntriesId":{"from":"path","at":"glossaryEntriesId"}}},
-      "projects.locations.glossaries.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.glossaries.patch": {"action":"write.glossaries","effects":["write"],"method":"PATCH","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"glossariesId":{"from":"path","at":"glossariesId"}}},
-      "projects.locations.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","extraLocationTypes","filter","pageSize","pageToken"],"scope":{"projectsId":{"from":"path","at":"projectsId"}}},
-      "projects.locations.models.create": {"action":"write.models","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/models","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.models.delete": {"action":"delete.models","effects":["delete"],"method":"DELETE","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/models/{modelsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"modelsId":{"from":"path","at":"modelsId"}}},
-      "projects.locations.models.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/models/{modelsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"modelsId":{"from":"path","at":"modelsId"}}},
-      "projects.locations.models.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/models","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.operations.cancel": {"action":"write.operations","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"operationsId":{"from":"path","at":"operationsId"}}},
-      "projects.locations.operations.delete": {"action":"delete.operations","effects":["delete"],"method":"DELETE","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"operationsId":{"from":"path","at":"operationsId"}}},
-      "projects.locations.operations.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"operationsId":{"from":"path","at":"operationsId"}}},
-      "projects.locations.operations.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/operations","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken","returnPartialSuccess"],"scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.operations.wait": {"action":"write.operations","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:wait","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"},"operationsId":{"from":"path","at":"operationsId"}}},
-      "projects.locations.refineText": {"action":"write.locations","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}:refineText","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.romanizeText": {"action":"write.locations","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}:romanizeText","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.translateDocument": {"action":"generate.locations","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}:translateDocument","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.locations.translateText": {"action":"generate.locations","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}/locations/{locationsId}:translateText","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"},"locationsId":{"from":"path","at":"locationsId"}}},
-      "projects.romanizeText": {"action":"write.projects","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}:romanizeText","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"}}},
-      "projects.translateText": {"action":"generate.projects","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","path":"/v3/projects/{projectsId}:translateText","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"projectsId":{"from":"path","at":"projectsId"}}}
+      "language.detections.detect": {"action":"language.translate.detect.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","bearer_token","callback","fields","pp","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/language/translate/v2/detect","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "language.detections.list": {"action":"language.translate.detect.generate","effects":["generate"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","bearer_token","callback","fields","pp","prettyPrint","quotaUser","uploadType","upload_protocol","q"],"path":"/language/translate/v2/detect","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "language.languages.list": {"action":"language.translate.languages.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","bearer_token","callback","fields","pp","prettyPrint","quotaUser","uploadType","upload_protocol","model","target"],"path":"/language/translate/v2/languages","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "language.translations.list": {"action":"language.translate.generate","effects":["generate"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","bearer_token","callback","fields","pp","prettyPrint","quotaUser","uploadType","upload_protocol","cid","format","model","q","source","target"],"path":"/language/translate/v2","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "language.translations.translate": {"action":"language.translate.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","bearer_token","callback","fields","pp","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/language/translate/v2","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "projects.detectLanguage": {"action":"projects.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}:detectLanguage","scope":{"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.getSupportedLanguages": {"action":"projects.supported_languages.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","displayLanguageCode","model"],"path":"/v3/projects/{projectsId}/supportedLanguages","scope":{"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.adaptiveMtDatasets.adaptiveMtFiles.adaptiveMtSentences.list": {"action":"projects.locations.adaptive_mt_datasets.adaptive_mt_files.adaptive_mt_sentences.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}/adaptiveMtFiles/{adaptiveMtFilesId}/adaptiveMtSentences","scope":{"adaptiveMtDatasetsId":{"at":"adaptiveMtDatasetsId","from":"path"},"adaptiveMtFilesId":{"at":"adaptiveMtFilesId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.adaptiveMtDatasets.adaptiveMtFiles.delete": {"action":"projects.locations.adaptive_mt_datasets.adaptive_mt_files.delete","effects":["delete"],"method":"DELETE","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}/adaptiveMtFiles/{adaptiveMtFilesId}","scope":{"adaptiveMtDatasetsId":{"at":"adaptiveMtDatasetsId","from":"path"},"adaptiveMtFilesId":{"at":"adaptiveMtFilesId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.adaptiveMtDatasets.adaptiveMtFiles.get": {"action":"projects.locations.adaptive_mt_datasets.adaptive_mt_files.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}/adaptiveMtFiles/{adaptiveMtFilesId}","scope":{"adaptiveMtDatasetsId":{"at":"adaptiveMtDatasetsId","from":"path"},"adaptiveMtFilesId":{"at":"adaptiveMtFilesId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.adaptiveMtDatasets.adaptiveMtFiles.list": {"action":"projects.locations.adaptive_mt_datasets.adaptive_mt_files.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}/adaptiveMtFiles","scope":{"adaptiveMtDatasetsId":{"at":"adaptiveMtDatasetsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.adaptiveMtDatasets.adaptiveMtSentences.list": {"action":"projects.locations.adaptive_mt_datasets.adaptive_mt_sentences.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}/adaptiveMtSentences","scope":{"adaptiveMtDatasetsId":{"at":"adaptiveMtDatasetsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.adaptiveMtDatasets.create": {"action":"projects.locations.adaptive_mt_datasets.write","body":"json","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.adaptiveMtDatasets.delete": {"action":"projects.locations.adaptive_mt_datasets.delete","effects":["delete"],"method":"DELETE","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}","scope":{"adaptiveMtDatasetsId":{"at":"adaptiveMtDatasetsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.adaptiveMtDatasets.get": {"action":"projects.locations.adaptive_mt_datasets.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}","scope":{"adaptiveMtDatasetsId":{"at":"adaptiveMtDatasetsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.adaptiveMtDatasets.importAdaptiveMtFile": {"action":"projects.locations.adaptive_mt_datasets.write","body":"json","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}:importAdaptiveMtFile","scope":{"adaptiveMtDatasetsId":{"at":"adaptiveMtDatasetsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.adaptiveMtDatasets.list": {"action":"projects.locations.adaptive_mt_datasets.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.adaptiveMtTranslate": {"action":"projects.locations.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}:adaptiveMtTranslate","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.batchTranslateDocument": {"action":"projects.locations.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}:batchTranslateDocument","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.batchTranslateText": {"action":"projects.locations.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}:batchTranslateText","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.datasets.create": {"action":"projects.locations.datasets.write","body":"json","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/datasets","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.datasets.delete": {"action":"projects.locations.datasets.delete","effects":["delete"],"method":"DELETE","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.datasets.examples.list": {"action":"projects.locations.datasets.examples.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/examples","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.datasets.exportData": {"action":"projects.locations.datasets.write","body":"json","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:exportData","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "projects.locations.datasets.get": {"action":"projects.locations.datasets.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.datasets.importData": {"action":"projects.locations.datasets.write","body":"json","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:importData","scope":{"datasetsId":{"at":"datasetsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.datasets.list": {"action":"projects.locations.datasets.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/datasets","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.detectLanguage": {"action":"projects.locations.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}:detectLanguage","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.get": {"action":"projects.locations.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.getSupportedLanguages": {"action":"projects.locations.supported_languages.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","displayLanguageCode","model"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/supportedLanguages","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.glossaries.create": {"action":"projects.locations.glossaries.write","body":"json","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.glossaries.delete": {"action":"projects.locations.glossaries.delete","effects":["delete"],"method":"DELETE","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}","scope":{"glossariesId":{"at":"glossariesId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.glossaries.get": {"action":"projects.locations.glossaries.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}","scope":{"glossariesId":{"at":"glossariesId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.glossaries.glossaryEntries.create": {"action":"projects.locations.glossaries.glossary_entries.write","body":"json","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/glossaryEntries","scope":{"glossariesId":{"at":"glossariesId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.glossaries.glossaryEntries.delete": {"action":"projects.locations.glossaries.glossary_entries.delete","effects":["delete"],"method":"DELETE","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/glossaryEntries/{glossaryEntriesId}","scope":{"glossariesId":{"at":"glossariesId","from":"path"},"glossaryEntriesId":{"at":"glossaryEntriesId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.glossaries.glossaryEntries.get": {"action":"projects.locations.glossaries.glossary_entries.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/glossaryEntries/{glossaryEntriesId}","scope":{"glossariesId":{"at":"glossariesId","from":"path"},"glossaryEntriesId":{"at":"glossaryEntriesId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.glossaries.glossaryEntries.list": {"action":"projects.locations.glossaries.glossary_entries.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/glossaryEntries","scope":{"glossariesId":{"at":"glossariesId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.glossaries.glossaryEntries.patch": {"action":"projects.locations.glossaries.glossary_entries.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/glossaryEntries/{glossaryEntriesId}","scope":{"glossariesId":{"at":"glossariesId","from":"path"},"glossaryEntriesId":{"at":"glossaryEntriesId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.glossaries.list": {"action":"projects.locations.glossaries.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.glossaries.patch": {"action":"projects.locations.glossaries.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}","scope":{"glossariesId":{"at":"glossariesId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.list": {"action":"projects.locations.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","extraLocationTypes","filter","pageSize","pageToken"],"path":"/v3/projects/{projectsId}/locations","scope":{"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.models.create": {"action":"projects.locations.models.write","body":"json","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/models","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.models.delete": {"action":"projects.locations.models.delete","effects":["delete"],"method":"DELETE","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/models/{modelsId}","scope":{"locationsId":{"at":"locationsId","from":"path"},"modelsId":{"at":"modelsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.models.get": {"action":"projects.locations.models.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/models/{modelsId}","scope":{"locationsId":{"at":"locationsId","from":"path"},"modelsId":{"at":"modelsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.models.list": {"action":"projects.locations.models.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/models","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.operations.cancel": {"action":"projects.locations.operations.write","body":"json","effects":["write"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel","scope":{"locationsId":{"at":"locationsId","from":"path"},"operationsId":{"at":"operationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.operations.delete": {"action":"projects.locations.operations.delete","effects":["delete"],"method":"DELETE","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}","scope":{"locationsId":{"at":"locationsId","from":"path"},"operationsId":{"at":"operationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.operations.get": {"action":"projects.locations.operations.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}","scope":{"locationsId":{"at":"locationsId","from":"path"},"operationsId":{"at":"operationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.operations.list": {"action":"projects.locations.operations.read","effects":["read"],"method":"GET","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken","returnPartialSuccess"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/operations","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.operations.wait": {"action":"projects.locations.operations.read","body":"json","effects":["read"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:wait","scope":{"locationsId":{"at":"locationsId","from":"path"},"operationsId":{"at":"operationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "projects.locations.refineText": {"action":"projects.locations.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}:refineText","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "projects.locations.romanizeText": {"action":"projects.locations.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}:romanizeText","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "projects.locations.translateDocument": {"action":"projects.locations.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}:translateDocument","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.locations.translateText": {"action":"projects.locations.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}/locations/{locationsId}:translateText","scope":{"locationsId":{"at":"locationsId","from":"path"},"projectsId":{"at":"projectsId","from":"path"}}},
+      "projects.romanizeText": {"action":"projects.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}:romanizeText","scope":{"projectsId":{"at":"projectsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "projects.translateText": {"action":"projects.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://translation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v3/projects/{projectsId}:translateText","scope":{"projectsId":{"at":"projectsId","from":"path"}}}
     }
   }
 }

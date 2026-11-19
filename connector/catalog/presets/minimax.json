@@ -1,29 +1,319 @@
 {
-  "title": "MiniMax",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.minimax.io", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "delete.delete": {"title": "Delete: delete"},
-      "generate.completions": {"title": "Generate: completions"},
-      "generate.t2a_v2": {"title": "Generate: t2a v2"},
-      "generate.upload": {"title": "Generate: upload"},
-      "read": {"title": "Read everything the account can see"}
-    }
+      "anthropic": {
+        "title": "Anthropic"
+      },
+      "anthropic.messages": {
+        "title": "Messages"
+      },
+      "anthropic.messages.count_tokens": {
+        "title": "Count tokens"
+      },
+      "anthropic.messages.count_tokens.read": {
+        "title": "Read"
+      },
+      "anthropic.messages.generate": {
+        "title": "Generate"
+      },
+      "anthropic.models": {
+        "title": "Models"
+      },
+      "anthropic.models.read": {
+        "title": "Read"
+      },
+      "chat": {
+        "title": "Chat"
+      },
+      "chat.completions": {
+        "title": "Completions"
+      },
+      "chat.completions.generate": {
+        "title": "Generate"
+      },
+      "files": {
+        "title": "Files"
+      },
+      "files.delete": {
+        "title": "Delete"
+      },
+      "files.read": {
+        "title": "Read"
+      },
+      "files.retrieve": {
+        "title": "Retrieve"
+      },
+      "files.retrieve.read": {
+        "title": "Read"
+      },
+      "files.retrieve_content": {
+        "title": "Retrieve content"
+      },
+      "files.retrieve_content.read": {
+        "title": "Read"
+      },
+      "files.write": {
+        "title": "Create and edit"
+      },
+      "h3_context_ir": {
+        "title": "H3 context ir"
+      },
+      "h3_context_ir.generate": {
+        "title": "Generate"
+      },
+      "h3_image_context_ir": {
+        "title": "H3 image context ir"
+      },
+      "h3_image_context_ir.generate": {
+        "title": "Generate"
+      },
+      "image_generation": {
+        "title": "Image generation"
+      },
+      "image_generation.generate": {
+        "title": "Generate"
+      },
+      "images": {
+        "title": "Images"
+      },
+      "images.edits": {
+        "title": "Edits"
+      },
+      "images.edits.generate": {
+        "title": "Generate"
+      },
+      "images.generations": {
+        "title": "Generations"
+      },
+      "images.generations.generate": {
+        "title": "Generate"
+      },
+      "lyrics_generation": {
+        "title": "Lyrics generation"
+      },
+      "lyrics_generation.generate": {
+        "title": "Generate"
+      },
+      "models": {
+        "title": "Models"
+      },
+      "models.read": {
+        "title": "Read"
+      },
+      "music_cover_preprocess": {
+        "title": "Music cover preprocess"
+      },
+      "music_cover_preprocess.generate": {
+        "title": "Generate"
+      },
+      "music_generation": {
+        "title": "Music generation"
+      },
+      "music_generation.generate": {
+        "title": "Generate"
+      },
+      "query": {
+        "title": "Query"
+      },
+      "query.t2a_async_query_v2": {
+        "title": "T2a async query v2"
+      },
+      "query.t2a_async_query_v2.read": {
+        "title": "Read"
+      },
+      "query.video_generation": {
+        "title": "Video generation"
+      },
+      "query.video_generation.read": {
+        "title": "Read"
+      },
+      "query.video_template_generation": {
+        "title": "Video template generation"
+      },
+      "query.video_template_generation.read": {
+        "title": "Read"
+      },
+      "responses": {
+        "title": "Responses"
+      },
+      "responses.generate": {
+        "title": "Generate"
+      },
+      "responses.input_tokens": {
+        "title": "Input tokens"
+      },
+      "responses.input_tokens.read": {
+        "title": "Read"
+      },
+      "speech_to_text": {
+        "title": "Speech to text"
+      },
+      "speech_to_text.generate": {
+        "title": "Generate"
+      },
+      "t2a_async_v2": {
+        "title": "T2a async v2"
+      },
+      "t2a_async_v2.generate": {
+        "title": "Generate"
+      },
+      "t2a_v2": {
+        "title": "T2a v2"
+      },
+      "t2a_v2.generate": {
+        "title": "Generate"
+      },
+      "text": {
+        "title": "Text"
+      },
+      "text.chatcompletion_v2": {
+        "title": "Chatcompletion v2"
+      },
+      "text.chatcompletion_v2.generate": {
+        "title": "Generate"
+      },
+      "video_generation": {
+        "title": "Video generation"
+      },
+      "video_generation.delete": {
+        "title": "Delete"
+      },
+      "video_generation.generate": {
+        "title": "Generate"
+      },
+      "video_regeneration": {
+        "title": "Video regeneration"
+      },
+      "video_regeneration.generate": {
+        "title": "Generate"
+      },
+      "video_template_generation": {
+        "title": "Video template generation"
+      },
+      "video_template_generation.generate": {
+        "title": "Generate"
+      },
+      "voice": {
+        "title": "Voice"
+      },
+      "voice.delete": {
+        "title": "Delete"
+      },
+      "voice.read": {
+        "title": "Read"
+      },
+      "voice_clone": {
+        "title": "Voice clone"
+      },
+      "voice_clone.generate": {
+        "title": "Generate"
+      },
+      "voice_design": {
+        "title": "Voice design"
+      },
+      "voice_design.generate": {
+        "title": "Generate"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.minimax.io",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api-uw.minimax.io",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api.minimax.cn",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          },
+          {
+            "header": "X-Api-Key",
+            "origin": "https://api.minimax.io",
+            "path": "/anthropic",
+            "value": "api_key"
+          },
+          {
+            "header": "X-Api-Key",
+            "origin": "https://api-uw.minimax.io",
+            "path": "/anthropic",
+            "value": "api_key"
+          },
+          {
+            "header": "X-Api-Key",
+            "origin": "https://api.minimax.cn",
+            "path": "/anthropic",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "MiniMax",
   "http": {
+    "origins": {"api":["https://api.minimax.io","https://api-uw.minimax.io","https://api.minimax.cn"]},
     "operations": {
-      "chatCompletionOpenAI": {"action":"generate.completions","effects":["generate"],"method":"POST","origin":"https://api.minimax.io","path":"/v1/chat/completions","body":"json","scope":{}},
-      "deleteFile": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"https://api.minimax.io","path":"/v1/files/delete","body":"json","scope":{"file_id":{"from":"body","at":"/file_id","type":"number"}}},
-      "listFiles": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.minimax.io","path":"/v1/files/list","params":["purpose"],"scope":{}},
-      "queryVideoGenerationTask": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.minimax.io","path":"/v1/query/video_generation","params":["task_id"],"scope":{"task_id":{"from":"query","at":"task_id"}}},
-      "retrieveFile": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.minimax.io","path":"/v1/files/retrieve","params":["file_id"],"scope":{"file_id":{"from":"query","at":"file_id"}}},
-      "retrieveFileContent": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.minimax.io","path":"/v1/files/retrieve_content","params":["file_id"],"scope":{"file_id":{"from":"query","at":"file_id"}}},
-      "t2aV2": {"action":"generate.t2a_v2","effects":["generate"],"method":"POST","origin":"https://api.minimax.io","path":"/v1/t2a_v2","body":"json","scope":{}},
-      "uploadFile": {"action":"generate.upload","effects":["generate"],"method":"POST","origin":"https://api.minimax.io","path":"/v1/files/upload","body":"any","scope":{}}
+      "anthropicListModels": {"action":"anthropic.models.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","after_id","before_id"],"path":"/anthropic/v1/models","scope":{"after_id":{"at":"after_id","from":"query","optional":true},"before_id":{"at":"before_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "anthropicRetrieveModel": {"action":"anthropic.models.read","effects":["read"],"method":"GET","origin":"{api}","path":"/anthropic/v1/models/{model_id}","scope":{"model_id":{"at":"model_id","from":"path"}}},
+      "chatCompletionAnthropic": {"action":"anthropic.messages.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/anthropic/v1/messages","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "chatCompletionOpenAI": {"action":"chat.completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/chat/completions","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "chatCompletionV2": {"action":"text.chatcompletion_v2.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/text/chatcompletion_v2","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "countTokensAnthropic": {"action":"anthropic.messages.count_tokens.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/anthropic/v1/messages/count_tokens","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "coverPreprocess": {"action":"music_cover_preprocess.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/music_cover_preprocess","scope":{"audio_url":{"at":"/audio_url","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createResponse": {"action":"responses.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/responses","scope":{"prompt_cache_key":{"at":"/prompt_cache_key","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "deleteFile": {"action":"files.delete","body":"json","effects":["delete"],"method":"POST","origin":"{api}","path":"/v1/files/delete","scope":{"file_id":{"at":"/file_id","from":"body","type":"number"}}},
+      "deleteVoice": {"action":"voice.delete","body":"json","effects":["delete"],"method":"POST","origin":"{api}","path":"/v1/delete_voice","scope":{"request":{"at":"","from":"body","type":"object"},"voice_id":{"at":"/voice_id","from":"body"}}},
+      "estimateInputTokens": {"action":"responses.input_tokens.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/v1/responses/input_tokens","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "generateLyrics": {"action":"lyrics_generation.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/lyrics_generation","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "generateMusic": {"action":"music_generation.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/music_generation","scope":{"audio_url":{"at":"/audio_url","from":"body","optional":true},"cover_feature_id":{"at":"/cover_feature_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "getVoice": {"action":"voice.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/v1/get_voice","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "h3ContextIRV2Create": {"action":"h3_context_ir.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v2/h3_context_ir","scope":{"callback_url":{"at":"/callback_url","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "h3ImageContextIR": {"action":"h3_image_context_ir.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/h3_image_context_ir","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "h3ImageEdits": {"action":"images.edits.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/images/edits","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "h3ImageGenerations": {"action":"images.generations.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/images/generations","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "imageGeneration": {"action":"image_generation.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/image_generation","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "listFiles": {"action":"files.read","effects":["read"],"method":"GET","origin":"{api}","params":["purpose"],"path":"/v1/files/list","scope":{}},
+      "listModels": {"action":"models.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/models","scope":{}},
+      "queryVideoGenerationTask": {"action":"query.video_generation.read","effects":["read"],"method":"GET","origin":"{api}","params":["task_id"],"path":"/v1/query/video_generation","scope":{"task_id":{"at":"task_id","from":"query"}}},
+      "queryVideoTemplateGenerationTask": {"action":"query.video_template_generation.read","effects":["read"],"method":"GET","origin":"{api}","params":["task_id"],"path":"/v1/query/video_template_generation","scope":{"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"query"}}},
+      "retrieveFile": {"action":"files.retrieve.read","effects":["read"],"method":"GET","origin":"{api}","params":["file_id"],"path":"/v1/files/retrieve","scope":{"file_id":{"at":"file_id","from":"query"}}},
+      "retrieveFileContent": {"action":"files.retrieve_content.read","effects":["read"],"method":"GET","origin":"{api}","params":["file_id"],"path":"/v1/files/retrieve_content","scope":{"file_id":{"at":"file_id","from":"query"}}},
+      "retrieveModel": {"action":"models.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/models/{model_id}","scope":{"model_id":{"at":"model_id","from":"path"}}},
+      "speechToText": {"action":"speech_to_text.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/speech_to_text","scope":{}},
+      "t2aAsyncV2": {"action":"t2a_async_v2.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/t2a_async_v2","scope":{"request":{"at":"","from":"body","type":"object"},"text_file_id":{"at":"/text_file_id","from":"body","optional":true,"type":"number"}}},
+      "t2aAsyncV2Query": {"action":"query.t2a_async_query_v2.read","effects":["read"],"method":"GET","origin":"{api}","params":["task_id"],"path":"/v1/query/t2a_async_query_v2","scope":{"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"query"}}},
+      "t2aV2": {"action":"t2a_v2.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/t2a_v2","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "uploadFile": {"action":"files.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v1/files/upload","scope":{}},
+      "videoGeneration": {"action":"video_generation.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/video_generation","scope":{"callback_url":{"at":"/callback_url","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "videoGenerationV2Create": {"action":"video_generation.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v2/video_generation","scope":{"callback_url":{"at":"/callback_url","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "videoGenerationV2Delete": {"action":"video_generation.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/video_generation/{task_id}","scope":{"task_id":{"at":"task_id","from":"path"}}},
+      "videoGenerationV2List": {"action":"query.video_generation.read","effects":["read"],"method":"GET","origin":"{api}","params":["page_num","page_size","filter.status","filter.task_ids","filter.model","filter.task_type"],"path":"/v2/query/video_generation","scope":{"filter.task_ids":{"at":"filter.task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "videoGenerationV2Query": {"action":"query.video_generation.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/query/video_generation/{task_id}","scope":{"task_id":{"at":"task_id","from":"path"}}},
+      "videoRegenerationV2Create": {"action":"video_regeneration.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v2/video_regeneration","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "videoTemplateGeneration": {"action":"video_template_generation.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/video_template_generation","scope":{"callback_url":{"at":"/callback_url","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"/template_id","from":"body"}}},
+      "voiceClone": {"action":"voice_clone.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/voice_clone","scope":{"file_id":{"at":"/file_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"},"voice_id":{"at":"/voice_id","from":"body"}}},
+      "voiceDesign": {"action":"voice_design.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v1/voice_design","scope":{"request":{"at":"","from":"body","type":"object"},"voice_id":{"at":"/voice_id","from":"body","optional":true}}}
     }
   }
 }

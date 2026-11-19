@@ -1,95 +1,386 @@
 {
-  "title": "Oura",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "access_token", "label": "Personal Access Token", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_token", "origin": "https://api.ouraring.com", "path": "/v2", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "admin.subscription": {"title": "Admin: subscription"},
-      "delete.subscription": {"title": "Delete: subscription"},
-      "read": {"title": "Read everything the account can see"},
-      "write.renew": {"title": "Write: renew"}
-    }
+      "sandbox": {
+        "title": "Sandbox"
+      },
+      "sandbox.usercollection": {
+        "title": "Usercollection"
+      },
+      "sandbox.usercollection.daily_activity": {
+        "title": "Daily activity"
+      },
+      "sandbox.usercollection.daily_activity.read": {
+        "title": "Read"
+      },
+      "sandbox.usercollection.daily_cardiovascular_age": {
+        "title": "Daily cardiovascular age"
+      },
+      "sandbox.usercollection.daily_cardiovascular_age.read": {
+        "title": "Read"
+      },
+      "sandbox.usercollection.daily_readiness": {
+        "title": "Daily readiness"
+      },
+      "sandbox.usercollection.daily_readiness.read": {
+        "title": "Read"
+      },
+      "sandbox.usercollection.daily_resilience": {
+        "title": "Daily resilience"
+      },
+      "sandbox.usercollection.daily_resilience.read": {
+        "title": "Read"
+      },
+      "sandbox.usercollection.daily_sleep": {
+        "title": "Daily sleep"
+      },
+      "sandbox.usercollection.daily_sleep.read": {
+        "title": "Read"
+      },
+      "sandbox.usercollection.daily_spo2": {
+        "title": "Daily spo2"
+      },
+      "sandbox.usercollection.daily_spo2.read": {
+        "title": "Read"
+      },
+      "sandbox.usercollection.daily_stress": {
+        "title": "Daily stress"
+      },
+      "sandbox.usercollection.daily_stress.read": {
+        "title": "Read"
+      },
+      "sandbox.usercollection.enhanced_tag": {
+        "title": "Enhanced tag"
+      },
+      "sandbox.usercollection.enhanced_tag.read": {
+        "title": "Read"
+      },
+      "sandbox.usercollection.heartrate": {
+        "title": "Heartrate"
+      },
+      "sandbox.usercollection.heartrate.read": {
+        "title": "Read"
+      },
+      "sandbox.usercollection.rest_mode_period": {
+        "title": "Rest mode period"
+      },
+      "sandbox.usercollection.rest_mode_period.read": {
+        "title": "Read"
+      },
+      "sandbox.usercollection.ring_battery_level": {
+        "title": "Ring battery level"
+      },
+      "sandbox.usercollection.ring_battery_level.read": {
+        "title": "Read"
+      },
+      "sandbox.usercollection.ring_configuration": {
+        "title": "Ring configuration"
+      },
+      "sandbox.usercollection.ring_configuration.read": {
+        "title": "Read"
+      },
+      "sandbox.usercollection.session": {
+        "title": "Session"
+      },
+      "sandbox.usercollection.session.read": {
+        "title": "Read"
+      },
+      "sandbox.usercollection.sleep": {
+        "title": "Sleep"
+      },
+      "sandbox.usercollection.sleep.read": {
+        "title": "Read"
+      },
+      "sandbox.usercollection.sleep_time": {
+        "title": "Sleep time"
+      },
+      "sandbox.usercollection.sleep_time.read": {
+        "title": "Read"
+      },
+      "sandbox.usercollection.tag": {
+        "title": "Tag"
+      },
+      "sandbox.usercollection.tag.read": {
+        "title": "Read"
+      },
+      "sandbox.usercollection.v_o2_max": {
+        "title": "V o2 max"
+      },
+      "sandbox.usercollection.v_o2_max.read": {
+        "title": "Read"
+      },
+      "sandbox.usercollection.workout": {
+        "title": "Workout"
+      },
+      "sandbox.usercollection.workout.read": {
+        "title": "Read"
+      },
+      "usercollection": {
+        "title": "Usercollection"
+      },
+      "usercollection.daily_activity": {
+        "title": "Daily activity"
+      },
+      "usercollection.daily_activity.read": {
+        "title": "Read"
+      },
+      "usercollection.daily_cardiovascular_age": {
+        "title": "Daily cardiovascular age"
+      },
+      "usercollection.daily_cardiovascular_age.read": {
+        "title": "Read"
+      },
+      "usercollection.daily_readiness": {
+        "title": "Daily readiness"
+      },
+      "usercollection.daily_readiness.read": {
+        "title": "Read"
+      },
+      "usercollection.daily_resilience": {
+        "title": "Daily resilience"
+      },
+      "usercollection.daily_resilience.read": {
+        "title": "Read"
+      },
+      "usercollection.daily_sleep": {
+        "title": "Daily sleep"
+      },
+      "usercollection.daily_sleep.read": {
+        "title": "Read"
+      },
+      "usercollection.daily_spo2": {
+        "title": "Daily spo2"
+      },
+      "usercollection.daily_spo2.read": {
+        "title": "Read"
+      },
+      "usercollection.daily_stress": {
+        "title": "Daily stress"
+      },
+      "usercollection.daily_stress.read": {
+        "title": "Read"
+      },
+      "usercollection.enhanced_tag": {
+        "title": "Enhanced tag"
+      },
+      "usercollection.enhanced_tag.read": {
+        "title": "Read"
+      },
+      "usercollection.heartrate": {
+        "title": "Heartrate"
+      },
+      "usercollection.heartrate.read": {
+        "title": "Read"
+      },
+      "usercollection.personal_info": {
+        "title": "Personal info"
+      },
+      "usercollection.personal_info.read": {
+        "title": "Read"
+      },
+      "usercollection.rest_mode_period": {
+        "title": "Rest mode period"
+      },
+      "usercollection.rest_mode_period.read": {
+        "title": "Read"
+      },
+      "usercollection.ring_battery_level": {
+        "title": "Ring battery level"
+      },
+      "usercollection.ring_battery_level.read": {
+        "title": "Read"
+      },
+      "usercollection.ring_configuration": {
+        "title": "Ring configuration"
+      },
+      "usercollection.ring_configuration.read": {
+        "title": "Read"
+      },
+      "usercollection.session": {
+        "title": "Session"
+      },
+      "usercollection.session.read": {
+        "title": "Read"
+      },
+      "usercollection.sleep": {
+        "title": "Sleep"
+      },
+      "usercollection.sleep.read": {
+        "title": "Read"
+      },
+      "usercollection.sleep_time": {
+        "title": "Sleep time"
+      },
+      "usercollection.sleep_time.read": {
+        "title": "Read"
+      },
+      "usercollection.tag": {
+        "title": "Tag"
+      },
+      "usercollection.tag.read": {
+        "title": "Read"
+      },
+      "usercollection.v_o2_max": {
+        "title": "V o2 max"
+      },
+      "usercollection.v_o2_max.read": {
+        "title": "Read"
+      },
+      "usercollection.workout": {
+        "title": "Workout"
+      },
+      "usercollection.workout.read": {
+        "title": "Read"
+      },
+      "webhook": {
+        "title": "Webhook"
+      },
+      "webhook.subscription": {
+        "title": "Subscription"
+      },
+      "webhook.subscription.admin": {
+        "title": "Manage"
+      },
+      "webhook.subscription.delete": {
+        "title": "Delete"
+      },
+      "webhook.subscription.read": {
+        "title": "Read"
+      },
+      "webhook.subscription.renew": {
+        "title": "Renew"
+      },
+      "webhook.subscription.renew.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.ouraring.com",
+            "path": "/v2",
+            "prefix": "Bearer ",
+            "value": "access_token"
+          },
+          {
+            "header": "x-client-id",
+            "origin": "https://api.ouraring.com",
+            "path": "/v2/webhook",
+            "value": "client_id"
+          },
+          {
+            "header": "x-client-secret",
+            "origin": "https://api.ouraring.com",
+            "path": "/v2/webhook",
+            "value": "client_secret"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "access_token",
+        "label": "OAuth access token",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "client_id",
+        "label": "Client ID (webhook subscriptions only)",
+        "optional": true,
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "client_secret",
+        "label": "Client secret (webhook subscriptions only)",
+        "optional": true,
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Oura",
   "http": {
     "operations": {
-      "Multiple_daily_activity_Documents_v2_usercollection_daily_activity_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_activity","params":["start_date","end_date","next_token","fields"],"scope":{}},
-      "Multiple_daily_cardiovascular_age_Documents_v2_usercollection_daily_cardiovascular_age_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_cardiovascular_age","params":["start_date","end_date","next_token","fields"],"scope":{}},
-      "Multiple_daily_readiness_Documents_v2_usercollection_daily_readiness_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_readiness","params":["start_date","end_date","next_token","fields"],"scope":{}},
-      "Multiple_daily_resilience_Documents_v2_usercollection_daily_resilience_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_resilience","params":["start_date","end_date","next_token","fields"],"scope":{}},
-      "Multiple_daily_sleep_Documents_v2_usercollection_daily_sleep_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_sleep","params":["start_date","end_date","next_token","fields"],"scope":{}},
-      "Multiple_daily_spo2_Documents_v2_usercollection_daily_spo2_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_spo2","params":["start_date","end_date","next_token","fields"],"scope":{}},
-      "Multiple_daily_stress_Documents_v2_usercollection_daily_stress_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_stress","params":["start_date","end_date","next_token","fields"],"scope":{}},
-      "Multiple_enhanced_tag_Documents_v2_usercollection_enhanced_tag_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/enhanced_tag","params":["start_date","end_date","next_token","fields"],"scope":{}},
-      "Multiple_heartrate_Documents_v2_usercollection_heartrate_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/heartrate","params":["start_datetime","end_datetime","next_token","latest","fields"],"scope":{}},
-      "Multiple_rest_mode_period_Documents_v2_usercollection_rest_mode_period_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/rest_mode_period","params":["start_date","end_date","next_token","fields"],"scope":{}},
-      "Multiple_ring_battery_level_Documents_v2_usercollection_ring_battery_level_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/ring_battery_level","params":["start_datetime","end_datetime","next_token","latest","fields"],"scope":{}},
-      "Multiple_ring_configuration_Documents_v2_usercollection_ring_configuration_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/ring_configuration","params":["fields","next_token"],"scope":{}},
-      "Multiple_session_Documents_v2_usercollection_session_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/session","params":["start_date","end_date","next_token","fields"],"scope":{}},
-      "Multiple_sleep_Documents_v2_usercollection_sleep_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/sleep","params":["start_date","end_date","next_token","fields"],"scope":{}},
-      "Multiple_sleep_time_Documents_v2_usercollection_sleep_time_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/sleep_time","params":["start_date","end_date","next_token","fields"],"scope":{}},
-      "Multiple_tag_Documents_v2_usercollection_tag_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/tag","params":["start_date","end_date","next_token","fields"],"scope":{}},
-      "Multiple_vO2_max_Documents_v2_usercollection_vO2_max_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/vO2_max","params":["start_date","end_date","next_token","fields"],"scope":{}},
-      "Multiple_workout_Documents_v2_usercollection_workout_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/workout","params":["start_date","end_date","next_token","fields"],"scope":{}},
-      "Sandbox___Multiple_daily_activity_Documents_v2_sandbox_usercollection_daily_activity_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_activity","params":["start_date","end_date","next_token"],"scope":{}},
-      "Sandbox___Multiple_daily_cardiovascular_age_Documents_v2_sandbox_usercollection_daily_cardiovascular_age_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_cardiovascular_age","params":["start_date","end_date","next_token"],"scope":{}},
-      "Sandbox___Multiple_daily_readiness_Documents_v2_sandbox_usercollection_daily_readiness_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_readiness","params":["start_date","end_date","next_token"],"scope":{}},
-      "Sandbox___Multiple_daily_resilience_Documents_v2_sandbox_usercollection_daily_resilience_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_resilience","params":["start_date","end_date","next_token"],"scope":{}},
-      "Sandbox___Multiple_daily_sleep_Documents_v2_sandbox_usercollection_daily_sleep_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_sleep","params":["start_date","end_date","next_token"],"scope":{}},
-      "Sandbox___Multiple_daily_spo2_Documents_v2_sandbox_usercollection_daily_spo2_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_spo2","params":["start_date","end_date","next_token"],"scope":{}},
-      "Sandbox___Multiple_daily_stress_Documents_v2_sandbox_usercollection_daily_stress_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_stress","params":["start_date","end_date","next_token"],"scope":{}},
-      "Sandbox___Multiple_enhanced_tag_Documents_v2_sandbox_usercollection_enhanced_tag_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/enhanced_tag","params":["start_date","end_date","next_token"],"scope":{}},
-      "Sandbox___Multiple_heartrate_Documents_v2_sandbox_usercollection_heartrate_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/heartrate","params":["start_datetime","end_datetime","next_token"],"scope":{}},
-      "Sandbox___Multiple_rest_mode_period_Documents_v2_sandbox_usercollection_rest_mode_period_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/rest_mode_period","params":["start_date","end_date","next_token"],"scope":{}},
-      "Sandbox___Multiple_ring_battery_level_Documents_v2_sandbox_usercollection_ring_battery_level_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/ring_battery_level","params":["start_datetime","end_datetime","next_token"],"scope":{}},
-      "Sandbox___Multiple_ring_configuration_Documents_v2_sandbox_usercollection_ring_configuration_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/ring_configuration","params":["next_token"],"scope":{}},
-      "Sandbox___Multiple_session_Documents_v2_sandbox_usercollection_session_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/session","params":["start_date","end_date","next_token"],"scope":{}},
-      "Sandbox___Multiple_sleep_Documents_v2_sandbox_usercollection_sleep_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/sleep","params":["start_date","end_date","next_token"],"scope":{}},
-      "Sandbox___Multiple_sleep_time_Documents_v2_sandbox_usercollection_sleep_time_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/sleep_time","params":["start_date","end_date","next_token"],"scope":{}},
-      "Sandbox___Multiple_tag_Documents_v2_sandbox_usercollection_tag_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/tag","params":["start_date","end_date","next_token"],"scope":{}},
-      "Sandbox___Multiple_vO2_max_Documents_v2_sandbox_usercollection_vO2_max_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/vO2_max","params":["start_date","end_date","next_token"],"scope":{}},
-      "Sandbox___Multiple_workout_Documents_v2_sandbox_usercollection_workout_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/workout","params":["start_date","end_date","next_token"],"scope":{}},
-      "Sandbox___Single_daily_activity_Document_v2_sandbox_usercollection_daily_activity__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_activity/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Sandbox___Single_daily_cardiovascular_age_Document_v2_sandbox_usercollection_daily_cardiovascular_age__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_cardiovascular_age/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Sandbox___Single_daily_readiness_Document_v2_sandbox_usercollection_daily_readiness__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_readiness/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Sandbox___Single_daily_resilience_Document_v2_sandbox_usercollection_daily_resilience__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_resilience/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Sandbox___Single_daily_sleep_Document_v2_sandbox_usercollection_daily_sleep__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_sleep/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Sandbox___Single_daily_spo2_Document_v2_sandbox_usercollection_daily_spo2__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_spo2/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Sandbox___Single_daily_stress_Document_v2_sandbox_usercollection_daily_stress__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_stress/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Sandbox___Single_enhanced_tag_Document_v2_sandbox_usercollection_enhanced_tag__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/enhanced_tag/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Sandbox___Single_rest_mode_period_Document_v2_sandbox_usercollection_rest_mode_period__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/rest_mode_period/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Sandbox___Single_ring_configuration_Document_v2_sandbox_usercollection_ring_configuration__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/ring_configuration/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Sandbox___Single_session_Document_v2_sandbox_usercollection_session__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/session/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Sandbox___Single_sleep_Document_v2_sandbox_usercollection_sleep__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/sleep/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Sandbox___Single_sleep_time_Document_v2_sandbox_usercollection_sleep_time__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/sleep_time/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Sandbox___Single_tag_Document_v2_sandbox_usercollection_tag__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/tag/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Sandbox___Single_vO2_max_Document_v2_sandbox_usercollection_vO2_max__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/vO2_max/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Sandbox___Single_workout_Document_v2_sandbox_usercollection_workout__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/workout/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Single_Personal_Info_Document_v2_usercollection_personal_info_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/personal_info","scope":{}},
-      "Single_daily_activity_Document_v2_usercollection_daily_activity__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_activity/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Single_daily_cardiovascular_age_Document_v2_usercollection_daily_cardiovascular_age__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_cardiovascular_age/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Single_daily_readiness_Document_v2_usercollection_daily_readiness__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_readiness/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Single_daily_resilience_Document_v2_usercollection_daily_resilience__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_resilience/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Single_daily_sleep_Document_v2_usercollection_daily_sleep__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_sleep/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Single_daily_spo2_Document_v2_usercollection_daily_spo2__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_spo2/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Single_daily_stress_Document_v2_usercollection_daily_stress__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_stress/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Single_enhanced_tag_Document_v2_usercollection_enhanced_tag__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/enhanced_tag/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Single_rest_mode_period_Document_v2_usercollection_rest_mode_period__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/rest_mode_period/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Single_ring_configuration_Document_v2_usercollection_ring_configuration__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/ring_configuration/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Single_session_Document_v2_usercollection_session__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/session/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Single_sleep_Document_v2_usercollection_sleep__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/sleep/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Single_sleep_time_Document_v2_usercollection_sleep_time__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/sleep_time/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Single_tag_Document_v2_usercollection_tag__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/tag/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Single_vO2_max_Document_v2_usercollection_vO2_max__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/vO2_max/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "Single_workout_Document_v2_usercollection_workout__document_id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/workout/{document_id}","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "create_webhook_subscription_v2_webhook_subscription_post": {"action":"admin.subscription","effects":["admin"],"method":"POST","origin":"https://api.ouraring.com","path":"/v2/webhook/subscription","body":"json","scope":{"callback_url":{"from":"body","at":"/callback_url"}}},
-      "delete_webhook_subscription_v2_webhook_subscription__id__delete": {"action":"delete.subscription","effects":["delete"],"method":"DELETE","origin":"https://api.ouraring.com","path":"/v2/webhook/subscription/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "get_webhook_subscription_v2_webhook_subscription__id__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/webhook/subscription/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "list_webhook_subscriptions_v2_webhook_subscription_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/webhook/subscription","scope":{}},
-      "renew_webhook_subscription_v2_webhook_subscription_renew__id__put": {"action":"write.renew","effects":["write"],"method":"PUT","origin":"https://api.ouraring.com","path":"/v2/webhook/subscription/renew/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "update_webhook_subscription_v2_webhook_subscription__id__put": {"action":"admin.subscription","effects":["admin"],"method":"PUT","origin":"https://api.ouraring.com","path":"/v2/webhook/subscription/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}}
+      "Multiple_daily_activity_Documents_v2_usercollection_daily_activity_get": {"action":"usercollection.daily_activity.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token","fields"],"path":"/v2/usercollection/daily_activity","scope":{}},
+      "Multiple_daily_cardiovascular_age_Documents_v2_usercollection_daily_cardiovascular_age_get": {"action":"usercollection.daily_cardiovascular_age.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token","fields"],"path":"/v2/usercollection/daily_cardiovascular_age","scope":{}},
+      "Multiple_daily_readiness_Documents_v2_usercollection_daily_readiness_get": {"action":"usercollection.daily_readiness.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token","fields"],"path":"/v2/usercollection/daily_readiness","scope":{}},
+      "Multiple_daily_resilience_Documents_v2_usercollection_daily_resilience_get": {"action":"usercollection.daily_resilience.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token","fields"],"path":"/v2/usercollection/daily_resilience","scope":{}},
+      "Multiple_daily_sleep_Documents_v2_usercollection_daily_sleep_get": {"action":"usercollection.daily_sleep.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token","fields"],"path":"/v2/usercollection/daily_sleep","scope":{}},
+      "Multiple_daily_spo2_Documents_v2_usercollection_daily_spo2_get": {"action":"usercollection.daily_spo2.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token","fields"],"path":"/v2/usercollection/daily_spo2","scope":{}},
+      "Multiple_daily_stress_Documents_v2_usercollection_daily_stress_get": {"action":"usercollection.daily_stress.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token","fields"],"path":"/v2/usercollection/daily_stress","scope":{}},
+      "Multiple_enhanced_tag_Documents_v2_usercollection_enhanced_tag_get": {"action":"usercollection.enhanced_tag.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token","fields"],"path":"/v2/usercollection/enhanced_tag","scope":{}},
+      "Multiple_heartrate_Documents_v2_usercollection_heartrate_get": {"action":"usercollection.heartrate.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_datetime","end_datetime","next_token","latest","fields"],"path":"/v2/usercollection/heartrate","scope":{}},
+      "Multiple_rest_mode_period_Documents_v2_usercollection_rest_mode_period_get": {"action":"usercollection.rest_mode_period.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token","fields"],"path":"/v2/usercollection/rest_mode_period","scope":{}},
+      "Multiple_ring_battery_level_Documents_v2_usercollection_ring_battery_level_get": {"action":"usercollection.ring_battery_level.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_datetime","end_datetime","next_token","latest","fields"],"path":"/v2/usercollection/ring_battery_level","scope":{}},
+      "Multiple_ring_configuration_Documents_v2_usercollection_ring_configuration_get": {"action":"usercollection.ring_configuration.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["fields","next_token"],"path":"/v2/usercollection/ring_configuration","scope":{}},
+      "Multiple_session_Documents_v2_usercollection_session_get": {"action":"usercollection.session.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token","fields"],"path":"/v2/usercollection/session","scope":{}},
+      "Multiple_sleep_Documents_v2_usercollection_sleep_get": {"action":"usercollection.sleep.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token","fields"],"path":"/v2/usercollection/sleep","scope":{}},
+      "Multiple_sleep_time_Documents_v2_usercollection_sleep_time_get": {"action":"usercollection.sleep_time.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token","fields"],"path":"/v2/usercollection/sleep_time","scope":{}},
+      "Multiple_tag_Documents_v2_usercollection_tag_get": {"action":"usercollection.tag.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token","fields"],"path":"/v2/usercollection/tag","scope":{}},
+      "Multiple_vO2_max_Documents_v2_usercollection_vO2_max_get": {"action":"usercollection.v_o2_max.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token","fields"],"path":"/v2/usercollection/vO2_max","scope":{}},
+      "Multiple_workout_Documents_v2_usercollection_workout_get": {"action":"usercollection.workout.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token","fields"],"path":"/v2/usercollection/workout","scope":{}},
+      "Sandbox___Multiple_daily_activity_Documents_v2_sandbox_usercollection_daily_activity_get": {"action":"sandbox.usercollection.daily_activity.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token"],"path":"/v2/sandbox/usercollection/daily_activity","scope":{}},
+      "Sandbox___Multiple_daily_cardiovascular_age_Documents_v2_sandbox_usercollection_daily_cardiovascular_age_get": {"action":"sandbox.usercollection.daily_cardiovascular_age.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token"],"path":"/v2/sandbox/usercollection/daily_cardiovascular_age","scope":{}},
+      "Sandbox___Multiple_daily_readiness_Documents_v2_sandbox_usercollection_daily_readiness_get": {"action":"sandbox.usercollection.daily_readiness.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token"],"path":"/v2/sandbox/usercollection/daily_readiness","scope":{}},
+      "Sandbox___Multiple_daily_resilience_Documents_v2_sandbox_usercollection_daily_resilience_get": {"action":"sandbox.usercollection.daily_resilience.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token"],"path":"/v2/sandbox/usercollection/daily_resilience","scope":{}},
+      "Sandbox___Multiple_daily_sleep_Documents_v2_sandbox_usercollection_daily_sleep_get": {"action":"sandbox.usercollection.daily_sleep.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token"],"path":"/v2/sandbox/usercollection/daily_sleep","scope":{}},
+      "Sandbox___Multiple_daily_spo2_Documents_v2_sandbox_usercollection_daily_spo2_get": {"action":"sandbox.usercollection.daily_spo2.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token"],"path":"/v2/sandbox/usercollection/daily_spo2","scope":{}},
+      "Sandbox___Multiple_daily_stress_Documents_v2_sandbox_usercollection_daily_stress_get": {"action":"sandbox.usercollection.daily_stress.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token"],"path":"/v2/sandbox/usercollection/daily_stress","scope":{}},
+      "Sandbox___Multiple_enhanced_tag_Documents_v2_sandbox_usercollection_enhanced_tag_get": {"action":"sandbox.usercollection.enhanced_tag.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token"],"path":"/v2/sandbox/usercollection/enhanced_tag","scope":{}},
+      "Sandbox___Multiple_heartrate_Documents_v2_sandbox_usercollection_heartrate_get": {"action":"sandbox.usercollection.heartrate.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_datetime","end_datetime","next_token"],"path":"/v2/sandbox/usercollection/heartrate","scope":{}},
+      "Sandbox___Multiple_rest_mode_period_Documents_v2_sandbox_usercollection_rest_mode_period_get": {"action":"sandbox.usercollection.rest_mode_period.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token"],"path":"/v2/sandbox/usercollection/rest_mode_period","scope":{}},
+      "Sandbox___Multiple_ring_battery_level_Documents_v2_sandbox_usercollection_ring_battery_level_get": {"action":"sandbox.usercollection.ring_battery_level.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_datetime","end_datetime","next_token"],"path":"/v2/sandbox/usercollection/ring_battery_level","scope":{}},
+      "Sandbox___Multiple_ring_configuration_Documents_v2_sandbox_usercollection_ring_configuration_get": {"action":"sandbox.usercollection.ring_configuration.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["next_token"],"path":"/v2/sandbox/usercollection/ring_configuration","scope":{}},
+      "Sandbox___Multiple_session_Documents_v2_sandbox_usercollection_session_get": {"action":"sandbox.usercollection.session.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token"],"path":"/v2/sandbox/usercollection/session","scope":{}},
+      "Sandbox___Multiple_sleep_Documents_v2_sandbox_usercollection_sleep_get": {"action":"sandbox.usercollection.sleep.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token"],"path":"/v2/sandbox/usercollection/sleep","scope":{}},
+      "Sandbox___Multiple_sleep_time_Documents_v2_sandbox_usercollection_sleep_time_get": {"action":"sandbox.usercollection.sleep_time.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token"],"path":"/v2/sandbox/usercollection/sleep_time","scope":{}},
+      "Sandbox___Multiple_tag_Documents_v2_sandbox_usercollection_tag_get": {"action":"sandbox.usercollection.tag.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token"],"path":"/v2/sandbox/usercollection/tag","scope":{}},
+      "Sandbox___Multiple_vO2_max_Documents_v2_sandbox_usercollection_vO2_max_get": {"action":"sandbox.usercollection.v_o2_max.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token"],"path":"/v2/sandbox/usercollection/vO2_max","scope":{}},
+      "Sandbox___Multiple_workout_Documents_v2_sandbox_usercollection_workout_get": {"action":"sandbox.usercollection.workout.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","params":["start_date","end_date","next_token"],"path":"/v2/sandbox/usercollection/workout","scope":{}},
+      "Sandbox___Single_daily_activity_Document_v2_sandbox_usercollection_daily_activity__document_id__get": {"action":"sandbox.usercollection.daily_activity.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_activity/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Sandbox___Single_daily_cardiovascular_age_Document_v2_sandbox_usercollection_daily_cardiovascular_age__document_id__get": {"action":"sandbox.usercollection.daily_cardiovascular_age.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_cardiovascular_age/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Sandbox___Single_daily_readiness_Document_v2_sandbox_usercollection_daily_readiness__document_id__get": {"action":"sandbox.usercollection.daily_readiness.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_readiness/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Sandbox___Single_daily_resilience_Document_v2_sandbox_usercollection_daily_resilience__document_id__get": {"action":"sandbox.usercollection.daily_resilience.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_resilience/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Sandbox___Single_daily_sleep_Document_v2_sandbox_usercollection_daily_sleep__document_id__get": {"action":"sandbox.usercollection.daily_sleep.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_sleep/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Sandbox___Single_daily_spo2_Document_v2_sandbox_usercollection_daily_spo2__document_id__get": {"action":"sandbox.usercollection.daily_spo2.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_spo2/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Sandbox___Single_daily_stress_Document_v2_sandbox_usercollection_daily_stress__document_id__get": {"action":"sandbox.usercollection.daily_stress.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/daily_stress/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Sandbox___Single_enhanced_tag_Document_v2_sandbox_usercollection_enhanced_tag__document_id__get": {"action":"sandbox.usercollection.enhanced_tag.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/enhanced_tag/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Sandbox___Single_rest_mode_period_Document_v2_sandbox_usercollection_rest_mode_period__document_id__get": {"action":"sandbox.usercollection.rest_mode_period.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/rest_mode_period/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Sandbox___Single_ring_configuration_Document_v2_sandbox_usercollection_ring_configuration__document_id__get": {"action":"sandbox.usercollection.ring_configuration.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/ring_configuration/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Sandbox___Single_session_Document_v2_sandbox_usercollection_session__document_id__get": {"action":"sandbox.usercollection.session.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/session/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Sandbox___Single_sleep_Document_v2_sandbox_usercollection_sleep__document_id__get": {"action":"sandbox.usercollection.sleep.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/sleep/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Sandbox___Single_sleep_time_Document_v2_sandbox_usercollection_sleep_time__document_id__get": {"action":"sandbox.usercollection.sleep_time.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/sleep_time/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Sandbox___Single_tag_Document_v2_sandbox_usercollection_tag__document_id__get": {"action":"sandbox.usercollection.tag.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/tag/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Sandbox___Single_vO2_max_Document_v2_sandbox_usercollection_vO2_max__document_id__get": {"action":"sandbox.usercollection.v_o2_max.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/vO2_max/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Sandbox___Single_workout_Document_v2_sandbox_usercollection_workout__document_id__get": {"action":"sandbox.usercollection.workout.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/sandbox/usercollection/workout/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Single_Personal_Info_Document_v2_usercollection_personal_info_get": {"action":"usercollection.personal_info.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/personal_info","scope":{}},
+      "Single_daily_activity_Document_v2_usercollection_daily_activity__document_id__get": {"action":"usercollection.daily_activity.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_activity/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Single_daily_cardiovascular_age_Document_v2_usercollection_daily_cardiovascular_age__document_id__get": {"action":"usercollection.daily_cardiovascular_age.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_cardiovascular_age/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Single_daily_readiness_Document_v2_usercollection_daily_readiness__document_id__get": {"action":"usercollection.daily_readiness.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_readiness/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Single_daily_resilience_Document_v2_usercollection_daily_resilience__document_id__get": {"action":"usercollection.daily_resilience.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_resilience/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Single_daily_sleep_Document_v2_usercollection_daily_sleep__document_id__get": {"action":"usercollection.daily_sleep.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_sleep/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Single_daily_spo2_Document_v2_usercollection_daily_spo2__document_id__get": {"action":"usercollection.daily_spo2.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_spo2/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Single_daily_stress_Document_v2_usercollection_daily_stress__document_id__get": {"action":"usercollection.daily_stress.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/daily_stress/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Single_enhanced_tag_Document_v2_usercollection_enhanced_tag__document_id__get": {"action":"usercollection.enhanced_tag.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/enhanced_tag/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Single_rest_mode_period_Document_v2_usercollection_rest_mode_period__document_id__get": {"action":"usercollection.rest_mode_period.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/rest_mode_period/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Single_ring_configuration_Document_v2_usercollection_ring_configuration__document_id__get": {"action":"usercollection.ring_configuration.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/ring_configuration/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Single_session_Document_v2_usercollection_session__document_id__get": {"action":"usercollection.session.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/session/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Single_sleep_Document_v2_usercollection_sleep__document_id__get": {"action":"usercollection.sleep.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/sleep/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Single_sleep_time_Document_v2_usercollection_sleep_time__document_id__get": {"action":"usercollection.sleep_time.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/sleep_time/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Single_tag_Document_v2_usercollection_tag__document_id__get": {"action":"usercollection.tag.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/tag/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Single_vO2_max_Document_v2_usercollection_vO2_max__document_id__get": {"action":"usercollection.v_o2_max.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/vO2_max/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "Single_workout_Document_v2_usercollection_workout__document_id__get": {"action":"usercollection.workout.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/usercollection/workout/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "create_webhook_subscription_v2_webhook_subscription_post": {"action":"webhook.subscription.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.ouraring.com","path":"/v2/webhook/subscription","scope":{"callback_url":{"at":"/callback_url","from":"body"}}},
+      "delete_webhook_subscription_v2_webhook_subscription__id__delete": {"action":"webhook.subscription.delete","effects":["delete"],"method":"DELETE","origin":"https://api.ouraring.com","path":"/v2/webhook/subscription/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "get_webhook_subscription_v2_webhook_subscription__id__get": {"action":"webhook.subscription.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/webhook/subscription/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "list_webhook_subscriptions_v2_webhook_subscription_get": {"action":"webhook.subscription.read","effects":["read"],"method":"GET","origin":"https://api.ouraring.com","path":"/v2/webhook/subscription","scope":{}},
+      "renew_webhook_subscription_v2_webhook_subscription_renew__id__put": {"action":"webhook.subscription.renew.write","effects":["write"],"method":"PUT","origin":"https://api.ouraring.com","path":"/v2/webhook/subscription/renew/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "update_webhook_subscription_v2_webhook_subscription__id__put": {"action":"webhook.subscription.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.ouraring.com","path":"/v2/webhook/subscription/{id}","scope":{"id":{"at":"id","from":"path"}}}
     }
   }
 }

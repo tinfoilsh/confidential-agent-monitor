@@ -55,8 +55,8 @@
       "folder.guest.delete": {
         "title": "Delete"
       },
-      "folder.guest.write": {
-        "title": "Create and edit"
+      "folder.guest.share": {
+        "title": "Share"
       },
       "folder.list_template": {
         "title": "List template"
@@ -151,8 +151,8 @@
       "list.guest.delete": {
         "title": "Delete"
       },
-      "list.guest.write": {
-        "title": "Create and edit"
+      "list.guest.share": {
+        "title": "Share"
       },
       "list.member": {
         "title": "Member"
@@ -199,8 +199,8 @@
       "oauth.token": {
         "title": "Token"
       },
-      "oauth.token.read": {
-        "title": "Read"
+      "oauth.token.admin": {
+        "title": "Manage"
       },
       "space": {
         "title": "Space"
@@ -265,6 +265,12 @@
       "task": {
         "title": "Task"
       },
+      "task.attachment": {
+        "title": "Attachment"
+      },
+      "task.attachment.write": {
+        "title": "Create and edit"
+      },
       "task.bulk_time_in_status": {
         "title": "Bulk time in status"
       },
@@ -316,8 +322,8 @@
       "task.guest.delete": {
         "title": "Delete"
       },
-      "task.guest.write": {
-        "title": "Create and edit"
+      "task.guest.share": {
+        "title": "Share"
       },
       "task.link": {
         "title": "Link"
@@ -325,8 +331,8 @@
       "task.link.delete": {
         "title": "Delete"
       },
-      "task.link.share": {
-        "title": "Share"
+      "task.link.write": {
+        "title": "Create and edit"
       },
       "task.member": {
         "title": "Member"
@@ -412,17 +418,17 @@
       "team.guest": {
         "title": "Guest"
       },
+      "team.guest.admin": {
+        "title": "Manage"
+      },
       "team.guest.delete": {
         "title": "Delete"
       },
       "team.guest.read": {
         "title": "Read"
       },
-      "team.guest.share": {
-        "title": "Share"
-      },
-      "team.guest.write": {
-        "title": "Create and edit"
+      "team.guest.send": {
+        "title": "Send"
       },
       "team.plan": {
         "title": "Plan"
@@ -520,8 +526,8 @@
       "team.user.read": {
         "title": "Read"
       },
-      "team.user.share": {
-        "title": "Share"
+      "team.user.send": {
+        "title": "Send"
       },
       "team.view": {
         "title": "View"
@@ -582,6 +588,165 @@
       },
       "webhook.delete": {
         "title": "Delete"
+      },
+      "workspaces": {
+        "title": "Workspaces"
+      },
+      "workspaces.acls": {
+        "title": "Acls"
+      },
+      "workspaces.acls.share": {
+        "title": "Share"
+      },
+      "workspaces.attachments": {
+        "title": "Attachments"
+      },
+      "workspaces.attachments.read": {
+        "title": "Read"
+      },
+      "workspaces.attachments.write": {
+        "title": "Create and edit"
+      },
+      "workspaces.auditlogs": {
+        "title": "Auditlogs"
+      },
+      "workspaces.auditlogs.read": {
+        "title": "Read"
+      },
+      "workspaces.chat": {
+        "title": "Chat"
+      },
+      "workspaces.chat.channels": {
+        "title": "Channels"
+      },
+      "workspaces.chat.channels.delete": {
+        "title": "Delete"
+      },
+      "workspaces.chat.channels.direct_message": {
+        "title": "Direct message"
+      },
+      "workspaces.chat.channels.direct_message.write": {
+        "title": "Create and edit"
+      },
+      "workspaces.chat.channels.followers": {
+        "title": "Followers"
+      },
+      "workspaces.chat.channels.followers.read": {
+        "title": "Read"
+      },
+      "workspaces.chat.channels.location": {
+        "title": "Location"
+      },
+      "workspaces.chat.channels.location.write": {
+        "title": "Create and edit"
+      },
+      "workspaces.chat.channels.members": {
+        "title": "Members"
+      },
+      "workspaces.chat.channels.members.read": {
+        "title": "Read"
+      },
+      "workspaces.chat.channels.messages": {
+        "title": "Messages"
+      },
+      "workspaces.chat.channels.messages.read": {
+        "title": "Read"
+      },
+      "workspaces.chat.channels.messages.send": {
+        "title": "Send"
+      },
+      "workspaces.chat.channels.read": {
+        "title": "Read"
+      },
+      "workspaces.chat.channels.write": {
+        "title": "Create and edit"
+      },
+      "workspaces.chat.messages": {
+        "title": "Messages"
+      },
+      "workspaces.chat.messages.delete": {
+        "title": "Delete"
+      },
+      "workspaces.chat.messages.reactions": {
+        "title": "Reactions"
+      },
+      "workspaces.chat.messages.reactions.delete": {
+        "title": "Delete"
+      },
+      "workspaces.chat.messages.reactions.read": {
+        "title": "Read"
+      },
+      "workspaces.chat.messages.reactions.write": {
+        "title": "Create and edit"
+      },
+      "workspaces.chat.messages.replies": {
+        "title": "Replies"
+      },
+      "workspaces.chat.messages.replies.read": {
+        "title": "Read"
+      },
+      "workspaces.chat.messages.replies.send": {
+        "title": "Send"
+      },
+      "workspaces.chat.messages.tagged_users": {
+        "title": "Tagged users"
+      },
+      "workspaces.chat.messages.tagged_users.read": {
+        "title": "Read"
+      },
+      "workspaces.chat.messages.write": {
+        "title": "Create and edit"
+      },
+      "workspaces.comments": {
+        "title": "Comments"
+      },
+      "workspaces.comments.types": {
+        "title": "Types"
+      },
+      "workspaces.comments.types.subtypes": {
+        "title": "Subtypes"
+      },
+      "workspaces.comments.types.subtypes.read": {
+        "title": "Read"
+      },
+      "workspaces.docs": {
+        "title": "Docs"
+      },
+      "workspaces.docs.page_listing": {
+        "title": "Page listing"
+      },
+      "workspaces.docs.page_listing.read": {
+        "title": "Read"
+      },
+      "workspaces.docs.pages": {
+        "title": "Pages"
+      },
+      "workspaces.docs.pages.read": {
+        "title": "Read"
+      },
+      "workspaces.docs.pages.write": {
+        "title": "Create and edit"
+      },
+      "workspaces.docs.read": {
+        "title": "Read"
+      },
+      "workspaces.docs.write": {
+        "title": "Create and edit"
+      },
+      "workspaces.tasks": {
+        "title": "Tasks"
+      },
+      "workspaces.tasks.home_list": {
+        "title": "Home list"
+      },
+      "workspaces.tasks.home_list.write": {
+        "title": "Create and edit"
+      },
+      "workspaces.tasks.time_estimates_by_user": {
+        "title": "Time estimates by user"
+      },
+      "workspaces.tasks.time_estimates_by_user.write": {
+        "title": "Create and edit"
       }
     },
     "connection": {
@@ -590,7 +755,7 @@
           {
             "header": "Authorization",
             "origin": "https://api.clickup.com",
-            "path": "/api/v2",
+            "path": "/api",
             "value": "token"
           }
         ]
@@ -598,9 +763,9 @@
     },
     "fields": [
       {
+        "credential": true,
         "key": "token",
         "label": "API token",
-        "credential": true,
         "secret": true
       }
     ],
@@ -610,11 +775,11 @@
   "http": {
     "operations": {
       "AddDependency": {"action":"task.dependency.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/dependency","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-      "AddGuestToFolder": {"action":"folder.guest.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","params":["include_shared"],"path":"/api/v2/folder/{folder_id}/guest/{guest_id}","scope":{"folder_id":{"at":"folder_id","from":"path"},"guest_id":{"at":"guest_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-      "AddGuestToList": {"action":"list.guest.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","params":["include_shared"],"path":"/api/v2/list/{list_id}/guest/{guest_id}","scope":{"guest_id":{"at":"guest_id","from":"path"},"list_id":{"at":"list_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-      "AddGuestToTask": {"action":"task.guest.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","params":["include_shared","custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/guest/{guest_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"guest_id":{"at":"guest_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+      "AddGuestToFolder": {"action":"folder.guest.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.clickup.com","params":["include_shared"],"path":"/api/v2/folder/{folder_id}/guest/{guest_id}","scope":{"folder_id":{"at":"folder_id","from":"path"},"guest_id":{"at":"guest_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "AddGuestToList": {"action":"list.guest.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.clickup.com","params":["include_shared"],"path":"/api/v2/list/{list_id}/guest/{guest_id}","scope":{"guest_id":{"at":"guest_id","from":"path"},"list_id":{"at":"list_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "AddGuestToTask": {"action":"task.guest.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.clickup.com","params":["include_shared","custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/guest/{guest_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"guest_id":{"at":"guest_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
       "AddTagToTask": {"action":"task.tag.write","effects":["write"],"method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/tag/{tag_name}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"tag_name":{"at":"tag_name","from":"path"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-      "AddTaskLink": {"action":"task.link.share","effects":["share"],"method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/link/{links_to}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"links_to":{"at":"links_to","from":"path"},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+      "AddTaskLink": {"action":"task.link.write","effects":["write"],"method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/link/{links_to}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"links_to":{"at":"links_to","from":"path"},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
       "AddTaskToList": {"action":"list.task.write","effects":["write"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}/task/{task_id}","scope":{"list_id":{"at":"list_id","from":"path"},"task_id":{"at":"task_id","from":"path"}}},
       "Addtagsfromtimeentries": {"action":"team.time_entries.tags.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/tags","scope":{"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"},"time_entry_ids":{"at":"/time_entry_ids","from":"body","type":"array"}}},
       "Changetagnamesfromtimeentries": {"action":"team.time_entries.tags.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/tags","scope":{"name":{"at":"/name","from":"body"},"new_name":{"at":"/new_name","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
@@ -635,6 +800,7 @@
       "CreateSpaceListFromTemplate": {"action":"space.list_template.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/list_template/{template_id}","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"},"template_id":{"at":"template_id","from":"path"}}},
       "CreateSpaceTag": {"action":"space.tag.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/tag","scope":{"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
       "CreateSpaceView": {"action":"space.view.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/view","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
+      "CreateTaskAttachment": {"action":"task.attachment.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/attachment","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
       "CreateTaskFromTemplate": {"action":"list.task_template.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}/taskTemplate/{template_id}","scope":{"list_id":{"at":"list_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"template_id","from":"path"}}},
       "CreateTeamView": {"action":"team.view.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/view","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
       "CreateThreadedComment": {"action":"comment.reply.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/comment/{comment_id}/reply","scope":{"comment_id":{"at":"comment_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
@@ -659,14 +825,14 @@
       "Deletetimetracked": {"action":"task.time.delete","effects":["delete"],"method":"DELETE","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/time/{interval_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"interval_id":{"at":"interval_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
       "EditChecklist": {"action":"checklist.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/checklist/{checklist_id}","scope":{"checklist_id":{"at":"checklist_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
       "EditChecklistItem": {"action":"checklist.checklist_item.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/checklist/{checklist_id}/checklist_item/{checklist_item_id}","scope":{"checklist_id":{"at":"checklist_id","from":"path"},"checklist_item_id":{"at":"checklist_item_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
-      "EditGuestOnWorkspace": {"action":"team.guest.write","effects":["write"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/guest/{guest_id}","scope":{"guest_id":{"at":"guest_id","from":"path"},"team_id":{"at":"team_id","from":"path"}}},
-      "EditGuestOnWorkspace.json.2946870080ba": {"action":"team.guest.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/guest/{guest_id}","scope":{"custom_role_id":{"at":"/custom_role_id","from":"body","optional":true,"type":"number"},"guest_id":{"at":"guest_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+      "EditGuestOnWorkspace": {"action":"team.guest.admin","effects":["admin"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/guest/{guest_id}","scope":{"guest_id":{"at":"guest_id","from":"path"},"team_id":{"at":"team_id","from":"path"}}},
+      "EditGuestOnWorkspace.json.2946870080ba": {"action":"team.guest.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/guest/{guest_id}","scope":{"custom_role_id":{"at":"/custom_role_id","from":"body","optional":true,"type":"number"},"guest_id":{"at":"guest_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
       "EditKeyResult": {"action":"key_result.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/key_result/{key_result_id}","scope":{"key_result_id":{"at":"key_result_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "EditSpaceTag": {"action":"space.tag.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/tag/{tag_name}","scope":{"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"},"tag_name":{"at":"tag_name","from":"path"}}},
       "EditUserOnWorkspace": {"action":"team.user.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/user/{user_id}","scope":{"custom_role_id":{"at":"/custom_role_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"},"user_id":{"at":"user_id","from":"path"},"username":{"at":"/username","from":"body"}}},
       "Edittimetracked": {"action":"task.time.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/time/{interval_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"interval_id":{"at":"interval_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-      "GetAccessToken": {"action":"oauth.token.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/oauth/token","scope":{"client_id":{"at":"/client_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
-      "GetAccessToken.form.efdb2a7992fc": {"action":"oauth.token.read","body":"form","effects":["read"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/oauth/token","scope":{"client_id":{"at":"client_id","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "GetAccessToken": {"action":"oauth.token.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/oauth/token","scope":{"client_id":{"at":"/client_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "GetAccessToken.form.efdb2a7992fc": {"action":"oauth.token.admin","body":"form","effects":["admin"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/oauth/token","scope":{"client_id":{"at":"client_id","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
       "GetAccessibleCustomFields": {"action":"list.field.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["include_applied_objects"],"path":"/api/v2/list/{list_id}/field","scope":{"list_id":{"at":"list_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "GetAuthorizedUser": {"action":"user.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","path":"/api/v2/user","scope":{}},
       "GetBulkTasks'TimeinStatus": {"action":"task.bulk_time_in_status.task_ids.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["task_ids","custom_task_ids","team_id"],"path":"/api/v2/task/bulk_time_in_status/task_ids","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"task_ids":{"at":"task_ids","from":"query"},"team_id":{"at":"team_id","from":"query","optional":true}}},
@@ -706,12 +872,12 @@
       "GetWorkspaceseats": {"action":"team.seats.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/seats","scope":{"team_id":{"at":"team_id","from":"path"}}},
       "Getalltagsfromtimeentries": {"action":"team.time_entries.tags.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/tags","scope":{"team_id":{"at":"team_id","from":"path"}}},
       "Getrunningtimeentry": {"action":"team.time_entries.current.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["assignee"],"path":"/api/v2/team/{team_id}/time_entries/current","scope":{"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
-      "Getsingulartimeentry": {"action":"team.time_entries.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["include_task_tags","include_location_names","include_approval_history","include_approval_details"],"path":"/api/v2/team/{team_id}/time_entries/{timer_id}","scope":{"include_location_names":{"at":"include_location_names","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"},"timer_id":{"at":"timer_id","from":"path"}}},
+      "Getsingulartimeentry": {"action":"team.time_entries.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["include_task_tags","include_location_names","include_approval_history","include_approval_details"],"path":"/api/v2/team/{team_id}/time_entries/{timer_id}","path_patterns":{"timer_id":"[^ct].*|c(?:|[^u].*|u(?:|[^r].*|r(?:|[^r].*|r(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t.+))))))|t(?:|[^a].*|a(?:|[^g].*|g(?:|[^s].*|s.+)))"},"scope":{"include_location_names":{"at":"include_location_names","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"},"timer_id":{"at":"timer_id","from":"path"}}},
       "Gettimeentrieswithinadaterange": {"action":"team.time_entries.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["start_date","end_date","assignee","include_task_tags","include_location_names","include_approval_history","include_approval_details","space_id","folder_id","list_id","task_id","custom_task_ids","team_id","is_billable"],"path":"/api/v2/team/{team_Id}/time_entries","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"folder_id":{"at":"folder_id","from":"query","optional":true},"include_location_names":{"at":"include_location_names","from":"query","optional":true},"list_id":{"at":"list_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"space_id":{"at":"space_id","from":"query","optional":true},"task_id":{"at":"task_id","from":"query","optional":true},"team_Id":{"at":"team_Id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
       "Gettimeentryhistory": {"action":"team.time_entries.history.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/{timer_id}/history","scope":{"team_id":{"at":"team_id","from":"path"},"timer_id":{"at":"timer_id","from":"path"}}},
       "Gettrackedtime": {"action":"task.time.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/time","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-      "InviteGuestToWorkspace": {"action":"team.guest.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/guest","scope":{"custom_role_id":{"at":"/custom_role_id","from":"body","optional":true,"type":"number"},"email":{"at":"/email","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
-      "InviteUserToWorkspace": {"action":"team.user.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/user","scope":{"custom_role_id":{"at":"/custom_role_id","from":"body","optional":true,"type":"number"},"email":{"at":"/email","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+      "InviteGuestToWorkspace": {"action":"team.guest.send","body":"json","effects":["send","share"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/guest","scope":{"custom_role_id":{"at":"/custom_role_id","from":"body","optional":true,"type":"number"},"email":{"at":"/email","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+      "InviteUserToWorkspace": {"action":"team.user.send","body":"json","effects":["send","share"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/user","scope":{"custom_role_id":{"at":"/custom_role_id","from":"body","optional":true,"type":"number"},"email":{"at":"/email","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
       "MoveFolder": {"action":"folder.position.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/folder/{folder_id}/position","scope":{"folder_id":{"at":"folder_id","from":"path"},"parent_folder_id":{"at":"/parent_folder_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"/space_id","from":"body","optional":true}}},
       "RemoveCustomFieldValue": {"action":"task.field.delete","effects":["delete"],"method":"DELETE","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/field/{field_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"field_id":{"at":"field_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
       "RemoveGuestFromFolder": {"action":"folder.guest.delete","effects":["delete"],"method":"DELETE","origin":"https://api.clickup.com","params":["include_shared"],"path":"/api/v2/folder/{folder_id}/guest/{guest_id}","scope":{"folder_id":{"at":"folder_id","from":"path"},"guest_id":{"at":"guest_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
@@ -735,19 +901,54 @@
       "UpdateTeam": {"action":"group.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/group/{group_id}","scope":{"group_id":{"at":"group_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
       "UpdateView": {"action":"view.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/view/{view_id}","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"view_id":{"at":"view_id","from":"path"}}},
       "UpdateWebhook": {"action":"webhook.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/webhook/{webhook_id}","scope":{"request":{"at":"","from":"body","type":"object"},"webhook_id":{"at":"webhook_id","from":"path"}}},
-      "UpdateatimeEntry": {"action":"team.time_entries.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/team/{team_id}/time_entries/{timer_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"query.team_id":{"at":"team_id","from":"query","optional":true},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"},"tid":{"at":"/tid","from":"body","optional":true},"timer_id":{"at":"timer_id","from":"path"}}},
+      "UpdateatimeEntry": {"action":"team.time_entries.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/team/{team_id}/time_entries/{timer_id}","path_patterns":{"timer_id":"[^t].*|t(?:|[^a].*|a(?:|[^g].*|g(?:|[^s].*|s.+)))"},"scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"query.team_id":{"at":"team_id","from":"query","optional":true},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"},"tid":{"at":"/tid","from":"body","optional":true},"timer_id":{"at":"timer_id","from":"path"}}},
+      "createChatChannel": {"action":"workspaces.chat.channels.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/chat/channels","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"topic":{"at":"/topic","from":"body","optional":true},"user_ids":{"at":"/user_ids","from":"body","optional":true,"type":"array"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "createChatMessage": {"action":"workspaces.chat.channels.messages.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/chat/channels/{channel_id}/messages","scope":{"channel_id":{"at":"channel_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"triaged_object_id":{"at":"/triaged_object_id","from":"body","optional":true},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "createChatReaction": {"action":"workspaces.chat.messages.reactions.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/chat/messages/{message_id}/reactions","scope":{"message_id":{"at":"message_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "createDirectMessageChatChannel": {"action":"workspaces.chat.channels.direct_message.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/chat/channels/direct_message","scope":{"request":{"at":"","from":"body","type":"object"},"user_ids":{"at":"/user_ids","from":"body","optional":true,"type":"array"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "createDocPublic": {"action":"workspaces.docs.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/docs","scope":{"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "createLocationChatChannel": {"action":"workspaces.chat.channels.location.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/chat/channels/location","scope":{"request":{"at":"","from":"body","type":"object"},"topic":{"at":"/topic","from":"body","optional":true},"user_ids":{"at":"/user_ids","from":"body","optional":true,"type":"array"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "createPagePublic": {"action":"workspaces.docs.pages.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/docs/{doc_id}/pages","scope":{"doc_id":{"at":"doc_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"parent_page_id":{"at":"/parent_page_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "createReplyMessage": {"action":"workspaces.chat.messages.replies.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/chat/messages/{message_id}/replies","scope":{"message_id":{"at":"message_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"triaged_object_id":{"at":"/triaged_object_id","from":"body","optional":true},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "deleteChatChannel": {"action":"workspaces.chat.channels.delete","effects":["delete"],"method":"DELETE","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/chat/channels/{channel_id}","scope":{"channel_id":{"at":"channel_id","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "deleteChatMessage": {"action":"workspaces.chat.messages.delete","effects":["delete"],"method":"DELETE","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/chat/messages/{message_id}","scope":{"message_id":{"at":"message_id","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "deleteChatReaction": {"action":"workspaces.chat.messages.reactions.delete","effects":["delete"],"method":"DELETE","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/chat/messages/{message_id}/reactions/{reaction}","scope":{"message_id":{"at":"message_id","from":"path"},"reaction":{"at":"reaction","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "editPagePublic": {"action":"workspaces.docs.pages.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/docs/{doc_id}/pages/{page_id}","scope":{"doc_id":{"at":"doc_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"page_id":{"at":"page_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "getChatChannel": {"action":"workspaces.chat.channels.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["description_format"],"path":"/api/v3/workspaces/{workspace_id}/chat/channels/{channel_id}","path_patterns":{"channel_id":"[^a].*|a(?:|[^t].*|t(?:|[^t].*|t(?:|[^a].*|a(?:|[^c].*|c(?:|[^h].*|h(?:|[^m].*|m(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+))))))))))"},"scope":{"channel_id":{"at":"channel_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "getChatChannelFollowers": {"action":"workspaces.chat.channels.followers.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["cursor","limit"],"path":"/api/v3/workspaces/{workspace_id}/chat/channels/{channel_id}/followers","scope":{"channel_id":{"at":"channel_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "getChatChannelMembers": {"action":"workspaces.chat.channels.members.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["cursor","limit"],"path":"/api/v3/workspaces/{workspace_id}/chat/channels/{channel_id}/members","scope":{"channel_id":{"at":"channel_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "getChatChannels": {"action":"workspaces.chat.channels.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["description_format","cursor","limit","is_follower","include_closed","with_message_since","channel_types"],"path":"/api/v3/workspaces/{workspace_id}/chat/channels","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "getChatMessageReactions": {"action":"workspaces.chat.messages.reactions.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["cursor","limit"],"path":"/api/v3/workspaces/{workspace_id}/chat/messages/{message_id}/reactions","scope":{"message_id":{"at":"message_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "getChatMessageReplies": {"action":"workspaces.chat.messages.replies.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["cursor","limit","content_format"],"path":"/api/v3/workspaces/{workspace_id}/chat/messages/{message_id}/replies","scope":{"message_id":{"at":"message_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "getChatMessageTaggedUsers": {"action":"workspaces.chat.messages.tagged_users.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["cursor","limit"],"path":"/api/v3/workspaces/{workspace_id}/chat/messages/{message_id}/tagged_users","scope":{"message_id":{"at":"message_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "getChatMessages": {"action":"workspaces.chat.channels.messages.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["cursor","limit","content_format"],"path":"/api/v3/workspaces/{workspace_id}/chat/channels/{channel_id}/messages","scope":{"channel_id":{"at":"channel_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "getDocPageListingPublic": {"action":"workspaces.docs.page_listing.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["max_page_depth"],"path":"/api/v3/workspaces/{workspace_id}/docs/{doc_id}/page_listing","scope":{"doc_id":{"at":"doc_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "getDocPagesPublic": {"action":"workspaces.docs.pages.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["max_page_depth","content_format"],"path":"/api/v3/workspaces/{workspace_id}/docs/{doc_id}/pages","scope":{"doc_id":{"at":"doc_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "getDocPublic": {"action":"workspaces.docs.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/docs/{doc_id}","scope":{"doc_id":{"at":"doc_id","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}},
       "getFolderAvailableFields": {"action":"folder.field.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["include_applied_objects"],"path":"/api/v2/folder/{folder_id}/field","scope":{"folder_id":{"at":"folder_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getPagePublic": {"action":"workspaces.docs.pages.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["content_format"],"path":"/api/v3/workspaces/{workspace_id}/docs/{doc_id}/pages/{page_id}","scope":{"doc_id":{"at":"doc_id","from":"path"},"page_id":{"at":"page_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "getParentEntityAttachments": {"action":"workspaces.attachments.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["cursor","limit"],"path":"/api/v3/workspaces/{workspace_id}/{entity_type}/{entity_id}/attachments","scope":{"entity_id":{"at":"entity_id","from":"path"},"entity_type":{"at":"entity_type","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
       "getSpaceAvailableFields": {"action":"space.field.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["include_applied_objects"],"path":"/api/v2/space/{space_id}/field","scope":{"query":{"at":"","from":"query","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
+      "getSubtypes": {"action":"workspaces.comments.types.subtypes.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/comments/types/{comment_type}/subtypes","scope":{"comment_type":{"at":"comment_type","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}},
       "getTeamAvailableFields": {"action":"team.field.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["include_applied_objects"],"path":"/api/v2/team/{team_id}/field","scope":{"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
       "list.task.create": {"action":"list.task.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/list/{list}/task","scope":{"list":{"at":"list","from":"path"},"task":{"at":"","from":"body","type":"object"}}},
-      "list.tasks.list": {"action":"list.task.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["archived","page","order_by","statuses[]"],"path":"/api/v2/list/{list}/task","scope":{"list":{"at":"list","from":"path"}}},
+      "list.tasks.list": {"action":"list.task.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["archived","page","order_by","statuses[]","assignees","custom_field","custom_fields","custom_items","date_created_gt","date_created_lt","date_done_gt","date_done_lt","date_updated_gt","date_updated_lt","due_date_gt","due_date_lt","include_closed","include_markdown_description","include_timl","reverse","statuses","subtasks","tags","watchers"],"path":"/api/v2/list/{list}/task","scope":{"list":{"at":"list","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "mergeTasks": {"action":"task.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/task/{task_id}/merge","scope":{"request":{"at":"","from":"body","type":"object"},"source_task_ids":{"at":"/source_task_ids","from":"body","type":"array"},"task_id":{"at":"task_id","from":"path"}}},
+      "moveTask": {"action":"workspaces.tasks.home_list.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/tasks/{task_id}/home_list/{list_id}","scope":{"list_id":{"at":"list_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "patchChatMessage": {"action":"workspaces.chat.messages.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/chat/messages/{message_id}","path_patterns":{"message_id":"[^a].*|a(?:|[^c].*|c(?:|[^l].*|l(?:|[^s].*|s.+)))"},"scope":{"message_id":{"at":"message_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "postEntityAttachment": {"action":"workspaces.attachments.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/{entity_type}/{entity_id}/attachments","scope":{"entity_id":{"at":"entity_id","from":"path"},"entity_type":{"at":"entity_type","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "publicPatchAcl": {"action":"workspaces.acls.share","body":"json","effects":["share"],"method":"PATCH","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/{object_type}/{object_id}/acls","scope":{"object_id":{"at":"object_id","from":"path"},"object_type":{"at":"object_type","from":"path"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "queryAuditLog": {"action":"workspaces.auditlogs.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/auditlogs","scope":{"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "replaceTimeEstimatesByUser": {"action":"workspaces.tasks.time_estimates_by_user.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/tasks/{task_id}/time_estimates_by_user","scope":{"request":{"at":"","from":"body","type":"array"},"task_id":{"at":"task_id","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "searchDocsPublic": {"action":"workspaces.docs.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["id","creator","deleted","archived","parent_id","parent_type","limit","cursor","next_cursor"],"path":"/api/v3/workspaces/{workspace_id}/docs","scope":{"id":{"at":"id","from":"query","optional":true},"parent_id":{"at":"parent_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
       "space.list": {"action":"team.space.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["archived"],"path":"/api/v2/team/{team}/space","scope":{"team":{"at":"team","from":"path"}}},
-      "task.comment.create": {"action":"task.comment.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.clickup.com","path":"/api/v2/task/{task}/comment","scope":{"comment":{"at":"","from":"body","type":"object"},"task":{"at":"task","from":"path"}}},
-      "task.delete": {"action":"task.delete","effects":["delete"],"method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/task/{task}","scope":{"task":{"at":"task","from":"path"}}},
-      "task.get": {"action":"task.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","path":"/api/v2/task/{task}","scope":{"task":{"at":"task","from":"path"}}},
-      "task.update": {"action":"task.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/task/{task}","scope":{"changes":{"at":"","from":"body","type":"object"},"task":{"at":"task","from":"path"}}},
-      "team.list": {"action":"team.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team","scope":{}}
+      "task.comment.create": {"action":"task.comment.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task}/comment","scope":{"comment":{"at":"","from":"body","type":"object"},"query":{"at":"","from":"query","type":"object"},"task":{"at":"task","from":"path"}}},
+      "task.delete": {"action":"task.delete","effects":["delete"],"method":"DELETE","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task}","scope":{"query":{"at":"","from":"query","type":"object"},"task":{"at":"task","from":"path"}}},
+      "task.get": {"action":"task.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","params":["custom_fields","custom_task_ids","include_markdown_description","include_subtasks","team_id"],"path":"/api/v2/task/{task}","scope":{"query":{"at":"","from":"query","type":"object"},"task":{"at":"task","from":"path"}}},
+      "task.update": {"action":"task.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task}","scope":{"changes":{"at":"","from":"body","type":"object"},"query":{"at":"","from":"query","type":"object"},"task":{"at":"task","from":"path"}}},
+      "team.list": {"action":"team.read","effects":["read"],"method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team","scope":{}},
+      "updateChatChannel": {"action":"workspaces.chat.channels.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/chat/channels/{channel_id}","path_patterns":{"channel_id":"[^a].*|a(?:|[^c].*|c(?:|[^l].*|l(?:|[^s].*|s.+)))"},"scope":{"channel_id":{"at":"channel_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"topic":{"at":"/topic","from":"body","optional":true},"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "updateTimeEstimatesByUser": {"action":"workspaces.tasks.time_estimates_by_user.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.clickup.com","path":"/api/v3/workspaces/{workspace_id}/tasks/{task_id}/time_estimates_by_user","scope":{"request":{"at":"","from":"body","type":"array"},"task_id":{"at":"task_id","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}}
     }
   }
 }

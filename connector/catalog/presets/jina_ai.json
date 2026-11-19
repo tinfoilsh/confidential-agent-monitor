@@ -1,28 +1,170 @@
 {
-  "title": "Jina AI",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://r.jina.ai", "path": "/", "header": "Authorization", "prefix": "Bearer "}, {"value": "api_key", "origin": "https://s.jina.ai", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "read": {"title": "Read everything the account can see"},
-      "write.crawl": {"title": "Write: crawl"},
-      "write.ephemeral": {"title": "Write: ephemeral"},
-      "write.search": {"title": "Write: search"}
-    }
+      "batch": {
+        "title": "Batch"
+      },
+      "batch.embeddings": {
+        "title": "Embeddings"
+      },
+      "batch.embeddings.generate": {
+        "title": "Generate"
+      },
+      "batch.errors": {
+        "title": "Errors"
+      },
+      "batch.errors.read": {
+        "title": "Read"
+      },
+      "batch.output": {
+        "title": "Output"
+      },
+      "batch.output.read": {
+        "title": "Read"
+      },
+      "batch.read": {
+        "title": "Read"
+      },
+      "batch.write": {
+        "title": "Create and edit"
+      },
+      "batches": {
+        "title": "Batches"
+      },
+      "batches.read": {
+        "title": "Read"
+      },
+      "chat": {
+        "title": "Chat"
+      },
+      "chat.completions": {
+        "title": "Completions"
+      },
+      "chat.completions.generate": {
+        "title": "Generate"
+      },
+      "embeddings": {
+        "title": "Embeddings"
+      },
+      "embeddings.generate": {
+        "title": "Generate"
+      },
+      "ephemeral": {
+        "title": "Ephemeral"
+      },
+      "ephemeral.read": {
+        "title": "Read"
+      },
+      "models": {
+        "title": "Models"
+      },
+      "models.read": {
+        "title": "Read"
+      },
+      "read": {
+        "title": "Read"
+      },
+      "read.read": {
+        "title": "Read"
+      },
+      "rerank": {
+        "title": "Rerank"
+      },
+      "rerank.generate": {
+        "title": "Generate"
+      },
+      "search": {
+        "title": "Search"
+      },
+      "search.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://r.jina.ai",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://s.jina.ai",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://eu.r.jina.ai",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://eu.s.jina.ai",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api.jina.ai",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Jina AI",
   "http": {
+    "origins": {"reader":["https://r.jina.ai","https://eu.r.jina.ai"],"search":["https://s.jina.ai","https://eu.s.jina.ai"]},
     "operations": {
-      "GET /": {"action":"read","effects":["read"],"method":"GET","origin":"https://r.jina.ai","path":"/","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","setCookies","exportStorageState","proxyUrl","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens"],"scope":{}},
-      "GET /ephemeral/{encodedFid}": {"action":"read","effects":["read"],"method":"GET","origin":"https://r.jina.ai","path":"/ephemeral/{encodedFid}","params":["t","s","crop"],"scope":{"encodedFid":{"from":"path","at":"encodedFid"}}},
-      "GET /{q}": {"action":"read","effects":["read"],"method":"GET","origin":"https://s.jina.ai","path":"/{q}","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","setCookies","exportStorageState","proxyUrl","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens","ext","filetype","intitle","loc","site","type","num","count","provider","gl","hl","location","fallback","nfpr","q"],"scope":{"q":{"from":"path","at":"q"}}},
-      "GET /{url}": {"action":"read","effects":["read"],"method":"GET","origin":"https://r.jina.ai","path":"/{url}","params":["preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","setCookies","exportStorageState","proxyUrl","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens"],"scope":{"url":{"from":"path","at":"url"}}},
-      "POST /": {"action":"write.crawl","effects":["write"],"method":"POST","origin":"https://r.jina.ai","path":"/","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","setCookies","exportStorageState","proxyUrl","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens"],"body":"any","scope":{}},
-      "POST /ephemeral/{encodedFid}": {"action":"write.ephemeral","effects":["write"],"method":"POST","origin":"https://r.jina.ai","path":"/ephemeral/{encodedFid}","params":["t","s","crop"],"body":"any","scope":{"encodedFid":{"from":"path","at":"encodedFid"}}},
-      "POST /{q}": {"action":"write.search","effects":["write"],"method":"POST","origin":"https://s.jina.ai","path":"/{q}","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","setCookies","exportStorageState","proxyUrl","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens","ext","filetype","intitle","loc","site","type","num","count","provider","gl","hl","location","fallback","nfpr","q"],"body":"any","scope":{"q":{"from":"path","at":"q"}}},
-      "POST /{url}": {"action":"write.crawl","effects":["write"],"method":"POST","origin":"https://r.jina.ai","path":"/{url}","params":["preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","setCookies","exportStorageState","proxyUrl","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens"],"body":"any","scope":{"url":{"from":"path","at":"url"}}}
+      "GET /": {"action":"read.read","effects":["read"],"method":"GET","origin":"{reader}","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","setCookies","exportStorageState","proxyUrl","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens","proxyResources","webBotAuth"],"path":"/","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GET /.none.cfe77d501d95": {"action":"search.read","effects":["read"],"method":"GET","origin":"{search}","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","webBotAuth","setCookies","exportStorageState","proxyUrl","proxyResources","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens","ext","filetype","intitle","loc","site","type","num","count","provider","gl","hl","location","fallback","q","nfpr"],"path":"/","scope":{"file":{"at":"file","from":"query","optional":true},"keepImgDataUrl":{"at":"keepImgDataUrl","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"preloadUrl":{"at":"preloadUrl","from":"query","optional":true},"proxyUrl":{"at":"proxyUrl","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"site":{"at":"site","from":"query","optional":true},"url":{"at":"url","from":"query","optional":true}}},
+      "GET /ephemeral/{encodedFid}": {"action":"ephemeral.read","effects":["read"],"method":"GET","origin":"{reader}","params":["t","s","crop"],"path":"/ephemeral/{encodedFid}","scope":{"encodedFid":{"at":"encodedFid","from":"path"}}},
+      "GET /search": {"action":"search.read","effects":["read"],"method":"GET","origin":"{search}","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","webBotAuth","setCookies","exportStorageState","proxyUrl","proxyResources","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens","ext","filetype","intitle","loc","site","type","num","count","provider","gl","hl","location","fallback","q","nfpr"],"path":"/search","scope":{"file":{"at":"file","from":"query","optional":true},"keepImgDataUrl":{"at":"keepImgDataUrl","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"preloadUrl":{"at":"preloadUrl","from":"query","optional":true},"proxyUrl":{"at":"proxyUrl","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"site":{"at":"site","from":"query","optional":true},"url":{"at":"url","from":"query","optional":true}}},
+      "GET /{q}": {"action":"search.read","effects":["read"],"method":"GET","origin":"{search}","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","setCookies","exportStorageState","proxyUrl","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens","ext","filetype","intitle","loc","site","type","num","count","provider","gl","hl","location","fallback","nfpr","q","proxyResources","webBotAuth"],"path":"/{q*}","path_patterns":{"q":"[^s].*|s(?:|[^e].*|e(?:|[^a].*|a(?:|[^r].*|r(?:|[^c].*|c(?:|[^h].*|h.+)))))"},"scope":{"q":{"at":"q","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /{url}": {"action":"read.read","effects":["read"],"method":"GET","open_params":true,"origin":"{reader}","params":["preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","setCookies","exportStorageState","proxyUrl","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens","proxyResources","webBotAuth"],"path":"/{url*}","path_patterns":{"url":"[^er].*|e(?:|[^p].*|p(?:|[^h].*|h(?:|[^e].*|e(?:|[^m].*|m(?:|[^e].*|e(?:|[^r].*|r(?:|[^a].*|a(?:|[^l].*|l(?:|[^/].*)))))))))|r(?:|[^e].*|e(?:|[^a].*|a(?:|[^d].*|d.+)))"},"scope":{"query":{"at":"","from":"query","type":"object"},"url":{"at":"url","from":"path"}}},
+      "POST /": {"action":"read.read","body":"any","effects":["read"],"method":"POST","origin":"{reader}","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","webBotAuth","setCookies","exportStorageState","proxyUrl","proxyResources","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens"],"path":"/","scope":{"file":{"at":"file","from":"query","optional":true},"keepImgDataUrl":{"at":"keepImgDataUrl","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"preloadUrl":{"at":"preloadUrl","from":"query","optional":true},"proxyUrl":{"at":"proxyUrl","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"url":{"at":"url","from":"query","optional":true}}},
+      "POST /.form.f4670805d4e5": {"action":"search.read","body":"form","effects":["read"],"method":"POST","origin":"{search}","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","webBotAuth","setCookies","exportStorageState","proxyUrl","proxyResources","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens","ext","filetype","intitle","loc","site","type","num","count","provider","gl","hl","location","fallback","q","nfpr"],"path":"/","scope":{"file":{"at":"file","from":"query","optional":true},"form.file":{"at":"file","from":"form","optional":true},"form.keepImgDataUrl":{"at":"keepImgDataUrl","from":"form","optional":true},"form.page":{"at":"page","from":"form","optional":true},"form.preloadUrl":{"at":"preloadUrl","from":"form","optional":true},"form.proxyUrl":{"at":"proxyUrl","from":"form","optional":true},"form.site":{"at":"site","from":"form","optional":true},"form.url":{"at":"url","from":"form","optional":true},"keepImgDataUrl":{"at":"keepImgDataUrl","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"preloadUrl":{"at":"preloadUrl","from":"query","optional":true},"proxyUrl":{"at":"proxyUrl","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"},"site":{"at":"site","from":"query","optional":true},"url":{"at":"url","from":"query","optional":true}}},
+      "POST /.json.ad4675893d53": {"action":"search.read","body":"json","effects":["read"],"method":"POST","origin":"{search}","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","webBotAuth","setCookies","exportStorageState","proxyUrl","proxyResources","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens","ext","filetype","intitle","loc","site","type","num","count","provider","gl","hl","location","fallback","q","nfpr"],"path":"/","scope":{"file":{"at":"file","from":"query","optional":true},"keepImgDataUrl":{"at":"keepImgDataUrl","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"preloadUrl":{"at":"preloadUrl","from":"query","optional":true},"proxyUrl":{"at":"proxyUrl","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"site":{"at":"site","from":"query","optional":true},"url":{"at":"url","from":"query","optional":true}}},
+      "POST /.none.8cddf932c208": {"action":"search.read","effects":["read"],"method":"POST","origin":"{search}","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","webBotAuth","setCookies","exportStorageState","proxyUrl","proxyResources","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens","ext","filetype","intitle","loc","site","type","num","count","provider","gl","hl","location","fallback","q","nfpr"],"path":"/","scope":{"file":{"at":"file","from":"query","optional":true},"keepImgDataUrl":{"at":"keepImgDataUrl","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"preloadUrl":{"at":"preloadUrl","from":"query","optional":true},"proxyUrl":{"at":"proxyUrl","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"site":{"at":"site","from":"query","optional":true},"url":{"at":"url","from":"query","optional":true}}},
+      "POST /ephemeral/{encodedFid}": {"action":"ephemeral.read","body":"any","effects":["read"],"method":"POST","origin":"{reader}","params":["t","s","crop"],"path":"/ephemeral/{encodedFid}","scope":{"encodedFid":{"at":"encodedFid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "POST /read": {"action":"read.read","effects":["read"],"method":"POST","origin":"{reader}","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","webBotAuth","setCookies","exportStorageState","proxyUrl","proxyResources","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens"],"path":"/read","scope":{"file":{"at":"file","from":"query","optional":true},"keepImgDataUrl":{"at":"keepImgDataUrl","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"preloadUrl":{"at":"preloadUrl","from":"query","optional":true},"proxyUrl":{"at":"proxyUrl","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"url":{"at":"url","from":"query","optional":true}}},
+      "POST /read.form.e328124754f0": {"action":"read.read","body":"form","effects":["read"],"method":"POST","origin":"{reader}","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","webBotAuth","setCookies","exportStorageState","proxyUrl","proxyResources","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens"],"path":"/read","scope":{"file":{"at":"file","from":"query","optional":true},"form.file":{"at":"file","from":"form","optional":true},"form.keepImgDataUrl":{"at":"keepImgDataUrl","from":"form","optional":true},"form.page":{"at":"page","from":"form","optional":true},"form.preloadUrl":{"at":"preloadUrl","from":"form","optional":true},"form.proxyUrl":{"at":"proxyUrl","from":"form","optional":true},"form.url":{"at":"url","from":"form","optional":true},"keepImgDataUrl":{"at":"keepImgDataUrl","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"preloadUrl":{"at":"preloadUrl","from":"query","optional":true},"proxyUrl":{"at":"proxyUrl","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"},"url":{"at":"url","from":"query","optional":true}}},
+      "POST /read.json.6b236ed5234a": {"action":"read.read","body":"json","effects":["read"],"method":"POST","origin":"{reader}","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","webBotAuth","setCookies","exportStorageState","proxyUrl","proxyResources","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens"],"path":"/read","scope":{"file":{"at":"file","from":"query","optional":true},"keepImgDataUrl":{"at":"keepImgDataUrl","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"preloadUrl":{"at":"preloadUrl","from":"query","optional":true},"proxyUrl":{"at":"proxyUrl","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"url":{"at":"url","from":"query","optional":true}}},
+      "POST /search": {"action":"search.read","effects":["read"],"method":"POST","origin":"{search}","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","webBotAuth","setCookies","exportStorageState","proxyUrl","proxyResources","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens","ext","filetype","intitle","loc","site","type","num","count","provider","gl","hl","location","fallback","q","nfpr"],"path":"/search","scope":{"file":{"at":"file","from":"query","optional":true},"keepImgDataUrl":{"at":"keepImgDataUrl","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"preloadUrl":{"at":"preloadUrl","from":"query","optional":true},"proxyUrl":{"at":"proxyUrl","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"site":{"at":"site","from":"query","optional":true},"url":{"at":"url","from":"query","optional":true}}},
+      "POST /search.form.14c9c2ee1eb1": {"action":"search.read","body":"form","effects":["read"],"method":"POST","origin":"{search}","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","webBotAuth","setCookies","exportStorageState","proxyUrl","proxyResources","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens","ext","filetype","intitle","loc","site","type","num","count","provider","gl","hl","location","fallback","q","nfpr"],"path":"/search","scope":{"file":{"at":"file","from":"query","optional":true},"form.file":{"at":"file","from":"form","optional":true},"form.keepImgDataUrl":{"at":"keepImgDataUrl","from":"form","optional":true},"form.page":{"at":"page","from":"form","optional":true},"form.preloadUrl":{"at":"preloadUrl","from":"form","optional":true},"form.proxyUrl":{"at":"proxyUrl","from":"form","optional":true},"form.site":{"at":"site","from":"form","optional":true},"form.url":{"at":"url","from":"form","optional":true},"keepImgDataUrl":{"at":"keepImgDataUrl","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"preloadUrl":{"at":"preloadUrl","from":"query","optional":true},"proxyUrl":{"at":"proxyUrl","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"},"site":{"at":"site","from":"query","optional":true},"url":{"at":"url","from":"query","optional":true}}},
+      "POST /search.json.e5a3073877df": {"action":"search.read","body":"json","effects":["read"],"method":"POST","origin":"{search}","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","webBotAuth","setCookies","exportStorageState","proxyUrl","proxyResources","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens","ext","filetype","intitle","loc","site","type","num","count","provider","gl","hl","location","fallback","q","nfpr"],"path":"/search","scope":{"file":{"at":"file","from":"query","optional":true},"keepImgDataUrl":{"at":"keepImgDataUrl","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"preloadUrl":{"at":"preloadUrl","from":"query","optional":true},"proxyUrl":{"at":"proxyUrl","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"site":{"at":"site","from":"query","optional":true},"url":{"at":"url","from":"query","optional":true}}},
+      "POST /{q}": {"action":"search.read","body":"any","effects":["read"],"method":"POST","origin":"{search}","params":["url","preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","setCookies","exportStorageState","proxyUrl","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens","ext","filetype","intitle","loc","site","type","num","count","provider","gl","hl","location","fallback","nfpr","q","proxyResources","webBotAuth"],"path":"/{q*}","path_patterns":{"q":"[^s].*|s(?:|[^e].*|e(?:|[^a].*|a(?:|[^r].*|r(?:|[^c].*|c(?:|[^h].*|h.+)))))"},"scope":{"q":{"at":"q","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "POST /{url}": {"action":"read.read","body":"any","effects":["read"],"method":"POST","open_params":true,"origin":"{reader}","params":["preloadUrl","noServiceWorker","html","base","pdf","file","page","respondWith","withGeneratedAlt","retainImages","retainMedia","preset","retainLinks","withLinksSummary","withImagesSummary","noCache","removeOverlay","detachInvisibles","noGfm","cacheTolerance","targetSelector","waitForSelector","removeSelector","keepImgDataUrl","withIframe","withShadowDom","skipCertVerification","setCookies","exportStorageState","proxyUrl","proxy","userAgent","engine","injectPageScript","injectFrameScript","timeout","locale","referer","tokenBudget","assertStatusCode","instruction","jsonSchema","robotsTxt","zeroDataRetention","respondTiming","markdownChunking","maxTokens","proxyResources","webBotAuth"],"path":"/{url*}","path_patterns":{"url":"[^er].*|e(?:|[^p].*|p(?:|[^h].*|h(?:|[^e].*|e(?:|[^m].*|m(?:|[^e].*|e(?:|[^r].*|r(?:|[^a].*|a(?:|[^l].*|l(?:|[^/].*)))))))))|r(?:|[^e].*|e(?:|[^a].*|a(?:|[^d].*|d.+)))"},"scope":{"query":{"at":"","from":"query","type":"object"},"url":{"at":"url","from":"path"}}},
+      "cancel_batch_job_v1_batch__batch_id__delete": {"action":"batch.write","effects":["write"],"method":"DELETE","origin":"https://api.jina.ai","path":"/v1/batch/{batch_id}","scope":{"batch_id":{"at":"batch_id","from":"path"}}},
+      "chat_completions_v1_chat_completions_post": {"action":"chat.completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.jina.ai","path":"/v1/chat/completions","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "create_batch_job_v1_batch_embeddings_post": {"action":"batch.embeddings.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.jina.ai","path":"/v1/batch/embeddings","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "download_batch_errors_v1_batch__batch_id__errors_get": {"action":"batch.errors.read","effects":["read"],"method":"GET","origin":"https://api.jina.ai","path":"/v1/batch/{batch_id}/errors","scope":{"batch_id":{"at":"batch_id","from":"path"}}},
+      "download_batch_output_v1_batch__batch_id__output_get": {"action":"batch.output.read","effects":["read"],"method":"GET","origin":"https://api.jina.ai","path":"/v1/batch/{batch_id}/output","scope":{"batch_id":{"at":"batch_id","from":"path"}}},
+      "embeddings_v1_embeddings_post": {"action":"embeddings.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.jina.ai","path":"/v1/embeddings","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "get_batch_status_v1_batch__batch_id__get": {"action":"batch.read","effects":["read"],"method":"GET","origin":"https://api.jina.ai","path":"/v1/batch/{batch_id}","scope":{"batch_id":{"at":"batch_id","from":"path"}}},
+      "get_model_v1_models__model_id__get": {"action":"models.read","effects":["read"],"method":"GET","origin":"https://api.jina.ai","path":"/v1/models/{model_id}","scope":{"model_id":{"at":"model_id","from":"path"}}},
+      "list_batch_jobs_v1_batches_get": {"action":"batches.read","effects":["read"],"method":"GET","origin":"https://api.jina.ai","params":["limit"],"path":"/v1/batches","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "list_models_v1_models_get": {"action":"models.read","effects":["read"],"method":"GET","origin":"https://api.jina.ai","path":"/v1/models","scope":{}},
+      "rerank_v1_rerank_post": {"action":"rerank.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.jina.ai","path":"/v1/rerank","scope":{"request":{"at":"","from":"body","type":"object"}}}
     }
   }
 }

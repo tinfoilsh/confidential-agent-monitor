@@ -1,111 +1,411 @@
 {
-  "title": "Qdrant Vector Store",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your Qdrant Vector Store origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://example.com", "path": "/", "header": "api-key"}]}},
     "actions": {
-      "delete.clear": {"title": "Delete: clear"},
-      "delete.collections": {"title": "Delete: collections"},
-      "delete.delete": {"title": "Delete: delete"},
-      "delete.index": {"title": "Delete: index"},
-      "delete.issues": {"title": "Delete: issues"},
-      "delete.peer": {"title": "Delete: peer"},
-      "delete.snapshots": {"title": "Delete: snapshots"},
-      "delete.vectors": {"title": "Delete: vectors"},
-      "generate.aliases": {"title": "Generate: aliases"},
-      "generate.batch": {"title": "Generate: batch"},
-      "generate.cluster": {"title": "Generate: cluster"},
-      "generate.facet": {"title": "Generate: facet"},
-      "generate.payload": {"title": "Generate: payload"},
-      "generate.recover": {"title": "Generate: recover"},
-      "generate.scroll": {"title": "Generate: scroll"},
-      "generate.snapshots": {"title": "Generate: snapshots"},
-      "read": {"title": "Read everything the account can see"},
-      "write.collections": {"title": "Write: collections"},
-      "write.index": {"title": "Write: index"},
-      "write.payload": {"title": "Write: payload"},
-      "write.points": {"title": "Write: points"},
-      "write.quotas": {"title": "Write: quotas"},
-      "write.recover": {"title": "Write: recover"},
-      "write.shards": {"title": "Write: shards"},
-      "write.vectors": {"title": "Write: vectors"}
-    }
+      "aliases": {
+        "title": "Aliases"
+      },
+      "aliases.read": {
+        "title": "Read"
+      },
+      "cluster": {
+        "title": "Cluster"
+      },
+      "cluster.peer": {
+        "title": "Peer"
+      },
+      "cluster.peer.admin": {
+        "title": "Manage"
+      },
+      "cluster.read": {
+        "title": "Read"
+      },
+      "cluster.recover": {
+        "title": "Recover"
+      },
+      "cluster.recover.admin": {
+        "title": "Manage"
+      },
+      "cluster.telemetry": {
+        "title": "Telemetry"
+      },
+      "cluster.telemetry.read": {
+        "title": "Read"
+      },
+      "collections": {
+        "title": "Collections"
+      },
+      "collections.aliases": {
+        "title": "Aliases"
+      },
+      "collections.aliases.read": {
+        "title": "Read"
+      },
+      "collections.aliases.write": {
+        "title": "Create and edit"
+      },
+      "collections.cluster": {
+        "title": "Cluster"
+      },
+      "collections.cluster.admin": {
+        "title": "Manage"
+      },
+      "collections.cluster.read": {
+        "title": "Read"
+      },
+      "collections.delete": {
+        "title": "Delete"
+      },
+      "collections.exists": {
+        "title": "Exists"
+      },
+      "collections.exists.read": {
+        "title": "Read"
+      },
+      "collections.facet": {
+        "title": "Facet"
+      },
+      "collections.facet.read": {
+        "title": "Read"
+      },
+      "collections.index": {
+        "title": "Index"
+      },
+      "collections.index.delete": {
+        "title": "Delete"
+      },
+      "collections.index.write": {
+        "title": "Create and edit"
+      },
+      "collections.optimizations": {
+        "title": "Optimizations"
+      },
+      "collections.optimizations.read": {
+        "title": "Read"
+      },
+      "collections.points": {
+        "title": "Points"
+      },
+      "collections.points.count": {
+        "title": "Count"
+      },
+      "collections.points.count.read": {
+        "title": "Read"
+      },
+      "collections.points.delete": {
+        "title": "Delete"
+      },
+      "collections.points.payload": {
+        "title": "Payload"
+      },
+      "collections.points.payload.clear": {
+        "title": "Clear"
+      },
+      "collections.points.payload.clear.delete": {
+        "title": "Delete"
+      },
+      "collections.points.payload.delete": {
+        "title": "Delete"
+      },
+      "collections.points.payload.write": {
+        "title": "Create and edit"
+      },
+      "collections.points.query": {
+        "title": "Query"
+      },
+      "collections.points.query.groups": {
+        "title": "Groups"
+      },
+      "collections.points.query.groups.read": {
+        "title": "Read"
+      },
+      "collections.points.query.read": {
+        "title": "Read"
+      },
+      "collections.points.read": {
+        "title": "Read"
+      },
+      "collections.points.scroll": {
+        "title": "Scroll"
+      },
+      "collections.points.scroll.read": {
+        "title": "Read"
+      },
+      "collections.points.search": {
+        "title": "Search"
+      },
+      "collections.points.search.matrix": {
+        "title": "Matrix"
+      },
+      "collections.points.search.matrix.offsets": {
+        "title": "Offsets"
+      },
+      "collections.points.search.matrix.offsets.read": {
+        "title": "Read"
+      },
+      "collections.points.search.matrix.pairs": {
+        "title": "Pairs"
+      },
+      "collections.points.search.matrix.pairs.read": {
+        "title": "Read"
+      },
+      "collections.points.vectors": {
+        "title": "Vectors"
+      },
+      "collections.points.vectors.delete": {
+        "title": "Delete"
+      },
+      "collections.points.vectors.write": {
+        "title": "Create and edit"
+      },
+      "collections.points.write": {
+        "title": "Create and edit"
+      },
+      "collections.read": {
+        "title": "Read"
+      },
+      "collections.shards": {
+        "title": "Shards"
+      },
+      "collections.shards.delete": {
+        "title": "Delete"
+      },
+      "collections.shards.read": {
+        "title": "Read"
+      },
+      "collections.shards.snapshot": {
+        "title": "Snapshot"
+      },
+      "collections.shards.snapshot.read": {
+        "title": "Read"
+      },
+      "collections.shards.snapshots": {
+        "title": "Snapshots"
+      },
+      "collections.shards.snapshots.delete": {
+        "title": "Delete"
+      },
+      "collections.shards.snapshots.read": {
+        "title": "Read"
+      },
+      "collections.shards.snapshots.recover": {
+        "title": "Recover"
+      },
+      "collections.shards.snapshots.recover.write": {
+        "title": "Create and edit"
+      },
+      "collections.shards.snapshots.write": {
+        "title": "Create and edit"
+      },
+      "collections.shards.write": {
+        "title": "Create and edit"
+      },
+      "collections.snapshots": {
+        "title": "Snapshots"
+      },
+      "collections.snapshots.delete": {
+        "title": "Delete"
+      },
+      "collections.snapshots.read": {
+        "title": "Read"
+      },
+      "collections.snapshots.recover": {
+        "title": "Recover"
+      },
+      "collections.snapshots.recover.write": {
+        "title": "Create and edit"
+      },
+      "collections.snapshots.write": {
+        "title": "Create and edit"
+      },
+      "collections.vectors": {
+        "title": "Vectors"
+      },
+      "collections.vectors.delete": {
+        "title": "Delete"
+      },
+      "collections.vectors.write": {
+        "title": "Create and edit"
+      },
+      "collections.write": {
+        "title": "Create and edit"
+      },
+      "healthz": {
+        "title": "Healthz"
+      },
+      "healthz.read": {
+        "title": "Read"
+      },
+      "issues": {
+        "title": "Issues"
+      },
+      "issues.delete": {
+        "title": "Delete"
+      },
+      "issues.read": {
+        "title": "Read"
+      },
+      "livez": {
+        "title": "Livez"
+      },
+      "livez.read": {
+        "title": "Read"
+      },
+      "metrics": {
+        "title": "Metrics"
+      },
+      "metrics.read": {
+        "title": "Read"
+      },
+      "quotas": {
+        "title": "Quotas"
+      },
+      "quotas.admin": {
+        "title": "Manage"
+      },
+      "quotas.read": {
+        "title": "Read"
+      },
+      "readyz": {
+        "title": "Readyz"
+      },
+      "readyz.read": {
+        "title": "Read"
+      },
+      "service": {
+        "title": "Service"
+      },
+      "service.read": {
+        "title": "Read"
+      },
+      "snapshots": {
+        "title": "Snapshots"
+      },
+      "snapshots.delete": {
+        "title": "Delete"
+      },
+      "snapshots.read": {
+        "title": "Read"
+      },
+      "snapshots.write": {
+        "title": "Create and edit"
+      },
+      "telemetry": {
+        "title": "Telemetry"
+      },
+      "telemetry.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "api-key",
+            "origin": "https://example.com",
+            "path": "/",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Your Qdrant Vector Store origin (https://host)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Qdrant Vector Store",
   "http": {
     "operations": {
-      "batch_update": {"action":"generate.batch","effects":["generate"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/points/batch","params":["wait","ordering","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "clear_issues": {"action":"delete.issues","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/issues","scope":{}},
-      "clear_payload": {"action":"delete.clear","effects":["delete"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/points/payload/clear","params":["wait","ordering","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "cluster_status": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/cluster","scope":{}},
-      "cluster_telemetry": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/cluster/telemetry","params":["details_level","timeout"],"scope":{}},
-      "collection_cluster_info": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/cluster","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "collection_exists": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/exists","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "count_points": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/points/count","params":["consistency","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "create_collection": {"action":"write.collections","effects":["write"],"method":"PUT","origin":"{origin}","path":"/collections/{collection_name}","params":["timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "create_field_index": {"action":"write.index","effects":["write"],"method":"PUT","origin":"{origin}","path":"/collections/{collection_name}/index","params":["wait","ordering","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "create_full_snapshot": {"action":"generate.snapshots","effects":["generate"],"method":"POST","origin":"{origin}","path":"/snapshots","params":["wait"],"scope":{}},
-      "create_shard_key": {"action":"write.shards","effects":["write"],"method":"PUT","origin":"{origin}","path":"/collections/{collection_name}/shards","params":["timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "create_shard_snapshot": {"action":"generate.snapshots","effects":["generate"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/shards/{shard_id}/snapshots","params":["wait"],"scope":{"collection_name":{"from":"path","at":"collection_name"},"shard_id":{"from":"path","at":"shard_id"}}},
-      "create_snapshot": {"action":"generate.snapshots","effects":["generate"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/snapshots","params":["wait"],"scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "create_vector_name": {"action":"write.vectors","effects":["write"],"method":"PUT","origin":"{origin}","path":"/collections/{collection_name}/vectors/{vector_name}","params":["wait","ordering","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"},"vector_name":{"from":"path","at":"vector_name"}}},
-      "delete_collection": {"action":"delete.collections","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/collections/{collection_name}","params":["timeout"],"scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "delete_field_index": {"action":"delete.index","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/collections/{collection_name}/index/{field_name}","params":["wait","ordering","timeout"],"scope":{"collection_name":{"from":"path","at":"collection_name"},"field_name":{"from":"path","at":"field_name"}}},
-      "delete_full_snapshot": {"action":"delete.snapshots","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/snapshots/{snapshot_name}","params":["wait"],"scope":{"snapshot_name":{"from":"path","at":"snapshot_name"}}},
-      "delete_payload": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/points/payload/delete","params":["wait","ordering","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "delete_points": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/points/delete","params":["wait","ordering","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "delete_shard_key": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/shards/delete","params":["timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "delete_shard_snapshot": {"action":"delete.snapshots","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/collections/{collection_name}/shards/{shard_id}/snapshots/{snapshot_name}","params":["wait"],"scope":{"collection_name":{"from":"path","at":"collection_name"},"shard_id":{"from":"path","at":"shard_id"},"snapshot_name":{"from":"path","at":"snapshot_name"}}},
-      "delete_snapshot": {"action":"delete.snapshots","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/collections/{collection_name}/snapshots/{snapshot_name}","params":["wait"],"scope":{"collection_name":{"from":"path","at":"collection_name"},"snapshot_name":{"from":"path","at":"snapshot_name"}}},
-      "delete_vector_name": {"action":"delete.vectors","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/collections/{collection_name}/vectors/{vector_name}","params":["wait","ordering","timeout"],"scope":{"collection_name":{"from":"path","at":"collection_name"},"vector_name":{"from":"path","at":"vector_name"}}},
-      "delete_vectors": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/points/vectors/delete","params":["wait","ordering","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "facet": {"action":"generate.facet","effects":["generate"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/facet","params":["consistency","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "get_collection": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "get_collection_aliases": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/aliases","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "get_collections": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections","scope":{}},
-      "get_collections_aliases": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/aliases","scope":{}},
-      "get_full_snapshot": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/snapshots/{snapshot_name}","scope":{"snapshot_name":{"from":"path","at":"snapshot_name"}}},
-      "get_issues": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/issues","scope":{}},
-      "get_optimizations": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/optimizations","params":["with","completed_limit"],"scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "get_point": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/points/{id}","params":["consistency","timeout"],"scope":{"collection_name":{"from":"path","at":"collection_name"},"id":{"from":"path","at":"id"}}},
-      "get_points": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/points","params":["consistency","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "get_quotas": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/quotas","scope":{}},
-      "get_shard_snapshot": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/shards/{shard_id}/snapshots/{snapshot_name}","scope":{"collection_name":{"from":"path","at":"collection_name"},"shard_id":{"from":"path","at":"shard_id"},"snapshot_name":{"from":"path","at":"snapshot_name"}}},
-      "get_snapshot": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/snapshots/{snapshot_name}","scope":{"collection_name":{"from":"path","at":"collection_name"},"snapshot_name":{"from":"path","at":"snapshot_name"}}},
-      "healthz": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/healthz","scope":{}},
-      "list_full_snapshots": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/snapshots","scope":{}},
-      "list_shard_keys": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/shards","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "list_shard_snapshots": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/shards/{shard_id}/snapshots","scope":{"collection_name":{"from":"path","at":"collection_name"},"shard_id":{"from":"path","at":"shard_id"}}},
-      "list_snapshots": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/snapshots","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "livez": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/livez","scope":{}},
-      "metrics": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/metrics","params":["anonymize","per_collection","timeout"],"scope":{}},
-      "overwrite_payload": {"action":"write.payload","effects":["write"],"method":"PUT","origin":"{origin}","path":"/collections/{collection_name}/points/payload","params":["wait","ordering","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "query_batch_points": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/points/query/batch","params":["consistency","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "query_points": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/points/query","params":["consistency","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "query_points_groups": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/points/query/groups","params":["consistency","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "readyz": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/readyz","scope":{}},
-      "recover_current_peer": {"action":"generate.recover","effects":["generate"],"method":"POST","origin":"{origin}","path":"/cluster/recover","scope":{}},
-      "recover_from_snapshot": {"action":"write.recover","effects":["write"],"method":"PUT","origin":"{origin}","path":"/collections/{collection_name}/snapshots/recover","params":["wait"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "recover_from_uploaded_snapshot": {"action":"generate.snapshots","effects":["generate"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/snapshots/upload","params":["wait","priority","checksum"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "recover_shard_from_snapshot": {"action":"write.recover","effects":["write"],"method":"PUT","origin":"{origin}","path":"/collections/{collection_name}/shards/{shard_id}/snapshots/recover","params":["wait"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"},"shard_id":{"from":"path","at":"shard_id"}}},
-      "recover_shard_from_uploaded_snapshot": {"action":"generate.snapshots","effects":["generate"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/shards/{shard_id}/snapshots/upload","params":["wait","priority","checksum"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"},"shard_id":{"from":"path","at":"shard_id"}}},
-      "remove_peer": {"action":"delete.peer","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/cluster/peer/{peer_id}","params":["timeout","force"],"scope":{"peer_id":{"from":"path","at":"peer_id"}}},
-      "root": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/","scope":{}},
-      "scroll_points": {"action":"generate.scroll","effects":["generate"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/points/scroll","params":["consistency","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "search_matrix_offsets": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/points/search/matrix/offsets","params":["consistency","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "search_matrix_pairs": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/points/search/matrix/pairs","params":["consistency","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "set_payload": {"action":"generate.payload","effects":["generate"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/points/payload","params":["wait","ordering","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "stream_shard_snapshot": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/shards/{shard_id}/snapshot","scope":{"collection_name":{"from":"path","at":"collection_name"},"shard_id":{"from":"path","at":"shard_id"}}},
-      "telemetry": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/telemetry","params":["anonymize","details_level","per_collection","timeout"],"scope":{}},
-      "update_aliases": {"action":"generate.aliases","effects":["generate"],"method":"POST","origin":"{origin}","path":"/collections/aliases","params":["timeout"],"body":"any","scope":{}},
-      "update_collection": {"action":"write.collections","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/collections/{collection_name}","params":["timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "update_collection_cluster": {"action":"generate.cluster","effects":["generate"],"method":"POST","origin":"{origin}","path":"/collections/{collection_name}/cluster","params":["timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "update_quotas": {"action":"write.quotas","effects":["write"],"method":"PUT","origin":"{origin}","path":"/quotas","params":["wait"],"body":"any","scope":{}},
-      "update_vectors": {"action":"write.vectors","effects":["write"],"method":"PUT","origin":"{origin}","path":"/collections/{collection_name}/points/vectors","params":["wait","ordering","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "upsert_points": {"action":"write.points","effects":["write"],"method":"PUT","origin":"{origin}","path":"/collections/{collection_name}/points","params":["wait","ordering","timeout"],"body":"any","scope":{"collection_name":{"from":"path","at":"collection_name"}}}
+      "batch_update": {"action":"collections.points.write","body":"any","effects":["write","delete"],"method":"POST","origin":"{origin}","params":["wait","ordering","timeout"],"path":"/collections/{collection_name}/points/batch","scope":{"collection_name":{"at":"collection_name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "clear_issues": {"action":"issues.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/issues","scope":{}},
+      "clear_payload": {"action":"collections.points.payload.clear.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","params":["wait","ordering","timeout"],"path":"/collections/{collection_name}/points/payload/clear","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "cluster_status": {"action":"cluster.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/cluster","scope":{}},
+      "cluster_telemetry": {"action":"cluster.telemetry.read","effects":["read"],"method":"GET","origin":"{origin}","params":["details_level","timeout"],"path":"/cluster/telemetry","scope":{}},
+      "collection_cluster_info": {"action":"collections.cluster.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/cluster","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "collection_exists": {"action":"collections.exists.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/exists","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "count_points": {"action":"collections.points.count.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","params":["consistency","timeout"],"path":"/collections/{collection_name}/points/count","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "create_collection": {"action":"collections.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["timeout"],"path":"/collections/{collection_name}","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "create_field_index": {"action":"collections.index.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["wait","ordering","timeout"],"path":"/collections/{collection_name}/index","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "create_full_snapshot": {"action":"snapshots.write","effects":["write"],"method":"POST","origin":"{origin}","params":["wait"],"path":"/snapshots","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "create_shard_key": {"action":"collections.shards.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["timeout"],"path":"/collections/{collection_name}/shards","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "create_shard_snapshot": {"action":"collections.shards.snapshots.write","effects":["write"],"method":"POST","origin":"{origin}","params":["wait"],"path":"/collections/{collection_name}/shards/{shard_id}/snapshots","scope":{"collection_name":{"at":"collection_name","from":"path"},"query":{"at":"","from":"query","type":"object"},"shard_id":{"at":"shard_id","from":"path"}}},
+      "create_snapshot": {"action":"collections.snapshots.write","effects":["write"],"method":"POST","origin":"{origin}","params":["wait"],"path":"/collections/{collection_name}/snapshots","scope":{"collection_name":{"at":"collection_name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "create_vector_name": {"action":"collections.vectors.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["wait","ordering","timeout"],"path":"/collections/{collection_name}/vectors/{vector_name}","scope":{"collection_name":{"at":"collection_name","from":"path"},"vector_name":{"at":"vector_name","from":"path"}}},
+      "delete_collection": {"action":"collections.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["timeout"],"path":"/collections/{collection_name}","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "delete_field_index": {"action":"collections.index.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["wait","ordering","timeout"],"path":"/collections/{collection_name}/index/{field_name}","scope":{"collection_name":{"at":"collection_name","from":"path"},"field_name":{"at":"field_name","from":"path"}}},
+      "delete_full_snapshot": {"action":"snapshots.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["wait"],"path":"/snapshots/{snapshot_name}","scope":{"snapshot_name":{"at":"snapshot_name","from":"path"}}},
+      "delete_payload": {"action":"collections.points.payload.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","params":["wait","ordering","timeout"],"path":"/collections/{collection_name}/points/payload/delete","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "delete_points": {"action":"collections.points.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","params":["wait","ordering","timeout"],"path":"/collections/{collection_name}/points/delete","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "delete_shard_key": {"action":"collections.shards.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","params":["timeout"],"path":"/collections/{collection_name}/shards/delete","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "delete_shard_snapshot": {"action":"collections.shards.snapshots.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["wait"],"path":"/collections/{collection_name}/shards/{shard_id}/snapshots/{snapshot_name}","scope":{"collection_name":{"at":"collection_name","from":"path"},"shard_id":{"at":"shard_id","from":"path"},"snapshot_name":{"at":"snapshot_name","from":"path"}}},
+      "delete_snapshot": {"action":"collections.snapshots.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["wait"],"path":"/collections/{collection_name}/snapshots/{snapshot_name}","scope":{"collection_name":{"at":"collection_name","from":"path"},"snapshot_name":{"at":"snapshot_name","from":"path"}}},
+      "delete_vector_name": {"action":"collections.vectors.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["wait","ordering","timeout"],"path":"/collections/{collection_name}/vectors/{vector_name}","scope":{"collection_name":{"at":"collection_name","from":"path"},"vector_name":{"at":"vector_name","from":"path"}}},
+      "delete_vectors": {"action":"collections.points.vectors.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","params":["wait","ordering","timeout"],"path":"/collections/{collection_name}/points/vectors/delete","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "facet": {"action":"collections.facet.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","params":["consistency","timeout"],"path":"/collections/{collection_name}/facet","scope":{"collection_name":{"at":"collection_name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "get_collection": {"action":"collections.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "get_collection_aliases": {"action":"collections.aliases.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/aliases","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "get_collections": {"action":"collections.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections","scope":{}},
+      "get_collections_aliases": {"action":"aliases.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/aliases","scope":{}},
+      "get_full_snapshot": {"action":"snapshots.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/snapshots/{snapshot_name}","scope":{"snapshot_name":{"at":"snapshot_name","from":"path"}}},
+      "get_issues": {"action":"issues.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/issues","scope":{}},
+      "get_optimizations": {"action":"collections.optimizations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["with","completed_limit"],"path":"/collections/{collection_name}/optimizations","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "get_point": {"action":"collections.points.read","effects":["read"],"method":"GET","origin":"{origin}","params":["consistency","timeout"],"path":"/collections/{collection_name}/points/{id}","scope":{"collection_name":{"at":"collection_name","from":"path"},"id":{"at":"id","from":"path"}}},
+      "get_points": {"action":"collections.points.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","params":["consistency","timeout"],"path":"/collections/{collection_name}/points","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "get_quotas": {"action":"quotas.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/quotas","scope":{}},
+      "get_shard_snapshot": {"action":"collections.shards.snapshots.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/shards/{shard_id}/snapshots/{snapshot_name}","scope":{"collection_name":{"at":"collection_name","from":"path"},"shard_id":{"at":"shard_id","from":"path"},"snapshot_name":{"at":"snapshot_name","from":"path"}}},
+      "get_snapshot": {"action":"collections.snapshots.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/snapshots/{snapshot_name}","scope":{"collection_name":{"at":"collection_name","from":"path"},"snapshot_name":{"at":"snapshot_name","from":"path"}}},
+      "healthz": {"action":"healthz.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/healthz","scope":{}},
+      "list_full_snapshots": {"action":"snapshots.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/snapshots","scope":{}},
+      "list_shard_keys": {"action":"collections.shards.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/shards","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "list_shard_snapshots": {"action":"collections.shards.snapshots.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/shards/{shard_id}/snapshots","scope":{"collection_name":{"at":"collection_name","from":"path"},"shard_id":{"at":"shard_id","from":"path"}}},
+      "list_snapshots": {"action":"collections.snapshots.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/snapshots","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "livez": {"action":"livez.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/livez","scope":{}},
+      "metrics": {"action":"metrics.read","effects":["read"],"method":"GET","origin":"{origin}","params":["anonymize","per_collection","timeout"],"path":"/metrics","scope":{}},
+      "overwrite_payload": {"action":"collections.points.payload.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["wait","ordering","timeout"],"path":"/collections/{collection_name}/points/payload","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "query_batch_points": {"action":"collections.points.query.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","params":["consistency","timeout"],"path":"/collections/{collection_name}/points/query/batch","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "query_points": {"action":"collections.points.query.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","params":["consistency","timeout"],"path":"/collections/{collection_name}/points/query","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "query_points_groups": {"action":"collections.points.query.groups.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","params":["consistency","timeout"],"path":"/collections/{collection_name}/points/query/groups","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "readyz": {"action":"readyz.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/readyz","scope":{}},
+      "recover_current_peer": {"action":"cluster.recover.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/cluster/recover","scope":{}},
+      "recover_from_snapshot": {"action":"collections.snapshots.recover.write","body":"any","effects":["write","delete"],"method":"PUT","origin":"{origin}","params":["wait"],"path":"/collections/{collection_name}/snapshots/recover","scope":{"collection_name":{"at":"collection_name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "recover_from_uploaded_snapshot": {"action":"collections.snapshots.recover.write","body":"any","effects":["write","delete"],"method":"POST","origin":"{origin}","params":["wait","priority","checksum"],"path":"/collections/{collection_name}/snapshots/upload","scope":{"collection_name":{"at":"collection_name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "recover_shard_from_snapshot": {"action":"collections.shards.snapshots.recover.write","body":"any","effects":["write","delete"],"method":"PUT","origin":"{origin}","params":["wait"],"path":"/collections/{collection_name}/shards/{shard_id}/snapshots/recover","scope":{"collection_name":{"at":"collection_name","from":"path"},"query":{"at":"","from":"query","type":"object"},"shard_id":{"at":"shard_id","from":"path"}}},
+      "recover_shard_from_uploaded_snapshot": {"action":"collections.shards.snapshots.recover.write","body":"any","effects":["write","delete"],"method":"POST","origin":"{origin}","params":["wait","priority","checksum"],"path":"/collections/{collection_name}/shards/{shard_id}/snapshots/upload","scope":{"collection_name":{"at":"collection_name","from":"path"},"query":{"at":"","from":"query","type":"object"},"shard_id":{"at":"shard_id","from":"path"}}},
+      "remove_peer": {"action":"cluster.peer.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["timeout","force"],"path":"/cluster/peer/{peer_id}","scope":{"peer_id":{"at":"peer_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "root": {"action":"service.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/","scope":{}},
+      "scroll_points": {"action":"collections.points.scroll.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","params":["consistency","timeout"],"path":"/collections/{collection_name}/points/scroll","scope":{"collection_name":{"at":"collection_name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "search_matrix_offsets": {"action":"collections.points.search.matrix.offsets.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","params":["consistency","timeout"],"path":"/collections/{collection_name}/points/search/matrix/offsets","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "search_matrix_pairs": {"action":"collections.points.search.matrix.pairs.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","params":["consistency","timeout"],"path":"/collections/{collection_name}/points/search/matrix/pairs","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "set_payload": {"action":"collections.points.payload.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["wait","ordering","timeout"],"path":"/collections/{collection_name}/points/payload","scope":{"collection_name":{"at":"collection_name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "stream_shard_snapshot": {"action":"collections.shards.snapshot.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/collections/{collection_name}/shards/{shard_id}/snapshot","scope":{"collection_name":{"at":"collection_name","from":"path"},"shard_id":{"at":"shard_id","from":"path"}}},
+      "telemetry": {"action":"telemetry.read","effects":["read"],"method":"GET","origin":"{origin}","params":["anonymize","details_level","per_collection","timeout"],"path":"/telemetry","scope":{}},
+      "update_aliases": {"action":"collections.aliases.write","body":"any","effects":["write","delete"],"method":"POST","origin":"{origin}","params":["timeout"],"path":"/collections/aliases","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "update_collection": {"action":"collections.write","body":"any","effects":["write"],"method":"PATCH","origin":"{origin}","params":["timeout"],"path":"/collections/{collection_name}","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "update_collection_cluster": {"action":"collections.cluster.admin","body":"any","effects":["admin","delete"],"method":"POST","origin":"{origin}","params":["timeout"],"path":"/collections/{collection_name}/cluster","scope":{"collection_name":{"at":"collection_name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "update_quotas": {"action":"quotas.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","params":["wait"],"path":"/quotas","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "update_vectors": {"action":"collections.points.vectors.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["wait","ordering","timeout"],"path":"/collections/{collection_name}/points/vectors","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "upsert_points": {"action":"collections.points.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["wait","ordering","timeout"],"path":"/collections/{collection_name}/points","scope":{"collection_name":{"at":"collection_name","from":"path"}}}
     }
   }
 }

@@ -1,46 +1,665 @@
 {
-  "title": "PayPal",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "secret", "label": "Secret", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "secret", "origin": "https://api-m.paypal.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "admin.webhooks": {"title": "Admin: webhooks"},
-      "delete.webhooks": {"title": "Delete: webhooks"},
-      "delete.webhooks_lookup": {"title": "Delete: webhooks lookup"},
-      "pay.payouts": {"title": "Pay: payouts"},
-      "read": {"title": "Read everything the account can see"},
-      "send.resend": {"title": "Send: resend"},
-      "write.payouts_item": {"title": "Write: payouts item"},
-      "write.simulate_event": {"title": "Write: simulate event"},
-      "write.verify_webhook_signature": {"title": "Write: verify webhook signature"},
-      "write.webhooks_lookup": {"title": "Write: webhooks lookup"}
-    }
+      "billing": {
+        "title": "Billing"
+      },
+      "billing.plans": {
+        "title": "Plans"
+      },
+      "billing.plans.activate": {
+        "title": "Activate"
+      },
+      "billing.plans.activate.write": {
+        "title": "Create and edit"
+      },
+      "billing.plans.deactivate": {
+        "title": "Deactivate"
+      },
+      "billing.plans.deactivate.write": {
+        "title": "Create and edit"
+      },
+      "billing.plans.pricing_schemes": {
+        "title": "Pricing schemes"
+      },
+      "billing.plans.pricing_schemes.write": {
+        "title": "Create and edit"
+      },
+      "billing.plans.read": {
+        "title": "Read"
+      },
+      "billing.plans.write": {
+        "title": "Create and edit"
+      },
+      "billing.subscriptions": {
+        "title": "Subscriptions"
+      },
+      "billing.subscriptions.activate": {
+        "title": "Activate"
+      },
+      "billing.subscriptions.activate.write": {
+        "title": "Create and edit"
+      },
+      "billing.subscriptions.capture": {
+        "title": "Capture"
+      },
+      "billing.subscriptions.capture.pay": {
+        "title": "Make payments"
+      },
+      "billing.subscriptions.read": {
+        "title": "Read"
+      },
+      "billing.subscriptions.revise": {
+        "title": "Revise"
+      },
+      "billing.subscriptions.revise.write": {
+        "title": "Create and edit"
+      },
+      "billing.subscriptions.suspend": {
+        "title": "Suspend"
+      },
+      "billing.subscriptions.suspend.write": {
+        "title": "Create and edit"
+      },
+      "billing.subscriptions.transactions": {
+        "title": "Transactions"
+      },
+      "billing.subscriptions.transactions.read": {
+        "title": "Read"
+      },
+      "billing.subscriptions.write": {
+        "title": "Create and edit"
+      },
+      "catalogs": {
+        "title": "Catalogs"
+      },
+      "catalogs.products": {
+        "title": "Products"
+      },
+      "catalogs.products.read": {
+        "title": "Read"
+      },
+      "catalogs.products.write": {
+        "title": "Create and edit"
+      },
+      "checkout": {
+        "title": "Checkout"
+      },
+      "checkout.orders": {
+        "title": "Orders"
+      },
+      "checkout.orders.authorize": {
+        "title": "Authorize"
+      },
+      "checkout.orders.authorize.pay": {
+        "title": "Make payments"
+      },
+      "checkout.orders.capture": {
+        "title": "Capture"
+      },
+      "checkout.orders.capture.pay": {
+        "title": "Make payments"
+      },
+      "checkout.orders.payment_source": {
+        "title": "Payment source"
+      },
+      "checkout.orders.payment_source.write": {
+        "title": "Create and edit"
+      },
+      "checkout.orders.read": {
+        "title": "Read"
+      },
+      "checkout.orders.track": {
+        "title": "Track"
+      },
+      "checkout.orders.track.write": {
+        "title": "Create and edit"
+      },
+      "checkout.orders.trackers": {
+        "title": "Trackers"
+      },
+      "checkout.orders.trackers.write": {
+        "title": "Create and edit"
+      },
+      "checkout.orders.write": {
+        "title": "Create and edit"
+      },
+      "customer": {
+        "title": "Customer"
+      },
+      "customer.disputes": {
+        "title": "Disputes"
+      },
+      "customer.disputes.acknowledge_return_item": {
+        "title": "Acknowledge return item"
+      },
+      "customer.disputes.acknowledge_return_item.write": {
+        "title": "Create and edit"
+      },
+      "customer.disputes.adjudicate": {
+        "title": "Adjudicate"
+      },
+      "customer.disputes.adjudicate.write": {
+        "title": "Create and edit"
+      },
+      "customer.disputes.appeal": {
+        "title": "Appeal"
+      },
+      "customer.disputes.appeal.write": {
+        "title": "Create and edit"
+      },
+      "customer.disputes.claim": {
+        "title": "Claim"
+      },
+      "customer.disputes.claim.pay": {
+        "title": "Make payments"
+      },
+      "customer.disputes.deny_offer": {
+        "title": "Deny offer"
+      },
+      "customer.disputes.deny_offer.write": {
+        "title": "Create and edit"
+      },
+      "customer.disputes.escalate": {
+        "title": "Escalate"
+      },
+      "customer.disputes.escalate.write": {
+        "title": "Create and edit"
+      },
+      "customer.disputes.make_offer": {
+        "title": "Make offer"
+      },
+      "customer.disputes.make_offer.pay": {
+        "title": "Make payments"
+      },
+      "customer.disputes.message": {
+        "title": "Message"
+      },
+      "customer.disputes.message.send": {
+        "title": "Send"
+      },
+      "customer.disputes.offer": {
+        "title": "Offer"
+      },
+      "customer.disputes.offer.pay": {
+        "title": "Make payments"
+      },
+      "customer.disputes.provide_evidence": {
+        "title": "Provide evidence"
+      },
+      "customer.disputes.provide_evidence.write": {
+        "title": "Create and edit"
+      },
+      "customer.disputes.provide_supporting_info": {
+        "title": "Provide supporting info"
+      },
+      "customer.disputes.provide_supporting_info.write": {
+        "title": "Create and edit"
+      },
+      "customer.disputes.read": {
+        "title": "Read"
+      },
+      "customer.disputes.require_evidence": {
+        "title": "Require evidence"
+      },
+      "customer.disputes.require_evidence.write": {
+        "title": "Create and edit"
+      },
+      "customer.disputes.write": {
+        "title": "Create and edit"
+      },
+      "invoicing": {
+        "title": "Invoicing"
+      },
+      "invoicing.accounting_sync": {
+        "title": "Accounting sync"
+      },
+      "invoicing.accounting_sync.invoices": {
+        "title": "Invoices"
+      },
+      "invoicing.accounting_sync.invoices.connections": {
+        "title": "Connections"
+      },
+      "invoicing.accounting_sync.invoices.connections.read": {
+        "title": "Read"
+      },
+      "invoicing.accounting_sync.merchant": {
+        "title": "Merchant"
+      },
+      "invoicing.accounting_sync.merchant.connections": {
+        "title": "Connections"
+      },
+      "invoicing.accounting_sync.merchant.connections.read": {
+        "title": "Read"
+      },
+      "invoicing.generate_next_invoice_number": {
+        "title": "Generate next invoice number"
+      },
+      "invoicing.generate_next_invoice_number.write": {
+        "title": "Create and edit"
+      },
+      "invoicing.invoices": {
+        "title": "Invoices"
+      },
+      "invoicing.invoices.delete": {
+        "title": "Delete"
+      },
+      "invoicing.invoices.generate_qr_code": {
+        "title": "Generate qr code"
+      },
+      "invoicing.invoices.generate_qr_code.read": {
+        "title": "Read"
+      },
+      "invoicing.invoices.payments": {
+        "title": "Payments"
+      },
+      "invoicing.invoices.payments.delete": {
+        "title": "Delete"
+      },
+      "invoicing.invoices.payments.write": {
+        "title": "Create and edit"
+      },
+      "invoicing.invoices.read": {
+        "title": "Read"
+      },
+      "invoicing.invoices.refunds": {
+        "title": "Refunds"
+      },
+      "invoicing.invoices.refunds.delete": {
+        "title": "Delete"
+      },
+      "invoicing.invoices.refunds.write": {
+        "title": "Create and edit"
+      },
+      "invoicing.invoices.remind": {
+        "title": "Remind"
+      },
+      "invoicing.invoices.remind.send": {
+        "title": "Send"
+      },
+      "invoicing.invoices.send": {
+        "title": "Send"
+      },
+      "invoicing.invoices.write": {
+        "title": "Create and edit"
+      },
+      "invoicing.templates": {
+        "title": "Templates"
+      },
+      "invoicing.templates.delete": {
+        "title": "Delete"
+      },
+      "invoicing.templates.read": {
+        "title": "Read"
+      },
+      "invoicing.templates.write": {
+        "title": "Create and edit"
+      },
+      "notifications": {
+        "title": "Notifications"
+      },
+      "notifications.simulate_event": {
+        "title": "Simulate event"
+      },
+      "notifications.simulate_event.send": {
+        "title": "Send"
+      },
+      "notifications.webhook_signature": {
+        "title": "Webhook signature"
+      },
+      "notifications.webhook_signature.read": {
+        "title": "Read"
+      },
+      "notifications.webhooks": {
+        "title": "Webhooks"
+      },
+      "notifications.webhooks.admin": {
+        "title": "Manage"
+      },
+      "notifications.webhooks.delete": {
+        "title": "Delete"
+      },
+      "notifications.webhooks.event_types": {
+        "title": "Event types"
+      },
+      "notifications.webhooks.event_types.read": {
+        "title": "Read"
+      },
+      "notifications.webhooks.read": {
+        "title": "Read"
+      },
+      "notifications.webhooks_event_types": {
+        "title": "Webhooks event types"
+      },
+      "notifications.webhooks_event_types.read": {
+        "title": "Read"
+      },
+      "notifications.webhooks_events": {
+        "title": "Webhooks events"
+      },
+      "notifications.webhooks_events.read": {
+        "title": "Read"
+      },
+      "notifications.webhooks_events.resend": {
+        "title": "Resend"
+      },
+      "notifications.webhooks_events.resend.send": {
+        "title": "Send"
+      },
+      "notifications.webhooks_lookup": {
+        "title": "Webhooks lookup"
+      },
+      "notifications.webhooks_lookup.delete": {
+        "title": "Delete"
+      },
+      "notifications.webhooks_lookup.read": {
+        "title": "Read"
+      },
+      "notifications.webhooks_lookup.write": {
+        "title": "Create and edit"
+      },
+      "payments": {
+        "title": "Payments"
+      },
+      "payments.authorizations": {
+        "title": "Authorizations"
+      },
+      "payments.authorizations.capture": {
+        "title": "Capture"
+      },
+      "payments.authorizations.capture.pay": {
+        "title": "Make payments"
+      },
+      "payments.authorizations.read": {
+        "title": "Read"
+      },
+      "payments.authorizations.reauthorize": {
+        "title": "Reauthorize"
+      },
+      "payments.authorizations.reauthorize.pay": {
+        "title": "Make payments"
+      },
+      "payments.authorizations.void": {
+        "title": "Void"
+      },
+      "payments.authorizations.void.write": {
+        "title": "Create and edit"
+      },
+      "payments.captures": {
+        "title": "Captures"
+      },
+      "payments.captures.read": {
+        "title": "Read"
+      },
+      "payments.captures.refund": {
+        "title": "Refund"
+      },
+      "payments.captures.refund.pay": {
+        "title": "Make payments"
+      },
+      "payments.eligible_methods": {
+        "title": "Eligible methods"
+      },
+      "payments.eligible_methods.read": {
+        "title": "Read"
+      },
+      "payments.payouts": {
+        "title": "Payouts"
+      },
+      "payments.payouts.pay": {
+        "title": "Make payments"
+      },
+      "payments.payouts.read": {
+        "title": "Read"
+      },
+      "payments.payouts_item": {
+        "title": "Payouts item"
+      },
+      "payments.payouts_item.read": {
+        "title": "Read"
+      },
+      "payments.payouts_item.write": {
+        "title": "Create and edit"
+      },
+      "payments.refunds": {
+        "title": "Refunds"
+      },
+      "payments.refunds.read": {
+        "title": "Read"
+      },
+      "reporting": {
+        "title": "Reporting"
+      },
+      "reporting.balances": {
+        "title": "Balances"
+      },
+      "reporting.balances.read": {
+        "title": "Read"
+      },
+      "reporting.transactions": {
+        "title": "Transactions"
+      },
+      "reporting.transactions.read": {
+        "title": "Read"
+      },
+      "shipping": {
+        "title": "Shipping"
+      },
+      "shipping.trackers": {
+        "title": "Trackers"
+      },
+      "shipping.trackers.read": {
+        "title": "Read"
+      },
+      "shipping.trackers.write": {
+        "title": "Create and edit"
+      },
+      "shipping.trackers_batch": {
+        "title": "Trackers batch"
+      },
+      "shipping.trackers_batch.write": {
+        "title": "Create and edit"
+      },
+      "vault": {
+        "title": "Vault"
+      },
+      "vault.payment_tokens": {
+        "title": "Payment tokens"
+      },
+      "vault.payment_tokens.delete": {
+        "title": "Delete"
+      },
+      "vault.payment_tokens.read": {
+        "title": "Read"
+      },
+      "vault.payment_tokens.write": {
+        "title": "Create and edit"
+      },
+      "vault.setup_tokens": {
+        "title": "Setup tokens"
+      },
+      "vault.setup_tokens.read": {
+        "title": "Read"
+      },
+      "vault.setup_tokens.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api-m.paypal.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "secret"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api-m.sandbox.paypal.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "secret"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "secret",
+        "label": "Access token",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "PayPal",
   "http": {
+    "origins": {"paypal":["https://api-m.paypal.com","https://api-m.sandbox.paypal.com"]},
     "operations": {
-      "event-types.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks/{webhook_id}/event-types","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "payouts-item.cancel": {"action":"write.payouts_item","effects":["write"],"method":"POST","origin":"https://api-m.paypal.com","path":"/v1/payments/payouts-item/{payout_item_id}/cancel","scope":{"payout_item_id":{"from":"path","at":"payout_item_id"}}},
-      "payouts-item.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/payments/payouts-item/{payout_item_id}","scope":{"payout_item_id":{"from":"path","at":"payout_item_id"}}},
-      "payouts.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/payments/payouts/{id}","params":["fields","page","page_size","total_required"],"scope":{"id":{"from":"path","at":"id"}}},
-      "payouts.post": {"action":"pay.payouts","effects":["pay"],"method":"POST","origin":"https://api-m.paypal.com","path":"/v1/payments/payouts","body":"any","scope":{}},
-      "simulate-event.post": {"action":"write.simulate_event","effects":["write"],"method":"POST","origin":"https://api-m.paypal.com","path":"/v1/notifications/simulate-event","body":"any","scope":{}},
-      "verify-webhook-signature.post": {"action":"write.verify_webhook_signature","effects":["write"],"method":"POST","origin":"https://api-m.paypal.com","path":"/v1/notifications/verify-webhook-signature","body":"any","scope":{}},
-      "webhooks-event-types.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks-event-types","scope":{}},
-      "webhooks-events.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks-events/{event_id}","scope":{"event_id":{"from":"path","at":"event_id"}}},
-      "webhooks-events.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks-events","params":["page_size","start_time","end_time","transaction_id","event_type"],"scope":{}},
-      "webhooks-events.resend": {"action":"send.resend","effects":["send"],"method":"POST","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks-events/{event_id}/resend","body":"any","scope":{"event_id":{"from":"path","at":"event_id"}}},
-      "webhooks-lookup.delete": {"action":"delete.webhooks_lookup","effects":["delete"],"method":"DELETE","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks-lookup/{webhook_lookup_id}","scope":{"webhook_lookup_id":{"from":"path","at":"webhook_lookup_id"}}},
-      "webhooks-lookup.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks-lookup/{webhook_lookup_id}","scope":{"webhook_lookup_id":{"from":"path","at":"webhook_lookup_id"}}},
-      "webhooks-lookup.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks-lookup","scope":{}},
-      "webhooks-lookup.post": {"action":"write.webhooks_lookup","effects":["write"],"method":"POST","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks-lookup","scope":{}},
-      "webhooks.delete": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks/{webhook_id}","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "webhooks.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks/{webhook_id}","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "webhooks.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks","params":["anchor_type"],"scope":{}},
-      "webhooks.post": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks","body":"any","scope":{}},
-      "webhooks.update": {"action":"admin.webhooks","effects":["admin"],"method":"PATCH","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks/{webhook_id}","body":"any","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}}
+      "authorizations.capture": {"action":"payments.authorizations.capture.pay","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v2/payments/authorizations/{authorization_id}/capture","scope":{"authorization_id":{"at":"authorization_id","from":"path"}}},
+      "authorizations.capture.json.81cb2b991ee7": {"action":"payments.authorizations.capture.pay","body":"json","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v2/payments/authorizations/{authorization_id}/capture","scope":{"authorization_id":{"at":"authorization_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "authorizations.get": {"action":"payments.authorizations.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v2/payments/authorizations/{authorization_id}","scope":{"authorization_id":{"at":"authorization_id","from":"path"}}},
+      "authorizations.reauthorize": {"action":"payments.authorizations.reauthorize.pay","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v2/payments/authorizations/{authorization_id}/reauthorize","scope":{"authorization_id":{"at":"authorization_id","from":"path"}}},
+      "authorizations.reauthorize.json.c20efeeb0ed5": {"action":"payments.authorizations.reauthorize.pay","body":"json","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v2/payments/authorizations/{authorization_id}/reauthorize","scope":{"authorization_id":{"at":"authorization_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "authorizations.void": {"action":"payments.authorizations.void.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v2/payments/authorizations/{authorization_id}/void","scope":{"authorization_id":{"at":"authorization_id","from":"path"}}},
+      "balances.get": {"action":"reporting.balances.read","effects":["read"],"method":"GET","origin":"{paypal}","params":["as_of_time","currency_code"],"path":"/v1/reporting/balances","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "captures.get": {"action":"payments.captures.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v2/payments/captures/{capture_id}","scope":{"capture_id":{"at":"capture_id","from":"path"}}},
+      "captures.refund": {"action":"payments.captures.refund.pay","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v2/payments/captures/{capture_id}/refund","scope":{"capture_id":{"at":"capture_id","from":"path"}}},
+      "captures.refund.json.5214e78bdbf3": {"action":"payments.captures.refund.pay","body":"json","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v2/payments/captures/{capture_id}/refund","scope":{"capture_id":{"at":"capture_id","from":"path"},"custom_id":{"at":"/custom_id","from":"body","optional":true},"invoice_id":{"at":"/invoice_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "connections.get": {"action":"invoicing.accounting_sync.merchant.connections.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v2/invoicing/accounting-sync/merchant/connections","scope":{}},
+      "customer.payment-tokens.get": {"action":"vault.payment_tokens.read","effects":["read"],"method":"GET","origin":"{paypal}","params":["customer_id","page_size","page","total_required"],"path":"/v3/vault/payment-tokens","scope":{"customer_id":{"at":"customer_id","from":"query"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "disputes.accept-claim": {"action":"customer.disputes.claim.pay","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v1/customer/disputes/{id}/accept-claim","scope":{"id":{"at":"id","from":"path"}}},
+      "disputes.accept-offer": {"action":"customer.disputes.offer.pay","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v1/customer/disputes/{id}/accept-offer","scope":{"id":{"at":"id","from":"path"}}},
+      "disputes.accept-offer.json.4dc05aa35012": {"action":"customer.disputes.offer.pay","body":"json","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v1/customer/disputes/{id}/accept-offer","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "disputes.acknowledge-return-item": {"action":"customer.disputes.acknowledge_return_item.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/customer/disputes/{id}/acknowledge-return-item","scope":{"id":{"at":"id","from":"path"}}},
+      "disputes.adjudicate": {"action":"customer.disputes.adjudicate.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/customer/disputes/{id}/adjudicate","scope":{"id":{"at":"id","from":"path"}}},
+      "disputes.adjudicate.json.25621d4bdc2f": {"action":"customer.disputes.adjudicate.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/customer/disputes/{id}/adjudicate","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "disputes.appeal": {"action":"customer.disputes.appeal.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/customer/disputes/{id}/appeal","scope":{"id":{"at":"id","from":"path"}}},
+      "disputes.deny-offer": {"action":"customer.disputes.deny_offer.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/customer/disputes/{id}/deny-offer","scope":{"id":{"at":"id","from":"path"}}},
+      "disputes.deny-offer.json.46eede6c05b6": {"action":"customer.disputes.deny_offer.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/customer/disputes/{id}/deny-offer","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "disputes.escalate": {"action":"customer.disputes.escalate.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/customer/disputes/{id}/escalate","scope":{"id":{"at":"id","from":"path"}}},
+      "disputes.escalate.json.cd5b3d4b6295": {"action":"customer.disputes.escalate.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/customer/disputes/{id}/escalate","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "disputes.get": {"action":"customer.disputes.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v1/customer/disputes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "disputes.list": {"action":"customer.disputes.read","effects":["read"],"method":"GET","origin":"{paypal}","params":["start_time","disputed_transaction_id","page_size","next_page_token","dispute_state","update_time_before","update_time_after"],"path":"/v1/customer/disputes","scope":{"disputed_transaction_id":{"at":"disputed_transaction_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "disputes.make-offer": {"action":"customer.disputes.make_offer.pay","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v1/customer/disputes/{id}/make-offer","scope":{"id":{"at":"id","from":"path"}}},
+      "disputes.make-offer.json.9b51e322d2ae": {"action":"customer.disputes.make_offer.pay","body":"json","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v1/customer/disputes/{id}/make-offer","scope":{"id":{"at":"id","from":"path"},"invoice_id":{"at":"/invoice_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "disputes.patch": {"action":"customer.disputes.write","effects":["write"],"method":"PATCH","origin":"{paypal}","path":"/v1/customer/disputes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "disputes.patch.json.5d9704acc73b": {"action":"customer.disputes.write","body":"json","effects":["write"],"method":"PATCH","origin":"{paypal}","path":"/v1/customer/disputes/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+      "disputes.provide-evidence": {"action":"customer.disputes.provide_evidence.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/customer/disputes/{id}/provide-evidence","scope":{"id":{"at":"id","from":"path"}}},
+      "disputes.provide-supporting-info": {"action":"customer.disputes.provide_supporting_info.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/customer/disputes/{id}/provide-supporting-info","scope":{"id":{"at":"id","from":"path"}}},
+      "disputes.require-evidence": {"action":"customer.disputes.require_evidence.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/customer/disputes/{id}/require-evidence","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "disputes.send-message": {"action":"customer.disputes.message.send","effects":["send"],"method":"POST","origin":"{paypal}","path":"/v1/customer/disputes/{id}/send-message","scope":{"id":{"at":"id","from":"path"}}},
+      "event-types.list": {"action":"notifications.webhooks.event_types.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v1/notifications/webhooks/{webhook_id}/event-types","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "find.eligible.methods": {"action":"payments.eligible_methods.read","effects":["read"],"method":"POST","origin":"{paypal}","path":"/v2/payments/find-eligible-methods","scope":{}},
+      "find.eligible.methods.json.b2e0ecbdcff8": {"action":"payments.eligible_methods.read","body":"json","effects":["read"],"method":"POST","origin":"{paypal}","path":"/v2/payments/find-eligible-methods","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "invoice_connection_details.get": {"action":"invoicing.accounting_sync.invoices.connections.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v2/invoicing/accounting-sync/invoices/{id}/connections","scope":{"id":{"at":"id","from":"path"}}},
+      "invoices.cancel": {"action":"invoicing.invoices.send","body":"json","effects":["send","write"],"method":"POST","origin":"{paypal}","path":"/v2/invoicing/invoices/{invoice_id}/cancel","scope":{"additional_recipients":{"at":"/additional_recipients","from":"body","optional":true,"type":"array"},"invoice_id":{"at":"invoice_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "invoices.create": {"action":"invoicing.invoices.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v2/invoicing/invoices","scope":{"additional_recipients":{"at":"/additional_recipients","from":"body","optional":true,"type":"array"},"id":{"at":"/id","from":"body","optional":true},"parent_id":{"at":"/parent_id","from":"body","optional":true},"primary_recipients":{"at":"/primary_recipients","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "invoices.delete": {"action":"invoicing.invoices.delete","effects":["delete"],"method":"DELETE","origin":"{paypal}","path":"/v2/invoicing/invoices/{invoice_id}","scope":{"invoice_id":{"at":"invoice_id","from":"path"}}},
+      "invoices.generate-qr-code": {"action":"invoicing.invoices.generate_qr_code.read","effects":["read"],"method":"POST","origin":"{paypal}","path":"/v2/invoicing/invoices/{invoice_id}/generate-qr-code","scope":{"invoice_id":{"at":"invoice_id","from":"path"}}},
+      "invoices.generate-qr-code.json.df40e4290967": {"action":"invoicing.invoices.generate_qr_code.read","body":"json","effects":["read"],"method":"POST","origin":"{paypal}","path":"/v2/invoicing/invoices/{invoice_id}/generate-qr-code","scope":{"invoice_id":{"at":"invoice_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "invoices.get": {"action":"invoicing.invoices.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v2/invoicing/invoices/{invoice_id}","scope":{"invoice_id":{"at":"invoice_id","from":"path"}}},
+      "invoices.list": {"action":"invoicing.invoices.read","effects":["read"],"method":"GET","origin":"{paypal}","params":["page","page_size","total_required","fields"],"path":"/v2/invoicing/invoices","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "invoices.payments": {"action":"invoicing.invoices.payments.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v2/invoicing/invoices/{invoice_id}/payments","scope":{"invoice_id":{"at":"invoice_id","from":"path"},"payment_id":{"at":"/payment_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "invoices.payments-delete": {"action":"invoicing.invoices.payments.delete","effects":["delete"],"method":"DELETE","origin":"{paypal}","path":"/v2/invoicing/invoices/{invoice_id}/payments/{transaction_id}","scope":{"invoice_id":{"at":"invoice_id","from":"path"},"transaction_id":{"at":"transaction_id","from":"path"}}},
+      "invoices.refunds": {"action":"invoicing.invoices.refunds.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v2/invoicing/invoices/{invoice_id}/refunds","scope":{"invoice_id":{"at":"invoice_id","from":"path"},"refund_id":{"at":"/refund_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "invoices.refunds-delete": {"action":"invoicing.invoices.refunds.delete","effects":["delete"],"method":"DELETE","origin":"{paypal}","path":"/v2/invoicing/invoices/{invoice_id}/refunds/{transaction_id}","scope":{"invoice_id":{"at":"invoice_id","from":"path"},"transaction_id":{"at":"transaction_id","from":"path"}}},
+      "invoices.remind": {"action":"invoicing.invoices.remind.send","effects":["send"],"method":"POST","origin":"{paypal}","path":"/v2/invoicing/invoices/{invoice_id}/remind","scope":{"invoice_id":{"at":"invoice_id","from":"path"}}},
+      "invoices.remind.json.1deeb9692335": {"action":"invoicing.invoices.remind.send","body":"json","effects":["send"],"method":"POST","origin":"{paypal}","path":"/v2/invoicing/invoices/{invoice_id}/remind","scope":{"additional_recipients":{"at":"/additional_recipients","from":"body","optional":true,"type":"array"},"invoice_id":{"at":"invoice_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "invoices.search-invoices": {"action":"invoicing.invoices.read","effects":["read"],"method":"POST","origin":"{paypal}","params":["page","page_size","total_required"],"path":"/v2/invoicing/search-invoices","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "invoices.search-invoices.json.614f3c9bfb6c": {"action":"invoicing.invoices.read","body":"json","effects":["read"],"method":"POST","origin":"{paypal}","params":["page","page_size","total_required"],"path":"/v2/invoicing/search-invoices","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"recipient_business_name":{"at":"/recipient_business_name","from":"body","optional":true},"recipient_email":{"at":"/recipient_email","from":"body","optional":true},"recipient_first_name":{"at":"/recipient_first_name","from":"body","optional":true},"recipient_last_name":{"at":"/recipient_last_name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "invoices.send": {"action":"invoicing.invoices.send","effects":["send"],"method":"POST","origin":"{paypal}","path":"/v2/invoicing/invoices/{invoice_id}/send","scope":{"invoice_id":{"at":"invoice_id","from":"path"}}},
+      "invoices.send.json.e890133f40e7": {"action":"invoicing.invoices.send","body":"json","effects":["send"],"method":"POST","origin":"{paypal}","path":"/v2/invoicing/invoices/{invoice_id}/send","scope":{"additional_recipients":{"at":"/additional_recipients","from":"body","optional":true,"type":"array"},"invoice_id":{"at":"invoice_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "invoices.update": {"action":"invoicing.invoices.write","body":"json","effects":["write"],"method":"PUT","origin":"{paypal}","params":["send_to_recipient","send_to_invoicer"],"path":"/v2/invoicing/invoices/{invoice_id}","scope":{"additional_recipients":{"at":"/additional_recipients","from":"body","optional":true,"type":"array"},"id":{"at":"/id","from":"body","optional":true},"invoice_id":{"at":"invoice_id","from":"path"},"parent_id":{"at":"/parent_id","from":"body","optional":true},"primary_recipients":{"at":"/primary_recipients","from":"body","optional":true,"type":"array"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"send_to_recipient":{"at":"send_to_recipient","from":"query","optional":true}}},
+      "invoicing.generate-next-invoice-number": {"action":"invoicing.generate_next_invoice_number.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v2/invoicing/generate-next-invoice-number","scope":{}},
+      "invoicing.generate-next-invoice-number.json.28effeba0bbb": {"action":"invoicing.generate_next_invoice_number.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v2/invoicing/generate-next-invoice-number","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "orders.authorize": {"action":"checkout.orders.authorize.pay","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v2/checkout/orders/{id}/authorize","scope":{"id":{"at":"id","from":"path"}}},
+      "orders.authorize.json.dbb7844b05f1": {"action":"checkout.orders.authorize.pay","body":"json","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v2/checkout/orders/{id}/authorize","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "orders.capture": {"action":"checkout.orders.capture.pay","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v2/checkout/orders/{id}/capture","scope":{"id":{"at":"id","from":"path"}}},
+      "orders.capture.json.3109dd4928dd": {"action":"checkout.orders.capture.pay","body":"json","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v2/checkout/orders/{id}/capture","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "orders.confirm": {"action":"checkout.orders.payment_source.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v2/checkout/orders/{id}/confirm-payment-source","scope":{"id":{"at":"id","from":"path"}}},
+      "orders.confirm.json.392f67e5fe40": {"action":"checkout.orders.payment_source.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v2/checkout/orders/{id}/confirm-payment-source","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "orders.create": {"action":"checkout.orders.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v2/checkout/orders","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "orders.get": {"action":"checkout.orders.read","effects":["read"],"method":"GET","origin":"{paypal}","params":["fields"],"path":"/v2/checkout/orders/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "orders.patch": {"action":"checkout.orders.write","effects":["write"],"method":"PATCH","origin":"{paypal}","path":"/v2/checkout/orders/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "orders.patch.json.f2352d7cbec8": {"action":"checkout.orders.write","body":"json","effects":["write"],"method":"PATCH","origin":"{paypal}","path":"/v2/checkout/orders/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+      "orders.track.create": {"action":"checkout.orders.track.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v2/checkout/orders/{id}/track","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "orders.trackers.patch": {"action":"checkout.orders.trackers.write","effects":["write"],"method":"PATCH","origin":"{paypal}","path":"/v2/checkout/orders/{id}/trackers/{tracker_id}","scope":{"id":{"at":"id","from":"path"},"tracker_id":{"at":"tracker_id","from":"path"}}},
+      "orders.trackers.patch.json.08766d59175a": {"action":"checkout.orders.trackers.write","body":"json","effects":["write"],"method":"PATCH","origin":"{paypal}","path":"/v2/checkout/orders/{id}/trackers/{tracker_id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"array"},"tracker_id":{"at":"tracker_id","from":"path"}}},
+      "payment-tokens.create": {"action":"vault.payment_tokens.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v3/vault/payment-tokens","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "payment-tokens.delete": {"action":"vault.payment_tokens.delete","effects":["delete"],"method":"DELETE","origin":"{paypal}","path":"/v3/vault/payment-tokens/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "payment-tokens.get": {"action":"vault.payment_tokens.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v3/vault/payment-tokens/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "payouts-item.cancel": {"action":"payments.payouts_item.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/payments/payouts-item/{payout_item_id}/cancel","scope":{"payout_item_id":{"at":"payout_item_id","from":"path"}}},
+      "payouts-item.get": {"action":"payments.payouts_item.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v1/payments/payouts-item/{payout_item_id}","scope":{"payout_item_id":{"at":"payout_item_id","from":"path"}}},
+      "payouts.get": {"action":"payments.payouts.read","effects":["read"],"method":"GET","origin":"{paypal}","params":["fields","page","page_size","total_required"],"path":"/v1/payments/payouts/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "payouts.post": {"action":"payments.payouts.pay","body":"any","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v1/payments/payouts","scope":{}},
+      "plans.activate": {"action":"billing.plans.activate.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/billing/plans/{id}/activate","scope":{"id":{"at":"id","from":"path"}}},
+      "plans.create": {"action":"billing.plans.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/billing/plans","scope":{}},
+      "plans.create.json.f16ed4eedc01": {"action":"billing.plans.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/billing/plans","scope":{"name":{"at":"/name","from":"body"},"product_id":{"at":"/product_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "plans.deactivate": {"action":"billing.plans.deactivate.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/billing/plans/{id}/deactivate","scope":{"id":{"at":"id","from":"path"}}},
+      "plans.get": {"action":"billing.plans.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v1/billing/plans/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "plans.list": {"action":"billing.plans.read","effects":["read"],"method":"GET","origin":"{paypal}","params":["product_id","page_size","page","total_required"],"path":"/v1/billing/plans","scope":{"page":{"at":"page","from":"query","optional":true},"product_id":{"at":"product_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "plans.patch": {"action":"billing.plans.write","effects":["write"],"method":"PATCH","origin":"{paypal}","path":"/v1/billing/plans/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "plans.patch.json.dccd8c1f9021": {"action":"billing.plans.write","body":"json","effects":["write"],"method":"PATCH","origin":"{paypal}","path":"/v1/billing/plans/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+      "plans.update-pricing-schemes": {"action":"billing.plans.pricing_schemes.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/billing/plans/{id}/update-pricing-schemes","scope":{"id":{"at":"id","from":"path"}}},
+      "plans.update-pricing-schemes.json.3603b3adc453": {"action":"billing.plans.pricing_schemes.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/billing/plans/{id}/update-pricing-schemes","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "products.create": {"action":"catalogs.products.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/catalogs/products","scope":{}},
+      "products.create.json.d1be21107ec4": {"action":"catalogs.products.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/catalogs/products","scope":{"home_url":{"at":"/home_url","from":"body","optional":true},"id":{"at":"/id","from":"body","optional":true},"image_url":{"at":"/image_url","from":"body","optional":true},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "products.get": {"action":"catalogs.products.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v1/catalogs/products/{product_id}","scope":{"product_id":{"at":"product_id","from":"path"}}},
+      "products.list": {"action":"catalogs.products.read","effects":["read"],"method":"GET","origin":"{paypal}","params":["page_size","page","total_required"],"path":"/v1/catalogs/products","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "products.patch": {"action":"catalogs.products.write","effects":["write"],"method":"PATCH","origin":"{paypal}","path":"/v1/catalogs/products/{product_id}","scope":{"product_id":{"at":"product_id","from":"path"}}},
+      "products.patch.json.6b4a0b44988f": {"action":"catalogs.products.write","body":"json","effects":["write"],"method":"PATCH","origin":"{paypal}","path":"/v1/catalogs/products/{product_id}","scope":{"product_id":{"at":"product_id","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+      "refunds.get": {"action":"payments.refunds.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v2/payments/refunds/{refund_id}","scope":{"refund_id":{"at":"refund_id","from":"path"}}},
+      "search.get": {"action":"reporting.transactions.read","effects":["read"],"method":"GET","origin":"{paypal}","params":["transaction_id","transaction_type","transaction_status","transaction_amount","transaction_currency","start_date","end_date","payment_instrument_type","store_id","terminal_id","fields","balance_affecting_records_only","page_size","page"],"path":"/v1/reporting/transactions","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"store_id":{"at":"store_id","from":"query","optional":true},"terminal_id":{"at":"terminal_id","from":"query","optional":true},"transaction_id":{"at":"transaction_id","from":"query","optional":true}}},
+      "setup-tokens.create": {"action":"vault.setup_tokens.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v3/vault/setup-tokens","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "setup-tokens.get": {"action":"vault.setup_tokens.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v3/vault/setup-tokens/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "simulate-event.post": {"action":"notifications.simulate_event.send","body":"any","effects":["send"],"method":"POST","origin":"{paypal}","path":"/v1/notifications/simulate-event","scope":{}},
+      "subscriptions.activate": {"action":"billing.subscriptions.activate.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/billing/subscriptions/{id}/activate","scope":{"id":{"at":"id","from":"path"}}},
+      "subscriptions.activate.json.65b78684bb7f": {"action":"billing.subscriptions.activate.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/billing/subscriptions/{id}/activate","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "subscriptions.cancel": {"action":"billing.subscriptions.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/billing/subscriptions/{id}/cancel","scope":{"id":{"at":"id","from":"path"}}},
+      "subscriptions.cancel.json.b100ea6f4d0d": {"action":"billing.subscriptions.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/billing/subscriptions/{id}/cancel","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "subscriptions.capture": {"action":"billing.subscriptions.capture.pay","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v1/billing/subscriptions/{id}/capture","scope":{"id":{"at":"id","from":"path"}}},
+      "subscriptions.capture.json.769b7f1f6a01": {"action":"billing.subscriptions.capture.pay","body":"json","effects":["pay"],"method":"POST","origin":"{paypal}","path":"/v1/billing/subscriptions/{id}/capture","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "subscriptions.create": {"action":"billing.subscriptions.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/billing/subscriptions","scope":{}},
+      "subscriptions.create.json.655eb891f8b5": {"action":"billing.subscriptions.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/billing/subscriptions","scope":{"custom_id":{"at":"/custom_id","from":"body","optional":true},"plan_id":{"at":"/plan_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "subscriptions.get": {"action":"billing.subscriptions.read","effects":["read"],"method":"GET","origin":"{paypal}","params":["fields"],"path":"/v1/billing/subscriptions/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "subscriptions.patch": {"action":"billing.subscriptions.write","effects":["write"],"method":"PATCH","origin":"{paypal}","path":"/v1/billing/subscriptions/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "subscriptions.patch.json.668e1fad0d19": {"action":"billing.subscriptions.write","body":"json","effects":["write"],"method":"PATCH","origin":"{paypal}","path":"/v1/billing/subscriptions/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+      "subscriptions.revise": {"action":"billing.subscriptions.revise.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/billing/subscriptions/{id}/revise","scope":{"id":{"at":"id","from":"path"}}},
+      "subscriptions.revise.json.8f816669e7a2": {"action":"billing.subscriptions.revise.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/billing/subscriptions/{id}/revise","scope":{"id":{"at":"id","from":"path"},"plan_id":{"at":"/plan_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "subscriptions.suspend": {"action":"billing.subscriptions.suspend.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/billing/subscriptions/{id}/suspend","scope":{"id":{"at":"id","from":"path"}}},
+      "subscriptions.suspend.json.2ab7bb13cbb6": {"action":"billing.subscriptions.suspend.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/billing/subscriptions/{id}/suspend","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "subscriptions.transactions": {"action":"billing.subscriptions.transactions.read","effects":["read"],"method":"GET","origin":"{paypal}","params":["start_time","end_time"],"path":"/v1/billing/subscriptions/{id}/transactions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "templates.create": {"action":"invoicing.templates.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v2/invoicing/templates","scope":{"id":{"at":"/id","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "templates.delete": {"action":"invoicing.templates.delete","effects":["delete"],"method":"DELETE","origin":"{paypal}","path":"/v2/invoicing/templates/{template_id}","scope":{"template_id":{"at":"template_id","from":"path"}}},
+      "templates.get": {"action":"invoicing.templates.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v2/invoicing/templates/{template_id}","scope":{"template_id":{"at":"template_id","from":"path"}}},
+      "templates.list": {"action":"invoicing.templates.read","effects":["read"],"method":"GET","origin":"{paypal}","params":["fields","page","page_size"],"path":"/v2/invoicing/templates","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "templates.update": {"action":"invoicing.templates.write","body":"json","effects":["write"],"method":"PUT","origin":"{paypal}","path":"/v2/invoicing/templates/{template_id}","scope":{"id":{"at":"/id","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"template_id","from":"path"}}},
+      "trackers-batch.get": {"action":"shipping.trackers.read","effects":["read"],"method":"GET","origin":"{paypal}","params":["transaction_id","tracking_number","account_id"],"path":"/v1/shipping/trackers","scope":{"account_id":{"at":"account_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"transaction_id":{"at":"transaction_id","from":"query"}}},
+      "trackers-batch.post": {"action":"shipping.trackers_batch.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/shipping/trackers-batch","scope":{}},
+      "trackers-batch.post.json.0dc21c045b4b": {"action":"shipping.trackers_batch.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/shipping/trackers-batch","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "trackers.get": {"action":"shipping.trackers.read","effects":["read"],"method":"GET","origin":"{paypal}","params":["account_id"],"path":"/v1/shipping/trackers/{id}","scope":{"account_id":{"at":"account_id","from":"query","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "trackers.post": {"action":"shipping.trackers.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/shipping/trackers","scope":{}},
+      "trackers.post.json.185aba19d325": {"action":"shipping.trackers.write","body":"json","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/shipping/trackers","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "trackers.put": {"action":"shipping.trackers.write","effects":["write"],"method":"PUT","origin":"{paypal}","path":"/v1/shipping/trackers/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "trackers.put.json.bcd3ca79b138": {"action":"shipping.trackers.write","body":"json","effects":["write"],"method":"PUT","origin":"{paypal}","path":"/v1/shipping/trackers/{id}","scope":{"account_id":{"at":"/account_id","from":"body","optional":true},"id":{"at":"id","from":"path"},"postage_payment_id":{"at":"/postage_payment_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"tracking_url":{"at":"/tracking_url","from":"body","optional":true},"transaction_id":{"at":"/transaction_id","from":"body"}}},
+      "verify-webhook-signature.post": {"action":"notifications.webhook_signature.read","body":"any","effects":["read"],"method":"POST","origin":"{paypal}","path":"/v1/notifications/verify-webhook-signature","scope":{}},
+      "webhooks-event-types.list": {"action":"notifications.webhooks_event_types.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v1/notifications/webhooks-event-types","scope":{}},
+      "webhooks-events.get": {"action":"notifications.webhooks_events.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v1/notifications/webhooks-events/{event_id}","scope":{"event_id":{"at":"event_id","from":"path"}}},
+      "webhooks-events.list": {"action":"notifications.webhooks_events.read","effects":["read"],"method":"GET","origin":"{paypal}","params":["page_size","start_time","end_time","transaction_id","event_type"],"path":"/v1/notifications/webhooks-events","scope":{}},
+      "webhooks-events.resend": {"action":"notifications.webhooks_events.resend.send","body":"any","effects":["send"],"method":"POST","origin":"{paypal}","path":"/v1/notifications/webhooks-events/{event_id}/resend","scope":{"event_id":{"at":"event_id","from":"path"}}},
+      "webhooks-lookup.delete": {"action":"notifications.webhooks_lookup.delete","effects":["delete"],"method":"DELETE","origin":"{paypal}","path":"/v1/notifications/webhooks-lookup/{webhook_lookup_id}","scope":{"webhook_lookup_id":{"at":"webhook_lookup_id","from":"path"}}},
+      "webhooks-lookup.get": {"action":"notifications.webhooks_lookup.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v1/notifications/webhooks-lookup/{webhook_lookup_id}","scope":{"webhook_lookup_id":{"at":"webhook_lookup_id","from":"path"}}},
+      "webhooks-lookup.list": {"action":"notifications.webhooks_lookup.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v1/notifications/webhooks-lookup","scope":{}},
+      "webhooks-lookup.post": {"action":"notifications.webhooks_lookup.write","effects":["write"],"method":"POST","origin":"{paypal}","path":"/v1/notifications/webhooks-lookup","scope":{}},
+      "webhooks.delete": {"action":"notifications.webhooks.delete","effects":["delete"],"method":"DELETE","origin":"{paypal}","path":"/v1/notifications/webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "webhooks.get": {"action":"notifications.webhooks.read","effects":["read"],"method":"GET","origin":"{paypal}","path":"/v1/notifications/webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "webhooks.list": {"action":"notifications.webhooks.read","effects":["read"],"method":"GET","origin":"{paypal}","params":["anchor_type"],"path":"/v1/notifications/webhooks","scope":{}},
+      "webhooks.post": {"action":"notifications.webhooks.admin","body":"any","effects":["admin"],"method":"POST","origin":"{paypal}","path":"/v1/notifications/webhooks","scope":{}},
+      "webhooks.update": {"action":"notifications.webhooks.admin","body":"any","effects":["admin"],"method":"PATCH","origin":"{paypal}","path":"/v1/notifications/webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}}
     }
   }
 }

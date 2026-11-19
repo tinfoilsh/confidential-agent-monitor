@@ -1,237 +1,981 @@
 {
-  "title": "Iterable",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.iterable.com", "path": "/api", "header": "Api_Key"}]}},
     "actions": {
-      "admin.settings": {"title": "Admin: settings"},
-      "admin.subscriptions": {"title": "Admin: subscriptions"},
-      "admin.user": {"title": "Admin: user"},
-      "admin.webhooks": {"title": "Admin: webhooks"},
-      "delete.bulk_delete": {"title": "Delete: bulk delete"},
-      "delete.by_user_id": {"title": "Delete: by user id"},
-      "delete.catalogs": {"title": "Delete: catalogs"},
-      "delete.delete": {"title": "Delete: delete"},
-      "delete.export": {"title": "Delete: export"},
-      "delete.items": {"title": "Delete: items"},
-      "delete.lists": {"title": "Delete: lists"},
-      "delete.metadata": {"title": "Delete: metadata"},
-      "delete.snippets": {"title": "Delete: snippets"},
-      "delete.user": {"title": "Delete: user"},
-      "delete.users": {"title": "Delete: users"},
-      "execute.trigger": {"title": "Execute: trigger"},
-      "execute.trigger_workflow": {"title": "Execute: trigger workflow"},
-      "pay.track_purchase": {"title": "Pay: track purchase"},
-      "read": {"title": "Read everything the account can see"},
-      "send.campaigns": {"title": "Send: campaigns"},
-      "write.abort": {"title": "Write: abort"},
-      "write.activate_triggered": {"title": "Write: activate triggered"},
-      "write.archive": {"title": "Write: archive"},
-      "write.begin": {"title": "Write: begin"},
-      "write.bulk_update": {"title": "Write: bulk update"},
-      "write.bulk_update_subscriptions": {"title": "Write: bulk update subscriptions"},
-      "write.by_user_id": {"title": "Write: by user id"},
-      "write.cancel": {"title": "Write: cancel"},
-      "write.catalogs": {"title": "Write: catalogs"},
-      "write.click": {"title": "Write: click"},
-      "write.create": {"title": "Write: create"},
-      "write.deactivate_triggered": {"title": "Write: deactivate triggered"},
-      "write.disable_device": {"title": "Write: disable device"},
-      "write.experiments": {"title": "Write: experiments"},
-      "write.field_mappings": {"title": "Write: field mappings"},
-      "write.forget": {"title": "Write: forget"},
-      "write.in_app_consume": {"title": "Write: in app consume"},
-      "write.invalidate": {"title": "Write: invalidate"},
-      "write.items": {"title": "Write: items"},
-      "write.lists": {"title": "Write: lists"},
-      "write.merge": {"title": "Write: merge"},
-      "write.metadata": {"title": "Write: metadata"},
-      "write.proof": {"title": "Write: proof"},
-      "write.received": {"title": "Write: received"},
-      "write.register_browser_token": {"title": "Write: register browser token"},
-      "write.register_device_token": {"title": "Write: register device token"},
-      "write.schedule": {"title": "Write: schedule"},
-      "write.session": {"title": "Write: session"},
-      "write.snippets": {"title": "Write: snippets"},
-      "write.start": {"title": "Write: start"},
-      "write.subscribe": {"title": "Write: subscribe"},
-      "write.subscribe_to_double_opt_in": {"title": "Write: subscribe to double opt in"},
-      "write.target": {"title": "Write: target"},
-      "write.track": {"title": "Write: track"},
-      "write.track_bulk": {"title": "Write: track bulk"},
-      "write.track_in_app_click": {"title": "Write: track in app click"},
-      "write.track_in_app_close": {"title": "Write: track in app close"},
-      "write.track_in_app_delivery": {"title": "Write: track in app delivery"},
-      "write.track_in_app_open": {"title": "Write: track in app open"},
-      "write.track_push_open": {"title": "Write: track push open"},
-      "write.track_web_push_click": {"title": "Write: track web push click"},
-      "write.unforget": {"title": "Write: unforget"},
-      "write.unsubscribe": {"title": "Write: unsubscribe"},
-      "write.update": {"title": "Write: update"},
-      "write.update_cart": {"title": "Write: update cart"},
-      "write.update_email": {"title": "Write: update email"},
-      "write.update_subscriptions": {"title": "Write: update subscriptions"},
-      "write.upsert": {"title": "Write: upsert"},
-      "write.variants": {"title": "Write: variants"},
-      "write.winner": {"title": "Write: winner"}
-    }
+      "auth": {
+        "title": "Auth"
+      },
+      "auth.jwts": {
+        "title": "Jwts"
+      },
+      "auth.jwts.invalidate": {
+        "title": "Invalidate"
+      },
+      "auth.jwts.invalidate.write": {
+        "title": "Create and edit"
+      },
+      "campaigns": {
+        "title": "Campaigns"
+      },
+      "campaigns.activate_triggered": {
+        "title": "Activate triggered"
+      },
+      "campaigns.activate_triggered.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.deactivate_triggered": {
+        "title": "Deactivate triggered"
+      },
+      "campaigns.deactivate_triggered.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.metrics": {
+        "title": "Metrics"
+      },
+      "campaigns.metrics.read": {
+        "title": "Read"
+      },
+      "campaigns.read": {
+        "title": "Read"
+      },
+      "campaigns.recurring": {
+        "title": "Recurring"
+      },
+      "campaigns.recurring.child_campaigns": {
+        "title": "Child campaigns"
+      },
+      "campaigns.recurring.child_campaigns.read": {
+        "title": "Read"
+      },
+      "campaigns.schedule": {
+        "title": "Schedule"
+      },
+      "campaigns.schedule.send": {
+        "title": "Send"
+      },
+      "campaigns.send": {
+        "title": "Send"
+      },
+      "campaigns.write": {
+        "title": "Create and edit"
+      },
+      "catalogs": {
+        "title": "Catalogs"
+      },
+      "catalogs.delete": {
+        "title": "Delete"
+      },
+      "catalogs.field_mappings": {
+        "title": "Field mappings"
+      },
+      "catalogs.field_mappings.read": {
+        "title": "Read"
+      },
+      "catalogs.field_mappings.write": {
+        "title": "Create and edit"
+      },
+      "catalogs.items": {
+        "title": "Items"
+      },
+      "catalogs.items.delete": {
+        "title": "Delete"
+      },
+      "catalogs.items.read": {
+        "title": "Read"
+      },
+      "catalogs.items.write": {
+        "title": "Create and edit"
+      },
+      "catalogs.read": {
+        "title": "Read"
+      },
+      "catalogs.write": {
+        "title": "Create and edit"
+      },
+      "channels": {
+        "title": "Channels"
+      },
+      "channels.read": {
+        "title": "Read"
+      },
+      "commerce": {
+        "title": "Commerce"
+      },
+      "commerce.cart": {
+        "title": "Cart"
+      },
+      "commerce.cart.write": {
+        "title": "Create and edit"
+      },
+      "commerce.track_purchase": {
+        "title": "Track purchase"
+      },
+      "commerce.track_purchase.pay": {
+        "title": "Make payments"
+      },
+      "email": {
+        "title": "Email"
+      },
+      "email.target": {
+        "title": "Target"
+      },
+      "email.target.send": {
+        "title": "Send"
+      },
+      "email.view_in_browser": {
+        "title": "View in browser"
+      },
+      "email.view_in_browser.read": {
+        "title": "Read"
+      },
+      "email.write": {
+        "title": "Create and edit"
+      },
+      "embedded_messaging": {
+        "title": "Embedded messaging"
+      },
+      "embedded_messaging.events": {
+        "title": "Events"
+      },
+      "embedded_messaging.events.click": {
+        "title": "Click"
+      },
+      "embedded_messaging.events.click.write": {
+        "title": "Create and edit"
+      },
+      "embedded_messaging.events.received": {
+        "title": "Received"
+      },
+      "embedded_messaging.events.received.write": {
+        "title": "Create and edit"
+      },
+      "embedded_messaging.events.session": {
+        "title": "Session"
+      },
+      "embedded_messaging.events.session.write": {
+        "title": "Create and edit"
+      },
+      "embedded_messaging.messages": {
+        "title": "Messages"
+      },
+      "embedded_messaging.messages.read": {
+        "title": "Read"
+      },
+      "events": {
+        "title": "Events"
+      },
+      "events.by_user_id": {
+        "title": "By user id"
+      },
+      "events.by_user_id.read": {
+        "title": "Read"
+      },
+      "events.in_app_consume": {
+        "title": "In app consume"
+      },
+      "events.in_app_consume.write": {
+        "title": "Create and edit"
+      },
+      "events.read": {
+        "title": "Read"
+      },
+      "events.track": {
+        "title": "Track"
+      },
+      "events.track.write": {
+        "title": "Create and edit"
+      },
+      "events.track_bulk": {
+        "title": "Track bulk"
+      },
+      "events.track_bulk.write": {
+        "title": "Create and edit"
+      },
+      "events.track_in_app_click": {
+        "title": "Track in app click"
+      },
+      "events.track_in_app_click.write": {
+        "title": "Create and edit"
+      },
+      "events.track_in_app_close": {
+        "title": "Track in app close"
+      },
+      "events.track_in_app_close.write": {
+        "title": "Create and edit"
+      },
+      "events.track_in_app_delivery": {
+        "title": "Track in app delivery"
+      },
+      "events.track_in_app_delivery.write": {
+        "title": "Create and edit"
+      },
+      "events.track_in_app_open": {
+        "title": "Track in app open"
+      },
+      "events.track_in_app_open.write": {
+        "title": "Create and edit"
+      },
+      "events.track_push_open": {
+        "title": "Track push open"
+      },
+      "events.track_push_open.write": {
+        "title": "Create and edit"
+      },
+      "events.track_web_push_click": {
+        "title": "Track web push click"
+      },
+      "events.track_web_push_click.write": {
+        "title": "Create and edit"
+      },
+      "experiments": {
+        "title": "Experiments"
+      },
+      "experiments.delete": {
+        "title": "Delete"
+      },
+      "experiments.metrics": {
+        "title": "Metrics"
+      },
+      "experiments.metrics.read": {
+        "title": "Read"
+      },
+      "experiments.read": {
+        "title": "Read"
+      },
+      "experiments.settings": {
+        "title": "Settings"
+      },
+      "experiments.settings.admin": {
+        "title": "Manage"
+      },
+      "experiments.totals": {
+        "title": "Totals"
+      },
+      "experiments.totals.read": {
+        "title": "Read"
+      },
+      "experiments.trends": {
+        "title": "Trends"
+      },
+      "experiments.trends.read": {
+        "title": "Read"
+      },
+      "experiments.variants": {
+        "title": "Variants"
+      },
+      "experiments.variants.read": {
+        "title": "Read"
+      },
+      "experiments.variants.write": {
+        "title": "Create and edit"
+      },
+      "experiments.winner": {
+        "title": "Winner"
+      },
+      "experiments.winner.write": {
+        "title": "Create and edit"
+      },
+      "experiments.write": {
+        "title": "Create and edit"
+      },
+      "export": {
+        "title": "Export"
+      },
+      "export.data": {
+        "title": "Data"
+      },
+      "export.data.csv": {
+        "title": "Csv"
+      },
+      "export.data.csv.read": {
+        "title": "Read"
+      },
+      "export.data.read": {
+        "title": "Read"
+      },
+      "export.delete": {
+        "title": "Delete"
+      },
+      "export.files": {
+        "title": "Files"
+      },
+      "export.files.read": {
+        "title": "Read"
+      },
+      "export.jobs": {
+        "title": "Jobs"
+      },
+      "export.jobs.read": {
+        "title": "Read"
+      },
+      "export.user_events": {
+        "title": "User events"
+      },
+      "export.user_events.read": {
+        "title": "Read"
+      },
+      "export.write": {
+        "title": "Create and edit"
+      },
+      "in_app": {
+        "title": "In app"
+      },
+      "in_app.messages": {
+        "title": "Messages"
+      },
+      "in_app.messages.read": {
+        "title": "Read"
+      },
+      "in_app.priority_message": {
+        "title": "Priority message"
+      },
+      "in_app.priority_message.read": {
+        "title": "Read"
+      },
+      "in_app.target": {
+        "title": "Target"
+      },
+      "in_app.target.send": {
+        "title": "Send"
+      },
+      "in_app.web": {
+        "title": "Web"
+      },
+      "in_app.web.messages": {
+        "title": "Messages"
+      },
+      "in_app.web.messages.read": {
+        "title": "Read"
+      },
+      "in_app.write": {
+        "title": "Create and edit"
+      },
+      "journeys": {
+        "title": "Journeys"
+      },
+      "journeys.read": {
+        "title": "Read"
+      },
+      "lists": {
+        "title": "Lists"
+      },
+      "lists.delete": {
+        "title": "Delete"
+      },
+      "lists.preview_users": {
+        "title": "Preview users"
+      },
+      "lists.preview_users.read": {
+        "title": "Read"
+      },
+      "lists.read": {
+        "title": "Read"
+      },
+      "lists.size": {
+        "title": "Size"
+      },
+      "lists.size.read": {
+        "title": "Read"
+      },
+      "lists.users": {
+        "title": "Users"
+      },
+      "lists.users.read": {
+        "title": "Read"
+      },
+      "lists.write": {
+        "title": "Create and edit"
+      },
+      "message_types": {
+        "title": "Message types"
+      },
+      "message_types.read": {
+        "title": "Read"
+      },
+      "metadata": {
+        "title": "Metadata"
+      },
+      "metadata.delete": {
+        "title": "Delete"
+      },
+      "metadata.read": {
+        "title": "Read"
+      },
+      "metadata.write": {
+        "title": "Create and edit"
+      },
+      "push": {
+        "title": "Push commits"
+      },
+      "push.target": {
+        "title": "Target"
+      },
+      "push.target.send": {
+        "title": "Send"
+      },
+      "push.write": {
+        "title": "Create and edit"
+      },
+      "rcs": {
+        "title": "Rcs"
+      },
+      "rcs.target": {
+        "title": "Target"
+      },
+      "rcs.target.send": {
+        "title": "Send"
+      },
+      "rcs.write": {
+        "title": "Create and edit"
+      },
+      "sms": {
+        "title": "Sms"
+      },
+      "sms.target": {
+        "title": "Target"
+      },
+      "sms.target.send": {
+        "title": "Send"
+      },
+      "sms.write": {
+        "title": "Create and edit"
+      },
+      "snippets": {
+        "title": "Snippets"
+      },
+      "snippets.delete": {
+        "title": "Delete"
+      },
+      "snippets.read": {
+        "title": "Read"
+      },
+      "snippets.write": {
+        "title": "Create and edit"
+      },
+      "subscriptions": {
+        "title": "Subscriptions"
+      },
+      "subscriptions.admin": {
+        "title": "Manage"
+      },
+      "subscriptions.by_user_id": {
+        "title": "By user id"
+      },
+      "subscriptions.by_user_id.delete": {
+        "title": "Delete"
+      },
+      "subscriptions.by_user_id.write": {
+        "title": "Create and edit"
+      },
+      "subscriptions.to_double_opt_in": {
+        "title": "To double opt in"
+      },
+      "subscriptions.to_double_opt_in.send": {
+        "title": "Send"
+      },
+      "subscriptions.user": {
+        "title": "Account"
+      },
+      "subscriptions.user.admin": {
+        "title": "Manage"
+      },
+      "subscriptions.user.delete": {
+        "title": "Delete"
+      },
+      "templates": {
+        "title": "Templates"
+      },
+      "templates.bulk_delete": {
+        "title": "Bulk delete"
+      },
+      "templates.bulk_delete.delete": {
+        "title": "Delete"
+      },
+      "templates.by_client_template_id": {
+        "title": "By client template id"
+      },
+      "templates.by_client_template_id.read": {
+        "title": "Read"
+      },
+      "templates.email": {
+        "title": "Email"
+      },
+      "templates.email.preview": {
+        "title": "Preview"
+      },
+      "templates.email.preview.read": {
+        "title": "Read"
+      },
+      "templates.email.proof": {
+        "title": "Proof"
+      },
+      "templates.email.proof.send": {
+        "title": "Send"
+      },
+      "templates.email.read": {
+        "title": "Read"
+      },
+      "templates.email.upsert": {
+        "title": "Upsert"
+      },
+      "templates.email.upsert.write": {
+        "title": "Create and edit"
+      },
+      "templates.email.write": {
+        "title": "Create and edit"
+      },
+      "templates.embedded": {
+        "title": "Embedded"
+      },
+      "templates.embedded.read": {
+        "title": "Read"
+      },
+      "templates.embedded.upsert": {
+        "title": "Upsert"
+      },
+      "templates.embedded.upsert.write": {
+        "title": "Create and edit"
+      },
+      "templates.embedded.write": {
+        "title": "Create and edit"
+      },
+      "templates.inapp": {
+        "title": "Inapp"
+      },
+      "templates.inapp.preview": {
+        "title": "Preview"
+      },
+      "templates.inapp.preview.read": {
+        "title": "Read"
+      },
+      "templates.inapp.proof": {
+        "title": "Proof"
+      },
+      "templates.inapp.proof.send": {
+        "title": "Send"
+      },
+      "templates.inapp.read": {
+        "title": "Read"
+      },
+      "templates.inapp.upsert": {
+        "title": "Upsert"
+      },
+      "templates.inapp.upsert.write": {
+        "title": "Create and edit"
+      },
+      "templates.inapp.write": {
+        "title": "Create and edit"
+      },
+      "templates.push": {
+        "title": "Push commits"
+      },
+      "templates.push.proof": {
+        "title": "Proof"
+      },
+      "templates.push.proof.send": {
+        "title": "Send"
+      },
+      "templates.push.read": {
+        "title": "Read"
+      },
+      "templates.push.upsert": {
+        "title": "Upsert"
+      },
+      "templates.push.upsert.write": {
+        "title": "Create and edit"
+      },
+      "templates.push.write": {
+        "title": "Create and edit"
+      },
+      "templates.read": {
+        "title": "Read"
+      },
+      "templates.sms": {
+        "title": "Sms"
+      },
+      "templates.sms.proof": {
+        "title": "Proof"
+      },
+      "templates.sms.proof.send": {
+        "title": "Send"
+      },
+      "templates.sms.read": {
+        "title": "Read"
+      },
+      "templates.sms.upsert": {
+        "title": "Upsert"
+      },
+      "templates.sms.upsert.write": {
+        "title": "Create and edit"
+      },
+      "templates.sms.write": {
+        "title": "Create and edit"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.bulk_update": {
+        "title": "Bulk update"
+      },
+      "users.bulk_update.write": {
+        "title": "Create and edit"
+      },
+      "users.bulk_update_subscriptions": {
+        "title": "Bulk update subscriptions"
+      },
+      "users.bulk_update_subscriptions.write": {
+        "title": "Create and edit"
+      },
+      "users.by_email": {
+        "title": "By email"
+      },
+      "users.by_email.read": {
+        "title": "Read"
+      },
+      "users.by_user_id": {
+        "title": "By user id"
+      },
+      "users.by_user_id.delete": {
+        "title": "Delete"
+      },
+      "users.by_user_id.read": {
+        "title": "Read"
+      },
+      "users.delete": {
+        "title": "Delete"
+      },
+      "users.device": {
+        "title": "Device"
+      },
+      "users.device.write": {
+        "title": "Create and edit"
+      },
+      "users.email": {
+        "title": "Email"
+      },
+      "users.email.write": {
+        "title": "Create and edit"
+      },
+      "users.fields": {
+        "title": "Fields"
+      },
+      "users.fields.read": {
+        "title": "Read"
+      },
+      "users.forget": {
+        "title": "Forget"
+      },
+      "users.forget.delete": {
+        "title": "Delete"
+      },
+      "users.forgotten": {
+        "title": "Forgotten"
+      },
+      "users.forgotten.read": {
+        "title": "Read"
+      },
+      "users.forgotten_user_ids": {
+        "title": "Forgotten user ids"
+      },
+      "users.forgotten_user_ids.read": {
+        "title": "Read"
+      },
+      "users.read": {
+        "title": "Read"
+      },
+      "users.register_browser_token": {
+        "title": "Register browser token"
+      },
+      "users.register_browser_token.write": {
+        "title": "Create and edit"
+      },
+      "users.register_device_token": {
+        "title": "Register device token"
+      },
+      "users.register_device_token.write": {
+        "title": "Create and edit"
+      },
+      "users.sent_messages": {
+        "title": "Sent messages"
+      },
+      "users.sent_messages.read": {
+        "title": "Read"
+      },
+      "users.subscriptions": {
+        "title": "Subscriptions"
+      },
+      "users.subscriptions.write": {
+        "title": "Create and edit"
+      },
+      "users.unforget": {
+        "title": "Unforget"
+      },
+      "users.unforget.write": {
+        "title": "Create and edit"
+      },
+      "users.write": {
+        "title": "Create and edit"
+      },
+      "verify": {
+        "title": "Verify"
+      },
+      "verify.sms": {
+        "title": "Sms"
+      },
+      "verify.sms.begin": {
+        "title": "Begin"
+      },
+      "verify.sms.begin.send": {
+        "title": "Send"
+      },
+      "verify.sms.read": {
+        "title": "Read"
+      },
+      "web_push": {
+        "title": "Web push"
+      },
+      "web_push.target": {
+        "title": "Target"
+      },
+      "web_push.target.send": {
+        "title": "Send"
+      },
+      "web_push.write": {
+        "title": "Create and edit"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.read": {
+        "title": "Read"
+      },
+      "whats_app": {
+        "title": "Whats app"
+      },
+      "whats_app.target": {
+        "title": "Target"
+      },
+      "whats_app.target.send": {
+        "title": "Send"
+      },
+      "whats_app.write": {
+        "title": "Create and edit"
+      },
+      "workflows": {
+        "title": "Workflows"
+      },
+      "workflows.workflow": {
+        "title": "Workflow"
+      },
+      "workflows.workflow.execute": {
+        "title": "Run"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Api-Key",
+            "origin": "https://api.iterable.com",
+            "path": "/api",
+            "value": "api_key"
+          },
+          {
+            "header": "Api_Key",
+            "origin": "https://api.iterable.com",
+            "path": "/api",
+            "value": "api_key"
+          },
+          {
+            "header": "Api-Key",
+            "origin": "https://api.eu.iterable.com",
+            "path": "/api",
+            "value": "api_key"
+          },
+          {
+            "header": "Api_Key",
+            "origin": "https://api.eu.iterable.com",
+            "path": "/api",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Iterable",
   "http": {
+    "origins": {"api":["https://api.iterable.com","https://api.eu.iterable.com"]},
     "operations": {
-      "Bulk subscription action": {"action":"admin.subscriptions","effects":["admin"],"method":"PUT","origin":"https://api.iterable.com","path":"/api/subscriptions/{subscriptionGroup}/{subscriptionGroupId}","params":["action"],"body":"json","scope":{"subscriptionGroup":{"from":"path","at":"subscriptionGroup"},"subscriptionGroupId":{"from":"path","at":"subscriptionGroupId"}}},
-      "Deactivate triggered campaign": {"action":"write.deactivate_triggered","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/campaigns/deactivateTriggered","body":"json","scope":{"campaignId":{"from":"body","at":"/campaignId","type":"number"}}},
-      "Invalidate JWT": {"action":"write.invalidate","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/auth/jwts/invalidate","body":"json","scope":{}},
-      "User events": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/events/{email}","params":["limit"],"scope":{"email":{"from":"path","at":"email"}}},
-      "User events by userId": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/events/byUserId/{userId}","params":["limit"],"scope":{"userId":{"from":"path","at":"userId"}}},
-      "abort campaign": {"action":"write.abort","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/campaigns/abort","body":"json","scope":{"campaignId":{"from":"body","at":"/campaignId","type":"number"}}},
-      "activate triggered campaign": {"action":"write.activate_triggered","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/campaigns/activateTriggered","body":"json","scope":{"campaignId":{"from":"body","at":"/campaignId","type":"number"}}},
-      "archive campaigns": {"action":"write.archive","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/campaigns/archive","body":"json","scope":{}},
-      "beginSmsVerification": {"action":"write.begin","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/verify/sms/begin","body":"json","scope":{"verificationProfileId":{"from":"body","at":"/verificationProfileId","type":"number"}}},
-      "bulk delete templates": {"action":"delete.bulk_delete","effects":["delete"],"method":"POST","origin":"https://api.iterable.com","path":"/api/templates/bulkDelete","body":"json","scope":{}},
-      "bulkDeleteCatalogItems": {"action":"delete.items","effects":["delete"],"method":"DELETE","origin":"https://api.iterable.com","path":"/api/catalogs/{catalogName}/items","body":"json","scope":{"catalogName":{"from":"path","at":"catalogName"}}},
-      "bulkUpdateCatalogItems": {"action":"write.items","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/catalogs/{catalogName}/items","body":"json","scope":{"catalogName":{"from":"path","at":"catalogName"}}},
-      "bulkUpdateSubscriptions": {"action":"write.bulk_update_subscriptions","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/users/bulkUpdateSubscriptions","body":"json","scope":{}},
-      "bulkUpdateUser": {"action":"write.bulk_update","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/users/bulkUpdate","body":"json","scope":{}},
-      "campaigns": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/campaigns","params":["page","pageSize","sort","campaignState"],"scope":{}},
-      "cancel": {"action":"write.cancel","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/email/cancel","body":"json","scope":{}},
-      "cancel campaign": {"action":"write.cancel","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/campaigns/cancel","body":"json","scope":{"campaignId":{"from":"body","at":"/campaignId","type":"number"}}},
-      "cancel.2": {"action":"write.experiments","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/experiments/{experimentId}/cancel","scope":{"experimentId":{"from":"path","at":"experimentId"}}},
-      "cancel.3": {"action":"write.cancel","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/inApp/cancel","body":"json","scope":{}},
-      "cancel.4": {"action":"write.cancel","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/push/cancel","body":"json","scope":{}},
-      "cancel.5": {"action":"write.cancel","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/rcs/cancel","body":"json","scope":{}},
-      "cancel.6": {"action":"write.cancel","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/sms/cancel","body":"json","scope":{}},
-      "cancel.7": {"action":"write.cancel","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/webPush/cancel","body":"json","scope":{}},
-      "cancel.8": {"action":"write.cancel","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/whatsApp/cancel","body":"json","scope":{}},
-      "cancelExport": {"action":"delete.export","effects":["delete"],"method":"DELETE","origin":"https://api.iterable.com","path":"/api/export/{jobId}","scope":{"jobId":{"from":"path","at":"jobId"}}},
-      "channels": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/channels","scope":{}},
-      "checkSmsVerification": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.iterable.com","path":"/api/verify/sms/check","body":"json","scope":{"verificationProfileId":{"from":"body","at":"/verificationProfileId","type":"number"}}},
-      "child campaigns": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/campaigns/recurring/{id}/childCampaigns","params":["page","pageSize","sort","campaignState"],"scope":{"id":{"from":"path","at":"id"}}},
-      "copyVariant": {"action":"write.variants","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/experiments/{experimentId}/variants","body":"json","scope":{"experimentId":{"from":"path","at":"experimentId"},"copyFromTemplateId":{"from":"body","at":"/copyFromTemplateId","type":"number"}}},
-      "create": {"action":"write.experiments","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/experiments","body":"json","scope":{"campaignId":{"from":"body","at":"/campaignId","type":"number"}}},
-      "create campaign": {"action":"write.create","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/campaigns/create","body":"json","scope":{"name":{"from":"body","at":"/name"},"templateId":{"from":"body","at":"/templateId","type":"number"}}},
-      "create.2": {"action":"write.lists","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/lists","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "createCatalog": {"action":"write.catalogs","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/catalogs/{catalogName}","scope":{"catalogName":{"from":"path","at":"catalogName"}}},
-      "createSnippet": {"action":"write.snippets","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/snippets","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "declareWinner": {"action":"write.winner","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/experiments/{experimentId}/winner","body":"json","scope":{"experimentId":{"from":"path","at":"experimentId"},"variantId":{"from":"body","at":"/variantId","type":"number"}}},
-      "delete": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"https://api.iterable.com","path":"/api/experiments/{experimentId}/delete","scope":{"experimentId":{"from":"path","at":"experimentId"}}},
-      "delete.2": {"action":"delete.lists","effects":["delete"],"method":"DELETE","origin":"https://api.iterable.com","path":"/api/lists/{listId}","scope":{"listId":{"from":"path","at":"listId"}}},
-      "delete.3": {"action":"delete.metadata","effects":["delete"],"method":"DELETE","origin":"https://api.iterable.com","path":"/api/metadata/{table}","scope":{"table":{"from":"path","at":"table"}}},
-      "delete.4": {"action":"delete.metadata","effects":["delete"],"method":"DELETE","origin":"https://api.iterable.com","path":"/api/metadata/{table}/{key}","scope":{"table":{"from":"path","at":"table"},"key":{"from":"path","at":"key"}}},
-      "delete.5": {"action":"delete.by_user_id","effects":["delete"],"method":"DELETE","origin":"https://api.iterable.com","path":"/api/users/byUserId/{userId}","scope":{"userId":{"from":"path","at":"userId"}}},
-      "delete.6": {"action":"delete.users","effects":["delete"],"method":"DELETE","origin":"https://api.iterable.com","path":"/api/users/{email}","scope":{"email":{"from":"path","at":"email"}}},
-      "deleteCatalog": {"action":"delete.catalogs","effects":["delete"],"method":"DELETE","origin":"https://api.iterable.com","path":"/api/catalogs/{catalogName}","scope":{"catalogName":{"from":"path","at":"catalogName"}}},
-      "deleteCatalogItem": {"action":"delete.items","effects":["delete"],"method":"DELETE","origin":"https://api.iterable.com","path":"/api/catalogs/{catalogName}/items/{itemId}","scope":{"catalogName":{"from":"path","at":"catalogName"},"itemId":{"from":"path","at":"itemId"}}},
-      "deleteSnippet": {"action":"delete.snippets","effects":["delete"],"method":"DELETE","origin":"https://api.iterable.com","path":"/api/snippets/{identifier}","scope":{"identifier":{"from":"path","at":"identifier"}}},
-      "disableDevice": {"action":"write.disable_device","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/users/disableDevice","body":"any","scope":{}},
-      "emailProof": {"action":"write.proof","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/templates/email/proof","body":"json","scope":{"templateId":{"from":"body","at":"/templateId","type":"number"}}},
-      "embedded-track-click": {"action":"write.click","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/embedded-messaging/events/click","body":"json","scope":{"messageId":{"from":"body","at":"/messageId"}}},
-      "embedded-track-impression": {"action":"write.session","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/embedded-messaging/events/session","body":"json","scope":{}},
-      "embedded-track-received": {"action":"write.received","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/embedded-messaging/events/received","body":"json","scope":{"messageId":{"from":"body","at":"/messageId"}}},
-      "exportDataCsv": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/export/data.csv","params":["dataTypeName","range","delimiter","startDateTime","endDateTime","omitFields","onlyFields","campaignId"],"scope":{"dataTypeName":{"from":"query","at":"dataTypeName"}}},
-      "exportDataJson": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/export/data.json","params":["dataTypeName","range","startDateTime","endDateTime","omitFields","onlyFields","campaignId"],"scope":{"dataTypeName":{"from":"query","at":"dataTypeName"}}},
-      "exportUserEvents": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/export/userEvents","params":["email","userId","includeCustomEvents"],"scope":{}},
-      "forget": {"action":"write.forget","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/users/forget","body":"json","scope":{}},
-      "get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/experiments/{experimentId}","params":["experimentId","campaignId","startDateTime","endDateTime"],"scope":{"experimentId":{"from":"path","at":"experimentId"}}},
-      "get.2": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/metadata/{table}/{key}","scope":{"table":{"from":"path","at":"table"},"key":{"from":"path","at":"key"}}},
-      "getByClientTemplateId": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/templates/getByClientTemplateId","params":["clientTemplateId"],"scope":{"clientTemplateId":{"from":"query","at":"clientTemplateId"}}},
-      "getCampaign": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/campaigns/{id}","params":["campaignId","startDateTime","endDateTime"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getCatalogItem": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/catalogs/{catalogName}/items/{itemId}","scope":{"catalogName":{"from":"path","at":"catalogName"},"itemId":{"from":"path","at":"itemId"}}},
-      "getEmailTemplate": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/templates/email/get","params":["templateId","locale"],"scope":{"templateId":{"from":"query","at":"templateId"}}},
-      "getEmbeddedTemplate": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/templates/embedded/get","params":["templateId","locale"],"scope":{"templateId":{"from":"query","at":"templateId"}}},
-      "getExportFiles": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/export/{jobId}/files","params":["startAfter"],"scope":{"jobId":{"from":"path","at":"jobId"}}},
-      "getExportJobs": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/export/jobs","params":["jobState"],"scope":{}},
-      "getFieldMappings": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/catalogs/{catalogName}/fieldMappings","scope":{"catalogName":{"from":"path","at":"catalogName"}}},
-      "getInAppTemplate": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/templates/inapp/get","params":["templateId","locale"],"scope":{"templateId":{"from":"query","at":"templateId"}}},
-      "getJourneys": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/journeys","params":["page","pageSize","sort","state"],"scope":{}},
-      "getListCount": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/lists/{listId}/size","scope":{"listId":{"from":"path","at":"listId"}}},
-      "getLists": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/lists","scope":{}},
-      "getMessages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/inApp/getMessages","params":["email","userId","count","platform","SDKVersion","packageName"],"scope":{}},
-      "getMessages.2": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/inApp/web/getMessages","params":["email","userId","count","SDKVersion","packageName"],"scope":{}},
-      "getPriorityMessage": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/inApp/getPriorityMessage","params":["email","userId","platform","SDKVersion","packageName"],"scope":{}},
-      "getPushTemplate": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/templates/push/get","params":["templateId","locale"],"scope":{"templateId":{"from":"query","at":"templateId"}}},
-      "getSMSTemplate": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/templates/sms/get","params":["templateId","locale"],"scope":{"templateId":{"from":"query","at":"templateId"}}},
-      "getSnippet": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/snippets/{identifier}","scope":{"identifier":{"from":"path","at":"identifier"}}},
-      "getSnippets": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/snippets","scope":{}},
-      "getTemplates": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/templates","params":["templateType","messageMedium","startDateTime","endDateTime","page","pageSize","sort"],"scope":{}},
-      "getUser": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/users/{email}","params":["userId","email","limit","campaignIds","startDateTime","endDateTime","excludeBlastCampaigns","messageMedium"],"scope":{"email":{"from":"path","at":"email"}}},
-      "getUserById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/users/byUserId/{userId}","scope":{"userId":{"from":"path","at":"userId"}}},
-      "getUsers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/lists/getUsers","params":["listId","preferUserId"],"scope":{"listId":{"from":"query","at":"listId"}}},
-      "getUsersPreview": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/lists/previewUsers","params":["listId","preferUserId","size"],"scope":{"listId":{"from":"query","at":"listId"}}},
-      "getWebhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/webhooks","scope":{}},
-      "inAppConsume": {"action":"write.in_app_consume","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/events/inAppConsume","body":"json","scope":{"messageId":{"from":"body","at":"/messageId"}}},
-      "inappProof": {"action":"write.proof","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/templates/inapp/proof","body":"json","scope":{"templateId":{"from":"body","at":"/templateId","type":"number"}}},
-      "indexCatalogItem": {"action":"write.items","effects":["write"],"method":"PUT","origin":"https://api.iterable.com","path":"/api/catalogs/{catalogName}/items/{itemId}","body":"json","scope":{"catalogName":{"from":"path","at":"catalogName"},"itemId":{"from":"path","at":"itemId"}}},
-      "list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/experiments","params":["campaignId","state","startDateTime","endDateTime","limit","offset"],"scope":{}},
-      "list tables": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/metadata","scope":{}},
-      "list.2": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/metadata/{table}","params":["nextMarker"],"scope":{"table":{"from":"path","at":"table"}}},
-      "listCatalogItems": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/catalogs/{catalogName}/items","params":["page","pageSize","orderBy","sortAscending"],"scope":{"catalogName":{"from":"path","at":"catalogName"}}},
-      "listCatalogs": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/catalogs","params":["page","pageSize"],"scope":{}},
-      "mergeUsers": {"action":"write.merge","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/users/merge","body":"json","scope":{}},
-      "messageTypes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/messageTypes","scope":{}},
-      "messages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/embedded-messaging/messages","params":["email","userId","platform","sdkVersion","packageName","placementIds","currentMessageIds"],"scope":{}},
-      "partialUpdateCatalogItem": {"action":"write.items","effects":["write"],"method":"PATCH","origin":"https://api.iterable.com","path":"/api/catalogs/{catalogName}/items/{itemId}","body":"json","scope":{"catalogName":{"from":"path","at":"catalogName"},"itemId":{"from":"path","at":"itemId"}}},
-      "previewEmailTemplate": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.iterable.com","path":"/api/templates/email/preview","params":["templateId","locale"],"body":"any","scope":{"templateId":{"from":"query","at":"templateId"}}},
-      "previewInAppTemplate": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.iterable.com","path":"/api/templates/inapp/preview","params":["templateId","locale"],"body":"any","scope":{"templateId":{"from":"query","at":"templateId"}}},
-      "pushProof": {"action":"write.proof","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/templates/push/proof","body":"json","scope":{"templateId":{"from":"body","at":"/templateId","type":"number"}}},
-      "put": {"action":"write.metadata","effects":["write"],"method":"PUT","origin":"https://api.iterable.com","path":"/api/metadata/{table}/{key}","body":"json","scope":{"table":{"from":"path","at":"table"},"key":{"from":"path","at":"key"}}},
-      "registerBrowserToken": {"action":"write.register_browser_token","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/users/registerBrowserToken","body":"json","scope":{}},
-      "registerDeviceToken": {"action":"write.register_device_token","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/users/registerDeviceToken","body":"json","scope":{}},
-      "schedule campaign": {"action":"write.schedule","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/campaigns/{campaignId}/schedule","body":"json","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "send campaign": {"action":"send.campaigns","effects":["send"],"method":"POST","origin":"https://api.iterable.com","path":"/api/campaigns/{campaignId}/send","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "smsProof": {"action":"write.proof","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/templates/sms/proof","body":"json","scope":{"templateId":{"from":"body","at":"/templateId","type":"number"}}},
-      "start": {"action":"write.experiments","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/experiments/{experimentId}/start","scope":{"experimentId":{"from":"path","at":"experimentId"}}},
-      "startExport": {"action":"write.start","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/export/start","body":"json","scope":{"dataTypeName":{"from":"body","at":"/dataTypeName"}}},
-      "subscribe": {"action":"write.subscribe","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/lists/subscribe","body":"json","scope":{"listId":{"from":"body","at":"/listId","type":"number"}}},
-      "subscribeSingleUser": {"action":"admin.user","effects":["admin"],"method":"PATCH","origin":"https://api.iterable.com","path":"/api/subscriptions/{subscriptionGroup}/{subscriptionGroupId}/user/{userEmail}","scope":{"subscriptionGroup":{"from":"path","at":"subscriptionGroup"},"subscriptionGroupId":{"from":"path","at":"subscriptionGroupId"},"userEmail":{"from":"path","at":"userEmail"}}},
-      "subscribeSingleUserByUserId": {"action":"write.by_user_id","effects":["write"],"method":"PATCH","origin":"https://api.iterable.com","path":"/api/subscriptions/{subscriptionGroup}/{subscriptionGroupId}/byUserId/{userId}","scope":{"subscriptionGroup":{"from":"path","at":"subscriptionGroup"},"subscriptionGroupId":{"from":"path","at":"subscriptionGroupId"},"userId":{"from":"path","at":"userId"}}},
-      "subscribeSingleUserToDoubleOptIn": {"action":"write.subscribe_to_double_opt_in","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/subscriptions/subscribeToDoubleOptIn","body":"json","scope":{}},
-      "target": {"action":"write.target","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/email/target","body":"json","scope":{"campaignId":{"from":"body","at":"/campaignId","type":"number"}}},
-      "target.2": {"action":"write.target","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/inApp/target","body":"json","scope":{"campaignId":{"from":"body","at":"/campaignId","type":"number"}}},
-      "target.3": {"action":"write.target","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/push/target","body":"json","scope":{"campaignId":{"from":"body","at":"/campaignId","type":"number"}}},
-      "target.4": {"action":"write.target","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/rcs/target","body":"json","scope":{"campaignId":{"from":"body","at":"/campaignId","type":"number"}}},
-      "target.5": {"action":"write.target","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/sms/target","body":"json","scope":{"campaignId":{"from":"body","at":"/campaignId","type":"number"}}},
-      "target.6": {"action":"write.target","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/webPush/target","body":"json","scope":{"campaignId":{"from":"body","at":"/campaignId","type":"number"}}},
-      "target.7": {"action":"write.target","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/whatsApp/target","body":"json","scope":{"campaignId":{"from":"body","at":"/campaignId","type":"number"}}},
-      "totals": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/experiments/{experimentId}/totals","scope":{"experimentId":{"from":"path","at":"experimentId"}}},
-      "track": {"action":"write.track","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/events/track","body":"json","scope":{"eventName":{"from":"body","at":"/eventName"}}},
-      "trackBulk": {"action":"write.track_bulk","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/events/trackBulk","body":"json","scope":{}},
-      "trackInAppClick": {"action":"write.track_in_app_click","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/events/trackInAppClick","body":"json","scope":{"messageId":{"from":"body","at":"/messageId"}}},
-      "trackInAppClose": {"action":"write.track_in_app_close","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/events/trackInAppClose","body":"json","scope":{"messageId":{"from":"body","at":"/messageId"}}},
-      "trackInAppDelivery": {"action":"write.track_in_app_delivery","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/events/trackInAppDelivery","body":"json","scope":{"messageId":{"from":"body","at":"/messageId"}}},
-      "trackInAppOpen": {"action":"write.track_in_app_open","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/events/trackInAppOpen","body":"json","scope":{"messageId":{"from":"body","at":"/messageId"}}},
-      "trackPurchase": {"action":"pay.track_purchase","effects":["pay"],"method":"POST","origin":"https://api.iterable.com","path":"/api/commerce/trackPurchase","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "trackPushOpen": {"action":"write.track_push_open","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/events/trackPushOpen","body":"json","scope":{"campaignId":{"from":"body","at":"/campaignId","type":"number"},"messageId":{"from":"body","at":"/messageId"}}},
-      "trackWebPushClick": {"action":"write.track_web_push_click","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/events/trackWebPushClick","body":"json","scope":{"messageId":{"from":"body","at":"/messageId"}}},
-      "trends": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/experiments/{experimentId}/trends","params":["startDateTime","endDateTime"],"scope":{"experimentId":{"from":"path","at":"experimentId"}}},
-      "trigger campaign": {"action":"execute.trigger","effects":["execute"],"method":"POST","origin":"https://api.iterable.com","path":"/api/campaigns/trigger","body":"json","scope":{"campaignId":{"from":"body","at":"/campaignId","type":"number"}}},
-      "triggerWorkflow": {"action":"execute.trigger_workflow","effects":["execute"],"method":"POST","origin":"https://api.iterable.com","path":"/api/workflows/triggerWorkflow","body":"json","scope":{"workflowId":{"from":"body","at":"/workflowId","type":"number"}}},
-      "unforget": {"action":"write.unforget","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/users/unforget","body":"json","scope":{}},
-      "unsubscribe": {"action":"write.unsubscribe","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/lists/unsubscribe","body":"json","scope":{"listId":{"from":"body","at":"/listId","type":"number"}}},
-      "unsubscribeSingleUser": {"action":"delete.user","effects":["delete"],"method":"DELETE","origin":"https://api.iterable.com","path":"/api/subscriptions/{subscriptionGroup}/{subscriptionGroupId}/user/{userEmail}","scope":{"subscriptionGroup":{"from":"path","at":"subscriptionGroup"},"subscriptionGroupId":{"from":"path","at":"subscriptionGroupId"},"userEmail":{"from":"path","at":"userEmail"}}},
-      "unsubscribeSingleUserByUserId": {"action":"delete.by_user_id","effects":["delete"],"method":"DELETE","origin":"https://api.iterable.com","path":"/api/subscriptions/{subscriptionGroup}/{subscriptionGroupId}/byUserId/{userId}","scope":{"subscriptionGroup":{"from":"path","at":"subscriptionGroup"},"subscriptionGroupId":{"from":"path","at":"subscriptionGroupId"},"userId":{"from":"path","at":"userId"}}},
-      "updateCart": {"action":"write.update_cart","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/commerce/updateCart","body":"json","scope":{}},
-      "updateEmail": {"action":"write.update_email","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/users/updateEmail","body":"json","scope":{}},
-      "updateEmailTemplate": {"action":"write.update","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/templates/email/update","body":"json","scope":{"templateId":{"from":"body","at":"/templateId","type":"number"}}},
-      "updateEmbeddedTemplate": {"action":"write.update","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/templates/embedded/update","body":"json","scope":{"templateId":{"from":"body","at":"/templateId","type":"number"}}},
-      "updateFieldTypes": {"action":"write.field_mappings","effects":["write"],"method":"PUT","origin":"https://api.iterable.com","path":"/api/catalogs/{catalogName}/fieldMappings","body":"json","scope":{"catalogName":{"from":"path","at":"catalogName"}}},
-      "updateInAppTemplate": {"action":"write.update","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/templates/inapp/update","body":"json","scope":{"templateId":{"from":"body","at":"/templateId","type":"number"}}},
-      "updatePushTemplate": {"action":"write.update","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/templates/push/update","body":"json","scope":{"templateId":{"from":"body","at":"/templateId","type":"number"}}},
-      "updateSMSTemplate": {"action":"write.update","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/templates/sms/update","body":"json","scope":{"templateId":{"from":"body","at":"/templateId","type":"number"}}},
-      "updateSettings": {"action":"admin.settings","effects":["admin"],"method":"PATCH","origin":"https://api.iterable.com","path":"/api/experiments/{experimentId}/settings","body":"json","scope":{"experimentId":{"from":"path","at":"experimentId"}}},
-      "updateSnippet": {"action":"write.snippets","effects":["write"],"method":"PUT","origin":"https://api.iterable.com","path":"/api/snippets/{identifier}","body":"json","scope":{"identifier":{"from":"path","at":"identifier"}}},
-      "updateSubscriptions": {"action":"write.update_subscriptions","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/users/updateSubscriptions","body":"json","scope":{}},
-      "updateUser": {"action":"write.update","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/users/update","body":"json","scope":{}},
-      "updateWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.iterable.com","path":"/api/webhooks","body":"json","scope":{"id":{"from":"body","at":"/id","type":"number"}}},
-      "upsertEmailTemplate": {"action":"write.upsert","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/templates/email/upsert","body":"json","scope":{"clientTemplateId":{"from":"body","at":"/clientTemplateId"}}},
-      "upsertEmbeddedTemplate": {"action":"write.upsert","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/templates/embedded/upsert","body":"json","scope":{"clientTemplateId":{"from":"body","at":"/clientTemplateId"}}},
-      "upsertInAppTemplate": {"action":"write.upsert","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/templates/inapp/upsert","body":"json","scope":{"clientTemplateId":{"from":"body","at":"/clientTemplateId"}}},
-      "upsertPushTemplate": {"action":"write.upsert","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/templates/push/upsert","body":"json","scope":{"clientTemplateId":{"from":"body","at":"/clientTemplateId"}}},
-      "upsertSMSTemplate": {"action":"write.upsert","effects":["write"],"method":"POST","origin":"https://api.iterable.com","path":"/api/templates/sms/upsert","body":"json","scope":{"clientTemplateId":{"from":"body","at":"/clientTemplateId"}}},
-      "variants": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/experiments/{experimentId}/variants","scope":{"experimentId":{"from":"path","at":"experimentId"}}},
-      "viewInBrowser": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.iterable.com","path":"/api/email/viewInBrowser","params":["email","userId","messageId"],"scope":{"messageId":{"from":"query","at":"messageId"}}}
+      "Bulk subscription action": {"action":"subscriptions.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","params":["action"],"path":"/api/subscriptions/{subscriptionGroup}/{subscriptionGroupId}","scope":{"subscriptionGroup":{"at":"subscriptionGroup","from":"path"},"subscriptionGroupId":{"at":"subscriptionGroupId","from":"path"}}},
+      "Deactivate triggered campaign": {"action":"campaigns.deactivate_triggered.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/campaigns/deactivateTriggered","scope":{"campaignId":{"at":"/campaignId","from":"body","type":"number"}}},
+      "Invalidate JWT": {"action":"auth.jwts.invalidate.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/auth/jwts/invalidate","scope":{}},
+      "User events": {"action":"events.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit"],"path":"/api/events/{email}","scope":{"email":{"at":"email","from":"path"}}},
+      "User events by userId": {"action":"events.by_user_id.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit"],"path":"/api/events/byUserId/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "abort campaign": {"action":"campaigns.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/campaigns/abort","scope":{"campaignId":{"at":"/campaignId","from":"body","type":"number"}}},
+      "activate triggered campaign": {"action":"campaigns.activate_triggered.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/campaigns/activateTriggered","scope":{"campaignId":{"at":"/campaignId","from":"body","type":"number"}}},
+      "archive campaigns": {"action":"campaigns.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/campaigns/archive","scope":{}},
+      "beginSmsVerification": {"action":"verify.sms.begin.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/api/verify/sms/begin","scope":{"request":{"at":"","from":"body","type":"object"},"verificationProfileId":{"at":"/verificationProfileId","from":"body","type":"number"}}},
+      "bulk delete templates": {"action":"templates.bulk_delete.delete","body":"json","effects":["delete"],"method":"POST","origin":"{api}","path":"/api/templates/bulkDelete","scope":{}},
+      "bulkDeleteCatalogItems": {"action":"catalogs.items.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/api/catalogs/{catalogName}/items","scope":{"catalogName":{"at":"catalogName","from":"path"}}},
+      "bulkUpdateCatalogItems": {"action":"catalogs.items.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/catalogs/{catalogName}/items","scope":{"catalogName":{"at":"catalogName","from":"path"}}},
+      "bulkUpdateSubscriptions": {"action":"users.bulk_update_subscriptions.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/users/bulkUpdateSubscriptions","scope":{}},
+      "bulkUpdateUser": {"action":"users.bulk_update.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/users/bulkUpdate","scope":{}},
+      "campaigns": {"action":"campaigns.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","pageSize","sort","campaignState"],"path":"/api/campaigns","scope":{}},
+      "cancel": {"action":"email.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/email/cancel","scope":{}},
+      "cancel campaign": {"action":"campaigns.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/campaigns/cancel","scope":{"campaignId":{"at":"/campaignId","from":"body","type":"number"}}},
+      "cancel.2": {"action":"experiments.write","effects":["write"],"method":"POST","origin":"{api}","path":"/api/experiments/{experimentId}/cancel","scope":{"experimentId":{"at":"experimentId","from":"path"}}},
+      "cancel.3": {"action":"in_app.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/inApp/cancel","scope":{}},
+      "cancel.4": {"action":"push.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/push/cancel","scope":{}},
+      "cancel.5": {"action":"rcs.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/rcs/cancel","scope":{}},
+      "cancel.6": {"action":"sms.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/sms/cancel","scope":{}},
+      "cancel.7": {"action":"web_push.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/webPush/cancel","scope":{}},
+      "cancel.8": {"action":"whats_app.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/whatsApp/cancel","scope":{}},
+      "cancelExport": {"action":"export.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/api/export/{jobId}","scope":{"jobId":{"at":"jobId","from":"path"}}},
+      "channels": {"action":"channels.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/channels","scope":{}},
+      "checkSmsVerification": {"action":"verify.sms.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/api/verify/sms/check","scope":{"verificationProfileId":{"at":"/verificationProfileId","from":"body","type":"number"}}},
+      "child campaigns": {"action":"campaigns.recurring.child_campaigns.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","pageSize","sort","campaignState"],"path":"/api/campaigns/recurring/{id}/childCampaigns","scope":{"id":{"at":"id","from":"path"}}},
+      "copyVariant": {"action":"experiments.variants.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/experiments/{experimentId}/variants","scope":{"copyFromTemplateId":{"at":"/copyFromTemplateId","from":"body","type":"number"},"experimentId":{"at":"experimentId","from":"path"}}},
+      "create": {"action":"experiments.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/experiments","scope":{"campaignId":{"at":"/campaignId","from":"body","type":"number"}}},
+      "create campaign": {"action":"campaigns.send","body":"json","effects":["send","write"],"method":"POST","origin":"{api}","path":"/api/campaigns/create","scope":{"labelIds":{"at":"/labelIds","from":"body","optional":true,"type":"array"},"listIds":{"at":"/listIds","from":"body","type":"array"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"suppressionListIds":{"at":"/suppressionListIds","from":"body","optional":true,"type":"array"},"templateId":{"at":"/templateId","from":"body","type":"number"}}},
+      "create.2": {"action":"lists.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/lists","scope":{"name":{"at":"/name","from":"body"}}},
+      "createCatalog": {"action":"catalogs.write","effects":["write"],"method":"POST","origin":"{api}","path":"/api/catalogs/{catalogName}","scope":{"catalogName":{"at":"catalogName","from":"path"}}},
+      "createSnippet": {"action":"snippets.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/snippets","scope":{"name":{"at":"/name","from":"body"}}},
+      "declareWinner": {"action":"experiments.winner.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/experiments/{experimentId}/winner","scope":{"experimentId":{"at":"experimentId","from":"path"},"variantId":{"at":"/variantId","from":"body","type":"number"}}},
+      "delete": {"action":"experiments.delete","effects":["delete"],"method":"POST","origin":"{api}","path":"/api/experiments/{experimentId}/delete","scope":{"experimentId":{"at":"experimentId","from":"path"}}},
+      "delete.2": {"action":"lists.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/api/lists/{listId}","scope":{"listId":{"at":"listId","from":"path"}}},
+      "delete.3": {"action":"metadata.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/api/metadata/{table}","scope":{"table":{"at":"table","from":"path"}}},
+      "delete.4": {"action":"metadata.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/api/metadata/{table}/{key}","scope":{"key":{"at":"key","from":"path"},"table":{"at":"table","from":"path"}}},
+      "delete.5": {"action":"users.by_user_id.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/api/users/byUserId/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "delete.6": {"action":"users.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/api/users/{email}","scope":{"email":{"at":"email","from":"path"}}},
+      "deleteCatalog": {"action":"catalogs.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/api/catalogs/{catalogName}","scope":{"catalogName":{"at":"catalogName","from":"path"}}},
+      "deleteCatalogItem": {"action":"catalogs.items.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/api/catalogs/{catalogName}/items/{itemId}","scope":{"catalogName":{"at":"catalogName","from":"path"},"itemId":{"at":"itemId","from":"path"}}},
+      "deleteSnippet": {"action":"snippets.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/api/snippets/{identifier}","scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "disableDevice": {"action":"users.device.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/api/users/disableDevice","scope":{}},
+      "emailProof": {"action":"templates.email.proof.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/api/templates/email/proof","scope":{"recipientUserId":{"at":"/recipientUserId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"/templateId","from":"body","type":"number"}}},
+      "embedded-track-click": {"action":"embedded_messaging.events.click.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/embedded-messaging/events/click","scope":{"messageId":{"at":"/messageId","from":"body"}}},
+      "embedded-track-impression": {"action":"embedded_messaging.events.session.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/embedded-messaging/events/session","scope":{}},
+      "embedded-track-received": {"action":"embedded_messaging.events.received.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/embedded-messaging/events/received","scope":{"messageId":{"at":"/messageId","from":"body"}}},
+      "exportDataCsv": {"action":"export.data.csv.read","effects":["read"],"method":"GET","origin":"{api}","params":["dataTypeName","range","delimiter","startDateTime","endDateTime","omitFields","onlyFields","campaignId"],"path":"/api/export/data.csv","scope":{"dataTypeName":{"at":"dataTypeName","from":"query"}}},
+      "exportDataJson": {"action":"export.data.read","effects":["read"],"method":"GET","origin":"{api}","params":["dataTypeName","range","startDateTime","endDateTime","omitFields","onlyFields","campaignId"],"path":"/api/export/data.json","scope":{"dataTypeName":{"at":"dataTypeName","from":"query"}}},
+      "exportProjectForgottenUserIds": {"action":"users.forgotten_user_ids.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/users/forgottenUserIds","scope":{}},
+      "exportProjectForgottenUsers": {"action":"users.forgotten.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/users/forgotten","scope":{}},
+      "exportUserEvents": {"action":"export.user_events.read","effects":["read"],"method":"GET","origin":"{api}","params":["email","userId","includeCustomEvents"],"path":"/api/export/userEvents","scope":{}},
+      "forget": {"action":"users.forget.delete","body":"json","effects":["delete"],"method":"POST","origin":"{api}","path":"/api/users/forget","scope":{"email":{"at":"/email","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"/userId","from":"body","optional":true}}},
+      "get": {"action":"experiments.read","effects":["read"],"method":"GET","origin":"{api}","params":["experimentId","campaignId","startDateTime","endDateTime"],"path":"/api/experiments/{experimentId}","path_patterns":{"experimentId":"[0-9]+"},"scope":{"experimentId":{"at":"experimentId","from":"path"}}},
+      "get.2": {"action":"metadata.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/metadata/{table}/{key}","scope":{"key":{"at":"key","from":"path"},"table":{"at":"table","from":"path"}}},
+      "getByClientTemplateId": {"action":"templates.by_client_template_id.read","effects":["read"],"method":"GET","origin":"{api}","params":["clientTemplateId"],"path":"/api/templates/getByClientTemplateId","scope":{"clientTemplateId":{"at":"clientTemplateId","from":"query"}}},
+      "getCampaign": {"action":"campaigns.read","effects":["read"],"method":"GET","origin":"{api}","params":["campaignId","startDateTime","endDateTime"],"path":"/api/campaigns/{id}","path_patterns":{"id":"[0-9]+"},"scope":{"id":{"at":"id","from":"path"}}},
+      "getCatalogItem": {"action":"catalogs.items.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/catalogs/{catalogName}/items/{itemId}","scope":{"catalogName":{"at":"catalogName","from":"path"},"itemId":{"at":"itemId","from":"path"}}},
+      "getEmailTemplate": {"action":"templates.email.read","effects":["read"],"method":"GET","origin":"{api}","params":["templateId","locale"],"path":"/api/templates/email/get","scope":{"templateId":{"at":"templateId","from":"query"}}},
+      "getEmbeddedTemplate": {"action":"templates.embedded.read","effects":["read"],"method":"GET","origin":"{api}","params":["templateId","locale"],"path":"/api/templates/embedded/get","scope":{"templateId":{"at":"templateId","from":"query"}}},
+      "getExportFiles": {"action":"export.files.read","effects":["read"],"method":"GET","origin":"{api}","params":["startAfter"],"path":"/api/export/{jobId}/files","scope":{"jobId":{"at":"jobId","from":"path"}}},
+      "getExportJobs": {"action":"export.jobs.read","effects":["read"],"method":"GET","origin":"{api}","params":["jobState"],"path":"/api/export/jobs","scope":{}},
+      "getFieldMappings": {"action":"catalogs.field_mappings.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/catalogs/{catalogName}/fieldMappings","scope":{"catalogName":{"at":"catalogName","from":"path"}}},
+      "getInAppTemplate": {"action":"templates.inapp.read","effects":["read"],"method":"GET","origin":"{api}","params":["templateId","locale"],"path":"/api/templates/inapp/get","scope":{"templateId":{"at":"templateId","from":"query"}}},
+      "getJourneys": {"action":"journeys.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","pageSize","sort","state"],"path":"/api/journeys","scope":{}},
+      "getListCount": {"action":"lists.size.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/lists/{listId}/size","scope":{"listId":{"at":"listId","from":"path"}}},
+      "getLists": {"action":"lists.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/lists","scope":{}},
+      "getMessages": {"action":"in_app.messages.read","effects":["read"],"method":"GET","origin":"{api}","params":["email","userId","count","platform","SDKVersion","packageName"],"path":"/api/inApp/getMessages","scope":{}},
+      "getMessages.2": {"action":"in_app.web.messages.read","effects":["read"],"method":"GET","origin":"{api}","params":["email","userId","count","SDKVersion","packageName"],"path":"/api/inApp/web/getMessages","scope":{}},
+      "getPriorityMessage": {"action":"in_app.priority_message.read","effects":["read"],"method":"GET","origin":"{api}","params":["email","userId","platform","SDKVersion","packageName"],"path":"/api/inApp/getPriorityMessage","scope":{}},
+      "getPushTemplate": {"action":"templates.push.read","effects":["read"],"method":"GET","origin":"{api}","params":["templateId","locale"],"path":"/api/templates/push/get","scope":{"templateId":{"at":"templateId","from":"query"}}},
+      "getSMSTemplate": {"action":"templates.sms.read","effects":["read"],"method":"GET","origin":"{api}","params":["templateId","locale"],"path":"/api/templates/sms/get","scope":{"templateId":{"at":"templateId","from":"query"}}},
+      "getSentMessages": {"action":"users.sent_messages.read","effects":["read"],"method":"GET","origin":"{api}","params":["email","userId","limit","campaignIds","startDateTime","endDateTime","excludeBlastCampaigns","messageMedium"],"path":"/api/users/getSentMessages","scope":{"campaignIds":{"at":"campaignIds","from":"query","optional":true},"email":{"at":"email","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"query","optional":true}}},
+      "getSnippet": {"action":"snippets.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/snippets/{identifier}","scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "getSnippets": {"action":"snippets.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/snippets","scope":{}},
+      "getTemplates": {"action":"templates.read","effects":["read"],"method":"GET","origin":"{api}","params":["templateType","messageMedium","startDateTime","endDateTime","page","pageSize","sort"],"path":"/api/templates","scope":{}},
+      "getUser": {"action":"users.read","effects":["read"],"method":"GET","origin":"{api}","params":["userId","email","limit","campaignIds","startDateTime","endDateTime","excludeBlastCampaigns","messageMedium"],"path":"/api/users/{email}","path_patterns":{"email":"[^bfg].*|b(?:|[^y].*|y(?:|[^U].*|U(?:|[^s].*|s(?:|[^e].*|e(?:|[^r].*|r(?:|[^I].*|I(?:|[^d].*|d.+)))))))|f(?:|[^o].*|o(?:|[^r].*|r(?:|[^g].*|g(?:|[^o].*|o(?:|[^t].*|t(?:|[^t].*|t(?:|[^e].*|e(?:|[^n].*|n(?:[^U].*|U(?:|[^s].*|s(?:|[^e].*|e(?:|[^r].*|r(?:|[^I].*|I(?:|[^d].*|d(?:|[^s].*|s.+)))))))))))))))|g(?:|[^e].*|e(?:|[^t].*|t(?:|[^BFS].*|B(?:|[^y].*|y(?:|[^E].*|E(?:|[^m].*|m(?:|[^a].*|a(?:|[^i].*|i(?:|[^l].*|l.+))))))|F(?:|[^i].*|i(?:|[^e].*|e(?:|[^l].*|l(?:|[^d].*|d(?:|[^s].*|s.+)))))|S(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^M].*|M(?:|[^e].*|e(?:|[^s].*|s(?:|[^s].*|s(?:|[^a].*|a(?:|[^g].*|g(?:|[^e].*|e(?:|[^s].*|s.+))))))))))))))"},"scope":{"email":{"at":"email","from":"path"}}},
+      "getUser.none.03deac81eba7": {"action":"users.by_email.read","effects":["read"],"method":"GET","origin":"{api}","params":["email"],"path":"/api/users/getByEmail","scope":{"email":{"at":"email","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getUserById": {"action":"users.by_user_id.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/users/byUserId/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "getUserById.none.862a270650b4": {"action":"users.by_user_id.read","effects":["read"],"method":"GET","origin":"{api}","params":["userId"],"path":"/api/users/byUserId","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"query","optional":true}}},
+      "getUserFields": {"action":"users.fields.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/users/getFields","scope":{}},
+      "getUsers": {"action":"lists.users.read","effects":["read"],"method":"GET","origin":"{api}","params":["listId","preferUserId"],"path":"/api/lists/getUsers","scope":{"listId":{"at":"listId","from":"query"}}},
+      "getUsersPreview": {"action":"lists.preview_users.read","effects":["read"],"method":"GET","origin":"{api}","params":["listId","preferUserId","size"],"path":"/api/lists/previewUsers","scope":{"listId":{"at":"listId","from":"query"}}},
+      "getWebhooks": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/webhooks","scope":{}},
+      "inAppConsume": {"action":"events.in_app_consume.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/events/inAppConsume","scope":{"messageId":{"at":"/messageId","from":"body"}}},
+      "inappProof": {"action":"templates.inapp.proof.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/api/templates/inapp/proof","scope":{"recipientUserId":{"at":"/recipientUserId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"/templateId","from":"body","type":"number"}}},
+      "indexCatalogItem": {"action":"catalogs.items.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/api/catalogs/{catalogName}/items/{itemId}","scope":{"catalogName":{"at":"catalogName","from":"path"},"itemId":{"at":"itemId","from":"path"}}},
+      "list": {"action":"experiments.read","effects":["read"],"method":"GET","origin":"{api}","params":["campaignId","state","startDateTime","endDateTime","limit","offset"],"path":"/api/experiments","scope":{}},
+      "list tables": {"action":"metadata.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/metadata","scope":{}},
+      "list.2": {"action":"metadata.read","effects":["read"],"method":"GET","origin":"{api}","params":["nextMarker"],"path":"/api/metadata/{table}","scope":{"table":{"at":"table","from":"path"}}},
+      "listCatalogItems": {"action":"catalogs.items.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","pageSize","orderBy","sortAscending"],"path":"/api/catalogs/{catalogName}/items","scope":{"catalogName":{"at":"catalogName","from":"path"}}},
+      "listCatalogs": {"action":"catalogs.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","pageSize"],"path":"/api/catalogs","scope":{}},
+      "mergeUsers": {"action":"users.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/users/merge","scope":{}},
+      "messageTypes": {"action":"message_types.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/messageTypes","scope":{}},
+      "messages": {"action":"embedded_messaging.messages.read","effects":["read"],"method":"GET","origin":"{api}","params":["email","userId","platform","sdkVersion","packageName","placementIds","currentMessageIds"],"path":"/api/embedded-messaging/messages","scope":{}},
+      "metrics": {"action":"campaigns.metrics.read","effects":["read"],"method":"GET","origin":"{api}","params":["campaignId","startDateTime","endDateTime"],"path":"/api/campaigns/metrics","scope":{"campaignId":{"at":"campaignId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "metrics.none.a313a2bbf594": {"action":"experiments.metrics.read","effects":["read"],"method":"GET","origin":"{api}","params":["experimentId","campaignId","startDateTime","endDateTime","state"],"path":"/api/experiments/metrics","scope":{"campaignId":{"at":"campaignId","from":"query","optional":true},"experimentId":{"at":"experimentId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "partialUpdateCatalogItem": {"action":"catalogs.items.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","path":"/api/catalogs/{catalogName}/items/{itemId}","scope":{"catalogName":{"at":"catalogName","from":"path"},"itemId":{"at":"itemId","from":"path"}}},
+      "previewEmailTemplate": {"action":"templates.email.preview.read","body":"any","effects":["read"],"method":"POST","origin":"{api}","params":["templateId","locale"],"path":"/api/templates/email/preview","scope":{"templateId":{"at":"templateId","from":"query"}}},
+      "previewInAppTemplate": {"action":"templates.inapp.preview.read","body":"any","effects":["read"],"method":"POST","origin":"{api}","params":["templateId","locale"],"path":"/api/templates/inapp/preview","scope":{"templateId":{"at":"templateId","from":"query"}}},
+      "pushProof": {"action":"templates.push.proof.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/api/templates/push/proof","scope":{"recipientUserId":{"at":"/recipientUserId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"/templateId","from":"body","type":"number"}}},
+      "put": {"action":"metadata.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/api/metadata/{table}/{key}","scope":{"key":{"at":"key","from":"path"},"table":{"at":"table","from":"path"}}},
+      "registerBrowserToken": {"action":"users.register_browser_token.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/users/registerBrowserToken","scope":{}},
+      "registerDeviceToken": {"action":"users.register_device_token.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/users/registerDeviceToken","scope":{}},
+      "schedule campaign": {"action":"campaigns.schedule.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/api/campaigns/{campaignId}/schedule","scope":{"campaignId":{"at":"campaignId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "send campaign": {"action":"campaigns.send","effects":["send"],"method":"POST","origin":"{api}","path":"/api/campaigns/{campaignId}/send","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "smsProof": {"action":"templates.sms.proof.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/api/templates/sms/proof","scope":{"recipientUserId":{"at":"/recipientUserId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"/templateId","from":"body","type":"number"}}},
+      "start": {"action":"experiments.write","effects":["write"],"method":"POST","origin":"{api}","path":"/api/experiments/{experimentId}/start","scope":{"experimentId":{"at":"experimentId","from":"path"}}},
+      "startExport": {"action":"export.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/export/start","scope":{"dataTypeName":{"at":"/dataTypeName","from":"body"}}},
+      "subscribe": {"action":"lists.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/lists/subscribe","scope":{"listId":{"at":"/listId","from":"body","type":"number"}}},
+      "subscribeSingleUser": {"action":"subscriptions.user.admin","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/api/subscriptions/{subscriptionGroup}/{subscriptionGroupId}/user/{userEmail}","scope":{"subscriptionGroup":{"at":"subscriptionGroup","from":"path"},"subscriptionGroupId":{"at":"subscriptionGroupId","from":"path"},"userEmail":{"at":"userEmail","from":"path"}}},
+      "subscribeSingleUserByUserId": {"action":"subscriptions.by_user_id.write","effects":["write"],"method":"PATCH","origin":"{api}","path":"/api/subscriptions/{subscriptionGroup}/{subscriptionGroupId}/byUserId/{userId}","scope":{"subscriptionGroup":{"at":"subscriptionGroup","from":"path"},"subscriptionGroupId":{"at":"subscriptionGroupId","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "subscribeSingleUserToDoubleOptIn": {"action":"subscriptions.to_double_opt_in.send","body":"json","effects":["send","write"],"method":"POST","origin":"{api}","path":"/api/subscriptions/subscribeToDoubleOptIn","scope":{"brandName":{"at":"/brandName","from":"body","optional":true},"email":{"at":"/email","from":"body","optional":true},"messageTypeIds":{"at":"/messageTypeIds","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"/userId","from":"body","optional":true}}},
+      "target": {"action":"email.target.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/api/email/target","scope":{"campaignId":{"at":"/campaignId","from":"body","type":"number"},"recipientUserId":{"at":"/recipientUserId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "target.2": {"action":"in_app.target.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/api/inApp/target","scope":{"campaignId":{"at":"/campaignId","from":"body","type":"number"}}},
+      "target.3": {"action":"push.target.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/api/push/target","scope":{"campaignId":{"at":"/campaignId","from":"body","type":"number"}}},
+      "target.4": {"action":"rcs.target.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/api/rcs/target","scope":{"campaignId":{"at":"/campaignId","from":"body","type":"number"}}},
+      "target.5": {"action":"sms.target.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/api/sms/target","scope":{"campaignId":{"at":"/campaignId","from":"body","type":"number"}}},
+      "target.6": {"action":"web_push.target.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/api/webPush/target","scope":{"campaignId":{"at":"/campaignId","from":"body","type":"number"}}},
+      "target.7": {"action":"whats_app.target.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/api/whatsApp/target","scope":{"campaignId":{"at":"/campaignId","from":"body","type":"number"}}},
+      "totals": {"action":"experiments.totals.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/experiments/{experimentId}/totals","scope":{"experimentId":{"at":"experimentId","from":"path"}}},
+      "track": {"action":"events.track.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/events/track","scope":{"eventName":{"at":"/eventName","from":"body"}}},
+      "trackBulk": {"action":"events.track_bulk.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/events/trackBulk","scope":{}},
+      "trackInAppClick": {"action":"events.track_in_app_click.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/events/trackInAppClick","scope":{"messageId":{"at":"/messageId","from":"body"}}},
+      "trackInAppClose": {"action":"events.track_in_app_close.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/events/trackInAppClose","scope":{"messageId":{"at":"/messageId","from":"body"}}},
+      "trackInAppDelivery": {"action":"events.track_in_app_delivery.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/events/trackInAppDelivery","scope":{"messageId":{"at":"/messageId","from":"body"}}},
+      "trackInAppOpen": {"action":"events.track_in_app_open.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/events/trackInAppOpen","scope":{"messageId":{"at":"/messageId","from":"body"}}},
+      "trackPurchase": {"action":"commerce.track_purchase.pay","body":"json","effects":["pay"],"method":"POST","origin":"{api}","path":"/api/commerce/trackPurchase","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "trackPushOpen": {"action":"events.track_push_open.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/events/trackPushOpen","scope":{"campaignId":{"at":"/campaignId","from":"body","type":"number"},"messageId":{"at":"/messageId","from":"body"}}},
+      "trackWebPushClick": {"action":"events.track_web_push_click.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/events/trackWebPushClick","scope":{"messageId":{"at":"/messageId","from":"body"}}},
+      "trends": {"action":"experiments.trends.read","effects":["read"],"method":"GET","origin":"{api}","params":["startDateTime","endDateTime"],"path":"/api/experiments/{experimentId}/trends","scope":{"experimentId":{"at":"experimentId","from":"path"}}},
+      "trigger campaign": {"action":"campaigns.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/api/campaigns/trigger","scope":{"campaignId":{"at":"/campaignId","from":"body","type":"number"},"listIds":{"at":"/listIds","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"suppressionListIds":{"at":"/suppressionListIds","from":"body","optional":true,"type":"array"}}},
+      "triggerWorkflow": {"action":"workflows.workflow.execute","body":"json","effects":["execute","send"],"method":"POST","origin":"{api}","path":"/api/workflows/triggerWorkflow","scope":{"email":{"at":"/email","from":"body","optional":true},"listId":{"at":"/listId","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"/userId","from":"body","optional":true},"workflowId":{"at":"/workflowId","from":"body","type":"number"}}},
+      "unforget": {"action":"users.unforget.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/users/unforget","scope":{}},
+      "unsubscribe": {"action":"lists.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/lists/unsubscribe","scope":{"listId":{"at":"/listId","from":"body","type":"number"}}},
+      "unsubscribeSingleUser": {"action":"subscriptions.user.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/api/subscriptions/{subscriptionGroup}/{subscriptionGroupId}/user/{userEmail}","scope":{"subscriptionGroup":{"at":"subscriptionGroup","from":"path"},"subscriptionGroupId":{"at":"subscriptionGroupId","from":"path"},"userEmail":{"at":"userEmail","from":"path"}}},
+      "unsubscribeSingleUserByUserId": {"action":"subscriptions.by_user_id.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/api/subscriptions/{subscriptionGroup}/{subscriptionGroupId}/byUserId/{userId}","scope":{"subscriptionGroup":{"at":"subscriptionGroup","from":"path"},"subscriptionGroupId":{"at":"subscriptionGroupId","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "updateCart": {"action":"commerce.cart.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/commerce/updateCart","scope":{}},
+      "updateEmail": {"action":"users.email.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/users/updateEmail","scope":{}},
+      "updateEmailTemplate": {"action":"templates.email.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/templates/email/update","scope":{"templateId":{"at":"/templateId","from":"body","type":"number"}}},
+      "updateEmbeddedTemplate": {"action":"templates.embedded.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/templates/embedded/update","scope":{"templateId":{"at":"/templateId","from":"body","type":"number"}}},
+      "updateFieldTypes": {"action":"catalogs.field_mappings.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/api/catalogs/{catalogName}/fieldMappings","scope":{"catalogName":{"at":"catalogName","from":"path"}}},
+      "updateInAppTemplate": {"action":"templates.inapp.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/templates/inapp/update","scope":{"templateId":{"at":"/templateId","from":"body","type":"number"}}},
+      "updatePushTemplate": {"action":"templates.push.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/templates/push/update","scope":{"templateId":{"at":"/templateId","from":"body","type":"number"}}},
+      "updateSMSTemplate": {"action":"templates.sms.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/templates/sms/update","scope":{"templateId":{"at":"/templateId","from":"body","type":"number"}}},
+      "updateSettings": {"action":"experiments.settings.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/api/experiments/{experimentId}/settings","scope":{"experimentId":{"at":"experimentId","from":"path"}}},
+      "updateSnippet": {"action":"snippets.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/api/snippets/{identifier}","scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "updateSubscriptions": {"action":"users.subscriptions.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/users/updateSubscriptions","scope":{}},
+      "updateUser": {"action":"users.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/users/update","scope":{}},
+      "updateWebhook": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/api/webhooks","scope":{"id":{"at":"/id","from":"body","type":"number"}}},
+      "upsertEmailTemplate": {"action":"templates.email.upsert.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/templates/email/upsert","scope":{"clientTemplateId":{"at":"/clientTemplateId","from":"body"}}},
+      "upsertEmbeddedTemplate": {"action":"templates.embedded.upsert.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/templates/embedded/upsert","scope":{"clientTemplateId":{"at":"/clientTemplateId","from":"body"}}},
+      "upsertInAppTemplate": {"action":"templates.inapp.upsert.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/templates/inapp/upsert","scope":{"clientTemplateId":{"at":"/clientTemplateId","from":"body"}}},
+      "upsertPushTemplate": {"action":"templates.push.upsert.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/templates/push/upsert","scope":{"clientTemplateId":{"at":"/clientTemplateId","from":"body"}}},
+      "upsertSMSTemplate": {"action":"templates.sms.upsert.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/api/templates/sms/upsert","scope":{"clientTemplateId":{"at":"/clientTemplateId","from":"body"}}},
+      "variants": {"action":"experiments.variants.read","effects":["read"],"method":"GET","origin":"{api}","path":"/api/experiments/{experimentId}/variants","scope":{"experimentId":{"at":"experimentId","from":"path"}}},
+      "viewInBrowser": {"action":"email.view_in_browser.read","effects":["read"],"method":"GET","origin":"{api}","params":["email","userId","messageId"],"path":"/api/email/viewInBrowser","scope":{"messageId":{"at":"messageId","from":"query"}}}
     }
   }
 }

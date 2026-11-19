@@ -1,401 +1,1574 @@
 {
-  "title": "TheHive",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your TheHive origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://example.com", "path": "/api/v1", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "admin.config": {"title": "Admin: config"},
-      "admin.configs": {"title": "Admin: configs"},
-      "admin.user": {"title": "Admin: user"},
-      "delete.alert": {"title": "Delete: alert"},
-      "delete.alert_feeder": {"title": "Delete: alert feeder"},
-      "delete.alert_status": {"title": "Delete: alert status"},
-      "delete.assets": {"title": "Delete: assets"},
-      "delete.attachment": {"title": "Delete: attachment"},
-      "delete.attachments": {"title": "Delete: attachments"},
-      "delete.case": {"title": "Delete: case"},
-      "delete.case_report": {"title": "Delete: case report"},
-      "delete.case_report_template": {"title": "Delete: case report template"},
-      "delete.case_status": {"title": "Delete: case status"},
-      "delete.case_template": {"title": "Delete: case template"},
-      "delete.catalog": {"title": "Delete: catalog"},
-      "delete.comment": {"title": "Delete: comment"},
-      "delete.config": {"title": "Delete: config"},
-      "delete.custom_event": {"title": "Delete: custom event"},
-      "delete.custom_field": {"title": "Delete: custom field"},
-      "delete.dashboard": {"title": "Delete: dashboard"},
-      "delete.function": {"title": "Delete: function"},
-      "delete.key": {"title": "Delete: key"},
-      "delete.link": {"title": "Delete: link"},
-      "delete.log": {"title": "Delete: log"},
-      "delete.observable": {"title": "Delete: observable"},
-      "delete.page": {"title": "Delete: page"},
-      "delete.page_template": {"title": "Delete: page template"},
-      "delete.pattern": {"title": "Delete: pattern"},
-      "delete.procedure": {"title": "Delete: procedure"},
-      "delete.profile": {"title": "Delete: profile"},
-      "delete.remove": {"title": "Delete: remove"},
-      "delete.share": {"title": "Delete: share"},
-      "delete.shares": {"title": "Delete: shares"},
-      "delete.tag": {"title": "Delete: tag"},
-      "delete.task": {"title": "Delete: task"},
-      "delete.taxonomy": {"title": "Delete: taxonomy"},
-      "delete.template": {"title": "Delete: template"},
-      "delete.type": {"title": "Delete: type"},
-      "delete.user": {"title": "Delete: user"},
-      "delete.views": {"title": "Delete: views"},
-      "execute.action": {"title": "Execute: action"},
-      "execute.check": {"title": "Execute: check"},
-      "execute.dedup": {"title": "Execute: dedup"},
-      "execute.function": {"title": "Execute: function"},
-      "execute.global": {"title": "Execute: global"},
-      "execute.job": {"title": "Execute: job"},
-      "execute.run": {"title": "Execute: run"},
-      "generate.report": {"title": "Generate: report"},
-      "read": {"title": "Read everything the account can see"},
-      "send.comment": {"title": "Send: comment"},
-      "share.case": {"title": "Share: case"},
-      "share.link": {"title": "Share: link"},
-      "share.links": {"title": "Share: links"},
-      "share.observable": {"title": "Share: observable"},
-      "share.share": {"title": "Share: share"},
-      "share.task": {"title": "Share: task"},
-      "write.access": {"title": "Write: access"},
-      "write.action_done": {"title": "Write: action done"},
-      "write.action_required": {"title": "Write: action required"},
-      "write.add": {"title": "Write: add"},
-      "write.alert": {"title": "Write: alert"},
-      "write.alert_feeder": {"title": "Write: alert feeder"},
-      "write.alert_status": {"title": "Write: alert status"},
-      "write.attachment": {"title": "Write: attachment"},
-      "write.attachments": {"title": "Write: attachments"},
-      "write.attack": {"title": "Write: attack"},
-      "write.authorization_code": {"title": "Write: authorization code"},
-      "write.branding": {"title": "Write: branding"},
-      "write.bulk": {"title": "Write: bulk"},
-      "write.cancel": {"title": "Write: cancel"},
-      "write.case": {"title": "Write: case"},
-      "write.case_report": {"title": "Write: case report"},
-      "write.case_report_template": {"title": "Write: case report template"},
-      "write.case_status": {"title": "Write: case status"},
-      "write.case_template": {"title": "Write: case template"},
-      "write.catalog": {"title": "Write: catalog"},
-      "write.change": {"title": "Write: change"},
-      "write.comment": {"title": "Write: comment"},
-      "write.custom_event": {"title": "Write: custom event"},
-      "write.custom_field": {"title": "Write: custom field"},
-      "write.dashboard": {"title": "Write: dashboard"},
-      "write.function": {"title": "Write: function"},
-      "write.import": {"title": "Write: import"},
-      "write.import_zip": {"title": "Write: import zip"},
-      "write.info": {"title": "Write: info"},
-      "write.license": {"title": "Write: license"},
-      "write.log": {"title": "Write: log"},
-      "write.login": {"title": "Write: login"},
-      "write.logout": {"title": "Write: logout"},
-      "write.merge": {"title": "Write: merge"},
-      "write.observable": {"title": "Write: observable"},
-      "write.organisation": {"title": "Write: organisation"},
-      "write.organisations": {"title": "Write: organisations"},
-      "write.owner": {"title": "Write: owner"},
-      "write.page": {"title": "Write: page"},
-      "write.page_template": {"title": "Write: page template"},
-      "write.procedure": {"title": "Write: procedure"},
-      "write.procedures": {"title": "Write: procedures"},
-      "write.profile": {"title": "Write: profile"},
-      "write.rebuild": {"title": "Write: rebuild"},
-      "write.reindex": {"title": "Write: reindex"},
-      "write.render": {"title": "Write: render"},
-      "write.renew": {"title": "Write: renew"},
-      "write.repair": {"title": "Write: repair"},
-      "write.report": {"title": "Write: report"},
-      "write.set": {"title": "Write: set"},
-      "write.stream": {"title": "Write: stream"},
-      "write.sync": {"title": "Write: sync"},
-      "write.tag": {"title": "Write: tag"},
-      "write.task": {"title": "Write: task"},
-      "write.taxonomy": {"title": "Write: taxonomy"},
-      "write.template": {"title": "Write: template"},
-      "write.type": {"title": "Write: type"},
-      "write.unset": {"title": "Write: unset"},
-      "write.views": {"title": "Write: views"}
-    }
+      "admin": {
+        "title": "Manage"
+      },
+      "admin.check": {
+        "title": "Check"
+      },
+      "admin.check.all": {
+        "title": "All"
+      },
+      "admin.check.all.execute": {
+        "title": "Run"
+      },
+      "admin.check.dedup": {
+        "title": "Dedup"
+      },
+      "admin.check.dedup.execute": {
+        "title": "Run"
+      },
+      "admin.check.execute": {
+        "title": "Run"
+      },
+      "admin.check.global": {
+        "title": "Global"
+      },
+      "admin.check.global.execute": {
+        "title": "Run"
+      },
+      "admin.check.stats": {
+        "title": "Stats"
+      },
+      "admin.check.stats.read": {
+        "title": "Read"
+      },
+      "admin.check.write": {
+        "title": "Create and edit"
+      },
+      "admin.index": {
+        "title": "Index"
+      },
+      "admin.index.rebuild": {
+        "title": "Rebuild"
+      },
+      "admin.index.rebuild.write": {
+        "title": "Create and edit"
+      },
+      "admin.index.reindex": {
+        "title": "Reindex"
+      },
+      "admin.index.reindex.write": {
+        "title": "Create and edit"
+      },
+      "admin.index.status": {
+        "title": "Status"
+      },
+      "admin.index.status.read": {
+        "title": "Read"
+      },
+      "admin.log": {
+        "title": "Log"
+      },
+      "admin.log.set": {
+        "title": "Set"
+      },
+      "admin.log.set.write": {
+        "title": "Create and edit"
+      },
+      "admin.schema": {
+        "title": "Schema"
+      },
+      "admin.schema.info": {
+        "title": "Info"
+      },
+      "admin.schema.info.read": {
+        "title": "Read"
+      },
+      "admin.schema.repair": {
+        "title": "Repair"
+      },
+      "admin.schema.repair.write": {
+        "title": "Create and edit"
+      },
+      "admin.stats": {
+        "title": "Stats"
+      },
+      "admin.stats.read": {
+        "title": "Read"
+      },
+      "alert": {
+        "title": "Alert"
+      },
+      "alert.attachment": {
+        "title": "Attachment"
+      },
+      "alert.attachment.delete": {
+        "title": "Delete"
+      },
+      "alert.attachment.read": {
+        "title": "Read"
+      },
+      "alert.attachments": {
+        "title": "Attachments"
+      },
+      "alert.attachments.write": {
+        "title": "Create and edit"
+      },
+      "alert.bulk": {
+        "title": "Bulk"
+      },
+      "alert.bulk.write": {
+        "title": "Create and edit"
+      },
+      "alert.case": {
+        "title": "Case"
+      },
+      "alert.case.write": {
+        "title": "Create and edit"
+      },
+      "alert.comment": {
+        "title": "Comment"
+      },
+      "alert.comment.send": {
+        "title": "Send"
+      },
+      "alert.delete": {
+        "title": "Delete"
+      },
+      "alert.delete.bulk": {
+        "title": "Bulk"
+      },
+      "alert.delete.bulk.delete": {
+        "title": "Delete"
+      },
+      "alert.import": {
+        "title": "Import"
+      },
+      "alert.import.write": {
+        "title": "Create and edit"
+      },
+      "alert.merge": {
+        "title": "Merge"
+      },
+      "alert.merge.bulk": {
+        "title": "Bulk"
+      },
+      "alert.merge.bulk.write": {
+        "title": "Create and edit"
+      },
+      "alert.merge.write": {
+        "title": "Create and edit"
+      },
+      "alert.observable": {
+        "title": "Observable"
+      },
+      "alert.observable.write": {
+        "title": "Create and edit"
+      },
+      "alert.procedure": {
+        "title": "Procedure"
+      },
+      "alert.procedure.write": {
+        "title": "Create and edit"
+      },
+      "alert.procedures": {
+        "title": "Procedures"
+      },
+      "alert.procedures.write": {
+        "title": "Create and edit"
+      },
+      "alert.read": {
+        "title": "Read"
+      },
+      "alert.similar": {
+        "title": "Similar"
+      },
+      "alert.similar.observables": {
+        "title": "Observables"
+      },
+      "alert.similar.observables.read": {
+        "title": "Read"
+      },
+      "alert.write": {
+        "title": "Create and edit"
+      },
+      "alert_status": {
+        "title": "Alert status"
+      },
+      "alert_status.delete": {
+        "title": "Delete"
+      },
+      "alert_status.write": {
+        "title": "Create and edit"
+      },
+      "attachment": {
+        "title": "Attachment"
+      },
+      "attachment.delete": {
+        "title": "Delete"
+      },
+      "attachment.read": {
+        "title": "Read"
+      },
+      "attachment.write": {
+        "title": "Create and edit"
+      },
+      "auth": {
+        "title": "Auth"
+      },
+      "auth.local": {
+        "title": "Local"
+      },
+      "auth.local.password_policy": {
+        "title": "Password policy"
+      },
+      "auth.local.password_policy.read": {
+        "title": "Read"
+      },
+      "auth.totp": {
+        "title": "Totp"
+      },
+      "auth.totp.admin": {
+        "title": "Manage"
+      },
+      "auth.totp.read": {
+        "title": "Read"
+      },
+      "auth.totp.unset": {
+        "title": "Unset"
+      },
+      "auth.totp.unset.admin": {
+        "title": "Manage"
+      },
+      "branding": {
+        "title": "Branding"
+      },
+      "branding.assets": {
+        "title": "Assets"
+      },
+      "branding.assets.delete": {
+        "title": "Delete"
+      },
+      "branding.assets.read": {
+        "title": "Read"
+      },
+      "branding.read": {
+        "title": "Read"
+      },
+      "branding.write": {
+        "title": "Create and edit"
+      },
+      "case": {
+        "title": "Case"
+      },
+      "case.access": {
+        "title": "Access"
+      },
+      "case.access.share": {
+        "title": "Share"
+      },
+      "case.alert": {
+        "title": "Alert"
+      },
+      "case.alert.delete": {
+        "title": "Delete"
+      },
+      "case.attachment": {
+        "title": "Attachment"
+      },
+      "case.attachment.delete": {
+        "title": "Delete"
+      },
+      "case.attachment.read": {
+        "title": "Read"
+      },
+      "case.attachment.write": {
+        "title": "Create and edit"
+      },
+      "case.attachments": {
+        "title": "Attachments"
+      },
+      "case.attachments.write": {
+        "title": "Create and edit"
+      },
+      "case.bulk": {
+        "title": "Bulk"
+      },
+      "case.bulk.access": {
+        "title": "Access"
+      },
+      "case.bulk.access.share": {
+        "title": "Share"
+      },
+      "case.bulk.case_template": {
+        "title": "Case template"
+      },
+      "case.bulk.case_template.write": {
+        "title": "Create and edit"
+      },
+      "case.bulk.write": {
+        "title": "Create and edit"
+      },
+      "case.comment": {
+        "title": "Comment"
+      },
+      "case.comment.send": {
+        "title": "Send"
+      },
+      "case.custom_event": {
+        "title": "Custom event"
+      },
+      "case.custom_event.write": {
+        "title": "Create and edit"
+      },
+      "case.custom_field": {
+        "title": "Custom field"
+      },
+      "case.custom_field.delete": {
+        "title": "Delete"
+      },
+      "case.delete": {
+        "title": "Delete"
+      },
+      "case.link": {
+        "title": "Link"
+      },
+      "case.link.case": {
+        "title": "Case"
+      },
+      "case.link.case.delete": {
+        "title": "Delete"
+      },
+      "case.link.case.write": {
+        "title": "Create and edit"
+      },
+      "case.link.external": {
+        "title": "External"
+      },
+      "case.link.external.delete": {
+        "title": "Delete"
+      },
+      "case.link.external.write": {
+        "title": "Create and edit"
+      },
+      "case.link.types": {
+        "title": "Types"
+      },
+      "case.link.types.read": {
+        "title": "Read"
+      },
+      "case.links": {
+        "title": "Links"
+      },
+      "case.links.read": {
+        "title": "Read"
+      },
+      "case.merge": {
+        "title": "Merge"
+      },
+      "case.merge.write": {
+        "title": "Create and edit"
+      },
+      "case.observable": {
+        "title": "Observable"
+      },
+      "case.observable.write": {
+        "title": "Create and edit"
+      },
+      "case.owner": {
+        "title": "Owner"
+      },
+      "case.owner.write": {
+        "title": "Create and edit"
+      },
+      "case.page": {
+        "title": "Page"
+      },
+      "case.page.delete": {
+        "title": "Delete"
+      },
+      "case.page.write": {
+        "title": "Create and edit"
+      },
+      "case.procedure": {
+        "title": "Procedure"
+      },
+      "case.procedure.write": {
+        "title": "Create and edit"
+      },
+      "case.procedures": {
+        "title": "Procedures"
+      },
+      "case.procedures.write": {
+        "title": "Create and edit"
+      },
+      "case.read": {
+        "title": "Read"
+      },
+      "case.report": {
+        "title": "Report"
+      },
+      "case.report.write": {
+        "title": "Create and edit"
+      },
+      "case.share": {
+        "title": "Share"
+      },
+      "case.share.share": {
+        "title": "Share"
+      },
+      "case.shares": {
+        "title": "Shares"
+      },
+      "case.shares.read": {
+        "title": "Read"
+      },
+      "case.shares.share": {
+        "title": "Share"
+      },
+      "case.similar": {
+        "title": "Similar"
+      },
+      "case.similar.observables": {
+        "title": "Observables"
+      },
+      "case.similar.observables.read": {
+        "title": "Read"
+      },
+      "case.task": {
+        "title": "Task"
+      },
+      "case.task.write": {
+        "title": "Create and edit"
+      },
+      "case.timeline": {
+        "title": "Timeline"
+      },
+      "case.timeline.read": {
+        "title": "Read"
+      },
+      "case.write": {
+        "title": "Create and edit"
+      },
+      "case_report": {
+        "title": "Case report"
+      },
+      "case_report.delete": {
+        "title": "Delete"
+      },
+      "case_report.formats": {
+        "title": "Formats"
+      },
+      "case_report.formats.read": {
+        "title": "Read"
+      },
+      "case_report.read": {
+        "title": "Read"
+      },
+      "case_report.render": {
+        "title": "Render"
+      },
+      "case_report.render.read": {
+        "title": "Read"
+      },
+      "case_report.view": {
+        "title": "View"
+      },
+      "case_report.view.read": {
+        "title": "Read"
+      },
+      "case_report.write": {
+        "title": "Create and edit"
+      },
+      "case_report_template": {
+        "title": "Case report template"
+      },
+      "case_report_template.attachment": {
+        "title": "Attachment"
+      },
+      "case_report_template.attachment.delete": {
+        "title": "Delete"
+      },
+      "case_report_template.attachment.read": {
+        "title": "Read"
+      },
+      "case_report_template.attachment.write": {
+        "title": "Create and edit"
+      },
+      "case_report_template.delete": {
+        "title": "Delete"
+      },
+      "case_report_template.info": {
+        "title": "Info"
+      },
+      "case_report_template.info.read": {
+        "title": "Read"
+      },
+      "case_report_template.read": {
+        "title": "Read"
+      },
+      "case_report_template.write": {
+        "title": "Create and edit"
+      },
+      "case_status": {
+        "title": "Case status"
+      },
+      "case_status.delete": {
+        "title": "Delete"
+      },
+      "case_status.write": {
+        "title": "Create and edit"
+      },
+      "case_template": {
+        "title": "Case template"
+      },
+      "case_template.delete": {
+        "title": "Delete"
+      },
+      "case_template.page_template": {
+        "title": "Page template"
+      },
+      "case_template.page_template.link": {
+        "title": "Link"
+      },
+      "case_template.page_template.link.write": {
+        "title": "Create and edit"
+      },
+      "case_template.read": {
+        "title": "Read"
+      },
+      "case_template.write": {
+        "title": "Create and edit"
+      },
+      "catalog": {
+        "title": "Catalog"
+      },
+      "catalog.delete": {
+        "title": "Delete"
+      },
+      "catalog.write": {
+        "title": "Create and edit"
+      },
+      "comment": {
+        "title": "Comment"
+      },
+      "comment.delete": {
+        "title": "Delete"
+      },
+      "comment.write": {
+        "title": "Create and edit"
+      },
+      "config": {
+        "title": "Config"
+      },
+      "config.user": {
+        "title": "Account"
+      },
+      "config.user.read": {
+        "title": "Read"
+      },
+      "config.user.write": {
+        "title": "Create and edit"
+      },
+      "connector": {
+        "title": "Connector"
+      },
+      "connector.alert_feeder": {
+        "title": "Alert feeder"
+      },
+      "connector.alert_feeder.delete": {
+        "title": "Delete"
+      },
+      "connector.alert_feeder.read": {
+        "title": "Read"
+      },
+      "connector.alert_feeder.run": {
+        "title": "Run"
+      },
+      "connector.alert_feeder.run.execute": {
+        "title": "Run"
+      },
+      "connector.alert_feeder.write": {
+        "title": "Create and edit"
+      },
+      "connector.cortex": {
+        "title": "Cortex"
+      },
+      "connector.cortex.action": {
+        "title": "Action"
+      },
+      "connector.cortex.action.execute": {
+        "title": "Run"
+      },
+      "connector.cortex.action.read": {
+        "title": "Read"
+      },
+      "connector.cortex.analyzer": {
+        "title": "Analyzer"
+      },
+      "connector.cortex.analyzer.read": {
+        "title": "Read"
+      },
+      "connector.cortex.analyzer.template": {
+        "title": "Template"
+      },
+      "connector.cortex.analyzer.template.content": {
+        "title": "Content"
+      },
+      "connector.cortex.analyzer.template.content.read": {
+        "title": "Read"
+      },
+      "connector.cortex.analyzer.template.delete": {
+        "title": "Delete"
+      },
+      "connector.cortex.analyzer.template.write": {
+        "title": "Create and edit"
+      },
+      "connector.cortex.analyzer.type": {
+        "title": "Type"
+      },
+      "connector.cortex.analyzer.type.read": {
+        "title": "Read"
+      },
+      "connector.cortex.job": {
+        "title": "Job"
+      },
+      "connector.cortex.job.bulk": {
+        "title": "Bulk"
+      },
+      "connector.cortex.job.bulk.execute": {
+        "title": "Run"
+      },
+      "connector.cortex.job.execute": {
+        "title": "Run"
+      },
+      "connector.cortex.job.read": {
+        "title": "Read"
+      },
+      "connector.cortex.responder": {
+        "title": "Responder"
+      },
+      "connector.cortex.responder.read": {
+        "title": "Read"
+      },
+      "connector.email_intake": {
+        "title": "Email intake"
+      },
+      "connector.email_intake.config": {
+        "title": "Config"
+      },
+      "connector.email_intake.config.admin": {
+        "title": "Manage"
+      },
+      "connector.email_intake.config.authorization_code": {
+        "title": "Authorization code"
+      },
+      "connector.email_intake.config.authorization_code.write": {
+        "title": "Create and edit"
+      },
+      "connector.email_intake.config.delete": {
+        "title": "Delete"
+      },
+      "connector.email_intake.config.read": {
+        "title": "Read"
+      },
+      "connector.email_intake.configs": {
+        "title": "Configs"
+      },
+      "connector.email_intake.configs.admin": {
+        "title": "Manage"
+      },
+      "connector.email_intake.configs.read": {
+        "title": "Read"
+      },
+      "connector.email_intake.folders": {
+        "title": "Folders"
+      },
+      "connector.email_intake.folders.read": {
+        "title": "Read"
+      },
+      "connector.email_intake.providers": {
+        "title": "Providers"
+      },
+      "connector.email_intake.providers.read": {
+        "title": "Read"
+      },
+      "connector.email_intake.write": {
+        "title": "Create and edit"
+      },
+      "connector.misp": {
+        "title": "Misp"
+      },
+      "connector.misp.case": {
+        "title": "Case"
+      },
+      "connector.misp.case.write": {
+        "title": "Create and edit"
+      },
+      "connector.misp.export": {
+        "title": "Export"
+      },
+      "connector.misp.export.send": {
+        "title": "Send"
+      },
+      "connector.misp.status": {
+        "title": "Status"
+      },
+      "connector.misp.status.read": {
+        "title": "Read"
+      },
+      "connector.misp.sync_alerts": {
+        "title": "Sync alerts"
+      },
+      "connector.misp.sync_alerts.write": {
+        "title": "Create and edit"
+      },
+      "custom_event": {
+        "title": "Custom event"
+      },
+      "custom_event.delete": {
+        "title": "Delete"
+      },
+      "custom_event.write": {
+        "title": "Create and edit"
+      },
+      "custom_field": {
+        "title": "Custom field"
+      },
+      "custom_field.delete": {
+        "title": "Delete"
+      },
+      "custom_field.read": {
+        "title": "Read"
+      },
+      "custom_field.write": {
+        "title": "Create and edit"
+      },
+      "dashboard": {
+        "title": "Dashboard"
+      },
+      "dashboard.delete": {
+        "title": "Delete"
+      },
+      "dashboard.owner": {
+        "title": "Owner"
+      },
+      "dashboard.owner.write": {
+        "title": "Create and edit"
+      },
+      "dashboard.read": {
+        "title": "Read"
+      },
+      "dashboard.write": {
+        "title": "Create and edit"
+      },
+      "describe": {
+        "title": "Describe"
+      },
+      "describe.all": {
+        "title": "All"
+      },
+      "describe.all.read": {
+        "title": "Read"
+      },
+      "describe.read": {
+        "title": "Read"
+      },
+      "export": {
+        "title": "Export"
+      },
+      "export.fields": {
+        "title": "Fields"
+      },
+      "export.fields.read": {
+        "title": "Read"
+      },
+      "export.read": {
+        "title": "Read"
+      },
+      "flow": {
+        "title": "Flow"
+      },
+      "flow.read": {
+        "title": "Read"
+      },
+      "function": {
+        "title": "Function"
+      },
+      "function.context": {
+        "title": "Context"
+      },
+      "function.context.documentation": {
+        "title": "Documentation"
+      },
+      "function.context.documentation.read": {
+        "title": "Read"
+      },
+      "function.delete": {
+        "title": "Delete"
+      },
+      "function.execute": {
+        "title": "Run"
+      },
+      "function.read": {
+        "title": "Read"
+      },
+      "function.write": {
+        "title": "Create and edit"
+      },
+      "license": {
+        "title": "License"
+      },
+      "license.activate": {
+        "title": "Activate"
+      },
+      "license.activate.admin": {
+        "title": "Manage"
+      },
+      "license.admin": {
+        "title": "Manage"
+      },
+      "license.challenge": {
+        "title": "Challenge"
+      },
+      "license.challenge.read": {
+        "title": "Read"
+      },
+      "license.current": {
+        "title": "Current"
+      },
+      "license.current.read": {
+        "title": "Read"
+      },
+      "license.read": {
+        "title": "Read"
+      },
+      "log": {
+        "title": "Log"
+      },
+      "log.attachment": {
+        "title": "Attachment"
+      },
+      "log.attachment.read": {
+        "title": "Read"
+      },
+      "log.attachments": {
+        "title": "Attachments"
+      },
+      "log.attachments.delete": {
+        "title": "Delete"
+      },
+      "log.attachments.write": {
+        "title": "Create and edit"
+      },
+      "log.delete": {
+        "title": "Delete"
+      },
+      "log.write": {
+        "title": "Create and edit"
+      },
+      "login": {
+        "title": "Login"
+      },
+      "login.write": {
+        "title": "Create and edit"
+      },
+      "logout": {
+        "title": "Logout"
+      },
+      "logout.read": {
+        "title": "Read"
+      },
+      "logout.write": {
+        "title": "Create and edit"
+      },
+      "observable": {
+        "title": "Observable"
+      },
+      "observable.attachment": {
+        "title": "Attachment"
+      },
+      "observable.attachment.read": {
+        "title": "Read"
+      },
+      "observable.bulk": {
+        "title": "Bulk"
+      },
+      "observable.bulk.write": {
+        "title": "Create and edit"
+      },
+      "observable.delete": {
+        "title": "Delete"
+      },
+      "observable.read": {
+        "title": "Read"
+      },
+      "observable.shares": {
+        "title": "Shares"
+      },
+      "observable.shares.read": {
+        "title": "Read"
+      },
+      "observable.shares.share": {
+        "title": "Share"
+      },
+      "observable.type": {
+        "title": "Type"
+      },
+      "observable.type.delete": {
+        "title": "Delete"
+      },
+      "observable.type.read": {
+        "title": "Read"
+      },
+      "observable.type.write": {
+        "title": "Create and edit"
+      },
+      "observable.write": {
+        "title": "Create and edit"
+      },
+      "organisation": {
+        "title": "Organisation"
+      },
+      "organisation.admin": {
+        "title": "Manage"
+      },
+      "organisation.avatar": {
+        "title": "Avatar"
+      },
+      "organisation.avatar.read": {
+        "title": "Read"
+      },
+      "organisation.link": {
+        "title": "Link"
+      },
+      "organisation.link.delete": {
+        "title": "Delete"
+      },
+      "organisation.link.share": {
+        "title": "Share"
+      },
+      "organisation.links": {
+        "title": "Links"
+      },
+      "organisation.links.read": {
+        "title": "Read"
+      },
+      "organisation.links.share": {
+        "title": "Share"
+      },
+      "organisation.read": {
+        "title": "Read"
+      },
+      "page": {
+        "title": "Page"
+      },
+      "page.delete": {
+        "title": "Delete"
+      },
+      "page.write": {
+        "title": "Create and edit"
+      },
+      "page_template": {
+        "title": "Page template"
+      },
+      "page_template.delete": {
+        "title": "Delete"
+      },
+      "page_template.write": {
+        "title": "Create and edit"
+      },
+      "pattern": {
+        "title": "Pattern"
+      },
+      "pattern.case": {
+        "title": "Case"
+      },
+      "pattern.case.read": {
+        "title": "Read"
+      },
+      "pattern.delete": {
+        "title": "Delete"
+      },
+      "pattern.import": {
+        "title": "Import"
+      },
+      "pattern.import.attack": {
+        "title": "Attack"
+      },
+      "pattern.import.attack.write": {
+        "title": "Create and edit"
+      },
+      "pattern.read": {
+        "title": "Read"
+      },
+      "permission": {
+        "title": "Permission"
+      },
+      "permission.read": {
+        "title": "Read"
+      },
+      "procedure": {
+        "title": "Procedure"
+      },
+      "procedure.delete": {
+        "title": "Delete"
+      },
+      "procedure.delete.bulk": {
+        "title": "Bulk"
+      },
+      "procedure.delete.bulk.delete": {
+        "title": "Delete"
+      },
+      "procedure.write": {
+        "title": "Create and edit"
+      },
+      "profile": {
+        "title": "Profile"
+      },
+      "profile.admin": {
+        "title": "Manage"
+      },
+      "profile.delete": {
+        "title": "Delete"
+      },
+      "profile.read": {
+        "title": "Read"
+      },
+      "query": {
+        "title": "Query"
+      },
+      "query.read": {
+        "title": "Read"
+      },
+      "sharing_profile": {
+        "title": "Sharing profile"
+      },
+      "sharing_profile.read": {
+        "title": "Read"
+      },
+      "status": {
+        "title": "Status"
+      },
+      "status.public": {
+        "title": "Public"
+      },
+      "status.public.read": {
+        "title": "Read"
+      },
+      "status.read": {
+        "title": "Read"
+      },
+      "stream": {
+        "title": "Stream"
+      },
+      "stream.read": {
+        "title": "Read"
+      },
+      "tag": {
+        "title": "Tag"
+      },
+      "tag.delete": {
+        "title": "Delete"
+      },
+      "tag.read": {
+        "title": "Read"
+      },
+      "tag.write": {
+        "title": "Create and edit"
+      },
+      "task": {
+        "title": "Task"
+      },
+      "task.action_done": {
+        "title": "Action done"
+      },
+      "task.action_done.write": {
+        "title": "Create and edit"
+      },
+      "task.action_required": {
+        "title": "Action required"
+      },
+      "task.action_required.read": {
+        "title": "Read"
+      },
+      "task.action_required.write": {
+        "title": "Create and edit"
+      },
+      "task.bulk": {
+        "title": "Bulk"
+      },
+      "task.bulk.write": {
+        "title": "Create and edit"
+      },
+      "task.delete": {
+        "title": "Delete"
+      },
+      "task.log": {
+        "title": "Log"
+      },
+      "task.log.write": {
+        "title": "Create and edit"
+      },
+      "task.read": {
+        "title": "Read"
+      },
+      "task.shares": {
+        "title": "Shares"
+      },
+      "task.shares.read": {
+        "title": "Read"
+      },
+      "task.shares.share": {
+        "title": "Share"
+      },
+      "task.write": {
+        "title": "Create and edit"
+      },
+      "taxonomy": {
+        "title": "Taxonomy"
+      },
+      "taxonomy.activate": {
+        "title": "Activate"
+      },
+      "taxonomy.activate.write": {
+        "title": "Create and edit"
+      },
+      "taxonomy.deactivate": {
+        "title": "Deactivate"
+      },
+      "taxonomy.deactivate.write": {
+        "title": "Create and edit"
+      },
+      "taxonomy.delete": {
+        "title": "Delete"
+      },
+      "taxonomy.read": {
+        "title": "Read"
+      },
+      "taxonomy.write": {
+        "title": "Create and edit"
+      },
+      "taxonomy.zip": {
+        "title": "Zip"
+      },
+      "taxonomy.zip.write": {
+        "title": "Create and edit"
+      },
+      "user": {
+        "title": "Account"
+      },
+      "user.admin": {
+        "title": "Manage"
+      },
+      "user.avatar": {
+        "title": "Avatar"
+      },
+      "user.avatar.read": {
+        "title": "Read"
+      },
+      "user.current": {
+        "title": "Current"
+      },
+      "user.current.attachments": {
+        "title": "Attachments"
+      },
+      "user.current.attachments.write": {
+        "title": "Create and edit"
+      },
+      "user.current.read": {
+        "title": "Read"
+      },
+      "user.delete": {
+        "title": "Delete"
+      },
+      "user.force": {
+        "title": "Force"
+      },
+      "user.force.delete": {
+        "title": "Delete"
+      },
+      "user.key": {
+        "title": "Key"
+      },
+      "user.key.delete": {
+        "title": "Delete"
+      },
+      "user.key.read": {
+        "title": "Read"
+      },
+      "user.key.renew": {
+        "title": "Renew"
+      },
+      "user.key.renew.admin": {
+        "title": "Manage"
+      },
+      "user.login": {
+        "title": "Login"
+      },
+      "user.login.admin": {
+        "title": "Manage"
+      },
+      "user.organisations": {
+        "title": "Organisations"
+      },
+      "user.organisations.admin": {
+        "title": "Manage"
+      },
+      "user.password": {
+        "title": "Password"
+      },
+      "user.password.admin": {
+        "title": "Manage"
+      },
+      "user.password.change": {
+        "title": "Change"
+      },
+      "user.password.change.admin": {
+        "title": "Manage"
+      },
+      "user.read": {
+        "title": "Read"
+      },
+      "views": {
+        "title": "Views"
+      },
+      "views.delete": {
+        "title": "Delete"
+      },
+      "views.read": {
+        "title": "Read"
+      },
+      "views.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://example.com",
+            "path": "/api",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Your TheHive origin (https://host)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "TheHive",
   "http": {
     "operations": {
-      "Activate License": {"action":"write.license","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/license/{licenseId}/activate","scope":{"licenseId":{"from":"path","at":"licenseId"}}},
-      "Activate Taxonomy": {"action":"write.taxonomy","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/taxonomy/{taxonomyId}/activate","scope":{"taxonomyId":{"from":"path","at":"taxonomyId"}}},
-      "Add Alert Attachment": {"action":"write.attachments","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/attachments","body":"any","scope":{"alertId":{"from":"path","at":"alertId"}}},
-      "Add Attachment to Organisation": {"action":"write.attachment","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/attachment","body":"any","scope":{}},
-      "Add License and Activate": {"action":"write.license","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/license","body":"json","scope":{}},
-      "Add Temporary Attachment": {"action":"write.attachments","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/user/current/attachments","body":"any","scope":{}},
-      "Add attachments to Task Log": {"action":"write.attachments","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/log/{logId}/attachments","body":"any","scope":{"logId":{"from":"path","at":"logId"}}},
-      "Add link with an external URL": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/link/external/add","body":"json","scope":{"caseId":{"from":"path","at":"caseId"},"url":{"from":"body","at":"/url"}}},
-      "Add link with another case": {"action":"write.add","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/link/case/add","body":"json","scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "Add new config": {"action":"admin.config","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/email-intake/config","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "Apply CaseTemplate on existing cases": {"action":"write.case_template","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/_bulk/caseTemplate","body":"json","scope":{}},
-      "Available providers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/email-intake/providers","scope":{}},
-      "Bulk link Organisations": {"action":"share.links","effects":["share"],"method":"PUT","origin":"{origin}","path":"/api/v1/organisation/{orgId}/links","body":"json","scope":{"orgId":{"from":"path","at":"orgId"},"request":{"from":"body","at":"","type":"object"}},"grant":["orgId"]},
-      "Cancel current integrity check": {"action":"write.cancel","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/admin/check/cancel","scope":{}},
-      "Change Case owning organisation": {"action":"write.owner","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/owner","body":"json","scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "Change Dashboard ownership": {"action":"write.owner","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/dashboard/{dashboardId}/owner","body":"json","scope":{"dashboardId":{"from":"path","at":"dashboardId"},"user":{"from":"body","at":"/user"}}},
-      "Change user password": {"action":"write.change","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/user/{userId}/password/change","body":"json","scope":{"userId":{"from":"path","at":"userId"}}},
-      "Create Alert": {"action":"write.alert","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert","body":"any","scope":{}},
-      "Create AlertStatus": {"action":"write.alert_status","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alertStatus","body":"json","scope":{}},
-      "Create Analyzer Template": {"action":"write.template","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/cortex/analyzer/template","body":"json","scope":{"analyzerId":{"from":"body","at":"/analyzerId"}}},
-      "Create Attachment to Case Report Template": {"action":"write.attachment","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/caseReportTemplate/{templateId}/attachment","body":"any","scope":{"templateId":{"from":"path","at":"templateId"}}},
-      "Create Case from Alert": {"action":"write.case","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/case","body":"any","scope":{"alertId":{"from":"path","at":"alertId"}}},
-      "Create CaseStatus": {"action":"write.case_status","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/caseStatus","body":"json","scope":{}},
-      "Create CaseTemplate": {"action":"write.case_template","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/caseTemplate","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "Create Catalog of TTP": {"action":"write.catalog","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/catalog","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "Create Comment in Alert": {"action":"send.comment","effects":["send"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/comment","body":"json","scope":{"alertId":{"from":"path","at":"alertId"},"request":{"from":"body","at":"","type":"object"}},"grant":["alertId"]},
-      "Create Comment in Case": {"action":"send.comment","effects":["send"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/comment","body":"json","scope":{"caseId":{"from":"path","at":"caseId"},"request":{"from":"body","at":"","type":"object"}},"grant":["caseId"]},
-      "Create Cortex job": {"action":"execute.job","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/cortex/job","body":"json","scope":{"analyzerId":{"from":"body","at":"/analyzerId"},"artifactId":{"from":"body","at":"/artifactId"},"cortexId":{"from":"body","at":"/cortexId"}}},
-      "Create Custom Event": {"action":"write.custom_event","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/customEvent","body":"json","scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "Create CustomField": {"action":"write.custom_field","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/customField","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "Create Dashboard": {"action":"write.dashboard","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/dashboard","body":"json","scope":{}},
-      "Create Function": {"action":"execute.function","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v1/function","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "Create Observable Type": {"action":"write.type","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/observable/type","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "Create Observable in Alert": {"action":"write.observable","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/observable","params":["dataType"],"body":"any","scope":{"alertId":{"from":"path","at":"alertId"}}},
-      "Create Organisation": {"action":"write.organisation","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/organisation","body":"any","scope":{}},
-      "Create Procedure for Alert": {"action":"write.procedure","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/procedure","body":"json","scope":{"alertId":{"from":"path","at":"alertId"},"patternId":{"from":"body","at":"/patternId"}}},
-      "Create Procedure for Case": {"action":"write.procedure","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/procedure","body":"json","scope":{"caseId":{"from":"path","at":"caseId"},"patternId":{"from":"body","at":"/patternId"}}},
-      "Create Profile": {"action":"write.profile","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/profile","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "Create Task Log": {"action":"write.log","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/task/{taskId}/log","body":"any","scope":{"taskId":{"from":"path","at":"taskId"}}},
-      "Create Task in Case": {"action":"write.task","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/task","body":"json","scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "Create Taxonomy": {"action":"write.taxonomy","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/taxonomy","body":"json","scope":{}},
-      "Create User": {"action":"admin.user","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v1/user","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "Create a Page": {"action":"write.page","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/page","body":"json","scope":{}},
-      "Create a Page Template": {"action":"write.page_template","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/pageTemplate","body":"json","scope":{}},
-      "Create a Page in a Case": {"action":"write.page","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/page","body":"json","scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "Create a stream of audits": {"action":"write.stream","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/stream","scope":{}},
-      "Create an action": {"action":"execute.action","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/cortex/action","body":"json","scope":{"objectId":{"from":"body","at":"/objectId"},"responderId":{"from":"body","at":"/responderId"}}},
-      "Create an alert feeder": {"action":"write.alert_feeder","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/alert-feeder","body":"json","scope":{"functionName":{"from":"body","at":"/functionName"},"name":{"from":"body","at":"/name"},"url":{"from":"body","at":"/url"}}},
-      "Create case": {"action":"write.case","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case","body":"json","scope":{}},
-      "Create case report template": {"action":"write.case_report_template","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/caseReportTemplate","body":"json","scope":{}},
-      "Create several Procedures for Alert": {"action":"write.procedures","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/procedures","body":"json","scope":{"alertId":{"from":"path","at":"alertId"}}},
-      "Create several Procedures for Case": {"action":"write.procedures","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/procedures","body":"json","scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "Create views": {"action":"write.views","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/views","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "Deactivate Taxonomy": {"action":"write.taxonomy","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/taxonomy/{taxonomyId}/deactivate","scope":{"taxonomyId":{"from":"path","at":"taxonomyId"}}},
-      "Delete Alert": {"action":"delete.alert","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/alert/{alertId}","scope":{"alertId":{"from":"path","at":"alertId"}}},
-      "Delete Alert Attachment": {"action":"delete.attachment","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/alert/{alertId}/attachment/{attachmentId}","scope":{"alertId":{"from":"path","at":"alertId"},"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Delete Alert in bulk": {"action":"write.bulk","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/delete/_bulk","body":"json","scope":{}},
-      "Delete AlertStatus": {"action":"delete.alert_status","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/alertStatus/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "Delete Analyzer Template": {"action":"delete.template","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/connector/cortex/analyzer/template/{analyzerTemplateId}","scope":{"analyzerTemplateId":{"from":"path","at":"analyzerTemplateId"}}},
-      "Delete Attachment": {"action":"delete.attachment","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/attachment/{attachmentId}","scope":{"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Delete Attachment for Case Report Template": {"action":"delete.attachment","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/caseReportTemplate/{templateId}/attachment/{attachmentId}","scope":{"templateId":{"from":"path","at":"templateId"},"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Delete Case Attachment": {"action":"delete.attachment","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/case/{caseId}/attachment/{attachmentId}","scope":{"caseId":{"from":"path","at":"caseId"},"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Delete Case Report": {"action":"delete.case_report","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/caseReport/{reportId}","scope":{"reportId":{"from":"path","at":"reportId"}}},
-      "Delete CaseStatus": {"action":"delete.case_status","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/caseStatus/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "Delete CaseTemplate": {"action":"delete.case_template","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/caseTemplate/{caseTemplateNameOrId}","scope":{"caseTemplateNameOrId":{"from":"path","at":"caseTemplateNameOrId"}}},
-      "Delete Comment": {"action":"delete.comment","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/comment/{commentId}","scope":{"commentId":{"from":"path","at":"commentId"}}},
-      "Delete CustomField": {"action":"delete.custom_field","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/customField/{customFieldId}","params":["force"],"scope":{"customFieldId":{"from":"path","at":"customFieldId"}}},
-      "Delete Dashboard": {"action":"delete.dashboard","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/dashboard/{dashboardId}","scope":{"dashboardId":{"from":"path","at":"dashboardId"}}},
-      "Delete Function": {"action":"delete.function","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/function/{functionId}","scope":{"functionId":{"from":"path","at":"functionId"}}},
-      "Delete Observable": {"action":"delete.observable","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/observable/{observableId}","scope":{"observableId":{"from":"path","at":"observableId"}}},
-      "Delete Observable Type": {"action":"delete.type","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/observable/type/{typeId}","scope":{"typeId":{"from":"path","at":"typeId"}}},
-      "Delete Pattern": {"action":"delete.pattern","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/pattern/{patternId}","scope":{"patternId":{"from":"path","at":"patternId"}}},
-      "Delete Procedure": {"action":"delete.procedure","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/procedure/{procedureId}","scope":{"procedureId":{"from":"path","at":"procedureId"}}},
-      "Delete Procedures in bulk": {"action":"write.bulk","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/procedure/delete/_bulk","body":"json","scope":{}},
-      "Delete Profile": {"action":"delete.profile","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/profile/{profileId}","scope":{"profileId":{"from":"path","at":"profileId"}}},
-      "Delete Shares by shareId": {"action":"delete.shares","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/case/shares","body":"json","scope":{}},
-      "Delete Tag": {"action":"delete.tag","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/tag/{tagId}","scope":{"tagId":{"from":"path","at":"tagId"}}},
-      "Delete Task": {"action":"delete.task","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/task/{taskId}","scope":{"taskId":{"from":"path","at":"taskId"}}},
-      "Delete Task Log": {"action":"delete.log","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/log/{logId}","scope":{"logId":{"from":"path","at":"logId"}}},
-      "Delete Taxonomy": {"action":"delete.taxonomy","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/taxonomy/{taxonomyId}","scope":{"taxonomyId":{"from":"path","at":"taxonomyId"}}},
-      "Delete User": {"action":"delete.user","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/user/{userId}/force","params":["organisation"],"scope":{"userId":{"from":"path","at":"userId"}}},
-      "Delete a Catalog of TTP": {"action":"delete.catalog","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/catalog/{catalogId}","scope":{"catalogId":{"from":"path","at":"catalogId"}}},
-      "Delete a Custom Event": {"action":"delete.custom_event","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/customEvent/{eventId}","scope":{"eventId":{"from":"path","at":"eventId"}}},
-      "Delete a Page": {"action":"delete.page","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/page/{pageId}","scope":{"pageId":{"from":"path","at":"pageId"}}},
-      "Delete a Page Template": {"action":"delete.page_template","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/pageTemplate/{pageTemplateId}","scope":{"pageTemplateId":{"from":"path","at":"pageTemplateId"}}},
-      "Delete a Page in a Case": {"action":"delete.page","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/case/{caseId}/page/{pageId}","scope":{"caseId":{"from":"path","at":"caseId"},"pageId":{"from":"path","at":"pageId"}}},
-      "Delete a custom field": {"action":"delete.custom_field","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/case/customField/{cfId}","scope":{"cfId":{"from":"path","at":"cfId"}}},
-      "Delete an alert feeder": {"action":"delete.alert_feeder","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/connector/alert-feeder/{alertFeederName}","scope":{"alertFeederName":{"from":"path","at":"alertFeederName"}}},
-      "Delete attachment from Task Log": {"action":"delete.attachments","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/log/{logId}/attachments/{attachmentId}","scope":{"logId":{"from":"path","at":"logId"},"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Delete branding attachment": {"action":"delete.assets","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/branding/assets/{kind}","scope":{"kind":{"from":"path","at":"kind"}}},
-      "Delete case": {"action":"delete.case","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/case/{idOrName}","scope":{"idOrName":{"from":"path","at":"idOrName"}}},
-      "Delete case report template": {"action":"delete.case_report_template","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/caseReportTemplate/{idOrName}","scope":{"idOrName":{"from":"path","at":"idOrName"}}},
-      "Delete config": {"action":"delete.config","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/connector/email-intake/config/{configId}","scope":{"configId":{"from":"path","at":"configId"}}},
-      "Delete link with an another case": {"action":"delete.remove","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/link/case/remove","body":"json","scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "Delete link with an external URL": {"action":"delete.remove","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/link/external/remove","body":"json","scope":{"caseId":{"from":"path","at":"caseId"},"url":{"from":"body","at":"/url"}}},
-      "Delete views": {"action":"delete.views","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/views/{viewsId}","scope":{"viewsId":{"from":"path","at":"viewsId"}}},
-      "Describe a model": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/describe/{model}","scope":{"model":{"from":"path","at":"model"}}},
-      "Download Alert Attachment": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/alert/{alertId}/attachment/{attachmentId}/download","scope":{"alertId":{"from":"path","at":"alertId"},"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Download Attachment": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/attachment/{attachmentId}/download","scope":{"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Download Attachment for Case Report Template": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/caseReportTemplate/{templateId}/attachment/{attachmentId}/download","scope":{"templateId":{"from":"path","at":"templateId"},"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Download Attachment from case": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/case/{caseId}/attachment/{attachmentId}/download","scope":{"caseId":{"from":"path","at":"caseId"},"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Download Attachment from log": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/log/{logId}/attachment/{attachmentId}/download","scope":{"logId":{"from":"path","at":"logId"},"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Download Attachment from observable": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/observable/{observableId}/attachment/{attachmentId}/download","params":["asZip"],"scope":{"observableId":{"from":"path","at":"observableId"},"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Download Case Report": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/caseReport/{reportId}/download","scope":{"reportId":{"from":"path","at":"reportId"}}},
-      "Export API - unstable route": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/export","params":["query","options"],"scope":{}},
-      "Export Case as archive": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/case/{caseId}/export","params":["password"],"scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "Export Case to MISP": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/misp/export/{caseId}/{mispName}","scope":{"caseId":{"from":"path","at":"caseId"},"mispName":{"from":"path","at":"mispName"}}},
-      "Follow Alert": {"action":"write.alert","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/follow","scope":{"alertId":{"from":"path","at":"alertId"}}},
-      "GW: Set authorization code": {"action":"write.authorization_code","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/email-intake/config/authorizationCode","body":"json","scope":{}},
-      "Generate Case Report": {"action":"generate.report","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/report","body":"json","scope":{"caseId":{"from":"path","at":"caseId"},"caseReportTemplateId":{"from":"body","at":"/caseReportTemplateId"}}},
-      "Get Alert": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/alert/{alertId}","scope":{"alertId":{"from":"path","at":"alertId"}}},
-      "Get Alert Attachment": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/alert/{alertId}/attachment/{attachmentId}","scope":{"alertId":{"from":"path","at":"alertId"},"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Get Analyzer Template content": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/cortex/analyzer/template/content/{analyzerId}","scope":{"analyzerId":{"from":"path","at":"analyzerId"}}},
-      "Get Analyzer by id": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/cortex/analyzer/{analyzerId}","scope":{"analyzerId":{"from":"path","at":"analyzerId"}}},
-      "Get Attachment": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/attachment/{attachmentId}","scope":{"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Get Attachment for Case Report Template": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/caseReportTemplate/{templateId}/attachment/{attachmentId}","scope":{"templateId":{"from":"path","at":"templateId"},"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Get Attachment from case": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/case/{caseId}/attachment/{attachmentId}","scope":{"caseId":{"from":"path","at":"caseId"},"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Get Attachment from log": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/log/{caseId}/attachment/{attachmentId}","scope":{"caseId":{"from":"path","at":"caseId"},"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Get Attachment from observable": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/observable/{observableId}/attachment/{attachmentId}","scope":{"observableId":{"from":"path","at":"observableId"},"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Get Case Patterns": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/pattern/case/{caseId}","scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "Get Case Timeline": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/case/{caseId}/timeline","scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "Get CaseTemplate": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/caseTemplate/{caseTemplateNameOrId}","scope":{"caseTemplateNameOrId":{"from":"path","at":"caseTemplateNameOrId"}}},
-      "Get Cortex Job": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/cortex/job/{jobId}","scope":{"jobId":{"from":"path","at":"jobId"}}},
-      "Get Dashboard": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/dashboard/{dashboardId}","scope":{"dashboardId":{"from":"path","at":"dashboardId"}}},
-      "Get Function": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/function/{functionId}","scope":{"functionId":{"from":"path","at":"functionId"}}},
-      "Get License": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/license/{licenseId}","scope":{"licenseId":{"from":"path","at":"licenseId"}}},
-      "Get MISP status": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/misp/status","scope":{}},
-      "Get Observable": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/observable/{observableId}","scope":{"observableId":{"from":"path","at":"observableId"}}},
-      "Get Observable Type": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/observable/type/{typeId}","scope":{"typeId":{"from":"path","at":"typeId"}}},
-      "Get Organisation": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/organisation/{orgId}","scope":{"orgId":{"from":"path","at":"orgId"}}},
-      "Get Organisation avatar": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/organisation/{orgId}/avatar/{fileHash}","scope":{"orgId":{"from":"path","at":"orgId"},"fileHash":{"from":"path","at":"fileHash"}}},
-      "Get Pattern": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/pattern/{patternId}","scope":{"patternId":{"from":"path","at":"patternId"}}},
-      "Get Profile": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/profile/{profileId}","scope":{"profileId":{"from":"path","at":"profileId"}}},
-      "Get TOTP secret": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/auth/totp/get","scope":{}},
-      "Get Tag": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/tag/{tagId}","scope":{"tagId":{"from":"path","at":"tagId"}}},
-      "Get Task": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/task/{taskId}","scope":{"taskId":{"from":"path","at":"taskId"}}},
-      "Get Taxonomy": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/taxonomy/{taxonomyId}","scope":{"taxonomyId":{"from":"path","at":"taxonomyId"}}},
-      "Get User": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/user/{userId}","scope":{"userId":{"from":"path","at":"userId"}}},
-      "Get User api key": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/user/{userId}/key","scope":{"userId":{"from":"path","at":"userId"}}},
-      "Get User avatar": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/user/{userId}/avatar/{file}","scope":{"userId":{"from":"path","at":"userId"},"file":{"from":"path","at":"file"}}},
-      "Get a stream of audits": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/stream/{streamId}","scope":{"streamId":{"from":"path","at":"streamId"}}},
-      "Get action by entity": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/cortex/action/{entityType}/{entityId}","scope":{"entityType":{"from":"path","at":"entityType"},"entityId":{"from":"path","at":"entityId"}}},
-      "Get alert feeders": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/alert-feeder","scope":{}},
-      "Get all link types": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/case/link/types","scope":{}},
-      "Get branding": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/branding","scope":{}},
-      "Get branding attachment": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/branding/assets/{kind}","scope":{"kind":{"from":"path","at":"kind"}}},
-      "Get case": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/case/{idOrName}","scope":{"idOrName":{"from":"path","at":"idOrName"}}},
-      "Get case report template": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/caseReportTemplate/{templateId}","scope":{"templateId":{"from":"path","at":"templateId"}}},
-      "Get check and index stats": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/admin/stats","scope":{}},
-      "Get check stats": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/admin/check/stats","scope":{}},
-      "Get config": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/email-intake/config/{configId}","scope":{"configId":{"from":"path","at":"configId"}}},
-      "Get configs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/email-intake/configs","scope":{}},
-      "Get current password policy": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/auth/local/passwordPolicy","scope":{}},
-      "Get documentation for the context object": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/function/_context/documentation","scope":{}},
-      "Get export fields - unstable route": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/export/_fields","scope":{}},
-      "Get flow of audit": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/flow","params":["rootId","count"],"scope":{}},
-      "Get index status": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/admin/index/status","scope":{}},
-      "Get mailbox folders": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/email-intake/folders","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "Get platform public status": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/status/public","scope":{}},
-      "Get platform status": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/status","params":["verbose"],"scope":{}},
-      "Get similar cases": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/case/{caseId}/links","scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "Get similar observables between a case and another case or alert": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/case/{caseId}/similar/{alertOrCaseId}/observables","scope":{"caseId":{"from":"path","at":"caseId"},"alertOrCaseId":{"from":"path","at":"alertOrCaseId"}}},
-      "Get similar observables between alert and another alert or case": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/alert/{alertId}/similar/{alertOrCaseId}/observables","scope":{"alertId":{"from":"path","at":"alertId"},"alertOrCaseId":{"from":"path","at":"alertOrCaseId"}}},
-      "Get user configuration item": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/config/user/{path}","scope":{"path":{"from":"path","at":"path"}}},
-      "Get views": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/views/{viewsId}","scope":{"viewsId":{"from":"path","at":"viewsId"}}},
-      "Import Alert observables and procedures in Case": {"action":"write.import","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/import/{caseId}","scope":{"alertId":{"from":"path","at":"alertId"},"caseId":{"from":"path","at":"caseId"}}},
-      "Import Analyzer Templates": {"action":"write.import","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/cortex/analyzer/template/_import","body":"any","scope":{}},
-      "Import Case from MISP": {"action":"write.import","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/misp/case/import","body":"any","scope":{}},
-      "Import Case from file": {"action":"write.import","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/import","body":"any","scope":{}},
-      "Import MITRE Att&ck file": {"action":"write.attack","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/pattern/import/attack","body":"any","scope":{}},
-      "Import from zip file": {"action":"write.import_zip","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/taxonomy/import-zip","body":"any","scope":{}},
-      "Invoke Function": {"action":"execute.function","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v1/function/{function}","params":["dryRun"],"body":"any","scope":{"function":{"from":"path","at":"function"}}},
-      "Invoke Function on an object": {"action":"execute.function","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v1/function/{function}/{objectType}/{objectIdOrName}","params":["dryRun","sync"],"scope":{"function":{"from":"path","at":"function"},"objectType":{"from":"path","at":"objectType"},"objectIdOrName":{"from":"path","at":"objectIdOrName"}}},
-      "Link Organisations": {"action":"share.link","effects":["share"],"method":"PUT","origin":"{origin}","path":"/api/v1/organisation/{orgId}/link/{otherOrgId}","body":"any","scope":{"orgId":{"from":"path","at":"orgId"},"otherOrgId":{"from":"path","at":"otherOrgId"}}},
-      "Link PageTemplates to a CaseTemplate": {"action":"share.link","effects":["share"],"method":"PUT","origin":"{origin}","path":"/api/v1/caseTemplate/{caseTemplateNameOrId}/pageTemplate/link","body":"json","scope":{"caseTemplateNameOrId":{"from":"path","at":"caseTemplateNameOrId"},"request":{"from":"body","at":"","type":"object"}},"grant":["caseTemplateNameOrId"]},
-      "List Analyzers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/cortex/analyzer","params":["range"],"scope":{}},
-      "List Analyzers by type": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/cortex/analyzer/type/{dataType}","scope":{"dataType":{"from":"path","at":"dataType"}}},
-      "List CustomFields": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/customField","scope":{}},
-      "List Organisation links": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/organisation/{orgId}/links","scope":{"orgId":{"from":"path","at":"orgId"}}},
-      "List Shares of Case": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/case/{caseId}/shares","scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "List Shares of Task": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/task/{taskId}/shares","scope":{"taskId":{"from":"path","at":"taskId"}}},
-      "List Sharing Profiles": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/sharingProfile","scope":{}},
-      "List all licenses": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/license","scope":{}},
-      "List permissions": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/permission","scope":{}},
-      "List responders": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/cortex/responder/{entityType}/{entityId}","scope":{"entityType":{"from":"path","at":"entityType"},"entityId":{"from":"path","at":"entityId"}}},
-      "List supported formats": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/caseReport/formats","scope":{}},
-      "List user configuration items": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/config/user","params":["path"],"scope":{}},
-      "Lock User": {"action":"delete.user","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/user/{userId}","scope":{"userId":{"from":"path","at":"userId"}}},
-      "Login": {"action":"write.login","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/login","body":"json","scope":{"user":{"from":"body","at":"/user"}}},
-      "Logout GET": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/logout","scope":{}},
-      "Logout POST": {"action":"write.logout","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/logout","scope":{}},
-      "Manage Case access": {"action":"write.access","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/access","body":"json","scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "Merge Alert with Case": {"action":"write.merge","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/merge/{caseId}","scope":{"alertId":{"from":"path","at":"alertId"},"caseId":{"from":"path","at":"caseId"}}},
-      "Merge bulk Alerts with Case": {"action":"write.bulk","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/merge/_bulk","body":"json","scope":{"caseId":{"from":"body","at":"/caseId"}}},
-      "Merge cases": {"action":"write.merge","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/_merge/{ids}","params":["dataType"],"scope":{"ids":{"from":"path","at":"ids"}}},
-      "Merge similar observables of this case": {"action":"write.observable","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/observable/_merge","scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "Query API": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v1/query","body":"json","scope":{}},
-      "Rebuild index": {"action":"write.rebuild","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/admin/index/{name}/rebuild","scope":{"name":{"from":"path","at":"name"}}},
-      "Reindex data": {"action":"write.reindex","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/admin/index/{name}/reindex","scope":{"name":{"from":"path","at":"name"}}},
-      "Remove User api key": {"action":"delete.key","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/user/{userId}/key","scope":{"userId":{"from":"path","at":"userId"}}},
-      "Remove a Share from Case": {"action":"delete.share","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/case/share/{shareId}","scope":{"shareId":{"from":"path","at":"shareId"}}},
-      "Render Case Report Template": {"action":"write.render","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/caseReport/render","body":"json","scope":{}},
-      "Render Case Report Template (GET)": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/caseReport/render","params":["format","caseReportTemplateId","caseId","maxElements"],"scope":{"caseReportTemplateId":{"from":"query","at":"caseReportTemplateId"}}},
-      "Renew User api key": {"action":"write.renew","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/user/{userId}/key/renew","scope":{"userId":{"from":"path","at":"userId"}}},
-      "Repair schema": {"action":"write.repair","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/admin/schema/repair/{schemaName}","params":["select","filter"],"scope":{"schemaName":{"from":"path","at":"schemaName"}}},
-      "Run an alert feeder": {"action":"execute.run","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/alert-feeder/run/{alertFeederName}","params":["dryRun"],"scope":{"alertFeederName":{"from":"path","at":"alertFeederName"}}},
-      "Schema info": {"action":"write.info","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/admin/schema/info/{schemaName}","params":["select","filter"],"scope":{"schemaName":{"from":"path","at":"schemaName"}}},
-      "Set TOTP secret": {"action":"write.set","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/auth/totp/set","body":"json","scope":{}},
-      "Set Task as done by organisation": {"action":"write.action_done","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/task/{taskId}/actionDone/{orgId}","scope":{"taskId":{"from":"path","at":"taskId"},"orgId":{"from":"path","at":"orgId"}}},
-      "Set Task as required by organisation": {"action":"write.action_required","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/task/{taskId}/actionRequired/{orgId}","scope":{"taskId":{"from":"path","at":"taskId"},"orgId":{"from":"path","at":"orgId"}}},
-      "Set User Organisations": {"action":"write.organisations","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/user/{userId}/organisations","body":"json","scope":{"userId":{"from":"path","at":"userId"}}},
-      "Set branding": {"action":"write.branding","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/branding","body":"any","scope":{}},
-      "Set shares for Case": {"action":"write.case","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/case/{caseId}/shares","body":"json","scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "Set user configuration item": {"action":"admin.user","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/v1/config/user/{path}","body":"json","scope":{"path":{"from":"path","at":"path"}}},
-      "Set user login": {"action":"write.set","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/user/{userId}/login/set","body":"json","scope":{"userId":{"from":"path","at":"userId"}}},
-      "Set user password": {"action":"write.set","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/user/{userId}/password/set","body":"json","scope":{"userId":{"from":"path","at":"userId"}}},
-      "Share a Case": {"action":"share.case","effects":["share"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/shares","body":"json","scope":{"caseId":{"from":"path","at":"caseId"},"request":{"from":"body","at":"","type":"object"}},"grant":["caseId"]},
-      "Share a Task": {"action":"share.task","effects":["share"],"method":"POST","origin":"{origin}","path":"/api/v1/task/{taskId}/shares","body":"json","scope":{"taskId":{"from":"path","at":"taskId"},"request":{"from":"body","at":"","type":"object"}},"grant":["taskId"]},
-      "Share an Observable": {"action":"share.observable","effects":["share"],"method":"POST","origin":"{origin}","path":"/api/v1/observable/{observableId}/shares","body":"json","scope":{"observableId":{"from":"path","at":"observableId"},"request":{"from":"body","at":"","type":"object"}},"grant":["observableId"]},
-      "Sync": {"action":"write.sync","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/email-intake/sync","scope":{}},
-      "Sync with MISP servers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/misp/_syncAlerts","scope":{}},
-      "Task actions required": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/task/{taskId}/actionRequired","scope":{"taskId":{"from":"path","at":"taskId"}}},
-      "Test an alert feeder": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/alert-feeder/test","body":"json","scope":{"name":{"from":"body","at":"/name"},"url":{"from":"body","at":"/url"}}},
-      "Test config": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/email-intake/config/test","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "Trigger dedup integrity check": {"action":"execute.dedup","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v1/admin/check/{name}/dedup/trigger","scope":{"name":{"from":"path","at":"name"}}},
-      "Trigger global integrity check": {"action":"execute.global","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v1/admin/check/{name}/global/trigger","scope":{"name":{"from":"path","at":"name"}}},
-      "Trigger integrity check": {"action":"execute.check","effects":["execute"],"method":"PUT","origin":"{origin}","path":"/api/v1/admin/check/{name}/trigger","scope":{"name":{"from":"path","at":"name"}}},
-      "Unfollow Alert": {"action":"write.alert","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/unfollow","scope":{"alertId":{"from":"path","at":"alertId"}}},
-      "Unlink Organisations": {"action":"delete.link","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/organisation/{orgId}/link/{otherOrgId}","scope":{"orgId":{"from":"path","at":"orgId"},"otherOrgId":{"from":"path","at":"otherOrgId"}}},
-      "Unlink alert from case": {"action":"delete.alert","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/case/{caseId}/alert/{alertId}","scope":{"caseId":{"from":"path","at":"caseId"},"alertId":{"from":"path","at":"alertId"}}},
-      "Unset TOTP secret": {"action":"write.unset","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/auth/totp/unset","scope":{}},
-      "Unset TOTP secret for user": {"action":"write.unset","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/auth/totp/unset/{user}","scope":{"user":{"from":"path","at":"user"}}},
-      "Unshare a Case": {"action":"delete.case","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/case/{caseId}/shares","body":"json","scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "Unshare a Task": {"action":"delete.task","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/task/{taskId}/shares","body":"json","scope":{"taskId":{"from":"path","at":"taskId"}}},
-      "Unshare an Observable": {"action":"delete.observable","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/observable/{observableId}/shares","body":"json","scope":{"observableId":{"from":"path","at":"observableId"}}},
-      "Update Alert": {"action":"write.alert","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/alert/{alertId}","body":"json","scope":{"alertId":{"from":"path","at":"alertId"}}},
-      "Update AlertStatus": {"action":"write.alert_status","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/alertStatus/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "Update Analyzer Template": {"action":"write.template","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/connector/cortex/analyzer/template/{analyzerTemplateId}","body":"json","scope":{"analyzerTemplateId":{"from":"path","at":"analyzerTemplateId"}}},
-      "Update Attachment": {"action":"write.attachment","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/case/{caseId}/attachment/{attachmentId}","body":"json","scope":{"caseId":{"from":"path","at":"caseId"},"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "Update Case Report": {"action":"write.case_report","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/caseReport/{reportId}","body":"any","scope":{"reportId":{"from":"path","at":"reportId"}}},
-      "Update CaseStatus": {"action":"write.case_status","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/caseStatus/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "Update CaseTemplate": {"action":"write.case_template","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/caseTemplate/{caseTemplateNameOrId}","body":"json","scope":{"caseTemplateNameOrId":{"from":"path","at":"caseTemplateNameOrId"}}},
-      "Update Catalog of TTP": {"action":"write.catalog","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/catalog/{catalogId}","body":"json","scope":{"catalogId":{"from":"path","at":"catalogId"}}},
-      "Update Comment": {"action":"write.comment","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/comment/{commentId}","body":"json","scope":{"commentId":{"from":"path","at":"commentId"}}},
-      "Update CustomField": {"action":"write.custom_field","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/customField/{customFieldId}","body":"json","scope":{"customFieldId":{"from":"path","at":"customFieldId"}}},
-      "Update Dashboard": {"action":"write.dashboard","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/dashboard/{dashboardId}","body":"json","scope":{"dashboardId":{"from":"path","at":"dashboardId"}}},
-      "Update Function": {"action":"write.function","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/function/{functionId}","body":"json","scope":{"functionId":{"from":"path","at":"functionId"}}},
-      "Update Log Level": {"action":"write.set","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/admin/log/set/{packageName}/{level}","scope":{"packageName":{"from":"path","at":"packageName"},"level":{"from":"path","at":"level"}}},
-      "Update Observable": {"action":"write.observable","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/observable/{observableId}","body":"json","scope":{"observableId":{"from":"path","at":"observableId"}}},
-      "Update Organisation": {"action":"write.organisation","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/organisation/{orgId}","body":"json","scope":{"orgId":{"from":"path","at":"orgId"}}},
-      "Update Procedure": {"action":"write.procedure","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/procedure/{procedureId}","body":"json","scope":{"procedureId":{"from":"path","at":"procedureId"}}},
-      "Update Profile": {"action":"write.profile","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/profile/{profileId}","body":"json","scope":{"profileId":{"from":"path","at":"profileId"}}},
-      "Update Tag": {"action":"write.tag","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/tag/{tagId}","body":"json","scope":{"tagId":{"from":"path","at":"tagId"}}},
-      "Update Task": {"action":"write.task","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/task/{taskId}","body":"json","scope":{"taskId":{"from":"path","at":"taskId"}}},
-      "Update Task Log": {"action":"write.log","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/log/{logId}","body":"json","scope":{"logId":{"from":"path","at":"logId"}}},
-      "Update User": {"action":"admin.user","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/v1/user/{userId}","body":"json","scope":{"userId":{"from":"path","at":"userId"}}},
-      "Update a Custom Event": {"action":"write.custom_event","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/customEvent/{eventId}","body":"json","scope":{"eventId":{"from":"path","at":"eventId"}}},
-      "Update a Page": {"action":"write.page","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/page/{pageId}","body":"json","scope":{"pageId":{"from":"path","at":"pageId"}}},
-      "Update a Page Template": {"action":"write.page_template","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/pageTemplate/{pageTemplateId}","body":"json","scope":{"pageTemplateId":{"from":"path","at":"pageTemplateId"}}},
-      "Update a Page in a Case": {"action":"write.page","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/case/{caseId}/page/{pageId}","body":"json","scope":{"caseId":{"from":"path","at":"caseId"},"pageId":{"from":"path","at":"pageId"}}},
-      "Update a Share": {"action":"share.share","effects":["share"],"method":"PATCH","origin":"{origin}","path":"/api/v1/case/share/{shareId}","body":"json","scope":{"shareId":{"from":"path","at":"shareId"},"request":{"from":"body","at":"","type":"object"}},"grant":["shareId"]},
-      "Update an alert feeder": {"action":"write.alert_feeder","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/connector/alert-feeder/{alertFeederName}","body":"json","scope":{"alertFeederName":{"from":"path","at":"alertFeederName"},"url":{"from":"body","at":"/url"}}},
-      "Update case": {"action":"write.case","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/case/{idOrName}","body":"json","scope":{"idOrName":{"from":"path","at":"idOrName"}}},
-      "Update case report template": {"action":"write.case_report_template","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/caseReportTemplate/{idOrName}","body":"json","scope":{"idOrName":{"from":"path","at":"idOrName"}}},
-      "Update config": {"action":"admin.config","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/v1/connector/email-intake/config/{configId}","body":"json","scope":{"configId":{"from":"path","at":"configId"},"name":{"from":"body","at":"/name"}}},
-      "Update configs": {"action":"admin.configs","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/v1/connector/email-intake/configs","body":"json","scope":{}},
-      "Update views": {"action":"write.views","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/views/{viewsId}","body":"json","scope":{"viewsId":{"from":"path","at":"viewsId"}}},
-      "Upload Case Report": {"action":"write.report","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/report/upload","body":"any","scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "View Case Report": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/caseReport/{reportId}/view","scope":{"reportId":{"from":"path","at":"reportId"}}}
+      "Activate License": {"action":"license.activate.admin","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/v1/license/{licenseId}/activate","scope":{"licenseId":{"at":"licenseId","from":"path"}}},
+      "Activate Taxonomy": {"action":"taxonomy.activate.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/taxonomy/{taxonomyId}/activate","scope":{"taxonomyId":{"at":"taxonomyId","from":"path"}}},
+      "Add Alert Attachment": {"action":"alert.attachments.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/attachments","scope":{"alertId":{"at":"alertId","from":"path"}}},
+      "Add Attachment to Case": {"action":"case.attachments.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/attachments","path_patterns":{"caseId":"[^_].*|_(?:|[^m].*|m(?:|[^e].*|e(?:|[^r].*|r(?:|[^g].*|g(?:|[^e].*|e.+)))))"},"scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "Add Attachment to Organisation": {"action":"attachment.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/attachment","scope":{}},
+      "Add License and Activate": {"action":"license.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v1/license","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "Add Temporary Attachment": {"action":"user.current.attachments.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/user/current/attachments","scope":{}},
+      "Add attachments to Task Log": {"action":"log.attachments.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/log/{logId}/attachments","scope":{"logId":{"at":"logId","from":"path"}}},
+      "Add link with an external URL": {"action":"case.link.external.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/link/external/add","scope":{"caseId":{"at":"caseId","from":"path"},"url":{"at":"/url","from":"body"}}},
+      "Add link with another case": {"action":"case.link.case.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/link/case/add","scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "Add new config": {"action":"connector.email_intake.config.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/email-intake/config","scope":{"name":{"at":"/name","from":"body"}}},
+      "Apply CaseTemplate on existing cases": {"action":"case.bulk.case_template.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/_bulk/caseTemplate","scope":{}},
+      "Available providers": {"action":"connector.email_intake.providers.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/email-intake/providers","scope":{}},
+      "Bulk Manage Case access": {"action":"case.bulk.access.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","path":"/api/v1/case/_bulk/access","scope":{"ids":{"at":"/ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "Bulk link Organisations": {"action":"organisation.links.share","body":"json","effects":["share"],"grant":["orgId"],"method":"PUT","origin":"{origin}","path":"/api/v1/organisation/{orgId}/links","scope":{"orgId":{"at":"orgId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "Bulk update Alert": {"action":"alert.bulk.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/alert/_bulk","scope":{"ids":{"at":"/ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "Bulk update case": {"action":"case.bulk.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/case/_bulk","scope":{"ids":{"at":"/ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "Cancel current integrity check": {"action":"admin.check.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/admin/check/cancel","scope":{}},
+      "Change Case owning organisation": {"action":"case.owner.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/owner","scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "Change Dashboard ownership": {"action":"dashboard.owner.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/dashboard/{dashboardId}/owner","scope":{"dashboardId":{"at":"dashboardId","from":"path"},"user":{"at":"/user","from":"body"}}},
+      "Change user password": {"action":"user.password.change.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v1/user/{userId}/password/change","scope":{"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "Create Alert": {"action":"alert.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert","scope":{}},
+      "Create AlertStatus": {"action":"alert_status.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alertStatus","scope":{}},
+      "Create Analyzer Template": {"action":"connector.cortex.analyzer.template.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/cortex/analyzer/template","scope":{"analyzerId":{"at":"/analyzerId","from":"body"}}},
+      "Create Attachment to Case Report Template": {"action":"case_report_template.attachment.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/caseReportTemplate/{templateId}/attachment","scope":{"templateId":{"at":"templateId","from":"path"}}},
+      "Create Case from Alert": {"action":"alert.case.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/case","scope":{"alertId":{"at":"alertId","from":"path"}}},
+      "Create CaseStatus": {"action":"case_status.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/caseStatus","scope":{}},
+      "Create CaseTemplate": {"action":"case_template.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/caseTemplate","scope":{"name":{"at":"/name","from":"body"}}},
+      "Create Catalog of TTP": {"action":"catalog.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/catalog","scope":{"name":{"at":"/name","from":"body"}}},
+      "Create Comment in Alert": {"action":"alert.comment.send","body":"json","effects":["send"],"grant":["alertId"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/comment","scope":{"alertId":{"at":"alertId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "Create Comment in Case": {"action":"case.comment.send","body":"json","effects":["send"],"grant":["caseId"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/comment","scope":{"caseId":{"at":"caseId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "Create Cortex job": {"action":"connector.cortex.job.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/cortex/job","scope":{"analyzerId":{"at":"/analyzerId","from":"body"},"artifactId":{"at":"/artifactId","from":"body"},"cortexId":{"at":"/cortexId","from":"body"}}},
+      "Create Cortex job (legacy path)": {"action":"connector.cortex.job.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/connector/cortex/job","scope":{"analyzerId":{"at":"/analyzerId","from":"body"},"artifactId":{"at":"/artifactId","from":"body"},"cortexId":{"at":"/cortexId","from":"body"}}},
+      "Create Cortex jobs in bulk": {"action":"connector.cortex.job.bulk.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/cortex/job/_bulk","scope":{"jobs":{"at":"/jobs","from":"body","type":"array"}}},
+      "Create Custom Event": {"action":"case.custom_event.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/customEvent","scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "Create CustomField": {"action":"custom_field.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/customField","scope":{"name":{"at":"/name","from":"body"}}},
+      "Create Dashboard": {"action":"dashboard.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/dashboard","scope":{}},
+      "Create Function": {"action":"function.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/function","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "Create Observable Type": {"action":"observable.type.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/observable/type","scope":{"name":{"at":"/name","from":"body"}}},
+      "Create Observable in Alert": {"action":"alert.observable.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["dataType"],"path":"/api/v1/alert/{alertId}/observable","scope":{"alertId":{"at":"alertId","from":"path"}}},
+      "Create Observable in Case": {"action":"case.observable.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["dataType"],"path":"/api/v1/case/{caseId}/observable","scope":{"caseId":{"at":"caseId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "Create Organisation": {"action":"organisation.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v1/organisation","scope":{}},
+      "Create Procedure for Alert": {"action":"alert.procedure.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/procedure","scope":{"alertId":{"at":"alertId","from":"path"},"patternId":{"at":"/patternId","from":"body"}}},
+      "Create Procedure for Case": {"action":"case.procedure.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/procedure","scope":{"caseId":{"at":"caseId","from":"path"},"patternId":{"at":"/patternId","from":"body"}}},
+      "Create Profile": {"action":"profile.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v1/profile","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "Create Task Log": {"action":"task.log.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/task/{taskId}/log","scope":{"taskId":{"at":"taskId","from":"path"}}},
+      "Create Task in Case": {"action":"case.task.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/task","scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "Create Taxonomy": {"action":"taxonomy.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/taxonomy","scope":{}},
+      "Create User": {"action":"user.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v1/user","scope":{"name":{"at":"/name","from":"body"}}},
+      "Create a Page": {"action":"page.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/page","scope":{}},
+      "Create a Page Template": {"action":"page_template.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/pageTemplate","scope":{}},
+      "Create a Page in a Case": {"action":"case.page.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/page","scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "Create a stream of audits": {"action":"stream.read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v1/stream","scope":{}},
+      "Create an action": {"action":"connector.cortex.action.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/cortex/action","scope":{"objectId":{"at":"/objectId","from":"body"},"responderId":{"at":"/responderId","from":"body"}}},
+      "Create an action (legacy path)": {"action":"connector.cortex.action.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/connector/cortex/action","scope":{"objectId":{"at":"/objectId","from":"body"},"responderId":{"at":"/responderId","from":"body"}}},
+      "Create an alert feeder": {"action":"connector.alert_feeder.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/alert-feeder","scope":{"functionName":{"at":"/functionName","from":"body"},"name":{"at":"/name","from":"body"},"url":{"at":"/url","from":"body"}}},
+      "Create case": {"action":"case.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case","scope":{}},
+      "Create case report template": {"action":"case_report_template.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/caseReportTemplate","scope":{}},
+      "Create several Procedures for Alert": {"action":"alert.procedures.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/procedures","scope":{"alertId":{"at":"alertId","from":"path"}}},
+      "Create several Procedures for Case": {"action":"case.procedures.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/procedures","scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "Create views": {"action":"views.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/views","scope":{"name":{"at":"/name","from":"body"}}},
+      "Deactivate Taxonomy": {"action":"taxonomy.deactivate.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/taxonomy/{taxonomyId}/deactivate","scope":{"taxonomyId":{"at":"taxonomyId","from":"path"}}},
+      "Delete Alert": {"action":"alert.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/alert/{alertId}","scope":{"alertId":{"at":"alertId","from":"path"}}},
+      "Delete Alert Attachment": {"action":"alert.attachment.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/alert/{alertId}/attachment/{attachmentId}","scope":{"alertId":{"at":"alertId","from":"path"},"attachmentId":{"at":"attachmentId","from":"path"}}},
+      "Delete Alert in bulk": {"action":"alert.delete.bulk.delete","body":"json","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/delete/_bulk","scope":{"ids":{"at":"/ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "Delete AlertStatus": {"action":"alert_status.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/alertStatus/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "Delete Analyzer Template": {"action":"connector.cortex.analyzer.template.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/connector/cortex/analyzer/template/{analyzerTemplateId}","scope":{"analyzerTemplateId":{"at":"analyzerTemplateId","from":"path"}}},
+      "Delete Attachment": {"action":"attachment.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/attachment/{attachmentId}","scope":{"attachmentId":{"at":"attachmentId","from":"path"}}},
+      "Delete Attachment for Case Report Template": {"action":"case_report_template.attachment.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/caseReportTemplate/{templateId}/attachment/{attachmentId}","scope":{"attachmentId":{"at":"attachmentId","from":"path"},"templateId":{"at":"templateId","from":"path"}}},
+      "Delete Case Attachment": {"action":"case.attachment.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/case/{caseId}/attachment/{attachmentId}","scope":{"attachmentId":{"at":"attachmentId","from":"path"},"caseId":{"at":"caseId","from":"path"}}},
+      "Delete Case Report": {"action":"case_report.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/caseReport/{reportId}","scope":{"reportId":{"at":"reportId","from":"path"}}},
+      "Delete CaseStatus": {"action":"case_status.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/caseStatus/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "Delete CaseTemplate": {"action":"case_template.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/caseTemplate/{caseTemplateNameOrId}","scope":{"caseTemplateNameOrId":{"at":"caseTemplateNameOrId","from":"path"}}},
+      "Delete Comment": {"action":"comment.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/comment/{commentId}","scope":{"commentId":{"at":"commentId","from":"path"}}},
+      "Delete CustomField": {"action":"custom_field.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/api/v1/customField/{customFieldId}","scope":{"customFieldId":{"at":"customFieldId","from":"path"}}},
+      "Delete Dashboard": {"action":"dashboard.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/dashboard/{dashboardId}","scope":{"dashboardId":{"at":"dashboardId","from":"path"}}},
+      "Delete Function": {"action":"function.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/function/{functionId}","scope":{"functionId":{"at":"functionId","from":"path"}}},
+      "Delete Observable": {"action":"observable.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/observable/{observableId}","scope":{"observableId":{"at":"observableId","from":"path"}}},
+      "Delete Observable Type": {"action":"observable.type.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/observable/type/{typeId}","scope":{"typeId":{"at":"typeId","from":"path"}}},
+      "Delete Pattern": {"action":"pattern.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/pattern/{patternId}","scope":{"patternId":{"at":"patternId","from":"path"}}},
+      "Delete Procedure": {"action":"procedure.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/procedure/{procedureId}","scope":{"procedureId":{"at":"procedureId","from":"path"}}},
+      "Delete Procedures in bulk": {"action":"procedure.delete.bulk.delete","body":"json","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/v1/procedure/delete/_bulk","scope":{"ids":{"at":"/ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "Delete Profile": {"action":"profile.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/profile/{profileId}","scope":{"profileId":{"at":"profileId","from":"path"}}},
+      "Delete Shares by shareId": {"action":"case.shares.share","body":"json","effects":["share","delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/case/shares","scope":{"ids":{"at":"/ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "Delete Tag": {"action":"tag.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/tag/{tagId}","scope":{"tagId":{"at":"tagId","from":"path"}}},
+      "Delete Task": {"action":"task.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/task/{taskId}","scope":{"taskId":{"at":"taskId","from":"path"}}},
+      "Delete Task Log": {"action":"log.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/log/{logId}","scope":{"logId":{"at":"logId","from":"path"}}},
+      "Delete Taxonomy": {"action":"taxonomy.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/taxonomy/{taxonomyId}","scope":{"taxonomyId":{"at":"taxonomyId","from":"path"}}},
+      "Delete User": {"action":"user.force.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["organisation"],"path":"/api/v1/user/{userId}/force","scope":{"userId":{"at":"userId","from":"path"}}},
+      "Delete a Catalog of TTP": {"action":"catalog.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/catalog/{catalogId}","scope":{"catalogId":{"at":"catalogId","from":"path"}}},
+      "Delete a Custom Event": {"action":"custom_event.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/customEvent/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "Delete a Page": {"action":"page.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/page/{pageId}","scope":{"pageId":{"at":"pageId","from":"path"}}},
+      "Delete a Page Template": {"action":"page_template.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/pageTemplate/{pageTemplateId}","scope":{"pageTemplateId":{"at":"pageTemplateId","from":"path"}}},
+      "Delete a Page in a Case": {"action":"case.page.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/case/{caseId}/page/{pageId}","scope":{"caseId":{"at":"caseId","from":"path"},"pageId":{"at":"pageId","from":"path"}}},
+      "Delete a custom field": {"action":"case.custom_field.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/case/customField/{cfId}","scope":{"cfId":{"at":"cfId","from":"path"}}},
+      "Delete an alert feeder": {"action":"connector.alert_feeder.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/connector/alert-feeder/{alertFeederName}","scope":{"alertFeederName":{"at":"alertFeederName","from":"path"}}},
+      "Delete attachment from Task Log": {"action":"log.attachments.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/log/{logId}/attachments/{attachmentId}","scope":{"attachmentId":{"at":"attachmentId","from":"path"},"logId":{"at":"logId","from":"path"}}},
+      "Delete branding attachment": {"action":"branding.assets.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/branding/assets/{kind}","scope":{"kind":{"at":"kind","from":"path"}}},
+      "Delete case": {"action":"case.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/case/{idOrName}","scope":{"idOrName":{"at":"idOrName","from":"path"}}},
+      "Delete case report template": {"action":"case_report_template.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/caseReportTemplate/{idOrName}","scope":{"idOrName":{"at":"idOrName","from":"path"}}},
+      "Delete config": {"action":"connector.email_intake.config.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/connector/email-intake/config/{configId}","scope":{"configId":{"at":"configId","from":"path"}}},
+      "Delete link with an another case": {"action":"case.link.case.delete","body":"json","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/link/case/remove","scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "Delete link with an external URL": {"action":"case.link.external.delete","body":"json","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/link/external/remove","scope":{"caseId":{"at":"caseId","from":"path"},"url":{"at":"/url","from":"body"}}},
+      "Delete views": {"action":"views.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/views/{viewsId}","scope":{"viewsId":{"at":"viewsId","from":"path"}}},
+      "Describe a model": {"action":"describe.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/describe/{model}","path_patterns":{"model":"[^_].*|_(?:|[^a].*|a(?:|[^l].*|l(?:|[^l].*|l.+)))"},"scope":{"model":{"at":"model","from":"path"}}},
+      "Describe all models": {"action":"describe.all.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/describe/_all","scope":{}},
+      "Download Alert Attachment": {"action":"alert.attachment.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/alert/{alertId}/attachment/{attachmentId}/download","scope":{"alertId":{"at":"alertId","from":"path"},"attachmentId":{"at":"attachmentId","from":"path"}}},
+      "Download Attachment": {"action":"attachment.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/attachment/{attachmentId}/download","scope":{"attachmentId":{"at":"attachmentId","from":"path"}}},
+      "Download Attachment for Case Report Template": {"action":"case_report_template.attachment.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/caseReportTemplate/{templateId}/attachment/{attachmentId}/download","scope":{"attachmentId":{"at":"attachmentId","from":"path"},"templateId":{"at":"templateId","from":"path"}}},
+      "Download Attachment from case": {"action":"case.attachment.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/case/{caseId}/attachment/{attachmentId}/download","scope":{"attachmentId":{"at":"attachmentId","from":"path"},"caseId":{"at":"caseId","from":"path"}}},
+      "Download Attachment from log": {"action":"log.attachment.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/log/{logId}/attachment/{attachmentId}/download","scope":{"attachmentId":{"at":"attachmentId","from":"path"},"logId":{"at":"logId","from":"path"}}},
+      "Download Attachment from observable": {"action":"observable.attachment.read","effects":["read"],"method":"GET","origin":"{origin}","params":["asZip"],"path":"/api/v1/observable/{observableId}/attachment/{attachmentId}/download","scope":{"attachmentId":{"at":"attachmentId","from":"path"},"observableId":{"at":"observableId","from":"path"}}},
+      "Download Case Report": {"action":"case_report.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/caseReport/{reportId}/download","scope":{"reportId":{"at":"reportId","from":"path"}}},
+      "Export API - unstable route": {"action":"export.read","effects":["read"],"method":"GET","origin":"{origin}","params":["query","options"],"path":"/api/v1/export","scope":{}},
+      "Export Case as archive": {"action":"case.read","effects":["read"],"method":"GET","origin":"{origin}","params":["password"],"path":"/api/v1/case/{caseId}/export","scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "Export Case to MISP": {"action":"connector.misp.export.send","effects":["send"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/misp/export/{caseId}/{mispName}","scope":{"caseId":{"at":"caseId","from":"path"},"mispName":{"at":"mispName","from":"path"}}},
+      "Follow Alert": {"action":"alert.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/follow","scope":{"alertId":{"at":"alertId","from":"path"}}},
+      "GW: Set authorization code": {"action":"connector.email_intake.config.authorization_code.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/email-intake/config/authorizationCode","scope":{}},
+      "Generate Case Report": {"action":"case.report.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/report","scope":{"caseId":{"at":"caseId","from":"path"},"caseReportTemplateId":{"at":"/caseReportTemplateId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "Get Alert": {"action":"alert.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/alert/{alertId}","scope":{"alertId":{"at":"alertId","from":"path"}}},
+      "Get Alert Attachment": {"action":"alert.attachment.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/alert/{alertId}/attachment/{attachmentId}","scope":{"alertId":{"at":"alertId","from":"path"},"attachmentId":{"at":"attachmentId","from":"path"}}},
+      "Get Analyzer Template content": {"action":"connector.cortex.analyzer.template.content.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/cortex/analyzer/template/content/{analyzerId}","scope":{"analyzerId":{"at":"analyzerId","from":"path"}}},
+      "Get Analyzer by id": {"action":"connector.cortex.analyzer.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/cortex/analyzer/{analyzerId}","scope":{"analyzerId":{"at":"analyzerId","from":"path"}}},
+      "Get Analyzer by id (legacy path)": {"action":"connector.cortex.analyzer.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/connector/cortex/analyzer/{analyzerId}","scope":{"analyzerId":{"at":"analyzerId","from":"path"}}},
+      "Get Attachment": {"action":"attachment.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/attachment/{attachmentId}","scope":{"attachmentId":{"at":"attachmentId","from":"path"}}},
+      "Get Attachment for Case Report Template": {"action":"case_report_template.attachment.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/caseReportTemplate/{templateId}/attachment/{attachmentId}","scope":{"attachmentId":{"at":"attachmentId","from":"path"},"templateId":{"at":"templateId","from":"path"}}},
+      "Get Attachment from case": {"action":"case.attachment.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/case/{caseId}/attachment/{attachmentId}","scope":{"attachmentId":{"at":"attachmentId","from":"path"},"caseId":{"at":"caseId","from":"path"}}},
+      "Get Attachment from log": {"action":"log.attachment.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/log/{caseId}/attachment/{attachmentId}","scope":{"attachmentId":{"at":"attachmentId","from":"path"},"caseId":{"at":"caseId","from":"path"}}},
+      "Get Attachment from observable": {"action":"observable.attachment.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/observable/{observableId}/attachment/{attachmentId}","scope":{"attachmentId":{"at":"attachmentId","from":"path"},"observableId":{"at":"observableId","from":"path"}}},
+      "Get Case Patterns": {"action":"pattern.case.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/pattern/case/{caseId}","scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "Get Case Timeline": {"action":"case.timeline.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/case/{caseId}/timeline","scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "Get CaseTemplate": {"action":"case_template.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/caseTemplate/{caseTemplateNameOrId}","scope":{"caseTemplateNameOrId":{"at":"caseTemplateNameOrId","from":"path"}}},
+      "Get Challenge": {"action":"license.challenge.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/license/challenge","scope":{}},
+      "Get Cortex Job": {"action":"connector.cortex.job.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/cortex/job/{jobId}","scope":{"jobId":{"at":"jobId","from":"path"}}},
+      "Get Cortex Job (legacy path)": {"action":"connector.cortex.job.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/connector/cortex/job/{jobId}","scope":{"jobId":{"at":"jobId","from":"path"}}},
+      "Get Dashboard": {"action":"dashboard.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/dashboard/{dashboardId}","scope":{"dashboardId":{"at":"dashboardId","from":"path"}}},
+      "Get Function": {"action":"function.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/function/{functionId}","scope":{"functionId":{"at":"functionId","from":"path"}}},
+      "Get License": {"action":"license.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/license/{licenseId}","path_patterns":{"licenseId":"[^c].*|c(?:|[^hu].*|h(?:|[^a].*|a(?:|[^l].*|l(?:|[^l].*|l(?:|[^e].*|e(?:|[^n].*|n(?:|[^g].*|g(?:|[^e].*|e.+)))))))|u(?:|[^r].*|r(?:|[^r].*|r(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t.+))))))"},"scope":{"licenseId":{"at":"licenseId","from":"path"}}},
+      "Get MISP status": {"action":"connector.misp.status.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/misp/status","scope":{}},
+      "Get Observable": {"action":"observable.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/observable/{observableId}","scope":{"observableId":{"at":"observableId","from":"path"}}},
+      "Get Observable Type": {"action":"observable.type.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/observable/type/{typeId}","scope":{"typeId":{"at":"typeId","from":"path"}}},
+      "Get Organisation": {"action":"organisation.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/organisation/{orgId}","scope":{"orgId":{"at":"orgId","from":"path"}}},
+      "Get Organisation avatar": {"action":"organisation.avatar.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/organisation/{orgId}/avatar/{fileHash}","scope":{"fileHash":{"at":"fileHash","from":"path"},"orgId":{"at":"orgId","from":"path"}}},
+      "Get Pattern": {"action":"pattern.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/pattern/{patternId}","scope":{"patternId":{"at":"patternId","from":"path"}}},
+      "Get Profile": {"action":"profile.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/profile/{profileId}","scope":{"profileId":{"at":"profileId","from":"path"}}},
+      "Get TOTP secret": {"action":"auth.totp.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/auth/totp/get","scope":{}},
+      "Get Tag": {"action":"tag.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/tag/{tagId}","scope":{"tagId":{"at":"tagId","from":"path"}}},
+      "Get Task": {"action":"task.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/task/{taskId}","scope":{"taskId":{"at":"taskId","from":"path"}}},
+      "Get Taxonomy": {"action":"taxonomy.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/taxonomy/{taxonomyId}","scope":{"taxonomyId":{"at":"taxonomyId","from":"path"}}},
+      "Get User": {"action":"user.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/user/{userId}","path_patterns":{"userId":"[^c].*|c(?:|[^u].*|u(?:|[^r].*|r(?:|[^r].*|r(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t.+))))))"},"scope":{"userId":{"at":"userId","from":"path"}}},
+      "Get User api key": {"action":"user.key.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/user/{userId}/key","scope":{"userId":{"at":"userId","from":"path"}}},
+      "Get User avatar": {"action":"user.avatar.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/user/{userId}/avatar/{file}","scope":{"file":{"at":"file","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "Get a stream of audits": {"action":"stream.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/stream/{streamId}","scope":{"streamId":{"at":"streamId","from":"path"}}},
+      "Get action by entity": {"action":"connector.cortex.action.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/cortex/action/{entityType}/{entityId}","scope":{"entityId":{"at":"entityId","from":"path"},"entityType":{"at":"entityType","from":"path"}}},
+      "Get alert feeders": {"action":"connector.alert_feeder.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/alert-feeder","scope":{}},
+      "Get all link types": {"action":"case.link.types.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/case/link/types","scope":{}},
+      "Get branding": {"action":"branding.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/branding","scope":{}},
+      "Get branding attachment": {"action":"branding.assets.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/branding/assets/{kind}","scope":{"kind":{"at":"kind","from":"path"}}},
+      "Get case": {"action":"case.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/case/{idOrName}","scope":{"idOrName":{"at":"idOrName","from":"path"}}},
+      "Get case report template": {"action":"case_report_template.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/caseReportTemplate/{templateId}","path_patterns":{"templateId":"[^_].*|_(?:|[^i].*|i(?:|[^n].*|n(?:|[^f].*|f(?:|[^o].*|o.+))))"},"scope":{"templateId":{"at":"templateId","from":"path"}}},
+      "Get case report template options": {"action":"case_report_template.info.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/caseReportTemplate/_info","scope":{}},
+      "Get check and index stats": {"action":"admin.stats.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/admin/stats","scope":{}},
+      "Get check stats": {"action":"admin.check.stats.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/admin/check/stats","scope":{}},
+      "Get config": {"action":"connector.email_intake.config.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/email-intake/config/{configId}","scope":{"configId":{"at":"configId","from":"path"}}},
+      "Get configs": {"action":"connector.email_intake.configs.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/email-intake/configs","scope":{}},
+      "Get current License": {"action":"license.current.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/license/current","scope":{}},
+      "Get current User info": {"action":"user.current.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/user/current","scope":{}},
+      "Get current password policy": {"action":"auth.local.password_policy.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/auth/local/passwordPolicy","scope":{}},
+      "Get documentation for the context object": {"action":"function.context.documentation.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/function/_context/documentation","scope":{}},
+      "Get export fields - unstable route": {"action":"export.fields.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/export/_fields","scope":{}},
+      "Get flow of audit": {"action":"flow.read","effects":["read"],"method":"GET","origin":"{origin}","params":["rootId","count"],"path":"/api/v1/flow","scope":{}},
+      "Get index status": {"action":"admin.index.status.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/admin/index/status","scope":{}},
+      "Get mailbox folders": {"action":"connector.email_intake.folders.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/email-intake/folders","scope":{"name":{"at":"/name","from":"body"}}},
+      "Get platform public status": {"action":"status.public.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/status/public","scope":{}},
+      "Get platform status": {"action":"status.read","effects":["read"],"method":"GET","origin":"{origin}","params":["verbose"],"path":"/api/v1/status","scope":{}},
+      "Get similar cases": {"action":"case.links.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/case/{caseId}/links","scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "Get similar observables between a case and another case or alert": {"action":"case.similar.observables.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/case/{caseId}/similar/{alertOrCaseId}/observables","scope":{"alertOrCaseId":{"at":"alertOrCaseId","from":"path"},"caseId":{"at":"caseId","from":"path"}}},
+      "Get similar observables between alert and another alert or case": {"action":"alert.similar.observables.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/alert/{alertId}/similar/{alertOrCaseId}/observables","scope":{"alertId":{"at":"alertId","from":"path"},"alertOrCaseId":{"at":"alertOrCaseId","from":"path"}}},
+      "Get user configuration item": {"action":"config.user.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/config/user/{path}","scope":{"path":{"at":"path","from":"path"}}},
+      "Get views": {"action":"views.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/views/{viewsId}","scope":{"viewsId":{"at":"viewsId","from":"path"}}},
+      "Import Alert observables and procedures in Case": {"action":"alert.import.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/import/{caseId}","scope":{"alertId":{"at":"alertId","from":"path"},"caseId":{"at":"caseId","from":"path"}}},
+      "Import Analyzer Templates": {"action":"connector.cortex.analyzer.template.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/cortex/analyzer/template/_import","scope":{}},
+      "Import Case from MISP": {"action":"connector.misp.case.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/misp/case/import","scope":{}},
+      "Import Case from file": {"action":"case.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/import","scope":{}},
+      "Import MITRE Att\u0026ck file": {"action":"pattern.import.attack.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/pattern/import/attack","scope":{}},
+      "Import from zip file": {"action":"taxonomy.zip.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/taxonomy/import-zip","scope":{}},
+      "Invoke Function": {"action":"function.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","params":["dryRun"],"path":"/api/v1/function/{function}","path_patterns":{"function":"[^_].*|_(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s(?:|[^t].*|t.+))))"},"scope":{"function":{"at":"function","from":"path"}}},
+      "Invoke Function on an object": {"action":"function.execute","effects":["execute"],"method":"POST","origin":"{origin}","params":["dryRun","sync"],"path":"/api/v1/function/{function}/{objectType}/{objectIdOrName}","scope":{"function":{"at":"function","from":"path"},"objectIdOrName":{"at":"objectIdOrName","from":"path"},"objectType":{"at":"objectType","from":"path"}}},
+      "Link Organisations": {"action":"organisation.link.share","body":"any","effects":["share"],"method":"PUT","origin":"{origin}","path":"/api/v1/organisation/{orgId}/link/{otherOrgId}","scope":{"orgId":{"at":"orgId","from":"path"},"otherOrgId":{"at":"otherOrgId","from":"path"}}},
+      "Link PageTemplates to a CaseTemplate": {"action":"case_template.page_template.link.write","body":"json","effects":["write"],"grant":["caseTemplateNameOrId"],"method":"PUT","origin":"{origin}","path":"/api/v1/caseTemplate/{caseTemplateNameOrId}/pageTemplate/link","scope":{"caseTemplateNameOrId":{"at":"caseTemplateNameOrId","from":"path"},"pageTemplateIds":{"at":"/pageTemplateIds","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "List Analyzers": {"action":"connector.cortex.analyzer.read","effects":["read"],"method":"GET","origin":"{origin}","params":["range"],"path":"/api/v1/connector/cortex/analyzer","scope":{}},
+      "List Analyzers (legacy path)": {"action":"connector.cortex.analyzer.read","effects":["read"],"method":"GET","origin":"{origin}","params":["range"],"path":"/api/connector/cortex/analyzer","scope":{}},
+      "List Analyzers by type": {"action":"connector.cortex.analyzer.type.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/cortex/analyzer/type/{dataType}","scope":{"dataType":{"at":"dataType","from":"path"}}},
+      "List Analyzers by type (legacy path)": {"action":"connector.cortex.analyzer.type.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/connector/cortex/analyzer/type/{dataType}","scope":{"dataType":{"at":"dataType","from":"path"}}},
+      "List CustomFields": {"action":"custom_field.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/customField","scope":{}},
+      "List Organisation links": {"action":"organisation.links.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/organisation/{orgId}/links","scope":{"orgId":{"at":"orgId","from":"path"}}},
+      "List Shares of Case": {"action":"case.shares.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/case/{caseId}/shares","scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "List Shares of Observable": {"action":"observable.shares.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/observable/{observableId}/shares","path_patterns":{"observableId":"[^t].*|t(?:|[^y].*|y(?:|[^p].*|p(?:|[^e].*|e.+)))"},"scope":{"observableId":{"at":"observableId","from":"path"}}},
+      "List Shares of Task": {"action":"task.shares.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/task/{taskId}/shares","scope":{"taskId":{"at":"taskId","from":"path"}}},
+      "List Sharing Profiles": {"action":"sharing_profile.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/sharingProfile","scope":{}},
+      "List all licenses": {"action":"license.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/license","scope":{}},
+      "List permissions": {"action":"permission.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/permission","scope":{}},
+      "List responders": {"action":"connector.cortex.responder.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/cortex/responder/{entityType}/{entityId}","scope":{"entityId":{"at":"entityId","from":"path"},"entityType":{"at":"entityType","from":"path"}}},
+      "List responders (legacy path)": {"action":"connector.cortex.responder.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/connector/cortex/responder/{entityType}/{entityId}","scope":{"entityId":{"at":"entityId","from":"path"},"entityType":{"at":"entityType","from":"path"}}},
+      "List supported formats": {"action":"case_report.formats.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/caseReport/formats","scope":{}},
+      "List user configuration items": {"action":"config.user.read","effects":["read"],"method":"GET","origin":"{origin}","params":["path"],"path":"/api/v1/config/user","scope":{}},
+      "Lock User": {"action":"user.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/user/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "Login": {"action":"login.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/login","scope":{"user":{"at":"/user","from":"body"}}},
+      "Logout GET": {"action":"logout.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/logout","scope":{}},
+      "Logout POST": {"action":"logout.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/logout","scope":{}},
+      "Manage Case access": {"action":"case.access.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/access","path_patterns":{"caseId":"[^_].*|_(?:|[^b].*|b(?:|[^u].*|u(?:|[^l].*|l(?:|[^k].*|k.+))))"},"scope":{"caseId":{"at":"caseId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "Merge Alert with Case": {"action":"alert.merge.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/merge/{caseId}","scope":{"alertId":{"at":"alertId","from":"path"},"caseId":{"at":"caseId","from":"path"}}},
+      "Merge bulk Alerts with Case": {"action":"alert.merge.bulk.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/merge/_bulk","scope":{"caseId":{"at":"/caseId","from":"body"}}},
+      "Merge cases": {"action":"case.merge.write","effects":["write"],"method":"POST","origin":"{origin}","params":["dataType"],"path":"/api/v1/case/_merge/{ids}","scope":{"ids":{"at":"ids","from":"path"}}},
+      "Merge similar observables of this case": {"action":"case.observable.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/observable/_merge","scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "Query API": {"action":"query.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["name"],"path":"/api/v1/query","scope":{}},
+      "Rebuild index": {"action":"admin.index.rebuild.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/admin/index/{name}/rebuild","scope":{"name":{"at":"name","from":"path"}}},
+      "Reindex data": {"action":"admin.index.reindex.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/admin/index/{name}/reindex","scope":{"name":{"at":"name","from":"path"}}},
+      "Remove User api key": {"action":"user.key.delete","effects":["delete","admin"],"method":"DELETE","origin":"{origin}","path":"/api/v1/user/{userId}/key","scope":{"userId":{"at":"userId","from":"path"}}},
+      "Remove a Share from Case": {"action":"case.share.share","effects":["share","delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/case/share/{shareId}","scope":{"shareId":{"at":"shareId","from":"path"}}},
+      "Render Case Report Template": {"action":"case_report.render.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v1/caseReport/render","scope":{"caseId":{"at":"/caseId","from":"body","optional":true},"caseReportTemplateId":{"at":"/caseReportTemplateId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "Render Case Report Template (GET)": {"action":"case_report.render.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format","caseReportTemplateId","caseId","maxElements"],"path":"/api/v1/caseReport/render","scope":{"caseReportTemplateId":{"at":"caseReportTemplateId","from":"query"}}},
+      "Renew User api key": {"action":"user.key.renew.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v1/user/{userId}/key/renew","scope":{"userId":{"at":"userId","from":"path"}}},
+      "Repair schema": {"action":"admin.schema.repair.write","effects":["write"],"method":"POST","origin":"{origin}","params":["select","filter"],"path":"/api/v1/admin/schema/repair/{schemaName}","scope":{"schemaName":{"at":"schemaName","from":"path"}}},
+      "Run an alert feeder": {"action":"connector.alert_feeder.run.execute","effects":["execute"],"method":"POST","origin":"{origin}","params":["dryRun"],"path":"/api/v1/connector/alert-feeder/run/{alertFeederName}","scope":{"alertFeederName":{"at":"alertFeederName","from":"path"}}},
+      "Schema info": {"action":"admin.schema.info.read","effects":["read"],"method":"POST","origin":"{origin}","params":["select","filter"],"path":"/api/v1/admin/schema/info/{schemaName}","scope":{"query":{"at":"","from":"query","type":"object"},"schemaName":{"at":"schemaName","from":"path"}}},
+      "Set TOTP secret": {"action":"auth.totp.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v1/auth/totp/set","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "Set Task as done by organisation": {"action":"task.action_done.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/task/{taskId}/actionDone/{orgId}","scope":{"orgId":{"at":"orgId","from":"path"},"taskId":{"at":"taskId","from":"path"}}},
+      "Set Task as required by organisation": {"action":"task.action_required.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/task/{taskId}/actionRequired/{orgId}","scope":{"orgId":{"at":"orgId","from":"path"},"taskId":{"at":"taskId","from":"path"}}},
+      "Set User Organisations": {"action":"user.organisations.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/v1/user/{userId}/organisations","scope":{"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "Set branding": {"action":"branding.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/branding","scope":{}},
+      "Set shares for Case": {"action":"case.shares.share","body":"json","effects":["share"],"method":"PUT","origin":"{origin}","path":"/api/v1/case/{caseId}/shares","scope":{"caseId":{"at":"caseId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "Set user configuration item": {"action":"config.user.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/config/user/{path}","scope":{"path":{"at":"path","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "Set user login": {"action":"user.login.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v1/user/{userId}/login/set","scope":{"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "Set user password": {"action":"user.password.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v1/user/{userId}/password/set","scope":{"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "Share a Case": {"action":"case.shares.share","body":"json","effects":["share"],"grant":["caseId"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/shares","scope":{"caseId":{"at":"caseId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "Share a Task": {"action":"task.shares.share","body":"json","effects":["share"],"grant":["taskId"],"method":"POST","origin":"{origin}","path":"/api/v1/task/{taskId}/shares","scope":{"request":{"at":"","from":"body","type":"object"},"taskId":{"at":"taskId","from":"path"}}},
+      "Share an Observable": {"action":"observable.shares.share","body":"json","effects":["share"],"grant":["observableId"],"method":"POST","origin":"{origin}","path":"/api/v1/observable/{observableId}/shares","scope":{"observableId":{"at":"observableId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "Sync": {"action":"connector.email_intake.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/email-intake/sync","scope":{}},
+      "Sync with MISP servers": {"action":"connector.misp.sync_alerts.write","effects":["write"],"method":"GET","origin":"{origin}","path":"/api/v1/connector/misp/_syncAlerts","scope":{}},
+      "Task actions required": {"action":"task.action_required.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/task/{taskId}/actionRequired","scope":{"taskId":{"at":"taskId","from":"path"}}},
+      "Test Function": {"action":"function.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","params":["dryRun"],"path":"/api/v1/function/_test","scope":{"name":{"at":"/name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "Test an alert feeder": {"action":"connector.alert_feeder.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/alert-feeder/test","scope":{"name":{"at":"/name","from":"body"},"url":{"at":"/url","from":"body"}}},
+      "Test config": {"action":"connector.email_intake.config.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v1/connector/email-intake/config/test","scope":{"name":{"at":"/name","from":"body"}}},
+      "Trigger all checks": {"action":"admin.check.all.execute","effects":["execute"],"method":"PUT","origin":"{origin}","path":"/api/v1/admin/check/_all/trigger","scope":{}},
+      "Trigger dedup integrity check": {"action":"admin.check.dedup.execute","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v1/admin/check/{name}/dedup/trigger","scope":{"name":{"at":"name","from":"path"}}},
+      "Trigger global integrity check": {"action":"admin.check.global.execute","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v1/admin/check/{name}/global/trigger","scope":{"name":{"at":"name","from":"path"}}},
+      "Trigger integrity check": {"action":"admin.check.execute","effects":["execute"],"method":"PUT","origin":"{origin}","path":"/api/v1/admin/check/{name}/trigger","path_patterns":{"name":"[^_].*|_(?:|[^a].*|a(?:|[^l].*|l(?:|[^l].*|l.+)))"},"scope":{"name":{"at":"name","from":"path"}}},
+      "Unfollow Alert": {"action":"alert.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/alert/{alertId}/unfollow","scope":{"alertId":{"at":"alertId","from":"path"}}},
+      "Unlink Organisations": {"action":"organisation.link.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/organisation/{orgId}/link/{otherOrgId}","scope":{"orgId":{"at":"orgId","from":"path"},"otherOrgId":{"at":"otherOrgId","from":"path"}}},
+      "Unlink alert from case": {"action":"case.alert.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/case/{caseId}/alert/{alertId}","scope":{"alertId":{"at":"alertId","from":"path"},"caseId":{"at":"caseId","from":"path"}}},
+      "Unset TOTP secret": {"action":"auth.totp.unset.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v1/auth/totp/unset","scope":{}},
+      "Unset TOTP secret for user": {"action":"auth.totp.unset.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v1/auth/totp/unset/{user}","scope":{"user":{"at":"user","from":"path"}}},
+      "Unshare a Case": {"action":"case.shares.share","body":"json","effects":["share","delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/case/{caseId}/shares","scope":{"caseId":{"at":"caseId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "Unshare a Task": {"action":"task.shares.share","body":"json","effects":["share","delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/task/{taskId}/shares","scope":{"request":{"at":"","from":"body","type":"object"},"taskId":{"at":"taskId","from":"path"}}},
+      "Unshare an Observable": {"action":"observable.shares.share","body":"json","effects":["share","delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/observable/{observableId}/shares","scope":{"observableId":{"at":"observableId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "Update Alert": {"action":"alert.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/alert/{alertId}","path_patterns":{"alertId":"[^_].*|_(?:|[^b].*|b(?:|[^u].*|u(?:|[^l].*|l(?:|[^k].*|k.+))))"},"scope":{"alertId":{"at":"alertId","from":"path"}}},
+      "Update AlertStatus": {"action":"alert_status.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/alertStatus/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "Update Analyzer Template": {"action":"connector.cortex.analyzer.template.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/connector/cortex/analyzer/template/{analyzerTemplateId}","scope":{"analyzerTemplateId":{"at":"analyzerTemplateId","from":"path"}}},
+      "Update Attachment": {"action":"case.attachment.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/case/{caseId}/attachment/{attachmentId}","scope":{"attachmentId":{"at":"attachmentId","from":"path"},"caseId":{"at":"caseId","from":"path"}}},
+      "Update Case Report": {"action":"case_report.write","body":"any","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/caseReport/{reportId}","scope":{"reportId":{"at":"reportId","from":"path"}}},
+      "Update CaseStatus": {"action":"case_status.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/caseStatus/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "Update CaseTemplate": {"action":"case_template.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/caseTemplate/{caseTemplateNameOrId}","scope":{"caseTemplateNameOrId":{"at":"caseTemplateNameOrId","from":"path"}}},
+      "Update Catalog of TTP": {"action":"catalog.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/catalog/{catalogId}","scope":{"catalogId":{"at":"catalogId","from":"path"}}},
+      "Update Comment": {"action":"comment.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/comment/{commentId}","scope":{"commentId":{"at":"commentId","from":"path"}}},
+      "Update CustomField": {"action":"custom_field.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/customField/{customFieldId}","scope":{"customFieldId":{"at":"customFieldId","from":"path"}}},
+      "Update Dashboard": {"action":"dashboard.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/dashboard/{dashboardId}","scope":{"dashboardId":{"at":"dashboardId","from":"path"}}},
+      "Update Function": {"action":"function.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/function/{functionId}","scope":{"functionId":{"at":"functionId","from":"path"}}},
+      "Update Log Level": {"action":"admin.log.set.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/admin/log/set/{packageName}/{level}","scope":{"level":{"at":"level","from":"path"},"packageName":{"at":"packageName","from":"path"}}},
+      "Update Observable": {"action":"observable.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/observable/{observableId}","path_patterns":{"observableId":"[^_].*|_(?:|[^b].*|b(?:|[^u].*|u(?:|[^l].*|l(?:|[^k].*|k.+))))"},"scope":{"observableId":{"at":"observableId","from":"path"}}},
+      "Update Organisation": {"action":"organisation.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/v1/organisation/{orgId}","scope":{"name":{"at":"/name","from":"body","optional":true},"orgId":{"at":"orgId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "Update Procedure": {"action":"procedure.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/procedure/{procedureId}","scope":{"procedureId":{"at":"procedureId","from":"path"}}},
+      "Update Profile": {"action":"profile.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/v1/profile/{profileId}","scope":{"name":{"at":"/name","from":"body","optional":true},"profileId":{"at":"profileId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "Update Tag": {"action":"tag.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/tag/{tagId}","scope":{"tagId":{"at":"tagId","from":"path"}}},
+      "Update Task": {"action":"task.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/task/{taskId}","path_patterns":{"taskId":"[^_].*|_(?:|[^b].*|b(?:|[^u].*|u(?:|[^l].*|l(?:|[^k].*|k.+))))"},"scope":{"taskId":{"at":"taskId","from":"path"}}},
+      "Update Task Log": {"action":"log.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/log/{logId}","scope":{"logId":{"at":"logId","from":"path"}}},
+      "Update User": {"action":"user.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/v1/user/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "Update a Custom Event": {"action":"custom_event.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/customEvent/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "Update a Page": {"action":"page.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/page/{pageId}","scope":{"pageId":{"at":"pageId","from":"path"}}},
+      "Update a Page Template": {"action":"page_template.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/pageTemplate/{pageTemplateId}","scope":{"pageTemplateId":{"at":"pageTemplateId","from":"path"}}},
+      "Update a Page in a Case": {"action":"case.page.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/case/{caseId}/page/{pageId}","scope":{"caseId":{"at":"caseId","from":"path"},"pageId":{"at":"pageId","from":"path"}}},
+      "Update a Share": {"action":"case.share.share","body":"json","effects":["share"],"grant":["shareId"],"method":"PATCH","origin":"{origin}","path":"/api/v1/case/share/{shareId}","scope":{"request":{"at":"","from":"body","type":"object"},"shareId":{"at":"shareId","from":"path"}}},
+      "Update an alert feeder": {"action":"connector.alert_feeder.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/connector/alert-feeder/{alertFeederName}","scope":{"alertFeederName":{"at":"alertFeederName","from":"path"},"url":{"at":"/url","from":"body"}}},
+      "Update bulk of Observables": {"action":"observable.bulk.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/observable/_bulk","scope":{"ids":{"at":"/ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "Update bulk of Task": {"action":"task.bulk.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/task/_bulk","scope":{"group":{"at":"/group","from":"body","optional":true},"ids":{"at":"/ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "Update case": {"action":"case.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/case/{idOrName}","path_patterns":{"idOrName":"[^_].*|_(?:|[^b].*|b(?:|[^u].*|u(?:|[^l].*|l(?:|[^k].*|k.+))))"},"scope":{"idOrName":{"at":"idOrName","from":"path"}}},
+      "Update case report template": {"action":"case_report_template.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/caseReportTemplate/{idOrName}","scope":{"idOrName":{"at":"idOrName","from":"path"}}},
+      "Update config": {"action":"connector.email_intake.config.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/v1/connector/email-intake/config/{configId}","scope":{"configId":{"at":"configId","from":"path"},"name":{"at":"/name","from":"body"}}},
+      "Update configs": {"action":"connector.email_intake.configs.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/v1/connector/email-intake/configs","scope":{}},
+      "Update views": {"action":"views.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/views/{viewsId}","scope":{"viewsId":{"at":"viewsId","from":"path"}}},
+      "Upload Case Report": {"action":"case.report.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/case/{caseId}/report/upload","scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "View Case Report": {"action":"case_report.view.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/caseReport/{reportId}/view","scope":{"reportId":{"at":"reportId","from":"path"}}}
     }
   }
 }

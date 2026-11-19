@@ -1,27 +1,225 @@
 {
-  "title": "Acuity Scheduling",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://acuityscheduling.com", "path": "/api/v1", "basic": "password"}]}},
     "actions": {
-      "delete": {"title": "Delete"},
-      "read": {"title": "Read everything the account can see"},
-      "write.block": {"title": "Write: block"}
-    }
+      "appointment_addons": {
+        "title": "Appointment addons"
+      },
+      "appointment_addons.read": {
+        "title": "Read"
+      },
+      "appointment_types": {
+        "title": "Appointment types"
+      },
+      "appointment_types.read": {
+        "title": "Read"
+      },
+      "appointments": {
+        "title": "Appointments"
+      },
+      "appointments.payments": {
+        "title": "Payments"
+      },
+      "appointments.payments.read": {
+        "title": "Read"
+      },
+      "appointments.read": {
+        "title": "Read"
+      },
+      "appointments.reschedule": {
+        "title": "Reschedule"
+      },
+      "appointments.reschedule.send": {
+        "title": "Send"
+      },
+      "appointments.send": {
+        "title": "Send"
+      },
+      "appointments.write": {
+        "title": "Create and edit"
+      },
+      "availability": {
+        "title": "Availability"
+      },
+      "availability.classes": {
+        "title": "Classes"
+      },
+      "availability.classes.read": {
+        "title": "Read"
+      },
+      "availability.dates": {
+        "title": "Dates"
+      },
+      "availability.dates.read": {
+        "title": "Read"
+      },
+      "availability.times": {
+        "title": "Times"
+      },
+      "availability.times.read": {
+        "title": "Read"
+      },
+      "blocks": {
+        "title": "Blocks"
+      },
+      "blocks.delete": {
+        "title": "Delete"
+      },
+      "blocks.read": {
+        "title": "Read"
+      },
+      "blocks.write": {
+        "title": "Create and edit"
+      },
+      "calendars": {
+        "title": "Calendars"
+      },
+      "calendars.read": {
+        "title": "Read"
+      },
+      "certificates": {
+        "title": "Certificates"
+      },
+      "certificates.delete": {
+        "title": "Delete"
+      },
+      "certificates.read": {
+        "title": "Read"
+      },
+      "certificates.write": {
+        "title": "Create and edit"
+      },
+      "clients": {
+        "title": "Clients"
+      },
+      "clients.delete": {
+        "title": "Delete"
+      },
+      "clients.read": {
+        "title": "Read"
+      },
+      "clients.write": {
+        "title": "Create and edit"
+      },
+      "forms": {
+        "title": "Forms"
+      },
+      "forms.read": {
+        "title": "Read"
+      },
+      "labels": {
+        "title": "Labels"
+      },
+      "labels.read": {
+        "title": "Read"
+      },
+      "me": {
+        "title": "Me"
+      },
+      "me.read": {
+        "title": "Read"
+      },
+      "meta": {
+        "title": "Meta"
+      },
+      "meta.read": {
+        "title": "Read"
+      },
+      "orders": {
+        "title": "Orders"
+      },
+      "orders.read": {
+        "title": "Read"
+      },
+      "products": {
+        "title": "Products"
+      },
+      "products.read": {
+        "title": "Read"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.delete": {
+        "title": "Delete"
+      },
+      "webhooks.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "basic": "password",
+            "origin": "https://acuityscheduling.com",
+            "path": "/api/v1",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Acuity Scheduling",
   "http": {
+    "format_suffixes": [".json"],
     "operations": {
-      "appointmentidjson": {"action":"read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","path":"/api/v1/appointment/:id.json","scope":{}},
-      "block": {"action":"write.block","effects":["write"],"method":"POST","origin":"https://acuityscheduling.com","path":"/api/v1/block","body":"any","scope":{}},
-      "blockidjson": {"action":"read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","path":"/api/v1/block/:id.json","scope":{}},
-      "blockidjson-1": {"action":"delete","effects":["delete"],"method":"DELETE","origin":"https://acuityscheduling.com","path":"/api/v1/block/:id.json","scope":{}},
-      "calendarsjson": {"action":"read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","path":"/api/v1/calendars.json","scope":{}},
-      "get-appointments": {"action":"read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","path":"/api/v1/appointments.json","params":["max","minDate","maxDate","calendarID"],"scope":{}},
-      "get-canceled": {"action":"read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","path":"/api/v1/canceled.json","params":["max","minDate","maxDate","calendarID"],"scope":{}},
-      "ordersjson": {"action":"read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","path":"/api/v1/orders.json","params":["max"],"scope":{}}
+      "appointment-types": {"action":"appointment_types.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","params":["includeDeleted"],"path":"/api/v1/appointment-types","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "appointments-addons": {"action":"appointment_addons.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","path":"/api/v1/appointment-addons","scope":{}},
+      "availability-check-times": {"action":"availability.times.read","effects":["read"],"method":"POST","origin":"https://acuityscheduling.com","path":"/api/v1/availability/check-times","scope":{}},
+      "availability-check-times.json.dfdd71877ddc": {"action":"availability.times.read","body":"json","effects":["read"],"method":"POST","origin":"https://acuityscheduling.com","path":"/api/v1/availability/check-times","scope":{}},
+      "blocks": {"action":"blocks.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","params":["max","minDate","maxDate","calendarID"],"path":"/api/v1/blocks","scope":{"calendarID":{"at":"calendarID","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "clients": {"action":"clients.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","params":["search"],"path":"/api/v1/clients","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "delete-blocks-id": {"action":"blocks.delete","effects":["delete"],"method":"DELETE","origin":"https://acuityscheduling.com","path":"/api/v1/blocks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "delete-certificates-id": {"action":"certificates.delete","effects":["delete"],"method":"DELETE","origin":"https://acuityscheduling.com","path":"/api/v1/certificates/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "delete-clients": {"action":"clients.delete","effects":["delete"],"method":"DELETE","origin":"https://acuityscheduling.com","params":["firstName","lastName","phone"],"path":"/api/v1/clients","scope":{"firstName":{"at":"firstName","from":"query"},"lastName":{"at":"lastName","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "delete-webhooks-id": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"https://acuityscheduling.com","path":"/api/v1/webhooks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "forms": {"action":"forms.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","path":"/api/v1/forms","scope":{}},
+      "get-appointments": {"action":"appointments.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","params":["max","minDate","maxDate","calendarID","appointmentTypeID","canceled","firstName","lastName","email","phone","field:id","excludeForms","direction"],"path":"/api/v1/appointments","scope":{"appointmentTypeID":{"at":"appointmentTypeID","from":"query","optional":true},"calendarID":{"at":"calendarID","from":"query","optional":true},"email":{"at":"email","from":"query","optional":true},"firstName":{"at":"firstName","from":"query","optional":true},"lastName":{"at":"lastName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "get-appointments-id": {"action":"appointments.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","params":["pastFormAnswers"],"path":"/api/v1/appointments/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-appointments-id-payments": {"action":"appointments.payments.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","path":"/api/v1/appointments/{id}/payments","scope":{"id":{"at":"id","from":"path"}}},
+      "get-availability-classes": {"action":"availability.classes.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","params":["month","appointmentTypeID","calendarID","timezone","minDate","maxDate","includeUnavailable","includePrivate"],"path":"/api/v1/availability/classes","scope":{"appointmentTypeID":{"at":"appointmentTypeID","from":"query","optional":true},"calendarID":{"at":"calendarID","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "get-availability-dates": {"action":"availability.dates.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","params":["month","appointmentTypeID","calendarID","addonIDs[]","timezone"],"path":"/api/v1/availability/dates","scope":{"appointmentTypeID":{"at":"appointmentTypeID","from":"query"},"calendarID":{"at":"calendarID","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "get-availability-times": {"action":"availability.times.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","params":["date","appointmentTypeID","calendarID","addonIDs[]","timezone","ignoreAppointmentIDs[]"],"path":"/api/v1/availability/times","scope":{"appointmentTypeID":{"at":"appointmentTypeID","from":"query"},"calendarID":{"at":"calendarID","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "get-blocks-id": {"action":"blocks.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","path":"/api/v1/blocks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "get-calendars": {"action":"calendars.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","path":"/api/v1/calendars","scope":{}},
+      "get-certificates": {"action":"certificates.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","params":["productID","orderID","appointmentTypeID","email"],"path":"/api/v1/certificates","scope":{"appointmentTypeID":{"at":"appointmentTypeID","from":"query","optional":true},"email":{"at":"email","from":"query","optional":true},"orderID":{"at":"orderID","from":"query","optional":true},"productID":{"at":"productID","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "get-certificates-check": {"action":"certificates.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","params":["certificate","appointmentTypeID","email"],"path":"/api/v1/certificates/check","scope":{"appointmentTypeID":{"at":"appointmentTypeID","from":"query"},"email":{"at":"email","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "get-me": {"action":"me.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","path":"/api/v1/me","scope":{}},
+      "get-orders": {"action":"orders.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","params":["max"],"path":"/api/v1/orders","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "get-products": {"action":"products.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","params":["deleted"],"path":"/api/v1/products","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "get-webhooks": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","path":"/api/v1/webhooks","scope":{}},
+      "labels": {"action":"labels.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","path":"/api/v1/labels","scope":{}},
+      "meta": {"action":"meta.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","path":"/api/v1/meta","scope":{}},
+      "ordersid": {"action":"orders.read","effects":["read"],"method":"GET","origin":"https://acuityscheduling.com","path":"/api/v1/orders/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "post-appointments": {"action":"appointments.send","effects":["send","write"],"method":"POST","origin":"https://acuityscheduling.com","params":["admin","noEmail"],"path":"/api/v1/appointments","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "post-appointments.json.6a46aef05ba1": {"action":"appointments.send","body":"json","effects":["send","write"],"method":"POST","origin":"https://acuityscheduling.com","params":["admin","noEmail"],"path":"/api/v1/appointments","scope":{"appointmentTypeID":{"at":"/appointmentTypeID","from":"body","type":"number"},"calendarID":{"at":"/calendarID","from":"body","optional":true,"type":"number"},"email":{"at":"/email","from":"body"},"firstName":{"at":"/firstName","from":"body"},"lastName":{"at":"/lastName","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "post-blocks": {"action":"blocks.write","effects":["write"],"method":"POST","origin":"https://acuityscheduling.com","path":"/api/v1/blocks","scope":{}},
+      "post-blocks.json.536eb25de44d": {"action":"blocks.write","body":"json","effects":["write"],"method":"POST","origin":"https://acuityscheduling.com","path":"/api/v1/blocks","scope":{"calendarID":{"at":"/calendarID","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "post-certificates": {"action":"certificates.write","effects":["write"],"method":"POST","origin":"https://acuityscheduling.com","path":"/api/v1/certificates","scope":{}},
+      "post-certificates.json.250327167443": {"action":"certificates.write","body":"json","effects":["write"],"method":"POST","origin":"https://acuityscheduling.com","path":"/api/v1/certificates","scope":{"couponID":{"at":"/couponID","from":"body","optional":true,"type":"number"},"email":{"at":"/email","from":"body","optional":true},"productID":{"at":"/productID","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "post-clients": {"action":"clients.write","effects":["write"],"method":"POST","origin":"https://acuityscheduling.com","path":"/api/v1/clients","scope":{}},
+      "post-clients.json.ea12c9572000": {"action":"clients.write","body":"json","effects":["write"],"method":"POST","origin":"https://acuityscheduling.com","path":"/api/v1/clients","scope":{"email":{"at":"/email","from":"body","optional":true},"firstName":{"at":"/firstName","from":"body"},"lastName":{"at":"/lastName","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "post-webhooks": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://acuityscheduling.com","path":"/api/v1/webhooks","scope":{"event":{"at":"/event","from":"body"},"target":{"at":"/target","from":"body"}}},
+      "put-appointments-id": {"action":"appointments.write","effects":["write"],"method":"PUT","origin":"https://acuityscheduling.com","params":["admin"],"path":"/api/v1/appointments/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "put-appointments-id-cancel": {"action":"appointments.send","effects":["send","write"],"method":"PUT","origin":"https://acuityscheduling.com","params":["admin","noEmail"],"path":"/api/v1/appointments/{id}/cancel","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "put-appointments-id-cancel.json.375ec82a27fd": {"action":"appointments.send","body":"json","effects":["send","write"],"method":"PUT","origin":"https://acuityscheduling.com","params":["admin","noEmail"],"path":"/api/v1/appointments/{id}/cancel","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "put-appointments-id-reschedule": {"action":"appointments.reschedule.send","effects":["send","write"],"method":"PUT","origin":"https://acuityscheduling.com","params":["admin","noEmail"],"path":"/api/v1/appointments/{id}/reschedule","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "put-appointments-id-reschedule.json.fcc95ead1c38": {"action":"appointments.reschedule.send","body":"json","effects":["send","write"],"method":"PUT","origin":"https://acuityscheduling.com","params":["admin","noEmail"],"path":"/api/v1/appointments/{id}/reschedule","scope":{"calendarID":{"at":"/calendarID","from":"body","optional":true,"type":"number"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "put-appointments-id.json.6e9aab8b302c": {"action":"appointments.write","body":"json","effects":["write"],"method":"PUT","origin":"https://acuityscheduling.com","params":["admin"],"path":"/api/v1/appointments/{id}","scope":{"email":{"at":"/email","from":"body","optional":true},"firstName":{"at":"/firstName","from":"body","optional":true},"id":{"at":"id","from":"path"},"lastName":{"at":"/lastName","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "put-clients": {"action":"clients.write","effects":["write"],"method":"PUT","origin":"https://acuityscheduling.com","params":["firstName","lastName","phone"],"path":"/api/v1/clients","scope":{"firstName":{"at":"firstName","from":"query"},"lastName":{"at":"lastName","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "put-clients.json.8f77e70a4b9b": {"action":"clients.write","body":"json","effects":["write"],"method":"PUT","origin":"https://acuityscheduling.com","params":["firstName","lastName","phone"],"path":"/api/v1/clients","scope":{"body.firstName":{"at":"/firstName","from":"body","optional":true},"body.lastName":{"at":"/lastName","from":"body","optional":true},"email":{"at":"/email","from":"body","optional":true},"firstName":{"at":"firstName","from":"query"},"lastName":{"at":"lastName","from":"query"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}}
     }
   }
 }

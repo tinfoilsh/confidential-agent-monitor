@@ -1,22 +1,1266 @@
 {
-  "title": "Snowflake",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your Snowflake origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "password", "label": "Password", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "password", "origin": "https://example.com", "path": "/api/v2", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "read": {"title": "Read everything the account can see"},
-      "write.statements": {"title": "Write: statements"}
-    }
+      "accounts": {
+        "title": "Accounts"
+      },
+      "accounts.admin": {
+        "title": "Manage"
+      },
+      "accounts.read": {
+        "title": "Read"
+      },
+      "api_integrations": {
+        "title": "Api integrations"
+      },
+      "api_integrations.admin": {
+        "title": "Manage"
+      },
+      "api_integrations.read": {
+        "title": "Read"
+      },
+      "api_integrations.write": {
+        "title": "Create and edit"
+      },
+      "catalog_integrations": {
+        "title": "Catalog integrations"
+      },
+      "catalog_integrations.admin": {
+        "title": "Manage"
+      },
+      "catalog_integrations.read": {
+        "title": "Read"
+      },
+      "catalog_integrations.write": {
+        "title": "Create and edit"
+      },
+      "code_bundle_executions": {
+        "title": "Code bundle executions"
+      },
+      "code_bundle_executions.execute": {
+        "title": "Run"
+      },
+      "code_bundle_executions.read": {
+        "title": "Read"
+      },
+      "code_bundle_executions.write": {
+        "title": "Create and edit"
+      },
+      "compute_pools": {
+        "title": "Compute pools"
+      },
+      "compute_pools.delete": {
+        "title": "Delete"
+      },
+      "compute_pools.instance_families": {
+        "title": "Instance families"
+      },
+      "compute_pools.instance_families.read": {
+        "title": "Read"
+      },
+      "compute_pools.read": {
+        "title": "Read"
+      },
+      "compute_pools.write": {
+        "title": "Create and edit"
+      },
+      "cortex": {
+        "title": "Cortex"
+      },
+      "cortex.agent": {
+        "title": "Agent"
+      },
+      "cortex.agent.execute": {
+        "title": "Run"
+      },
+      "cortex.agent.runs": {
+        "title": "Runs"
+      },
+      "cortex.agent.runs.read": {
+        "title": "Read"
+      },
+      "cortex.agent.runs.write": {
+        "title": "Create and edit"
+      },
+      "cortex.analyst": {
+        "title": "Analyst"
+      },
+      "cortex.analyst.agentic_optimization": {
+        "title": "Agentic optimization"
+      },
+      "cortex.analyst.agentic_optimization.read": {
+        "title": "Read"
+      },
+      "cortex.analyst.agentic_optimizations": {
+        "title": "Agentic optimizations"
+      },
+      "cortex.analyst.agentic_optimizations.read": {
+        "title": "Read"
+      },
+      "cortex.analyst.fast_generation": {
+        "title": "Fast generation"
+      },
+      "cortex.analyst.fast_generation.generate": {
+        "title": "Generate"
+      },
+      "cortex.analyst.feedback": {
+        "title": "Feedback"
+      },
+      "cortex.analyst.feedback.write": {
+        "title": "Create and edit"
+      },
+      "cortex.analyst.filters_and_metrics_suggestions": {
+        "title": "Filters and metrics suggestions"
+      },
+      "cortex.analyst.filters_and_metrics_suggestions.generate": {
+        "title": "Generate"
+      },
+      "cortex.analyst.message": {
+        "title": "Message"
+      },
+      "cortex.analyst.message.generate": {
+        "title": "Generate"
+      },
+      "cortex.analyst.pre_selection": {
+        "title": "Pre selection"
+      },
+      "cortex.analyst.pre_selection.generate": {
+        "title": "Generate"
+      },
+      "cortex.analyst.verified_query_suggestions": {
+        "title": "Verified query suggestions"
+      },
+      "cortex.analyst.verified_query_suggestions.generate": {
+        "title": "Generate"
+      },
+      "cortex.chat": {
+        "title": "Chat"
+      },
+      "cortex.chat.completions": {
+        "title": "Completions"
+      },
+      "cortex.chat.completions.generate": {
+        "title": "Generate"
+      },
+      "cortex.inference": {
+        "title": "Inference"
+      },
+      "cortex.inference.generate": {
+        "title": "Generate"
+      },
+      "cortex.messages": {
+        "title": "Messages"
+      },
+      "cortex.messages.generate": {
+        "title": "Generate"
+      },
+      "cortex.models": {
+        "title": "Models"
+      },
+      "cortex.models.read": {
+        "title": "Read"
+      },
+      "databases": {
+        "title": "Databases"
+      },
+      "databases.database_roles": {
+        "title": "Database roles"
+      },
+      "databases.database_roles.delete": {
+        "title": "Delete"
+      },
+      "databases.database_roles.future_grants": {
+        "title": "Future grants"
+      },
+      "databases.database_roles.future_grants.admin": {
+        "title": "Manage"
+      },
+      "databases.database_roles.future_grants.read": {
+        "title": "Read"
+      },
+      "databases.database_roles.grants": {
+        "title": "Grants"
+      },
+      "databases.database_roles.grants.admin": {
+        "title": "Manage"
+      },
+      "databases.database_roles.grants.read": {
+        "title": "Read"
+      },
+      "databases.database_roles.read": {
+        "title": "Read"
+      },
+      "databases.database_roles.write": {
+        "title": "Create and edit"
+      },
+      "databases.delete": {
+        "title": "Delete"
+      },
+      "databases.failover": {
+        "title": "Failover"
+      },
+      "databases.failover.admin": {
+        "title": "Manage"
+      },
+      "databases.read": {
+        "title": "Read"
+      },
+      "databases.replication": {
+        "title": "Replication"
+      },
+      "databases.replication.admin": {
+        "title": "Manage"
+      },
+      "databases.replication.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas": {
+        "title": "Schemas"
+      },
+      "databases.schemas.agents": {
+        "title": "Agents"
+      },
+      "databases.schemas.agents.execute": {
+        "title": "Run"
+      },
+      "databases.schemas.alerts": {
+        "title": "Alerts"
+      },
+      "databases.schemas.alerts.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.alerts.execute": {
+        "title": "Run"
+      },
+      "databases.schemas.alerts.read": {
+        "title": "Read"
+      },
+      "databases.schemas.alerts.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.artifact_repositories": {
+        "title": "Artifact repositories"
+      },
+      "databases.schemas.artifact_repositories.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.artifact_repositories.read": {
+        "title": "Read"
+      },
+      "databases.schemas.artifact_repositories.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.code_bundles": {
+        "title": "Code bundles"
+      },
+      "databases.schemas.code_bundles.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.code_bundles.execute": {
+        "title": "Run"
+      },
+      "databases.schemas.code_bundles.read": {
+        "title": "Read"
+      },
+      "databases.schemas.code_bundles.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.cortex_search_services": {
+        "title": "Cortex search services"
+      },
+      "databases.schemas.cortex_search_services.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.cortex_search_services.read": {
+        "title": "Read"
+      },
+      "databases.schemas.cortex_search_services.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.dynamic_tables": {
+        "title": "Dynamic tables"
+      },
+      "databases.schemas.dynamic_tables.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.dynamic_tables.read": {
+        "title": "Read"
+      },
+      "databases.schemas.dynamic_tables.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.event_tables": {
+        "title": "Event tables"
+      },
+      "databases.schemas.event_tables.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.event_tables.read": {
+        "title": "Read"
+      },
+      "databases.schemas.event_tables.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.functions": {
+        "title": "Functions"
+      },
+      "databases.schemas.functions.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.functions.execute": {
+        "title": "Run"
+      },
+      "databases.schemas.functions.read": {
+        "title": "Read"
+      },
+      "databases.schemas.functions.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.iceberg_tables": {
+        "title": "Iceberg tables"
+      },
+      "databases.schemas.iceberg_tables.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.iceberg_tables.execute": {
+        "title": "Run"
+      },
+      "databases.schemas.iceberg_tables.read": {
+        "title": "Read"
+      },
+      "databases.schemas.iceberg_tables.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.image_repositories": {
+        "title": "Image repositories"
+      },
+      "databases.schemas.image_repositories.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.image_repositories.images": {
+        "title": "Images"
+      },
+      "databases.schemas.image_repositories.images.read": {
+        "title": "Read"
+      },
+      "databases.schemas.image_repositories.read": {
+        "title": "Read"
+      },
+      "databases.schemas.image_repositories.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.network_rules": {
+        "title": "Network rules"
+      },
+      "databases.schemas.network_rules.admin": {
+        "title": "Manage"
+      },
+      "databases.schemas.network_rules.read": {
+        "title": "Read"
+      },
+      "databases.schemas.notebooks": {
+        "title": "Notebooks"
+      },
+      "databases.schemas.notebooks.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.notebooks.execute": {
+        "title": "Run"
+      },
+      "databases.schemas.notebooks.read": {
+        "title": "Read"
+      },
+      "databases.schemas.notebooks.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.password_policies": {
+        "title": "Password policies"
+      },
+      "databases.schemas.password_policies.admin": {
+        "title": "Manage"
+      },
+      "databases.schemas.password_policies.read": {
+        "title": "Read"
+      },
+      "databases.schemas.password_policies.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.pipes": {
+        "title": "Pipes"
+      },
+      "databases.schemas.pipes.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.pipes.read": {
+        "title": "Read"
+      },
+      "databases.schemas.pipes.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.procedures": {
+        "title": "Procedures"
+      },
+      "databases.schemas.procedures.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.procedures.execute": {
+        "title": "Run"
+      },
+      "databases.schemas.procedures.read": {
+        "title": "Read"
+      },
+      "databases.schemas.procedures.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.read": {
+        "title": "Read"
+      },
+      "databases.schemas.secrets": {
+        "title": "Secrets"
+      },
+      "databases.schemas.secrets.admin": {
+        "title": "Manage"
+      },
+      "databases.schemas.secrets.read": {
+        "title": "Read"
+      },
+      "databases.schemas.sequences": {
+        "title": "Sequences"
+      },
+      "databases.schemas.sequences.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.sequences.read": {
+        "title": "Read"
+      },
+      "databases.schemas.sequences.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.services": {
+        "title": "Services"
+      },
+      "databases.schemas.services.containers": {
+        "title": "Containers"
+      },
+      "databases.schemas.services.containers.read": {
+        "title": "Read"
+      },
+      "databases.schemas.services.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.services.endpoints": {
+        "title": "Endpoints"
+      },
+      "databases.schemas.services.endpoints.read": {
+        "title": "Read"
+      },
+      "databases.schemas.services.execute": {
+        "title": "Run"
+      },
+      "databases.schemas.services.instances": {
+        "title": "Instances"
+      },
+      "databases.schemas.services.instances.read": {
+        "title": "Read"
+      },
+      "databases.schemas.services.logs": {
+        "title": "Logs"
+      },
+      "databases.schemas.services.logs.read": {
+        "title": "Read"
+      },
+      "databases.schemas.services.read": {
+        "title": "Read"
+      },
+      "databases.schemas.services.roles": {
+        "title": "Roles"
+      },
+      "databases.schemas.services.roles.grants": {
+        "title": "Grants"
+      },
+      "databases.schemas.services.roles.grants.read": {
+        "title": "Read"
+      },
+      "databases.schemas.services.roles.grants_of": {
+        "title": "Grants of"
+      },
+      "databases.schemas.services.roles.grants_of.read": {
+        "title": "Read"
+      },
+      "databases.schemas.services.roles.read": {
+        "title": "Read"
+      },
+      "databases.schemas.services.status": {
+        "title": "Status"
+      },
+      "databases.schemas.services.status.read": {
+        "title": "Read"
+      },
+      "databases.schemas.services.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.stages": {
+        "title": "Stages"
+      },
+      "databases.schemas.stages.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.stages.files": {
+        "title": "Files"
+      },
+      "databases.schemas.stages.files.read": {
+        "title": "Read"
+      },
+      "databases.schemas.stages.files.share": {
+        "title": "Share"
+      },
+      "databases.schemas.stages.read": {
+        "title": "Read"
+      },
+      "databases.schemas.stages.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.streamlits": {
+        "title": "Streamlits"
+      },
+      "databases.schemas.streamlits.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.streamlits.read": {
+        "title": "Read"
+      },
+      "databases.schemas.streamlits.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.streams": {
+        "title": "Streams"
+      },
+      "databases.schemas.streams.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.streams.read": {
+        "title": "Read"
+      },
+      "databases.schemas.streams.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.tables": {
+        "title": "Tables"
+      },
+      "databases.schemas.tables.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.tables.execute": {
+        "title": "Run"
+      },
+      "databases.schemas.tables.read": {
+        "title": "Read"
+      },
+      "databases.schemas.tables.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.tags": {
+        "title": "Tags"
+      },
+      "databases.schemas.tags.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.tags.read": {
+        "title": "Read"
+      },
+      "databases.schemas.tags.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.tasks": {
+        "title": "Tasks"
+      },
+      "databases.schemas.tasks.complete_graphs": {
+        "title": "Complete graphs"
+      },
+      "databases.schemas.tasks.complete_graphs.read": {
+        "title": "Read"
+      },
+      "databases.schemas.tasks.current_graphs": {
+        "title": "Current graphs"
+      },
+      "databases.schemas.tasks.current_graphs.read": {
+        "title": "Read"
+      },
+      "databases.schemas.tasks.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.tasks.dependents": {
+        "title": "Dependents"
+      },
+      "databases.schemas.tasks.dependents.read": {
+        "title": "Read"
+      },
+      "databases.schemas.tasks.execute": {
+        "title": "Run"
+      },
+      "databases.schemas.tasks.read": {
+        "title": "Read"
+      },
+      "databases.schemas.tasks.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.user_defined_functions": {
+        "title": "User defined functions"
+      },
+      "databases.schemas.user_defined_functions.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.user_defined_functions.execute": {
+        "title": "Run"
+      },
+      "databases.schemas.user_defined_functions.read": {
+        "title": "Read"
+      },
+      "databases.schemas.user_defined_functions.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.views": {
+        "title": "Views"
+      },
+      "databases.schemas.views.delete": {
+        "title": "Delete"
+      },
+      "databases.schemas.views.read": {
+        "title": "Read"
+      },
+      "databases.schemas.views.write": {
+        "title": "Create and edit"
+      },
+      "databases.schemas.write": {
+        "title": "Create and edit"
+      },
+      "databases.write": {
+        "title": "Create and edit"
+      },
+      "external_volumes": {
+        "title": "External volumes"
+      },
+      "external_volumes.admin": {
+        "title": "Manage"
+      },
+      "external_volumes.read": {
+        "title": "Read"
+      },
+      "grants": {
+        "title": "Grants"
+      },
+      "grants.privileges": {
+        "title": "Privileges"
+      },
+      "grants.privileges.admin": {
+        "title": "Manage"
+      },
+      "grants.privileges.option": {
+        "title": "Option"
+      },
+      "grants.privileges.option.admin": {
+        "title": "Manage"
+      },
+      "grants.read": {
+        "title": "Read"
+      },
+      "managed_accounts": {
+        "title": "Managed accounts"
+      },
+      "managed_accounts.admin": {
+        "title": "Manage"
+      },
+      "managed_accounts.read": {
+        "title": "Read"
+      },
+      "network_policies": {
+        "title": "Network policies"
+      },
+      "network_policies.admin": {
+        "title": "Manage"
+      },
+      "network_policies.read": {
+        "title": "Read"
+      },
+      "network_policies.write": {
+        "title": "Create and edit"
+      },
+      "notification_integrations": {
+        "title": "Notification integrations"
+      },
+      "notification_integrations.admin": {
+        "title": "Manage"
+      },
+      "notification_integrations.read": {
+        "title": "Read"
+      },
+      "notification_integrations.write": {
+        "title": "Create and edit"
+      },
+      "results": {
+        "title": "Results"
+      },
+      "results.read": {
+        "title": "Read"
+      },
+      "roles": {
+        "title": "Roles"
+      },
+      "roles.admin": {
+        "title": "Manage"
+      },
+      "roles.future_grants": {
+        "title": "Future grants"
+      },
+      "roles.future_grants.admin": {
+        "title": "Manage"
+      },
+      "roles.future_grants.read": {
+        "title": "Read"
+      },
+      "roles.grants": {
+        "title": "Grants"
+      },
+      "roles.grants.admin": {
+        "title": "Manage"
+      },
+      "roles.grants.read": {
+        "title": "Read"
+      },
+      "roles.grants_of": {
+        "title": "Grants of"
+      },
+      "roles.grants_of.read": {
+        "title": "Read"
+      },
+      "roles.grants_on": {
+        "title": "Grants on"
+      },
+      "roles.grants_on.read": {
+        "title": "Read"
+      },
+      "roles.read": {
+        "title": "Read"
+      },
+      "roles.write": {
+        "title": "Create and edit"
+      },
+      "statements": {
+        "title": "Statements"
+      },
+      "statements.execute": {
+        "title": "Run"
+      },
+      "statements.read": {
+        "title": "Read"
+      },
+      "statements.write": {
+        "title": "Create and edit"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.admin": {
+        "title": "Manage"
+      },
+      "users.grants": {
+        "title": "Grants"
+      },
+      "users.grants.admin": {
+        "title": "Manage"
+      },
+      "users.grants.read": {
+        "title": "Read"
+      },
+      "users.read": {
+        "title": "Read"
+      },
+      "users.write": {
+        "title": "Create and edit"
+      },
+      "warehouses": {
+        "title": "Warehouses"
+      },
+      "warehouses.delete": {
+        "title": "Delete"
+      },
+      "warehouses.read": {
+        "title": "Read"
+      },
+      "warehouses.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://example.com",
+            "path": "/api/v2",
+            "prefix": "Bearer ",
+            "value": "password"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Your Snowflake origin (https://host)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "password",
+        "label": "Programmatic access token, OAuth token, or key-pair JWT",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Snowflake",
   "http": {
     "operations": {
-      "CancelStatement": {"action":"write.statements","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/statements/{statementHandle}/cancel","params":["requestId"],"scope":{"statementHandle":{"from":"path","at":"statementHandle"}}},
-      "GetStatementStatus": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/statements/{statementHandle}","params":["requestId","partition"],"scope":{"statementHandle":{"from":"path","at":"statementHandle"}}},
-      "SubmitStatement": {"action":"write.statements","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/statements","params":["requestId","async","nullable"],"body":"json","scope":{}}
+      "CancelStatement": {"action":"statements.write","effects":["write"],"method":"POST","origin":"{origin}","params":["requestId"],"path":"/api/v2/statements/{statementHandle}/cancel","scope":{"statementHandle":{"at":"statementHandle","from":"path"}}},
+      "GetStatementStatus": {"action":"statements.read","effects":["read"],"method":"GET","origin":"{origin}","params":["requestId","partition"],"path":"/api/v2/statements/{statementHandle}","scope":{"statementHandle":{"at":"statementHandle","from":"path"}}},
+      "SubmitStatement": {"action":"statements.execute","body":"json","effects":["admin","delete","execute","send","share","write"],"method":"POST","origin":"{origin}","params":["requestId","retry","async","nullable"],"path":"/api/v2/statements","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "UndropAccount": {"action":"accounts.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/accounts/{name}:undrop","scope":{"name":{"at":"name","from":"path"}}},
+      "abortAllQueriesOnWarehouse": {"action":"warehouses.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/warehouses/{name}:abort","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "abortStreamlit": {"action":"databases.schemas.streamlits.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/streamlits/{name}:abort","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "addLiveVersionNotebook": {"action":"databases.schemas.notebooks.write","effects":["write"],"method":"POST","origin":"{origin}","params":["fromLast","comment"],"path":"/api/v2/databases/{database}/schemas/{schema}/notebooks/{name}:add-live-version","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "addLiveVersionStreamlit": {"action":"databases.schemas.streamlits.write","effects":["write"],"method":"POST","origin":"{origin}","params":["fromLast"],"path":"/api/v2/databases/{database}/schemas/{schema}/streamlits/{name}:add-live-version","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "addLiveVersionStreamlit.json.c9fb31e0800f": {"action":"databases.schemas.streamlits.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["fromLast"],"path":"/api/v2/databases/{database}/schemas/{schema}/streamlits/{name}:add-live-version","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "addVersionCodeBundle": {"action":"databases.schemas.code_bundles.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/code-bundles/{name}:add-version","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "addVersionFromGitStreamlit": {"action":"databases.schemas.streamlits.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/streamlits/{name}:add-version-from-git","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "addVersionStreamlit": {"action":"databases.schemas.streamlits.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/streamlits/{name}:add-version","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "callProcedure": {"action":"databases.schemas.procedures.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/procedures/{nameWithArgs}:call","scope":{"database":{"at":"database","from":"path"},"nameWithArgs":{"at":"nameWithArgs","from":"path"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "cancelAgentRun": {"action":"cortex.agent.runs.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/cortex/agent/runs/{run_id}/cancel","scope":{"run_id":{"at":"run_id","from":"path"}}},
+      "cancelCodeBundleExecution": {"action":"code_bundle_executions.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/code-bundle-executions/{executionId}:cancel","scope":{"executionId":{"at":"executionId","from":"path"}}},
+      "cloneAlert": {"action":"databases.schemas.alerts.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","targetDatabase","targetSchema"],"path":"/api/v2/databases/{database}/schemas/{schema}/alerts/{name}:clone","scope":{"body.name":{"at":"/name","from":"body"},"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "cloneDatabase": {"action":"databases.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","kind"],"path":"/api/v2/databases/{name}:clone","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "cloneDatabaseRole": {"action":"databases.database_roles.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","targetDatabase"],"path":"/api/v2/databases/{database}/database-roles/{name}:clone","scope":{"body.name":{"at":"/name","from":"body"},"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "cloneDynamicTable": {"action":"databases.schemas.dynamic_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants","targetDatabase","targetSchema"],"path":"/api/v2/databases/{database}/schemas/{schema}/dynamic-tables/{name}:clone","scope":{"body.name":{"at":"/name","from":"body"},"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "cloneSchema": {"action":"databases.schemas.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","kind","targetDatabase"],"path":"/api/v2/databases/{database}/schemas/{name}:clone","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "cloneSequence": {"action":"databases.schemas.sequences.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","targetDatabase","targetSchema"],"path":"/api/v2/databases/{database}/schemas/{schema}/sequences/{name}:clone","scope":{"body.name":{"at":"/name","from":"body"},"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"name","from":"path"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "cloneSnowflakeManagedIcebergTable": {"action":"databases.schemas.iceberg_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants","targetDatabase","targetSchema"],"path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables/{name}:clone","scope":{"body.name":{"at":"/name","from":"body"},"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "cloneStream": {"action":"databases.schemas.streams.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","targetDatabase","targetSchema","copyGrants"],"path":"/api/v2/databases/{database}/schemas/{schema}/streams/{name}:clone","scope":{"body.name":{"at":"/name","from":"body"},"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "cloneTable": {"action":"databases.schemas.tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants","targetDatabase","targetSchema"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}:clone","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "commitNotebook": {"action":"databases.schemas.notebooks.write","effects":["write"],"method":"POST","origin":"{origin}","params":["version","comment"],"path":"/api/v2/databases/{database}/schemas/{schema}/notebooks/{name}:commit","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "commitStreamlit": {"action":"databases.schemas.streamlits.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/streamlits/{name}:commit","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "commitStreamlit.json.f8db185ae25b": {"action":"databases.schemas.streamlits.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/streamlits/{name}:commit","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "convertToManagedIcebergTable": {"action":"databases.schemas.iceberg_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables/{name}:convert-to-managed","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "cortexGenericAnthropicMessages": {"action":"cortex.messages.generate","body":"json","effects":["generate","pay"],"method":"POST","origin":"{origin}","path":"/api/v2/cortex/v1/messages","scope":{}},
+      "cortexGenericAnthropicMessages.none.830b46b65c6d": {"action":"cortex.messages.generate","effects":["generate","pay"],"method":"POST","origin":"{origin}","path":"/api/v2/cortex/v1/messages","scope":{}},
+      "cortexGenericOpenAIChatCompletions": {"action":"cortex.chat.completions.generate","body":"json","effects":["generate","pay"],"method":"POST","origin":"{origin}","path":"/api/v2/cortex/v1/chat/completions","scope":{}},
+      "cortexGenericOpenAIChatCompletions.none.e159a51126da": {"action":"cortex.chat.completions.generate","effects":["generate","pay"],"method":"POST","origin":"{origin}","path":"/api/v2/cortex/v1/chat/completions","scope":{}},
+      "cortexLLMInferenceComplete": {"action":"cortex.inference.generate","body":"json","effects":["generate","pay"],"method":"POST","origin":"{origin}","path":"/api/v2/cortex/inference:complete","scope":{}},
+      "cortexLLMInferenceComplete.none.6d245b38545c": {"action":"cortex.inference.generate","effects":["generate","pay"],"method":"POST","origin":"{origin}","path":"/api/v2/cortex/inference:complete","scope":{}},
+      "createAPIIntegration": {"action":"api_integrations.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/api-integrations","scope":{"name":{"at":"/name","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createAccount": {"action":"accounts.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/accounts","scope":{"account_locator_url":{"at":"/account_locator_url","from":"body","optional":true},"account_url":{"at":"/account_url","from":"body","optional":true},"admin_name":{"at":"/admin_name","from":"body"},"admin_rsa_public_key":{"at":"/admin_rsa_public_key","from":"body","optional":true},"consumption_billing_entity_name":{"at":"/consumption_billing_entity_name","from":"body","optional":true},"email":{"at":"/email","from":"body"},"first_name":{"at":"/first_name","from":"body","optional":true},"last_name":{"at":"/last_name","from":"body","optional":true},"managed_accounts":{"at":"/managed_accounts","from":"body","optional":true,"type":"number"},"marketplace_consumer_billing_entity_name":{"at":"/marketplace_consumer_billing_entity_name","from":"body","optional":true},"marketplace_provider_billing_entity_name":{"at":"/marketplace_provider_billing_entity_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"old_account_url":{"at":"/old_account_url","from":"body","optional":true},"organization_name":{"at":"/organization_name","from":"body","optional":true},"organization_old_url":{"at":"/organization_old_url","from":"body","optional":true},"region_group":{"at":"/region_group","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createAlert": {"action":"databases.schemas.alerts.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/alerts","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createArtifactRepository": {"action":"databases.schemas.artifact_repositories.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/artifact-repositories","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createCatalogIntegration": {"action":"catalog_integrations.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/catalog-integrations","scope":{"name":{"at":"/name","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createCodeBundle": {"action":"databases.schemas.code_bundles.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/code-bundles","scope":{"container_database":{"at":"/container_database","from":"body","optional":true},"container_name":{"at":"/container_name","from":"body","optional":true},"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createComputePool": {"action":"compute_pools.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","initiallySuspended"],"path":"/api/v2/compute-pools","scope":{"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"placement_group":{"at":"/placement_group","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createCortexSearchService": {"action":"databases.schemas.cortex_search_services.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/cortex-search-services","scope":{"database":{"at":"database","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "createDatabase": {"action":"databases.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","kind"],"path":"/api/v2/databases","scope":{"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createDatabaseFromShare": {"action":"databases.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","share"],"path":"/api/v2/databases:from-share","scope":{"name":{"at":"/name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createDatabaseFromShareDeprecated": {"action":"databases.write","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","share"],"path":"/api/v2/databases/{name}:from_share","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "createDatabaseRole": {"action":"databases.database_roles.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/database-roles","scope":{"database":{"at":"database","from":"path"},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createDynamicTable": {"action":"databases.schemas.dynamic_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/dynamic-tables","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createEventTable": {"action":"databases.schemas.event_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants"],"path":"/api/v2/databases/{database}/schemas/{schema}/event-tables","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createExternalVolume": {"action":"external_volumes.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/external-volumes","scope":{"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createFunction": {"action":"databases.schemas.functions.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/functions","scope":{"database":{"at":"database","from":"path"},"name":{"at":"/name","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "createImageRepository": {"action":"databases.schemas.image_repositories.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/image-repositories","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"repository_url":{"at":"/repository_url","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createManagedAccount": {"action":"managed_accounts.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/managed-accounts","scope":{"account_locator_url":{"at":"/account_locator_url","from":"body","optional":true},"admin_name":{"at":"/admin_name","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"url":{"at":"/url","from":"body","optional":true}}},
+      "createNetworkPolicy": {"action":"network_policies.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/network-policies","scope":{"allowed_ip_list":{"at":"/allowed_ip_list","from":"body","optional":true,"type":"array"},"allowed_network_rule_list":{"at":"/allowed_network_rule_list","from":"body","optional":true,"type":"array"},"blocked_ip_list":{"at":"/blocked_ip_list","from":"body","optional":true,"type":"array"},"blocked_network_rule_list":{"at":"/blocked_network_rule_list","from":"body","optional":true,"type":"array"},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createNetworkRule": {"action":"databases.schemas.network_rules.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/network-rules","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true},"value_list":{"at":"/value_list","from":"body","optional":true,"type":"array"}}},
+      "createNotebook": {"action":"databases.schemas.notebooks.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/notebooks","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"main_file":{"at":"/main_file","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"runtime_name":{"at":"/runtime_name","from":"body","optional":true},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true},"url_id":{"at":"/url_id","from":"body","optional":true}}},
+      "createNotificationIntegration": {"action":"notification_integrations.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/notification-integrations","scope":{"name":{"at":"/name","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createOrAlterAPIIntegration": {"action":"api_integrations.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/v2/api-integrations/{name}","scope":{"body.name":{"at":"/name","from":"body"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createOrAlterArtifactRepository": {"action":"databases.schemas.artifact_repositories.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/artifact-repositories/{name}","scope":{"body.name":{"at":"/name","from":"body"},"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"name","from":"path"},"owner":{"at":"/owner","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createOrAlterComputePool": {"action":"compute_pools.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v2/compute-pools/{name}","scope":{"body.name":{"at":"/name","from":"body"},"name":{"at":"name","from":"path"},"owner":{"at":"/owner","from":"body","optional":true},"placement_group":{"at":"/placement_group","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createOrAlterDatabase": {"action":"databases.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v2/databases/{name}","scope":{"body.name":{"at":"/name","from":"body"},"name":{"at":"name","from":"path"},"owner":{"at":"/owner","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createOrAlterSchema": {"action":"databases.schemas.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","params":["kind"],"path":"/api/v2/databases/{database}/schemas/{name}","scope":{"body.name":{"at":"/name","from":"body"},"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"name","from":"path"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createOrAlterService": {"action":"databases.schemas.services.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/services/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "createOrAlterTable": {"action":"databases.schemas.tables.delete","body":"json","effects":["delete","write"],"method":"PUT","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}","scope":{"body.name":{"at":"/name","from":"body"},"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"name","from":"path"},"owner":{"at":"/owner","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createOrAlterTag": {"action":"databases.schemas.tags.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/tags/{name}","scope":{"body.name":{"at":"/name","from":"body"},"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"name","from":"path"},"owner":{"at":"/owner","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createOrAlterTask": {"action":"databases.schemas.tasks.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/tasks/{name}","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"execute_as_user":{"at":"/execute_as_user","from":"body","optional":true},"id":{"at":"/id","from":"body","optional":true},"name":{"at":"name","from":"path"},"owner":{"at":"/owner","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createOrAlterUser": {"action":"users.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/v2/users/{name}","scope":{"body.name":{"at":"/name","from":"body"},"custom_landing_page_url":{"at":"/custom_landing_page_url","from":"body","optional":true},"display_name":{"at":"/display_name","from":"body","optional":true},"email":{"at":"/email","from":"body","optional":true},"ext_authn_uid":{"at":"/ext_authn_uid","from":"body","optional":true},"first_name":{"at":"/first_name","from":"body","optional":true},"last_name":{"at":"/last_name","from":"body","optional":true},"login_name":{"at":"/login_name","from":"body","optional":true},"middle_name":{"at":"/middle_name","from":"body","optional":true},"name":{"at":"name","from":"path"},"owner":{"at":"/owner","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"rsa_public_key":{"at":"/rsa_public_key","from":"body","optional":true}}},
+      "createOrAlterWarehouse": {"action":"warehouses.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v2/warehouses/{name}","scope":{"body.name":{"at":"/name","from":"body"},"name":{"at":"name","from":"path"},"owner":{"at":"/owner","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createPasswordPolicy": {"action":"databases.schemas.password_policies.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/password-policies","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createPipe": {"action":"databases.schemas.pipes.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/pipes","scope":{"aws_sns_topic":{"at":"/aws_sns_topic","from":"body","optional":true},"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createProcedure": {"action":"databases.schemas.procedures.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants"],"path":"/api/v2/databases/{database}/schemas/{schema}/procedures","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createRole": {"action":"roles.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/roles","scope":{"assigned_to_users":{"at":"/assigned_to_users","from":"body","optional":true,"type":"number"},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createSchema": {"action":"databases.schemas.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","kind"],"path":"/api/v2/databases/{database}/schemas","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createSecret": {"action":"databases.schemas.secrets.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/secrets","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createSequence": {"action":"databases.schemas.sequences.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/sequences","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createService": {"action":"databases.schemas.services.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/services","scope":{"database":{"at":"database","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "createSnowflakeManagedIcebergTable": {"action":"databases.schemas.iceberg_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants"],"path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables","scope":{"catalog_table_name":{"at":"/catalog_table_name","from":"body","optional":true},"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createSnowflakeManagedIcebergTableAsSelect": {"action":"databases.schemas.iceberg_tables.execute","body":"json","effects":["execute","write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants","query"],"path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables:as-select","scope":{"database":{"at":"database","from":"path"},"name":{"at":"/name","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "createSnowflakeManagedIcebergTableLike": {"action":"databases.schemas.iceberg_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants","targetDatabase","targetSchema"],"path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables/{name}:create-like","scope":{"body.name":{"at":"/name","from":"body"},"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "createStage": {"action":"databases.schemas.stages.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/stages","scope":{"database":{"at":"database","from":"path"},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"url":{"at":"/url","from":"body","optional":true}}},
+      "createStream": {"action":"databases.schemas.streams.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants"],"path":"/api/v2/databases/{database}/schemas/{schema}/streams","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true},"table_name":{"at":"/table_name","from":"body","optional":true}}},
+      "createStreamlit": {"action":"databases.schemas.streamlits.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/streamlits","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"main_file":{"at":"/main_file","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"runtime_name":{"at":"/runtime_name","from":"body","optional":true},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true},"url_id":{"at":"/url_id","from":"body","optional":true}}},
+      "createTable": {"action":"databases.schemas.tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createTableAsSelect": {"action":"databases.schemas.tables.execute","body":"json","effects":["execute","write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants","query"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables:as-select","scope":{"database":{"at":"database","from":"path"},"name":{"at":"/name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "createTableAsSelectDeprecated": {"action":"databases.schemas.tables.execute","body":"json","effects":["execute","write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants","query"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}:as_select","scope":{"body.name":{"at":"/name","from":"body"},"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"name","from":"path"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createTableLike": {"action":"databases.schemas.tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}:create-like","scope":{"body.name":{"at":"/name","from":"body","optional":true},"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "createTableLikeDeprecated": {"action":"databases.schemas.tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants","newTableName"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}:create_like","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"newTableName":{"at":"newTableName","from":"query"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "createTableUsingTemplate": {"action":"databases.schemas.tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants","query"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables:using-template","scope":{"database":{"at":"database","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "createTableUsingTemplate.json.85365111a046": {"action":"databases.schemas.tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants","query"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables:using-template","scope":{"database":{"at":"database","from":"path"},"name":{"at":"/name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "createTableUsingTemplateDeprecated": {"action":"databases.schemas.tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants","query"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}:using_template","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "createTag": {"action":"databases.schemas.tags.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/tags","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createTask": {"action":"databases.schemas.tasks.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/tasks","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"execute_as_user":{"at":"/execute_as_user","from":"body","optional":true},"id":{"at":"/id","from":"body","optional":true},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createUnmanagedIcebergTableFromAWSGlueCatalog": {"action":"databases.schemas.iceberg_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables:from-aws-glue-catalog","scope":{"catalog_table_name":{"at":"/catalog_table_name","from":"body"},"database":{"at":"database","from":"path"},"name":{"at":"/name","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "createUnmanagedIcebergTableFromDelta": {"action":"databases.schemas.iceberg_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables:from-delta","scope":{"database":{"at":"database","from":"path"},"name":{"at":"/name","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "createUnmanagedIcebergTableFromIcebergFiles": {"action":"databases.schemas.iceberg_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables:from-iceberg-files","scope":{"database":{"at":"database","from":"path"},"name":{"at":"/name","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "createUnmanagedIcebergTableFromIcebergRest": {"action":"databases.schemas.iceberg_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables:from-iceberg-rest","scope":{"catalog_table_name":{"at":"/catalog_table_name","from":"body"},"database":{"at":"database","from":"path"},"name":{"at":"/name","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "createUser": {"action":"users.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/users","scope":{"custom_landing_page_url":{"at":"/custom_landing_page_url","from":"body","optional":true},"display_name":{"at":"/display_name","from":"body","optional":true},"email":{"at":"/email","from":"body","optional":true},"ext_authn_uid":{"at":"/ext_authn_uid","from":"body","optional":true},"first_name":{"at":"/first_name","from":"body","optional":true},"last_name":{"at":"/last_name","from":"body","optional":true},"login_name":{"at":"/login_name","from":"body","optional":true},"middle_name":{"at":"/middle_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"rsa_public_key":{"at":"/rsa_public_key","from":"body","optional":true}}},
+      "createUserDefinedFunction": {"action":"databases.schemas.user_defined_functions.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants"],"path":"/api/v2/databases/{database}/schemas/{schema}/user-defined-functions","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createView": {"action":"databases.schemas.views.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode","copyGrants"],"path":"/api/v2/databases/{database}/schemas/{schema}/views","scope":{"database":{"at":"database","from":"path"},"database_name":{"at":"/database_name","from":"body","optional":true},"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"schema_name":{"at":"/schema_name","from":"body","optional":true}}},
+      "createWarehouse": {"action":"warehouses.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["createMode"],"path":"/api/v2/warehouses","scope":{"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "deleteAPIIntegration": {"action":"api_integrations.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/api-integrations/{name}","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteAccount": {"action":"accounts.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["ifExists","gracePeriodInDays"],"path":"/api/v2/accounts/{name}","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteAlert": {"action":"databases.schemas.alerts.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/alerts/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteArtifactRepository": {"action":"databases.schemas.artifact_repositories.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/artifact-repositories/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteCatalogIntegration": {"action":"catalog_integrations.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/catalog-integrations/{name}","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteCodeBundle": {"action":"databases.schemas.code_bundles.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/code-bundles/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteComputePool": {"action":"compute_pools.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/compute-pools/{name}","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteCortexSearchService": {"action":"databases.schemas.cortex_search_services.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/cortex-search-services/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteDatabase": {"action":"databases.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists","restrict"],"path":"/api/v2/databases/{name}","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteDatabaseRole": {"action":"databases.database_roles.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/database-roles/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteDynamicTable": {"action":"databases.schemas.dynamic_tables.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/dynamic-tables/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteEventTable": {"action":"databases.schemas.event_tables.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/event-tables/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteExternalVolume": {"action":"external_volumes.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/external-volumes/{name}","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteFunction": {"action":"databases.schemas.functions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/functions/{nameWithArgs}","scope":{"database":{"at":"database","from":"path"},"nameWithArgs":{"at":"nameWithArgs","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteImageRepository": {"action":"databases.schemas.image_repositories.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/image-repositories/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteManagedAccount": {"action":"managed_accounts.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/managed-accounts/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "deleteNetworkPolicy": {"action":"network_policies.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/network-policies/{name}","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteNetworkRule": {"action":"databases.schemas.network_rules.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/network-rules/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteNotebook": {"action":"databases.schemas.notebooks.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/notebooks/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteNotificationIntegration": {"action":"notification_integrations.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/notification-integrations/{name}","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deletePasswordPolicy": {"action":"databases.schemas.password_policies.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/password-policies/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deletePipe": {"action":"databases.schemas.pipes.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/pipes/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteProcedure": {"action":"databases.schemas.procedures.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/procedures/{nameWithArgs}","scope":{"database":{"at":"database","from":"path"},"nameWithArgs":{"at":"nameWithArgs","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteRole": {"action":"roles.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/roles/{name}","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteSchema": {"action":"databases.schemas.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists","restrict"],"path":"/api/v2/databases/{database}/schemas/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteSecret": {"action":"databases.schemas.secrets.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/secrets/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteSequence": {"action":"databases.schemas.sequences.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/sequences/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteService": {"action":"databases.schemas.services.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/services/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteStage": {"action":"databases.schemas.stages.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/stages/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteStream": {"action":"databases.schemas.streams.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/streams/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteStreamlit": {"action":"databases.schemas.streamlits.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/streamlits/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteTable": {"action":"databases.schemas.tables.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteTag": {"action":"databases.schemas.tags.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/tags/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteTask": {"action":"databases.schemas.tasks.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/tasks/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteUser": {"action":"users.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/users/{name}","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteUserDefinedFunction": {"action":"databases.schemas.user_defined_functions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/user-defined-functions/{nameWithArgs}","scope":{"database":{"at":"database","from":"path"},"nameWithArgs":{"at":"nameWithArgs","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteView": {"action":"databases.schemas.views.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/views/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "deleteWarehouse": {"action":"warehouses.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists"],"path":"/api/v2/warehouses/{name}","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "disableDatabaseFailover": {"action":"databases.failover.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{name}/failover:disable","scope":{"name":{"at":"name","from":"path"}}},
+      "disableDatabaseFailover.json.bb854160d20f": {"action":"databases.failover.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{name}/failover:disable","scope":{"accounts":{"at":"/accounts","from":"body","type":"array"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "disableDatabaseReplication": {"action":"databases.replication.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{name}/replication:disable","scope":{"name":{"at":"name","from":"path"}}},
+      "disableDatabaseReplication.json.f3aca992f4c5": {"action":"databases.replication.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{name}/replication:disable","scope":{"accounts":{"at":"/accounts","from":"body","type":"array"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "disableWarehouse": {"action":"warehouses.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/warehouses/{name}:disable","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "dropIcebergTable": {"action":"databases.schemas.iceberg_tables.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ifExists","type"],"path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "embed": {"action":"cortex.inference.generate","body":"json","effects":["generate","pay"],"method":"POST","origin":"{origin}","path":"/api/v2/cortex/inference:embed","scope":{}},
+      "enableDatabaseFailover": {"action":"databases.failover.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{name}/failover:enable","scope":{"accounts":{"at":"/accounts","from":"body","type":"array"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "enableDatabaseReplication": {"action":"databases.replication.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","params":["ignore_edition_check"],"path":"/api/v2/databases/{name}/replication:enable","scope":{"accounts":{"at":"/accounts","from":"body","type":"array"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "enableWarehouse": {"action":"warehouses.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/warehouses/{name}:enable","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "executeAlert": {"action":"databases.schemas.alerts.execute","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/alerts/{name}:execute","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "executeCodeBundle": {"action":"code_bundle_executions.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","params":["asyncExec"],"path":"/api/v2/code-bundle-executions","scope":{"execution_name":{"at":"/execution_name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "executeCodeBundle.json.31569ba36bca": {"action":"databases.schemas.code_bundles.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","params":["asyncExec"],"path":"/api/v2/databases/{database}/schemas/{schema}/code-bundles/{name}:execute","scope":{"database":{"at":"database","from":"path"},"execution_name":{"at":"/execution_name","from":"body","optional":true},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "executeFunction": {"action":"databases.schemas.functions.execute","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/functions/{name}:execute","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "executeFunction.json.b1096c79334e": {"action":"databases.schemas.functions.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/functions/{name}:execute","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "executeJobService": {"action":"databases.schemas.services.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/services:execute-job","scope":{"database":{"at":"database","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "executeNotebook": {"action":"databases.schemas.notebooks.execute","effects":["execute"],"method":"POST","origin":"{origin}","params":["asyncExec"],"path":"/api/v2/databases/{database}/schemas/{schema}/notebooks/{name}:execute","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "executeTask": {"action":"databases.schemas.tasks.execute","effects":["execute"],"method":"POST","origin":"{origin}","params":["asyncExec","retryLast"],"path":"/api/v2/databases/{database}/schemas/{schema}/tasks/{name}:execute","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "executeUserDefinedFunction": {"action":"databases.schemas.user_defined_functions.execute","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/user-defined-functions/{name}:execute","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "executeUserDefinedFunction.json.c17f481bca3b": {"action":"databases.schemas.user_defined_functions.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/user-defined-functions/{name}:execute","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "fastGeneration": {"action":"cortex.analyst.fast_generation.generate","body":"json","effects":["generate","pay"],"method":"POST","origin":"{origin}","path":"/api/v2/cortex/analyst/fast-generation","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "fetchAPIIntegration": {"action":"api_integrations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/api-integrations/{name}","path_patterns":{"name":"[^:]+"},"scope":{"name":{"at":"name","from":"path"}}},
+      "fetchAlert": {"action":"databases.schemas.alerts.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/alerts/{name}","path_patterns":{"name":"[^:]+"},"scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchArtifactRepository": {"action":"databases.schemas.artifact_repositories.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/artifact-repositories/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchCatalogIntegration": {"action":"catalog_integrations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/catalog-integrations/{name}","path_patterns":{"name":"[^:]+"},"scope":{"name":{"at":"name","from":"path"}}},
+      "fetchCodeBundle": {"action":"databases.schemas.code_bundles.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/code-bundles/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchCodeBundleExecutionStatus": {"action":"code_bundle_executions.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/code-bundle-executions/{executionId}","scope":{"executionId":{"at":"executionId","from":"path"}}},
+      "fetchComputePool": {"action":"compute_pools.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/compute-pools/{name}","path_patterns":{"name":"[^:i][^:]*|i(?:|[^:n][^:]*|n(?:|[^:s][^:]*|s(?:|[^:t][^:]*|t(?:|[^:a][^:]*|a(?:|[^:n][^:]*|n(?:|[^:c][^:]*|c(?:|[^:e][^:]*|e(?:|[^:\\-][^:]*|-(?:|[^:f][^:]*|f(?:|[^:a][^:]*|a(?:|[^:m][^:]*|m(?:|[^:i][^:]*|i(?:|[^:l][^:]*|l(?:|[^:i][^:]*|i(?:|[^:e][^:]*|e(?:|[^:s][^:]*|s[^:]+))))))))))))))))"},"scope":{"name":{"at":"name","from":"path"}}},
+      "fetchCortexSearchService": {"action":"databases.schemas.cortex_search_services.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/cortex-search-services/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchDatabase": {"action":"databases.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{name}","path_patterns":{"name":"[^:]+"},"scope":{"name":{"at":"name","from":"path"}}},
+      "fetchDynamicTable": {"action":"databases.schemas.dynamic_tables.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/dynamic-tables/{name}","path_patterns":{"name":"[^:]+"},"scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchEventTable": {"action":"databases.schemas.event_tables.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/event-tables/{name}","path_patterns":{"name":"[^:]+"},"scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchExternalVolume": {"action":"external_volumes.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/external-volumes/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "fetchFunction": {"action":"databases.schemas.functions.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/functions/{nameWithArgs}","path_patterns":{"nameWithArgs":"[^:]+"},"scope":{"database":{"at":"database","from":"path"},"nameWithArgs":{"at":"nameWithArgs","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchIcebergTable": {"action":"databases.schemas.iceberg_tables.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables/{name}","path_patterns":{"name":"[^:]+"},"scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchImageRepository": {"action":"databases.schemas.image_repositories.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/image-repositories/{name}","path_patterns":{"name":"[^:]+"},"scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchNetworkPolicy": {"action":"network_policies.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/network-policies/{name}","path_patterns":{"name":"[^:]+"},"scope":{"name":{"at":"name","from":"path"}}},
+      "fetchNetworkRule": {"action":"databases.schemas.network_rules.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/network-rules/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchNotebook": {"action":"databases.schemas.notebooks.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/notebooks/{name}","path_patterns":{"name":"[^:]+"},"scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchNotificationIntegration": {"action":"notification_integrations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/notification-integrations/{name}","path_patterns":{"name":"[^:]+"},"scope":{"name":{"at":"name","from":"path"}}},
+      "fetchPasswordPolicy": {"action":"databases.schemas.password_policies.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/password-policies/{name}","path_patterns":{"name":"[^:]+"},"scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchPipe": {"action":"databases.schemas.pipes.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/pipes/{name}","path_patterns":{"name":"[^:]+"},"scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchProcedure": {"action":"databases.schemas.procedures.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/procedures/{nameWithArgs}","path_patterns":{"nameWithArgs":"[^:]+"},"scope":{"database":{"at":"database","from":"path"},"nameWithArgs":{"at":"nameWithArgs","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchResult": {"action":"results.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page"],"path":"/api/v2/results/{result_handler}","scope":{"result_handler":{"at":"result_handler","from":"path"}}},
+      "fetchSchema": {"action":"databases.schemas.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{name}","path_patterns":{"name":"[^:]+"},"scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"}}},
+      "fetchSecret": {"action":"databases.schemas.secrets.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/secrets/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchSequence": {"action":"databases.schemas.sequences.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/sequences/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchService": {"action":"databases.schemas.services.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/services/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchServiceLogs": {"action":"databases.schemas.services.logs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["instanceId","containerName","numLines"],"path":"/api/v2/databases/{database}/schemas/{schema}/services/{name}/logs","scope":{"containerName":{"at":"containerName","from":"query"},"database":{"at":"database","from":"path"},"instanceId":{"at":"instanceId","from":"query"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "fetchServiceStatus": {"action":"databases.schemas.services.status.read","effects":["read"],"method":"GET","origin":"{origin}","params":["timeout"],"path":"/api/v2/databases/{database}/schemas/{schema}/services/{name}/status","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "fetchStage": {"action":"databases.schemas.stages.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/stages/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchStream": {"action":"databases.schemas.streams.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/streams/{name}","path_patterns":{"name":"[^:]+"},"scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchStreamlit": {"action":"databases.schemas.streamlits.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/streamlits/{name}","path_patterns":{"name":"[^:]+"},"scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchTable": {"action":"databases.schemas.tables.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}","path_patterns":{"name":"[^:]+"},"scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchTag": {"action":"databases.schemas.tags.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/tags/{name}","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchTask": {"action":"databases.schemas.tasks.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/tasks/{name}","path_patterns":{"name":"[^:]+"},"scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchTaskDependents": {"action":"databases.schemas.tasks.dependents.read","effects":["read"],"method":"GET","origin":"{origin}","params":["recursive"],"path":"/api/v2/databases/{database}/schemas/{schema}/tasks/{name}/dependents","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "fetchUser": {"action":"users.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/users/{name}","path_patterns":{"name":"[^:]+"},"scope":{"name":{"at":"name","from":"path"}}},
+      "fetchUserDefinedFunction": {"action":"databases.schemas.user_defined_functions.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/user-defined-functions/{nameWithArgs}","path_patterns":{"nameWithArgs":"[^:]+"},"scope":{"database":{"at":"database","from":"path"},"nameWithArgs":{"at":"nameWithArgs","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchView": {"action":"databases.schemas.views.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/views/{name}","path_patterns":{"name":"[^:]+"},"scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "fetchWarehouse": {"action":"warehouses.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/warehouses/{name}","path_patterns":{"name":"[^:]+"},"scope":{"name":{"at":"name","from":"path"}}},
+      "generateFiltersAndMetricsSuggestions": {"action":"cortex.analyst.filters_and_metrics_suggestions.generate","body":"json","effects":["generate","pay"],"method":"POST","origin":"{origin}","path":"/api/v2/cortex/analyst/filters-and-metrics-suggestions","scope":{"request":{"at":"","from":"body","type":"object"},"tables":{"at":"/tables","from":"body","optional":true,"type":"array"}}},
+      "generateVerifiedQuerySuggestions": {"action":"cortex.analyst.verified_query_suggestions.generate","body":"json","effects":["generate","pay"],"method":"POST","origin":"{origin}","path":"/api/v2/cortex/analyst/verified-query-suggestions","scope":{"request":{"at":"","from":"body","type":"object"},"tables":{"at":"/tables","from":"body","optional":true,"type":"array"}}},
+      "getAgentRun": {"action":"cortex.agent.runs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["starting_after"],"path":"/api/v2/cortex/agent/runs/{run_id}","scope":{"run_id":{"at":"run_id","from":"path"}}},
+      "getAgenticOptimization": {"action":"cortex.analyst.agentic_optimization.read","effects":["read"],"method":"GET","origin":"{origin}","params":["optimization_name"],"path":"/api/v2/cortex/analyst/agentic-optimization","scope":{"optimization_name":{"at":"optimization_name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "getCompleteGraphs": {"action":"databases.schemas.tasks.complete_graphs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["resultLimit","errorOnly"],"path":"/api/v2/databases/{database}/schemas/{schema}/tasks/{name}/complete-graphs","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getCompleteGraphsDeprecated": {"action":"databases.schemas.tasks.complete_graphs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["resultLimit","errorOnly"],"path":"/api/v2/databases/{database}/schemas/{schema}/tasks/{name}/complete_graphs","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getCurrentGraphs": {"action":"databases.schemas.tasks.current_graphs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["resultLimit"],"path":"/api/v2/databases/{database}/schemas/{schema}/tasks/{name}/current-graphs","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getCurrentGraphsDeprecated": {"action":"databases.schemas.tasks.current_graphs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["resultLimit"],"path":"/api/v2/databases/{database}/schemas/{schema}/tasks/{name}/current_graphs","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getModels": {"action":"cortex.models.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/cortex/models","scope":{}},
+      "getModels.json.b0bcbea6d6d3": {"action":"cortex.models.read","body":"json","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/cortex/models","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "getPresignedUrl": {"action":"databases.schemas.stages.files.share","effects":["share"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/stages/{name}/files/{filePath}:presigned-url","scope":{"database":{"at":"database","from":"path"},"filePath":{"at":"filePath","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "getPresignedUrl.json.4d0117207b06": {"action":"databases.schemas.stages.files.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/stages/{name}/files/{filePath}:presigned-url","scope":{"database":{"at":"database","from":"path"},"filePath":{"at":"filePath","from":"path"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getTags": {"action":"databases.schemas.alerts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/schemas/{schema}/alerts/{name}:get-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getTags.none.0ba7f1b395b1": {"action":"databases.schemas.views.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/schemas/{schema}/views/{name}:get-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getTags.none.0f2ccfbcda58": {"action":"notification_integrations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/notification-integrations/{name}:get-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getTags.none.186e3150f07c": {"action":"databases.schemas.image_repositories.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/schemas/{schema}/image-repositories/{name}:get-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getTags.none.199895657c7f": {"action":"roles.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/roles/{name}:get-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getTags.none.2e313dd5ff60": {"action":"compute_pools.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/compute-pools/{name}:get-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getTags.none.2fc8ae9d13a0": {"action":"databases.schemas.notebooks.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/schemas/{schema}/notebooks/{name}:get-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getTags.none.5a897b1c9c44": {"action":"databases.schemas.user_defined_functions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/schemas/{schema}/user-defined-functions/{nameWithArgs}:get-tags","scope":{"database":{"at":"database","from":"path"},"nameWithArgs":{"at":"nameWithArgs","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getTags.none.60097fbc536b": {"action":"databases.schemas.dynamic_tables.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/schemas/{schema}/dynamic-tables/{name}:get-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getTags.none.65b1022249bd": {"action":"databases.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{name}:get-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getTags.none.6a07e21a7f26": {"action":"databases.schemas.functions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/schemas/{schema}/functions/{nameWithArgs}:get-tags","scope":{"database":{"at":"database","from":"path"},"nameWithArgs":{"at":"nameWithArgs","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getTags.none.73d87b4b1d68": {"action":"warehouses.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/warehouses/{name}:get-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getTags.none.761acf4874fa": {"action":"users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/users/{name}:get-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getTags.none.799eb0ddc656": {"action":"databases.schemas.iceberg_tables.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables/{name}:get-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getTags.none.ada67c83f087": {"action":"databases.schemas.streams.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/schemas/{schema}/streams/{name}:get-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getTags.none.b4aa2937c546": {"action":"databases.schemas.streamlits.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/schemas/{schema}/streamlits/{name}:get-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getTags.none.c1a7cfec4374": {"action":"databases.schemas.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/schemas/{name}:get-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getTags.none.c48183620deb": {"action":"catalog_integrations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/catalog-integrations/{name}:get-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getTags.none.c4b1cd6473b5": {"action":"network_policies.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/network-policies/{name}:get-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getTags.none.d11404beed20": {"action":"databases.schemas.procedures.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/schemas/{schema}/procedures/{nameWithArgs}:get-tags","scope":{"database":{"at":"database","from":"path"},"nameWithArgs":{"at":"nameWithArgs","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getTags.none.d1b257391de8": {"action":"databases.schemas.tasks.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/schemas/{schema}/tasks/{name}:get-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getTags.none.d37946e4b970": {"action":"api_integrations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/api-integrations/{name}:get-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getTags.none.d7c2d74d5811": {"action":"databases.schemas.pipes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/schemas/{schema}/pipes/{name}:get-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getTags.none.e20858b5a298": {"action":"databases.schemas.tables.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}:get-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getTags.none.ebdaf31caba4": {"action":"databases.database_roles.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/database-roles/{name}:get-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getTags.none.edafa7272c91": {"action":"databases.schemas.event_tables.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/schemas/{schema}/event-tables/{name}:get-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "getTags.none.f6c1626b7763": {"action":"databases.schemas.password_policies.read","effects":["read"],"method":"GET","origin":"{origin}","params":["withLineage"],"path":"/api/v2/databases/{database}/schemas/{schema}/password-policies/{name}:get-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "grant": {"action":"users.grants.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","path":"/api/v2/users/{name}/grants","scope":{"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "grantFuturePrivileges": {"action":"databases.database_roles.future_grants.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/database-roles/{name}/future-grants","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "grantFuturePrivileges.json.849dcafc5af8": {"action":"roles.future_grants.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","path":"/api/v2/roles/{name}/future-grants","scope":{"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "grantGroupPrivilege": {"action":"grants.privileges.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","path":"/api/v2/grants/{granteeType}/{granteeName}/{bulkGrantType}/{securableTypePlural}/{scopeType}/{scopeName}/privileges","scope":{"bulkGrantType":{"at":"bulkGrantType","from":"path"},"granted_by_name":{"at":"/granted_by_name","from":"body","optional":true},"granteeName":{"at":"granteeName","from":"path"},"granteeType":{"at":"granteeType","from":"path"},"grantee_name":{"at":"/grantee_name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"scopeName":{"at":"scopeName","from":"path"},"scopeType":{"at":"scopeType","from":"path"},"securableTypePlural":{"at":"securableTypePlural","from":"path"},"securable_name":{"at":"/securable_name","from":"body","optional":true}}},
+      "grantPrivilege": {"action":"grants.privileges.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","path":"/api/v2/grants/{granteeType}/{granteeName}/{securableType}/{securableName}/privileges","scope":{"granted_by_name":{"at":"/granted_by_name","from":"body","optional":true},"granteeName":{"at":"granteeName","from":"path"},"granteeType":{"at":"granteeType","from":"path"},"grantee_name":{"at":"/grantee_name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"securableName":{"at":"securableName","from":"path"},"securableType":{"at":"securableType","from":"path"},"securable_name":{"at":"/securable_name","from":"body","optional":true}}},
+      "grantPrivileges": {"action":"databases.database_roles.grants.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/database-roles/{name}/grants","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "grantPrivileges.json.70acb0a2e807": {"action":"roles.grants.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","path":"/api/v2/roles/{name}/grants","scope":{"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "listAPIIntegrations": {"action":"api_integrations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like"],"path":"/api/v2/api-integrations","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listAccounts": {"action":"accounts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","showLimit","history"],"path":"/api/v2/accounts","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listAgenticOptimizations": {"action":"cortex.analyst.agentic_optimizations.read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v2/cortex/analyst/agentic-optimizations","scope":{}},
+      "listAgenticOptimizations.json.1f7fefa4dd83": {"action":"cortex.analyst.agentic_optimizations.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v2/cortex/analyst/agentic-optimizations","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "listAlerts": {"action":"databases.schemas.alerts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName"],"path":"/api/v2/databases/{database}/schemas/{schema}/alerts","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listArtifactRepositories": {"action":"databases.schemas.artifact_repositories.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName"],"path":"/api/v2/databases/{database}/schemas/{schema}/artifact-repositories","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listCatalogIntegrations": {"action":"catalog_integrations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like"],"path":"/api/v2/catalog-integrations","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listCodeBundleExecutions": {"action":"code_bundle_executions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["bundleName","database","schema","entrypoint","startTimeRangeStart","startTimeRangeEnd","bundleTypes","computeTypes","languageTypes","status","executionName","queryId","resultLimit"],"path":"/api/v2/code-bundle-executions","scope":{"bundleName":{"at":"bundleName","from":"query","optional":true},"database":{"at":"database","from":"query","optional":true},"executionName":{"at":"executionName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"queryId":{"at":"queryId","from":"query","optional":true}}},
+      "listCodeBundles": {"action":"databases.schemas.code_bundles.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName"],"path":"/api/v2/databases/{database}/schemas/{schema}/code-bundles","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listComputePoolInstanceFamilies": {"action":"compute_pools.instance_families.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/compute-pools/instance-families","scope":{}},
+      "listComputePools": {"action":"compute_pools.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit"],"path":"/api/v2/compute-pools","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listCortexSearchServices": {"action":"databases.schemas.cortex_search_services.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","fromName","showLimit"],"path":"/api/v2/databases/{database}/schemas/{schema}/cortex-search-services","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listDatabaseRoles": {"action":"databases.database_roles.read","effects":["read"],"method":"GET","origin":"{origin}","params":["showLimit","fromName"],"path":"/api/v2/databases/{database}/database-roles","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listDatabases": {"action":"databases.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName","history"],"path":"/api/v2/databases","scope":{"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listDynamicTables": {"action":"databases.schemas.dynamic_tables.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName","deep"],"path":"/api/v2/databases/{database}/schemas/{schema}/dynamic-tables","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listEventTables": {"action":"databases.schemas.event_tables.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName"],"path":"/api/v2/databases/{database}/schemas/{schema}/event-tables","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listExternalVolumes": {"action":"external_volumes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like"],"path":"/api/v2/external-volumes","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listFiles": {"action":"databases.schemas.stages.files.read","effects":["read"],"method":"GET","origin":"{origin}","params":["pattern"],"path":"/api/v2/databases/{database}/schemas/{schema}/stages/{name}/files","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listFunctions": {"action":"databases.schemas.functions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like"],"path":"/api/v2/databases/{database}/schemas/{schema}/functions","scope":{"database":{"at":"database","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listFutureGrants": {"action":"databases.database_roles.future_grants.read","effects":["read"],"method":"GET","origin":"{origin}","params":["showLimit"],"path":"/api/v2/databases/{database}/database-roles/{name}/future-grants","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listFutureGrants.none.20cf2c29271f": {"action":"roles.future_grants.read","effects":["read"],"method":"GET","origin":"{origin}","params":["showLimit"],"path":"/api/v2/roles/{name}/future-grants","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listGrants": {"action":"databases.database_roles.grants.read","effects":["read"],"method":"GET","origin":"{origin}","params":["showLimit"],"path":"/api/v2/databases/{database}/database-roles/{name}/grants","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listGrants.none.acb8a6a41856": {"action":"users.grants.read","effects":["read"],"method":"GET","origin":"{origin}","params":["showLimit"],"path":"/api/v2/users/{name}/grants","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listGrants.none.f2f7e3b6563f": {"action":"roles.grants.read","effects":["read"],"method":"GET","origin":"{origin}","params":["showLimit"],"path":"/api/v2/roles/{name}/grants","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listGrantsOf": {"action":"roles.grants_of.read","effects":["read"],"method":"GET","origin":"{origin}","params":["showLimit"],"path":"/api/v2/roles/{name}/grants-of","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listGrantsOn": {"action":"roles.grants_on.read","effects":["read"],"method":"GET","origin":"{origin}","params":["showLimit"],"path":"/api/v2/roles/{name}/grants-on","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listGrantsTo": {"action":"grants.read","effects":["read"],"method":"GET","origin":"{origin}","params":["showLimit"],"path":"/api/v2/grants/{granteeType}/{granteeName}","scope":{"granteeName":{"at":"granteeName","from":"path"},"granteeType":{"at":"granteeType","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listIcebergTables": {"action":"databases.schemas.iceberg_tables.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName","deep"],"path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listImageRepositories": {"action":"databases.schemas.image_repositories.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like"],"path":"/api/v2/databases/{database}/schemas/{schema}/image-repositories","scope":{"database":{"at":"database","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listImagesInRepository": {"action":"databases.schemas.image_repositories.images.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/image-repositories/{name}/images","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "listManagedAccounts": {"action":"managed_accounts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like"],"path":"/api/v2/managed-accounts","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listNetworkPolicies": {"action":"network_policies.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/network-policies","scope":{}},
+      "listNetworkRules": {"action":"databases.schemas.network_rules.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName"],"path":"/api/v2/databases/{database}/schemas/{schema}/network-rules","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listNotebooks": {"action":"databases.schemas.notebooks.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName"],"path":"/api/v2/databases/{database}/schemas/{schema}/notebooks","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listNotificationIntegrations": {"action":"notification_integrations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like"],"path":"/api/v2/notification-integrations","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listPasswordPolicies": {"action":"databases.schemas.password_policies.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit"],"path":"/api/v2/databases/{database}/schemas/{schema}/password-policies","scope":{"database":{"at":"database","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listPipes": {"action":"databases.schemas.pipes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like"],"path":"/api/v2/databases/{database}/schemas/{schema}/pipes","scope":{"database":{"at":"database","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listProcedures": {"action":"databases.schemas.procedures.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like"],"path":"/api/v2/databases/{database}/schemas/{schema}/procedures","scope":{"database":{"at":"database","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listRoles": {"action":"roles.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName"],"path":"/api/v2/roles","scope":{"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listSchemas": {"action":"databases.schemas.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName","history"],"path":"/api/v2/databases/{database}/schemas","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listSecrets": {"action":"databases.schemas.secrets.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName"],"path":"/api/v2/databases/{database}/schemas/{schema}/secrets","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listSequences": {"action":"databases.schemas.sequences.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like"],"path":"/api/v2/databases/{database}/schemas/{schema}/sequences","scope":{"database":{"at":"database","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listServiceContainers": {"action":"databases.schemas.services.containers.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/services/{name}/containers","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "listServiceInstances": {"action":"databases.schemas.services.instances.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/services/{name}/instances","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "listServiceRoleGrantsOf": {"action":"databases.schemas.services.roles.grants_of.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/services/{service}/roles/{name}/grants-of","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"},"service":{"at":"service","from":"path"}}},
+      "listServiceRoleGrantsTo": {"action":"databases.schemas.services.roles.grants.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/services/{service}/roles/{name}/grants","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"},"service":{"at":"service","from":"path"}}},
+      "listServiceRoles": {"action":"databases.schemas.services.roles.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/services/{name}/roles","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "listServices": {"action":"databases.schemas.services.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName"],"path":"/api/v2/databases/{database}/schemas/{schema}/services","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listStages": {"action":"databases.schemas.stages.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like"],"path":"/api/v2/databases/{database}/schemas/{schema}/stages","scope":{"database":{"at":"database","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listStreamlits": {"action":"databases.schemas.streamlits.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName"],"path":"/api/v2/databases/{database}/schemas/{schema}/streamlits","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listStreams": {"action":"databases.schemas.streams.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName"],"path":"/api/v2/databases/{database}/schemas/{schema}/streams","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listTables": {"action":"databases.schemas.tables.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName","history","deep"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listTags": {"action":"databases.schemas.tags.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like"],"path":"/api/v2/databases/{database}/schemas/{schema}/tags","scope":{"database":{"at":"database","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listTasks": {"action":"databases.schemas.tasks.read","effects":["read"],"method":"GET","origin":"{origin}","params":["rootOnly","like","startsWith","showLimit","fromName"],"path":"/api/v2/databases/{database}/schemas/{schema}/tasks","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listUserDefinedFunctions": {"action":"databases.schemas.user_defined_functions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like"],"path":"/api/v2/databases/{database}/schemas/{schema}/user-defined-functions","scope":{"database":{"at":"database","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listUsers": {"action":"users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName"],"path":"/api/v2/users","scope":{"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listViews": {"action":"databases.schemas.views.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like","startsWith","showLimit","fromName","deep"],"path":"/api/v2/databases/{database}/schemas/{schema}/views","scope":{"database":{"at":"database","from":"path"},"fromName":{"at":"fromName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "listWarehouses": {"action":"warehouses.read","effects":["read"],"method":"GET","origin":"{origin}","params":["like"],"path":"/api/v2/warehouses","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "preSelection": {"action":"cortex.analyst.pre_selection.generate","body":"json","effects":["generate","pay"],"method":"POST","origin":"{origin}","path":"/api/v2/cortex/analyst/pre-selection","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "primaryDatabaseFailover": {"action":"databases.failover.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{name}/failover:primary","scope":{"name":{"at":"name","from":"path"}}},
+      "pullStreamlit": {"action":"databases.schemas.streamlits.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/streamlits/{name}:pull","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "pushStreamlit": {"action":"databases.schemas.streamlits.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/streamlits/{name}:push","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "queryCortexSearchService": {"action":"databases.schemas.cortex_search_services.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/cortex-search-services/{service_name}:query","scope":{"database":{"at":"database","from":"path"},"schema":{"at":"schema","from":"path"},"service_name":{"at":"service_name","from":"path"}}},
+      "queryCortexSearchService.none.de5638ee8cd7": {"action":"databases.schemas.cortex_search_services.read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/cortex-search-services/{service_name}:query","scope":{"database":{"at":"database","from":"path"},"schema":{"at":"schema","from":"path"},"service_name":{"at":"service_name","from":"path"}}},
+      "refreshDatabaseReplication": {"action":"databases.replication.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{name}/replication:refresh","scope":{"name":{"at":"name","from":"path"}}},
+      "refreshDynamicTable": {"action":"databases.schemas.dynamic_tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/dynamic-tables/{name}:refresh","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "refreshIcebergTable": {"action":"databases.schemas.iceberg_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables/{name}:refresh","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "refreshPipe": {"action":"databases.schemas.pipes.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists","prefix","modified_after"],"path":"/api/v2/databases/{database}/schemas/{schema}/pipes/{name}:refresh","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "renameArtifactRepository": {"action":"databases.schemas.artifact_repositories.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists","targetDatabase","targetSchema","targetName"],"path":"/api/v2/databases/{database}/schemas/{schema}/artifact-repositories/{name}:rename","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"},"targetName":{"at":"targetName","from":"query"}}},
+      "renameEventTable": {"action":"databases.schemas.event_tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists","targetName"],"path":"/api/v2/databases/{database}/schemas/{schema}/event-tables/{name}:rename","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"},"targetName":{"at":"targetName","from":"query"}}},
+      "renameNotebook": {"action":"databases.schemas.notebooks.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists","targetDatabase","targetSchema","targetName"],"path":"/api/v2/databases/{database}/schemas/{schema}/notebooks/{name}:rename","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"},"targetName":{"at":"targetName","from":"query"}}},
+      "renamePasswordPolicy": {"action":"databases.schemas.password_policies.admin","effects":["admin"],"method":"POST","origin":"{origin}","params":["ifExists","targetDatabase","targetSchema","targetName"],"path":"/api/v2/databases/{database}/schemas/{schema}/password-policies/{name}:rename","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"},"targetName":{"at":"targetName","from":"query"}}},
+      "renameSequence": {"action":"databases.schemas.sequences.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists","targetDatabase","targetSchema","targetName"],"path":"/api/v2/databases/{database}/schemas/{schema}/sequences/{name}:rename","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"},"targetName":{"at":"targetName","from":"query"}}},
+      "renameStreamlit": {"action":"databases.schemas.streamlits.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists","targetDatabase","targetSchema","targetName"],"path":"/api/v2/databases/{database}/schemas/{schema}/streamlits/{name}:rename","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"},"targetName":{"at":"targetName","from":"query"}}},
+      "renameTag": {"action":"databases.schemas.tags.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists","targetDatabase","targetSchema","targetName"],"path":"/api/v2/databases/{database}/schemas/{schema}/tags/{name}:rename","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"},"targetName":{"at":"targetName","from":"query"}}},
+      "renameUserDefinedFunction": {"action":"databases.schemas.user_defined_functions.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists","targetDatabase","targetSchema","targetName"],"path":"/api/v2/databases/{database}/schemas/{schema}/user-defined-functions/{nameWithArgs}:rename","scope":{"database":{"at":"database","from":"path"},"nameWithArgs":{"at":"nameWithArgs","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"},"targetName":{"at":"targetName","from":"query"}}},
+      "renameWarehouse": {"action":"warehouses.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/warehouses/{name}:rename","scope":{"body.name":{"at":"/name","from":"body"},"name":{"at":"name","from":"path"},"owner":{"at":"/owner","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "resumeComputePool": {"action":"compute_pools.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/compute-pools/{name}:resume","scope":{"name":{"at":"name","from":"path"}}},
+      "resumeCortexSearchService": {"action":"databases.schemas.cortex_search_services.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists","target"],"path":"/api/v2/databases/{database}/schemas/{schema}/cortex-search-services/{name}:resume","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "resumeDynamicTable": {"action":"databases.schemas.dynamic_tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/dynamic-tables/{name}:resume","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "resumeReclusterDynamicTable": {"action":"databases.schemas.dynamic_tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/dynamic-tables/{name}:resume-recluster","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "resumeReclusterIcebergTable": {"action":"databases.schemas.iceberg_tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables/{name}:resume-recluster","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "resumeReclusterTable": {"action":"databases.schemas.tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}:resume-recluster","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "resumeReclusterTableDeprecated": {"action":"databases.schemas.tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}:resume_recluster","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "resumeService": {"action":"databases.schemas.services.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/services/{name}:resume","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "resumeTask": {"action":"databases.schemas.tasks.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/tasks/{name}:resume","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "resumeWarehouse": {"action":"warehouses.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/warehouses/{name}:resume","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "revokeFutureGrants": {"action":"databases.database_roles.future_grants.admin","body":"json","effects":["admin","delete"],"method":"POST","origin":"{origin}","params":["mode"],"path":"/api/v2/databases/{database}/database-roles/{name}/future-grants:revoke","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "revokeFutureGrants.json.8ae5d6376041": {"action":"roles.future_grants.admin","body":"json","effects":["admin","delete"],"method":"POST","origin":"{origin}","params":["mode"],"path":"/api/v2/roles/{name}/future-grants:revoke","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "revokeGrants": {"action":"databases.database_roles.grants.admin","body":"json","effects":["admin","delete"],"method":"POST","origin":"{origin}","params":["mode"],"path":"/api/v2/databases/{database}/database-roles/{name}/grants:revoke","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "revokeGrants.json.77c56adaee7a": {"action":"users.grants.admin","body":"json","effects":["admin","delete"],"method":"POST","origin":"{origin}","path":"/api/v2/users/{name}/grants:revoke","scope":{"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "revokeGrants.json.8d27262deaf4": {"action":"roles.grants.admin","body":"json","effects":["admin","delete"],"method":"POST","origin":"{origin}","params":["mode"],"path":"/api/v2/roles/{name}/grants:revoke","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "revokeGroupPrivilege": {"action":"grants.privileges.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["deleteMode"],"path":"/api/v2/grants/{granteeType}/{granteeName}/{bulkGrantType}/{securableTypePlural}/{scopeType}/{scopeName}/privileges/{privilege}","scope":{"bulkGrantType":{"at":"bulkGrantType","from":"path"},"granteeName":{"at":"granteeName","from":"path"},"granteeType":{"at":"granteeType","from":"path"},"privilege":{"at":"privilege","from":"path"},"query":{"at":"","from":"query","type":"object"},"scopeName":{"at":"scopeName","from":"path"},"scopeType":{"at":"scopeType","from":"path"},"securableTypePlural":{"at":"securableTypePlural","from":"path"}}},
+      "revokeGroupPrivilegeGrantOption": {"action":"grants.privileges.option.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["deleteMode"],"path":"/api/v2/grants/{granteeType}/{granteeName}/{bulkGrantType}/{securableTypePlural}/{scopeType}/{scopeName}/privileges/{privilege}/grant-option","scope":{"bulkGrantType":{"at":"bulkGrantType","from":"path"},"granteeName":{"at":"granteeName","from":"path"},"granteeType":{"at":"granteeType","from":"path"},"privilege":{"at":"privilege","from":"path"},"query":{"at":"","from":"query","type":"object"},"scopeName":{"at":"scopeName","from":"path"},"scopeType":{"at":"scopeType","from":"path"},"securableTypePlural":{"at":"securableTypePlural","from":"path"}}},
+      "revokePrivilege": {"action":"grants.privileges.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["deleteMode"],"path":"/api/v2/grants/{granteeType}/{granteeName}/{securableType}/{securableName}/privileges/{privilege}","scope":{"granteeName":{"at":"granteeName","from":"path"},"granteeType":{"at":"granteeType","from":"path"},"privilege":{"at":"privilege","from":"path"},"query":{"at":"","from":"query","type":"object"},"securableName":{"at":"securableName","from":"path"},"securableType":{"at":"securableType","from":"path"}}},
+      "revokePrivilegeGrantOption": {"action":"grants.privileges.option.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["deleteMode"],"path":"/api/v2/grants/{granteeType}/{granteeName}/{securableType}/{securableName}/privileges/{privilege}/grant-option","scope":{"granteeName":{"at":"granteeName","from":"path"},"granteeType":{"at":"granteeType","from":"path"},"privilege":{"at":"privilege","from":"path"},"query":{"at":"","from":"query","type":"object"},"securableName":{"at":"securableName","from":"path"},"securableType":{"at":"securableType","from":"path"}}},
+      "runAgent": {"action":"databases.schemas.agents.execute","body":"json","effects":["execute","generate","pay","send"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/agents/{name}:run","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "runAgentWithoutObject": {"action":"cortex.agent.execute","body":"json","effects":["execute","generate","pay","send"],"method":"POST","origin":"{origin}","path":"/api/v2/cortex/agent:run","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "sendFeedback": {"action":"cortex.analyst.feedback.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/cortex/analyst/feedback","scope":{"request":{"at":"","from":"body","type":"object"},"request_id":{"at":"/request_id","from":"body"}}},
+      "sendFeedback.json.aa71c6245f60": {"action":"databases.schemas.cortex_search_services.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/cortex-search-services/{name}:feedback","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"},"request_id":{"at":"/request_id","from":"body"},"schema":{"at":"schema","from":"path"}}},
+      "sendMessage": {"action":"cortex.analyst.message.generate","body":"json","effects":["generate","pay"],"method":"POST","origin":"{origin}","path":"/api/v2/cortex/analyst/message","scope":{}},
+      "setTags": {"action":"databases.schemas.alerts.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/alerts/{name}:set-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "setTags.json.14adc13944db": {"action":"databases.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{name}:set-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "setTags.json.1a2ddf34b333": {"action":"databases.schemas.tasks.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/tasks/{name}:set-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "setTags.json.20537f03ebb3": {"action":"databases.schemas.image_repositories.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/image-repositories/{name}:set-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "setTags.json.223ff2df1fd4": {"action":"network_policies.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/network-policies/{name}:set-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "setTags.json.25afa72c421c": {"action":"catalog_integrations.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/catalog-integrations/{name}:set-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "setTags.json.27546832f5e3": {"action":"notification_integrations.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/notification-integrations/{name}:set-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "setTags.json.2f2520a9ca85": {"action":"warehouses.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/warehouses/{name}:set-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "setTags.json.2fa18ed400ab": {"action":"databases.schemas.procedures.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/procedures/{nameWithArgs}:set-tags","scope":{"database":{"at":"database","from":"path"},"nameWithArgs":{"at":"nameWithArgs","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "setTags.json.32befaad6f81": {"action":"users.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/users/{name}:set-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "setTags.json.33e85430531a": {"action":"databases.schemas.streams.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/streams/{name}:set-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "setTags.json.3cec7ce4e222": {"action":"databases.schemas.event_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/event-tables/{name}:set-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "setTags.json.43a7e47967fe": {"action":"databases.schemas.streamlits.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/streamlits/{name}:set-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "setTags.json.4dbe36757529": {"action":"databases.database_roles.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/database-roles/{name}:set-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "setTags.json.6eb3a83cd051": {"action":"databases.schemas.password_policies.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/password-policies/{name}:set-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "setTags.json.8e816237dcf4": {"action":"databases.schemas.views.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/views/{name}:set-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "setTags.json.a311701e61ef": {"action":"api_integrations.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/api-integrations/{name}:set-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "setTags.json.a7155d74e3ab": {"action":"databases.schemas.functions.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/functions/{nameWithArgs}:set-tags","scope":{"database":{"at":"database","from":"path"},"nameWithArgs":{"at":"nameWithArgs","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "setTags.json.b048cfbb65d3": {"action":"databases.schemas.dynamic_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/dynamic-tables/{name}:set-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "setTags.json.b20a5a8efad5": {"action":"databases.schemas.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{name}:set-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "setTags.json.b3955a26bfef": {"action":"databases.schemas.tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}:set-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "setTags.json.c543a4bc6c7f": {"action":"databases.schemas.iceberg_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables/{name}:set-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "setTags.json.d638a478a41f": {"action":"compute_pools.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/compute-pools/{name}:set-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "setTags.json.e141454ace06": {"action":"roles.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/roles/{name}:set-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "setTags.json.e66e4be9c583": {"action":"databases.schemas.pipes.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/pipes/{name}:set-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "setTags.json.e85156fa29ad": {"action":"databases.schemas.notebooks.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/notebooks/{name}:set-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "setTags.json.f274ad804096": {"action":"databases.schemas.user_defined_functions.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/user-defined-functions/{nameWithArgs}:set-tags","scope":{"database":{"at":"database","from":"path"},"nameWithArgs":{"at":"nameWithArgs","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "showServiceEndpoints": {"action":"databases.schemas.services.endpoints.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/services/{name}/endpoints","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "stopAllServicesInComputePool": {"action":"compute_pools.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/v2/compute-pools/{name}:stop-all-services","scope":{"name":{"at":"name","from":"path"}}},
+      "stopAllServicesInComputePoolDeprecated": {"action":"compute_pools.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/v2/compute-pools/{name}:stopallservices","scope":{"name":{"at":"name","from":"path"}}},
+      "suggestCortexSearchService": {"action":"databases.schemas.cortex_search_services.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/cortex-search-services/{service_name}:suggest","scope":{"database":{"at":"database","from":"path"},"request":{"at":"","from":"body","type":"object"},"schema":{"at":"schema","from":"path"},"service_name":{"at":"service_name","from":"path"}}},
+      "suspendComputePool": {"action":"compute_pools.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/compute-pools/{name}:suspend","scope":{"name":{"at":"name","from":"path"}}},
+      "suspendCortexSearchService": {"action":"databases.schemas.cortex_search_services.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists","target"],"path":"/api/v2/databases/{database}/schemas/{schema}/cortex-search-services/{name}:suspend","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "suspendDynamicTable": {"action":"databases.schemas.dynamic_tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/dynamic-tables/{name}:suspend","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "suspendReclusterDynamicTable": {"action":"databases.schemas.dynamic_tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/dynamic-tables/{name}:suspend-recluster","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "suspendReclusterIcebergTable": {"action":"databases.schemas.iceberg_tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables/{name}:suspend-recluster","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "suspendReclusterTable": {"action":"databases.schemas.tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}:suspend-recluster","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "suspendReclusterTableDeprecated": {"action":"databases.schemas.tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}:suspend_recluster","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "suspendService": {"action":"databases.schemas.services.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/services/{name}:suspend","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"}}},
+      "suspendTask": {"action":"databases.schemas.tasks.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/tasks/{name}:suspend","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "suspendWarehouse": {"action":"warehouses.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/warehouses/{name}:suspend","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "swapWithDynamicTable": {"action":"databases.schemas.dynamic_tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists","targetName","targetDatabase","targetSchema"],"path":"/api/v2/databases/{database}/schemas/{schema}/dynamic-tables/{name}:swap-with","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"},"targetName":{"at":"targetName","from":"query"}}},
+      "swapWithTable": {"action":"databases.schemas.tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists","targetName","targetDatabase","targetSchema"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}:swap-with","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"},"targetName":{"at":"targetName","from":"query"}}},
+      "swapWithTableDeprecated": {"action":"databases.schemas.tables.write","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists","targetTableName"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}:swapwith","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"schema":{"at":"schema","from":"path"},"targetTableName":{"at":"targetTableName","from":"query"}}},
+      "undropDatabase": {"action":"databases.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{name}:undrop","scope":{"name":{"at":"name","from":"path"}}},
+      "undropDynamicTable": {"action":"databases.schemas.dynamic_tables.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/dynamic-tables/{name}:undrop","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "undropExternalVolume": {"action":"external_volumes.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/external-volumes/{name}:undrop","scope":{"name":{"at":"name","from":"path"}}},
+      "undropIcebergTable": {"action":"databases.schemas.iceberg_tables.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables/{name}:undrop","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "undropSchema": {"action":"databases.schemas.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{name}:undrop","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"}}},
+      "undropStreamlit": {"action":"databases.schemas.streamlits.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/streamlits/{name}:undrop","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "undropTable": {"action":"databases.schemas.tables.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}:undrop","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "undropTag": {"action":"databases.schemas.tags.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/databases/{database}/schemas/{schema}/tags/{name}:undrop","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"schema":{"at":"schema","from":"path"}}},
+      "unsetTags": {"action":"databases.schemas.alerts.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/alerts/{name}:unset-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "unsetTags.json.0a2b42285942": {"action":"databases.schemas.functions.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/functions/{nameWithArgs}:unset-tags","scope":{"database":{"at":"database","from":"path"},"nameWithArgs":{"at":"nameWithArgs","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "unsetTags.json.114085bccd24": {"action":"databases.schemas.iceberg_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/iceberg-tables/{name}:unset-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "unsetTags.json.2cd16af7908b": {"action":"databases.schemas.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{name}:unset-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "unsetTags.json.32b961fb345c": {"action":"databases.schemas.views.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/views/{name}:unset-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "unsetTags.json.3cf9abb7e0b0": {"action":"users.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/users/{name}:unset-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "unsetTags.json.48d928098edb": {"action":"databases.database_roles.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/database-roles/{name}:unset-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "unsetTags.json.55ef779f3248": {"action":"databases.schemas.procedures.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/procedures/{nameWithArgs}:unset-tags","scope":{"database":{"at":"database","from":"path"},"nameWithArgs":{"at":"nameWithArgs","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "unsetTags.json.59ec37fc1ece": {"action":"databases.schemas.dynamic_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/dynamic-tables/{name}:unset-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "unsetTags.json.64b63fc5a9b1": {"action":"databases.schemas.user_defined_functions.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/user-defined-functions/{nameWithArgs}:unset-tags","scope":{"database":{"at":"database","from":"path"},"nameWithArgs":{"at":"nameWithArgs","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "unsetTags.json.7c9fae569a34": {"action":"databases.schemas.tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/tables/{name}:unset-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "unsetTags.json.86161822c2a0": {"action":"catalog_integrations.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/catalog-integrations/{name}:unset-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "unsetTags.json.92c901121279": {"action":"databases.schemas.pipes.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/pipes/{name}:unset-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "unsetTags.json.92f674a97bc3": {"action":"warehouses.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/warehouses/{name}:unset-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "unsetTags.json.9a8f425b7471": {"action":"databases.schemas.password_policies.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/password-policies/{name}:unset-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "unsetTags.json.9c59d90e11f9": {"action":"network_policies.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/network-policies/{name}:unset-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "unsetTags.json.9f828622d4f2": {"action":"compute_pools.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/compute-pools/{name}:unset-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "unsetTags.json.b2b3c13dfd35": {"action":"api_integrations.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/api-integrations/{name}:unset-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "unsetTags.json.b3214922a11d": {"action":"databases.schemas.streamlits.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/streamlits/{name}:unset-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "unsetTags.json.b885cdc6fc2e": {"action":"databases.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{name}:unset-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "unsetTags.json.c5fd06211a92": {"action":"databases.schemas.event_tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/event-tables/{name}:unset-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "unsetTags.json.d9f0bb1b9c5a": {"action":"notification_integrations.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/notification-integrations/{name}:unset-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "unsetTags.json.da14d00de794": {"action":"databases.schemas.image_repositories.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/image-repositories/{name}:unset-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "unsetTags.json.e0f1befe02c6": {"action":"databases.schemas.notebooks.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/notebooks/{name}:unset-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "unsetTags.json.e6d053348093": {"action":"databases.schemas.streams.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/streams/{name}:unset-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "unsetTags.json.e7d9a7930abe": {"action":"databases.schemas.tasks.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/databases/{database}/schemas/{schema}/tasks/{name}:unset-tags","scope":{"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"schema":{"at":"schema","from":"path"}}},
+      "unsetTags.json.f044f6f17935": {"action":"roles.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["ifExists"],"path":"/api/v2/roles/{name}:unset-tags","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"}}},
+      "useWarehouse": {"action":"warehouses.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/warehouses/{name}:use","scope":{"name":{"at":"name","from":"path"}}}
     }
   }
 }

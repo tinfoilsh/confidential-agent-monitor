@@ -1,126 +1,1791 @@
 {
-  "title": "HighLevel",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "token", "label": "HighLevel access token", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "token", "origin": "https://services.leadconnectorhq.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "admin.groups": {"title": "Admin: groups"},
-      "admin.users": {"title": "Admin: users"},
-      "delete.associations": {"title": "Delete: associations"},
-      "delete.business": {"title": "Delete: business"},
-      "delete.calendars": {"title": "Delete: calendars"},
-      "delete.campaigns": {"title": "Delete: campaigns"},
-      "delete.contacts": {"title": "Delete: contacts"},
-      "delete.events": {"title": "Delete: events"},
-      "delete.groups": {"title": "Delete: groups"},
-      "delete.notes": {"title": "Delete: notes"},
-      "delete.opportunities": {"title": "Delete: opportunities"},
-      "delete.resources": {"title": "Delete: resources"},
-      "delete.schedules": {"title": "Delete: schedules"},
-      "delete.tags": {"title": "Delete: tags"},
-      "delete.tasks": {"title": "Delete: tasks"},
-      "delete.users": {"title": "Delete: users"},
-      "delete.workflow": {"title": "Delete: workflow"},
-      "execute.workflow": {"title": "Execute: workflow"},
-      "read": {"title": "Read everything the account can see"},
-      "send.notes": {"title": "Send: notes"},
-      "send.notifications": {"title": "Send: notifications"},
-      "write.appointments": {"title": "Write: appointments"},
-      "write.associations": {"title": "Write: associations"},
-      "write.block_slots": {"title": "Write: block slots"},
-      "write.calendars": {"title": "Write: calendars"},
-      "write.campaigns": {"title": "Write: campaigns"},
-      "write.completed": {"title": "Write: completed"},
-      "write.contacts": {"title": "Write: contacts"},
-      "write.filter_by_email": {"title": "Write: filter by email"},
-      "write.notes": {"title": "Write: notes"},
-      "write.opportunities": {"title": "Write: opportunities"},
-      "write.resources": {"title": "Write: resources"},
-      "write.schedules": {"title": "Write: schedules"},
-      "write.status": {"title": "Write: status"},
-      "write.tags": {"title": "Write: tags"},
-      "write.tasks": {"title": "Write: tasks"},
-      "write.update": {"title": "Write: update"},
-      "write.upsert": {"title": "Write: upsert"}
-    }
+      "associations": {
+        "title": "Associations"
+      },
+      "associations.delete": {
+        "title": "Delete"
+      },
+      "associations.key": {
+        "title": "Key"
+      },
+      "associations.key.read": {
+        "title": "Read"
+      },
+      "associations.object_key": {
+        "title": "Object key"
+      },
+      "associations.object_key.read": {
+        "title": "Read"
+      },
+      "associations.read": {
+        "title": "Read"
+      },
+      "associations.relations": {
+        "title": "Relations"
+      },
+      "associations.relations.delete": {
+        "title": "Delete"
+      },
+      "associations.relations.read": {
+        "title": "Read"
+      },
+      "associations.relations.write": {
+        "title": "Create and edit"
+      },
+      "associations.write": {
+        "title": "Create and edit"
+      },
+      "blogs": {
+        "title": "Blogs"
+      },
+      "blogs.authors": {
+        "title": "Authors"
+      },
+      "blogs.authors.read": {
+        "title": "Read"
+      },
+      "blogs.categories": {
+        "title": "Categories"
+      },
+      "blogs.categories.read": {
+        "title": "Read"
+      },
+      "blogs.posts": {
+        "title": "Posts"
+      },
+      "blogs.posts.all": {
+        "title": "All"
+      },
+      "blogs.posts.all.read": {
+        "title": "Read"
+      },
+      "blogs.posts.publish": {
+        "title": "Publish"
+      },
+      "blogs.posts.url_slug_exists": {
+        "title": "Url slug exists"
+      },
+      "blogs.posts.url_slug_exists.read": {
+        "title": "Read"
+      },
+      "blogs.site": {
+        "title": "Site"
+      },
+      "blogs.site.all": {
+        "title": "All"
+      },
+      "blogs.site.all.read": {
+        "title": "Read"
+      },
+      "businesses": {
+        "title": "Businesses"
+      },
+      "businesses.delete": {
+        "title": "Delete"
+      },
+      "businesses.read": {
+        "title": "Read"
+      },
+      "businesses.write": {
+        "title": "Create and edit"
+      },
+      "calendars": {
+        "title": "Calendars"
+      },
+      "calendars.appointments": {
+        "title": "Appointments"
+      },
+      "calendars.appointments.notes": {
+        "title": "Notes"
+      },
+      "calendars.appointments.notes.delete": {
+        "title": "Delete"
+      },
+      "calendars.appointments.notes.read": {
+        "title": "Read"
+      },
+      "calendars.appointments.notes.send": {
+        "title": "Send"
+      },
+      "calendars.appointments.notes.write": {
+        "title": "Create and edit"
+      },
+      "calendars.blocked_slots": {
+        "title": "Blocked slots"
+      },
+      "calendars.blocked_slots.read": {
+        "title": "Read"
+      },
+      "calendars.delete": {
+        "title": "Delete"
+      },
+      "calendars.events": {
+        "title": "Events"
+      },
+      "calendars.events.appointments": {
+        "title": "Appointments"
+      },
+      "calendars.events.appointments.read": {
+        "title": "Read"
+      },
+      "calendars.events.appointments.write": {
+        "title": "Create and edit"
+      },
+      "calendars.events.block_slots": {
+        "title": "Block slots"
+      },
+      "calendars.events.block_slots.write": {
+        "title": "Create and edit"
+      },
+      "calendars.events.delete": {
+        "title": "Delete"
+      },
+      "calendars.events.read": {
+        "title": "Read"
+      },
+      "calendars.free_slots": {
+        "title": "Free slots"
+      },
+      "calendars.free_slots.read": {
+        "title": "Read"
+      },
+      "calendars.groups": {
+        "title": "Groups"
+      },
+      "calendars.groups.admin": {
+        "title": "Manage"
+      },
+      "calendars.groups.delete": {
+        "title": "Delete"
+      },
+      "calendars.groups.read": {
+        "title": "Read"
+      },
+      "calendars.groups.slug": {
+        "title": "Slug"
+      },
+      "calendars.groups.slug.read": {
+        "title": "Read"
+      },
+      "calendars.groups.status": {
+        "title": "Status"
+      },
+      "calendars.groups.status.write": {
+        "title": "Create and edit"
+      },
+      "calendars.notifications": {
+        "title": "Notifications"
+      },
+      "calendars.notifications.delete": {
+        "title": "Delete"
+      },
+      "calendars.notifications.read": {
+        "title": "Read"
+      },
+      "calendars.notifications.write": {
+        "title": "Create and edit"
+      },
+      "calendars.read": {
+        "title": "Read"
+      },
+      "calendars.resources": {
+        "title": "Resources"
+      },
+      "calendars.resources.delete": {
+        "title": "Delete"
+      },
+      "calendars.resources.read": {
+        "title": "Read"
+      },
+      "calendars.resources.send": {
+        "title": "Send"
+      },
+      "calendars.resources.write": {
+        "title": "Create and edit"
+      },
+      "calendars.schedules": {
+        "title": "Schedules"
+      },
+      "calendars.schedules.associations": {
+        "title": "Associations"
+      },
+      "calendars.schedules.associations.delete": {
+        "title": "Delete"
+      },
+      "calendars.schedules.associations.write": {
+        "title": "Create and edit"
+      },
+      "calendars.schedules.delete": {
+        "title": "Delete"
+      },
+      "calendars.schedules.read": {
+        "title": "Read"
+      },
+      "calendars.schedules.write": {
+        "title": "Create and edit"
+      },
+      "calendars.write": {
+        "title": "Create and edit"
+      },
+      "campaigns": {
+        "title": "Campaigns"
+      },
+      "campaigns.read": {
+        "title": "Read"
+      },
+      "contacts": {
+        "title": "Contacts"
+      },
+      "contacts.appointments": {
+        "title": "Appointments"
+      },
+      "contacts.appointments.read": {
+        "title": "Read"
+      },
+      "contacts.bulk": {
+        "title": "Bulk"
+      },
+      "contacts.bulk.business": {
+        "title": "Business"
+      },
+      "contacts.bulk.business.delete": {
+        "title": "Delete"
+      },
+      "contacts.bulk.tags": {
+        "title": "Tags"
+      },
+      "contacts.bulk.tags.update": {
+        "title": "Update"
+      },
+      "contacts.bulk.tags.update.write": {
+        "title": "Create and edit"
+      },
+      "contacts.business": {
+        "title": "Business"
+      },
+      "contacts.business.read": {
+        "title": "Read"
+      },
+      "contacts.campaigns": {
+        "title": "Campaigns"
+      },
+      "contacts.campaigns.all": {
+        "title": "All"
+      },
+      "contacts.campaigns.all.delete": {
+        "title": "Delete"
+      },
+      "contacts.campaigns.delete": {
+        "title": "Delete"
+      },
+      "contacts.campaigns.write": {
+        "title": "Create and edit"
+      },
+      "contacts.delete": {
+        "title": "Delete"
+      },
+      "contacts.followers": {
+        "title": "Followers"
+      },
+      "contacts.followers.delete": {
+        "title": "Delete"
+      },
+      "contacts.followers.write": {
+        "title": "Create and edit"
+      },
+      "contacts.notes": {
+        "title": "Notes"
+      },
+      "contacts.notes.delete": {
+        "title": "Delete"
+      },
+      "contacts.notes.read": {
+        "title": "Read"
+      },
+      "contacts.notes.send": {
+        "title": "Send"
+      },
+      "contacts.notes.write": {
+        "title": "Create and edit"
+      },
+      "contacts.read": {
+        "title": "Read"
+      },
+      "contacts.search": {
+        "title": "Search"
+      },
+      "contacts.search.read": {
+        "title": "Read"
+      },
+      "contacts.tags": {
+        "title": "Tags"
+      },
+      "contacts.tags.delete": {
+        "title": "Delete"
+      },
+      "contacts.tags.write": {
+        "title": "Create and edit"
+      },
+      "contacts.tasks": {
+        "title": "Tasks"
+      },
+      "contacts.tasks.completed": {
+        "title": "Completed"
+      },
+      "contacts.tasks.completed.write": {
+        "title": "Create and edit"
+      },
+      "contacts.tasks.delete": {
+        "title": "Delete"
+      },
+      "contacts.tasks.read": {
+        "title": "Read"
+      },
+      "contacts.tasks.write": {
+        "title": "Create and edit"
+      },
+      "contacts.upsert": {
+        "title": "Upsert"
+      },
+      "contacts.upsert.write": {
+        "title": "Create and edit"
+      },
+      "contacts.workflow": {
+        "title": "Workflow"
+      },
+      "contacts.workflow.delete": {
+        "title": "Delete"
+      },
+      "contacts.workflow.execute": {
+        "title": "Run"
+      },
+      "contacts.write": {
+        "title": "Create and edit"
+      },
+      "conversations": {
+        "title": "Conversations"
+      },
+      "conversations.delete": {
+        "title": "Delete"
+      },
+      "conversations.locations": {
+        "title": "Locations"
+      },
+      "conversations.locations.messages": {
+        "title": "Messages"
+      },
+      "conversations.locations.messages.transcription": {
+        "title": "Transcription"
+      },
+      "conversations.locations.messages.transcription.read": {
+        "title": "Read"
+      },
+      "conversations.messages": {
+        "title": "Messages"
+      },
+      "conversations.messages.attachments": {
+        "title": "Attachments"
+      },
+      "conversations.messages.attachments.write": {
+        "title": "Create and edit"
+      },
+      "conversations.messages.complete": {
+        "title": "Complete"
+      },
+      "conversations.messages.complete.write": {
+        "title": "Create and edit"
+      },
+      "conversations.messages.email": {
+        "title": "Email"
+      },
+      "conversations.messages.email.read": {
+        "title": "Read"
+      },
+      "conversations.messages.email.schedule": {
+        "title": "Schedule"
+      },
+      "conversations.messages.email.schedule.delete": {
+        "title": "Delete"
+      },
+      "conversations.messages.inbound": {
+        "title": "Inbound"
+      },
+      "conversations.messages.inbound.write": {
+        "title": "Create and edit"
+      },
+      "conversations.messages.initiate": {
+        "title": "Initiate"
+      },
+      "conversations.messages.initiate.write": {
+        "title": "Create and edit"
+      },
+      "conversations.messages.locations": {
+        "title": "Locations"
+      },
+      "conversations.messages.locations.recording": {
+        "title": "Recording"
+      },
+      "conversations.messages.locations.recording.read": {
+        "title": "Read"
+      },
+      "conversations.messages.outbound": {
+        "title": "Outbound"
+      },
+      "conversations.messages.outbound.write": {
+        "title": "Create and edit"
+      },
+      "conversations.messages.read": {
+        "title": "Read"
+      },
+      "conversations.messages.review_reply": {
+        "title": "Review reply"
+      },
+      "conversations.messages.review_reply.publish": {
+        "title": "Publish"
+      },
+      "conversations.messages.schedule": {
+        "title": "Schedule"
+      },
+      "conversations.messages.schedule.delete": {
+        "title": "Delete"
+      },
+      "conversations.messages.send": {
+        "title": "Send"
+      },
+      "conversations.messages.status": {
+        "title": "Status"
+      },
+      "conversations.messages.status.write": {
+        "title": "Create and edit"
+      },
+      "conversations.messages.write": {
+        "title": "Create and edit"
+      },
+      "conversations.preferences": {
+        "title": "Preferences"
+      },
+      "conversations.preferences.custom_subtypes": {
+        "title": "Custom subtypes"
+      },
+      "conversations.preferences.custom_subtypes.read": {
+        "title": "Read"
+      },
+      "conversations.preferences.custom_subtypes.write": {
+        "title": "Create and edit"
+      },
+      "conversations.preferences.unsubscriptions": {
+        "title": "Unsubscriptions"
+      },
+      "conversations.preferences.unsubscriptions.status": {
+        "title": "Status"
+      },
+      "conversations.preferences.unsubscriptions.status.read": {
+        "title": "Read"
+      },
+      "conversations.preferences.unsubscriptions.user_change": {
+        "title": "User change"
+      },
+      "conversations.preferences.unsubscriptions.user_change.write": {
+        "title": "Create and edit"
+      },
+      "conversations.providers": {
+        "title": "Providers"
+      },
+      "conversations.providers.live_chat": {
+        "title": "Live chat"
+      },
+      "conversations.providers.live_chat.typing": {
+        "title": "Typing"
+      },
+      "conversations.providers.live_chat.typing.send": {
+        "title": "Send"
+      },
+      "conversations.read": {
+        "title": "Read"
+      },
+      "conversations.write": {
+        "title": "Create and edit"
+      },
+      "custom_fields": {
+        "title": "Custom fields"
+      },
+      "custom_fields.delete": {
+        "title": "Delete"
+      },
+      "custom_fields.folder": {
+        "title": "Folder"
+      },
+      "custom_fields.folder.delete": {
+        "title": "Delete"
+      },
+      "custom_fields.folder.write": {
+        "title": "Create and edit"
+      },
+      "custom_fields.object_key": {
+        "title": "Object key"
+      },
+      "custom_fields.object_key.read": {
+        "title": "Read"
+      },
+      "custom_fields.read": {
+        "title": "Read"
+      },
+      "custom_fields.write": {
+        "title": "Create and edit"
+      },
+      "emails": {
+        "title": "Emails"
+      },
+      "emails.builder": {
+        "title": "Builder"
+      },
+      "emails.builder.data": {
+        "title": "Data"
+      },
+      "emails.builder.data.write": {
+        "title": "Create and edit"
+      },
+      "emails.builder.delete": {
+        "title": "Delete"
+      },
+      "emails.builder.read": {
+        "title": "Read"
+      },
+      "emails.builder.write": {
+        "title": "Create and edit"
+      },
+      "emails.schedule": {
+        "title": "Schedule"
+      },
+      "emails.schedule.read": {
+        "title": "Read"
+      },
+      "forms": {
+        "title": "Forms"
+      },
+      "forms.custom_files": {
+        "title": "Custom files"
+      },
+      "forms.custom_files.write": {
+        "title": "Create and edit"
+      },
+      "forms.read": {
+        "title": "Read"
+      },
+      "forms.submissions": {
+        "title": "Submissions"
+      },
+      "forms.submissions.read": {
+        "title": "Read"
+      },
+      "funnels": {
+        "title": "Funnels"
+      },
+      "funnels.funnel": {
+        "title": "Funnel"
+      },
+      "funnels.funnel.read": {
+        "title": "Read"
+      },
+      "funnels.lookup": {
+        "title": "Lookup"
+      },
+      "funnels.lookup.redirect": {
+        "title": "Redirect"
+      },
+      "funnels.lookup.redirect.delete": {
+        "title": "Delete"
+      },
+      "funnels.lookup.redirect.read": {
+        "title": "Read"
+      },
+      "funnels.lookup.redirect.write": {
+        "title": "Create and edit"
+      },
+      "funnels.page": {
+        "title": "Page"
+      },
+      "funnels.page.count": {
+        "title": "Count"
+      },
+      "funnels.page.count.read": {
+        "title": "Read"
+      },
+      "funnels.page.read": {
+        "title": "Read"
+      },
+      "invoices": {
+        "title": "Invoices"
+      },
+      "invoices.delete": {
+        "title": "Delete"
+      },
+      "invoices.estimate": {
+        "title": "Estimate"
+      },
+      "invoices.estimate.delete": {
+        "title": "Delete"
+      },
+      "invoices.estimate.invoice": {
+        "title": "Invoice"
+      },
+      "invoices.estimate.invoice.write": {
+        "title": "Create and edit"
+      },
+      "invoices.estimate.number": {
+        "title": "Number"
+      },
+      "invoices.estimate.number.generate": {
+        "title": "Generate"
+      },
+      "invoices.estimate.number.generate.read": {
+        "title": "Read"
+      },
+      "invoices.estimate.read": {
+        "title": "Read"
+      },
+      "invoices.estimate.send": {
+        "title": "Send"
+      },
+      "invoices.estimate.stats": {
+        "title": "Stats"
+      },
+      "invoices.estimate.stats.last_visited_at": {
+        "title": "Last visited at"
+      },
+      "invoices.estimate.stats.last_visited_at.write": {
+        "title": "Create and edit"
+      },
+      "invoices.estimate.template": {
+        "title": "Template"
+      },
+      "invoices.estimate.template.delete": {
+        "title": "Delete"
+      },
+      "invoices.estimate.template.preview": {
+        "title": "Preview"
+      },
+      "invoices.estimate.template.preview.read": {
+        "title": "Read"
+      },
+      "invoices.estimate.template.read": {
+        "title": "Read"
+      },
+      "invoices.estimate.template.write": {
+        "title": "Create and edit"
+      },
+      "invoices.estimate.write": {
+        "title": "Create and edit"
+      },
+      "invoices.generate_invoice_number": {
+        "title": "Generate invoice number"
+      },
+      "invoices.generate_invoice_number.read": {
+        "title": "Read"
+      },
+      "invoices.late_fees_configuration": {
+        "title": "Late fees configuration"
+      },
+      "invoices.late_fees_configuration.write": {
+        "title": "Create and edit"
+      },
+      "invoices.read": {
+        "title": "Read"
+      },
+      "invoices.record_payment": {
+        "title": "Record payment"
+      },
+      "invoices.record_payment.write": {
+        "title": "Create and edit"
+      },
+      "invoices.schedule": {
+        "title": "Schedule"
+      },
+      "invoices.schedule.and_schedule": {
+        "title": "And schedule"
+      },
+      "invoices.schedule.and_schedule.send": {
+        "title": "Send"
+      },
+      "invoices.schedule.auto_payment": {
+        "title": "Auto payment"
+      },
+      "invoices.schedule.auto_payment.pay": {
+        "title": "Make payments"
+      },
+      "invoices.schedule.delete": {
+        "title": "Delete"
+      },
+      "invoices.schedule.read": {
+        "title": "Read"
+      },
+      "invoices.schedule.schedule": {
+        "title": "Schedule"
+      },
+      "invoices.schedule.schedule.send": {
+        "title": "Send"
+      },
+      "invoices.schedule.write": {
+        "title": "Create and edit"
+      },
+      "invoices.send": {
+        "title": "Send"
+      },
+      "invoices.settings": {
+        "title": "Settings"
+      },
+      "invoices.settings.read": {
+        "title": "Read"
+      },
+      "invoices.stats": {
+        "title": "Stats"
+      },
+      "invoices.stats.last_visited_at": {
+        "title": "Last visited at"
+      },
+      "invoices.stats.last_visited_at.write": {
+        "title": "Create and edit"
+      },
+      "invoices.template": {
+        "title": "Template"
+      },
+      "invoices.template.delete": {
+        "title": "Delete"
+      },
+      "invoices.template.late_fees_configuration": {
+        "title": "Late fees configuration"
+      },
+      "invoices.template.late_fees_configuration.write": {
+        "title": "Create and edit"
+      },
+      "invoices.template.payment_methods_configuration": {
+        "title": "Payment methods configuration"
+      },
+      "invoices.template.payment_methods_configuration.write": {
+        "title": "Create and edit"
+      },
+      "invoices.template.read": {
+        "title": "Read"
+      },
+      "invoices.template.write": {
+        "title": "Create and edit"
+      },
+      "invoices.text2pay": {
+        "title": "Text2pay"
+      },
+      "invoices.text2pay.send": {
+        "title": "Send"
+      },
+      "invoices.void": {
+        "title": "Void"
+      },
+      "invoices.void.write": {
+        "title": "Create and edit"
+      },
+      "invoices.write": {
+        "title": "Create and edit"
+      },
+      "links": {
+        "title": "Links"
+      },
+      "links.delete": {
+        "title": "Delete"
+      },
+      "links.id": {
+        "title": "Id"
+      },
+      "links.id.read": {
+        "title": "Read"
+      },
+      "links.read": {
+        "title": "Read"
+      },
+      "links.write": {
+        "title": "Create and edit"
+      },
+      "locations": {
+        "title": "Locations"
+      },
+      "locations.admin": {
+        "title": "Manage"
+      },
+      "locations.custom_fields": {
+        "title": "Custom fields"
+      },
+      "locations.custom_fields.delete": {
+        "title": "Delete"
+      },
+      "locations.custom_fields.read": {
+        "title": "Read"
+      },
+      "locations.custom_fields.write": {
+        "title": "Create and edit"
+      },
+      "locations.custom_values": {
+        "title": "Custom values"
+      },
+      "locations.custom_values.delete": {
+        "title": "Delete"
+      },
+      "locations.custom_values.read": {
+        "title": "Read"
+      },
+      "locations.custom_values.write": {
+        "title": "Create and edit"
+      },
+      "locations.delete": {
+        "title": "Delete"
+      },
+      "locations.read": {
+        "title": "Read"
+      },
+      "locations.recurring_tasks": {
+        "title": "Recurring tasks"
+      },
+      "locations.recurring_tasks.delete": {
+        "title": "Delete"
+      },
+      "locations.recurring_tasks.read": {
+        "title": "Read"
+      },
+      "locations.recurring_tasks.write": {
+        "title": "Create and edit"
+      },
+      "locations.tags": {
+        "title": "Tags"
+      },
+      "locations.tags.delete": {
+        "title": "Delete"
+      },
+      "locations.tags.read": {
+        "title": "Read"
+      },
+      "locations.tags.write": {
+        "title": "Create and edit"
+      },
+      "locations.tasks": {
+        "title": "Tasks"
+      },
+      "locations.tasks.read": {
+        "title": "Read"
+      },
+      "locations.templates": {
+        "title": "Templates"
+      },
+      "locations.templates.delete": {
+        "title": "Delete"
+      },
+      "locations.templates.read": {
+        "title": "Read"
+      },
+      "locations.timezones": {
+        "title": "Timezones"
+      },
+      "locations.timezones.read": {
+        "title": "Read"
+      },
+      "medias": {
+        "title": "Medias"
+      },
+      "medias.delete": {
+        "title": "Delete"
+      },
+      "medias.file": {
+        "title": "File"
+      },
+      "medias.file.write": {
+        "title": "Create and edit"
+      },
+      "medias.files": {
+        "title": "Files"
+      },
+      "medias.files.delete": {
+        "title": "Delete"
+      },
+      "medias.files.read": {
+        "title": "Read"
+      },
+      "medias.files.write": {
+        "title": "Create and edit"
+      },
+      "medias.folder": {
+        "title": "Folder"
+      },
+      "medias.folder.write": {
+        "title": "Create and edit"
+      },
+      "medias.write": {
+        "title": "Create and edit"
+      },
+      "objects": {
+        "title": "Objects"
+      },
+      "objects.read": {
+        "title": "Read"
+      },
+      "objects.records": {
+        "title": "Records"
+      },
+      "objects.records.delete": {
+        "title": "Delete"
+      },
+      "objects.records.read": {
+        "title": "Read"
+      },
+      "objects.records.write": {
+        "title": "Create and edit"
+      },
+      "objects.write": {
+        "title": "Create and edit"
+      },
+      "opportunities": {
+        "title": "Opportunities"
+      },
+      "opportunities.delete": {
+        "title": "Delete"
+      },
+      "opportunities.followers": {
+        "title": "Followers"
+      },
+      "opportunities.followers.delete": {
+        "title": "Delete"
+      },
+      "opportunities.followers.write": {
+        "title": "Create and edit"
+      },
+      "opportunities.lost_reason": {
+        "title": "Lost reason"
+      },
+      "opportunities.lost_reason.read": {
+        "title": "Read"
+      },
+      "opportunities.pipelines": {
+        "title": "Pipelines"
+      },
+      "opportunities.pipelines.read": {
+        "title": "Read"
+      },
+      "opportunities.read": {
+        "title": "Read"
+      },
+      "opportunities.status": {
+        "title": "Status"
+      },
+      "opportunities.status.write": {
+        "title": "Create and edit"
+      },
+      "opportunities.upsert": {
+        "title": "Upsert"
+      },
+      "opportunities.upsert.write": {
+        "title": "Create and edit"
+      },
+      "opportunities.write": {
+        "title": "Create and edit"
+      },
+      "payments": {
+        "title": "Payments"
+      },
+      "payments.coupon": {
+        "title": "Coupon"
+      },
+      "payments.coupon.delete": {
+        "title": "Delete"
+      },
+      "payments.coupon.read": {
+        "title": "Read"
+      },
+      "payments.coupon.write": {
+        "title": "Create and edit"
+      },
+      "payments.custom_provider": {
+        "title": "Custom provider"
+      },
+      "payments.custom_provider.capabilities": {
+        "title": "Capabilities"
+      },
+      "payments.custom_provider.capabilities.admin": {
+        "title": "Manage"
+      },
+      "payments.custom_provider.connect": {
+        "title": "Connect"
+      },
+      "payments.custom_provider.connect.admin": {
+        "title": "Manage"
+      },
+      "payments.custom_provider.connect.read": {
+        "title": "Read"
+      },
+      "payments.custom_provider.disconnect": {
+        "title": "Disconnect"
+      },
+      "payments.custom_provider.disconnect.admin": {
+        "title": "Manage"
+      },
+      "payments.custom_provider.provider": {
+        "title": "Provider"
+      },
+      "payments.custom_provider.provider.admin": {
+        "title": "Manage"
+      },
+      "payments.custom_provider.provider.delete": {
+        "title": "Delete"
+      },
+      "payments.integrations": {
+        "title": "Integrations"
+      },
+      "payments.integrations.provider": {
+        "title": "Provider"
+      },
+      "payments.integrations.provider.whitelabel": {
+        "title": "Whitelabel"
+      },
+      "payments.integrations.provider.whitelabel.admin": {
+        "title": "Manage"
+      },
+      "payments.integrations.provider.whitelabel.read": {
+        "title": "Read"
+      },
+      "payments.orders": {
+        "title": "Orders"
+      },
+      "payments.orders.fulfillments": {
+        "title": "Fulfillments"
+      },
+      "payments.orders.fulfillments.read": {
+        "title": "Read"
+      },
+      "payments.orders.fulfillments.write": {
+        "title": "Create and edit"
+      },
+      "payments.orders.notes": {
+        "title": "Notes"
+      },
+      "payments.orders.notes.read": {
+        "title": "Read"
+      },
+      "payments.orders.read": {
+        "title": "Read"
+      },
+      "payments.orders.record_payment": {
+        "title": "Record payment"
+      },
+      "payments.orders.record_payment.write": {
+        "title": "Create and edit"
+      },
+      "payments.subscriptions": {
+        "title": "Subscriptions"
+      },
+      "payments.subscriptions.read": {
+        "title": "Read"
+      },
+      "payments.transactions": {
+        "title": "Transactions"
+      },
+      "payments.transactions.read": {
+        "title": "Read"
+      },
+      "products": {
+        "title": "Products"
+      },
+      "products.bulk_update": {
+        "title": "Bulk update"
+      },
+      "products.bulk_update.write": {
+        "title": "Create and edit"
+      },
+      "products.collections": {
+        "title": "Collections"
+      },
+      "products.collections.delete": {
+        "title": "Delete"
+      },
+      "products.collections.read": {
+        "title": "Read"
+      },
+      "products.collections.write": {
+        "title": "Create and edit"
+      },
+      "products.delete": {
+        "title": "Delete"
+      },
+      "products.inventory": {
+        "title": "Inventory"
+      },
+      "products.inventory.read": {
+        "title": "Read"
+      },
+      "products.inventory.write": {
+        "title": "Create and edit"
+      },
+      "products.price": {
+        "title": "Price"
+      },
+      "products.price.delete": {
+        "title": "Delete"
+      },
+      "products.price.read": {
+        "title": "Read"
+      },
+      "products.price.write": {
+        "title": "Create and edit"
+      },
+      "products.read": {
+        "title": "Read"
+      },
+      "products.reviews": {
+        "title": "Reviews"
+      },
+      "products.reviews.bulk_update": {
+        "title": "Bulk update"
+      },
+      "products.reviews.bulk_update.write": {
+        "title": "Create and edit"
+      },
+      "products.reviews.count": {
+        "title": "Count"
+      },
+      "products.reviews.count.read": {
+        "title": "Read"
+      },
+      "products.reviews.delete": {
+        "title": "Delete"
+      },
+      "products.reviews.read": {
+        "title": "Read"
+      },
+      "products.reviews.write": {
+        "title": "Create and edit"
+      },
+      "products.store": {
+        "title": "Store"
+      },
+      "products.store.priority": {
+        "title": "Priority"
+      },
+      "products.store.priority.write": {
+        "title": "Create and edit"
+      },
+      "products.store.stats": {
+        "title": "Stats"
+      },
+      "products.store.stats.read": {
+        "title": "Read"
+      },
+      "products.store.write": {
+        "title": "Create and edit"
+      },
+      "products.write": {
+        "title": "Create and edit"
+      },
+      "social_media_posting": {
+        "title": "Social media posting"
+      },
+      "social_media_posting.accounts": {
+        "title": "Accounts"
+      },
+      "social_media_posting.accounts.delete": {
+        "title": "Delete"
+      },
+      "social_media_posting.accounts.read": {
+        "title": "Read"
+      },
+      "social_media_posting.accounts.write": {
+        "title": "Create and edit"
+      },
+      "social_media_posting.categories": {
+        "title": "Categories"
+      },
+      "social_media_posting.categories.read": {
+        "title": "Read"
+      },
+      "social_media_posting.csv": {
+        "title": "Csv"
+      },
+      "social_media_posting.csv.delete": {
+        "title": "Delete"
+      },
+      "social_media_posting.csv.post": {
+        "title": "Post"
+      },
+      "social_media_posting.csv.post.delete": {
+        "title": "Delete"
+      },
+      "social_media_posting.csv.read": {
+        "title": "Read"
+      },
+      "social_media_posting.csv.write": {
+        "title": "Create and edit"
+      },
+      "social_media_posting.oauth": {
+        "title": "Oauth"
+      },
+      "social_media_posting.oauth.facebook": {
+        "title": "Facebook"
+      },
+      "social_media_posting.oauth.facebook.accounts": {
+        "title": "Accounts"
+      },
+      "social_media_posting.oauth.facebook.accounts.admin": {
+        "title": "Manage"
+      },
+      "social_media_posting.oauth.facebook.accounts.read": {
+        "title": "Read"
+      },
+      "social_media_posting.oauth.facebook.read": {
+        "title": "Read"
+      },
+      "social_media_posting.oauth.google": {
+        "title": "Google"
+      },
+      "social_media_posting.oauth.google.locations": {
+        "title": "Locations"
+      },
+      "social_media_posting.oauth.google.locations.admin": {
+        "title": "Manage"
+      },
+      "social_media_posting.oauth.google.locations.read": {
+        "title": "Read"
+      },
+      "social_media_posting.oauth.google.read": {
+        "title": "Read"
+      },
+      "social_media_posting.oauth.instagram": {
+        "title": "Instagram"
+      },
+      "social_media_posting.oauth.instagram.accounts": {
+        "title": "Accounts"
+      },
+      "social_media_posting.oauth.instagram.accounts.admin": {
+        "title": "Manage"
+      },
+      "social_media_posting.oauth.instagram.accounts.read": {
+        "title": "Read"
+      },
+      "social_media_posting.oauth.instagram.read": {
+        "title": "Read"
+      },
+      "social_media_posting.oauth.linkedin": {
+        "title": "Linkedin"
+      },
+      "social_media_posting.oauth.linkedin.accounts": {
+        "title": "Accounts"
+      },
+      "social_media_posting.oauth.linkedin.accounts.admin": {
+        "title": "Manage"
+      },
+      "social_media_posting.oauth.linkedin.accounts.read": {
+        "title": "Read"
+      },
+      "social_media_posting.oauth.linkedin.read": {
+        "title": "Read"
+      },
+      "social_media_posting.oauth.tiktok": {
+        "title": "Tiktok"
+      },
+      "social_media_posting.oauth.tiktok.accounts": {
+        "title": "Accounts"
+      },
+      "social_media_posting.oauth.tiktok.accounts.admin": {
+        "title": "Manage"
+      },
+      "social_media_posting.oauth.tiktok.accounts.read": {
+        "title": "Read"
+      },
+      "social_media_posting.oauth.tiktok.read": {
+        "title": "Read"
+      },
+      "social_media_posting.oauth.tiktok_business": {
+        "title": "Tiktok business"
+      },
+      "social_media_posting.oauth.tiktok_business.accounts": {
+        "title": "Accounts"
+      },
+      "social_media_posting.oauth.tiktok_business.accounts.read": {
+        "title": "Read"
+      },
+      "social_media_posting.oauth.tiktok_business.read": {
+        "title": "Read"
+      },
+      "social_media_posting.oauth.twitter": {
+        "title": "Twitter"
+      },
+      "social_media_posting.oauth.twitter.accounts": {
+        "title": "Accounts"
+      },
+      "social_media_posting.oauth.twitter.accounts.admin": {
+        "title": "Manage"
+      },
+      "social_media_posting.oauth.twitter.accounts.read": {
+        "title": "Read"
+      },
+      "social_media_posting.oauth.twitter.read": {
+        "title": "Read"
+      },
+      "social_media_posting.posts": {
+        "title": "Posts"
+      },
+      "social_media_posting.posts.bulk_delete": {
+        "title": "Bulk delete"
+      },
+      "social_media_posting.posts.bulk_delete.delete": {
+        "title": "Delete"
+      },
+      "social_media_posting.posts.delete": {
+        "title": "Delete"
+      },
+      "social_media_posting.posts.publish": {
+        "title": "Publish"
+      },
+      "social_media_posting.posts.read": {
+        "title": "Read"
+      },
+      "social_media_posting.posts.write": {
+        "title": "Create and edit"
+      },
+      "social_media_posting.statistics": {
+        "title": "Statistics"
+      },
+      "social_media_posting.statistics.read": {
+        "title": "Read"
+      },
+      "social_media_posting.tags": {
+        "title": "Tags"
+      },
+      "social_media_posting.tags.details": {
+        "title": "Details"
+      },
+      "social_media_posting.tags.details.read": {
+        "title": "Read"
+      },
+      "social_media_posting.tags.read": {
+        "title": "Read"
+      },
+      "surveys": {
+        "title": "Surveys"
+      },
+      "surveys.read": {
+        "title": "Read"
+      },
+      "surveys.submissions": {
+        "title": "Submissions"
+      },
+      "surveys.submissions.read": {
+        "title": "Read"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.admin": {
+        "title": "Manage"
+      },
+      "users.delete": {
+        "title": "Delete"
+      },
+      "users.read": {
+        "title": "Read"
+      },
+      "users.search": {
+        "title": "Search"
+      },
+      "users.search.filter_by_email": {
+        "title": "Filter by email"
+      },
+      "users.search.filter_by_email.write": {
+        "title": "Create and edit"
+      },
+      "users.search.read": {
+        "title": "Read"
+      },
+      "workflows": {
+        "title": "Workflows"
+      },
+      "workflows.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://services.leadconnectorhq.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "token",
+        "label": "HighLevel access token",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "HighLevel",
   "http": {
     "operations": {
-      "Upsert-opportunity": {"action":"write.upsert","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/opportunities/upsert","body":"json","scope":{"pipelineId":{"from":"body","at":"/pipelineId"},"locationId":{"from":"body","at":"/locationId"}}},
-      "add-calendar-to-schedule": {"action":"write.associations","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/schedules/{id}/associations/{calendarId}","scope":{"id":{"from":"path","at":"id"},"calendarId":{"from":"path","at":"calendarId"}}},
-      "add-contact-to-campaign": {"action":"write.campaigns","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/campaigns/{campaignId}","body":"json","scope":{"contactId":{"from":"path","at":"contactId"},"campaignId":{"from":"path","at":"campaignId"}}},
-      "add-contact-to-workflow": {"action":"execute.workflow","effects":["execute"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/workflow/{workflowId}","body":"json","scope":{"contactId":{"from":"path","at":"contactId"},"workflowId":{"from":"path","at":"workflowId"}}},
-      "add-followers-contact": {"action":"write.contacts","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/followers","body":"json","scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "add-followers-opportunity": {"action":"write.opportunities","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/opportunities/{id}/followers","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "add-remove-contact-from-business": {"action":"delete.business","effects":["delete"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/bulk/business","body":"json","scope":{"locationId":{"from":"body","at":"/locationId"},"businessId":{"from":"body","at":"/businessId"}}},
-      "add-tags": {"action":"write.tags","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/tags","body":"json","scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "create-appointment": {"action":"write.appointments","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/calendars/events/appointments","body":"json","scope":{"calendarId":{"from":"body","at":"/calendarId"},"locationId":{"from":"body","at":"/locationId"},"contactId":{"from":"body","at":"/contactId"}}},
-      "create-appointment-note": {"action":"send.notes","effects":["send"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/calendars/appointments/{appointmentId}/notes","body":"json","scope":{"appointmentId":{"from":"path","at":"appointmentId"},"request":{"from":"body","at":"","type":"object"}},"grant":["appointmentId"]},
-      "create-association": {"action":"write.update","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/bulk/tags/update/{type}","body":"json","scope":{"type":{"from":"path","at":"type"},"locationId":{"from":"body","at":"/locationId"}}},
-      "create-block-slot": {"action":"write.block_slots","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/calendars/events/block-slots","body":"json","scope":{"calendarId":{"from":"body","at":"/calendarId"},"locationId":{"from":"body","at":"/locationId"}}},
-      "create-calendar": {"action":"write.calendars","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/calendars/","body":"json","scope":{"locationId":{"from":"body","at":"/locationId"},"name":{"from":"body","at":"/name"}}},
-      "create-calendar-group": {"action":"admin.groups","effects":["admin"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/calendars/groups","body":"json","scope":{"locationId":{"from":"body","at":"/locationId"},"name":{"from":"body","at":"/name"},"slug":{"from":"body","at":"/slug"}}},
-      "create-calendar-resource": {"action":"send.notifications","effects":["send"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/calendars/resources/{resourceType}","body":"json","scope":{"resourceType":{"from":"path","at":"resourceType"},"locationId":{"from":"body","at":"/locationId"},"name":{"from":"body","at":"/name"}}},
-      "create-contact": {"action":"write.contacts","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/","body":"json","scope":{"locationId":{"from":"body","at":"/locationId"}}},
-      "create-note": {"action":"send.notes","effects":["send"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/notes","body":"json","scope":{"contactId":{"from":"path","at":"contactId"},"request":{"from":"body","at":"","type":"object"}},"grant":["contactId"]},
-      "create-opportunity": {"action":"write.opportunities","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/opportunities/","body":"json","scope":{"pipelineId":{"from":"body","at":"/pipelineId"},"locationId":{"from":"body","at":"/locationId"},"name":{"from":"body","at":"/name"},"contactId":{"from":"body","at":"/contactId"}}},
-      "create-task": {"action":"write.tasks","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/tasks","body":"json","scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "create-user": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/users/","body":"json","scope":{"companyId":{"from":"body","at":"/companyId"},"firstName":{"from":"body","at":"/firstName"},"lastName":{"from":"body","at":"/lastName"},"email":{"from":"body","at":"/email"}}},
-      "createSchedule": {"action":"write.schedules","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/calendars/schedules","body":"json","scope":{"locationId":{"from":"body","at":"/locationId"},"name":{"from":"body","at":"/name"},"userId":{"from":"body","at":"/userId"}}},
-      "delete-appointment-note": {"action":"delete.notes","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/calendars/appointments/{appointmentId}/notes/{noteId}","scope":{"appointmentId":{"from":"path","at":"appointmentId"},"noteId":{"from":"path","at":"noteId"}}},
-      "delete-calendar": {"action":"delete.calendars","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/calendars/{calendarId}","scope":{"calendarId":{"from":"path","at":"calendarId"}}},
-      "delete-calendar-resource": {"action":"delete.resources","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/calendars/resources/{resourceType}/{id}","scope":{"resourceType":{"from":"path","at":"resourceType"},"id":{"from":"path","at":"id"}}},
-      "delete-contact": {"action":"delete.contacts","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}","scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "delete-contact-from-workflow": {"action":"delete.workflow","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/workflow/{workflowId}","body":"json","scope":{"contactId":{"from":"path","at":"contactId"},"workflowId":{"from":"path","at":"workflowId"}}},
-      "delete-event": {"action":"delete.events","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/calendars/events/{eventId}","body":"json","scope":{"eventId":{"from":"path","at":"eventId"}}},
-      "delete-group": {"action":"delete.groups","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/calendars/groups/{groupId}","scope":{"groupId":{"from":"path","at":"groupId"}}},
-      "delete-note": {"action":"delete.notes","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/notes/{id}","scope":{"contactId":{"from":"path","at":"contactId"},"id":{"from":"path","at":"id"}}},
-      "delete-opportunity": {"action":"delete.opportunities","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/opportunities/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "delete-task": {"action":"delete.tasks","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/tasks/{taskId}","scope":{"contactId":{"from":"path","at":"contactId"},"taskId":{"from":"path","at":"taskId"}}},
-      "delete-user": {"action":"delete.users","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/users/{userId}","scope":{"userId":{"from":"path","at":"userId"}}},
-      "deleteSchedule": {"action":"delete.schedules","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/calendars/schedules/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "edit-appointment": {"action":"write.appointments","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/events/appointments/{eventId}","body":"json","scope":{"eventId":{"from":"path","at":"eventId"}}},
-      "edit-block-slot": {"action":"write.block_slots","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/events/block-slots/{eventId}","body":"json","scope":{"eventId":{"from":"path","at":"eventId"},"calendarId":{"from":"body","at":"/calendarId"},"locationId":{"from":"body","at":"/locationId"}}},
-      "edit-group": {"action":"admin.groups","effects":["admin"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/groups/{groupId}","body":"json","scope":{"groupId":{"from":"path","at":"groupId"},"name":{"from":"body","at":"/name"},"slug":{"from":"body","at":"/slug"}}},
-      "fetch-calendar-resources": {"action":"read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/calendars/resources/{resourceType}","params":["locationId","limit","skip","startDate","endDate","timezone","userId","userIds","isActive","deleted"],"scope":{"resourceType":{"from":"path","at":"resourceType"},"locationId":{"from":"query","at":"locationId"}}},
-      "filter-users-by-email": {"action":"write.filter_by_email","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/users/search/filter-by-email","body":"json","scope":{"companyId":{"from":"body","at":"/companyId"}}},
-      "get-appointment": {"action":"read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/calendars/events/appointments/{eventId}","scope":{"eventId":{"from":"path","at":"eventId"}}},
-      "get-calendar": {"action":"read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/calendars/{calendarId}","params":["locationId","userId","calendarId","groupId","startTime","endTime"],"scope":{"calendarId":{"from":"path","at":"calendarId"}}},
-      "get-calendar-resource": {"action":"read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/calendars/resources/{resourceType}/{id}","params":["limit","offset"],"scope":{"resourceType":{"from":"path","at":"resourceType"},"id":{"from":"path","at":"id"}}},
-      "get-calendars": {"action":"read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/calendars/","params":["locationId","groupId","showDrafted"],"scope":{"locationId":{"from":"query","at":"locationId"}}},
-      "get-contact": {"action":"read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}","scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "get-contacts": {"action":"read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/contacts/","params":["locationId","startAfterId","startAfter","query","limit"],"scope":{"locationId":{"from":"query","at":"locationId"}}},
-      "get-contacts-by-businessId": {"action":"read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/contacts/business/{businessId}","params":["limit","locationId","skip","query"],"scope":{"businessId":{"from":"path","at":"businessId"},"locationId":{"from":"query","at":"locationId"}}},
-      "get-duplicate-contact": {"action":"read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/contacts/search/duplicate","params":["locationId","number","email"],"scope":{"locationId":{"from":"query","at":"locationId"}}},
-      "get-note": {"action":"read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/notes/{id}","scope":{"contactId":{"from":"path","at":"contactId"},"id":{"from":"path","at":"id"}}},
-      "get-opportunity": {"action":"read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/opportunities/{id}","params":["locationId","name","deleted","query","skip","limit","getCount","q","location_id","pipeline_id","pipeline_stage_id","contact_id","status","assigned_to","campaignId","id","order","endDate","startAfter","startAfterId","date","country","page","getTasks","getNotes","getCalendarEvents"],"scope":{"id":{"from":"path","at":"id"}}},
-      "get-task": {"action":"read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/tasks/{taskId}","scope":{"contactId":{"from":"path","at":"contactId"},"taskId":{"from":"path","at":"taskId"}}},
-      "get-user": {"action":"read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/users/{userId}","params":["companyId","query","skip","limit","locationId","type","role","ids","sort","sortDirection","enabled2waySync"],"scope":{"userId":{"from":"path","at":"userId"}}},
-      "get-user-by-location": {"action":"read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/users/","params":["locationId"],"scope":{"locationId":{"from":"query","at":"locationId"}}},
-      "getScheduleById": {"action":"read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/calendars/schedules/{id}","params":["locationId","userId","calendarId","skip","limit"],"scope":{"id":{"from":"path","at":"id"}}},
-      "remove-calendar-from-schedule": {"action":"delete.associations","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/calendars/schedules/{id}/associations/{calendarId}","scope":{"id":{"from":"path","at":"id"},"calendarId":{"from":"path","at":"calendarId"}}},
-      "remove-contact-from-campaign": {"action":"delete.campaigns","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/campaigns/{campaignId}","scope":{"contactId":{"from":"path","at":"contactId"},"campaignId":{"from":"path","at":"campaignId"}}},
-      "remove-followers-contact": {"action":"delete.contacts","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/followers","body":"json","scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "remove-followers-opportunity": {"action":"delete.opportunities","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/opportunities/{id}/followers","params":["isRemoveAllFollowers"],"body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "remove-tags": {"action":"delete.tags","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/tags","body":"json","scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "search-contacts-advanced": {"action":"read","effects":["read"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/search","body":"json","scope":{}},
-      "search-opportunities-advanced": {"action":"read","effects":["read"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/opportunities/search","body":"json","scope":{"locationId":{"from":"body","at":"/locationId"},"page":{"from":"body","at":"/page","type":"number"}}},
-      "update-appointment-note": {"action":"write.notes","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/appointments/{appointmentId}/notes/{noteId}","body":"json","scope":{"appointmentId":{"from":"path","at":"appointmentId"},"noteId":{"from":"path","at":"noteId"}}},
-      "update-calendar": {"action":"write.calendars","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/{calendarId}","body":"json","scope":{"calendarId":{"from":"path","at":"calendarId"}}},
-      "update-calendar-resource": {"action":"write.resources","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/resources/{resourceType}/{id}","body":"json","scope":{"resourceType":{"from":"path","at":"resourceType"},"id":{"from":"path","at":"id"}}},
-      "update-contact": {"action":"write.contacts","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}","body":"json","scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "update-note": {"action":"write.notes","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/notes/{id}","body":"json","scope":{"contactId":{"from":"path","at":"contactId"},"id":{"from":"path","at":"id"}}},
-      "update-opportunity": {"action":"write.opportunities","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/opportunities/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "update-opportunity-status": {"action":"write.status","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/opportunities/{id}/status","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "update-task": {"action":"write.tasks","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/tasks/{taskId}","body":"json","scope":{"contactId":{"from":"path","at":"contactId"},"taskId":{"from":"path","at":"taskId"}}},
-      "update-task-completed": {"action":"write.completed","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/tasks/{taskId}/completed","body":"json","scope":{"contactId":{"from":"path","at":"contactId"},"taskId":{"from":"path","at":"taskId"}}},
-      "update-user": {"action":"admin.users","effects":["admin"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/users/{userId}","body":"json","scope":{"userId":{"from":"path","at":"userId"}}},
-      "updateSchedule": {"action":"write.schedules","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/schedules/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "upsert-contact": {"action":"write.upsert","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/upsert","body":"json","scope":{"locationId":{"from":"body","at":"/locationId"}}},
-      "validate-groups-slug": {"action":"read","effects":["read"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/calendars/groups/validate-slug","body":"json","scope":{"locationId":{"from":"body","at":"/locationId"},"slug":{"from":"body","at":"/slug"}}}
+      "DELETE-an-email-sms-template": {"action":"locations.templates.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/templates/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "GET-all-or-email-sms-templates": {"action":"locations.templates.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["deleted","skip","limit","type","originId"],"path":"/locations/{locationId}/templates","scope":{"locationId":{"at":"locationId","from":"path"},"originId":{"at":"originId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "Upsert-opportunity": {"action":"opportunities.upsert.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/opportunities/upsert","scope":{"locationId":{"at":"/locationId","from":"body"},"pipelineId":{"at":"/pipelineId","from":"body"}}},
+      "add-an-inbound-message": {"action":"conversations.messages.inbound.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/conversations/messages/inbound","scope":{"altId":{"at":"/altId","from":"body","optional":true},"contactId":{"at":"/contactId","from":"body"},"conversationId":{"at":"/conversationId","from":"body"},"conversationProviderId":{"at":"/conversationProviderId","from":"body"},"emailMessageId":{"at":"/emailMessageId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "add-an-outbound-message": {"action":"conversations.messages.outbound.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/conversations/messages/outbound","scope":{"altId":{"at":"/altId","from":"body","optional":true},"conversationId":{"at":"/conversationId","from":"body"},"conversationProviderId":{"at":"/conversationProviderId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "add-calendar-to-schedule": {"action":"calendars.schedules.associations.write","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/schedules/{id}/associations/{calendarId}","scope":{"calendarId":{"at":"calendarId","from":"path"},"id":{"at":"id","from":"path"}}},
+      "add-contact-to-campaign": {"action":"contacts.campaigns.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/campaigns/{campaignId}","scope":{"campaignId":{"at":"campaignId","from":"path"},"contactId":{"at":"contactId","from":"path"}}},
+      "add-contact-to-workflow": {"action":"contacts.workflow.execute","body":"json","effects":["execute"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/workflow/{workflowId}","scope":{"contactId":{"at":"contactId","from":"path"},"workflowId":{"at":"workflowId","from":"path"}}},
+      "add-followers-contact": {"action":"contacts.followers.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/followers","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "add-followers-opportunity": {"action":"opportunities.followers.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/opportunities/{id}/followers","scope":{"id":{"at":"id","from":"path"}}},
+      "add-message-attachments": {"action":"conversations.messages.attachments.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/conversations/messages/{messageId}/attachments","scope":{"messageId":{"at":"messageId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "add-remove-contact-from-business": {"action":"contacts.bulk.business.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/bulk/business","scope":{"businessId":{"at":"/businessId","from":"body"},"locationId":{"at":"/locationId","from":"body"}}},
+      "add-tags": {"action":"contacts.tags.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/tags","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "attach-facebook-page-group": {"action":"social_media_posting.oauth.facebook.accounts.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/oauth/{locationId}/facebook/accounts/{accountId}","scope":{"accountId":{"at":"accountId","from":"path"},"companyId":{"at":"/companyId","from":"body","optional":true},"locationId":{"at":"locationId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"originId":{"at":"/originId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "attach-instagram-page-group": {"action":"social_media_posting.oauth.instagram.accounts.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/oauth/{locationId}/instagram/accounts/{accountId}","scope":{"accountId":{"at":"accountId","from":"path"},"companyId":{"at":"/companyId","from":"body","optional":true},"locationId":{"at":"locationId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"originId":{"at":"/originId","from":"body","optional":true},"pageId":{"at":"/pageId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "attach-linkedin-page-profile": {"action":"social_media_posting.oauth.linkedin.accounts.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/oauth/{locationId}/linkedin/accounts/{accountId}","scope":{"accountId":{"at":"accountId","from":"path"},"companyId":{"at":"/companyId","from":"body","optional":true},"locationId":{"at":"locationId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"originId":{"at":"/originId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "attach-tiktok-profile": {"action":"social_media_posting.oauth.tiktok.accounts.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/oauth/{locationId}/tiktok/accounts/{accountId}","scope":{"accountId":{"at":"accountId","from":"path"},"companyId":{"at":"/companyId","from":"body","optional":true},"locationId":{"at":"locationId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"originId":{"at":"/originId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"username":{"at":"/username","from":"body","optional":true}}},
+      "attach-twitter-profile": {"action":"social_media_posting.oauth.twitter.accounts.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/oauth/{locationId}/twitter/accounts/{accountId}","scope":{"accountId":{"at":"accountId","from":"path"},"companyId":{"at":"/companyId","from":"body","optional":true},"locationId":{"at":"locationId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"originId":{"at":"/originId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"username":{"at":"/username","from":"body","optional":true}}},
+      "auto-payment-invoice-schedule": {"action":"invoices.schedule.auto_payment.pay","body":"json","effects":["pay","write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/invoices/schedule/{scheduleId}/auto-payment","scope":{"altId":{"at":"/altId","from":"body"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"},"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "bulk-delete-media-objects": {"action":"medias.files.delete","body":"json","effects":["delete"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/medias/delete-files","scope":{"altId":{"at":"/altId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "bulk-delete-social-planner-posts": {"action":"social_media_posting.posts.bulk_delete.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/{locationId}/posts/bulk-delete","scope":{"locationId":{"at":"locationId","from":"path"},"postIds":{"at":"/postIds","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "bulk-update-media-objects": {"action":"medias.files.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/medias/update-files","scope":{"altId":{"at":"/altId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "bulk-update-product-review": {"action":"products.reviews.bulk_update.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/products/reviews/bulk-update","scope":{"altId":{"at":"/altId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "bulkEdit": {"action":"products.bulk_update.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/products/bulk-update/edit","scope":{"altId":{"at":"/altId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "bulkUpdate": {"action":"products.bulk_update.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/products/bulk-update","scope":{"altId":{"at":"/altId","from":"body"},"collectionIds":{"at":"/collectionIds","from":"body","optional":true,"type":"array"},"productIds":{"at":"/productIds","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "cancel-invoice-schedule": {"action":"invoices.schedule.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/invoices/schedule/{scheduleId}/cancel","scope":{"altId":{"at":"/altId","from":"body"},"request":{"at":"","from":"body","type":"object"},"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "cancel-scheduled-email-message": {"action":"conversations.messages.email.schedule.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/conversations/messages/email/{emailMessageId}/schedule","scope":{"emailMessageId":{"at":"emailMessageId","from":"path"}}},
+      "cancel-scheduled-message": {"action":"conversations.messages.schedule.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/conversations/messages/{messageId}/schedule","scope":{"messageId":{"at":"messageId","from":"path"}}},
+      "check-url-slug-exists": {"action":"blogs.posts.url_slug_exists.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["urlSlug","locationId","postId"],"path":"/blogs/posts/url-slug-exists","scope":{"locationId":{"at":"locationId","from":"query"},"postId":{"at":"postId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "complete-file-upload": {"action":"conversations.messages.complete.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/conversations/messages/upload/complete","scope":{"conversationId":{"at":"/conversationId","from":"body"},"filename":{"at":"/filename","from":"body"},"locationId":{"at":"/locationId","from":"body"},"request":{"at":"","from":"body","type":"object"},"uploadId":{"at":"/uploadId","from":"body"}}},
+      "create-appointment": {"action":"calendars.events.appointments.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/calendars/events/appointments","scope":{"calendarId":{"at":"/calendarId","from":"body"},"contactId":{"at":"/contactId","from":"body"},"locationId":{"at":"/locationId","from":"body"}}},
+      "create-appointment-note": {"action":"calendars.appointments.notes.send","body":"json","effects":["send"],"grant":["appointmentId"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/calendars/appointments/{appointmentId}/notes","scope":{"appointmentId":{"at":"appointmentId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-association": {"action":"contacts.bulk.tags.update.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/bulk/tags/update/{type}","scope":{"locationId":{"at":"/locationId","from":"body"},"type":{"at":"type","from":"path"}}},
+      "create-association.json.278257feb60c": {"action":"associations.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/associations/","scope":{"key":{"at":"/key","from":"body"},"locationId":{"at":"/locationId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-block-slot": {"action":"calendars.events.block_slots.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/calendars/events/block-slots","scope":{"calendarId":{"at":"/calendarId","from":"body"},"locationId":{"at":"/locationId","from":"body"}}},
+      "create-blog-post": {"action":"blogs.posts.publish","body":"json","effects":["publish","write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/blogs/posts","scope":{"blogId":{"at":"/blogId","from":"body"},"imageUrl":{"at":"/imageUrl","from":"body"},"locationId":{"at":"/locationId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-business": {"action":"businesses.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/businesses/","scope":{"email":{"at":"/email","from":"body","optional":true},"locationId":{"at":"/locationId","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-calendar": {"action":"calendars.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/calendars/","scope":{"locationId":{"at":"/locationId","from":"body"},"name":{"at":"/name","from":"body"}}},
+      "create-calendar-group": {"action":"calendars.groups.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/calendars/groups","scope":{"locationId":{"at":"/locationId","from":"body"},"name":{"at":"/name","from":"body"},"slug":{"at":"/slug","from":"body"}}},
+      "create-calendar-resource": {"action":"calendars.resources.send","body":"json","effects":["send"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/calendars/resources/{resourceType}","scope":{"locationId":{"at":"/locationId","from":"body"},"name":{"at":"/name","from":"body"},"resourceType":{"at":"resourceType","from":"path"}}},
+      "create-config": {"action":"payments.custom_provider.connect.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/payments/custom-provider/connect","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-contact": {"action":"contacts.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/","scope":{"locationId":{"at":"/locationId","from":"body"}}},
+      "create-conversation": {"action":"conversations.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/conversations/","scope":{"contactId":{"at":"/contactId","from":"body"},"locationId":{"at":"/locationId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-coupon": {"action":"payments.coupon.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/payments/coupon","scope":{"altId":{"at":"/altId","from":"body"},"name":{"at":"/name","from":"body"},"productIds":{"at":"/productIds","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-custom-field": {"action":"locations.custom_fields.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/customFields","scope":{"locationId":{"at":"locationId","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-custom-field-folder": {"action":"custom_fields.folder.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/custom-fields/folder","scope":{"locationId":{"at":"/locationId","from":"body"},"name":{"at":"/name","from":"body"},"objectKey":{"at":"/objectKey","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-custom-field.json.b2ac2c5e1756": {"action":"custom_fields.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/custom-fields/","scope":{"fieldKey":{"at":"/fieldKey","from":"body"},"locationId":{"at":"/locationId","from":"body"},"name":{"at":"/name","from":"body","optional":true},"objectKey":{"at":"/objectKey","from":"body"},"parentId":{"at":"/parentId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-custom-object-schema": {"action":"objects.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/objects/","scope":{"key":{"at":"/key","from":"body"},"locationId":{"at":"/locationId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-custom-subtype": {"action":"conversations.preferences.custom_subtypes.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/conversations/preferences/custom-subtypes","scope":{"channel":{"at":"/channel","from":"body"},"locationId":{"at":"locationId","from":"query"},"name":{"at":"/name","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-custom-value": {"action":"locations.custom_values.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/customValues","scope":{"locationId":{"at":"locationId","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-estimate-template": {"action":"invoices.estimate.template.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/invoices/estimate/template","scope":{"altId":{"at":"/altId","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-event-notification": {"action":"calendars.notifications.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/calendars/{calendarId}/notifications","path_patterns":{"calendarId":"[^r].*|r(?:|[^e].*|e(?:|[^s].*|s(?:|[^o].*|o(?:|[^u].*|u(?:|[^r].*|r(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))))"},"scope":{"calendarId":{"at":"calendarId","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+      "create-integration": {"action":"payments.custom_provider.provider.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/payments/custom-provider/provider","scope":{"imageUrl":{"at":"/imageUrl","from":"body"},"locationId":{"at":"locationId","from":"query"},"name":{"at":"/name","from":"body"},"paymentsUrl":{"at":"/paymentsUrl","from":"body"},"query":{"at":"","from":"query","type":"object"},"queryUrl":{"at":"/queryUrl","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-integration provider": {"action":"payments.integrations.provider.whitelabel.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/payments/integrations/provider/whitelabel","scope":{"altId":{"at":"/altId","from":"body"},"imageUrl":{"at":"/imageUrl","from":"body"},"request":{"at":"","from":"body","type":"object"},"uniqueName":{"at":"/uniqueName","from":"body"}}},
+      "create-invoice": {"action":"invoices.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/invoices/","scope":{"altId":{"at":"/altId","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-invoice-from-estimate": {"action":"invoices.estimate.invoice.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/invoices/estimate/{estimateId}/invoice","scope":{"altId":{"at":"/altId","from":"body"},"estimateId":{"at":"estimateId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-invoice-schedule": {"action":"invoices.schedule.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/invoices/schedule","scope":{"altId":{"at":"/altId","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-invoice-template": {"action":"invoices.template.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/invoices/template","scope":{"altId":{"at":"/altId","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-link": {"action":"links.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/links/","scope":{"locationId":{"at":"/locationId","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-location": {"action":"locations.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/locations/","scope":{"companyId":{"at":"/companyId","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"snapshotId":{"at":"/snapshotId","from":"body","optional":true}}},
+      "create-media-folder": {"action":"medias.folder.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/medias/folder","scope":{"altId":{"at":"/altId","from":"body"},"name":{"at":"/name","from":"body"},"parentId":{"at":"/parentId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "create-new-estimate": {"action":"invoices.estimate.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/invoices/estimate","scope":{"altId":{"at":"/altId","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"/userId","from":"body","optional":true}}},
+      "create-note": {"action":"contacts.notes.send","body":"json","effects":["send"],"grant":["contactId"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/notes","scope":{"contactId":{"at":"contactId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-object-record": {"action":"objects.records.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/objects/{schemaKey}/records","scope":{"request":{"at":"","from":"body","type":"object"},"schemaKey":{"at":"schemaKey","from":"path"}}},
+      "create-opportunity": {"action":"opportunities.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/opportunities/","scope":{"contactId":{"at":"/contactId","from":"body"},"locationId":{"at":"/locationId","from":"body"},"name":{"at":"/name","from":"body"},"pipelineId":{"at":"/pipelineId","from":"body"}}},
+      "create-order-fulfillment": {"action":"payments.orders.fulfillments.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/payments/orders/{orderId}/fulfillments","scope":{"altId":{"at":"/altId","from":"body"},"orderId":{"at":"orderId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-post": {"action":"social_media_posting.posts.publish","body":"json","effects":["publish"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/{locationId}/posts","scope":{"accountIds":{"at":"/accountIds","from":"body","type":"array"},"categoryId":{"at":"/categoryId","from":"body","optional":true},"locationId":{"at":"locationId","from":"path"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"/userId","from":"body"}}},
+      "create-price-for-product": {"action":"products.price.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/products/{productId}/price","path_patterns":{"productId":"[^s].*|s(?:|[^t].*|t(?:|[^o].*|o(?:|[^r].*|r(?:|[^e].*|e.+))))"},"scope":{"locationId":{"at":"/locationId","from":"body"},"name":{"at":"/name","from":"body"},"productId":{"at":"productId","from":"path"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"/userId","from":"body","optional":true},"variantOptionIds":{"at":"/variantOptionIds","from":"body","optional":true,"type":"array"}}},
+      "create-product": {"action":"products.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/products/","scope":{"automaticTaxCategoryId":{"at":"/automaticTaxCategoryId","from":"body","optional":true},"collectionIds":{"at":"/collectionIds","from":"body","optional":true,"type":"array"},"locationId":{"at":"/locationId","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"slug":{"at":"/slug","from":"body","optional":true}}},
+      "create-product-collection": {"action":"products.collections.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/products/collections","scope":{"altId":{"at":"/altId","from":"body"},"collectionId":{"at":"/collectionId","from":"body","optional":true},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"slug":{"at":"/slug","from":"body"}}},
+      "create-recurring-task": {"action":"locations.recurring_tasks.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/recurring-tasks","scope":{"contactIds":{"at":"/contactIds","from":"body","optional":true,"type":"array"},"locationId":{"at":"locationId","from":"path"},"owners":{"at":"/owners","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-redirect": {"action":"funnels.lookup.redirect.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/funnels/lookup/redirect","scope":{"locationId":{"at":"/locationId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-relation": {"action":"associations.relations.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/associations/relations","scope":{"associationId":{"at":"/associationId","from":"body"},"firstRecordId":{"at":"/firstRecordId","from":"body"},"locationId":{"at":"/locationId","from":"body"},"request":{"at":"","from":"body","type":"object"},"secondRecordId":{"at":"/secondRecordId","from":"body"}}},
+      "create-tag": {"action":"locations.tags.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/tags","scope":{"locationId":{"at":"locationId","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-task": {"action":"contacts.tasks.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/tasks","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "create-template": {"action":"emails.builder.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/emails/builder","scope":{"importURL":{"at":"/importURL","from":"body","optional":true},"locationId":{"at":"/locationId","from":"body"},"name":{"at":"/name","from":"body","optional":true},"parentId":{"at":"/parentId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"templateDataUrl":{"at":"/templateDataUrl","from":"body","optional":true}}},
+      "create-user": {"action":"users.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/users/","scope":{"companyId":{"at":"/companyId","from":"body"},"email":{"at":"/email","from":"body"},"firstName":{"at":"/firstName","from":"body"},"lastName":{"at":"/lastName","from":"body"}}},
+      "createSchedule": {"action":"calendars.schedules.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/calendars/schedules","scope":{"locationId":{"at":"/locationId","from":"body"},"name":{"at":"/name","from":"body"},"userId":{"at":"/userId","from":"body"}}},
+      "custom-provider-marketplace-app-update-capabilities": {"action":"payments.custom_provider.capabilities.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/payments/custom-provider/capabilities","scope":{"companyId":{"at":"/companyId","from":"body","optional":true},"locationId":{"at":"/locationId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "delete-Business": {"action":"businesses.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/businesses/{businessId}","scope":{"businessId":{"at":"businessId","from":"path"}}},
+      "delete-account": {"action":"social_media_posting.accounts.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","params":["companyId","userId"],"path":"/social-media-posting/{locationId}/accounts/{id}","scope":{"companyId":{"at":"companyId","from":"query","optional":true},"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"query","optional":true}}},
+      "delete-appointment-note": {"action":"calendars.appointments.notes.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/calendars/appointments/{appointmentId}/notes/{noteId}","scope":{"appointmentId":{"at":"appointmentId","from":"path"},"noteId":{"at":"noteId","from":"path"}}},
+      "delete-association": {"action":"associations.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/associations/{associationId}","scope":{"associationId":{"at":"associationId","from":"path"}}},
+      "delete-calendar": {"action":"calendars.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/calendars/{calendarId}","scope":{"calendarId":{"at":"calendarId","from":"path"}}},
+      "delete-calendar-resource": {"action":"calendars.resources.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/calendars/resources/{resourceType}/{id}","scope":{"id":{"at":"id","from":"path"},"resourceType":{"at":"resourceType","from":"path"}}},
+      "delete-contact": {"action":"contacts.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "delete-contact-from-workflow": {"action":"contacts.workflow.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/workflow/{workflowId}","scope":{"contactId":{"at":"contactId","from":"path"},"workflowId":{"at":"workflowId","from":"path"}}},
+      "delete-conversation": {"action":"conversations.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/conversations/{conversationId}","scope":{"conversationId":{"at":"conversationId","from":"path"}}},
+      "delete-coupon": {"action":"payments.coupon.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/payments/coupon","scope":{"altId":{"at":"/altId","from":"body"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "delete-csv": {"action":"social_media_posting.csv.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/{locationId}/csv/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "delete-csv-post": {"action":"social_media_posting.csv.post.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/{locationId}/csv/{csvId}/post/{postId}","scope":{"csvId":{"at":"csvId","from":"path"},"locationId":{"at":"locationId","from":"path"},"postId":{"at":"postId","from":"path"}}},
+      "delete-custom-field": {"action":"locations.custom_fields.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/customFields/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "delete-custom-field-folder": {"action":"custom_fields.folder.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/custom-fields/folder/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "delete-custom-field.none.c58648a0a246": {"action":"custom_fields.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/custom-fields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "delete-custom-value": {"action":"locations.custom_values.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/customValues/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "delete-estimate": {"action":"invoices.estimate.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/invoices/estimate/{estimateId}","scope":{"altId":{"at":"/altId","from":"body"},"estimateId":{"at":"estimateId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "delete-estimate-template": {"action":"invoices.estimate.template.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/invoices/estimate/template/{templateId}","scope":{"altId":{"at":"/altId","from":"body"},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"templateId","from":"path"}}},
+      "delete-event": {"action":"calendars.events.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/calendars/events/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "delete-event-notification": {"action":"calendars.notifications.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/calendars/{calendarId}/notifications/{notificationId}","path_patterns":{"calendarId":"[^r].*|r(?:|[^e].*|e(?:|[^s].*|s(?:|[^o].*|o(?:|[^u].*|u(?:|[^r].*|r(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))))"},"scope":{"calendarId":{"at":"calendarId","from":"path"},"notificationId":{"at":"notificationId","from":"path"}}},
+      "delete-group": {"action":"calendars.groups.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/calendars/groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"}}},
+      "delete-integration": {"action":"payments.custom_provider.provider.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/payments/custom-provider/provider","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "delete-invoice": {"action":"invoices.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","params":["altId","altType"],"path":"/invoices/{invoiceId}","scope":{"altId":{"at":"altId","from":"query"},"invoiceId":{"at":"invoiceId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "delete-invoice-schedule": {"action":"invoices.schedule.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","params":["altId","altType"],"path":"/invoices/schedule/{scheduleId}","scope":{"altId":{"at":"altId","from":"query"},"query":{"at":"","from":"query","type":"object"},"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "delete-invoice-template": {"action":"invoices.template.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","params":["altId","altType"],"path":"/invoices/template/{templateId}","scope":{"altId":{"at":"altId","from":"query"},"query":{"at":"","from":"query","type":"object"},"templateId":{"at":"templateId","from":"path"}}},
+      "delete-link": {"action":"links.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/links/{linkId}","scope":{"linkId":{"at":"linkId","from":"path"}}},
+      "delete-location": {"action":"locations.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","params":["deleteTwilioAccount"],"path":"/locations/{locationId}","scope":{"locationId":{"at":"locationId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "delete-media-content": {"action":"medias.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","params":["altType","altId"],"path":"/medias/{id}","scope":{"altId":{"at":"altId","from":"query"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "delete-note": {"action":"contacts.notes.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/notes/{id}","scope":{"contactId":{"at":"contactId","from":"path"},"id":{"at":"id","from":"path"}}},
+      "delete-object-record": {"action":"objects.records.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/objects/{schemaKey}/records/{id}","scope":{"id":{"at":"id","from":"path"},"schemaKey":{"at":"schemaKey","from":"path"}}},
+      "delete-opportunity": {"action":"opportunities.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/opportunities/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "delete-post": {"action":"social_media_posting.posts.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/{locationId}/posts/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "delete-price-by-id-for-product": {"action":"products.price.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/products/{productId}/price/{priceId}","scope":{"locationId":{"at":"locationId","from":"query"},"priceId":{"at":"priceId","from":"path"},"productId":{"at":"productId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "delete-product-by-id": {"action":"products.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","params":["locationId","sendWishlistStatus"],"path":"/products/{productId}","scope":{"locationId":{"at":"locationId","from":"query"},"productId":{"at":"productId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "delete-product-collection": {"action":"products.collections.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","params":["altId","altType"],"path":"/products/collections/{collectionId}","scope":{"altId":{"at":"altId","from":"query"},"collectionId":{"at":"collectionId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "delete-product-review": {"action":"products.reviews.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","params":["altId","altType","productId"],"path":"/products/reviews/{reviewId}","scope":{"altId":{"at":"altId","from":"query"},"productId":{"at":"productId","from":"query"},"query":{"at":"","from":"query","type":"object"},"reviewId":{"at":"reviewId","from":"path"}}},
+      "delete-recurring-task": {"action":"locations.recurring_tasks.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/recurring-tasks/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "delete-redirect-by-id": {"action":"funnels.lookup.redirect.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/funnels/lookup/redirect/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "delete-relation": {"action":"associations.relations.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/associations/relations/{relationId}","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"},"relationId":{"at":"relationId","from":"path"}}},
+      "delete-tag": {"action":"locations.tags.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/tags/{tagId}","scope":{"locationId":{"at":"locationId","from":"path"},"tagId":{"at":"tagId","from":"path"}}},
+      "delete-task": {"action":"contacts.tasks.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/tasks/{taskId}","scope":{"contactId":{"at":"contactId","from":"path"},"taskId":{"at":"taskId","from":"path"}}},
+      "delete-template": {"action":"emails.builder.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/emails/builder/{locationId}/{templateId}","scope":{"locationId":{"at":"locationId","from":"path"},"templateId":{"at":"templateId","from":"path"}}},
+      "delete-user": {"action":"users.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "deleteSchedule": {"action":"calendars.schedules.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/calendars/schedules/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "disable-group": {"action":"calendars.groups.status.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/groups/{groupId}/status","path_patterns":{"groupId":"[^n].*|n(?:|[^o].*|o(?:|[^t].*|t(?:|[^i].*|i(?:|[^f].*|f(?:|[^i].*|i(?:|[^c].*|c(?:|[^a].*|a(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s.+))))))))))))"},"scope":{"groupId":{"at":"groupId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "disconnect-config": {"action":"payments.custom_provider.disconnect.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/payments/custom-provider/disconnect","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "download-message-transcription": {"action":"conversations.locations.messages.transcription.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/conversations/locations/{locationId}/messages/{messageId}/transcription/download","scope":{"locationId":{"at":"locationId","from":"path"},"messageId":{"at":"messageId","from":"path"}}},
+      "edit-appointment": {"action":"calendars.events.appointments.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/events/appointments/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "edit-block-slot": {"action":"calendars.events.block_slots.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/events/block-slots/{eventId}","scope":{"calendarId":{"at":"/calendarId","from":"body"},"eventId":{"at":"eventId","from":"path"},"locationId":{"at":"/locationId","from":"body"}}},
+      "edit-group": {"action":"calendars.groups.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"},"name":{"at":"/name","from":"body"},"slug":{"at":"/slug","from":"body"}}},
+      "edit-post": {"action":"social_media_posting.posts.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/{locationId}/posts/{id}","scope":{"accountIds":{"at":"/accountIds","from":"body","optional":true,"type":"array"},"categoryId":{"at":"/categoryId","from":"body","optional":true},"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"/userId","from":"body","optional":true}}},
+      "export-messages-by-location": {"action":"conversations.messages.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","limit","cursor","sortBy","sortOrder","conversationId","contactId","channel","startDate","endDate"],"path":"/conversations/messages/export","scope":{"channel":{"at":"channel","from":"query","optional":true},"contactId":{"at":"contactId","from":"query","optional":true},"conversationId":{"at":"conversationId","from":"query","optional":true},"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "fetch-calendar-resources": {"action":"calendars.resources.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","limit","skip","startDate","endDate","timezone","userId","userIds","isActive","deleted"],"path":"/calendars/resources/{resourceType}","scope":{"locationId":{"at":"locationId","from":"query"},"resourceType":{"at":"resourceType","from":"path"}}},
+      "fetch-campaigns": {"action":"emails.schedule.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","limit","offset","status","emailStatus","name","parentId","limitedFields","archived","campaignsOnly","showStats"],"path":"/emails/schedule","scope":{"locationId":{"at":"locationId","from":"query"},"name":{"at":"name","from":"query","optional":true},"parentId":{"at":"parentId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "fetch-config": {"action":"payments.custom_provider.connect.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/payments/custom-provider/connect","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "fetch-media-content": {"action":"medias.files.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["offset","limit","sortBy","sortOrder","type","query","altType","altId","parentId","fetchAll"],"path":"/medias/files","scope":{"altId":{"at":"altId","from":"query"},"parentId":{"at":"parentId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "fetch-redirects-list": {"action":"funnels.lookup.redirect.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","limit","offset","search"],"path":"/funnels/lookup/redirect/list","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "fetch-template": {"action":"emails.builder.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","limit","offset","search","sortByDate","archived","builderVersion","name","parentId","originId","templatesOnly"],"path":"/emails/builder","scope":{"locationId":{"at":"locationId","from":"query"},"name":{"at":"name","from":"query","optional":true},"originId":{"at":"originId","from":"query","optional":true},"parentId":{"at":"parentId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "filter-users-by-email": {"action":"users.search.filter_by_email.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/users/search/filter-by-email","scope":{"companyId":{"at":"/companyId","from":"body"}}},
+      "find-associations": {"action":"associations.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","skip","limit"],"path":"/associations/","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "find-event-notification": {"action":"calendars.notifications.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/calendars/{calendarId}/notifications/{notificationId}","path_patterns":{"calendarId":"[^r].*|r(?:|[^e].*|e(?:|[^s].*|s(?:|[^o].*|o(?:|[^u].*|u(?:|[^r].*|r(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))))"},"scope":{"calendarId":{"at":"calendarId","from":"path"},"notificationId":{"at":"notificationId","from":"path"}}},
+      "generate-estimate-number": {"action":"invoices.estimate.number.generate.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType"],"path":"/invoices/estimate/number/generate","scope":{"altId":{"at":"altId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "generate-invoice-number": {"action":"invoices.generate_invoice_number.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType"],"path":"/invoices/generate-invoice-number","scope":{"altId":{"at":"altId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-account": {"action":"social_media_posting.accounts.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/{locationId}/accounts","scope":{"locationId":{"at":"locationId","from":"path"}}},
+      "get-all-blog-authors-by-location": {"action":"blogs.authors.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","limit","offset"],"path":"/blogs/authors","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-all-categories-by-location": {"action":"blogs.categories.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","limit","offset"],"path":"/blogs/categories","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-all-custom-subtypes": {"action":"conversations.preferences.custom_subtypes.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/conversations/preferences/custom-subtypes","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-all-notes": {"action":"contacts.notes.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/notes","path_patterns":{"contactId":"[^b].*|b(?:|[^u].*|u(?:|[^s].*|s(?:|[^i].*|i(?:|[^n].*|n(?:|[^e].*|e(?:|[^s].*|s(?:|[^s].*|s.+)))))))"},"scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "get-all-tasks": {"action":"contacts.tasks.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/tasks","path_patterns":{"contactId":"[^b].*|b(?:|[^u].*|u(?:|[^s].*|s(?:|[^i].*|i(?:|[^n].*|n(?:|[^e].*|e(?:|[^s].*|s(?:|[^s].*|s.+)))))))"},"scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "get-appointment": {"action":"calendars.events.appointments.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/calendars/events/appointments/{eventId}","scope":{"eventId":{"at":"eventId","from":"path"}}},
+      "get-appointment-notes": {"action":"calendars.appointments.notes.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["limit","offset"],"path":"/calendars/appointments/{appointmentId}/notes","path_patterns":{"appointmentId":"[^n].*|n(?:|[^o].*|o(?:|[^t].*|t(?:|[^i].*|i(?:|[^f].*|f(?:|[^i].*|i(?:|[^c].*|c(?:|[^a].*|a(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s.+))))))))))))"},"scope":{"appointmentId":{"at":"appointmentId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-appointments-for-contact": {"action":"contacts.appointments.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/appointments","path_patterns":{"contactId":"[^b].*|b(?:|[^u].*|u(?:|[^s].*|s(?:|[^i].*|i(?:|[^n].*|n(?:|[^e].*|e(?:|[^s].*|s(?:|[^s].*|s.+)))))))"},"scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "get-association-by-ID": {"action":"associations.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/associations/{associationId}","scope":{"associationId":{"at":"associationId","from":"path"}}},
+      "get-association-by-object-keys": {"action":"associations.object_key.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/associations/objectKey/{objectKey}","scope":{"locationId":{"at":"locationId","from":"query","optional":true},"objectKey":{"at":"objectKey","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-association-key-by-key-name": {"action":"associations.key.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/associations/key/{key_name}","scope":{"key_name":{"at":"key_name","from":"path"},"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-blocked-slots": {"action":"calendars.blocked_slots.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","userId","calendarId","groupId","startTime","endTime"],"path":"/calendars/blocked-slots","scope":{"calendarId":{"at":"calendarId","from":"query","optional":true},"groupId":{"at":"groupId","from":"query","optional":true},"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"query","optional":true}}},
+      "get-blog-post": {"action":"blogs.posts.all.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","blogId","limit","offset","searchTerm","status"],"path":"/blogs/posts/all","scope":{"blogId":{"at":"blogId","from":"query"},"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-blogs": {"action":"blogs.site.all.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","skip","limit","searchTerm"],"path":"/blogs/site/all","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-business": {"action":"businesses.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/businesses/{businessId}","scope":{"businessId":{"at":"businessId","from":"path"}}},
+      "get-businesses-by-location": {"action":"businesses.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","limit","skip"],"path":"/businesses/","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-calendar": {"action":"calendars.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","userId","calendarId","groupId","startTime","endTime"],"path":"/calendars/{calendarId}","path_patterns":{"calendarId":"[^beg].*|b(?:|[^l].*|l(?:|[^o].*|o(?:|[^c].*|c(?:|[^k].*|k(?:|[^e].*|e(?:|[^d].*|d(?:|[^\\-].*|-(?:|[^s].*|s(?:|[^l].*|l(?:|[^o].*|o(?:|[^t].*|t(?:|[^s].*|s.+))))))))))))|e(?:|[^v].*|v(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+)))))|g(?:|[^r].*|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))"},"scope":{"calendarId":{"at":"calendarId","from":"path"}}},
+      "get-calendar-events": {"action":"calendars.events.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","userId","calendarId","groupId","startTime","endTime"],"path":"/calendars/events","scope":{"calendarId":{"at":"calendarId","from":"query","optional":true},"groupId":{"at":"groupId","from":"query","optional":true},"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"query","optional":true}}},
+      "get-calendar-resource": {"action":"calendars.resources.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["limit","offset"],"path":"/calendars/resources/{resourceType}/{id}","scope":{"id":{"at":"id","from":"path"},"resourceType":{"at":"resourceType","from":"path"}}},
+      "get-calendars": {"action":"calendars.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","groupId","showDrafted"],"path":"/calendars/","scope":{"locationId":{"at":"locationId","from":"query"}}},
+      "get-campaigns": {"action":"campaigns.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","status"],"path":"/campaigns/","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-categories-id": {"action":"social_media_posting.categories.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/{locationId}/categories/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "get-categories-location-id": {"action":"social_media_posting.categories.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["searchText","limit","skip"],"path":"/social-media-posting/{locationId}/categories","scope":{"locationId":{"at":"locationId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-contact": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "get-contact-unsubscription-status": {"action":"conversations.preferences.unsubscriptions.status.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","contactId","email"],"path":"/conversations/preferences/unsubscriptions/status","scope":{"contactId":{"at":"contactId","from":"query"},"email":{"at":"email","from":"query","optional":true},"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-contacts": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","startAfterId","startAfter","query","limit"],"path":"/contacts/","scope":{"locationId":{"at":"locationId","from":"query"}}},
+      "get-contacts-by-businessId": {"action":"contacts.business.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["limit","locationId","skip","query"],"path":"/contacts/business/{businessId}","scope":{"businessId":{"at":"businessId","from":"path"},"locationId":{"at":"locationId","from":"query"}}},
+      "get-conversation": {"action":"conversations.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/conversations/{conversationId}","path_patterns":{"conversationId":"[^s].*|s(?:|[^e].*|e(?:|[^a].*|a(?:|[^r].*|r(?:|[^c].*|c(?:|[^h].*|h.+)))))"},"scope":{"conversationId":{"at":"conversationId","from":"path"}}},
+      "get-coupon": {"action":"payments.coupon.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType","id","code"],"path":"/payments/coupon","scope":{"altId":{"at":"altId","from":"query"},"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-csv-post": {"action":"social_media_posting.csv.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["skip","limit"],"path":"/social-media-posting/{locationId}/csv/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-custom-field": {"action":"locations.custom_fields.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/customFields/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "get-custom-field-by-id": {"action":"custom_fields.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/custom-fields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "get-custom-fields": {"action":"locations.custom_fields.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["model"],"path":"/locations/{locationId}/customFields","scope":{"locationId":{"at":"locationId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-custom-fields-by-object-key": {"action":"custom_fields.object_key.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/custom-fields/object-key/{objectKey}","scope":{"locationId":{"at":"locationId","from":"query"},"objectKey":{"at":"objectKey","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-custom-value": {"action":"locations.custom_values.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/customValues/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "get-custom-values": {"action":"locations.custom_values.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/customValues","scope":{"locationId":{"at":"locationId","from":"path"}}},
+      "get-duplicate-contact": {"action":"contacts.search.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","number","email"],"path":"/contacts/search/duplicate","scope":{"locationId":{"at":"locationId","from":"query"}}},
+      "get-email-by-id": {"action":"conversations.messages.email.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/conversations/messages/email/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "get-event-notification": {"action":"calendars.notifications.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["isActive","deleted","limit","skip"],"path":"/calendars/{calendarId}/notifications","path_patterns":{"calendarId":"[^rs].*|r(?:|[^e].*|e(?:|[^s].*|s(?:|[^o].*|o(?:|[^u].*|u(?:|[^r].*|r(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))))|s(?:|[^c].*|c(?:|[^h].*|h(?:|[^e].*|e(?:|[^d].*|d(?:|[^u].*|u(?:|[^l].*|l(?:|[^e].*|e(?:|[^s].*|s.+))))))))"},"scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-facebook-page-group": {"action":"social_media_posting.oauth.facebook.accounts.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/oauth/{locationId}/facebook/accounts/{accountId}","scope":{"accountId":{"at":"accountId","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "get-forms": {"action":"forms.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","skip","limit","type"],"path":"/forms/","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-forms-submissions": {"action":"forms.submissions.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","page","limit","formId","q","startAt","endAt"],"path":"/forms/submissions","scope":{"formId":{"at":"formId","from":"query","optional":true},"locationId":{"at":"locationId","from":"query"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "get-google-locations": {"action":"social_media_posting.oauth.google.locations.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/oauth/{locationId}/google/locations/{accountId}","scope":{"accountId":{"at":"accountId","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "get-groups": {"action":"calendars.groups.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/calendars/groups","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-instagram-page-group": {"action":"social_media_posting.oauth.instagram.accounts.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/oauth/{locationId}/instagram/accounts/{accountId}","scope":{"accountId":{"at":"accountId","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "get-invoice": {"action":"invoices.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType"],"path":"/invoices/{invoiceId}","path_patterns":{"invoiceId":"[^gst].*|g(?:|[^e].*|e(?:|[^n].*|n(?:|[^e].*|e(?:|[^r].*|r(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^\\-].*|-(?:|[^i].*|i(?:|[^n].*|n(?:|[^v].*|v(?:|[^o].*|o(?:|[^i].*|i(?:|[^c].*|c(?:|[^e].*|e(?:|[^\\-].*|-(?:|[^n].*|n(?:|[^u].*|u(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r.+))))))))))))))))))))))|s(?:|[^ce].*|c(?:|[^h].*|h(?:|[^e].*|e(?:|[^d].*|d(?:|[^u].*|u(?:|[^l].*|l(?:|[^e].*|e.+))))))|e(?:|[^t].*|t(?:|[^t].*|t(?:|[^i].*|i(?:|[^n].*|n(?:|[^g].*|g(?:|[^s].*|s.+)))))))|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e.+)))))))"},"scope":{"altId":{"at":"altId","from":"query"},"invoiceId":{"at":"invoiceId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-invoice-schedule": {"action":"invoices.schedule.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType"],"path":"/invoices/schedule/{scheduleId}","scope":{"altId":{"at":"altId","from":"query"},"query":{"at":"","from":"query","type":"object"},"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "get-invoice-settings": {"action":"invoices.settings.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType"],"path":"/invoices/settings","scope":{"altId":{"at":"altId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-invoice-template": {"action":"invoices.template.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType"],"path":"/invoices/template/{templateId}","scope":{"altId":{"at":"altId","from":"query"},"query":{"at":"","from":"query","type":"object"},"templateId":{"at":"templateId","from":"path"}}},
+      "get-link-by-id": {"action":"links.id.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/links/id/{linkId}","scope":{"linkId":{"at":"linkId","from":"path"},"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-linkedin-page-profile": {"action":"social_media_posting.oauth.linkedin.accounts.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/oauth/{locationId}/linkedin/accounts/{accountId}","scope":{"accountId":{"at":"accountId","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "get-links": {"action":"links.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/links/","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-list-inventory": {"action":"products.inventory.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["limit","offset","altId","altType","search"],"path":"/products/inventory","scope":{"altId":{"at":"altId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-location": {"action":"locations.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}","path_patterns":{"locationId":"[^s].*|s(?:|[^e].*|e(?:|[^a].*|a(?:|[^r].*|r(?:|[^c].*|c(?:|[^h].*|h.+)))))"},"scope":{"locationId":{"at":"locationId","from":"path"}}},
+      "get-location-tags": {"action":"locations.tags.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/tags","scope":{"locationId":{"at":"locationId","from":"path"}}},
+      "get-lost-reason": {"action":"opportunities.lost_reason.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","name","deleted","query","skip","limit","getCount"],"path":"/opportunities/lost-reason","scope":{"locationId":{"at":"locationId","from":"query"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "get-message": {"action":"conversations.messages.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/conversations/messages/{id}","path_patterns":{"id":"[^e].*|e(?:|[^x].*|x(?:|[^p].*|p(?:|[^o].*|o(?:|[^r].*|r(?:|[^t].*|t.+)))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "get-message-recording": {"action":"conversations.messages.locations.recording.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/conversations/messages/{messageId}/locations/{locationId}/recording","scope":{"locationId":{"at":"locationId","from":"path"},"messageId":{"at":"messageId","from":"path"}}},
+      "get-message-transcription": {"action":"conversations.locations.messages.transcription.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/conversations/locations/{locationId}/messages/{messageId}/transcription","scope":{"locationId":{"at":"locationId","from":"path"},"messageId":{"at":"messageId","from":"path"}}},
+      "get-messages": {"action":"conversations.messages.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["lastMessageId","limit","type"],"path":"/conversations/{conversationId}/messages","path_patterns":{"conversationId":"[^m].*|m(?:|[^e].*|e(?:|[^s].*|s(?:|[^s].*|s(?:|[^a].*|a(?:|[^g].*|g(?:|[^e].*|e(?:|[^s].*|s.+)))))))"},"scope":{"conversationId":{"at":"conversationId","from":"path"},"lastMessageId":{"at":"lastMessageId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "get-note": {"action":"contacts.notes.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/notes/{id}","scope":{"contactId":{"at":"contactId","from":"path"},"id":{"at":"id","from":"path"}}},
+      "get-object-by-location-id": {"action":"objects.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/objects/","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-object-schema-by-key": {"action":"objects.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","fetchProperties"],"path":"/objects/{key}","scope":{"key":{"at":"key","from":"path"},"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-opportunity": {"action":"opportunities.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","name","deleted","query","skip","limit","getCount","q","location_id","pipeline_id","pipeline_stage_id","contact_id","status","assigned_to","campaignId","id","order","endDate","startAfter","startAfterId","date","country","page","getTasks","getNotes","getCalendarEvents"],"path":"/opportunities/{id}","path_patterns":{"id":"[^lps].*|l(?:|[^o].*|o(?:|[^s].*|s(?:|[^t].*|t(?:|[^\\-].*|-(?:|[^r].*|r(?:|[^e].*|e(?:|[^a].*|a(?:|[^s].*|s(?:|[^o].*|o(?:|[^n].*|n.+))))))))))|p(?:|[^i].*|i(?:|[^p].*|p(?:|[^e].*|e(?:|[^l].*|l(?:|[^i].*|i(?:|[^n].*|n(?:|[^e].*|e(?:|[^s].*|s.+))))))))|s(?:|[^e].*|e(?:|[^a].*|a(?:|[^r].*|r(?:|[^c].*|c(?:|[^h].*|h.+)))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "get-order-by-id": {"action":"payments.orders.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","altId"],"path":"/payments/orders/{orderId}","scope":{"altId":{"at":"altId","from":"query"},"locationId":{"at":"locationId","from":"query","optional":true},"orderId":{"at":"orderId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-pipelines": {"action":"opportunities.pipelines.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/opportunities/pipelines","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-post": {"action":"social_media_posting.posts.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/{locationId}/posts/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "get-posts": {"action":"social_media_posting.posts.read","body":"json","effects":["read"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/{locationId}/posts/list","scope":{"accounts":{"at":"/accounts","from":"body","optional":true},"locationId":{"at":"locationId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "get-price-by-id-for-product": {"action":"products.price.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/products/{productId}/price/{priceId}","scope":{"locationId":{"at":"locationId","from":"query"},"priceId":{"at":"priceId","from":"path"},"productId":{"at":"productId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-product-by-id": {"action":"products.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","sendWishlistStatus"],"path":"/products/{productId}","path_patterns":{"productId":"[^cir].*|c(?:|[^o].*|o(?:|[^l].*|l(?:|[^l].*|l(?:|[^e].*|e(?:|[^c].*|c(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s.+))))))))))|i(?:|[^n].*|n(?:|[^v].*|v(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^o].*|o(?:|[^r].*|r(?:|[^y].*|y.+))))))))|r(?:|[^e].*|e(?:|[^v].*|v(?:|[^i].*|i(?:|[^e].*|e(?:|[^w].*|w(?:|[^s].*|s.+))))))"},"scope":{"locationId":{"at":"locationId","from":"query"},"productId":{"at":"productId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-product-collection": {"action":"products.collections.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["limit","offset","altId","altType","collectionIds","name"],"path":"/products/collections","scope":{"altId":{"at":"altId","from":"query"},"collectionIds":{"at":"collectionIds","from":"query","optional":true},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "get-product-collection-id": {"action":"products.collections.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId"],"path":"/products/collections/{collectionId}","scope":{"altId":{"at":"altId","from":"query"},"collectionId":{"at":"collectionId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-product-reviews": {"action":"products.reviews.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType","limit","offset","sortField","sortOrder","rating","startDate","endDate","productId","storeId"],"path":"/products/reviews","scope":{"altId":{"at":"altId","from":"query"},"productId":{"at":"productId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"storeId":{"at":"storeId","from":"query","optional":true}}},
+      "get-product-store-stats": {"action":"products.store.stats.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType","search","collectionIds"],"path":"/products/store/{storeId}/stats","path_patterns":{"storeId":"[^p].*|p(?:|[^r].*|r(?:|[^i].*|i(?:|[^c].*|c(?:|[^e].*|e.+))))"},"scope":{"altId":{"at":"altId","from":"query"},"collectionIds":{"at":"collectionIds","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"storeId":{"at":"storeId","from":"path"}}},
+      "get-record-by-id": {"action":"objects.records.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/objects/{schemaKey}/records/{id}","scope":{"id":{"at":"id","from":"path"},"schemaKey":{"at":"schemaKey","from":"path"}}},
+      "get-recurring-task-by-id": {"action":"locations.recurring_tasks.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/recurring-tasks/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "get-relations-by-record-id": {"action":"associations.relations.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","skip","limit","associationIds"],"path":"/associations/relations/{recordId}","scope":{"associationIds":{"at":"associationIds","from":"query","optional":true},"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"},"recordId":{"at":"recordId","from":"path"}}},
+      "get-reviews-count": {"action":"products.reviews.count.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType","rating","startDate","endDate","productId","storeId"],"path":"/products/reviews/count","scope":{"altId":{"at":"altId","from":"query"},"productId":{"at":"productId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"storeId":{"at":"storeId","from":"query","optional":true}}},
+      "get-slots": {"action":"calendars.free_slots.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["startDate","endDate","timezone","userId","userIds"],"path":"/calendars/{calendarId}/free-slots","path_patterns":{"calendarId":"[^rs].*|r(?:|[^e].*|e(?:|[^s].*|s(?:|[^o].*|o(?:|[^u].*|u(?:|[^r].*|r(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))))|s(?:|[^c].*|c(?:|[^h].*|h(?:|[^e].*|e(?:|[^d].*|d(?:|[^u].*|u(?:|[^l].*|l(?:|[^e].*|e(?:|[^s].*|s.+))))))))"},"scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"query","optional":true},"userIds":{"at":"userIds","from":"query","optional":true}}},
+      "get-social-media-statistics": {"action":"social_media_posting.statistics.read","effects":["read"],"method":"POST","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/social-media-posting/statistics","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-social-media-statistics.json.5c7aceae7f76": {"action":"social_media_posting.statistics.read","body":"json","effects":["read"],"method":"POST","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/social-media-posting/statistics","scope":{"locationId":{"at":"locationId","from":"query"},"profileIds":{"at":"/profileIds","from":"body","type":"array"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "get-subscription-by-id": {"action":"payments.subscriptions.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType"],"path":"/payments/subscriptions/{subscriptionId}","scope":{"altId":{"at":"altId","from":"query"},"query":{"at":"","from":"query","type":"object"},"subscriptionId":{"at":"subscriptionId","from":"path"}}},
+      "get-surveys": {"action":"surveys.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","skip","limit","type"],"path":"/surveys/","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-surveys-submissions": {"action":"surveys.submissions.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","page","limit","surveyId","q","startAt","endAt"],"path":"/surveys/submissions","scope":{"locationId":{"at":"locationId","from":"query"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"surveyId":{"at":"surveyId","from":"query","optional":true}}},
+      "get-tag-by-id": {"action":"locations.tags.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/tags/{tagId}","scope":{"locationId":{"at":"locationId","from":"path"},"tagId":{"at":"tagId","from":"path"}}},
+      "get-tags-by-ids": {"action":"social_media_posting.tags.details.read","body":"json","effects":["read"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/{locationId}/tags/details","scope":{"locationId":{"at":"locationId","from":"path"},"request":{"at":"","from":"body","type":"object"},"tagIds":{"at":"/tagIds","from":"body","type":"array"}}},
+      "get-tags-location-id": {"action":"social_media_posting.tags.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["searchText","limit","skip"],"path":"/social-media-posting/{locationId}/tags","scope":{"locationId":{"at":"locationId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-task": {"action":"contacts.tasks.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/tasks/{taskId}","scope":{"contactId":{"at":"contactId","from":"path"},"taskId":{"at":"taskId","from":"path"}}},
+      "get-tiktok-business-profile": {"action":"social_media_posting.oauth.tiktok_business.accounts.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/oauth/{locationId}/tiktok-business/accounts/{accountId}","scope":{"accountId":{"at":"accountId","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "get-tiktok-profile": {"action":"social_media_posting.oauth.tiktok.accounts.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/oauth/{locationId}/tiktok/accounts/{accountId}","scope":{"accountId":{"at":"accountId","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "get-timezones": {"action":"locations.timezones.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/timezones","scope":{"locationId":{"at":"locationId","from":"path"}}},
+      "get-transaction-by-id": {"action":"payments.transactions.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","altId","altType"],"path":"/payments/transactions/{transactionId}","scope":{"altId":{"at":"altId","from":"query"},"locationId":{"at":"locationId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"transactionId":{"at":"transactionId","from":"path"}}},
+      "get-twitter-profile": {"action":"social_media_posting.oauth.twitter.accounts.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/oauth/{locationId}/twitter/accounts/{accountId}","scope":{"accountId":{"at":"accountId","from":"path"},"locationId":{"at":"locationId","from":"path"}}},
+      "get-upload-status": {"action":"social_media_posting.csv.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["skip","limit","includeUsers","userId"],"path":"/social-media-posting/{locationId}/csv","scope":{"locationId":{"at":"locationId","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"query","optional":true}}},
+      "get-user": {"action":"users.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["companyId","query","skip","limit","locationId","type","role","ids","sort","sortDirection","enabled2waySync"],"path":"/users/{userId}","path_patterns":{"userId":"[^s].*|s(?:|[^e].*|e(?:|[^a].*|a(?:|[^r].*|r(?:|[^c].*|c(?:|[^h].*|h.+)))))"},"scope":{"userId":{"at":"userId","from":"path"}}},
+      "get-user-by-location": {"action":"users.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/users/","scope":{"locationId":{"at":"locationId","from":"query"}}},
+      "get-workflow": {"action":"workflows.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/workflows/","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "getAllSchedules": {"action":"calendars.schedules.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","userId","calendarId","skip","limit"],"path":"/calendars/schedules/search","scope":{"calendarId":{"at":"calendarId","from":"query","optional":true},"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"query"}}},
+      "getFunnels": {"action":"funnels.funnel.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","type","category","offset","limit","parentId","name"],"path":"/funnels/funnel/list","scope":{"locationId":{"at":"locationId","from":"query"},"name":{"at":"name","from":"query","optional":true},"parentId":{"at":"parentId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getPagesByFunnelId": {"action":"funnels.page.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","funnelId","name","limit","offset"],"path":"/funnels/page","scope":{"funnelId":{"at":"funnelId","from":"query"},"locationId":{"at":"locationId","from":"query"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getPagesCountByFunnelId": {"action":"funnels.page.count.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","funnelId","name"],"path":"/funnels/page/count","scope":{"funnelId":{"at":"funnelId","from":"query"},"locationId":{"at":"locationId","from":"query"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getScheduleById": {"action":"calendars.schedules.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","userId","calendarId","skip","limit"],"path":"/calendars/schedules/{id}","path_patterns":{"id":"[^s].*|s(?:|[^e].*|e(?:|[^a].*|a(?:|[^r].*|r(?:|[^c].*|c(?:|[^h].*|h.+)))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "initiate-file-upload": {"action":"conversations.messages.initiate.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/conversations/messages/upload/initiate","scope":{"channel":{"at":"/channel","from":"body"},"conversationId":{"at":"/conversationId","from":"body"},"filename":{"at":"/filename","from":"body"},"locationId":{"at":"/locationId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "list-coupons": {"action":"payments.coupon.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType","limit","offset","status","search"],"path":"/payments/coupon/list","scope":{"altId":{"at":"altId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "list-estimate-templates": {"action":"invoices.estimate.template.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType","search","limit","offset"],"path":"/invoices/estimate/template","scope":{"altId":{"at":"altId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "list-estimates": {"action":"invoices.estimate.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType","startAt","endAt","search","status","contactId","limit","offset"],"path":"/invoices/estimate/list","scope":{"altId":{"at":"altId","from":"query"},"contactId":{"at":"contactId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "list-integration-providers": {"action":"payments.integrations.provider.whitelabel.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType","limit","offset"],"path":"/payments/integrations/provider/whitelabel","scope":{"altId":{"at":"altId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "list-invoice-schedules": {"action":"invoices.schedule.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType","status","startAt","endAt","search","paymentMode","limit","offset"],"path":"/invoices/schedule","scope":{"altId":{"at":"altId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "list-invoice-templates": {"action":"invoices.template.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType","status","startAt","endAt","search","paymentMode","limit","offset"],"path":"/invoices/template","scope":{"altId":{"at":"altId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "list-invoices": {"action":"invoices.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType","status","startAt","endAt","search","paymentMode","contactId","limit","offset","sortField","sortOrder"],"path":"/invoices/","scope":{"altId":{"at":"altId","from":"query"},"contactId":{"at":"contactId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "list-invoices.none.03a1af99dc6b": {"action":"products.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["limit","offset","locationId","search","collectionIds","collectionSlug","expand","productIds","storeId","includedInStore","availableInStore","sortOrder"],"path":"/products/","scope":{"collectionIds":{"at":"collectionIds","from":"query","optional":true},"locationId":{"at":"locationId","from":"query"},"productIds":{"at":"productIds","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"storeId":{"at":"storeId","from":"query","optional":true}}},
+      "list-order-fulfillment": {"action":"payments.orders.fulfillments.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType"],"path":"/payments/orders/{orderId}/fulfillments","scope":{"altId":{"at":"altId","from":"query"},"orderId":{"at":"orderId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "list-order-notes": {"action":"payments.orders.notes.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType"],"path":"/payments/orders/{orderId}/notes","scope":{"altId":{"at":"altId","from":"query"},"orderId":{"at":"orderId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "list-orders": {"action":"payments.orders.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","altId","status","paymentStatus","paymentMode","startAt","endAt","search","contactId","funnelProductIds","sourceId","limit","offset"],"path":"/payments/orders","scope":{"altId":{"at":"altId","from":"query"},"contactId":{"at":"contactId","from":"query","optional":true},"funnelProductIds":{"at":"funnelProductIds","from":"query","optional":true},"locationId":{"at":"locationId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"sourceId":{"at":"sourceId","from":"query","optional":true}}},
+      "list-prices-for-product": {"action":"products.price.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["limit","offset","locationId","ids"],"path":"/products/{productId}/price","path_patterns":{"productId":"[^c].*|c(?:|[^o].*|o(?:|[^l].*|l(?:|[^l].*|l(?:|[^e].*|e(?:|[^c].*|c(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s.+))))))))))"},"scope":{"ids":{"at":"ids","from":"query","optional":true},"locationId":{"at":"locationId","from":"query"},"productId":{"at":"productId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "list-subscriptions": {"action":"payments.subscriptions.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType","entityId","paymentMode","startAt","endAt","entitySourceType","search","contactId","id","limit","offset","getPaymentsCollectedCount"],"path":"/payments/subscriptions","scope":{"altId":{"at":"altId","from":"query"},"contactId":{"at":"contactId","from":"query","optional":true},"entityId":{"at":"entityId","from":"query","optional":true},"id":{"at":"id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "list-transactions": {"action":"payments.transactions.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","altId","altType","paymentMode","startAt","endAt","entitySourceType","entitySourceSubType","search","subscriptionId","entityId","contactId","limit","offset"],"path":"/payments/transactions","scope":{"altId":{"at":"altId","from":"query"},"contactId":{"at":"contactId","from":"query","optional":true},"entityId":{"at":"entityId","from":"query","optional":true},"locationId":{"at":"locationId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"subscriptionId":{"at":"subscriptionId","from":"query","optional":true}}},
+      "live-chat-agent-typing": {"action":"conversations.providers.live_chat.typing.send","body":"json","effects":["send"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/conversations/providers/live-chat/typing","scope":{"conversationId":{"at":"/conversationId","from":"body"},"locationId":{"at":"/locationId","from":"body"},"request":{"at":"","from":"body","type":"object"},"visitorId":{"at":"/visitorId","from":"body"}}},
+      "preview-estimate-template": {"action":"invoices.estimate.template.preview.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["altId","altType","templateId"],"path":"/invoices/estimate/template/preview","scope":{"altId":{"at":"altId","from":"query"},"query":{"at":"","from":"query","type":"object"},"templateId":{"at":"templateId","from":"query"}}},
+      "put-location": {"action":"locations.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}","scope":{"companyId":{"at":"/companyId","from":"body"},"locationId":{"at":"locationId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "record-invoice": {"action":"invoices.record_payment.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/invoices/{invoiceId}/record-payment","scope":{"altId":{"at":"/altId","from":"body"},"invoiceId":{"at":"invoiceId","from":"path"},"paymentScheduleIds":{"at":"/paymentScheduleIds","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "record-order-payment": {"action":"payments.orders.record_payment.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/payments/orders/{orderId}/record-payment","scope":{"altId":{"at":"/altId","from":"body"},"orderId":{"at":"orderId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "remove-calendar-from-schedule": {"action":"calendars.schedules.associations.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/calendars/schedules/{id}/associations/{calendarId}","scope":{"calendarId":{"at":"calendarId","from":"path"},"id":{"at":"id","from":"path"}}},
+      "remove-contact-from-campaign": {"action":"contacts.campaigns.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/campaigns/{campaignId}","path_patterns":{"campaignId":"[^r].*|r(?:|[^e].*|e(?:|[^m].*|m(?:|[^o].*|o(?:|[^v].*|v(?:|[^e].*|e(?:|[^A].*|A(?:|[^l].*|l(?:|[^l].*|l.+))))))))"},"scope":{"campaignId":{"at":"campaignId","from":"path"},"contactId":{"at":"contactId","from":"path"}}},
+      "remove-contact-from-every-campaign": {"action":"contacts.campaigns.all.delete","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/campaigns/removeAll","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "remove-followers-contact": {"action":"contacts.followers.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/followers","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "remove-followers-opportunity": {"action":"opportunities.followers.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","params":["isRemoveAllFollowers"],"path":"/opportunities/{id}/followers","scope":{"id":{"at":"id","from":"path"}}},
+      "remove-tags": {"action":"contacts.tags.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/tags","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "schedule-invoice-schedule": {"action":"invoices.schedule.schedule.send","body":"json","effects":["send","write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/invoices/schedule/{scheduleId}/schedule","scope":{"altId":{"at":"/altId","from":"body"},"request":{"at":"","from":"body","type":"object"},"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "search-contacts-advanced": {"action":"contacts.search.read","body":"json","effects":["read"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/search","scope":{}},
+      "search-conversation": {"action":"conversations.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","contactId","assignedTo","followers","mentions","query","sort","startAfterDate","id","limit","lastMessageType","lastMessageAction","lastMessageDirection","status","sortBy","sortScoreProfile","scoreProfile","scoreProfileMin","scoreProfileMax","startDate","endDate"],"path":"/conversations/search","scope":{"contactId":{"at":"contactId","from":"query","optional":true},"id":{"at":"id","from":"query","optional":true},"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "search-locations": {"action":"locations.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["companyId","skip","limit","order","email"],"path":"/locations/search","scope":{"companyId":{"at":"companyId","from":"query","optional":true},"email":{"at":"email","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "search-object-records": {"action":"objects.records.read","body":"json","effects":["read"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/objects/{schemaKey}/records/search","scope":{"locationId":{"at":"/locationId","from":"body"},"page":{"at":"/page","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"},"schemaKey":{"at":"schemaKey","from":"path"}}},
+      "search-opportunities-advanced": {"action":"opportunities.read","body":"json","effects":["read"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/opportunities/search","scope":{"locationId":{"at":"/locationId","from":"body"},"page":{"at":"/page","from":"body","type":"number"}}},
+      "search-opportunity": {"action":"opportunities.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["q","location_id","pipeline_id","pipeline_stage_id","contact_id","status","assigned_to","campaignId","id","order","endDate","startAfter","startAfterId","date","country","page","limit","getTasks","getNotes","getCalendarEvents"],"path":"/opportunities/search","scope":{"campaignId":{"at":"campaignId","from":"query","optional":true},"contact_id":{"at":"contact_id","from":"query","optional":true},"id":{"at":"id","from":"query","optional":true},"location_id":{"at":"location_id","from":"query"},"page":{"at":"page","from":"query","optional":true},"pipeline_id":{"at":"pipeline_id","from":"query","optional":true},"pipeline_stage_id":{"at":"pipeline_stage_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"startAfterId":{"at":"startAfterId","from":"query","optional":true}}},
+      "search-trigger-links": {"action":"links.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","query","skip","limit"],"path":"/links/search","scope":{"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "search-users": {"action":"users.search.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["companyId","query","skip","limit","locationId","type","role","ids","sort","sortDirection","enabled2waySync"],"path":"/users/search","scope":{"companyId":{"at":"companyId","from":"query"},"ids":{"at":"ids","from":"query","optional":true},"locationId":{"at":"locationId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "send-a-new-message": {"action":"conversations.messages.send","body":"json","effects":["send"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/conversations/messages","scope":{"appointmentId":{"at":"/appointmentId","from":"body","optional":true},"contactId":{"at":"/contactId","from":"body"},"conversationProviderId":{"at":"/conversationProviderId","from":"body","optional":true},"customSubtypeId":{"at":"/customSubtypeId","from":"body","optional":true},"replyMessageId":{"at":"/replyMessageId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"/templateId","from":"body","optional":true},"threadId":{"at":"/threadId","from":"body","optional":true}}},
+      "send-estimate": {"action":"invoices.estimate.send","body":"json","effects":["send"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/invoices/estimate/{estimateId}/send","scope":{"altId":{"at":"/altId","from":"body"},"estimateId":{"at":"estimateId","from":"path"},"estimateName":{"at":"/estimateName","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"/userId","from":"body"}}},
+      "send-invoice": {"action":"invoices.send","body":"json","effects":["send"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/invoices/{invoiceId}/send","scope":{"altId":{"at":"/altId","from":"body"},"invoiceId":{"at":"invoiceId","from":"path"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"/userId","from":"body"}}},
+      "send-review-reply": {"action":"conversations.messages.review_reply.publish","body":"json","effects":["publish"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/conversations/messages/review-reply","scope":{"conversationId":{"at":"/conversationId","from":"body"},"locationId":{"at":"/locationId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "set-accounts": {"action":"social_media_posting.accounts.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/{locationId}/set-accounts","scope":{"accountIds":{"at":"/accountIds","from":"body","type":"array"},"fileName":{"at":"/fileName","from":"body"},"locationId":{"at":"locationId","from":"path"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"/userId","from":"body","optional":true}}},
+      "set-google-locations": {"action":"social_media_posting.oauth.google.locations.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/oauth/{locationId}/google/locations/{accountId}","scope":{"accountId":{"at":"accountId","from":"path"},"companyId":{"at":"/companyId","from":"body","optional":true},"locationId":{"at":"locationId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "start-csv-finalize": {"action":"social_media_posting.csv.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/{locationId}/csv/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"/userId","from":"body","optional":true}}},
+      "start-facebook-oauth": {"action":"social_media_posting.oauth.facebook.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","userId","page","reconnect"],"path":"/social-media-posting/oauth/facebook/start","scope":{"locationId":{"at":"locationId","from":"query"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"query"}}},
+      "start-google-oauth": {"action":"social_media_posting.oauth.google.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","userId","page","reconnect"],"path":"/social-media-posting/oauth/google/start","scope":{"locationId":{"at":"locationId","from":"query"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"query"}}},
+      "start-instagram-oauth": {"action":"social_media_posting.oauth.instagram.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","userId","page","reconnect"],"path":"/social-media-posting/oauth/instagram/start","scope":{"locationId":{"at":"locationId","from":"query"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"query"}}},
+      "start-linkedin-oauth": {"action":"social_media_posting.oauth.linkedin.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","userId","page","reconnect"],"path":"/social-media-posting/oauth/linkedin/start","scope":{"locationId":{"at":"locationId","from":"query"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"query"}}},
+      "start-tiktok-business-oauth": {"action":"social_media_posting.oauth.tiktok_business.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","userId","page","reconnect"],"path":"/social-media-posting/oauth/tiktok-business/start","scope":{"locationId":{"at":"locationId","from":"query"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"query"}}},
+      "start-tiktok-oauth": {"action":"social_media_posting.oauth.tiktok.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","userId","page","reconnect"],"path":"/social-media-posting/oauth/tiktok/start","scope":{"locationId":{"at":"locationId","from":"query"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"query"}}},
+      "start-twitter-oauth": {"action":"social_media_posting.oauth.twitter.read","effects":["read"],"method":"GET","origin":"https://services.leadconnectorhq.com","params":["locationId","userId","page","reconnect"],"path":"/social-media-posting/oauth/twitter/start","scope":{"locationId":{"at":"locationId","from":"query"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"query"}}},
+      "task-search": {"action":"locations.tasks.read","body":"json","effects":["read"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/tasks/search","scope":{"businessId":{"at":"/businessId","from":"body","optional":true},"contactId":{"at":"/contactId","from":"body","optional":true,"type":"array"},"locationId":{"at":"locationId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "text2pay-invoice": {"action":"invoices.text2pay.send","body":"json","effects":["send","write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/invoices/text2pay","scope":{"altId":{"at":"/altId","from":"body"},"id":{"at":"/id","from":"body","optional":true},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"/userId","from":"body"}}},
+      "update-and-schedule-invoice-schedule": {"action":"invoices.schedule.and_schedule.send","effects":["send","write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/invoices/schedule/{scheduleId}/updateAndSchedule","scope":{"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "update-appointment-note": {"action":"calendars.appointments.notes.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/appointments/{appointmentId}/notes/{noteId}","scope":{"appointmentId":{"at":"appointmentId","from":"path"},"noteId":{"at":"noteId","from":"path"}}},
+      "update-association": {"action":"associations.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/associations/{associationId}","scope":{"associationId":{"at":"associationId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-blog-post": {"action":"blogs.posts.publish","body":"json","effects":["publish","write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/blogs/posts/{postId}","scope":{"blogId":{"at":"/blogId","from":"body"},"imageUrl":{"at":"/imageUrl","from":"body"},"locationId":{"at":"/locationId","from":"body"},"postId":{"at":"postId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-business": {"action":"businesses.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/businesses/{businessId}","scope":{"businessId":{"at":"businessId","from":"path"},"email":{"at":"/email","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "update-calendar": {"action":"calendars.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/{calendarId}","scope":{"calendarId":{"at":"calendarId","from":"path"}}},
+      "update-calendar-resource": {"action":"calendars.resources.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/resources/{resourceType}/{id}","scope":{"id":{"at":"id","from":"path"},"resourceType":{"at":"resourceType","from":"path"}}},
+      "update-contact": {"action":"contacts.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "update-conversation": {"action":"conversations.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/conversations/{conversationId}","scope":{"conversationId":{"at":"conversationId","from":"path"},"locationId":{"at":"/locationId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-coupon": {"action":"payments.coupon.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/payments/coupon","scope":{"altId":{"at":"/altId","from":"body"},"id":{"at":"/id","from":"body"},"name":{"at":"/name","from":"body"},"productIds":{"at":"/productIds","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-custom-field": {"action":"locations.custom_fields.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/customFields/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-custom-field-folder": {"action":"custom_fields.folder.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/custom-fields/folder/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"/locationId","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-custom-field.json.3a84b7d8e0ab": {"action":"custom_fields.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/custom-fields/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"/locationId","from":"body"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "update-custom-object": {"action":"objects.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/objects/{key}","scope":{"key":{"at":"key","from":"path"},"locationId":{"at":"/locationId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-custom-subtype": {"action":"conversations.preferences.custom_subtypes.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/conversations/preferences/custom-subtypes/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"query"},"name":{"at":"/name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"resubscription_legal_form_id":{"at":"/resubscription_legal_form_id","from":"body","optional":true}}},
+      "update-custom-value": {"action":"locations.custom_values.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/customValues/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-display-priority": {"action":"products.store.priority.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/products/store/{storeId}/priority","scope":{"altId":{"at":"/altId","from":"body"},"request":{"at":"","from":"body","type":"object"},"storeId":{"at":"storeId","from":"path"}}},
+      "update-estimate": {"action":"invoices.estimate.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/invoices/estimate/{estimateId}","scope":{"altId":{"at":"/altId","from":"body"},"estimateId":{"at":"estimateId","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"/userId","from":"body","optional":true}}},
+      "update-estimate-last-visited-at": {"action":"invoices.estimate.stats.last_visited_at.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://services.leadconnectorhq.com","path":"/invoices/estimate/stats/last-visited-at","scope":{"estimateId":{"at":"/estimateId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-estimate-template": {"action":"invoices.estimate.template.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/invoices/estimate/template/{templateId}","scope":{"altId":{"at":"/altId","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"templateId","from":"path"}}},
+      "update-event-notification": {"action":"calendars.notifications.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/{calendarId}/notifications/{notificationId}","path_patterns":{"calendarId":"[^r].*|r(?:|[^e].*|e(?:|[^s].*|s(?:|[^o].*|o(?:|[^u].*|u(?:|[^r].*|r(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))))"},"scope":{"additionalEmailIds":{"at":"/additionalEmailIds","from":"body","optional":true,"type":"array"},"calendarId":{"at":"calendarId","from":"path"},"channel":{"at":"/channel","from":"body","optional":true},"fromName":{"at":"/fromName","from":"body","optional":true},"notificationId":{"at":"notificationId","from":"path"},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"/templateId","from":"body","optional":true}}},
+      "update-inventory": {"action":"products.inventory.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/products/inventory","scope":{"altId":{"at":"/altId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-invoice": {"action":"invoices.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/invoices/{invoiceId}","scope":{"altId":{"at":"/altId","from":"body"},"contactId":{"at":"/contactId","from":"body","optional":true},"invoiceId":{"at":"invoiceId","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-invoice-last-visited-at": {"action":"invoices.stats.last_visited_at.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://services.leadconnectorhq.com","path":"/invoices/stats/last-visited-at","scope":{"invoiceId":{"at":"/invoiceId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-invoice-late-fees-configuration": {"action":"invoices.late_fees_configuration.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://services.leadconnectorhq.com","path":"/invoices/{invoiceId}/late-fees-configuration","scope":{"altId":{"at":"/altId","from":"body"},"invoiceId":{"at":"invoiceId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-invoice-payment-methods-configuration": {"action":"invoices.template.payment_methods_configuration.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://services.leadconnectorhq.com","path":"/invoices/template/{templateId}/payment-methods-configuration","scope":{"altId":{"at":"/altId","from":"body"},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"templateId","from":"path"}}},
+      "update-invoice-schedule": {"action":"invoices.schedule.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/invoices/schedule/{scheduleId}","scope":{"altId":{"at":"/altId","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "update-invoice-template": {"action":"invoices.template.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/invoices/template/{templateId}","scope":{"altId":{"at":"/altId","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"templateId","from":"path"}}},
+      "update-invoice-template-late-fees-configuration": {"action":"invoices.template.late_fees_configuration.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://services.leadconnectorhq.com","path":"/invoices/template/{templateId}/late-fees-configuration","scope":{"altId":{"at":"/altId","from":"body"},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"templateId","from":"path"}}},
+      "update-link": {"action":"links.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/links/{linkId}","scope":{"linkId":{"at":"linkId","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-media-object": {"action":"medias.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/medias/{id}","path_patterns":{"id":"[^fu].*|f(?:|[^o].*|o(?:|[^l].*|l(?:|[^d].*|d(?:|[^e].*|e(?:|[^r].*|r.+)))))|u(?:|[^p].*|p(?:|[^l].*|l(?:|[^o].*|o(?:|[^a].*|a(?:|[^d].*|d(?:|[^\\-].*|-(?:|[^f].*|f(?:|[^i].*|i(?:|[^l].*|l(?:|[^e].*|e.+))))))))))"},"scope":{"altId":{"at":"/altId","from":"body"},"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-message-status": {"action":"conversations.messages.status.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/conversations/messages/{messageId}/status","scope":{"emailMessageId":{"at":"/emailMessageId","from":"body","optional":true},"messageId":{"at":"messageId","from":"path"},"recipients":{"at":"/recipients","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-note": {"action":"contacts.notes.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/notes/{id}","scope":{"contactId":{"at":"contactId","from":"path"},"id":{"at":"id","from":"path"}}},
+      "update-object-record": {"action":"objects.records.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","params":["locationId"],"path":"/objects/{schemaKey}/records/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"schemaKey":{"at":"schemaKey","from":"path"}}},
+      "update-opportunity": {"action":"opportunities.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/opportunities/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "update-opportunity-status": {"action":"opportunities.status.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/opportunities/{id}/status","scope":{"id":{"at":"id","from":"path"}}},
+      "update-price-by-id-for-product": {"action":"products.price.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/products/{productId}/price/{priceId}","scope":{"locationId":{"at":"/locationId","from":"body"},"name":{"at":"/name","from":"body"},"priceId":{"at":"priceId","from":"path"},"productId":{"at":"productId","from":"path"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"/userId","from":"body","optional":true},"variantOptionIds":{"at":"/variantOptionIds","from":"body","optional":true,"type":"array"}}},
+      "update-product-by-id": {"action":"products.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/products/{productId}","scope":{"automaticTaxCategoryId":{"at":"/automaticTaxCategoryId","from":"body","optional":true},"collectionIds":{"at":"/collectionIds","from":"body","optional":true,"type":"array"},"locationId":{"at":"/locationId","from":"body"},"name":{"at":"/name","from":"body"},"productId":{"at":"productId","from":"path"},"request":{"at":"","from":"body","type":"object"},"slug":{"at":"/slug","from":"body","optional":true}}},
+      "update-product-collection": {"action":"products.collections.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/products/collections/{collectionId}","scope":{"altId":{"at":"/altId","from":"body"},"collectionId":{"at":"collectionId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"slug":{"at":"/slug","from":"body","optional":true}}},
+      "update-product-review": {"action":"products.reviews.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/products/reviews/{reviewId}","scope":{"altId":{"at":"/altId","from":"body"},"productId":{"at":"/productId","from":"body"},"request":{"at":"","from":"body","type":"object"},"reviewId":{"at":"reviewId","from":"path"}}},
+      "update-recurring-task": {"action":"locations.recurring_tasks.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/recurring-tasks/{id}","scope":{"contactIds":{"at":"/contactIds","from":"body","optional":true,"type":"array"},"id":{"at":"id","from":"path"},"locationId":{"at":"locationId","from":"path"},"owners":{"at":"/owners","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-redirect-by-id": {"action":"funnels.lookup.redirect.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://services.leadconnectorhq.com","path":"/funnels/lookup/redirect/{id}","scope":{"id":{"at":"id","from":"path"},"locationId":{"at":"/locationId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "update-store-status": {"action":"products.store.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/products/store/{storeId}","scope":{"altId":{"at":"/altId","from":"body"},"productIds":{"at":"/productIds","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"storeId":{"at":"storeId","from":"path"}}},
+      "update-tag": {"action":"locations.tags.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/tags/{tagId}","scope":{"locationId":{"at":"locationId","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"tagId":{"at":"tagId","from":"path"}}},
+      "update-task": {"action":"contacts.tasks.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/tasks/{taskId}","scope":{"contactId":{"at":"contactId","from":"path"},"taskId":{"at":"taskId","from":"path"}}},
+      "update-task-completed": {"action":"contacts.tasks.completed.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/contacts/{contactId}/tasks/{taskId}/completed","scope":{"contactId":{"at":"contactId","from":"path"},"taskId":{"at":"taskId","from":"path"}}},
+      "update-template": {"action":"emails.builder.data.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/emails/builder/data","scope":{"locationId":{"at":"/locationId","from":"body"},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"/templateId","from":"body"}}},
+      "update-user": {"action":"users.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "updateSchedule": {"action":"calendars.schedules.write","body":"json","effects":["write"],"method":"PUT","origin":"https://services.leadconnectorhq.com","path":"/calendars/schedules/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "upload-csv": {"action":"social_media_posting.csv.write","body":"any","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/social-media-posting/{locationId}/csv","scope":{"locationId":{"at":"locationId","from":"path"}}},
+      "upload-file-attachments": {"action":"conversations.messages.write","body":"any","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/conversations/messages/upload","scope":{}},
+      "upload-file-customFields": {"action":"locations.custom_fields.write","body":"any","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/locations/{locationId}/customFields/upload","scope":{"locationId":{"at":"locationId","from":"path"}}},
+      "upload-media-content": {"action":"medias.file.write","body":"any","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/medias/upload-file","scope":{}},
+      "upload-to-custom-fields": {"action":"forms.custom_files.write","body":"any","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","params":["contactId","locationId"],"path":"/forms/upload-custom-files","scope":{"contactId":{"at":"contactId","from":"query"},"locationId":{"at":"locationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "upsert-contact": {"action":"contacts.upsert.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/contacts/upsert","scope":{"locationId":{"at":"/locationId","from":"body"}}},
+      "user-subscription-change": {"action":"conversations.preferences.unsubscriptions.user_change.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/conversations/preferences/unsubscriptions/user-change","scope":{"contactId":{"at":"/contactId","from":"body"},"email":{"at":"/email","from":"body"},"locationId":{"at":"/locationId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "validate-groups-slug": {"action":"calendars.groups.slug.read","body":"json","effects":["read"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/calendars/groups/validate-slug","scope":{"locationId":{"at":"/locationId","from":"body"},"slug":{"at":"/slug","from":"body"}}},
+      "void-invoice": {"action":"invoices.void.write","body":"json","effects":["write"],"method":"POST","origin":"https://services.leadconnectorhq.com","path":"/invoices/{invoiceId}/void","scope":{"altId":{"at":"/altId","from":"body"},"invoiceId":{"at":"invoiceId","from":"path"},"request":{"at":"","from":"body","type":"object"}}}
     }
   }
 }

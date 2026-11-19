@@ -1,151 +1,1395 @@
 {
-  "title": "Elastic Security",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your Elastic Security origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"], ["http", "slots", 1, "origin"]]},
-      {"key": "username", "label": "Username", "secret": true, "credential": true},
-      {"key": "password", "label": "Password", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "username", "origin": "https://example.com", "path": "/api", "basic": "user"}, {"value": "password", "origin": "https://example.com", "path": "/api", "basic": "password"}]}},
     "actions": {
-      "delete.cases": {"title": "Delete: cases"},
-      "delete.comments": {"title": "Delete: comments"},
-      "delete.connector": {"title": "Delete: connector"},
-      "delete.field_definitions": {"title": "Delete: field definitions"},
-      "delete.index": {"title": "Delete: index"},
-      "delete.migration": {"title": "Delete: migration"},
-      "delete.rules": {"title": "Delete: rules"},
-      "delete.scripts_library": {"title": "Delete: scripts library"},
-      "delete.templates": {"title": "Delete: templates"},
-      "execute.connector": {"title": "Execute: connector"},
-      "execute.execute": {"title": "Execute: execute"},
-      "execute.run_script": {"title": "Execute: run script"},
-      "generate.memory_dump": {"title": "Generate: memory dump"},
-      "read": {"title": "Read everything the account can see"},
-      "send.comments": {"title": "Send: comments"},
-      "write.assignees": {"title": "Write: assignees"},
-      "write.bulk_action": {"title": "Write: bulk action"},
-      "write.cancel": {"title": "Write: cancel"},
-      "write.cases": {"title": "Write: cases"},
-      "write.configure": {"title": "Write: configure"},
-      "write.connector": {"title": "Write: connector"},
-      "write.exceptions": {"title": "Write: exceptions"},
-      "write.field_definitions": {"title": "Write: field definitions"},
-      "write.files": {"title": "Write: files"},
-      "write.finalize_migration": {"title": "Write: finalize migration"},
-      "write.get_file": {"title": "Write: get file"},
-      "write.import": {"title": "Write: import"},
-      "write.index": {"title": "Write: index"},
-      "write.isolate": {"title": "Write: isolate"},
-      "write.kill_process": {"title": "Write: kill process"},
-      "write.migration": {"title": "Write: migration"},
-      "write.prepackaged": {"title": "Write: prepackaged"},
-      "write.preview": {"title": "Write: preview"},
-      "write.protection_updates_note": {"title": "Write: protection updates note"},
-      "write.push": {"title": "Write: push"},
-      "write.rules": {"title": "Write: rules"},
-      "write.running_procs": {"title": "Write: running procs"},
-      "write.scan": {"title": "Write: scan"},
-      "write.scripts_library": {"title": "Write: scripts library"},
-      "write.status": {"title": "Write: status"},
-      "write.suspend_process": {"title": "Write: suspend process"},
-      "write.tags": {"title": "Write: tags"},
-      "write.templates": {"title": "Write: templates"},
-      "write.unisolate": {"title": "Write: unisolate"},
-      "write.upload": {"title": "Write: upload"}
-    }
+      "actions": {
+        "title": "Actions"
+      },
+      "actions.connector": {
+        "title": "Connector"
+      },
+      "actions.connector.admin": {
+        "title": "Manage"
+      },
+      "actions.connector.delete": {
+        "title": "Delete"
+      },
+      "actions.connector.oauth": {
+        "title": "Oauth"
+      },
+      "actions.connector.oauth.read": {
+        "title": "Read"
+      },
+      "actions.connector.oauth_callback": {
+        "title": "Oauth callback"
+      },
+      "actions.connector.oauth_callback.admin": {
+        "title": "Manage"
+      },
+      "actions.connector.oauth_callback_script": {
+        "title": "Oauth callback script"
+      },
+      "actions.connector.oauth_callback_script.read": {
+        "title": "Read"
+      },
+      "actions.connector.read": {
+        "title": "Read"
+      },
+      "actions.connector.send": {
+        "title": "Send"
+      },
+      "actions.connector_types": {
+        "title": "Connector types"
+      },
+      "actions.connector_types.read": {
+        "title": "Read"
+      },
+      "actions.connectors": {
+        "title": "Connectors"
+      },
+      "actions.connectors.read": {
+        "title": "Read"
+      },
+      "asset_criticality": {
+        "title": "Asset criticality"
+      },
+      "asset_criticality.bulk": {
+        "title": "Bulk"
+      },
+      "asset_criticality.bulk.write": {
+        "title": "Create and edit"
+      },
+      "asset_criticality.delete": {
+        "title": "Delete"
+      },
+      "asset_criticality.read": {
+        "title": "Read"
+      },
+      "asset_criticality.write": {
+        "title": "Create and edit"
+      },
+      "attack_discovery": {
+        "title": "Attack discovery"
+      },
+      "attack_discovery.bulk": {
+        "title": "Bulk"
+      },
+      "attack_discovery.bulk.write": {
+        "title": "Create and edit"
+      },
+      "attack_discovery.generate": {
+        "title": "Generate"
+      },
+      "attack_discovery.generate.generate": {
+        "title": "Generate"
+      },
+      "attack_discovery.generations": {
+        "title": "Generations"
+      },
+      "attack_discovery.generations.dismiss": {
+        "title": "Dismiss"
+      },
+      "attack_discovery.generations.dismiss.write": {
+        "title": "Create and edit"
+      },
+      "attack_discovery.generations.read": {
+        "title": "Read"
+      },
+      "attack_discovery.read": {
+        "title": "Read"
+      },
+      "attack_discovery.schedules": {
+        "title": "Schedules"
+      },
+      "attack_discovery.schedules.bulk_delete": {
+        "title": "Bulk delete"
+      },
+      "attack_discovery.schedules.bulk_delete.delete": {
+        "title": "Delete"
+      },
+      "attack_discovery.schedules.bulk_disable": {
+        "title": "Bulk disable"
+      },
+      "attack_discovery.schedules.bulk_disable.write": {
+        "title": "Create and edit"
+      },
+      "attack_discovery.schedules.bulk_enable": {
+        "title": "Bulk enable"
+      },
+      "attack_discovery.schedules.bulk_enable.write": {
+        "title": "Create and edit"
+      },
+      "attack_discovery.schedules.delete": {
+        "title": "Delete"
+      },
+      "attack_discovery.schedules.read": {
+        "title": "Read"
+      },
+      "attack_discovery.schedules.write": {
+        "title": "Create and edit"
+      },
+      "cases": {
+        "title": "Cases"
+      },
+      "cases.alerts": {
+        "title": "Alerts"
+      },
+      "cases.alerts.read": {
+        "title": "Read"
+      },
+      "cases.comments": {
+        "title": "Comments"
+      },
+      "cases.comments.delete": {
+        "title": "Delete"
+      },
+      "cases.comments.read": {
+        "title": "Read"
+      },
+      "cases.comments.send": {
+        "title": "Send"
+      },
+      "cases.comments.write": {
+        "title": "Create and edit"
+      },
+      "cases.configure": {
+        "title": "Configure"
+      },
+      "cases.configure.connectors": {
+        "title": "Connectors"
+      },
+      "cases.configure.connectors.read": {
+        "title": "Read"
+      },
+      "cases.configure.read": {
+        "title": "Read"
+      },
+      "cases.configure.write": {
+        "title": "Create and edit"
+      },
+      "cases.connector": {
+        "title": "Connector"
+      },
+      "cases.connector.push": {
+        "title": "Push commits"
+      },
+      "cases.connector.push.send": {
+        "title": "Send"
+      },
+      "cases.delete": {
+        "title": "Delete"
+      },
+      "cases.field_definitions": {
+        "title": "Field definitions"
+      },
+      "cases.field_definitions.delete": {
+        "title": "Delete"
+      },
+      "cases.field_definitions.read": {
+        "title": "Read"
+      },
+      "cases.field_definitions.write": {
+        "title": "Create and edit"
+      },
+      "cases.fields": {
+        "title": "Fields"
+      },
+      "cases.fields.read": {
+        "title": "Read"
+      },
+      "cases.files": {
+        "title": "Files"
+      },
+      "cases.files.write": {
+        "title": "Create and edit"
+      },
+      "cases.read": {
+        "title": "Read"
+      },
+      "cases.reporters": {
+        "title": "Reporters"
+      },
+      "cases.reporters.read": {
+        "title": "Read"
+      },
+      "cases.tags": {
+        "title": "Tags"
+      },
+      "cases.tags.read": {
+        "title": "Read"
+      },
+      "cases.templates": {
+        "title": "Templates"
+      },
+      "cases.templates.delete": {
+        "title": "Delete"
+      },
+      "cases.templates.read": {
+        "title": "Read"
+      },
+      "cases.templates.write": {
+        "title": "Create and edit"
+      },
+      "cases.user_actions": {
+        "title": "User actions"
+      },
+      "cases.user_actions.read": {
+        "title": "Read"
+      },
+      "cases.write": {
+        "title": "Create and edit"
+      },
+      "detection_engine": {
+        "title": "Detection engine"
+      },
+      "detection_engine.attacks": {
+        "title": "Attacks"
+      },
+      "detection_engine.attacks.assignees": {
+        "title": "Assignees"
+      },
+      "detection_engine.attacks.assignees.write": {
+        "title": "Create and edit"
+      },
+      "detection_engine.attacks.read": {
+        "title": "Read"
+      },
+      "detection_engine.attacks.status": {
+        "title": "Status"
+      },
+      "detection_engine.attacks.status.write": {
+        "title": "Create and edit"
+      },
+      "detection_engine.attacks.tags": {
+        "title": "Tags"
+      },
+      "detection_engine.attacks.tags.write": {
+        "title": "Create and edit"
+      },
+      "detection_engine.index": {
+        "title": "Index"
+      },
+      "detection_engine.index.delete": {
+        "title": "Delete"
+      },
+      "detection_engine.index.read": {
+        "title": "Read"
+      },
+      "detection_engine.index.write": {
+        "title": "Create and edit"
+      },
+      "detection_engine.privileges": {
+        "title": "Privileges"
+      },
+      "detection_engine.privileges.read": {
+        "title": "Read"
+      },
+      "detection_engine.rules": {
+        "title": "Rules"
+      },
+      "detection_engine.rules.bulk_action": {
+        "title": "Bulk action"
+      },
+      "detection_engine.rules.bulk_action.delete": {
+        "title": "Delete"
+      },
+      "detection_engine.rules.delete": {
+        "title": "Delete"
+      },
+      "detection_engine.rules.exceptions": {
+        "title": "Exceptions"
+      },
+      "detection_engine.rules.exceptions.write": {
+        "title": "Create and edit"
+      },
+      "detection_engine.rules.prepackaged": {
+        "title": "Prepackaged"
+      },
+      "detection_engine.rules.prepackaged.status": {
+        "title": "Status"
+      },
+      "detection_engine.rules.prepackaged.status.read": {
+        "title": "Read"
+      },
+      "detection_engine.rules.prepackaged.write": {
+        "title": "Create and edit"
+      },
+      "detection_engine.rules.preview": {
+        "title": "Preview"
+      },
+      "detection_engine.rules.preview.read": {
+        "title": "Read"
+      },
+      "detection_engine.rules.read": {
+        "title": "Read"
+      },
+      "detection_engine.rules.write": {
+        "title": "Create and edit"
+      },
+      "detection_engine.signals": {
+        "title": "Signals"
+      },
+      "detection_engine.signals.assignees": {
+        "title": "Assignees"
+      },
+      "detection_engine.signals.assignees.write": {
+        "title": "Create and edit"
+      },
+      "detection_engine.signals.finalize_migration": {
+        "title": "Finalize migration"
+      },
+      "detection_engine.signals.finalize_migration.write": {
+        "title": "Create and edit"
+      },
+      "detection_engine.signals.migration": {
+        "title": "Migration"
+      },
+      "detection_engine.signals.migration.delete": {
+        "title": "Delete"
+      },
+      "detection_engine.signals.migration.write": {
+        "title": "Create and edit"
+      },
+      "detection_engine.signals.migration_status": {
+        "title": "Migration status"
+      },
+      "detection_engine.signals.migration_status.read": {
+        "title": "Read"
+      },
+      "detection_engine.signals.read": {
+        "title": "Read"
+      },
+      "detection_engine.signals.status": {
+        "title": "Status"
+      },
+      "detection_engine.signals.status.write": {
+        "title": "Create and edit"
+      },
+      "detection_engine.signals.tags": {
+        "title": "Tags"
+      },
+      "detection_engine.signals.tags.write": {
+        "title": "Create and edit"
+      },
+      "detection_engine.tags": {
+        "title": "Tags"
+      },
+      "detection_engine.tags.read": {
+        "title": "Read"
+      },
+      "endpoint": {
+        "title": "Endpoint"
+      },
+      "endpoint.action": {
+        "title": "Action"
+      },
+      "endpoint.action.execute": {
+        "title": "Run"
+      },
+      "endpoint.action.file": {
+        "title": "File"
+      },
+      "endpoint.action.file.execute": {
+        "title": "Run"
+      },
+      "endpoint.action.file.read": {
+        "title": "Read"
+      },
+      "endpoint.action.isolate": {
+        "title": "Isolate"
+      },
+      "endpoint.action.isolate.execute": {
+        "title": "Run"
+      },
+      "endpoint.action.kill_process": {
+        "title": "Kill process"
+      },
+      "endpoint.action.kill_process.execute": {
+        "title": "Run"
+      },
+      "endpoint.action.memory_dump": {
+        "title": "Memory dump"
+      },
+      "endpoint.action.memory_dump.execute": {
+        "title": "Run"
+      },
+      "endpoint.action.read": {
+        "title": "Read"
+      },
+      "endpoint.action.running_procs": {
+        "title": "Running procs"
+      },
+      "endpoint.action.running_procs.execute": {
+        "title": "Run"
+      },
+      "endpoint.action.scan": {
+        "title": "Scan"
+      },
+      "endpoint.action.scan.execute": {
+        "title": "Run"
+      },
+      "endpoint.action.script": {
+        "title": "Script"
+      },
+      "endpoint.action.script.execute": {
+        "title": "Run"
+      },
+      "endpoint.action.state": {
+        "title": "State"
+      },
+      "endpoint.action.state.read": {
+        "title": "Read"
+      },
+      "endpoint.action.suspend_process": {
+        "title": "Suspend process"
+      },
+      "endpoint.action.suspend_process.execute": {
+        "title": "Run"
+      },
+      "endpoint.action.unisolate": {
+        "title": "Unisolate"
+      },
+      "endpoint.action.unisolate.execute": {
+        "title": "Run"
+      },
+      "endpoint.action.write": {
+        "title": "Create and edit"
+      },
+      "endpoint.action_status": {
+        "title": "Action status"
+      },
+      "endpoint.action_status.read": {
+        "title": "Read"
+      },
+      "endpoint.metadata": {
+        "title": "Metadata"
+      },
+      "endpoint.metadata.read": {
+        "title": "Read"
+      },
+      "endpoint.policy_response": {
+        "title": "Policy response"
+      },
+      "endpoint.policy_response.read": {
+        "title": "Read"
+      },
+      "endpoint.protection_updates_note": {
+        "title": "Protection updates note"
+      },
+      "endpoint.protection_updates_note.read": {
+        "title": "Read"
+      },
+      "endpoint.protection_updates_note.write": {
+        "title": "Create and edit"
+      },
+      "endpoint.scripts_library": {
+        "title": "Scripts library"
+      },
+      "endpoint.scripts_library.delete": {
+        "title": "Delete"
+      },
+      "endpoint.scripts_library.read": {
+        "title": "Read"
+      },
+      "endpoint.scripts_library.write": {
+        "title": "Create and edit"
+      },
+      "endpoint_list": {
+        "title": "Endpoint list"
+      },
+      "endpoint_list.items": {
+        "title": "Items"
+      },
+      "endpoint_list.items.delete": {
+        "title": "Delete"
+      },
+      "endpoint_list.items.read": {
+        "title": "Read"
+      },
+      "endpoint_list.items.write": {
+        "title": "Create and edit"
+      },
+      "endpoint_list.write": {
+        "title": "Create and edit"
+      },
+      "entity_analytics": {
+        "title": "Entity analytics"
+      },
+      "entity_analytics.monitoring": {
+        "title": "Monitoring"
+      },
+      "entity_analytics.monitoring.engine": {
+        "title": "Engine"
+      },
+      "entity_analytics.monitoring.engine.delete": {
+        "title": "Delete"
+      },
+      "entity_analytics.monitoring.engine.init": {
+        "title": "Init"
+      },
+      "entity_analytics.monitoring.engine.init.write": {
+        "title": "Create and edit"
+      },
+      "entity_analytics.monitoring.engine.schedule_now": {
+        "title": "Schedule now"
+      },
+      "entity_analytics.monitoring.engine.schedule_now.write": {
+        "title": "Create and edit"
+      },
+      "entity_analytics.monitoring.engine.write": {
+        "title": "Create and edit"
+      },
+      "entity_analytics.monitoring.privileges": {
+        "title": "Privileges"
+      },
+      "entity_analytics.monitoring.privileges.health": {
+        "title": "Health"
+      },
+      "entity_analytics.monitoring.privileges.health.read": {
+        "title": "Read"
+      },
+      "entity_analytics.monitoring.privileges.privileges": {
+        "title": "Privileges"
+      },
+      "entity_analytics.monitoring.privileges.privileges.read": {
+        "title": "Read"
+      },
+      "entity_analytics.monitoring.users": {
+        "title": "Users"
+      },
+      "entity_analytics.monitoring.users.csv": {
+        "title": "Csv"
+      },
+      "entity_analytics.monitoring.users.csv.write": {
+        "title": "Create and edit"
+      },
+      "entity_analytics.monitoring.users.delete": {
+        "title": "Delete"
+      },
+      "entity_analytics.monitoring.users.read": {
+        "title": "Read"
+      },
+      "entity_analytics.monitoring.users.write": {
+        "title": "Create and edit"
+      },
+      "entity_analytics.privileged_user_monitoring": {
+        "title": "Privileged user monitoring"
+      },
+      "entity_analytics.privileged_user_monitoring.pad": {
+        "title": "Pad"
+      },
+      "entity_analytics.privileged_user_monitoring.pad.install": {
+        "title": "Install"
+      },
+      "entity_analytics.privileged_user_monitoring.pad.install.write": {
+        "title": "Create and edit"
+      },
+      "entity_analytics.privileged_user_monitoring.pad.status": {
+        "title": "Status"
+      },
+      "entity_analytics.privileged_user_monitoring.pad.status.read": {
+        "title": "Read"
+      },
+      "entity_analytics.watchlists": {
+        "title": "Watchlists"
+      },
+      "entity_analytics.watchlists.csv": {
+        "title": "Csv"
+      },
+      "entity_analytics.watchlists.csv.write": {
+        "title": "Create and edit"
+      },
+      "entity_analytics.watchlists.entities": {
+        "title": "Entities"
+      },
+      "entity_analytics.watchlists.entities.assign": {
+        "title": "Assign"
+      },
+      "entity_analytics.watchlists.entities.assign.write": {
+        "title": "Create and edit"
+      },
+      "entity_analytics.watchlists.entities.unassign": {
+        "title": "Unassign"
+      },
+      "entity_analytics.watchlists.entities.unassign.write": {
+        "title": "Create and edit"
+      },
+      "entity_analytics.watchlists.read": {
+        "title": "Read"
+      },
+      "entity_analytics.watchlists.write": {
+        "title": "Create and edit"
+      },
+      "exception_lists": {
+        "title": "Exception lists"
+      },
+      "exception_lists.delete": {
+        "title": "Delete"
+      },
+      "exception_lists.items": {
+        "title": "Items"
+      },
+      "exception_lists.items.delete": {
+        "title": "Delete"
+      },
+      "exception_lists.items.read": {
+        "title": "Read"
+      },
+      "exception_lists.items.write": {
+        "title": "Create and edit"
+      },
+      "exception_lists.read": {
+        "title": "Read"
+      },
+      "exception_lists.summary": {
+        "title": "Summary"
+      },
+      "exception_lists.summary.read": {
+        "title": "Read"
+      },
+      "exception_lists.write": {
+        "title": "Create and edit"
+      },
+      "exceptions": {
+        "title": "Exceptions"
+      },
+      "exceptions.shared": {
+        "title": "Shared"
+      },
+      "exceptions.shared.write": {
+        "title": "Create and edit"
+      },
+      "lists": {
+        "title": "Lists"
+      },
+      "lists.delete": {
+        "title": "Delete"
+      },
+      "lists.index": {
+        "title": "Index"
+      },
+      "lists.index.delete": {
+        "title": "Delete"
+      },
+      "lists.index.read": {
+        "title": "Read"
+      },
+      "lists.index.write": {
+        "title": "Create and edit"
+      },
+      "lists.items": {
+        "title": "Items"
+      },
+      "lists.items.delete": {
+        "title": "Delete"
+      },
+      "lists.items.read": {
+        "title": "Read"
+      },
+      "lists.items.write": {
+        "title": "Create and edit"
+      },
+      "lists.privileges": {
+        "title": "Privileges"
+      },
+      "lists.privileges.read": {
+        "title": "Read"
+      },
+      "lists.read": {
+        "title": "Read"
+      },
+      "lists.write": {
+        "title": "Create and edit"
+      },
+      "note": {
+        "title": "Note"
+      },
+      "note.delete": {
+        "title": "Delete"
+      },
+      "note.read": {
+        "title": "Read"
+      },
+      "note.write": {
+        "title": "Create and edit"
+      },
+      "osquery": {
+        "title": "Osquery"
+      },
+      "osquery.history": {
+        "title": "History"
+      },
+      "osquery.history.read": {
+        "title": "Read"
+      },
+      "osquery.live_queries": {
+        "title": "Live queries"
+      },
+      "osquery.live_queries.execute": {
+        "title": "Run"
+      },
+      "osquery.live_queries.read": {
+        "title": "Read"
+      },
+      "osquery.live_queries.results": {
+        "title": "Results"
+      },
+      "osquery.live_queries.results.read": {
+        "title": "Read"
+      },
+      "osquery.packs": {
+        "title": "Packs"
+      },
+      "osquery.packs.delete": {
+        "title": "Delete"
+      },
+      "osquery.packs.read": {
+        "title": "Read"
+      },
+      "osquery.packs.write": {
+        "title": "Create and edit"
+      },
+      "osquery.saved_queries": {
+        "title": "Saved queries"
+      },
+      "osquery.saved_queries.delete": {
+        "title": "Delete"
+      },
+      "osquery.saved_queries.read": {
+        "title": "Read"
+      },
+      "osquery.saved_queries.write": {
+        "title": "Create and edit"
+      },
+      "osquery.scheduled_results": {
+        "title": "Scheduled results"
+      },
+      "osquery.scheduled_results.read": {
+        "title": "Read"
+      },
+      "osquery.scheduled_results.results": {
+        "title": "Results"
+      },
+      "osquery.scheduled_results.results.read": {
+        "title": "Read"
+      },
+      "pinned_event": {
+        "title": "Pinned event"
+      },
+      "pinned_event.write": {
+        "title": "Create and edit"
+      },
+      "risk_score": {
+        "title": "Risk score"
+      },
+      "risk_score.engine": {
+        "title": "Engine"
+      },
+      "risk_score.engine.dangerously_delete_data": {
+        "title": "Dangerously delete data"
+      },
+      "risk_score.engine.dangerously_delete_data.delete": {
+        "title": "Delete"
+      },
+      "risk_score.engine.saved_object": {
+        "title": "Saved object"
+      },
+      "risk_score.engine.saved_object.configure": {
+        "title": "Configure"
+      },
+      "risk_score.engine.saved_object.configure.write": {
+        "title": "Create and edit"
+      },
+      "risk_score.engine.schedule_now": {
+        "title": "Schedule now"
+      },
+      "risk_score.engine.schedule_now.write": {
+        "title": "Create and edit"
+      },
+      "risk_score.history": {
+        "title": "History"
+      },
+      "risk_score.history.read": {
+        "title": "Read"
+      },
+      "security": {
+        "title": "Security"
+      },
+      "security.entity_store": {
+        "title": "Entity store"
+      },
+      "security.entity_store.entities": {
+        "title": "Entities"
+      },
+      "security.entity_store.entities.bulk": {
+        "title": "Bulk"
+      },
+      "security.entity_store.entities.bulk.write": {
+        "title": "Create and edit"
+      },
+      "security.entity_store.entities.delete": {
+        "title": "Delete"
+      },
+      "security.entity_store.entities.read": {
+        "title": "Read"
+      },
+      "security.entity_store.entities.write": {
+        "title": "Create and edit"
+      },
+      "security.entity_store.history_snapshot": {
+        "title": "History snapshot"
+      },
+      "security.entity_store.history_snapshot.write": {
+        "title": "Create and edit"
+      },
+      "security.entity_store.install": {
+        "title": "Install"
+      },
+      "security.entity_store.install.write": {
+        "title": "Create and edit"
+      },
+      "security.entity_store.resolution": {
+        "title": "Resolution"
+      },
+      "security.entity_store.resolution.group": {
+        "title": "Group"
+      },
+      "security.entity_store.resolution.group.read": {
+        "title": "Read"
+      },
+      "security.entity_store.resolution.link": {
+        "title": "Link"
+      },
+      "security.entity_store.resolution.link.write": {
+        "title": "Create and edit"
+      },
+      "security.entity_store.resolution.rules": {
+        "title": "Rules"
+      },
+      "security.entity_store.resolution.rules.read": {
+        "title": "Read"
+      },
+      "security.entity_store.resolution.rules.write": {
+        "title": "Create and edit"
+      },
+      "security.entity_store.resolution.unlink": {
+        "title": "Unlink"
+      },
+      "security.entity_store.resolution.unlink.write": {
+        "title": "Create and edit"
+      },
+      "security.entity_store.status": {
+        "title": "Status"
+      },
+      "security.entity_store.status.read": {
+        "title": "Read"
+      },
+      "security.entity_store.uninstall": {
+        "title": "Uninstall"
+      },
+      "security.entity_store.uninstall.delete": {
+        "title": "Delete"
+      },
+      "security.entity_store.write": {
+        "title": "Create and edit"
+      },
+      "security_ai_assistant": {
+        "title": "Security ai assistant"
+      },
+      "security_ai_assistant.anonymization_fields": {
+        "title": "Anonymization fields"
+      },
+      "security_ai_assistant.anonymization_fields.bulk_action": {
+        "title": "Bulk action"
+      },
+      "security_ai_assistant.anonymization_fields.bulk_action.delete": {
+        "title": "Delete"
+      },
+      "security_ai_assistant.anonymization_fields.read": {
+        "title": "Read"
+      },
+      "security_ai_assistant.chat": {
+        "title": "Chat"
+      },
+      "security_ai_assistant.chat.complete": {
+        "title": "Complete"
+      },
+      "security_ai_assistant.chat.complete.generate": {
+        "title": "Generate"
+      },
+      "security_ai_assistant.current_user": {
+        "title": "Current user"
+      },
+      "security_ai_assistant.current_user.conversations": {
+        "title": "Conversations"
+      },
+      "security_ai_assistant.current_user.conversations.delete": {
+        "title": "Delete"
+      },
+      "security_ai_assistant.current_user.conversations.read": {
+        "title": "Read"
+      },
+      "security_ai_assistant.current_user.conversations.write": {
+        "title": "Create and edit"
+      },
+      "security_ai_assistant.knowledge_base": {
+        "title": "Knowledge base"
+      },
+      "security_ai_assistant.knowledge_base.entries": {
+        "title": "Entries"
+      },
+      "security_ai_assistant.knowledge_base.entries.bulk_action": {
+        "title": "Bulk action"
+      },
+      "security_ai_assistant.knowledge_base.entries.bulk_action.delete": {
+        "title": "Delete"
+      },
+      "security_ai_assistant.knowledge_base.entries.delete": {
+        "title": "Delete"
+      },
+      "security_ai_assistant.knowledge_base.entries.read": {
+        "title": "Read"
+      },
+      "security_ai_assistant.knowledge_base.entries.write": {
+        "title": "Create and edit"
+      },
+      "security_ai_assistant.knowledge_base.read": {
+        "title": "Read"
+      },
+      "security_ai_assistant.knowledge_base.write": {
+        "title": "Create and edit"
+      },
+      "security_ai_assistant.prompts": {
+        "title": "Prompts"
+      },
+      "security_ai_assistant.prompts.bulk_action": {
+        "title": "Bulk action"
+      },
+      "security_ai_assistant.prompts.bulk_action.delete": {
+        "title": "Delete"
+      },
+      "security_ai_assistant.prompts.read": {
+        "title": "Read"
+      },
+      "security_solution": {
+        "title": "Security solution"
+      },
+      "security_solution.initialize": {
+        "title": "Initialize"
+      },
+      "security_solution.initialize.write": {
+        "title": "Create and edit"
+      },
+      "timeline": {
+        "title": "Timeline"
+      },
+      "timeline.delete": {
+        "title": "Delete"
+      },
+      "timeline.draft": {
+        "title": "Draft"
+      },
+      "timeline.draft.read": {
+        "title": "Read"
+      },
+      "timeline.draft.write": {
+        "title": "Create and edit"
+      },
+      "timeline.favorite": {
+        "title": "Favorite"
+      },
+      "timeline.favorite.write": {
+        "title": "Create and edit"
+      },
+      "timeline.prepackaged": {
+        "title": "Prepackaged"
+      },
+      "timeline.prepackaged.write": {
+        "title": "Create and edit"
+      },
+      "timeline.read": {
+        "title": "Read"
+      },
+      "timeline.resolve": {
+        "title": "Resolve"
+      },
+      "timeline.resolve.read": {
+        "title": "Read"
+      },
+      "timeline.write": {
+        "title": "Create and edit"
+      },
+      "timelines": {
+        "title": "Timelines"
+      },
+      "timelines.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "basic": "user",
+            "origin": "https://example.com",
+            "path": "/",
+            "value": "username"
+          },
+          {
+            "basic": "password",
+            "origin": "https://example.com",
+            "path": "/",
+            "value": "password"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://example.com",
+            "path": "/",
+            "prefix": "ApiKey ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "hint": "For a non-default space, add its path, such as https://kibana.example.com/s/marketing.",
+        "key": "origin",
+        "label": "Your Kibana origin (https://host)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            1,
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            2,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "username",
+        "label": "Username",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "password",
+        "label": "Password",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API key (Base64-encoded, instead of username and password)",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Elastic Security",
   "http": {
     "operations": {
-      "AlertsMigrationCleanup": {"action":"delete.migration","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/detection_engine/signals/migration","body":"json","scope":{}},
-      "CancelAction": {"action":"write.cancel","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/cancel","body":"json","scope":{}},
-      "CreateAlertsIndex": {"action":"write.index","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/index","scope":{}},
-      "CreateAlertsMigration": {"action":"write.migration","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/signals/migration","body":"json","scope":{}},
-      "CreateRule": {"action":"write.rules","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/rules","body":"json","scope":{}},
-      "CreateRuleExceptionListItems": {"action":"write.exceptions","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/rules/{id}/exceptions","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "CreateUpdateProtectionUpdatesNote": {"action":"write.protection_updates_note","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/endpoint/protection_updates_note/{package_policy_id}","body":"json","scope":{"package_policy_id":{"from":"path","at":"package_policy_id"}}},
-      "DeleteAlertsIndex": {"action":"delete.index","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/detection_engine/index","scope":{}},
-      "DeleteRule": {"action":"delete.rules","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/detection_engine/rules","params":["id","rule_id"],"scope":{}},
-      "EndpointExecuteAction": {"action":"execute.execute","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/execute","body":"json","scope":{}},
-      "EndpointFileDownload": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/action/{action_id}/file/{file_id}/download","scope":{"action_id":{"from":"path","at":"action_id"},"file_id":{"from":"path","at":"file_id"}}},
-      "EndpointFileInfo": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/action/{action_id}/file/{file_id}","scope":{"action_id":{"from":"path","at":"action_id"},"file_id":{"from":"path","at":"file_id"}}},
-      "EndpointGenerateMemoryDump": {"action":"generate.memory_dump","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/memory_dump","body":"json","scope":{}},
-      "EndpointGetActionsDetails": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/action/{action_id}","scope":{"action_id":{"from":"path","at":"action_id"}}},
-      "EndpointGetActionsList": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/action","params":["page","pageSize","commands","agentIds","userIds","startDate","endDate","agentTypes","withOutputs","types"],"scope":{}},
-      "EndpointGetActionsStatus": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/action_status","params":["agent_ids"],"scope":{"agent_ids":{"from":"query","at":"agent_ids"}}},
-      "EndpointGetFileAction": {"action":"write.get_file","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/get_file","body":"json","scope":{}},
-      "EndpointGetProcessesAction": {"action":"write.running_procs","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/running_procs","body":"json","scope":{}},
-      "EndpointIsolateAction": {"action":"write.isolate","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/isolate","body":"json","scope":{}},
-      "EndpointKillProcessAction": {"action":"write.kill_process","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/kill_process","body":"json","scope":{}},
-      "EndpointScanAction": {"action":"write.scan","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/scan","body":"json","scope":{}},
-      "EndpointScriptLibraryCreateScript": {"action":"write.scripts_library","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/endpoint/scripts_library","body":"any","scope":{}},
-      "EndpointScriptLibraryDeleteScript": {"action":"delete.scripts_library","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/endpoint/scripts_library/{script_id}","scope":{"script_id":{"from":"path","at":"script_id"}}},
-      "EndpointScriptLibraryDownloadScript": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/scripts_library/{script_id}/download","scope":{"script_id":{"from":"path","at":"script_id"}}},
-      "EndpointScriptLibraryGetOneScript": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/scripts_library/{script_id}","scope":{"script_id":{"from":"path","at":"script_id"}}},
-      "EndpointScriptLibraryListScripts": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/scripts_library","params":["page","pageSize","sortField","sortDirection","kuery"],"scope":{}},
-      "EndpointScriptLibraryPatchUpdateScript": {"action":"write.scripts_library","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/endpoint/scripts_library/{script_id}","body":"any","scope":{"script_id":{"from":"path","at":"script_id"}}},
-      "EndpointSuspendProcessAction": {"action":"write.suspend_process","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/suspend_process","body":"json","scope":{}},
-      "EndpointUnisolateAction": {"action":"write.unisolate","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/unisolate","body":"json","scope":{}},
-      "EndpointUploadAction": {"action":"write.upload","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/upload","body":"any","scope":{}},
-      "ExportRules": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/rules/_export","params":["exclude_export_details","file_name"],"body":"any","scope":{}},
-      "FinalizeAlertsMigration": {"action":"write.finalize_migration","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/signals/finalize_migration","body":"json","scope":{}},
-      "FindRules": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/detection_engine/rules/_find","params":["fields","filter","sort_field","sort_order","page","per_page","gaps_range_start","gaps_range_end","gap_fill_statuses","gap_auto_fill_scheduler_id"],"scope":{}},
-      "GetEndpointMetadata": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/metadata/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GetEndpointMetadataList": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/metadata","params":["page","pageSize","kuery","hostStatuses","sortField","sortDirection"],"scope":{}},
-      "GetPolicyResponse": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/policy_response","params":["agentId"],"scope":{"agentId":{"from":"query","at":"agentId"}}},
-      "GetProtectionUpdatesNote": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/protection_updates_note/{package_policy_id}","scope":{"package_policy_id":{"from":"path","at":"package_policy_id"}}},
-      "ImportRules": {"action":"write.import","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/rules/_import","params":["overwrite","overwrite_exceptions","overwrite_action_connectors","as_new_list"],"body":"any","scope":{}},
-      "InstallPrebuiltRulesAndTimelines": {"action":"write.prepackaged","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/detection_engine/rules/prepackaged","scope":{}},
-      "PatchRule": {"action":"write.rules","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/detection_engine/rules","body":"json","scope":{}},
-      "PerformRulesBulkAction": {"action":"write.bulk_action","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/rules/_bulk_action","params":["dry_run"],"body":"any","scope":{}},
-      "ReadAlertsIndex": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/detection_engine/index","scope":{}},
-      "ReadAlertsMigrationStatus": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/detection_engine/signals/migration_status","params":["from"],"scope":{}},
-      "ReadPrebuiltRulesAndTimelinesStatus": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/detection_engine/rules/prepackaged/_status","scope":{}},
-      "ReadPrivileges": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/detection_engine/privileges","scope":{}},
-      "ReadRule": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/detection_engine/rules","params":["id","rule_id"],"scope":{}},
-      "ReadTags": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/detection_engine/tags","scope":{}},
-      "RulePreview": {"action":"write.preview","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/rules/preview","params":["enable_logged_requests"],"body":"json","scope":{}},
-      "RunScriptAction": {"action":"execute.run_script","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/run_script","body":"json","scope":{}},
-      "SearchAlerts": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/signals/search","body":"json","scope":{}},
-      "SearchAttacks": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/attacks/search","body":"json","scope":{}},
-      "SetAlertAssignees": {"action":"write.assignees","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/signals/assignees","body":"json","scope":{}},
-      "SetAlertTags": {"action":"write.tags","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/signals/tags","body":"json","scope":{}},
-      "SetAlertsStatus": {"action":"write.status","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/signals/status","body":"json","scope":{}},
-      "SetAttacksAssignees": {"action":"write.assignees","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/attacks/assignees","body":"json","scope":{}},
-      "SetAttacksStatus": {"action":"write.status","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/attacks/status","body":"json","scope":{}},
-      "SetAttacksTags": {"action":"write.tags","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/attacks/tags","body":"json","scope":{}},
-      "UpdateRule": {"action":"write.rules","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/detection_engine/rules","body":"json","scope":{}},
-      "addCaseCommentDefaultSpace": {"action":"send.comments","effects":["send"],"method":"POST","origin":"{origin}","path":"/api/cases/{caseId}/comments","body":"json","scope":{"caseId":{"from":"path","at":"caseId"},"request":{"from":"body","at":"","type":"object"}},"grant":["caseId"]},
-      "addCaseFileDefaultSpace": {"action":"write.files","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/cases/{caseId}/files","body":"any","scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "createCaseDefaultSpace": {"action":"write.cases","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/cases","body":"json","scope":{"owner":{"from":"body","at":"/owner"}}},
-      "createCaseFieldDefinitionDefaultSpace": {"action":"write.field_definitions","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/cases/field_definitions","params":["dry_run"],"body":"json","scope":{"owner":{"from":"body","at":"/owner"}}},
-      "createCaseTemplateDefaultSpace": {"action":"write.templates","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/cases/templates","params":["dry_run"],"body":"json","scope":{"owner":{"from":"body","at":"/owner"}}},
-      "delete-actions-connector-id": {"action":"delete.connector","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/actions/connector/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteCaseCommentDefaultSpace": {"action":"delete.comments","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/cases/{caseId}/comments/{commentId}","scope":{"caseId":{"from":"path","at":"caseId"},"commentId":{"from":"path","at":"commentId"}}},
-      "deleteCaseDefaultSpace": {"action":"delete.cases","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/cases","params":["ids"],"scope":{"ids":{"from":"query","at":"ids"}}},
-      "deleteCaseFieldDefinitionDefaultSpace": {"action":"delete.field_definitions","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/cases/field_definitions/{field_definition_id}","scope":{"field_definition_id":{"from":"path","at":"field_definition_id"}}},
-      "deleteCaseTemplateDefaultSpace": {"action":"delete.templates","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/cases/templates/{template_id}","scope":{"template_id":{"from":"path","at":"template_id"}}},
-      "findCaseActivityDefaultSpace": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cases/{caseId}/user_actions/_find","params":["page","perPage","sortOrder","types"],"scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "findCaseConnectorsDefaultSpace": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cases/configure/connectors/_find","scope":{}},
-      "get-actions-connector-connectorid-oauth-start": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/actions/connector/{connectorId}/oauth/start","scope":{"connectorId":{"from":"path","at":"connectorId"}}},
-      "get-actions-connector-id": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/actions/connector/{id}","params":["code","state","error","error_description","session_state"],"scope":{"id":{"from":"path","at":"id"}}},
-      "get-actions-connector-types": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/actions/connector_types","params":["feature_id"],"scope":{}},
-      "get-actions-connectors": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/actions/connectors","scope":{}},
-      "getCaseCommentDefaultSpace": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cases/{caseId}/comments/{commentId}","params":["page","perPage","sortOrder"],"scope":{"caseId":{"from":"path","at":"caseId"},"commentId":{"from":"path","at":"commentId"}}},
-      "getCaseDefaultSpace": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cases/{caseId}","params":["assignees","category","defaultSearchOperator","from","owner","page","perPage","reporters","search","searchFields","severity","sortField","sortOrder","status","tags","to","isGlobal","templateId","author","isEnabled"],"scope":{"caseId":{"from":"path","at":"caseId"}}},
-      "getCaseFieldDefinitionDefaultSpace": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cases/field_definitions/{field_definition_id}","scope":{"field_definition_id":{"from":"path","at":"field_definition_id"}}},
-      "getCaseTemplateDefaultSpace": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cases/templates/{template_id}","params":["version"],"scope":{"template_id":{"from":"path","at":"template_id"}}},
-      "getCasesByAlertDefaultSpace": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cases/alerts/{alertId}","params":["owner"],"scope":{"alertId":{"from":"path","at":"alertId"}}},
-      "post-actions-connector-id": {"action":"write.connector","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/actions/connector/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "post-actions-connector-id-execute": {"action":"execute.connector","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/actions/connector/{id}/_execute","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "pushCaseDefaultSpace": {"action":"write.push","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/cases/{caseId}/connector/{connectorId}/_push","body":"any","scope":{"caseId":{"from":"path","at":"caseId"},"connectorId":{"from":"path","at":"connectorId"}}},
-      "put-actions-connector-id": {"action":"write.connector","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/actions/connector/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "setCaseConfigurationDefaultSpace": {"action":"write.configure","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/cases/configure","body":"any","scope":{}},
-      "updateCaseConfigurationDefaultSpace": {"action":"write.configure","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/cases/configure/{configurationId}","body":"any","scope":{"configurationId":{"from":"path","at":"configurationId"}}},
-      "updateCaseDefaultSpace": {"action":"write.cases","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/cases","body":"any","scope":{}},
-      "updateCaseFieldDefinitionDefaultSpace": {"action":"write.field_definitions","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/cases/field_definitions/{field_definition_id}","params":["dry_run"],"body":"json","scope":{"field_definition_id":{"from":"path","at":"field_definition_id"},"owner":{"from":"body","at":"/owner"}}},
-      "updateCaseTemplateDefaultSpace": {"action":"write.templates","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/cases/templates/{template_id}","params":["dry_run"],"body":"json","scope":{"template_id":{"from":"path","at":"template_id"},"owner":{"from":"body","at":"/owner"}}}
+      "AlertsMigrationCleanup": {"action":"detection_engine.signals.migration.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/detection_engine/signals/migration","scope":{}},
+      "AssignWatchlistEntities": {"action":"entity_analytics.watchlists.entities.assign.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/entity_analytics/watchlists/{watchlist_id}/entities/assign","scope":{"euids":{"at":"/euids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"watchlist_id":{"at":"watchlist_id","from":"path"}}},
+      "AttackDiscoveryFind": {"action":"attack_discovery.read","effects":["read"],"method":"GET","origin":"{origin}","params":["alert_ids","connector_names","enable_field_rendering","end","ids","include_unique_alert_ids","page","per_page","search","shared","include_all_authors","scheduled","sort_field","sort_order","start","status","with_replacements"],"path":"/api/attack_discovery/_find","scope":{"alert_ids":{"at":"alert_ids","from":"query","optional":true},"connector_names":{"at":"connector_names","from":"query","optional":true},"ids":{"at":"ids","from":"query","optional":true},"include_unique_alert_ids":{"at":"include_unique_alert_ids","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "BulkDeleteAttackDiscoverySchedules": {"action":"attack_discovery.schedules.bulk_delete.delete","body":"json","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/attack_discovery/schedules/_bulk_delete","scope":{"ids":{"at":"/ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "BulkDisableAttackDiscoverySchedules": {"action":"attack_discovery.schedules.bulk_disable.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/attack_discovery/schedules/_bulk_disable","scope":{"ids":{"at":"/ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "BulkEnableAttackDiscoverySchedules": {"action":"attack_discovery.schedules.bulk_enable.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/attack_discovery/schedules/_bulk_enable","scope":{"ids":{"at":"/ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "BulkUpsertAssetCriticalityRecords": {"action":"asset_criticality.bulk.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/asset_criticality/bulk","scope":{}},
+      "BulkUpsertAssetCriticalityRecords.json.abe0319fdd24": {"action":"asset_criticality.bulk.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/asset_criticality/bulk","scope":{"records":{"at":"/records","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "CancelAction": {"action":"endpoint.action.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/cancel","scope":{}},
+      "ChatComplete": {"action":"security_ai_assistant.chat.complete.generate","body":"json","effects":["generate"],"method":"POST","origin":"{origin}","params":["content_references_disabled"],"path":"/api/security_ai_assistant/chat/complete","scope":{"connectorId":{"at":"/connectorId","from":"body"},"conversationId":{"at":"/conversationId","from":"body","optional":true},"langSmithApiKey":{"at":"/langSmithApiKey","from":"body","optional":true},"promptId":{"at":"/promptId","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "CleanDraftTimelines": {"action":"timeline.draft.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/timeline/_draft","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "CleanUpRiskEngine": {"action":"risk_score.engine.dangerously_delete_data.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/risk_score/engine/dangerously_delete_data","scope":{}},
+      "ConfigureRiskEngineSavedObject": {"action":"risk_score.engine.saved_object.configure.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/risk_score/engine/saved_object/configure","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "CopyTimeline": {"action":"timeline.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/timeline/_copy","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "CreateAlertsIndex": {"action":"detection_engine.index.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/index","scope":{}},
+      "CreateAlertsMigration": {"action":"detection_engine.signals.migration.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/signals/migration","scope":{}},
+      "CreateAssetCriticalityRecord": {"action":"asset_criticality.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/asset_criticality","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "CreateAttackDiscoverySchedules": {"action":"attack_discovery.schedules.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/attack_discovery/schedules","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "CreateConversation": {"action":"security_ai_assistant.current_user.conversations.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/security_ai_assistant/current_user/conversations","scope":{"id":{"at":"/id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "CreateEndpointList": {"action":"endpoint_list.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/endpoint_list","scope":{}},
+      "CreateEndpointListItem": {"action":"endpoint_list.items.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/endpoint_list/items","scope":{"item_id":{"at":"/item_id","from":"body","optional":true},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "CreateExceptionList": {"action":"exception_lists.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/exception_lists","scope":{"list_id":{"at":"/list_id","from":"body","optional":true},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "CreateExceptionListItem": {"action":"exception_lists.items.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/exception_lists/items","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "CreateKnowledgeBase": {"action":"security_ai_assistant.knowledge_base.write","effects":["write"],"method":"POST","origin":"{origin}","params":["modelId","ignoreSecurityLabs"],"path":"/api/security_ai_assistant/knowledge_base/{resource}","scope":{"modelId":{"at":"modelId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"resource":{"at":"resource","from":"path"}}},
+      "CreateKnowledgeBaseEntry": {"action":"security_ai_assistant.knowledge_base.entries.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/security_ai_assistant/knowledge_base/entries","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "CreateList": {"action":"lists.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/lists","scope":{"id":{"at":"/id","from":"body","optional":true},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "CreateListIndex": {"action":"lists.index.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/lists/index","scope":{}},
+      "CreateListItem": {"action":"lists.items.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/lists/items","scope":{"id":{"at":"/id","from":"body","optional":true},"list_id":{"at":"/list_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "CreatePrivMonUser": {"action":"entity_analytics.monitoring.users.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/entity_analytics/monitoring/users","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "CreateRule": {"action":"detection_engine.rules.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/rules","scope":{}},
+      "CreateRuleExceptionListItems": {"action":"detection_engine.rules.exceptions.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/rules/{id}/exceptions","scope":{"id":{"at":"id","from":"path"}}},
+      "CreateSharedExceptionList": {"action":"exceptions.shared.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/exceptions/shared","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "CreateTimelines": {"action":"timeline.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/timeline","scope":{"request":{"at":"","from":"body","type":"object"},"templateTimelineId":{"at":"/templateTimelineId","from":"body","optional":true},"timelineId":{"at":"/timelineId","from":"body","optional":true}}},
+      "CreateUpdateProtectionUpdatesNote": {"action":"endpoint.protection_updates_note.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/endpoint/protection_updates_note/{package_policy_id}","scope":{"package_policy_id":{"at":"package_policy_id","from":"path"}}},
+      "CreateWatchlist": {"action":"entity_analytics.watchlists.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/entity_analytics/watchlists","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "DeleteAlertsIndex": {"action":"detection_engine.index.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/detection_engine/index","scope":{}},
+      "DeleteAllConversations": {"action":"security_ai_assistant.current_user.conversations.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/security_ai_assistant/current_user/conversations","scope":{}},
+      "DeleteAllConversations.json.8bf81a7c8b1c": {"action":"security_ai_assistant.current_user.conversations.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/security_ai_assistant/current_user/conversations","scope":{"excludedIds":{"at":"/excludedIds","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "DeleteAssetCriticalityRecord": {"action":"asset_criticality.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["id_value","id_field","refresh"],"path":"/api/asset_criticality","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "DeleteAttackDiscoverySchedules": {"action":"attack_discovery.schedules.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/attack_discovery/schedules/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DeleteConversation": {"action":"security_ai_assistant.current_user.conversations.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/security_ai_assistant/current_user/conversations/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DeleteEndpointListItem": {"action":"endpoint_list.items.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["id","item_id"],"path":"/api/endpoint_list/items","scope":{"id":{"at":"id","from":"query","optional":true},"item_id":{"at":"item_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "DeleteExceptionList": {"action":"exception_lists.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["id","list_id","namespace_type"],"path":"/api/exception_lists","scope":{"id":{"at":"id","from":"query","optional":true},"list_id":{"at":"list_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "DeleteExceptionListItem": {"action":"exception_lists.items.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["id","item_id","namespace_type"],"path":"/api/exception_lists/items","scope":{"id":{"at":"id","from":"query","optional":true},"item_id":{"at":"item_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "DeleteKnowledgeBaseEntry": {"action":"security_ai_assistant.knowledge_base.entries.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/security_ai_assistant/knowledge_base/entries/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DeleteList": {"action":"lists.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["id","deleteReferences","ignoreReferences"],"path":"/api/lists","scope":{"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "DeleteListIndex": {"action":"lists.index.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/lists/index","scope":{}},
+      "DeleteListItem": {"action":"lists.items.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["id","list_id","value","refresh"],"path":"/api/lists/items","scope":{"id":{"at":"id","from":"query","optional":true},"list_id":{"at":"list_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "DeleteMonitoringEngine": {"action":"entity_analytics.monitoring.engine.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["data"],"path":"/api/entity_analytics/monitoring/engine/delete","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "DeleteNote": {"action":"note.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/note","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "DeletePrivMonUser": {"action":"entity_analytics.monitoring.users.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/entity_analytics/monitoring/users/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DeleteRule": {"action":"detection_engine.rules.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["id","rule_id"],"path":"/api/detection_engine/rules","scope":{}},
+      "DeleteTimelines": {"action":"timeline.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/timeline","scope":{"request":{"at":"","from":"body","type":"object"},"savedObjectIds":{"at":"/savedObjectIds","from":"body","type":"array"},"searchIds":{"at":"/searchIds","from":"body","optional":true,"type":"array"}}},
+      "DisableAttackDiscoverySchedules": {"action":"attack_discovery.schedules.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/attack_discovery/schedules/{id}/_disable","scope":{"id":{"at":"id","from":"path"}}},
+      "DisableMonitoringEngine": {"action":"entity_analytics.monitoring.engine.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/entity_analytics/monitoring/engine/disable","scope":{}},
+      "DuplicateExceptionList": {"action":"exception_lists.write","effects":["write"],"method":"POST","origin":"{origin}","params":["list_id","namespace_type","include_expired_exceptions"],"path":"/api/exception_lists/_duplicate","scope":{"list_id":{"at":"list_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "EnableAttackDiscoverySchedules": {"action":"attack_discovery.schedules.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/attack_discovery/schedules/{id}/_enable","scope":{"id":{"at":"id","from":"path"}}},
+      "EndpointExecuteAction": {"action":"endpoint.action.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/execute","scope":{}},
+      "EndpointFileDownload": {"action":"endpoint.action.file.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/action/{action_id}/file/{file_id}/download","scope":{"action_id":{"at":"action_id","from":"path"},"file_id":{"at":"file_id","from":"path"}}},
+      "EndpointFileInfo": {"action":"endpoint.action.file.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/action/{action_id}/file/{file_id}","scope":{"action_id":{"at":"action_id","from":"path"},"file_id":{"at":"file_id","from":"path"}}},
+      "EndpointGenerateMemoryDump": {"action":"endpoint.action.memory_dump.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/memory_dump","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "EndpointGetActionsDetails": {"action":"endpoint.action.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/action/{action_id}","path_patterns":{"action_id":"[^s].*|s(?:|[^t].*|t(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e.+))))"},"scope":{"action_id":{"at":"action_id","from":"path"}}},
+      "EndpointGetActionsList": {"action":"endpoint.action.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","pageSize","commands","agentIds","userIds","startDate","endDate","agentTypes","withOutputs","types"],"path":"/api/endpoint/action","scope":{}},
+      "EndpointGetActionsState": {"action":"endpoint.action.state.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/action/state","scope":{}},
+      "EndpointGetActionsStatus": {"action":"endpoint.action_status.read","effects":["read"],"method":"GET","origin":"{origin}","params":["agent_ids"],"path":"/api/endpoint/action_status","scope":{"agent_ids":{"at":"agent_ids","from":"query"}}},
+      "EndpointGetFileAction": {"action":"endpoint.action.file.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/get_file","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "EndpointGetProcessesAction": {"action":"endpoint.action.running_procs.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/running_procs","scope":{"alert_ids":{"at":"/alert_ids","from":"body","optional":true,"type":"array"},"case_ids":{"at":"/case_ids","from":"body","optional":true,"type":"array"},"endpoint_ids":{"at":"/endpoint_ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "EndpointIsolateAction": {"action":"endpoint.action.isolate.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/isolate","scope":{"alert_ids":{"at":"/alert_ids","from":"body","optional":true,"type":"array"},"case_ids":{"at":"/case_ids","from":"body","optional":true,"type":"array"},"endpoint_ids":{"at":"/endpoint_ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "EndpointKillProcessAction": {"action":"endpoint.action.kill_process.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/kill_process","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "EndpointScanAction": {"action":"endpoint.action.scan.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/scan","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "EndpointScriptLibraryCreateScript": {"action":"endpoint.scripts_library.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/endpoint/scripts_library","scope":{}},
+      "EndpointScriptLibraryDeleteScript": {"action":"endpoint.scripts_library.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/endpoint/scripts_library/{script_id}","scope":{"script_id":{"at":"script_id","from":"path"}}},
+      "EndpointScriptLibraryDownloadScript": {"action":"endpoint.scripts_library.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/scripts_library/{script_id}/download","scope":{"script_id":{"at":"script_id","from":"path"}}},
+      "EndpointScriptLibraryGetOneScript": {"action":"endpoint.scripts_library.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/scripts_library/{script_id}","scope":{"script_id":{"at":"script_id","from":"path"}}},
+      "EndpointScriptLibraryListScripts": {"action":"endpoint.scripts_library.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","pageSize","sortField","sortDirection","kuery"],"path":"/api/endpoint/scripts_library","scope":{}},
+      "EndpointScriptLibraryPatchUpdateScript": {"action":"endpoint.scripts_library.write","body":"any","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/endpoint/scripts_library/{script_id}","scope":{"script_id":{"at":"script_id","from":"path"}}},
+      "EndpointSuspendProcessAction": {"action":"endpoint.action.suspend_process.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/suspend_process","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "EndpointUnisolateAction": {"action":"endpoint.action.unisolate.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/unisolate","scope":{"alert_ids":{"at":"/alert_ids","from":"body","optional":true,"type":"array"},"case_ids":{"at":"/case_ids","from":"body","optional":true,"type":"array"},"endpoint_ids":{"at":"/endpoint_ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "EndpointUploadAction": {"action":"endpoint.action.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/upload","scope":{}},
+      "ExportExceptionList": {"action":"exception_lists.read","effects":["read"],"method":"POST","origin":"{origin}","params":["id","list_id","namespace_type","include_expired_exceptions"],"path":"/api/exception_lists/_export","scope":{"id":{"at":"id","from":"query"},"list_id":{"at":"list_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "ExportListItems": {"action":"lists.items.read","effects":["read"],"method":"POST","origin":"{origin}","params":["list_id"],"path":"/api/lists/items/_export","scope":{"list_id":{"at":"list_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "ExportRules": {"action":"detection_engine.rules.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","params":["exclude_export_details","file_name"],"path":"/api/detection_engine/rules/_export","scope":{}},
+      "ExportTimelines": {"action":"timeline.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["file_name"],"path":"/api/timeline/_export","scope":{"file_name":{"at":"file_name","from":"query"},"ids":{"at":"/ids","from":"body","optional":true,"type":"array"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "FinalizeAlertsMigration": {"action":"detection_engine.signals.finalize_migration.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/signals/finalize_migration","scope":{}},
+      "FindAnonymizationFields": {"action":"security_ai_assistant.anonymization_fields.read","effects":["read"],"method":"GET","origin":"{origin}","params":["fields","filter","sort_field","sort_order","page","per_page","all_data"],"path":"/api/security_ai_assistant/anonymization_fields/_find","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "FindAssetCriticalityRecords": {"action":"asset_criticality.read","effects":["read"],"method":"GET","origin":"{origin}","params":["sort_field","sort_direction","page","per_page","kuery"],"path":"/api/asset_criticality/list","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "FindAttackDiscoverySchedules": {"action":"attack_discovery.schedules.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","per_page","sort_field","sort_direction"],"path":"/api/attack_discovery/schedules/_find","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "FindConversations": {"action":"security_ai_assistant.current_user.conversations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["fields","filter","sort_field","sort_order","page","per_page","is_owner"],"path":"/api/security_ai_assistant/current_user/conversations/_find","scope":{"is_owner":{"at":"is_owner","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "FindEndpointListItems": {"action":"endpoint_list.items.read","effects":["read"],"method":"GET","origin":"{origin}","params":["filter","page","per_page","sort_field","sort_order"],"path":"/api/endpoint_list/items/_find","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "FindExceptionListItems": {"action":"exception_lists.items.read","effects":["read"],"method":"GET","origin":"{origin}","params":["list_id","filter","namespace_type","search","page","per_page","sort_field","sort_order"],"path":"/api/exception_lists/items/_find","scope":{"list_id":{"at":"list_id","from":"query"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "FindExceptionLists": {"action":"exception_lists.read","effects":["read"],"method":"GET","origin":"{origin}","params":["filter","namespace_type","page","per_page","sort_field","sort_order"],"path":"/api/exception_lists/_find","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "FindKnowledgeBaseEntries": {"action":"security_ai_assistant.knowledge_base.entries.read","effects":["read"],"method":"GET","origin":"{origin}","params":["fields","filter","sort_field","sort_order","page","per_page"],"path":"/api/security_ai_assistant/knowledge_base/entries/_find","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "FindListItems": {"action":"lists.items.read","effects":["read"],"method":"GET","origin":"{origin}","params":["list_id","page","per_page","sort_field","sort_order","cursor","filter"],"path":"/api/lists/items/_find","scope":{"list_id":{"at":"list_id","from":"query"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "FindLists": {"action":"lists.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","per_page","sort_field","sort_order","cursor","filter"],"path":"/api/lists/_find","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "FindPrompts": {"action":"security_ai_assistant.prompts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["fields","filter","sort_field","sort_order","page","per_page"],"path":"/api/security_ai_assistant/prompts/_find","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "FindRules": {"action":"detection_engine.rules.read","effects":["read"],"method":"GET","origin":"{origin}","params":["fields","filter","sort_field","sort_order","page","per_page","gaps_range_start","gaps_range_end","gap_fill_statuses","gap_auto_fill_scheduler_id"],"path":"/api/detection_engine/rules/_find","scope":{}},
+      "GetAssetCriticalityRecord": {"action":"asset_criticality.read","effects":["read"],"method":"GET","origin":"{origin}","params":["id_value","id_field"],"path":"/api/asset_criticality","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GetAttackDiscoveryGeneration": {"action":"attack_discovery.generations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["enable_field_rendering","with_replacements"],"path":"/api/attack_discovery/generations/{execution_uuid}","scope":{"execution_uuid":{"at":"execution_uuid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "GetAttackDiscoveryGenerations": {"action":"attack_discovery.generations.read","effects":["read"],"method":"GET","origin":"{origin}","params":["end","size","scheduled","start"],"path":"/api/attack_discovery/generations","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GetAttackDiscoverySchedules": {"action":"attack_discovery.schedules.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/attack_discovery/schedules/{id}","path_patterns":{"id":"[^_].*|_(?:|[^f].*|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^d].*|d.+))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "GetDraftTimelines": {"action":"timeline.draft.read","effects":["read"],"method":"GET","origin":"{origin}","params":["timelineType"],"path":"/api/timeline/_draft","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GetEndpointMetadata": {"action":"endpoint.metadata.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/metadata/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GetEndpointMetadataList": {"action":"endpoint.metadata.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","pageSize","kuery","hostStatuses","sortField","sortDirection"],"path":"/api/endpoint/metadata","scope":{}},
+      "GetKnowledgeBase": {"action":"security_ai_assistant.knowledge_base.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/security_ai_assistant/knowledge_base","scope":{}},
+      "GetNotes": {"action":"note.read","effects":["read"],"method":"GET","origin":"{origin}","params":["documentIds","savedObjectIds","page","perPage","search","sortField","sortOrder","filter","createdByFilter","associatedFilter"],"path":"/api/note","scope":{"documentIds":{"at":"documentIds","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"savedObjectIds":{"at":"savedObjectIds","from":"query","optional":true}}},
+      "GetPolicyResponse": {"action":"endpoint.policy_response.read","effects":["read"],"method":"GET","origin":"{origin}","params":["agentId"],"path":"/api/endpoint/policy_response","scope":{"agentId":{"at":"agentId","from":"query"}}},
+      "GetPrivilegedAccessDetectionPackageStatus": {"action":"entity_analytics.privileged_user_monitoring.pad.status.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/entity_analytics/privileged_user_monitoring/pad/status","scope":{}},
+      "GetProtectionUpdatesNote": {"action":"endpoint.protection_updates_note.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/endpoint/protection_updates_note/{package_policy_id}","scope":{"package_policy_id":{"at":"package_policy_id","from":"path"}}},
+      "GetRiskScoreHistory": {"action":"risk_score.history.read","effects":["read"],"method":"GET","origin":"{origin}","params":["entity_type","entity_id","from","to","score_type","include_contributions"],"path":"/api/risk_score/history","scope":{"entity_id":{"at":"entity_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "GetTimeline": {"action":"timeline.read","effects":["read"],"method":"GET","origin":"{origin}","params":["template_timeline_id","id"],"path":"/api/timeline","scope":{"id":{"at":"id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"template_timeline_id":{"at":"template_timeline_id","from":"query","optional":true}}},
+      "GetTimelines": {"action":"timelines.read","effects":["read"],"method":"GET","origin":"{origin}","params":["only_user_favorite","timeline_type","sort_field","sort_order","page_size","page_index","search","status"],"path":"/api/timelines","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GetWatchlist": {"action":"entity_analytics.watchlists.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/entity_analytics/watchlists/{id}","path_patterns":{"id":"[^l].*|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t.+)))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "ImportExceptionList": {"action":"exception_lists.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["overwrite","as_new_list"],"path":"/api/exception_lists/_import","scope":{"as_new_list":{"at":"as_new_list","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "ImportListItems": {"action":"lists.items.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["list_id","type","refresh"],"path":"/api/lists/items/_import","scope":{"list_id":{"at":"list_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "ImportRules": {"action":"detection_engine.rules.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["overwrite","overwrite_exceptions","overwrite_action_connectors","as_new_list"],"path":"/api/detection_engine/rules/_import","scope":{}},
+      "ImportTimelines": {"action":"timeline.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/timeline/_import","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "InitMonitoringEngine": {"action":"entity_analytics.monitoring.engine.init.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/entity_analytics/monitoring/engine/init","scope":{}},
+      "InitializeSecuritySolution": {"action":"security_solution.initialize.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/security_solution/initialize","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "InstallPrebuiltRulesAndTimelines": {"action":"detection_engine.rules.prepackaged.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/detection_engine/rules/prepackaged","scope":{}},
+      "InstallPrepackedTimelines": {"action":"timeline.prepackaged.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/timeline/_prepackaged","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "InstallPrivilegedAccessDetectionPackage": {"action":"entity_analytics.privileged_user_monitoring.pad.install.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/entity_analytics/privileged_user_monitoring/pad/install","scope":{}},
+      "ListPrivMonUsers": {"action":"entity_analytics.monitoring.users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["kql"],"path":"/api/entity_analytics/monitoring/users/list","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "ListWatchlists": {"action":"entity_analytics.watchlists.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/entity_analytics/watchlists/list","scope":{}},
+      "OsqueryCopyPacks": {"action":"osquery.packs.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/osquery/packs/{id}/copy","scope":{"id":{"at":"id","from":"path"}}},
+      "OsqueryCopySavedQuery": {"action":"osquery.saved_queries.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/osquery/saved_queries/{id}/copy","scope":{"id":{"at":"id","from":"path"}}},
+      "OsqueryCreateLiveQuery": {"action":"osquery.live_queries.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/osquery/live_queries","scope":{"agent_ids":{"at":"/agent_ids","from":"body","optional":true,"type":"array"},"agent_policy_ids":{"at":"/agent_policy_ids","from":"body","optional":true,"type":"array"},"alert_ids":{"at":"/alert_ids","from":"body","optional":true,"type":"array"},"case_ids":{"at":"/case_ids","from":"body","optional":true,"type":"array"},"event_ids":{"at":"/event_ids","from":"body","optional":true,"type":"array"},"pack_id":{"at":"/pack_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"saved_query_id":{"at":"/saved_query_id","from":"body","optional":true}}},
+      "OsqueryCreatePacks": {"action":"osquery.packs.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/osquery/packs","scope":{"name":{"at":"/name","from":"body","optional":true},"policy_ids":{"at":"/policy_ids","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "OsqueryCreateSavedQuery": {"action":"osquery.saved_queries.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/osquery/saved_queries","scope":{"id":{"at":"/id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "OsqueryDeletePacks": {"action":"osquery.packs.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/osquery/packs/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "OsqueryDeleteSavedQuery": {"action":"osquery.saved_queries.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/osquery/saved_queries/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "OsqueryExportLiveQueryResults": {"action":"osquery.live_queries.results.read","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/api/osquery/live_queries/{id}/results/{actionId}/_export","scope":{"actionId":{"at":"actionId","from":"path"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "OsqueryExportLiveQueryResults.json.95f7a5818c48": {"action":"osquery.live_queries.results.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/api/osquery/live_queries/{id}/results/{actionId}/_export","scope":{"actionId":{"at":"actionId","from":"path"},"agentIds":{"at":"/agentIds","from":"body","optional":true,"type":"array"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "OsqueryExportScheduledQueryResults": {"action":"osquery.scheduled_results.read","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/api/osquery/scheduled_results/{scheduleId}/{executionCount}/_export","scope":{"executionCount":{"at":"executionCount","from":"path"},"query":{"at":"","from":"query","type":"object"},"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "OsqueryExportScheduledQueryResults.json.2dde8037b88c": {"action":"osquery.scheduled_results.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/api/osquery/scheduled_results/{scheduleId}/{executionCount}/_export","scope":{"agentIds":{"at":"/agentIds","from":"body","optional":true,"type":"array"},"executionCount":{"at":"executionCount","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "OsqueryFindLiveQueries": {"action":"osquery.live_queries.read","effects":["read"],"method":"GET","origin":"{origin}","params":["kuery","page","pageSize","sort","sortOrder"],"path":"/api/osquery/live_queries","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "OsqueryFindPacks": {"action":"osquery.packs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","pageSize","sort","sortOrder"],"path":"/api/osquery/packs","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "OsqueryFindSavedQueries": {"action":"osquery.saved_queries.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","pageSize","sort","sortOrder"],"path":"/api/osquery/saved_queries","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "OsqueryGetLiveQueryDetails": {"action":"osquery.live_queries.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/osquery/live_queries/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "OsqueryGetLiveQueryResults": {"action":"osquery.live_queries.results.read","effects":["read"],"method":"GET","origin":"{origin}","params":["kuery","page","pageSize","sort","sortOrder"],"path":"/api/osquery/live_queries/{id}/results/{actionId}","scope":{"actionId":{"at":"actionId","from":"path"},"id":{"at":"id","from":"path"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "OsqueryGetPacksDetails": {"action":"osquery.packs.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/osquery/packs/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "OsqueryGetSavedQueryDetails": {"action":"osquery.saved_queries.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/osquery/saved_queries/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "OsqueryGetScheduledActionResults": {"action":"osquery.scheduled_results.read","effects":["read"],"method":"GET","origin":"{origin}","params":["kuery","page","pageSize","sort","sortOrder"],"path":"/api/osquery/scheduled_results/{scheduleId}/{executionCount}","scope":{"executionCount":{"at":"executionCount","from":"path"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "OsqueryGetScheduledQueryResults": {"action":"osquery.scheduled_results.results.read","effects":["read"],"method":"GET","origin":"{origin}","params":["kuery","page","pageSize","sort","sortOrder","startDate"],"path":"/api/osquery/scheduled_results/{scheduleId}/{executionCount}/results","scope":{"executionCount":{"at":"executionCount","from":"path"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "OsqueryGetUnifiedHistory": {"action":"osquery.history.read","effects":["read"],"method":"GET","origin":"{origin}","params":["pageSize","nextPage","kuery","userIds","sourceFilters","startDate","endDate"],"path":"/api/osquery/history","scope":{"query":{"at":"","from":"query","type":"object"},"userIds":{"at":"userIds","from":"query","optional":true}}},
+      "OsqueryUpdatePacks": {"action":"osquery.packs.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/osquery/packs/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"policy_ids":{"at":"/policy_ids","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "OsqueryUpdateSavedQuery": {"action":"osquery.saved_queries.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/osquery/saved_queries/{id}","scope":{"body.id":{"at":"/id","from":"body","optional":true},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "PatchList": {"action":"lists.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/lists","scope":{"id":{"at":"/id","from":"body"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "PatchListItem": {"action":"lists.items.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/lists/items","scope":{"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "PatchRule": {"action":"detection_engine.rules.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/detection_engine/rules","scope":{}},
+      "PatchTimeline": {"action":"timeline.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/timeline","scope":{"request":{"at":"","from":"body","type":"object"},"timelineId":{"at":"/timelineId","from":"body"}}},
+      "PerformAnonymizationFieldsBulkAction": {"action":"security_ai_assistant.anonymization_fields.bulk_action.delete","effects":["delete","write"],"method":"POST","origin":"{origin}","path":"/api/security_ai_assistant/anonymization_fields/_bulk_action","scope":{}},
+      "PerformAnonymizationFieldsBulkAction.json.c0c5de86aa97": {"action":"security_ai_assistant.anonymization_fields.bulk_action.delete","body":"json","effects":["delete","write"],"method":"POST","origin":"{origin}","path":"/api/security_ai_assistant/anonymization_fields/_bulk_action","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "PerformKnowledgeBaseEntryBulkAction": {"action":"security_ai_assistant.knowledge_base.entries.bulk_action.delete","effects":["delete","write"],"method":"POST","origin":"{origin}","path":"/api/security_ai_assistant/knowledge_base/entries/_bulk_action","scope":{}},
+      "PerformKnowledgeBaseEntryBulkAction.json.2348c359ba6a": {"action":"security_ai_assistant.knowledge_base.entries.bulk_action.delete","body":"json","effects":["delete","write"],"method":"POST","origin":"{origin}","path":"/api/security_ai_assistant/knowledge_base/entries/_bulk_action","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "PerformPromptsBulkAction": {"action":"security_ai_assistant.prompts.bulk_action.delete","effects":["delete","write"],"method":"POST","origin":"{origin}","path":"/api/security_ai_assistant/prompts/_bulk_action","scope":{}},
+      "PerformPromptsBulkAction.json.6718d8ba028d": {"action":"security_ai_assistant.prompts.bulk_action.delete","body":"json","effects":["delete","write"],"method":"POST","origin":"{origin}","path":"/api/security_ai_assistant/prompts/_bulk_action","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "PerformRulesBulkAction": {"action":"detection_engine.rules.bulk_action.delete","body":"any","effects":["delete","write"],"method":"POST","origin":"{origin}","params":["dry_run"],"path":"/api/detection_engine/rules/_bulk_action","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "PersistFavoriteRoute": {"action":"timeline.favorite.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/timeline/_favorite","scope":{"request":{"at":"","from":"body","type":"object"},"templateTimelineId":{"at":"/templateTimelineId","from":"body"},"timelineId":{"at":"/timelineId","from":"body"}}},
+      "PersistNoteRoute": {"action":"note.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/note","scope":{"noteId":{"at":"/noteId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "PersistPinnedEventRoute": {"action":"pinned_event.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/pinned_event","scope":{"eventId":{"at":"/eventId","from":"body"},"pinnedEventId":{"at":"/pinnedEventId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"timelineId":{"at":"/timelineId","from":"body"}}},
+      "PostAttackDiscoveryBulk": {"action":"attack_discovery.bulk.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/attack_discovery/_bulk","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "PostAttackDiscoveryGenerate": {"action":"attack_discovery.generate.generate","body":"json","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/attack_discovery/_generate","scope":{"connectorName":{"at":"/connectorName","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "PostAttackDiscoveryGenerationsDismiss": {"action":"attack_discovery.generations.dismiss.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/attack_discovery/generations/{execution_uuid}/_dismiss","scope":{"execution_uuid":{"at":"execution_uuid","from":"path"}}},
+      "PostKnowledgeBase": {"action":"security_ai_assistant.knowledge_base.write","effects":["write"],"method":"POST","origin":"{origin}","params":["modelId","ignoreSecurityLabs"],"path":"/api/security_ai_assistant/knowledge_base","scope":{"modelId":{"at":"modelId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "PrivMonHealth": {"action":"entity_analytics.monitoring.privileges.health.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/entity_analytics/monitoring/privileges/health","scope":{}},
+      "PrivMonPrivileges": {"action":"entity_analytics.monitoring.privileges.privileges.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/entity_analytics/monitoring/privileges/privileges","scope":{}},
+      "PrivmonBulkUploadUsersCSV": {"action":"entity_analytics.monitoring.users.csv.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/entity_analytics/monitoring/users/_csv","scope":{}},
+      "ReadAlertsIndex": {"action":"detection_engine.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/detection_engine/index","scope":{}},
+      "ReadAlertsMigrationStatus": {"action":"detection_engine.signals.migration_status.read","effects":["read"],"method":"GET","origin":"{origin}","params":["from"],"path":"/api/detection_engine/signals/migration_status","scope":{}},
+      "ReadConversation": {"action":"security_ai_assistant.current_user.conversations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/security_ai_assistant/current_user/conversations/{id}","path_patterns":{"id":"[^_].*|_(?:|[^f].*|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^d].*|d.+))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "ReadEndpointListItem": {"action":"endpoint_list.items.read","effects":["read"],"method":"GET","origin":"{origin}","params":["id","item_id"],"path":"/api/endpoint_list/items","scope":{"id":{"at":"id","from":"query","optional":true},"item_id":{"at":"item_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "ReadExceptionList": {"action":"exception_lists.read","effects":["read"],"method":"GET","origin":"{origin}","params":["id","list_id","namespace_type"],"path":"/api/exception_lists","scope":{"id":{"at":"id","from":"query","optional":true},"list_id":{"at":"list_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "ReadExceptionListItem": {"action":"exception_lists.items.read","effects":["read"],"method":"GET","origin":"{origin}","params":["id","item_id","namespace_type"],"path":"/api/exception_lists/items","scope":{"id":{"at":"id","from":"query","optional":true},"item_id":{"at":"item_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "ReadExceptionListSummary": {"action":"exception_lists.summary.read","effects":["read"],"method":"GET","origin":"{origin}","params":["id","list_id","namespace_type","filter"],"path":"/api/exception_lists/summary","scope":{"id":{"at":"id","from":"query","optional":true},"list_id":{"at":"list_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "ReadKnowledgeBase": {"action":"security_ai_assistant.knowledge_base.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/security_ai_assistant/knowledge_base/{resource}","scope":{"resource":{"at":"resource","from":"path"}}},
+      "ReadKnowledgeBaseEntry": {"action":"security_ai_assistant.knowledge_base.entries.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/security_ai_assistant/knowledge_base/entries/{id}","path_patterns":{"id":"[^_].*|_(?:|[^f].*|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^d].*|d.+))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "ReadList": {"action":"lists.read","effects":["read"],"method":"GET","origin":"{origin}","params":["id"],"path":"/api/lists","scope":{"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "ReadListIndex": {"action":"lists.index.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/lists/index","scope":{}},
+      "ReadListItem": {"action":"lists.items.read","effects":["read"],"method":"GET","origin":"{origin}","params":["id","list_id","value"],"path":"/api/lists/items","scope":{"id":{"at":"id","from":"query","optional":true},"list_id":{"at":"list_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "ReadListPrivileges": {"action":"lists.privileges.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/lists/privileges","scope":{}},
+      "ReadPrebuiltRulesAndTimelinesStatus": {"action":"detection_engine.rules.prepackaged.status.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/detection_engine/rules/prepackaged/_status","scope":{}},
+      "ReadPrivileges": {"action":"detection_engine.privileges.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/detection_engine/privileges","scope":{}},
+      "ReadRule": {"action":"detection_engine.rules.read","effects":["read"],"method":"GET","origin":"{origin}","params":["id","rule_id"],"path":"/api/detection_engine/rules","scope":{}},
+      "ReadTags": {"action":"detection_engine.tags.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/detection_engine/tags","scope":{}},
+      "ResolveTimeline": {"action":"timeline.resolve.read","effects":["read"],"method":"GET","origin":"{origin}","params":["template_timeline_id","id"],"path":"/api/timeline/resolve","scope":{"id":{"at":"id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"template_timeline_id":{"at":"template_timeline_id","from":"query","optional":true}}},
+      "RulePreview": {"action":"detection_engine.rules.preview.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["enable_logged_requests"],"path":"/api/detection_engine/rules/preview","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "RunScriptAction": {"action":"endpoint.action.script.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/endpoint/action/run_script","scope":{}},
+      "ScheduleMonitoringEngine": {"action":"entity_analytics.monitoring.engine.schedule_now.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/entity_analytics/monitoring/engine/schedule_now","scope":{}},
+      "ScheduleRiskEngineNow": {"action":"risk_score.engine.schedule_now.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/risk_score/engine/schedule_now","scope":{}},
+      "ScheduleRiskEngineNow.json.9551582b84e2": {"action":"risk_score.engine.schedule_now.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/risk_score/engine/schedule_now","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "SearchAlerts": {"action":"detection_engine.signals.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/signals/search","scope":{}},
+      "SearchAttacks": {"action":"detection_engine.attacks.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/attacks/search","scope":{}},
+      "SetAlertAssignees": {"action":"detection_engine.signals.assignees.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/signals/assignees","scope":{}},
+      "SetAlertTags": {"action":"detection_engine.signals.tags.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/signals/tags","scope":{}},
+      "SetAlertsStatus": {"action":"detection_engine.signals.status.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/signals/status","scope":{}},
+      "SetAttacksAssignees": {"action":"detection_engine.attacks.assignees.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/attacks/assignees","scope":{}},
+      "SetAttacksStatus": {"action":"detection_engine.attacks.status.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/attacks/status","scope":{}},
+      "SetAttacksTags": {"action":"detection_engine.attacks.tags.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/detection_engine/attacks/tags","scope":{}},
+      "UnassignWatchlistEntities": {"action":"entity_analytics.watchlists.entities.unassign.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/entity_analytics/watchlists/{watchlist_id}/entities/unassign","scope":{"euids":{"at":"/euids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"watchlist_id":{"at":"watchlist_id","from":"path"}}},
+      "UpdateAttackDiscoverySchedules": {"action":"attack_discovery.schedules.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/attack_discovery/schedules/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "UpdateConversation": {"action":"security_ai_assistant.current_user.conversations.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/security_ai_assistant/current_user/conversations/{id}","scope":{"body.id":{"at":"/id","from":"body"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"users":{"at":"/users","from":"body","optional":true,"type":"array"}}},
+      "UpdateEndpointListItem": {"action":"endpoint_list.items.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/endpoint_list/items","scope":{"id":{"at":"/id","from":"body","optional":true},"item_id":{"at":"/item_id","from":"body","optional":true},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "UpdateExceptionList": {"action":"exception_lists.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/exception_lists","scope":{"id":{"at":"/id","from":"body","optional":true},"list_id":{"at":"/list_id","from":"body","optional":true},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "UpdateExceptionListItem": {"action":"exception_lists.items.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/exception_lists/items","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "UpdateKnowledgeBaseEntry": {"action":"security_ai_assistant.knowledge_base.entries.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/security_ai_assistant/knowledge_base/entries/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "UpdateList": {"action":"lists.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/lists","scope":{"id":{"at":"/id","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "UpdateListItem": {"action":"lists.items.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/lists/items","scope":{"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "UpdatePrivMonUser": {"action":"entity_analytics.monitoring.users.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/entity_analytics/monitoring/users/{id}","scope":{"body.id":{"at":"/id","from":"body","optional":true},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "UpdateRule": {"action":"detection_engine.rules.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/detection_engine/rules","scope":{}},
+      "UpdateWatchlist": {"action":"entity_analytics.watchlists.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/entity_analytics/watchlists/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "UploadWatchlistCsv": {"action":"entity_analytics.watchlists.csv.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/entity_analytics/watchlists/{watchlist_id}/csv_upload","scope":{"watchlist_id":{"at":"watchlist_id","from":"path"}}},
+      "addCaseCommentDefaultSpace": {"action":"cases.comments.send","body":"json","effects":["send"],"grant":["caseId"],"method":"POST","origin":"{origin}","path":"/api/cases/{caseId}/comments","scope":{"caseId":{"at":"caseId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "addCaseFileDefaultSpace": {"action":"cases.files.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/cases/{caseId}/files","scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "createCaseDefaultSpace": {"action":"cases.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/cases","scope":{"owner":{"at":"/owner","from":"body"}}},
+      "createCaseFieldDefinitionDefaultSpace": {"action":"cases.field_definitions.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["dry_run"],"path":"/api/cases/field_definitions","scope":{"owner":{"at":"/owner","from":"body"}}},
+      "createCaseTemplateDefaultSpace": {"action":"cases.templates.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["dry_run"],"path":"/api/cases/templates","scope":{"owner":{"at":"/owner","from":"body"}}},
+      "delete-actions-connector-id": {"action":"actions.connector.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/actions/connector/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "delete-security-entity-store-entities": {"action":"security.entity_store.entities.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/security/entity_store/entities/","scope":{}},
+      "delete-security-entity-store-entities.json.bd9261896cd8": {"action":"security.entity_store.entities.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/security/entity_store/entities/","scope":{"entityId":{"at":"/entityId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "deleteCaseCommentDefaultSpace": {"action":"cases.comments.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/cases/{caseId}/comments/{commentId}","scope":{"caseId":{"at":"caseId","from":"path"},"commentId":{"at":"commentId","from":"path"}}},
+      "deleteCaseCommentsDefaultSpace": {"action":"cases.comments.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/cases/{caseId}/comments","path_patterns":{"caseId":"[^ft].*|f(?:|[^i].*|i(?:|[^e].*|e(?:|[^l].*|l(?:|[^d].*|d(?:|[^_].*|_(?:|[^d].*|d(?:|[^e].*|e(?:|[^f].*|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^i].*|i(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s.+))))))))))))))))|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))"},"scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "deleteCaseDefaultSpace": {"action":"cases.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ids"],"path":"/api/cases","scope":{"ids":{"at":"ids","from":"query"}}},
+      "deleteCaseFieldDefinitionDefaultSpace": {"action":"cases.field_definitions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/cases/field_definitions/{field_definition_id}","scope":{"field_definition_id":{"at":"field_definition_id","from":"path"}}},
+      "deleteCaseTemplateDefaultSpace": {"action":"cases.templates.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/cases/templates/{template_id}","scope":{"template_id":{"at":"template_id","from":"path"}}},
+      "findCaseActivityDefaultSpace": {"action":"cases.user_actions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","perPage","sortOrder","types"],"path":"/api/cases/{caseId}/user_actions/_find","scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "findCaseCommentsDefaultSpace": {"action":"cases.comments.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","perPage","sortOrder"],"path":"/api/cases/{caseId}/comments/_find","scope":{"caseId":{"at":"caseId","from":"path"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "findCaseConnectorsDefaultSpace": {"action":"cases.configure.connectors.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cases/configure/connectors/_find","scope":{}},
+      "findCasesDefaultSpace": {"action":"cases.read","effects":["read"],"method":"GET","origin":"{origin}","params":["assignees","category","defaultSearchOperator","from","owner","page","perPage","reporters","search","searchFields","severity","sortField","sortOrder","status","tags","to"],"path":"/api/cases/_find","scope":{"owner":{"at":"owner","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "get-actions-connector-connectorid-oauth-start": {"action":"actions.connector.oauth.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/actions/connector/{connectorId}/oauth/start","scope":{"connectorId":{"at":"connectorId","from":"path"}}},
+      "get-actions-connector-id": {"action":"actions.connector.read","effects":["read"],"method":"GET","origin":"{origin}","params":["code","state","error","error_description","session_state"],"path":"/api/actions/connector/{id}","path_patterns":{"id":"[^_].*|_(?:|[^o].*|o(?:|[^a].*|a(?:|[^u].*|u(?:|[^t].*|t(?:|[^h].*|h(?:|[^_].*|_(?:|[^c].*|c(?:|[^a].*|a(?:|[^l].*|l(?:|[^l].*|l(?:|[^b].*|b(?:|[^a].*|a(?:|[^c].*|c(?:|[^k].*|k(?:[^_].*|_(?:|[^s].*|s(?:|[^c].*|c(?:|[^r].*|r(?:|[^i].*|i(?:|[^p].*|p(?:|[^t].*|t.+)))))))))))))))))))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "get-actions-connector-oauth-callback": {"action":"actions.connector.oauth_callback.admin","effects":["admin"],"method":"GET","origin":"{origin}","params":["code","state","error","error_description","session_state"],"path":"/api/actions/connector/_oauth_callback","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "get-actions-connector-oauth-callback-script": {"action":"actions.connector.oauth_callback_script.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/actions/connector/_oauth_callback_script","scope":{}},
+      "get-actions-connector-types": {"action":"actions.connector_types.read","effects":["read"],"method":"GET","origin":"{origin}","params":["feature_id"],"path":"/api/actions/connector_types","scope":{}},
+      "get-actions-connectors": {"action":"actions.connectors.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/actions/connectors","scope":{}},
+      "get-security-entity-store-entities": {"action":"security.entity_store.entities.read","effects":["read"],"method":"GET","origin":"{origin}","params":["filter","size","searchAfter","source","fields","sort_field","sort_order","page","per_page","filterQuery","entity_types"],"path":"/api/security/entity_store/entities","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "get-security-entity-store-resolution-group": {"action":"security.entity_store.resolution.group.read","effects":["read"],"method":"GET","origin":"{origin}","params":["entity_id"],"path":"/api/security/entity_store/resolution/group","scope":{"entity_id":{"at":"entity_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-security-entity-store-resolution-rules": {"action":"security.entity_store.resolution.rules.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/security/entity_store/resolution/rules","scope":{}},
+      "get-security-entity-store-status": {"action":"security.entity_store.status.read","effects":["read"],"method":"GET","origin":"{origin}","params":["include_components"],"path":"/api/security/entity_store/status","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getApplicableFieldsDefaultSpace": {"action":"cases.fields.read","effects":["read"],"method":"GET","origin":"{origin}","params":["owner","templateId"],"path":"/api/cases/fields","scope":{"owner":{"at":"owner","from":"query"},"query":{"at":"","from":"query","type":"object"},"templateId":{"at":"templateId","from":"query","optional":true}}},
+      "getCaseAlertsDefaultSpace": {"action":"cases.alerts.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cases/{caseId}/alerts","path_patterns":{"caseId":"[^aft].*|a(?:|[^l].*|l(?:|[^e].*|e(?:|[^r].*|r(?:|[^t].*|t(?:|[^s].*|s.+)))))|f(?:|[^i].*|i(?:|[^e].*|e(?:|[^l].*|l(?:|[^d].*|d(?:|[^_].*|_(?:|[^d].*|d(?:|[^e].*|e(?:|[^f].*|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^i].*|i(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s.+))))))))))))))))|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))"},"scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "getCaseApplicableFieldsDefaultSpace": {"action":"cases.fields.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cases/{caseId}/fields","path_patterns":{"caseId":"[^aft].*|a(?:|[^l].*|l(?:|[^e].*|e(?:|[^r].*|r(?:|[^t].*|t(?:|[^s].*|s.+)))))|f(?:|[^i].*|i(?:|[^e].*|e(?:|[^l].*|l(?:|[^d].*|d(?:|[^_].*|_(?:|[^d].*|d(?:|[^e].*|e(?:|[^f].*|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^i].*|i(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s.+))))))))))))))))|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))"},"scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "getCaseCommentDefaultSpace": {"action":"cases.comments.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","perPage","sortOrder"],"path":"/api/cases/{caseId}/comments/{commentId}","path_patterns":{"commentId":"[^_].*|_(?:|[^f].*|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^d].*|d.+))))"},"scope":{"caseId":{"at":"caseId","from":"path"},"commentId":{"at":"commentId","from":"path"}}},
+      "getCaseConfigurationDefaultSpace": {"action":"cases.configure.read","effects":["read"],"method":"GET","origin":"{origin}","params":["owner"],"path":"/api/cases/configure","scope":{"owner":{"at":"owner","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getCaseDefaultSpace": {"action":"cases.read","effects":["read"],"method":"GET","origin":"{origin}","params":["assignees","category","defaultSearchOperator","from","owner","page","perPage","reporters","search","searchFields","severity","sortField","sortOrder","status","tags","to","isGlobal","templateId","author","isEnabled"],"path":"/api/cases/{caseId}","path_patterns":{"caseId":"[^_cfrt].*|_(?:|[^f].*|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^d].*|d.+))))|c(?:|[^o].*|o(?:|[^n].*|n(?:|[^f].*|f(?:|[^i].*|i(?:|[^g].*|g(?:|[^u].*|u(?:|[^r].*|r(?:|[^e].*|e.+))))))))|f(?:|[^i].*|i(?:|[^e].*|e(?:|[^l].*|l(?:|[^d].*|d(?:|[^_s].*|_(?:|[^d].*|d(?:|[^e].*|e(?:|[^f].*|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^i].*|i(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s.+)))))))))))|s.+)))))|r(?:|[^e].*|e(?:|[^p].*|p(?:|[^o].*|o(?:|[^r].*|r(?:|[^t].*|t(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))))|t(?:|[^ae].*|a(?:|[^g].*|g(?:|[^s].*|s.+))|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))"},"scope":{"caseId":{"at":"caseId","from":"path"}}},
+      "getCaseFieldDefinitionDefaultSpace": {"action":"cases.field_definitions.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/cases/field_definitions/{field_definition_id}","scope":{"field_definition_id":{"at":"field_definition_id","from":"path"}}},
+      "getCaseFieldDefinitionsDefaultSpace": {"action":"cases.field_definitions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["owner","isGlobal","page","perPage","sortField","sortOrder","search"],"path":"/api/cases/field_definitions","scope":{"owner":{"at":"owner","from":"query"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getCaseReportersDefaultSpace": {"action":"cases.reporters.read","effects":["read"],"method":"GET","origin":"{origin}","params":["owner"],"path":"/api/cases/reporters","scope":{"owner":{"at":"owner","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getCaseTagsDefaultSpace": {"action":"cases.tags.read","effects":["read"],"method":"GET","origin":"{origin}","params":["owner"],"path":"/api/cases/tags","scope":{"owner":{"at":"owner","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getCaseTemplateDefaultSpace": {"action":"cases.templates.read","effects":["read"],"method":"GET","origin":"{origin}","params":["version"],"path":"/api/cases/templates/{template_id}","scope":{"template_id":{"at":"template_id","from":"path"}}},
+      "getCaseTemplatesDefaultSpace": {"action":"cases.templates.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","perPage","sortField","sortOrder","search","owner","tags","author","isEnabled"],"path":"/api/cases/templates","scope":{"owner":{"at":"owner","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getCasesByAlertDefaultSpace": {"action":"cases.alerts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["owner"],"path":"/api/cases/alerts/{alertId}","scope":{"alertId":{"at":"alertId","from":"path"}}},
+      "post-actions-connector-id": {"action":"actions.connector.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/actions/connector/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "post-actions-connector-id-execute": {"action":"actions.connector.send","body":"any","effects":["send","execute"],"method":"POST","origin":"{origin}","path":"/api/actions/connector/{id}/_execute","scope":{"id":{"at":"id","from":"path"}}},
+      "post-security-entity-store-entities-entitytype": {"action":"security.entity_store.entities.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/security/entity_store/entities/{entityType}","scope":{"entityType":{"at":"entityType","from":"path"}}},
+      "post-security-entity-store-entities-entitytype.json.82f5cd1a101d": {"action":"security.entity_store.entities.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/security/entity_store/entities/{entityType}","scope":{"entityType":{"at":"entityType","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "post-security-entity-store-install": {"action":"security.entity_store.install.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/security/entity_store/install","scope":{}},
+      "post-security-entity-store-install.json.426e21b05bc9": {"action":"security.entity_store.install.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/security/entity_store/install","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "post-security-entity-store-resolution-link": {"action":"security.entity_store.resolution.link.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/security/entity_store/resolution/link","scope":{}},
+      "post-security-entity-store-resolution-link.json.e1fd6d082929": {"action":"security.entity_store.resolution.link.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/security/entity_store/resolution/link","scope":{"entity_ids":{"at":"/entity_ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"target_id":{"at":"/target_id","from":"body"}}},
+      "post-security-entity-store-resolution-unlink": {"action":"security.entity_store.resolution.unlink.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/security/entity_store/resolution/unlink","scope":{}},
+      "post-security-entity-store-resolution-unlink.json.e100286a4556": {"action":"security.entity_store.resolution.unlink.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/security/entity_store/resolution/unlink","scope":{"entity_ids":{"at":"/entity_ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "post-security-entity-store-uninstall": {"action":"security.entity_store.uninstall.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/security/entity_store/uninstall","scope":{}},
+      "post-security-entity-store-uninstall.json.4d27f9a7cc24": {"action":"security.entity_store.uninstall.delete","body":"json","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/security/entity_store/uninstall","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "pushCaseDefaultSpace": {"action":"cases.connector.push.send","body":"any","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/api/cases/{caseId}/connector/{connectorId}/_push","scope":{"caseId":{"at":"caseId","from":"path"},"connectorId":{"at":"connectorId","from":"path"}}},
+      "put-actions-connector-id": {"action":"actions.connector.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/actions/connector/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "put-security-entity-store": {"action":"security.entity_store.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/security/entity_store","scope":{}},
+      "put-security-entity-store-entities-bulk": {"action":"security.entity_store.entities.bulk.write","effects":["write"],"method":"PUT","origin":"{origin}","params":["force"],"path":"/api/security/entity_store/entities/bulk","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "put-security-entity-store-entities-bulk.json.2c8155ef0b65": {"action":"security.entity_store.entities.bulk.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","params":["force"],"path":"/api/security/entity_store/entities/bulk","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "put-security-entity-store-entities-entitytype": {"action":"security.entity_store.entities.write","effects":["write"],"method":"PUT","origin":"{origin}","params":["force"],"path":"/api/security/entity_store/entities/{entityType}","path_patterns":{"entityType":"generic|host|service|user"},"scope":{"entityType":{"at":"entityType","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "put-security-entity-store-entities-entitytype.json.b3f817c44a62": {"action":"security.entity_store.entities.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","params":["force"],"path":"/api/security/entity_store/entities/{entityType}","path_patterns":{"entityType":"generic|host|service|user"},"scope":{"entityType":{"at":"entityType","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "put-security-entity-store-history-snapshot-disable": {"action":"security.entity_store.history_snapshot.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/security/entity_store/history_snapshot/disable","scope":{}},
+      "put-security-entity-store-history-snapshot-disable.json.c9aea34e0144": {"action":"security.entity_store.history_snapshot.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/security/entity_store/history_snapshot/disable","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "put-security-entity-store-history-snapshot-enable": {"action":"security.entity_store.history_snapshot.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/security/entity_store/history_snapshot/enable","scope":{}},
+      "put-security-entity-store-resolution-rules-id-disable": {"action":"security.entity_store.resolution.rules.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/security/entity_store/resolution/rules/{id}/disable","scope":{"id":{"at":"id","from":"path"}}},
+      "put-security-entity-store-resolution-rules-id-enable": {"action":"security.entity_store.resolution.rules.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/security/entity_store/resolution/rules/{id}/enable","scope":{"id":{"at":"id","from":"path"}}},
+      "put-security-entity-store-start": {"action":"security.entity_store.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/security/entity_store/start","scope":{}},
+      "put-security-entity-store-start.json.432e2b446445": {"action":"security.entity_store.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/security/entity_store/start","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "put-security-entity-store-stop": {"action":"security.entity_store.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/security/entity_store/stop","scope":{}},
+      "put-security-entity-store-stop.json.0ef764fb5650": {"action":"security.entity_store.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/security/entity_store/stop","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "put-security-entity-store.json.7630d93c7e26": {"action":"security.entity_store.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/security/entity_store","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "setCaseConfigurationDefaultSpace": {"action":"cases.configure.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/cases/configure","scope":{}},
+      "updateCaseCommentDefaultSpace": {"action":"cases.comments.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/cases/{caseId}/comments","path_patterns":{"caseId":"[^c].*|c(?:|[^o].*|o(?:|[^n].*|n(?:|[^f].*|f(?:|[^i].*|i(?:|[^g].*|g(?:|[^u].*|u(?:|[^r].*|r(?:|[^e].*|e.+))))))))"},"scope":{"caseId":{"at":"caseId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateCaseConfigurationDefaultSpace": {"action":"cases.configure.write","body":"any","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/cases/configure/{configurationId}","scope":{"configurationId":{"at":"configurationId","from":"path"}}},
+      "updateCaseDefaultSpace": {"action":"cases.write","body":"any","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/cases","scope":{}},
+      "updateCaseFieldDefinitionDefaultSpace": {"action":"cases.field_definitions.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","params":["dry_run"],"path":"/api/cases/field_definitions/{field_definition_id}","scope":{"field_definition_id":{"at":"field_definition_id","from":"path"},"owner":{"at":"/owner","from":"body"}}},
+      "updateCaseTemplateDefaultSpace": {"action":"cases.templates.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","params":["dry_run"],"path":"/api/cases/templates/{template_id}","scope":{"owner":{"at":"/owner","from":"body"},"template_id":{"at":"template_id","from":"path"}}}
     }
   }
 }

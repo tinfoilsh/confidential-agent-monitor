@@ -1,67 +1,136 @@
 {
-  "title": "AWS Certificate Manager",
   "catalog": {
-    "replaced_by": "aws",
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["http", "slots", 0, "sigv4", "region"]},
-      {"key": "access_key", "label": "Access key ID", "secret": true, "credential": true},
-      {"key": "secret_key", "label": "Secret access key", "secret": true, "credential": true},
-      {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/", "sigv4": {"service": "acm", "region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}},
     "actions": {
-      "delete.acm": {"title": "Delete: acm"},
-      "read": {"title": "Read everything the account can see"},
-      "send.acm": {"title": "Send: acm"},
-      "share.acm": {"title": "Share: acm"},
-      "write.acm": {"title": "Write: acm"}
-    }
+      "acm": {
+        "title": "Acm"
+      },
+      "acm.admin": {
+        "title": "Manage"
+      },
+      "acm.delete": {
+        "title": "Delete"
+      },
+      "acm.read": {
+        "title": "Read"
+      },
+      "acm.send": {
+        "title": "Send"
+      },
+      "acm.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "origin": "https://example.com",
+            "path": "/",
+            "sigv4": {
+              "region": "us-east-1",
+              "secret": "secret_key",
+              "service": "acm",
+              "session": "session_token"
+            },
+            "value": "access_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Service endpoint (https://service.region.amazonaws.com)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "key": "region",
+        "label": "Region (e.g. us-east-1)",
+        "path": [
+          "http",
+          "slots",
+          0,
+          "sigv4",
+          "region"
+        ]
+      },
+      {
+        "credential": true,
+        "key": "access_key",
+        "label": "Access key ID",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "secret_key",
+        "label": "Secret access key",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "session_token",
+        "label": "Session token (temporary credentials only)",
+        "secret": true
+      }
+    ],
+    "group": "api",
+    "replaced_by": "aws"
   },
+  "title": "AWS Certificate Manager",
   "http": {
     "origins": {"origin":["https://acm-fips.{region}.amazonaws.com","https://acm.{region}.amazonaws.com"]},
     "operations": {
-      "AddTagsToCertificate": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.AddTagsToCertificate"},"body":"any","scope":{}},
-      "CreateAcmeDomainValidation": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.CreateAcmeDomainValidation"},"body":"any","scope":{}},
-      "CreateAcmeEndpoint": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.CreateAcmeEndpoint"},"body":"any","scope":{}},
-      "CreateAcmeExternalAccountBinding": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.CreateAcmeExternalAccountBinding"},"body":"any","scope":{}},
-      "DeleteAcmeDomainValidation": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.DeleteAcmeDomainValidation"},"body":"any","scope":{}},
-      "DeleteAcmeEndpoint": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.DeleteAcmeEndpoint"},"body":"any","scope":{}},
-      "DeleteAcmeExternalAccountBinding": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.DeleteAcmeExternalAccountBinding"},"body":"any","scope":{}},
-      "DeleteCertificate": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.DeleteCertificate"},"body":"any","scope":{}},
-      "DescribeAcmeAccount": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.DescribeAcmeAccount"},"body":"any","scope":{}},
-      "DescribeAcmeDomainValidation": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.DescribeAcmeDomainValidation"},"body":"any","scope":{}},
-      "DescribeAcmeEndpoint": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.DescribeAcmeEndpoint"},"body":"any","scope":{}},
-      "DescribeAcmeExternalAccountBinding": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.DescribeAcmeExternalAccountBinding"},"body":"any","scope":{}},
-      "DescribeCertificate": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.DescribeCertificate"},"body":"any","scope":{}},
-      "ExportCertificate": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.ExportCertificate"},"body":"any","scope":{}},
-      "GetAccountConfiguration": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.GetAccountConfiguration"},"body":"any","scope":{}},
-      "GetAcmeExternalAccountBindingCredentials": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.GetAcmeExternalAccountBindingCredentials"},"body":"any","scope":{}},
-      "GetCertificate": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.GetCertificate"},"body":"any","scope":{}},
-      "ImportCertificate": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.ImportCertificate"},"body":"any","scope":{}},
-      "ListAcmeAccounts": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.ListAcmeAccounts"},"body":"any","scope":{}},
-      "ListAcmeDomainValidations": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.ListAcmeDomainValidations"},"body":"any","scope":{}},
-      "ListAcmeEndpoints": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.ListAcmeEndpoints"},"body":"any","scope":{}},
-      "ListAcmeExternalAccountBindings": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.ListAcmeExternalAccountBindings"},"body":"any","scope":{}},
-      "ListCertificateDomainValidations": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.ListCertificateDomainValidations"},"body":"any","scope":{}},
-      "ListCertificates": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.ListCertificates"},"body":"any","scope":{}},
-      "ListTagsForCertificate": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.ListTagsForCertificate"},"body":"any","scope":{}},
-      "ListTagsForResource": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.ListTagsForResource"},"body":"any","scope":{}},
-      "PutAccountConfiguration": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.PutAccountConfiguration"},"body":"any","scope":{}},
-      "RemoveTagsFromCertificate": {"action":"delete.acm","effects":["delete"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.RemoveTagsFromCertificate"},"body":"any","scope":{}},
-      "RenewCertificate": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.RenewCertificate"},"body":"any","scope":{}},
-      "RequestCertificate": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.RequestCertificate"},"body":"any","scope":{}},
-      "ResendValidationEmail": {"action":"send.acm","effects":["send"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.ResendValidationEmail"},"body":"any","scope":{}},
-      "RevokeAcmeAccount": {"action":"share.acm","effects":["share"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.RevokeAcmeAccount"},"body":"any","scope":{}},
-      "RevokeAcmeExternalAccountBinding": {"action":"share.acm","effects":["share"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.RevokeAcmeExternalAccountBinding"},"body":"any","scope":{}},
-      "RevokeCertificate": {"action":"share.acm","effects":["share"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.RevokeCertificate"},"body":"any","scope":{}},
-      "SearchCertificates": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.SearchCertificates"},"body":"any","scope":{}},
-      "TagResource": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.TagResource"},"body":"any","scope":{}},
-      "UntagResource": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.UntagResource"},"body":"any","scope":{}},
-      "UpdateAcmeDomainValidation": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.UpdateAcmeDomainValidation"},"body":"any","scope":{}},
-      "UpdateAcmeEndpoint": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.UpdateAcmeEndpoint"},"body":"any","scope":{}},
-      "UpdateCertificateOptions": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.UpdateCertificateOptions"},"body":"any","scope":{}}
+      "AddTagsToCertificate": {"action":"acm.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"CertificateManager.AddTagsToCertificate"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateAcmeDomainValidation": {"action":"acm.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"CertificateManager.CreateAcmeDomainValidation"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateAcmeEndpoint": {"action":"acm.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"CertificateManager.CreateAcmeEndpoint"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateAcmeExternalAccountBinding": {"action":"acm.admin","body":"any","effects":["admin"],"headers":{"X-Amz-Target":"CertificateManager.CreateAcmeExternalAccountBinding"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteAcmeDomainValidation": {"action":"acm.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"CertificateManager.DeleteAcmeDomainValidation"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteAcmeEndpoint": {"action":"acm.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"CertificateManager.DeleteAcmeEndpoint"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteAcmeExternalAccountBinding": {"action":"acm.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"CertificateManager.DeleteAcmeExternalAccountBinding"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteCertificate": {"action":"acm.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"CertificateManager.DeleteCertificate"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeAcmeAccount": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.DescribeAcmeAccount"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeAcmeDomainValidation": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.DescribeAcmeDomainValidation"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeAcmeEndpoint": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.DescribeAcmeEndpoint"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeAcmeExternalAccountBinding": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.DescribeAcmeExternalAccountBinding"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeCertificate": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.DescribeCertificate"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ExportCertificate": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.ExportCertificate"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetAccountConfiguration": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.GetAccountConfiguration"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetAcmeExternalAccountBindingCredentials": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.GetAcmeExternalAccountBindingCredentials"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetCertificate": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.GetCertificate"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ImportCertificate": {"action":"acm.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"CertificateManager.ImportCertificate"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListAcmeAccounts": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.ListAcmeAccounts"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListAcmeDomainValidations": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.ListAcmeDomainValidations"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListAcmeEndpoints": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.ListAcmeEndpoints"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListAcmeExternalAccountBindings": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.ListAcmeExternalAccountBindings"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListCertificateDomainValidations": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.ListCertificateDomainValidations"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListCertificates": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.ListCertificates"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListTagsForCertificate": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.ListTagsForCertificate"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListTagsForResource": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.ListTagsForResource"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "PutAccountConfiguration": {"action":"acm.admin","body":"any","effects":["admin"],"headers":{"X-Amz-Target":"CertificateManager.PutAccountConfiguration"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "RemoveTagsFromCertificate": {"action":"acm.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"CertificateManager.RemoveTagsFromCertificate"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "RenewCertificate": {"action":"acm.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"CertificateManager.RenewCertificate"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "RequestCertificate": {"action":"acm.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"CertificateManager.RequestCertificate"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ResendValidationEmail": {"action":"acm.send","body":"any","effects":["send"],"headers":{"X-Amz-Target":"CertificateManager.ResendValidationEmail"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "RevokeAcmeAccount": {"action":"acm.admin","body":"any","effects":["admin"],"headers":{"X-Amz-Target":"CertificateManager.RevokeAcmeAccount"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "RevokeAcmeExternalAccountBinding": {"action":"acm.admin","body":"any","effects":["admin"],"headers":{"X-Amz-Target":"CertificateManager.RevokeAcmeExternalAccountBinding"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "RevokeCertificate": {"action":"acm.delete","body":"any","effects":["delete","admin"],"headers":{"X-Amz-Target":"CertificateManager.RevokeCertificate"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "SearchCertificates": {"action":"acm.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"CertificateManager.SearchCertificates"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "TagResource": {"action":"acm.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"CertificateManager.TagResource"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UntagResource": {"action":"acm.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"CertificateManager.UntagResource"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UpdateAcmeDomainValidation": {"action":"acm.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"CertificateManager.UpdateAcmeDomainValidation"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UpdateAcmeEndpoint": {"action":"acm.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"CertificateManager.UpdateAcmeEndpoint"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UpdateCertificateOptions": {"action":"acm.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"CertificateManager.UpdateCertificateOptions"},"method":"POST","origin":"{origin}","path":"/","scope":{}}
     }
   }
 }

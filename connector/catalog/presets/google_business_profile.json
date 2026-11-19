@@ -1,7 +1,306 @@
 {
-  "title": "Google Business Profile",
   "catalog": {
-    "group": "api",
+    "actions": {
+      "accounts": {
+        "title": "Accounts"
+      },
+      "accounts.admin": {
+        "title": "Manage"
+      },
+      "accounts.admins": {
+        "title": "Admins"
+      },
+      "accounts.admins.delete": {
+        "title": "Delete"
+      },
+      "accounts.admins.read": {
+        "title": "Read"
+      },
+      "accounts.admins.share": {
+        "title": "Share"
+      },
+      "accounts.invitations": {
+        "title": "Invitations"
+      },
+      "accounts.invitations.admin": {
+        "title": "Manage"
+      },
+      "accounts.invitations.read": {
+        "title": "Read"
+      },
+      "accounts.invitations.write": {
+        "title": "Create and edit"
+      },
+      "accounts.locations": {
+        "title": "Locations"
+      },
+      "accounts.locations.food_menus": {
+        "title": "Food menus"
+      },
+      "accounts.locations.food_menus.publish": {
+        "title": "Publish"
+      },
+      "accounts.locations.food_menus.read": {
+        "title": "Read"
+      },
+      "accounts.locations.local_posts": {
+        "title": "Local posts"
+      },
+      "accounts.locations.local_posts.delete": {
+        "title": "Delete"
+      },
+      "accounts.locations.local_posts.publish": {
+        "title": "Publish"
+      },
+      "accounts.locations.local_posts.read": {
+        "title": "Read"
+      },
+      "accounts.locations.media": {
+        "title": "Media"
+      },
+      "accounts.locations.media.customers": {
+        "title": "Customers"
+      },
+      "accounts.locations.media.customers.read": {
+        "title": "Read"
+      },
+      "accounts.locations.media.delete": {
+        "title": "Delete"
+      },
+      "accounts.locations.media.publish": {
+        "title": "Publish"
+      },
+      "accounts.locations.media.read": {
+        "title": "Read"
+      },
+      "accounts.locations.media.write": {
+        "title": "Create and edit"
+      },
+      "accounts.locations.read": {
+        "title": "Read"
+      },
+      "accounts.locations.reviews": {
+        "title": "Reviews"
+      },
+      "accounts.locations.reviews.read": {
+        "title": "Read"
+      },
+      "accounts.locations.reviews.reply": {
+        "title": "Reply"
+      },
+      "accounts.locations.reviews.reply.delete": {
+        "title": "Delete"
+      },
+      "accounts.locations.reviews.reply.publish": {
+        "title": "Publish"
+      },
+      "accounts.locations.write": {
+        "title": "Create and edit"
+      },
+      "accounts.notification_setting": {
+        "title": "Notification setting"
+      },
+      "accounts.notification_setting.read": {
+        "title": "Read"
+      },
+      "accounts.notification_setting.write": {
+        "title": "Create and edit"
+      },
+      "accounts.read": {
+        "title": "Read"
+      },
+      "attributes": {
+        "title": "Attributes"
+      },
+      "attributes.read": {
+        "title": "Read"
+      },
+      "categories": {
+        "title": "Categories"
+      },
+      "categories.read": {
+        "title": "Read"
+      },
+      "chains": {
+        "title": "Chains"
+      },
+      "chains.read": {
+        "title": "Read"
+      },
+      "google_locations": {
+        "title": "Google locations"
+      },
+      "google_locations.read": {
+        "title": "Read"
+      },
+      "locations": {
+        "title": "Locations"
+      },
+      "locations.admin": {
+        "title": "Manage"
+      },
+      "locations.admins": {
+        "title": "Admins"
+      },
+      "locations.admins.delete": {
+        "title": "Delete"
+      },
+      "locations.admins.read": {
+        "title": "Read"
+      },
+      "locations.admins.share": {
+        "title": "Share"
+      },
+      "locations.attributes": {
+        "title": "Attributes"
+      },
+      "locations.attributes.publish": {
+        "title": "Publish"
+      },
+      "locations.attributes.read": {
+        "title": "Read"
+      },
+      "locations.delete": {
+        "title": "Delete"
+      },
+      "locations.lodging": {
+        "title": "Lodging"
+      },
+      "locations.lodging.publish": {
+        "title": "Publish"
+      },
+      "locations.lodging.read": {
+        "title": "Read"
+      },
+      "locations.place_action_links": {
+        "title": "Place action links"
+      },
+      "locations.place_action_links.delete": {
+        "title": "Delete"
+      },
+      "locations.place_action_links.publish": {
+        "title": "Publish"
+      },
+      "locations.place_action_links.read": {
+        "title": "Read"
+      },
+      "locations.publish": {
+        "title": "Publish"
+      },
+      "locations.read": {
+        "title": "Read"
+      },
+      "locations.searchkeywords": {
+        "title": "Searchkeywords"
+      },
+      "locations.searchkeywords.impressions": {
+        "title": "Impressions"
+      },
+      "locations.searchkeywords.impressions.monthly": {
+        "title": "Monthly"
+      },
+      "locations.searchkeywords.impressions.monthly.read": {
+        "title": "Read"
+      },
+      "locations.send": {
+        "title": "Send"
+      },
+      "locations.verifications": {
+        "title": "Verifications"
+      },
+      "locations.verifications.read": {
+        "title": "Read"
+      },
+      "locations.verifications.write": {
+        "title": "Create and edit"
+      },
+      "locations.voice_of_merchant_state": {
+        "title": "Voice of merchant state"
+      },
+      "locations.voice_of_merchant_state.read": {
+        "title": "Read"
+      },
+      "media": {
+        "title": "Media"
+      },
+      "media.write": {
+        "title": "Create and edit"
+      },
+      "place_action_type_metadata": {
+        "title": "Place action type metadata"
+      },
+      "place_action_type_metadata.read": {
+        "title": "Read"
+      },
+      "verification_tokens": {
+        "title": "Verification tokens"
+      },
+      "verification_tokens.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://mybusinessbusinessinformation.googleapis.com",
+            "path": "/v1",
+            "prefix": "Bearer ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://mybusinessaccountmanagement.googleapis.com",
+            "path": "/v1",
+            "prefix": "Bearer ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://mybusiness.googleapis.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://businessprofileperformance.googleapis.com",
+            "path": "/v1",
+            "prefix": "Bearer ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://mybusinessverifications.googleapis.com",
+            "path": "/v1",
+            "prefix": "Bearer ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://mybusinessnotifications.googleapis.com",
+            "path": "/v1",
+            "prefix": "Bearer ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://mybusinessplaceactions.googleapis.com",
+            "path": "/v1",
+            "prefix": "Bearer ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://mybusinesslodging.googleapis.com",
+            "path": "/v1",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
     "fields": [
       {
         "key": "client_id",
@@ -14,53 +313,98 @@
         "paths": [],
         "secret": true
       },
-      {"key": "token", "label": "Google Business Profile account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/business.manage"}}
+      {
+        "credential": true,
+        "key": "token",
+        "label": "Google Business Profile account",
+        "oauth": {
+          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
+          "client_id": "{client_id}",
+          "client_secret": "{client_secret}",
+          "scope": "https://www.googleapis.com/auth/business.manage",
+          "token_url": "https://oauth2.googleapis.com/token"
+        },
+        "secret": true
+      }
     ],
-    "connection": {"http": {"slots": [{"value": "token", "origin": "https://mybusinessbusinessinformation.googleapis.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}, {"value": "token", "origin": "https://mybusinessaccountmanagement.googleapis.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}},
-    "actions": {
-      "admin.accounts": {"title": "Admin: accounts"},
-      "admin.admins": {"title": "Admin: admins"},
-      "delete.admins": {"title": "Delete: admins"},
-      "delete.locations": {"title": "Delete: locations"},
-      "pay.locations": {"title": "Pay: locations"},
-      "read": {"title": "Read everything the account can see"},
-      "share.invitations": {"title": "Share: invitations"},
-      "write.attributes": {"title": "Write: attributes"},
-      "write.locations": {"title": "Write: locations"}
-    }
+    "group": "api"
   },
+  "title": "Google Business Profile",
   "http": {
     "operations": {
-      "accounts.admins.create": {"action":"admin.admins","effects":["admin"],"method":"POST","origin":"https://mybusinessaccountmanagement.googleapis.com","path":"/v1/accounts/{accountsId}/admins","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"accountsId":{"from":"path","at":"accountsId"}}},
-      "accounts.admins.delete": {"action":"delete.admins","effects":["delete"],"method":"DELETE","origin":"https://mybusinessaccountmanagement.googleapis.com","path":"/v1/accounts/{accountsId}/admins/{adminsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"accountsId":{"from":"path","at":"accountsId"},"adminsId":{"from":"path","at":"adminsId"}}},
-      "accounts.admins.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://mybusinessaccountmanagement.googleapis.com","path":"/v1/accounts/{accountsId}/admins","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"accountsId":{"from":"path","at":"accountsId"}}},
-      "accounts.admins.patch": {"action":"admin.admins","effects":["admin"],"method":"PATCH","origin":"https://mybusinessaccountmanagement.googleapis.com","path":"/v1/accounts/{accountsId}/admins/{adminsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"accountsId":{"from":"path","at":"accountsId"},"adminsId":{"from":"path","at":"adminsId"}}},
-      "accounts.create": {"action":"admin.accounts","effects":["admin"],"method":"POST","origin":"https://mybusinessaccountmanagement.googleapis.com","path":"/v1/accounts","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}},
-      "accounts.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://mybusinessaccountmanagement.googleapis.com","path":"/v1/accounts/{accountsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"accountsId":{"from":"path","at":"accountsId"}}},
-      "accounts.invitations.accept": {"action":"share.invitations","effects":["share"],"method":"POST","origin":"https://mybusinessaccountmanagement.googleapis.com","path":"/v1/accounts/{accountsId}/invitations/{invitationsId}:accept","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"accountsId":{"from":"path","at":"accountsId"},"invitationsId":{"from":"path","at":"invitationsId"},"request":{"from":"body","at":"","type":"object"}},"grant":["accountsId","invitationsId"]},
-      "accounts.invitations.decline": {"action":"share.invitations","effects":["share"],"method":"POST","origin":"https://mybusinessaccountmanagement.googleapis.com","path":"/v1/accounts/{accountsId}/invitations/{invitationsId}:decline","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"accountsId":{"from":"path","at":"accountsId"},"invitationsId":{"from":"path","at":"invitationsId"},"request":{"from":"body","at":"","type":"object"}},"grant":["accountsId","invitationsId"]},
-      "accounts.invitations.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://mybusinessaccountmanagement.googleapis.com","path":"/v1/accounts/{accountsId}/invitations","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter"],"scope":{"accountsId":{"from":"path","at":"accountsId"}}},
-      "accounts.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://mybusinessaccountmanagement.googleapis.com","path":"/v1/accounts","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken","parentAccount"],"scope":{}},
-      "accounts.locations.create": {"action":"write.locations","effects":["write"],"method":"POST","origin":"https://mybusinessbusinessinformation.googleapis.com","path":"/v1/accounts/{accountsId}/locations","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","requestId","validateOnly"],"body":"json","scope":{"accountsId":{"from":"path","at":"accountsId"}}},
-      "accounts.locations.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","path":"/v1/accounts/{accountsId}/locations","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","orderBy","pageSize","pageToken","readMask"],"scope":{"accountsId":{"from":"path","at":"accountsId"}}},
-      "accounts.patch": {"action":"admin.accounts","effects":["admin"],"method":"PATCH","origin":"https://mybusinessaccountmanagement.googleapis.com","path":"/v1/accounts/{accountsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask","validateOnly"],"body":"json","scope":{"accountsId":{"from":"path","at":"accountsId"}}},
-      "attributes.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","path":"/v1/attributes","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","categoryName","languageCode","pageSize","pageToken","parent","regionCode","showAll"],"scope":{}},
-      "categories.batchGet": {"action":"read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","path":"/v1/categories:batchGet","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","languageCode","names","regionCode","view"],"scope":{}},
-      "categories.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","path":"/v1/categories","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","languageCode","pageSize","pageToken","regionCode","view"],"scope":{}},
-      "chains.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","path":"/v1/chains/{chainsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"chainsId":{"from":"path","at":"chainsId"}}},
-      "chains.search": {"action":"read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","path":"/v1/chains:search","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","chainName","pageSize"],"scope":{}},
-      "googleLocations.search": {"action":"read","effects":["read"],"method":"POST","origin":"https://mybusinessbusinessinformation.googleapis.com","path":"/v1/googleLocations:search","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}},
-      "locations.admins.create": {"action":"admin.admins","effects":["admin"],"method":"POST","origin":"https://mybusinessaccountmanagement.googleapis.com","path":"/v1/locations/{locationsId}/admins","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"locationsId":{"from":"path","at":"locationsId"}}},
-      "locations.admins.delete": {"action":"delete.admins","effects":["delete"],"method":"DELETE","origin":"https://mybusinessaccountmanagement.googleapis.com","path":"/v1/locations/{locationsId}/admins/{adminsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"locationsId":{"from":"path","at":"locationsId"},"adminsId":{"from":"path","at":"adminsId"}}},
-      "locations.admins.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://mybusinessaccountmanagement.googleapis.com","path":"/v1/locations/{locationsId}/admins","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"locationsId":{"from":"path","at":"locationsId"}}},
-      "locations.admins.patch": {"action":"admin.admins","effects":["admin"],"method":"PATCH","origin":"https://mybusinessaccountmanagement.googleapis.com","path":"/v1/locations/{locationsId}/admins/{adminsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"locationsId":{"from":"path","at":"locationsId"},"adminsId":{"from":"path","at":"adminsId"}}},
-      "locations.attributes.getGoogleUpdated": {"action":"read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","path":"/v1/locations/{locationsId}/attributes:getGoogleUpdated","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"locationsId":{"from":"path","at":"locationsId"}}},
-      "locations.delete": {"action":"delete.locations","effects":["delete"],"method":"DELETE","origin":"https://mybusinessbusinessinformation.googleapis.com","path":"/v1/locations/{locationsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"locationsId":{"from":"path","at":"locationsId"}}},
-      "locations.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","path":"/v1/locations/{locationsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","readMask"],"scope":{"locationsId":{"from":"path","at":"locationsId"}}},
-      "locations.getAttributes": {"action":"read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","path":"/v1/locations/{locationsId}/attributes","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"locationsId":{"from":"path","at":"locationsId"}}},
-      "locations.patch": {"action":"write.locations","effects":["write"],"method":"PATCH","origin":"https://mybusinessbusinessinformation.googleapis.com","path":"/v1/locations/{locationsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask","validateOnly"],"body":"json","scope":{"locationsId":{"from":"path","at":"locationsId"}}},
-      "locations.transfer": {"action":"pay.locations","effects":["pay"],"method":"POST","origin":"https://mybusinessaccountmanagement.googleapis.com","path":"/v1/locations/{locationsId}:transfer","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"locationsId":{"from":"path","at":"locationsId"},"request":{"from":"body","at":"","type":"object"}},"grant":["locationsId"]},
-      "locations.updateAttributes": {"action":"write.attributes","effects":["write"],"method":"PATCH","origin":"https://mybusinessbusinessinformation.googleapis.com","path":"/v1/locations/{locationsId}/attributes","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","attributeMask"],"body":"json","scope":{"locationsId":{"from":"path","at":"locationsId"}}}
+      "accounts.admins.create": {"action":"accounts.admins.share","body":"json","effects":["share"],"method":"POST","origin":"https://mybusinessaccountmanagement.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/accounts/{accountsId}/admins","scope":{"accountsId":{"at":"accountsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "accounts.admins.delete": {"action":"accounts.admins.delete","effects":["delete","share"],"method":"DELETE","origin":"https://mybusinessaccountmanagement.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/accounts/{accountsId}/admins/{adminsId}","scope":{"accountsId":{"at":"accountsId","from":"path"},"adminsId":{"at":"adminsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "accounts.admins.list": {"action":"accounts.admins.read","effects":["read"],"method":"GET","origin":"https://mybusinessaccountmanagement.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/accounts/{accountsId}/admins","scope":{"accountsId":{"at":"accountsId","from":"path"}}},
+      "accounts.admins.patch": {"action":"accounts.admins.share","body":"json","effects":["share"],"method":"PATCH","origin":"https://mybusinessaccountmanagement.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1/accounts/{accountsId}/admins/{adminsId}","scope":{"accountsId":{"at":"accountsId","from":"path"},"adminsId":{"at":"adminsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "accounts.create": {"action":"accounts.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://mybusinessaccountmanagement.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/accounts","scope":{}},
+      "accounts.get": {"action":"accounts.read","effects":["read"],"method":"GET","origin":"https://mybusinessaccountmanagement.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/accounts/{accountsId}","scope":{"accountsId":{"at":"accountsId","from":"path"}}},
+      "accounts.getNotificationSetting": {"action":"accounts.notification_setting.read","effects":["read"],"method":"GET","origin":"https://mybusinessnotifications.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/accounts/{accountsId}/notificationSetting","scope":{"accountsId":{"at":"accountsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "accounts.invitations.accept": {"action":"accounts.invitations.admin","body":"json","effects":["admin"],"grant":["accountsId","invitationsId"],"method":"POST","origin":"https://mybusinessaccountmanagement.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/accounts/{accountsId}/invitations/{invitationsId}:accept","scope":{"accountsId":{"at":"accountsId","from":"path"},"invitationsId":{"at":"invitationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "accounts.invitations.decline": {"action":"accounts.invitations.write","body":"json","effects":["write"],"grant":["accountsId","invitationsId"],"method":"POST","origin":"https://mybusinessaccountmanagement.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/accounts/{accountsId}/invitations/{invitationsId}:decline","scope":{"accountsId":{"at":"accountsId","from":"path"},"invitationsId":{"at":"invitationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "accounts.invitations.list": {"action":"accounts.invitations.read","effects":["read"],"method":"GET","origin":"https://mybusinessaccountmanagement.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter"],"path":"/v1/accounts/{accountsId}/invitations","scope":{"accountsId":{"at":"accountsId","from":"path"}}},
+      "accounts.list": {"action":"accounts.read","effects":["read"],"method":"GET","origin":"https://mybusinessaccountmanagement.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken","parentAccount"],"path":"/v1/accounts","scope":{}},
+      "accounts.locations.batchGetReviews": {"action":"accounts.locations.read","body":"json","effects":["read"],"method":"POST","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/accounts/{accountsId}/locations:batchGetReviews","scope":{"accountsId":{"at":"accountsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "accounts.locations.create": {"action":"accounts.locations.write","body":"json","effects":["write"],"method":"POST","origin":"https://mybusinessbusinessinformation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","requestId","validateOnly"],"path":"/v1/accounts/{accountsId}/locations","scope":{"accountsId":{"at":"accountsId","from":"path"}}},
+      "accounts.locations.getFoodMenus": {"action":"accounts.locations.food_menus.read","effects":["read"],"method":"GET","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","readMask"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/foodMenus","scope":{"accountsId":{"at":"accountsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "accounts.locations.list": {"action":"accounts.locations.read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","orderBy","pageSize","pageToken","readMask"],"path":"/v1/accounts/{accountsId}/locations","scope":{"accountsId":{"at":"accountsId","from":"path"}}},
+      "accounts.locations.localPosts.create": {"action":"accounts.locations.local_posts.publish","body":"json","effects":["publish"],"method":"POST","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/localPosts","scope":{"accountsId":{"at":"accountsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "accounts.locations.localPosts.delete": {"action":"accounts.locations.local_posts.delete","effects":["delete"],"method":"DELETE","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/localPosts/{localPostsId}","scope":{"accountsId":{"at":"accountsId","from":"path"},"localPostsId":{"at":"localPostsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "accounts.locations.localPosts.get": {"action":"accounts.locations.local_posts.read","effects":["read"],"method":"GET","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/localPosts/{localPostsId}","scope":{"accountsId":{"at":"accountsId","from":"path"},"localPostsId":{"at":"localPostsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "accounts.locations.localPosts.list": {"action":"accounts.locations.local_posts.read","effects":["read"],"method":"GET","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/localPosts","scope":{"accountsId":{"at":"accountsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "accounts.locations.localPosts.patch": {"action":"accounts.locations.local_posts.publish","body":"json","effects":["publish"],"method":"PATCH","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/localPosts/{localPostsId}","scope":{"accountsId":{"at":"accountsId","from":"path"},"localPostsId":{"at":"localPostsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "accounts.locations.localPosts.reportInsights": {"action":"accounts.locations.local_posts.read","body":"json","effects":["read"],"method":"POST","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/localPosts:reportInsights","scope":{"accountsId":{"at":"accountsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "accounts.locations.media.create": {"action":"accounts.locations.media.publish","body":"json","effects":["publish"],"method":"POST","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/media","scope":{"accountsId":{"at":"accountsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "accounts.locations.media.customers.get": {"action":"accounts.locations.media.customers.read","effects":["read"],"method":"GET","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/media/customers/{customersId}","scope":{"accountsId":{"at":"accountsId","from":"path"},"customersId":{"at":"customersId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "accounts.locations.media.customers.list": {"action":"accounts.locations.media.customers.read","effects":["read"],"method":"GET","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/media/customers","scope":{"accountsId":{"at":"accountsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "accounts.locations.media.delete": {"action":"accounts.locations.media.delete","effects":["delete"],"method":"DELETE","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/media/{mediaId}","scope":{"accountsId":{"at":"accountsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"mediaId":{"at":"mediaId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "accounts.locations.media.get": {"action":"accounts.locations.media.read","effects":["read"],"method":"GET","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/media/{mediaId}","path_patterns":{"mediaId":"[^c].*|c(?:|[^u].*|u(?:|[^s].*|s(?:|[^t].*|t(?:|[^o].*|o(?:|[^m].*|m(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))))"},"scope":{"accountsId":{"at":"accountsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"mediaId":{"at":"mediaId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "accounts.locations.media.list": {"action":"accounts.locations.media.read","effects":["read"],"method":"GET","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/media","scope":{"accountsId":{"at":"accountsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "accounts.locations.media.patch": {"action":"accounts.locations.media.publish","body":"json","effects":["publish"],"method":"PATCH","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/media/{mediaId}","scope":{"accountsId":{"at":"accountsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"mediaId":{"at":"mediaId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "accounts.locations.media.startUpload": {"action":"accounts.locations.media.write","body":"json","effects":["write"],"method":"POST","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/media:startUpload","scope":{"accountsId":{"at":"accountsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "accounts.locations.reviews.deleteReply": {"action":"accounts.locations.reviews.reply.delete","effects":["delete"],"method":"DELETE","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/reviews/{reviewsId}/reply","scope":{"accountsId":{"at":"accountsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"reviewsId":{"at":"reviewsId","from":"path"}}},
+      "accounts.locations.reviews.get": {"action":"accounts.locations.reviews.read","effects":["read"],"method":"GET","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/reviews/{reviewsId}","scope":{"accountsId":{"at":"accountsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"reviewsId":{"at":"reviewsId","from":"path"}}},
+      "accounts.locations.reviews.list": {"action":"accounts.locations.reviews.read","effects":["read"],"method":"GET","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","orderBy","pageSize","pageToken"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/reviews","scope":{"accountsId":{"at":"accountsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "accounts.locations.reviews.updateReply": {"action":"accounts.locations.reviews.reply.publish","body":"json","effects":["publish"],"method":"PUT","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/reviews/{reviewsId}/reply","scope":{"accountsId":{"at":"accountsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"reviewsId":{"at":"reviewsId","from":"path"}}},
+      "accounts.locations.updateFoodMenus": {"action":"accounts.locations.food_menus.publish","body":"json","effects":["publish"],"method":"PATCH","origin":"https://mybusiness.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v4/accounts/{accountsId}/locations/{locationsId}/foodMenus","scope":{"accountsId":{"at":"accountsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "accounts.patch": {"action":"accounts.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://mybusinessaccountmanagement.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask","validateOnly"],"path":"/v1/accounts/{accountsId}","scope":{"accountsId":{"at":"accountsId","from":"path"}}},
+      "accounts.updateNotificationSetting": {"action":"accounts.notification_setting.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://mybusinessnotifications.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1/accounts/{accountsId}/notificationSetting","scope":{"accountsId":{"at":"accountsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "attributes.list": {"action":"attributes.read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","categoryName","languageCode","pageSize","pageToken","parent","regionCode","showAll"],"path":"/v1/attributes","scope":{}},
+      "categories.batchGet": {"action":"categories.read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","languageCode","names","regionCode","view"],"path":"/v1/categories:batchGet","scope":{}},
+      "categories.list": {"action":"categories.read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","languageCode","pageSize","pageToken","regionCode","view"],"path":"/v1/categories","scope":{}},
+      "chains.get": {"action":"chains.read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/chains/{chainsId}","scope":{"chainsId":{"at":"chainsId","from":"path"}}},
+      "chains.search": {"action":"chains.read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","chainName","pageSize"],"path":"/v1/chains:search","scope":{}},
+      "googleLocations.search": {"action":"google_locations.read","body":"json","effects":["read"],"method":"POST","origin":"https://mybusinessbusinessinformation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/googleLocations:search","scope":{}},
+      "locations.admins.create": {"action":"locations.admins.share","body":"json","effects":["share"],"method":"POST","origin":"https://mybusinessaccountmanagement.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/locations/{locationsId}/admins","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "locations.admins.delete": {"action":"locations.admins.delete","effects":["delete","share"],"method":"DELETE","origin":"https://mybusinessaccountmanagement.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/locations/{locationsId}/admins/{adminsId}","scope":{"adminsId":{"at":"adminsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "locations.admins.list": {"action":"locations.admins.read","effects":["read"],"method":"GET","origin":"https://mybusinessaccountmanagement.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/locations/{locationsId}/admins","scope":{"locationsId":{"at":"locationsId","from":"path"}}},
+      "locations.admins.patch": {"action":"locations.admins.share","body":"json","effects":["share"],"method":"PATCH","origin":"https://mybusinessaccountmanagement.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1/locations/{locationsId}/admins/{adminsId}","scope":{"adminsId":{"at":"adminsId","from":"path"},"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "locations.attributes.getGoogleUpdated": {"action":"locations.attributes.read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/locations/{locationsId}/attributes:getGoogleUpdated","scope":{"locationsId":{"at":"locationsId","from":"path"}}},
+      "locations.delete": {"action":"locations.delete","effects":["delete"],"method":"DELETE","origin":"https://mybusinessbusinessinformation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/locations/{locationsId}","scope":{"locationsId":{"at":"locationsId","from":"path"}}},
+      "locations.fetchMultiDailyMetricsTimeSeries": {"action":"locations.read","effects":["read"],"method":"GET","origin":"https://businessprofileperformance.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","dailyMetrics","dailyRange.endDate.day","dailyRange.endDate.month","dailyRange.endDate.year","dailyRange.startDate.day","dailyRange.startDate.month","dailyRange.startDate.year"],"path":"/v1/locations/{locationsId}:fetchMultiDailyMetricsTimeSeries","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "locations.fetchVerificationOptions": {"action":"locations.read","body":"json","effects":["read"],"method":"POST","origin":"https://mybusinessverifications.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/locations/{locationsId}:fetchVerificationOptions","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "locations.get": {"action":"locations.read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","readMask"],"path":"/v1/locations/{locationsId}","path_patterns":{"locationsId":"[^:]+"},"scope":{"locationsId":{"at":"locationsId","from":"path"}}},
+      "locations.getAttributes": {"action":"locations.attributes.read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/locations/{locationsId}/attributes","scope":{"locationsId":{"at":"locationsId","from":"path"}}},
+      "locations.getDailyMetricsTimeSeries": {"action":"locations.read","effects":["read"],"method":"GET","origin":"https://businessprofileperformance.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","dailyMetric","dailyRange.endDate.day","dailyRange.endDate.month","dailyRange.endDate.year","dailyRange.startDate.day","dailyRange.startDate.month","dailyRange.startDate.year","dailySubEntityType.dayOfWeek","dailySubEntityType.timeOfDay.hours","dailySubEntityType.timeOfDay.minutes","dailySubEntityType.timeOfDay.nanos","dailySubEntityType.timeOfDay.seconds"],"path":"/v1/locations/{locationsId}:getDailyMetricsTimeSeries","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "locations.getGoogleUpdated": {"action":"locations.read","effects":["read"],"method":"GET","origin":"https://mybusinessbusinessinformation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","readMask"],"path":"/v1/locations/{locationsId}:getGoogleUpdated","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "locations.getLodging": {"action":"locations.lodging.read","effects":["read"],"method":"GET","origin":"https://mybusinesslodging.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","readMask"],"path":"/v1/locations/{locationsId}/lodging","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "locations.getVoiceOfMerchantState": {"action":"locations.voice_of_merchant_state.read","effects":["read"],"method":"GET","origin":"https://mybusinessverifications.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/locations/{locationsId}/VoiceOfMerchantState","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "locations.lodging.getGoogleUpdated": {"action":"locations.lodging.read","effects":["read"],"method":"GET","origin":"https://mybusinesslodging.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","readMask"],"path":"/v1/locations/{locationsId}/lodging:getGoogleUpdated","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "locations.patch": {"action":"locations.publish","body":"json","effects":["publish"],"method":"PATCH","origin":"https://mybusinessbusinessinformation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask","validateOnly"],"path":"/v1/locations/{locationsId}","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "locations.placeActionLinks.create": {"action":"locations.place_action_links.publish","body":"json","effects":["publish"],"method":"POST","origin":"https://mybusinessplaceactions.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/locations/{locationsId}/placeActionLinks","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "locations.placeActionLinks.delete": {"action":"locations.place_action_links.delete","effects":["delete"],"method":"DELETE","origin":"https://mybusinessplaceactions.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/locations/{locationsId}/placeActionLinks/{placeActionLinksId}","scope":{"locationsId":{"at":"locationsId","from":"path"},"placeActionLinksId":{"at":"placeActionLinksId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "locations.placeActionLinks.get": {"action":"locations.place_action_links.read","effects":["read"],"method":"GET","origin":"https://mybusinessplaceactions.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/locations/{locationsId}/placeActionLinks/{placeActionLinksId}","scope":{"locationsId":{"at":"locationsId","from":"path"},"placeActionLinksId":{"at":"placeActionLinksId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "locations.placeActionLinks.list": {"action":"locations.place_action_links.read","effects":["read"],"method":"GET","origin":"https://mybusinessplaceactions.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"path":"/v1/locations/{locationsId}/placeActionLinks","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "locations.placeActionLinks.patch": {"action":"locations.place_action_links.publish","body":"json","effects":["publish"],"method":"PATCH","origin":"https://mybusinessplaceactions.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1/locations/{locationsId}/placeActionLinks/{placeActionLinksId}","scope":{"locationsId":{"at":"locationsId","from":"path"},"placeActionLinksId":{"at":"placeActionLinksId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "locations.searchkeywords.impressions.monthly.list": {"action":"locations.searchkeywords.impressions.monthly.read","effects":["read"],"method":"GET","origin":"https://businessprofileperformance.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","monthlyRange.endMonth.day","monthlyRange.endMonth.month","monthlyRange.endMonth.year","monthlyRange.startMonth.day","monthlyRange.startMonth.month","monthlyRange.startMonth.year","pageSize","pageToken"],"path":"/v1/locations/{locationsId}/searchkeywords/impressions/monthly","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "locations.transfer": {"action":"locations.admin","body":"json","effects":["admin"],"grant":["locationsId"],"method":"POST","origin":"https://mybusinessaccountmanagement.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/locations/{locationsId}:transfer","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "locations.updateAttributes": {"action":"locations.attributes.publish","body":"json","effects":["publish"],"method":"PATCH","origin":"https://mybusinessbusinessinformation.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","attributeMask"],"path":"/v1/locations/{locationsId}/attributes","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "locations.updateLodging": {"action":"locations.lodging.publish","body":"json","effects":["publish"],"method":"PATCH","origin":"https://mybusinesslodging.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1/locations/{locationsId}/lodging","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "locations.verifications.complete": {"action":"locations.verifications.write","body":"json","effects":["write"],"method":"POST","origin":"https://mybusinessverifications.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/locations/{locationsId}/verifications/{verificationsId}:complete","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"verificationsId":{"at":"verificationsId","from":"path"}}},
+      "locations.verifications.list": {"action":"locations.verifications.read","effects":["read"],"method":"GET","origin":"https://mybusinessverifications.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1/locations/{locationsId}/verifications","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "locations.verify": {"action":"locations.send","body":"json","effects":["send"],"method":"POST","origin":"https://mybusinessverifications.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/locations/{locationsId}:verify","scope":{"locationsId":{"at":"locationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "media.upload": {"action":"media.write","body":"any","effects":["write"],"method":"POST","origin":"https://mybusiness.googleapis.com","params":["upload_type","uploadType"],"path":"/upload/v1/media/{resourceName*}","scope":{"resourceName":{"at":"resourceName","from":"path"}}},
+      "placeActionTypeMetadata.list": {"action":"place_action_type_metadata.read","effects":["read"],"method":"GET","origin":"https://mybusinessplaceactions.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","languageCode","pageSize","pageToken"],"path":"/v1/placeActionTypeMetadata","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "verificationTokens.generate": {"action":"verification_tokens.write","body":"json","effects":["write"],"method":"POST","origin":"https://mybusinessverifications.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/verificationTokens:generate","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}}
     }
   }
 }

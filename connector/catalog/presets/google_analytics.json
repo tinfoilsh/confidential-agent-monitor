@@ -1,7 +1,180 @@
 {
-  "title": "Google Analytics",
   "catalog": {
-    "group": "api",
+    "actions": {
+      "account_summaries": {
+        "title": "Account summaries"
+      },
+      "account_summaries.read": {
+        "title": "Read"
+      },
+      "accounts": {
+        "title": "Accounts"
+      },
+      "accounts.admin": {
+        "title": "Manage"
+      },
+      "accounts.data_sharing_settings": {
+        "title": "Data sharing settings"
+      },
+      "accounts.data_sharing_settings.read": {
+        "title": "Read"
+      },
+      "accounts.delete": {
+        "title": "Delete"
+      },
+      "accounts.read": {
+        "title": "Read"
+      },
+      "properties": {
+        "title": "Properties"
+      },
+      "properties.audience_exports": {
+        "title": "Audience exports"
+      },
+      "properties.audience_exports.read": {
+        "title": "Read"
+      },
+      "properties.audience_exports.write": {
+        "title": "Create and edit"
+      },
+      "properties.conversion_events": {
+        "title": "Conversion events"
+      },
+      "properties.conversion_events.delete": {
+        "title": "Delete"
+      },
+      "properties.conversion_events.read": {
+        "title": "Read"
+      },
+      "properties.conversion_events.write": {
+        "title": "Create and edit"
+      },
+      "properties.custom_dimensions": {
+        "title": "Custom dimensions"
+      },
+      "properties.custom_dimensions.read": {
+        "title": "Read"
+      },
+      "properties.custom_dimensions.write": {
+        "title": "Create and edit"
+      },
+      "properties.custom_metrics": {
+        "title": "Custom metrics"
+      },
+      "properties.custom_metrics.read": {
+        "title": "Read"
+      },
+      "properties.custom_metrics.write": {
+        "title": "Create and edit"
+      },
+      "properties.data_retention_settings": {
+        "title": "Data retention settings"
+      },
+      "properties.data_retention_settings.read": {
+        "title": "Read"
+      },
+      "properties.data_retention_settings.write": {
+        "title": "Create and edit"
+      },
+      "properties.data_streams": {
+        "title": "Data streams"
+      },
+      "properties.data_streams.delete": {
+        "title": "Delete"
+      },
+      "properties.data_streams.measurement_protocol_secrets": {
+        "title": "Measurement protocol secrets"
+      },
+      "properties.data_streams.measurement_protocol_secrets.admin": {
+        "title": "Manage"
+      },
+      "properties.data_streams.measurement_protocol_secrets.delete": {
+        "title": "Delete"
+      },
+      "properties.data_streams.measurement_protocol_secrets.read": {
+        "title": "Read"
+      },
+      "properties.data_streams.read": {
+        "title": "Read"
+      },
+      "properties.data_streams.write": {
+        "title": "Create and edit"
+      },
+      "properties.delete": {
+        "title": "Delete"
+      },
+      "properties.firebase_links": {
+        "title": "Firebase links"
+      },
+      "properties.firebase_links.delete": {
+        "title": "Delete"
+      },
+      "properties.firebase_links.read": {
+        "title": "Read"
+      },
+      "properties.firebase_links.share": {
+        "title": "Share"
+      },
+      "properties.google_ads_links": {
+        "title": "Google ads links"
+      },
+      "properties.google_ads_links.delete": {
+        "title": "Delete"
+      },
+      "properties.google_ads_links.read": {
+        "title": "Read"
+      },
+      "properties.google_ads_links.share": {
+        "title": "Share"
+      },
+      "properties.google_ads_links.write": {
+        "title": "Create and edit"
+      },
+      "properties.key_events": {
+        "title": "Key events"
+      },
+      "properties.key_events.delete": {
+        "title": "Delete"
+      },
+      "properties.key_events.read": {
+        "title": "Read"
+      },
+      "properties.key_events.write": {
+        "title": "Create and edit"
+      },
+      "properties.metadata": {
+        "title": "Metadata"
+      },
+      "properties.metadata.read": {
+        "title": "Read"
+      },
+      "properties.read": {
+        "title": "Read"
+      },
+      "properties.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://analyticsdata.googleapis.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://analyticsadmin.googleapis.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
     "fields": [
       {
         "hint": "Leave empty to use Tinfoil's app",
@@ -16,103 +189,97 @@
         "paths": [],
         "secret": true
       },
-      {"key": "token", "label": "Google Analytics account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "default_client": {"client_id": "355716529673-semtjk51liuh2uc8mo8cgd3v7v7lgi68.apps.googleusercontent.com", "client_secret": "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", "loopback": true}, "prompt": "consent", "scope": "https://www.googleapis.com/auth/analytics https://www.googleapis.com/auth/analytics.readonly"}}
+      {
+        "credential": true,
+        "key": "token",
+        "label": "Google Analytics account",
+        "oauth": {
+          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
+          "client_id": "{client_id}",
+          "client_secret": "{client_secret}",
+          "default_client": {
+            "client_id": "355716529673-semtjk51liuh2uc8mo8cgd3v7v7lgi68.apps.googleusercontent.com",
+            "client_secret": "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",
+            "loopback": true
+          },
+          "prompt": "consent",
+          "scope": "https://www.googleapis.com/auth/analytics https://www.googleapis.com/auth/analytics.readonly",
+          "token_url": "https://oauth2.googleapis.com/token"
+        },
+        "secret": true
+      }
     ],
-    "connection": {"http": {"slots": [{"value": "token", "origin": "https://analyticsdata.googleapis.com", "path": "/v1beta", "header": "Authorization", "prefix": "Bearer "}, {"value": "token", "origin": "https://analyticsadmin.googleapis.com", "path": "/v1beta", "header": "Authorization", "prefix": "Bearer "}]}},
-    "actions": {
-      "admin.accounts": {"title": "Admin: accounts"},
-      "delete.accounts": {"title": "Delete: accounts"},
-      "delete.conversion_events": {"title": "Delete: conversion events"},
-      "delete.data_streams": {"title": "Delete: data streams"},
-      "delete.firebase_links": {"title": "Delete: firebase links"},
-      "delete.google_ads_links": {"title": "Delete: google ads links"},
-      "delete.key_events": {"title": "Delete: key events"},
-      "delete.measurement_protocol_secrets": {"title": "Delete: measurement protocol secrets"},
-      "delete.properties": {"title": "Delete: properties"},
-      "execute.accounts": {"title": "Execute: accounts"},
-      "execute.properties": {"title": "Execute: properties"},
-      "read": {"title": "Read everything the account can see"},
-      "write.audience_exports": {"title": "Write: audience exports"},
-      "write.conversion_events": {"title": "Write: conversion events"},
-      "write.custom_dimensions": {"title": "Write: custom dimensions"},
-      "write.custom_metrics": {"title": "Write: custom metrics"},
-      "write.data_retention_settings": {"title": "Write: data retention settings"},
-      "write.data_streams": {"title": "Write: data streams"},
-      "write.firebase_links": {"title": "Write: firebase links"},
-      "write.google_ads_links": {"title": "Write: google ads links"},
-      "write.key_events": {"title": "Write: key events"},
-      "write.measurement_protocol_secrets": {"title": "Write: measurement protocol secrets"},
-      "write.properties": {"title": "Write: properties"}
-    }
+    "group": "api"
   },
+  "title": "Google Analytics",
   "http": {
     "operations": {
-      "accountSummaries.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/accountSummaries","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{}},
-      "accounts.delete": {"action":"delete.accounts","effects":["delete"],"method":"DELETE","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/accounts/{accountsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"accountsId":{"from":"path","at":"accountsId"}}},
-      "accounts.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/accounts/{accountsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"accountsId":{"from":"path","at":"accountsId"}}},
-      "accounts.getDataSharingSettings": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/accounts/{accountsId}/dataSharingSettings","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"accountsId":{"from":"path","at":"accountsId"}}},
-      "accounts.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/accounts","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken","showDeleted"],"scope":{}},
-      "accounts.patch": {"action":"admin.accounts","effects":["admin"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/accounts/{accountsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"accountsId":{"from":"path","at":"accountsId"}}},
-      "accounts.provisionAccountTicket": {"action":"admin.accounts","effects":["admin"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/accounts:provisionAccountTicket","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}},
-      "accounts.runAccessReport": {"action":"execute.accounts","effects":["execute"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/accounts/{accountsId}:runAccessReport","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"accountsId":{"from":"path","at":"accountsId"}}},
-      "accounts.searchChangeHistoryEvents": {"action":"read","effects":["read"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/accounts/{accountsId}:searchChangeHistoryEvents","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"accountsId":{"from":"path","at":"accountsId"}}},
-      "properties.acknowledgeUserDataCollection": {"action":"write.properties","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}:acknowledgeUserDataCollection","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.audienceExports.create": {"action":"write.audience_exports","effects":["write"],"method":"POST","origin":"https://analyticsdata.googleapis.com","path":"/v1beta/properties/{propertiesId}/audienceExports","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.audienceExports.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsdata.googleapis.com","path":"/v1beta/properties/{propertiesId}/audienceExports/{audienceExportsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"},"audienceExportsId":{"from":"path","at":"audienceExportsId"}}},
-      "properties.audienceExports.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsdata.googleapis.com","path":"/v1beta/properties/{propertiesId}/audienceExports","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.audienceExports.query": {"action":"read","effects":["read"],"method":"POST","origin":"https://analyticsdata.googleapis.com","path":"/v1beta/properties/{propertiesId}/audienceExports/{audienceExportsId}:query","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"},"audienceExportsId":{"from":"path","at":"audienceExportsId"}}},
-      "properties.batchRunPivotReports": {"action":"execute.properties","effects":["execute"],"method":"POST","origin":"https://analyticsdata.googleapis.com","path":"/v1beta/properties/{propertiesId}:batchRunPivotReports","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.batchRunReports": {"action":"execute.properties","effects":["execute"],"method":"POST","origin":"https://analyticsdata.googleapis.com","path":"/v1beta/properties/{propertiesId}:batchRunReports","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.checkCompatibility": {"action":"read","effects":["read"],"method":"POST","origin":"https://analyticsdata.googleapis.com","path":"/v1beta/properties/{propertiesId}:checkCompatibility","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.conversionEvents.create": {"action":"write.conversion_events","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/conversionEvents","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.conversionEvents.delete": {"action":"delete.conversion_events","effects":["delete"],"method":"DELETE","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/conversionEvents/{conversionEventsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"},"conversionEventsId":{"from":"path","at":"conversionEventsId"}}},
-      "properties.conversionEvents.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/conversionEvents/{conversionEventsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"},"conversionEventsId":{"from":"path","at":"conversionEventsId"}}},
-      "properties.conversionEvents.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/conversionEvents","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.conversionEvents.patch": {"action":"write.conversion_events","effects":["write"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/conversionEvents/{conversionEventsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"},"conversionEventsId":{"from":"path","at":"conversionEventsId"}}},
-      "properties.create": {"action":"write.properties","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}},
-      "properties.customDimensions.archive": {"action":"write.custom_dimensions","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/customDimensions/{customDimensionsId}:archive","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"},"customDimensionsId":{"from":"path","at":"customDimensionsId"}}},
-      "properties.customDimensions.create": {"action":"write.custom_dimensions","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/customDimensions","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.customDimensions.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/customDimensions/{customDimensionsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"},"customDimensionsId":{"from":"path","at":"customDimensionsId"}}},
-      "properties.customDimensions.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/customDimensions","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.customDimensions.patch": {"action":"write.custom_dimensions","effects":["write"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/customDimensions/{customDimensionsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"},"customDimensionsId":{"from":"path","at":"customDimensionsId"}}},
-      "properties.customMetrics.archive": {"action":"write.custom_metrics","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/customMetrics/{customMetricsId}:archive","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"},"customMetricsId":{"from":"path","at":"customMetricsId"}}},
-      "properties.customMetrics.create": {"action":"write.custom_metrics","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/customMetrics","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.customMetrics.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/customMetrics/{customMetricsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"},"customMetricsId":{"from":"path","at":"customMetricsId"}}},
-      "properties.customMetrics.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/customMetrics","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.customMetrics.patch": {"action":"write.custom_metrics","effects":["write"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/customMetrics/{customMetricsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"},"customMetricsId":{"from":"path","at":"customMetricsId"}}},
-      "properties.dataStreams.create": {"action":"write.data_streams","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/dataStreams","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.dataStreams.delete": {"action":"delete.data_streams","effects":["delete"],"method":"DELETE","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/dataStreams/{dataStreamsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"},"dataStreamsId":{"from":"path","at":"dataStreamsId"}}},
-      "properties.dataStreams.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/dataStreams/{dataStreamsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"},"dataStreamsId":{"from":"path","at":"dataStreamsId"}}},
-      "properties.dataStreams.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/dataStreams","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.dataStreams.measurementProtocolSecrets.create": {"action":"write.measurement_protocol_secrets","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/dataStreams/{dataStreamsId}/measurementProtocolSecrets","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"},"dataStreamsId":{"from":"path","at":"dataStreamsId"}}},
-      "properties.dataStreams.measurementProtocolSecrets.delete": {"action":"delete.measurement_protocol_secrets","effects":["delete"],"method":"DELETE","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/dataStreams/{dataStreamsId}/measurementProtocolSecrets/{measurementProtocolSecretsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"},"dataStreamsId":{"from":"path","at":"dataStreamsId"},"measurementProtocolSecretsId":{"from":"path","at":"measurementProtocolSecretsId"}}},
-      "properties.dataStreams.measurementProtocolSecrets.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/dataStreams/{dataStreamsId}/measurementProtocolSecrets/{measurementProtocolSecretsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"},"dataStreamsId":{"from":"path","at":"dataStreamsId"},"measurementProtocolSecretsId":{"from":"path","at":"measurementProtocolSecretsId"}}},
-      "properties.dataStreams.measurementProtocolSecrets.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/dataStreams/{dataStreamsId}/measurementProtocolSecrets","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"},"dataStreamsId":{"from":"path","at":"dataStreamsId"}}},
-      "properties.dataStreams.measurementProtocolSecrets.patch": {"action":"write.measurement_protocol_secrets","effects":["write"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/dataStreams/{dataStreamsId}/measurementProtocolSecrets/{measurementProtocolSecretsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"},"dataStreamsId":{"from":"path","at":"dataStreamsId"},"measurementProtocolSecretsId":{"from":"path","at":"measurementProtocolSecretsId"}}},
-      "properties.dataStreams.patch": {"action":"write.data_streams","effects":["write"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/dataStreams/{dataStreamsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"},"dataStreamsId":{"from":"path","at":"dataStreamsId"}}},
-      "properties.delete": {"action":"delete.properties","effects":["delete"],"method":"DELETE","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.firebaseLinks.create": {"action":"write.firebase_links","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/firebaseLinks","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.firebaseLinks.delete": {"action":"delete.firebase_links","effects":["delete"],"method":"DELETE","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/firebaseLinks/{firebaseLinksId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"},"firebaseLinksId":{"from":"path","at":"firebaseLinksId"}}},
-      "properties.firebaseLinks.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/firebaseLinks","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.getDataRetentionSettings": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/dataRetentionSettings","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.getMetadata": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsdata.googleapis.com","path":"/v1beta/properties/{propertiesId}/metadata","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.googleAdsLinks.create": {"action":"write.google_ads_links","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/googleAdsLinks","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.googleAdsLinks.delete": {"action":"delete.google_ads_links","effects":["delete"],"method":"DELETE","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/googleAdsLinks/{googleAdsLinksId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"},"googleAdsLinksId":{"from":"path","at":"googleAdsLinksId"}}},
-      "properties.googleAdsLinks.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/googleAdsLinks","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.googleAdsLinks.patch": {"action":"write.google_ads_links","effects":["write"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/googleAdsLinks/{googleAdsLinksId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"},"googleAdsLinksId":{"from":"path","at":"googleAdsLinksId"}}},
-      "properties.keyEvents.create": {"action":"write.key_events","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/keyEvents","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.keyEvents.delete": {"action":"delete.key_events","effects":["delete"],"method":"DELETE","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/keyEvents/{keyEventsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"},"keyEventsId":{"from":"path","at":"keyEventsId"}}},
-      "properties.keyEvents.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/keyEvents/{keyEventsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"},"keyEventsId":{"from":"path","at":"keyEventsId"}}},
-      "properties.keyEvents.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/keyEvents","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.keyEvents.patch": {"action":"write.key_events","effects":["write"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/keyEvents/{keyEventsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"},"keyEventsId":{"from":"path","at":"keyEventsId"}}},
-      "properties.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken","showDeleted"],"scope":{}},
-      "properties.patch": {"action":"write.properties","effects":["write"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.runAccessReport": {"action":"execute.properties","effects":["execute"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}:runAccessReport","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.runPivotReport": {"action":"execute.properties","effects":["execute"],"method":"POST","origin":"https://analyticsdata.googleapis.com","path":"/v1beta/properties/{propertiesId}:runPivotReport","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.runRealtimeReport": {"action":"execute.properties","effects":["execute"],"method":"POST","origin":"https://analyticsdata.googleapis.com","path":"/v1beta/properties/{propertiesId}:runRealtimeReport","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.runReport": {"action":"execute.properties","effects":["execute"],"method":"POST","origin":"https://analyticsdata.googleapis.com","path":"/v1beta/properties/{propertiesId}:runReport","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}},
-      "properties.updateDataRetentionSettings": {"action":"write.data_retention_settings","effects":["write"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","path":"/v1beta/properties/{propertiesId}/dataRetentionSettings","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"propertiesId":{"from":"path","at":"propertiesId"}}}
+      "accountSummaries.list": {"action":"account_summaries.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/accountSummaries","scope":{}},
+      "accounts.delete": {"action":"accounts.delete","effects":["delete"],"method":"DELETE","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/accounts/{accountsId}","scope":{"accountsId":{"at":"accountsId","from":"path"}}},
+      "accounts.get": {"action":"accounts.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/accounts/{accountsId}","scope":{"accountsId":{"at":"accountsId","from":"path"}}},
+      "accounts.getDataSharingSettings": {"action":"accounts.data_sharing_settings.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/accounts/{accountsId}/dataSharingSettings","scope":{"accountsId":{"at":"accountsId","from":"path"}}},
+      "accounts.list": {"action":"accounts.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken","showDeleted"],"path":"/v1beta/accounts","scope":{}},
+      "accounts.patch": {"action":"accounts.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1beta/accounts/{accountsId}","scope":{"accountsId":{"at":"accountsId","from":"path"}}},
+      "accounts.provisionAccountTicket": {"action":"accounts.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/accounts:provisionAccountTicket","scope":{}},
+      "accounts.runAccessReport": {"action":"accounts.read","body":"json","effects":["read"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/accounts/{accountsId}:runAccessReport","scope":{"accountsId":{"at":"accountsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "accounts.searchChangeHistoryEvents": {"action":"accounts.read","body":"json","effects":["read"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/accounts/{accountsId}:searchChangeHistoryEvents","scope":{"accountsId":{"at":"accountsId","from":"path"}}},
+      "properties.acknowledgeUserDataCollection": {"action":"properties.write","body":"json","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}:acknowledgeUserDataCollection","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.audienceExports.create": {"action":"properties.audience_exports.write","body":"json","effects":["write"],"method":"POST","origin":"https://analyticsdata.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/audienceExports","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.audienceExports.get": {"action":"properties.audience_exports.read","effects":["read"],"method":"GET","origin":"https://analyticsdata.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/audienceExports/{audienceExportsId}","scope":{"audienceExportsId":{"at":"audienceExportsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.audienceExports.list": {"action":"properties.audience_exports.read","effects":["read"],"method":"GET","origin":"https://analyticsdata.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/properties/{propertiesId}/audienceExports","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.audienceExports.query": {"action":"properties.audience_exports.read","body":"json","effects":["read"],"method":"POST","origin":"https://analyticsdata.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/audienceExports/{audienceExportsId}:query","scope":{"audienceExportsId":{"at":"audienceExportsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.batchRunPivotReports": {"action":"properties.read","body":"json","effects":["read"],"method":"POST","origin":"https://analyticsdata.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}:batchRunPivotReports","scope":{"propertiesId":{"at":"propertiesId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "properties.batchRunReports": {"action":"properties.read","body":"json","effects":["read"],"method":"POST","origin":"https://analyticsdata.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}:batchRunReports","scope":{"propertiesId":{"at":"propertiesId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "properties.checkCompatibility": {"action":"properties.read","body":"json","effects":["read"],"method":"POST","origin":"https://analyticsdata.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}:checkCompatibility","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.conversionEvents.create": {"action":"properties.conversion_events.write","body":"json","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/conversionEvents","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.conversionEvents.delete": {"action":"properties.conversion_events.delete","effects":["delete"],"method":"DELETE","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/conversionEvents/{conversionEventsId}","scope":{"conversionEventsId":{"at":"conversionEventsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.conversionEvents.get": {"action":"properties.conversion_events.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/conversionEvents/{conversionEventsId}","scope":{"conversionEventsId":{"at":"conversionEventsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.conversionEvents.list": {"action":"properties.conversion_events.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/properties/{propertiesId}/conversionEvents","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.conversionEvents.patch": {"action":"properties.conversion_events.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1beta/properties/{propertiesId}/conversionEvents/{conversionEventsId}","scope":{"conversionEventsId":{"at":"conversionEventsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.create": {"action":"properties.write","body":"json","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties","scope":{}},
+      "properties.customDimensions.archive": {"action":"properties.custom_dimensions.write","body":"json","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/customDimensions/{customDimensionsId}:archive","scope":{"customDimensionsId":{"at":"customDimensionsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.customDimensions.create": {"action":"properties.custom_dimensions.write","body":"json","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/customDimensions","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.customDimensions.get": {"action":"properties.custom_dimensions.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/customDimensions/{customDimensionsId}","scope":{"customDimensionsId":{"at":"customDimensionsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.customDimensions.list": {"action":"properties.custom_dimensions.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/properties/{propertiesId}/customDimensions","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.customDimensions.patch": {"action":"properties.custom_dimensions.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1beta/properties/{propertiesId}/customDimensions/{customDimensionsId}","scope":{"customDimensionsId":{"at":"customDimensionsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.customMetrics.archive": {"action":"properties.custom_metrics.write","body":"json","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/customMetrics/{customMetricsId}:archive","scope":{"customMetricsId":{"at":"customMetricsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.customMetrics.create": {"action":"properties.custom_metrics.write","body":"json","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/customMetrics","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.customMetrics.get": {"action":"properties.custom_metrics.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/customMetrics/{customMetricsId}","scope":{"customMetricsId":{"at":"customMetricsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.customMetrics.list": {"action":"properties.custom_metrics.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/properties/{propertiesId}/customMetrics","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.customMetrics.patch": {"action":"properties.custom_metrics.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1beta/properties/{propertiesId}/customMetrics/{customMetricsId}","scope":{"customMetricsId":{"at":"customMetricsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.dataStreams.create": {"action":"properties.data_streams.write","body":"json","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/dataStreams","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.dataStreams.delete": {"action":"properties.data_streams.delete","effects":["delete"],"method":"DELETE","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/dataStreams/{dataStreamsId}","scope":{"dataStreamsId":{"at":"dataStreamsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.dataStreams.get": {"action":"properties.data_streams.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/dataStreams/{dataStreamsId}","scope":{"dataStreamsId":{"at":"dataStreamsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.dataStreams.list": {"action":"properties.data_streams.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/properties/{propertiesId}/dataStreams","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.dataStreams.measurementProtocolSecrets.create": {"action":"properties.data_streams.measurement_protocol_secrets.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/dataStreams/{dataStreamsId}/measurementProtocolSecrets","scope":{"dataStreamsId":{"at":"dataStreamsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "properties.dataStreams.measurementProtocolSecrets.delete": {"action":"properties.data_streams.measurement_protocol_secrets.delete","effects":["delete","admin"],"method":"DELETE","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/dataStreams/{dataStreamsId}/measurementProtocolSecrets/{measurementProtocolSecretsId}","scope":{"dataStreamsId":{"at":"dataStreamsId","from":"path"},"measurementProtocolSecretsId":{"at":"measurementProtocolSecretsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "properties.dataStreams.measurementProtocolSecrets.get": {"action":"properties.data_streams.measurement_protocol_secrets.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/dataStreams/{dataStreamsId}/measurementProtocolSecrets/{measurementProtocolSecretsId}","scope":{"dataStreamsId":{"at":"dataStreamsId","from":"path"},"measurementProtocolSecretsId":{"at":"measurementProtocolSecretsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.dataStreams.measurementProtocolSecrets.list": {"action":"properties.data_streams.measurement_protocol_secrets.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/properties/{propertiesId}/dataStreams/{dataStreamsId}/measurementProtocolSecrets","scope":{"dataStreamsId":{"at":"dataStreamsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.dataStreams.measurementProtocolSecrets.patch": {"action":"properties.data_streams.measurement_protocol_secrets.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1beta/properties/{propertiesId}/dataStreams/{dataStreamsId}/measurementProtocolSecrets/{measurementProtocolSecretsId}","scope":{"dataStreamsId":{"at":"dataStreamsId","from":"path"},"measurementProtocolSecretsId":{"at":"measurementProtocolSecretsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "properties.dataStreams.patch": {"action":"properties.data_streams.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1beta/properties/{propertiesId}/dataStreams/{dataStreamsId}","scope":{"dataStreamsId":{"at":"dataStreamsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.delete": {"action":"properties.delete","effects":["delete"],"method":"DELETE","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.firebaseLinks.create": {"action":"properties.firebase_links.share","body":"json","effects":["share"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/firebaseLinks","scope":{"propertiesId":{"at":"propertiesId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "properties.firebaseLinks.delete": {"action":"properties.firebase_links.delete","effects":["delete"],"method":"DELETE","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/firebaseLinks/{firebaseLinksId}","scope":{"firebaseLinksId":{"at":"firebaseLinksId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.firebaseLinks.list": {"action":"properties.firebase_links.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/properties/{propertiesId}/firebaseLinks","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.get": {"action":"properties.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.getDataRetentionSettings": {"action":"properties.data_retention_settings.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/dataRetentionSettings","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.getMetadata": {"action":"properties.metadata.read","effects":["read"],"method":"GET","origin":"https://analyticsdata.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/metadata","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.googleAdsLinks.create": {"action":"properties.google_ads_links.share","body":"json","effects":["share"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/googleAdsLinks","scope":{"propertiesId":{"at":"propertiesId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "properties.googleAdsLinks.delete": {"action":"properties.google_ads_links.delete","effects":["delete"],"method":"DELETE","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/googleAdsLinks/{googleAdsLinksId}","scope":{"googleAdsLinksId":{"at":"googleAdsLinksId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.googleAdsLinks.list": {"action":"properties.google_ads_links.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/properties/{propertiesId}/googleAdsLinks","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.googleAdsLinks.patch": {"action":"properties.google_ads_links.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1beta/properties/{propertiesId}/googleAdsLinks/{googleAdsLinksId}","scope":{"googleAdsLinksId":{"at":"googleAdsLinksId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.keyEvents.create": {"action":"properties.key_events.write","body":"json","effects":["write"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/keyEvents","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.keyEvents.delete": {"action":"properties.key_events.delete","effects":["delete"],"method":"DELETE","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/keyEvents/{keyEventsId}","scope":{"keyEventsId":{"at":"keyEventsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.keyEvents.get": {"action":"properties.key_events.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}/keyEvents/{keyEventsId}","scope":{"keyEventsId":{"at":"keyEventsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.keyEvents.list": {"action":"properties.key_events.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/properties/{propertiesId}/keyEvents","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.keyEvents.patch": {"action":"properties.key_events.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1beta/properties/{propertiesId}/keyEvents/{keyEventsId}","scope":{"keyEventsId":{"at":"keyEventsId","from":"path"},"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.list": {"action":"properties.read","effects":["read"],"method":"GET","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken","showDeleted"],"path":"/v1beta/properties","scope":{}},
+      "properties.patch": {"action":"properties.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1beta/properties/{propertiesId}","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}},
+      "properties.runAccessReport": {"action":"properties.read","body":"json","effects":["read"],"method":"POST","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}:runAccessReport","scope":{"propertiesId":{"at":"propertiesId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "properties.runPivotReport": {"action":"properties.read","body":"json","effects":["read"],"method":"POST","origin":"https://analyticsdata.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}:runPivotReport","scope":{"propertiesId":{"at":"propertiesId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "properties.runRealtimeReport": {"action":"properties.read","body":"json","effects":["read"],"method":"POST","origin":"https://analyticsdata.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}:runRealtimeReport","scope":{"propertiesId":{"at":"propertiesId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "properties.runReport": {"action":"properties.read","body":"json","effects":["read"],"method":"POST","origin":"https://analyticsdata.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/properties/{propertiesId}:runReport","scope":{"propertiesId":{"at":"propertiesId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "properties.updateDataRetentionSettings": {"action":"properties.data_retention_settings.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://analyticsadmin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1beta/properties/{propertiesId}/dataRetentionSettings","scope":{"propertiesId":{"at":"propertiesId","from":"path"}}}
     }
   }
 }

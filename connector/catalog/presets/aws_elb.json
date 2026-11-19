@@ -1,76 +1,141 @@
 {
-  "title": "AWS ELB",
   "catalog": {
-    "replaced_by": "aws",
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["http", "slots", 0, "sigv4", "region"]},
-      {"key": "access_key", "label": "Access key ID", "secret": true, "credential": true},
-      {"key": "secret_key", "label": "Secret access key", "secret": true, "credential": true},
-      {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/", "sigv4": {"service": "elasticloadbalancing", "region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}},
     "actions": {
-      "delete.elasticloadbalancing": {"title": "Delete: elasticloadbalancing"},
-      "read": {"title": "Read everything the account can see"},
-      "write.elasticloadbalancing": {"title": "Write: elasticloadbalancing"}
-    }
+      "elasticloadbalancing": {
+        "title": "Elasticloadbalancing"
+      },
+      "elasticloadbalancing.delete": {
+        "title": "Delete"
+      },
+      "elasticloadbalancing.read": {
+        "title": "Read"
+      },
+      "elasticloadbalancing.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "origin": "https://example.com",
+            "path": "/",
+            "sigv4": {
+              "region": "us-east-1",
+              "secret": "secret_key",
+              "service": "elasticloadbalancing",
+              "session": "session_token"
+            },
+            "value": "access_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Service endpoint (https://service.region.amazonaws.com)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "key": "region",
+        "label": "Region (e.g. us-east-1)",
+        "path": [
+          "http",
+          "slots",
+          0,
+          "sigv4",
+          "region"
+        ]
+      },
+      {
+        "credential": true,
+        "key": "access_key",
+        "label": "Access key ID",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "secret_key",
+        "label": "Secret access key",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "session_token",
+        "label": "Session token (temporary credentials only)",
+        "secret": true
+      }
+    ],
+    "group": "api",
+    "replaced_by": "aws"
   },
+  "title": "AWS ELB",
   "http": {
     "origins": {"origin":["https://elasticloadbalancing-fips.{region}.amazonaws.com","https://elasticloadbalancing.{region}.amazonaws.com"]},
     "operations": {
-      "AddListenerCertificates": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"AddListenerCertificates"},"body":"form","scope":{"ListenerArn":{"from":"form","at":"ListenerArn"}}},
-      "AddTags": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"AddTags"},"body":"form","scope":{}},
-      "AddTrustStoreRevocations": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"AddTrustStoreRevocations"},"body":"form","scope":{"TrustStoreArn":{"from":"form","at":"TrustStoreArn"}}},
-      "CreateListener": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"CreateListener"},"body":"form","scope":{"LoadBalancerArn":{"from":"form","at":"LoadBalancerArn"}}},
-      "CreateLoadBalancer": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"CreateLoadBalancer"},"body":"form","scope":{"Name":{"from":"form","at":"Name"}}},
-      "CreateRule": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"CreateRule"},"body":"form","scope":{"ListenerArn":{"from":"form","at":"ListenerArn"}}},
-      "CreateTargetGroup": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"CreateTargetGroup"},"body":"form","scope":{"Name":{"from":"form","at":"Name"}}},
-      "CreateTrustStore": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"CreateTrustStore"},"body":"form","scope":{"Name":{"from":"form","at":"Name"}}},
-      "DeleteListener": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeleteListener"},"body":"form","scope":{"ListenerArn":{"from":"form","at":"ListenerArn"}}},
-      "DeleteLoadBalancer": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeleteLoadBalancer"},"body":"form","scope":{"LoadBalancerArn":{"from":"form","at":"LoadBalancerArn"}}},
-      "DeleteRule": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeleteRule"},"body":"form","scope":{"RuleArn":{"from":"form","at":"RuleArn"}}},
-      "DeleteSharedTrustStoreAssociation": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeleteSharedTrustStoreAssociation"},"body":"form","scope":{"TrustStoreArn":{"from":"form","at":"TrustStoreArn"},"ResourceArn":{"from":"form","at":"ResourceArn"}}},
-      "DeleteTargetGroup": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeleteTargetGroup"},"body":"form","scope":{"TargetGroupArn":{"from":"form","at":"TargetGroupArn"}}},
-      "DeleteTrustStore": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeleteTrustStore"},"body":"form","scope":{"TrustStoreArn":{"from":"form","at":"TrustStoreArn"}}},
-      "DeregisterTargets": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DeregisterTargets"},"body":"form","scope":{"TargetGroupArn":{"from":"form","at":"TargetGroupArn"}}},
-      "DescribeAccountLimits": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeAccountLimits"},"body":"form","scope":{}},
-      "DescribeCapacityReservation": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeCapacityReservation"},"body":"form","scope":{"LoadBalancerArn":{"from":"form","at":"LoadBalancerArn"}}},
-      "DescribeListenerAttributes": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeListenerAttributes"},"body":"form","scope":{"ListenerArn":{"from":"form","at":"ListenerArn"}}},
-      "DescribeListenerCertificates": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeListenerCertificates"},"body":"form","scope":{"ListenerArn":{"from":"form","at":"ListenerArn"}}},
-      "DescribeListeners": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeListeners"},"body":"form","scope":{}},
-      "DescribeLoadBalancerAttributes": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeLoadBalancerAttributes"},"body":"form","scope":{"LoadBalancerArn":{"from":"form","at":"LoadBalancerArn"}}},
-      "DescribeLoadBalancers": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeLoadBalancers"},"body":"form","scope":{}},
-      "DescribeRules": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeRules"},"body":"form","scope":{}},
-      "DescribeSSLPolicies": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeSSLPolicies"},"body":"form","scope":{}},
-      "DescribeTags": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeTags"},"body":"form","scope":{}},
-      "DescribeTargetGroupAttributes": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeTargetGroupAttributes"},"body":"form","scope":{"TargetGroupArn":{"from":"form","at":"TargetGroupArn"}}},
-      "DescribeTargetGroups": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeTargetGroups"},"body":"form","scope":{}},
-      "DescribeTargetHealth": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeTargetHealth"},"body":"form","scope":{"TargetGroupArn":{"from":"form","at":"TargetGroupArn"}}},
-      "DescribeTrustStoreAssociations": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeTrustStoreAssociations"},"body":"form","scope":{"TrustStoreArn":{"from":"form","at":"TrustStoreArn"}}},
-      "DescribeTrustStoreRevocations": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeTrustStoreRevocations"},"body":"form","scope":{"TrustStoreArn":{"from":"form","at":"TrustStoreArn"}}},
-      "DescribeTrustStores": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"DescribeTrustStores"},"body":"form","scope":{}},
-      "GetResourcePolicy": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"GetResourcePolicy"},"body":"form","scope":{"ResourceArn":{"from":"form","at":"ResourceArn"}}},
-      "GetTrustStoreCaCertificatesBundle": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"GetTrustStoreCaCertificatesBundle"},"body":"form","scope":{"TrustStoreArn":{"from":"form","at":"TrustStoreArn"}}},
-      "GetTrustStoreRevocationContent": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"GetTrustStoreRevocationContent"},"body":"form","scope":{"TrustStoreArn":{"from":"form","at":"TrustStoreArn"}}},
-      "ModifyCapacityReservation": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ModifyCapacityReservation"},"body":"form","scope":{"LoadBalancerArn":{"from":"form","at":"LoadBalancerArn"}}},
-      "ModifyIpPools": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ModifyIpPools"},"body":"form","scope":{"LoadBalancerArn":{"from":"form","at":"LoadBalancerArn"}}},
-      "ModifyListener": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ModifyListener"},"body":"form","scope":{"ListenerArn":{"from":"form","at":"ListenerArn"}}},
-      "ModifyListenerAttributes": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ModifyListenerAttributes"},"body":"form","scope":{"ListenerArn":{"from":"form","at":"ListenerArn"}}},
-      "ModifyLoadBalancerAttributes": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ModifyLoadBalancerAttributes"},"body":"form","scope":{"LoadBalancerArn":{"from":"form","at":"LoadBalancerArn"}}},
-      "ModifyRule": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ModifyRule"},"body":"form","scope":{"RuleArn":{"from":"form","at":"RuleArn"}}},
-      "ModifyTargetGroup": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ModifyTargetGroup"},"body":"form","scope":{"TargetGroupArn":{"from":"form","at":"TargetGroupArn"}}},
-      "ModifyTargetGroupAttributes": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ModifyTargetGroupAttributes"},"body":"form","scope":{"TargetGroupArn":{"from":"form","at":"TargetGroupArn"}}},
-      "ModifyTrustStore": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"ModifyTrustStore"},"body":"form","scope":{"TrustStoreArn":{"from":"form","at":"TrustStoreArn"}}},
-      "RegisterTargets": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"RegisterTargets"},"body":"form","scope":{"TargetGroupArn":{"from":"form","at":"TargetGroupArn"}}},
-      "RemoveListenerCertificates": {"action":"delete.elasticloadbalancing","effects":["delete"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"RemoveListenerCertificates"},"body":"form","scope":{"ListenerArn":{"from":"form","at":"ListenerArn"}}},
-      "RemoveTags": {"action":"delete.elasticloadbalancing","effects":["delete"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"RemoveTags"},"body":"form","scope":{}},
-      "RemoveTrustStoreRevocations": {"action":"delete.elasticloadbalancing","effects":["delete"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"RemoveTrustStoreRevocations"},"body":"form","scope":{"TrustStoreArn":{"from":"form","at":"TrustStoreArn"}}},
-      "SetIpAddressType": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"SetIpAddressType"},"body":"form","scope":{"LoadBalancerArn":{"from":"form","at":"LoadBalancerArn"}}},
-      "SetRulePriorities": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"SetRulePriorities"},"body":"form","scope":{}},
-      "SetSecurityGroups": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"SetSecurityGroups"},"body":"form","scope":{"LoadBalancerArn":{"from":"form","at":"LoadBalancerArn"}}},
-      "SetSubnets": {"action":"write.elasticloadbalancing","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"SetSubnets"},"body":"form","scope":{"LoadBalancerArn":{"from":"form","at":"LoadBalancerArn"}}}
+      "AddListenerCertificates": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"AddListenerCertificates"},"method":"POST","origin":"{origin}","path":"/","scope":{"ListenerArn":{"at":"ListenerArn","from":"form"}}},
+      "AddTags": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"AddTags"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "AddTrustStoreRevocations": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"AddTrustStoreRevocations"},"method":"POST","origin":"{origin}","path":"/","scope":{"TrustStoreArn":{"at":"TrustStoreArn","from":"form"}}},
+      "CreateListener": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"CreateListener"},"method":"POST","origin":"{origin}","path":"/","scope":{"LoadBalancerArn":{"at":"LoadBalancerArn","from":"form"}}},
+      "CreateLoadBalancer": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"CreateLoadBalancer"},"method":"POST","origin":"{origin}","path":"/","scope":{"Name":{"at":"Name","from":"form"}}},
+      "CreateRule": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"CreateRule"},"method":"POST","origin":"{origin}","path":"/","scope":{"ListenerArn":{"at":"ListenerArn","from":"form"}}},
+      "CreateTargetGroup": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"CreateTargetGroup"},"method":"POST","origin":"{origin}","path":"/","scope":{"Name":{"at":"Name","from":"form"}}},
+      "CreateTrustStore": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"CreateTrustStore"},"method":"POST","origin":"{origin}","path":"/","scope":{"Name":{"at":"Name","from":"form"}}},
+      "DeleteListener": {"action":"elasticloadbalancing.delete","body":"form","effects":["delete"],"fields":{"Action":"DeleteListener"},"method":"POST","origin":"{origin}","path":"/","scope":{"ListenerArn":{"at":"ListenerArn","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "DeleteLoadBalancer": {"action":"elasticloadbalancing.delete","body":"form","effects":["delete"],"fields":{"Action":"DeleteLoadBalancer"},"method":"POST","origin":"{origin}","path":"/","scope":{"LoadBalancerArn":{"at":"LoadBalancerArn","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "DeleteRule": {"action":"elasticloadbalancing.delete","body":"form","effects":["delete"],"fields":{"Action":"DeleteRule"},"method":"POST","origin":"{origin}","path":"/","scope":{"RuleArn":{"at":"RuleArn","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "DeleteSharedTrustStoreAssociation": {"action":"elasticloadbalancing.delete","body":"form","effects":["delete"],"fields":{"Action":"DeleteSharedTrustStoreAssociation"},"method":"POST","origin":"{origin}","path":"/","scope":{"ResourceArn":{"at":"ResourceArn","from":"form"},"TrustStoreArn":{"at":"TrustStoreArn","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "DeleteTargetGroup": {"action":"elasticloadbalancing.delete","body":"form","effects":["delete"],"fields":{"Action":"DeleteTargetGroup"},"method":"POST","origin":"{origin}","path":"/","scope":{"TargetGroupArn":{"at":"TargetGroupArn","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "DeleteTrustStore": {"action":"elasticloadbalancing.delete","body":"form","effects":["delete"],"fields":{"Action":"DeleteTrustStore"},"method":"POST","origin":"{origin}","path":"/","scope":{"TrustStoreArn":{"at":"TrustStoreArn","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "DeregisterTargets": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"DeregisterTargets"},"method":"POST","origin":"{origin}","path":"/","scope":{"TargetGroupArn":{"at":"TargetGroupArn","from":"form"}}},
+      "DescribeAccountLimits": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"DescribeAccountLimits"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeCapacityReservation": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"DescribeCapacityReservation"},"method":"POST","origin":"{origin}","path":"/","scope":{"LoadBalancerArn":{"at":"LoadBalancerArn","from":"form"}}},
+      "DescribeListenerAttributes": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"DescribeListenerAttributes"},"method":"POST","origin":"{origin}","path":"/","scope":{"ListenerArn":{"at":"ListenerArn","from":"form"}}},
+      "DescribeListenerCertificates": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"DescribeListenerCertificates"},"method":"POST","origin":"{origin}","path":"/","scope":{"ListenerArn":{"at":"ListenerArn","from":"form"}}},
+      "DescribeListeners": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"DescribeListeners"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeLoadBalancerAttributes": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"DescribeLoadBalancerAttributes"},"method":"POST","origin":"{origin}","path":"/","scope":{"LoadBalancerArn":{"at":"LoadBalancerArn","from":"form"}}},
+      "DescribeLoadBalancers": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"DescribeLoadBalancers"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeRules": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"DescribeRules"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeSSLPolicies": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"DescribeSSLPolicies"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeTags": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"DescribeTags"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeTargetGroupAttributes": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"DescribeTargetGroupAttributes"},"method":"POST","origin":"{origin}","path":"/","scope":{"TargetGroupArn":{"at":"TargetGroupArn","from":"form"}}},
+      "DescribeTargetGroups": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"DescribeTargetGroups"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DescribeTargetHealth": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"DescribeTargetHealth"},"method":"POST","origin":"{origin}","path":"/","scope":{"TargetGroupArn":{"at":"TargetGroupArn","from":"form"}}},
+      "DescribeTrustStoreAssociations": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"DescribeTrustStoreAssociations"},"method":"POST","origin":"{origin}","path":"/","scope":{"TrustStoreArn":{"at":"TrustStoreArn","from":"form"}}},
+      "DescribeTrustStoreRevocations": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"DescribeTrustStoreRevocations"},"method":"POST","origin":"{origin}","path":"/","scope":{"TrustStoreArn":{"at":"TrustStoreArn","from":"form"}}},
+      "DescribeTrustStores": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"DescribeTrustStores"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetResourcePolicy": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"GetResourcePolicy"},"method":"POST","origin":"{origin}","path":"/","scope":{"ResourceArn":{"at":"ResourceArn","from":"form"}}},
+      "GetTrustStoreCaCertificatesBundle": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"GetTrustStoreCaCertificatesBundle"},"method":"POST","origin":"{origin}","path":"/","scope":{"TrustStoreArn":{"at":"TrustStoreArn","from":"form"}}},
+      "GetTrustStoreRevocationContent": {"action":"elasticloadbalancing.read","body":"form","effects":["read"],"fields":{"Action":"GetTrustStoreRevocationContent"},"method":"POST","origin":"{origin}","path":"/","scope":{"TrustStoreArn":{"at":"TrustStoreArn","from":"form"}}},
+      "ModifyCapacityReservation": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"ModifyCapacityReservation"},"method":"POST","origin":"{origin}","path":"/","scope":{"LoadBalancerArn":{"at":"LoadBalancerArn","from":"form"}}},
+      "ModifyIpPools": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"ModifyIpPools"},"method":"POST","origin":"{origin}","path":"/","scope":{"LoadBalancerArn":{"at":"LoadBalancerArn","from":"form"}}},
+      "ModifyListener": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"ModifyListener"},"method":"POST","origin":"{origin}","path":"/","scope":{"ListenerArn":{"at":"ListenerArn","from":"form"}}},
+      "ModifyListenerAttributes": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"ModifyListenerAttributes"},"method":"POST","origin":"{origin}","path":"/","scope":{"ListenerArn":{"at":"ListenerArn","from":"form"}}},
+      "ModifyLoadBalancerAttributes": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"ModifyLoadBalancerAttributes"},"method":"POST","origin":"{origin}","path":"/","scope":{"LoadBalancerArn":{"at":"LoadBalancerArn","from":"form"}}},
+      "ModifyRule": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"ModifyRule"},"method":"POST","origin":"{origin}","path":"/","scope":{"RuleArn":{"at":"RuleArn","from":"form"}}},
+      "ModifyTargetGroup": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"ModifyTargetGroup"},"method":"POST","origin":"{origin}","path":"/","scope":{"TargetGroupArn":{"at":"TargetGroupArn","from":"form"}}},
+      "ModifyTargetGroupAttributes": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"ModifyTargetGroupAttributes"},"method":"POST","origin":"{origin}","path":"/","scope":{"TargetGroupArn":{"at":"TargetGroupArn","from":"form"}}},
+      "ModifyTrustStore": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"ModifyTrustStore"},"method":"POST","origin":"{origin}","path":"/","scope":{"TrustStoreArn":{"at":"TrustStoreArn","from":"form"}}},
+      "RegisterTargets": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"RegisterTargets"},"method":"POST","origin":"{origin}","path":"/","scope":{"TargetGroupArn":{"at":"TargetGroupArn","from":"form"}}},
+      "RemoveListenerCertificates": {"action":"elasticloadbalancing.delete","body":"form","effects":["delete"],"fields":{"Action":"RemoveListenerCertificates"},"method":"POST","origin":"{origin}","path":"/","scope":{"ListenerArn":{"at":"ListenerArn","from":"form"}}},
+      "RemoveTags": {"action":"elasticloadbalancing.delete","body":"form","effects":["delete"],"fields":{"Action":"RemoveTags"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "RemoveTrustStoreRevocations": {"action":"elasticloadbalancing.delete","body":"form","effects":["delete"],"fields":{"Action":"RemoveTrustStoreRevocations"},"method":"POST","origin":"{origin}","path":"/","scope":{"TrustStoreArn":{"at":"TrustStoreArn","from":"form"}}},
+      "SetIpAddressType": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"SetIpAddressType"},"method":"POST","origin":"{origin}","path":"/","scope":{"LoadBalancerArn":{"at":"LoadBalancerArn","from":"form"}}},
+      "SetRulePriorities": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"SetRulePriorities"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "SetSecurityGroups": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"SetSecurityGroups"},"method":"POST","origin":"{origin}","path":"/","scope":{"LoadBalancerArn":{"at":"LoadBalancerArn","from":"form"}}},
+      "SetSubnets": {"action":"elasticloadbalancing.write","body":"form","effects":["write"],"fields":{"Action":"SetSubnets"},"method":"POST","origin":"{origin}","path":"/","scope":{"LoadBalancerArn":{"at":"LoadBalancerArn","from":"form"}}}
     }
   }
 }

@@ -1,78 +1,313 @@
 {
-  "title": "Currents",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.currents.dev", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "admin.webhooks": {"title": "Admin: webhooks"},
-      "delete.actions": {"title": "Delete: actions"},
-      "delete.runs": {"title": "Delete: runs"},
-      "delete.terms": {"title": "Delete: terms"},
-      "delete.webhooks": {"title": "Delete: webhooks"},
-      "execute.actions": {"title": "Execute: actions"},
-      "execute.attachments": {"title": "Execute: attachments"},
-      "execute.github": {"title": "Execute: github"},
-      "execute.issues": {"title": "Execute: issues"},
-      "execute.link": {"title": "Execute: link"},
-      "execute.runs": {"title": "Execute: runs"},
-      "read": {"title": "Read everything the account can see"},
-      "share.share": {"title": "Share: share"},
-      "write.actions": {"title": "Write: actions"},
-      "write.attachments": {"title": "Write: attachments"},
-      "write.sessions": {"title": "Write: sessions"}
-    }
+      "actions": {
+        "title": "Actions"
+      },
+      "actions.delete": {
+        "title": "Delete"
+      },
+      "actions.read": {
+        "title": "Read"
+      },
+      "actions.tests": {
+        "title": "Tests"
+      },
+      "actions.tests.read": {
+        "title": "Read"
+      },
+      "actions.write": {
+        "title": "Create and edit"
+      },
+      "context": {
+        "title": "Context"
+      },
+      "context.read": {
+        "title": "Read"
+      },
+      "errors": {
+        "title": "Errors"
+      },
+      "errors.read": {
+        "title": "Read"
+      },
+      "instances": {
+        "title": "Instances"
+      },
+      "instances.read": {
+        "title": "Read"
+      },
+      "integrations": {
+        "title": "Integrations"
+      },
+      "integrations.jira": {
+        "title": "Jira"
+      },
+      "integrations.jira.projects": {
+        "title": "Projects"
+      },
+      "integrations.jira.projects.issue_types": {
+        "title": "Issue types"
+      },
+      "integrations.jira.projects.issue_types.read": {
+        "title": "Read"
+      },
+      "integrations.jira.projects.read": {
+        "title": "Read"
+      },
+      "me": {
+        "title": "Me"
+      },
+      "me.organizations": {
+        "title": "Organizations"
+      },
+      "me.organizations.read": {
+        "title": "Read"
+      },
+      "projects": {
+        "title": "Projects"
+      },
+      "projects.insights": {
+        "title": "Insights"
+      },
+      "projects.insights.read": {
+        "title": "Read"
+      },
+      "projects.jira": {
+        "title": "Jira"
+      },
+      "projects.jira.issues": {
+        "title": "Issues"
+      },
+      "projects.jira.issues.link": {
+        "title": "Link"
+      },
+      "projects.jira.issues.link.send": {
+        "title": "Send"
+      },
+      "projects.jira.issues.send": {
+        "title": "Send"
+      },
+      "projects.pull_requests": {
+        "title": "Pull requests"
+      },
+      "projects.pull_requests.read": {
+        "title": "Read"
+      },
+      "projects.read": {
+        "title": "Read"
+      },
+      "projects.runs": {
+        "title": "Runs"
+      },
+      "projects.runs.read": {
+        "title": "Read"
+      },
+      "projects.sessions": {
+        "title": "Sessions"
+      },
+      "projects.sessions.read": {
+        "title": "Read"
+      },
+      "projects.terms": {
+        "title": "Terms"
+      },
+      "projects.terms.delete": {
+        "title": "Delete"
+      },
+      "projects.terms.read": {
+        "title": "Read"
+      },
+      "runs": {
+        "title": "Runs"
+      },
+      "runs.attachments": {
+        "title": "Attachments"
+      },
+      "runs.attachments.write": {
+        "title": "Create and edit"
+      },
+      "runs.cancel_ci": {
+        "title": "Cancel ci"
+      },
+      "runs.cancel_ci.github": {
+        "title": "Github"
+      },
+      "runs.cancel_ci.github.write": {
+        "title": "Create and edit"
+      },
+      "runs.context_links": {
+        "title": "Context links"
+      },
+      "runs.context_links.share": {
+        "title": "Share"
+      },
+      "runs.delete": {
+        "title": "Delete"
+      },
+      "runs.execute": {
+        "title": "Run"
+      },
+      "runs.read": {
+        "title": "Read"
+      },
+      "runs.write": {
+        "title": "Create and edit"
+      },
+      "sessions": {
+        "title": "Sessions"
+      },
+      "sessions.attachments": {
+        "title": "Attachments"
+      },
+      "sessions.attachments.read": {
+        "title": "Read"
+      },
+      "sessions.attachments.write": {
+        "title": "Create and edit"
+      },
+      "sessions.delete": {
+        "title": "Delete"
+      },
+      "sessions.read": {
+        "title": "Read"
+      },
+      "sessions.write": {
+        "title": "Create and edit"
+      },
+      "share": {
+        "title": "Share"
+      },
+      "share.share": {
+        "title": "Share: share"
+      },
+      "signature": {
+        "title": "Signature"
+      },
+      "signature.read": {
+        "title": "Read"
+      },
+      "spec_files": {
+        "title": "Spec files"
+      },
+      "spec_files.metrics": {
+        "title": "Metrics"
+      },
+      "spec_files.metrics.read": {
+        "title": "Read"
+      },
+      "spec_files.read": {
+        "title": "Read"
+      },
+      "test_results": {
+        "title": "Test results"
+      },
+      "test_results.read": {
+        "title": "Read"
+      },
+      "tests": {
+        "title": "Tests"
+      },
+      "tests.metrics": {
+        "title": "Metrics"
+      },
+      "tests.metrics.read": {
+        "title": "Read"
+      },
+      "tests.read": {
+        "title": "Read"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.delete": {
+        "title": "Delete"
+      },
+      "webhooks.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.currents.dev",
+            "path": "/v1",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Currents",
   "http": {
     "operations": {
-      "addSessionAttachments": {"action":"write.attachments","effects":["write"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/sessions/{sessionId}/attachments","body":"json","scope":{"sessionId":{"from":"path","at":"sessionId"}}},
-      "attachRunAttachments": {"action":"execute.attachments","effects":["execute"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/runs/{runId}/attachments","body":"json","scope":{"runId":{"from":"path","at":"runId"}}},
-      "attachRunAttachmentsByBuild": {"action":"execute.attachments","effects":["execute"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/runs/attachments","body":"json","scope":{}},
-      "cancelRun": {"action":"execute.runs","effects":["execute"],"method":"PUT","origin":"https://api.currents.dev","path":"/v1/runs/{runId}/cancel","scope":{"runId":{"from":"path","at":"runId"}}},
-      "cancelRunByGithubCI": {"action":"execute.github","effects":["execute"],"method":"PUT","origin":"https://api.currents.dev","path":"/v1/runs/cancel-ci/github","body":"json","scope":{"githubRunId":{"from":"body","at":"/githubRunId"}}},
-      "createAction": {"action":"execute.actions","effects":["execute"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/actions","params":["projectId"],"body":"json","scope":{"projectId":{"from":"query","at":"projectId"},"name":{"from":"body","at":"/name"}}},
-      "createJiraIssueFromRunTest": {"action":"execute.issues","effects":["execute"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/projects/{projectId}/jira/issues","body":"json","scope":{"projectId":{"from":"path","at":"projectId"},"runId":{"from":"body","at":"/runId"},"testId":{"from":"body","at":"/testId"},"jiraInstallationId":{"from":"body","at":"/jiraInstallationId"},"jiraProjectId":{"from":"body","at":"/jiraProjectId"}}},
-      "createSession": {"action":"write.sessions","effects":["write"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/sessions","body":"json","scope":{"projectId":{"from":"body","at":"/projectId"}}},
-      "createShareLink": {"action":"share.share","effects":["share"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/share","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "createWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/webhooks","params":["projectId"],"body":"json","scope":{"projectId":{"from":"query","at":"projectId"},"url":{"from":"body","at":"/url"}}},
-      "deleteAction": {"action":"delete.actions","effects":["delete"],"method":"DELETE","origin":"https://api.currents.dev","path":"/v1/actions/{actionId}","scope":{"actionId":{"from":"path","at":"actionId"}}},
-      "deleteProjectTerm": {"action":"delete.terms","effects":["delete"],"method":"DELETE","origin":"https://api.currents.dev","path":"/v1/projects/{projectId}/terms/{termType}/{termId}","scope":{"projectId":{"from":"path","at":"projectId"},"termType":{"from":"path","at":"termType"},"termId":{"from":"path","at":"termId"}}},
-      "deleteRun": {"action":"delete.runs","effects":["delete"],"method":"DELETE","origin":"https://api.currents.dev","path":"/v1/runs/{runId}","scope":{"runId":{"from":"path","at":"runId"}}},
-      "deleteWebhook": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.currents.dev","path":"/v1/webhooks/{hookId}","scope":{"hookId":{"from":"path","at":"hookId"}}},
-      "disableAction": {"action":"write.actions","effects":["write"],"method":"PUT","origin":"https://api.currents.dev","path":"/v1/actions/{actionId}/disable","scope":{"actionId":{"from":"path","at":"actionId"}}},
-      "enableAction": {"action":"write.actions","effects":["write"],"method":"PUT","origin":"https://api.currents.dev","path":"/v1/actions/{actionId}/enable","scope":{"actionId":{"from":"path","at":"actionId"}}},
-      "getAction": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/actions/{actionId}","params":["projectId","date_start","date_end","page","limit","search","action_type","action_id","dir","status"],"scope":{"actionId":{"from":"path","at":"actionId"}}},
-      "getAffectedTestExecutions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/actions/tests/{signature}","params":["projectId","date_start","date_end","limit","starting_after","ending_before","search"],"scope":{"signature":{"from":"path","at":"signature"},"projectId":{"from":"query","at":"projectId"}}},
-      "getContext": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/context","params":["run_id","instance_id","test_id","attempt","format","detail","limit","page","max_length","include_flaky"],"scope":{}},
-      "getErrorsExplorer": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/errors/{projectId}","params":["date_start","date_end","page","limit","tags[]","tags_logical_operator","branches[]","groups[]","authors[]","error_target","error_message","error_category","error_action","test_title","order_by","dir","group_by[]","metric","top_n"],"scope":{"projectId":{"from":"path","at":"projectId"}}},
-      "getInstance": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/instances/{instanceId}","scope":{"instanceId":{"from":"path","at":"instanceId"}}},
-      "getProject": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/projects/{projectId}","scope":{"projectId":{"from":"path","at":"projectId"}}},
-      "getProjectInsights": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/projects/{projectId}/insights","params":["date_start","date_end","resolution","tags[]","branches[]","groups[]","authors[]"],"scope":{"projectId":{"from":"path","at":"projectId"}}},
-      "getRun": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/runs/{runId}","params":["include_attachments","projectId","ciBuildId","branch","tags[]","tag[]","pwLastRun"],"scope":{"runId":{"from":"path","at":"runId"}}},
-      "getSession": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/sessions/{sessionId}","scope":{"sessionId":{"from":"path","at":"sessionId"}}},
-      "getSpecFiles": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/spec-files/{projectId}","params":["date_start","date_end","page","limit","tags[]","branches[]","groups[]","authors[]","environments[]","order","dir","specNameFilter","includeFailedInDuration"],"scope":{"projectId":{"from":"path","at":"projectId"}}},
-      "getSpecFilesMetrics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/spec-files/{projectId}/metrics","params":["date_start","date_end","tags[]","branches[]","groups[]","authors[]","environments[]","signature","spec_name_filter","include_failed_in_duration"],"scope":{"projectId":{"from":"path","at":"projectId"}}},
-      "getTestResults": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/test-results/{signature}","params":["date_start","date_end","limit","starting_after","ending_before","tags[]","branches[]","authors[]","groups[]","environments[]","branch[]","tag[]","status[]","flaky","annotations"],"scope":{"signature":{"from":"path","at":"signature"}}},
-      "getTestSignature": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/signature/test","body":"json","scope":{"projectId":{"from":"body","at":"/projectId"}}},
-      "getTestsExplorer": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/tests/{projectId}","params":["date_start","date_end","page","limit","tags[]","branches[]","groups[]","authors[]","environments[]","order","dir","spec","title","min_executions","test_state[]","metric_settings","annotations"],"scope":{"projectId":{"from":"path","at":"projectId"}}},
-      "getTestsMetrics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/tests/{projectId}/metrics","params":["date_start","date_end","tags[]","branches[]","groups[]","authors[]","environments[]","signature","spec","title","test_state[]","metric_settings","annotations"],"scope":{"projectId":{"from":"path","at":"projectId"}}},
-      "getWebhook": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/webhooks/{hookId}","scope":{"hookId":{"from":"path","at":"hookId"}}},
-      "linkJiraIssueFromRunTest": {"action":"execute.link","effects":["execute"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/projects/{projectId}/jira/issues/{jiraIssueKey}/link","body":"json","scope":{"projectId":{"from":"path","at":"projectId"},"jiraIssueKey":{"from":"path","at":"jiraIssueKey"},"runId":{"from":"body","at":"/runId"},"testId":{"from":"body","at":"/testId"},"jiraInstallationId":{"from":"body","at":"/jiraInstallationId"},"jiraProjectId":{"from":"body","at":"/jiraProjectId"}}},
-      "listActions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/actions","params":["projectId","status","search"],"scope":{"projectId":{"from":"query","at":"projectId"}}},
-      "listJiraIssueTypes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/integrations/jira/projects/{jiraProjectId}/issue-types","params":["jira_installation_id","search","page","limit"],"scope":{"jiraProjectId":{"from":"path","at":"jiraProjectId"},"jira_installation_id":{"from":"query","at":"jira_installation_id"}}},
-      "listJiraProjects": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/integrations/jira/projects","params":["jira_installation_id","search","page","limit"],"scope":{"jira_installation_id":{"from":"query","at":"jira_installation_id"}}},
-      "listMyOrganizations": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/me/organizations","scope":{}},
-      "listProjectPullRequests": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/projects/{projectId}/pull-requests","params":["limit","starting_after","ending_before","runs_per_pr","tags[]","branches[]","authors[]","tag_operator","search","pr_search","status","completion_state","environments[]","pr_id","date_start","date_end","order","dir"],"scope":{"projectId":{"from":"path","at":"projectId"}}},
-      "listProjectRuns": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/projects/{projectId}/runs","params":["limit","starting_after","ending_before","tags[]","branches[]","authors[]","environments[]","branch","tag","tag_operator","search","pr_id","author","status","completion_state","date_start","date_end"],"scope":{"projectId":{"from":"path","at":"projectId"}}},
-      "listProjectTermsByType": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/projects/{projectId}/terms/{termType}","params":["limit","dir","starting_after","ending_before","search"],"scope":{"projectId":{"from":"path","at":"projectId"},"termType":{"from":"path","at":"termType"}}},
-      "listProjects": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/projects","params":["limit","starting_after","ending_before"],"scope":{}},
-      "listSessionAttachments": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/sessions/{sessionId}/attachments","scope":{"sessionId":{"from":"path","at":"sessionId"}}},
-      "listWebhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/webhooks","params":["projectId"],"scope":{"projectId":{"from":"query","at":"projectId"}}},
-      "resetRun": {"action":"execute.runs","effects":["execute"],"method":"PUT","origin":"https://api.currents.dev","path":"/v1/runs/{runId}/reset","body":"json","scope":{"runId":{"from":"path","at":"runId"}}},
-      "updateAction": {"action":"write.actions","effects":["write"],"method":"PUT","origin":"https://api.currents.dev","path":"/v1/actions/{actionId}","body":"json","scope":{"actionId":{"from":"path","at":"actionId"}}},
-      "updateWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"PUT","origin":"https://api.currents.dev","path":"/v1/webhooks/{hookId}","body":"json","scope":{"hookId":{"from":"path","at":"hookId"}}}
+      "addSessionAttachments": {"action":"sessions.attachments.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/sessions/{sessionId}/attachments","scope":{"sessionId":{"at":"sessionId","from":"path"}}},
+      "attachRunAttachments": {"action":"runs.attachments.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/runs/{runId}/attachments","scope":{"groupId":{"at":"/groupId","from":"body","optional":true},"instanceId":{"at":"/instanceId","from":"body","optional":true},"machineId":{"at":"/machineId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"runId":{"at":"runId","from":"path"},"testId":{"at":"/testId","from":"body","optional":true}}},
+      "attachRunAttachmentsByBuild": {"action":"runs.attachments.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/runs/attachments","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "cancelRun": {"action":"runs.write","effects":["write"],"method":"PUT","origin":"https://api.currents.dev","path":"/v1/runs/{runId}/cancel","scope":{"runId":{"at":"runId","from":"path"}}},
+      "cancelRunByGithubCI": {"action":"runs.cancel_ci.github.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.currents.dev","path":"/v1/runs/cancel-ci/github","scope":{"ciBuildId":{"at":"/ciBuildId","from":"body","optional":true},"githubRunId":{"at":"/githubRunId","from":"body"},"projectId":{"at":"/projectId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createAction": {"action":"actions.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.currents.dev","params":["projectId"],"path":"/v1/actions","scope":{"name":{"at":"/name","from":"body"},"projectId":{"at":"projectId","from":"query"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createJiraIssueFromRunTest": {"action":"projects.jira.issues.send","body":"json","effects":["send","write"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/projects/{projectId}/jira/issues","scope":{"jiraInstallationId":{"at":"/jiraInstallationId","from":"body"},"jiraProjectId":{"at":"/jiraProjectId","from":"body"},"projectId":{"at":"projectId","from":"path"},"request":{"at":"","from":"body","type":"object"},"runId":{"at":"/runId","from":"body"},"testId":{"at":"/testId","from":"body"}}},
+      "createRunContextLinks": {"action":"runs.context_links.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/runs/{runId}/context-links","scope":{"request":{"at":"","from":"body","type":"object"},"runId":{"at":"runId","from":"path"}}},
+      "createSession": {"action":"sessions.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/sessions","scope":{"projectId":{"at":"/projectId","from":"body"}}},
+      "createShareLink": {"action":"share.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/share","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createWebhook": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.currents.dev","params":["projectId"],"path":"/v1/webhooks","scope":{"projectId":{"at":"projectId","from":"query"},"url":{"at":"/url","from":"body"}}},
+      "deleteAction": {"action":"actions.delete","effects":["delete"],"method":"DELETE","origin":"https://api.currents.dev","path":"/v1/actions/{actionId}","scope":{"actionId":{"at":"actionId","from":"path"}}},
+      "deleteProjectTerm": {"action":"projects.terms.delete","effects":["delete"],"method":"DELETE","origin":"https://api.currents.dev","path":"/v1/projects/{projectId}/terms/{termType}/{termId}","scope":{"projectId":{"at":"projectId","from":"path"},"termId":{"at":"termId","from":"path"},"termType":{"at":"termType","from":"path"}}},
+      "deleteRun": {"action":"runs.delete","effects":["delete"],"method":"DELETE","origin":"https://api.currents.dev","path":"/v1/runs/{runId}","scope":{"runId":{"at":"runId","from":"path"}}},
+      "deleteSession": {"action":"sessions.delete","effects":["delete"],"method":"DELETE","origin":"https://api.currents.dev","path":"/v1/sessions/{sessionId}","scope":{"sessionId":{"at":"sessionId","from":"path"}}},
+      "deleteWebhook": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"https://api.currents.dev","path":"/v1/webhooks/{hookId}","scope":{"hookId":{"at":"hookId","from":"path"}}},
+      "disableAction": {"action":"actions.write","effects":["write"],"method":"PUT","origin":"https://api.currents.dev","path":"/v1/actions/{actionId}/disable","scope":{"actionId":{"at":"actionId","from":"path"}}},
+      "enableAction": {"action":"actions.write","effects":["write"],"method":"PUT","origin":"https://api.currents.dev","path":"/v1/actions/{actionId}/enable","scope":{"actionId":{"at":"actionId","from":"path"}}},
+      "findRun": {"action":"runs.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["projectId","ciBuildId","branch","tags[]","tag[]","pwLastRun","include_attachments"],"path":"/v1/runs/find","scope":{"ciBuildId":{"at":"ciBuildId","from":"query","optional":true},"projectId":{"at":"projectId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "getAction": {"action":"actions.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["projectId","date_start","date_end","page","limit","search","action_type","action_id","dir","status"],"path":"/v1/actions/{actionId}","path_patterns":{"actionId":"[^t].*|t(?:|[^e].*|e(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))"},"scope":{"actionId":{"at":"actionId","from":"path"}}},
+      "getAffectedTestExecutions": {"action":"actions.tests.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["projectId","date_start","date_end","limit","starting_after","ending_before","search"],"path":"/v1/actions/tests/{signature}","scope":{"projectId":{"at":"projectId","from":"query"},"signature":{"at":"signature","from":"path"}}},
+      "getAffectedTestExecutionsByAction": {"action":"actions.tests.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["date_start","date_end","limit","starting_after","ending_before","search"],"path":"/v1/actions/{actionId}/tests","path_patterns":{"actionId":"[^t].*|t(?:|[^e].*|e(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))"},"scope":{"actionId":{"at":"actionId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getContext": {"action":"context.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["run_id","instance_id","test_id","attempt","format","detail","limit","page","max_length","include_flaky"],"path":"/v1/context","scope":{}},
+      "getErrorsExplorer": {"action":"errors.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["date_start","date_end","page","limit","tags[]","tags_logical_operator","branches[]","groups[]","authors[]","error_target","error_message","error_category","error_action","test_title","order_by","dir","group_by[]","metric","top_n"],"path":"/v1/errors/{projectId}","scope":{"projectId":{"at":"projectId","from":"path"}}},
+      "getInstance": {"action":"instances.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/instances/{instanceId}","scope":{"instanceId":{"at":"instanceId","from":"path"}}},
+      "getProject": {"action":"projects.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/projects/{projectId}","scope":{"projectId":{"at":"projectId","from":"path"}}},
+      "getProjectInsights": {"action":"projects.insights.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["date_start","date_end","resolution","tags[]","branches[]","groups[]","authors[]"],"path":"/v1/projects/{projectId}/insights","scope":{"projectId":{"at":"projectId","from":"path"}}},
+      "getProjectSessions": {"action":"projects.sessions.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["limit","starting_after","ending_before","branches[]","tags[]","tag_operator","pr_id","search","date_start","date_end"],"path":"/v1/projects/{projectId}/sessions","scope":{"pr_id":{"at":"pr_id","from":"query","optional":true},"projectId":{"at":"projectId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getRun": {"action":"runs.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["include_attachments","projectId","ciBuildId","branch","tags[]","tag[]","pwLastRun"],"path":"/v1/runs/{runId}","path_patterns":{"runId":"[^f].*|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^d].*|d.+)))"},"scope":{"runId":{"at":"runId","from":"path"}}},
+      "getSession": {"action":"sessions.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/sessions/{sessionId}","scope":{"sessionId":{"at":"sessionId","from":"path"}}},
+      "getSpecFiles": {"action":"spec_files.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["date_start","date_end","page","limit","tags[]","branches[]","groups[]","authors[]","environments[]","order","dir","specNameFilter","includeFailedInDuration"],"path":"/v1/spec-files/{projectId}","scope":{"projectId":{"at":"projectId","from":"path"}}},
+      "getSpecFilesMetrics": {"action":"spec_files.metrics.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["date_start","date_end","tags[]","branches[]","groups[]","authors[]","environments[]","signature","spec_name_filter","include_failed_in_duration"],"path":"/v1/spec-files/{projectId}/metrics","scope":{"projectId":{"at":"projectId","from":"path"}}},
+      "getTestResults": {"action":"test_results.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["date_start","date_end","limit","starting_after","ending_before","tags[]","branches[]","authors[]","groups[]","environments[]","branch[]","tag[]","status[]","flaky","annotations"],"path":"/v1/test-results/{signature}","scope":{"signature":{"at":"signature","from":"path"}}},
+      "getTestSignature": {"action":"signature.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/signature/test","scope":{"projectId":{"at":"/projectId","from":"body"}}},
+      "getTestsExplorer": {"action":"tests.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["date_start","date_end","page","limit","tags[]","branches[]","groups[]","authors[]","environments[]","order","dir","spec","title","min_executions","test_state[]","metric_settings","annotations"],"path":"/v1/tests/{projectId}","scope":{"projectId":{"at":"projectId","from":"path"}}},
+      "getTestsMetrics": {"action":"tests.metrics.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["date_start","date_end","tags[]","branches[]","groups[]","authors[]","environments[]","signature","spec","title","test_state[]","metric_settings","annotations"],"path":"/v1/tests/{projectId}/metrics","scope":{"projectId":{"at":"projectId","from":"path"}}},
+      "getWebhook": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/webhooks/{hookId}","scope":{"hookId":{"at":"hookId","from":"path"}}},
+      "linkJiraIssueFromRunTest": {"action":"projects.jira.issues.link.send","body":"json","effects":["send","write"],"method":"POST","origin":"https://api.currents.dev","path":"/v1/projects/{projectId}/jira/issues/{jiraIssueKey}/link","scope":{"jiraInstallationId":{"at":"/jiraInstallationId","from":"body"},"jiraIssueKey":{"at":"jiraIssueKey","from":"path"},"jiraProjectId":{"at":"/jiraProjectId","from":"body"},"projectId":{"at":"projectId","from":"path"},"request":{"at":"","from":"body","type":"object"},"runId":{"at":"/runId","from":"body"},"testId":{"at":"/testId","from":"body"}}},
+      "listActions": {"action":"actions.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["projectId","status","search"],"path":"/v1/actions","scope":{"projectId":{"at":"projectId","from":"query"}}},
+      "listAffectedTests": {"action":"actions.tests.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["projectId","date_start","date_end","page","limit","search","action_type","action_id","dir","status"],"path":"/v1/actions/tests","scope":{"action_id":{"at":"action_id","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"projectId":{"at":"projectId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "listJiraIssueTypes": {"action":"integrations.jira.projects.issue_types.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["jira_installation_id","search","page","limit"],"path":"/v1/integrations/jira/projects/{jiraProjectId}/issue-types","scope":{"jiraProjectId":{"at":"jiraProjectId","from":"path"},"jira_installation_id":{"at":"jira_installation_id","from":"query"}}},
+      "listJiraProjects": {"action":"integrations.jira.projects.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["jira_installation_id","search","page","limit"],"path":"/v1/integrations/jira/projects","scope":{"jira_installation_id":{"at":"jira_installation_id","from":"query"}}},
+      "listMyOrganizations": {"action":"me.organizations.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/me/organizations","scope":{}},
+      "listProjectPullRequests": {"action":"projects.pull_requests.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["limit","starting_after","ending_before","runs_per_pr","tags[]","branches[]","authors[]","tag_operator","search","pr_search","status","completion_state","environments[]","pr_id","date_start","date_end","order","dir"],"path":"/v1/projects/{projectId}/pull-requests","scope":{"projectId":{"at":"projectId","from":"path"}}},
+      "listProjectRuns": {"action":"projects.runs.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["limit","starting_after","ending_before","tags[]","branches[]","authors[]","environments[]","branch","tag","tag_operator","search","pr_id","author","status","completion_state","date_start","date_end"],"path":"/v1/projects/{projectId}/runs","scope":{"projectId":{"at":"projectId","from":"path"}}},
+      "listProjectTermsByType": {"action":"projects.terms.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["limit","dir","starting_after","ending_before","search"],"path":"/v1/projects/{projectId}/terms/{termType}","scope":{"projectId":{"at":"projectId","from":"path"},"termType":{"at":"termType","from":"path"}}},
+      "listProjects": {"action":"projects.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["limit","starting_after","ending_before"],"path":"/v1/projects","scope":{}},
+      "listSessionAttachments": {"action":"sessions.attachments.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","path":"/v1/sessions/{sessionId}/attachments","scope":{"sessionId":{"at":"sessionId","from":"path"}}},
+      "listWebhooks": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://api.currents.dev","params":["projectId"],"path":"/v1/webhooks","scope":{"projectId":{"at":"projectId","from":"query"}}},
+      "resetRun": {"action":"runs.execute","body":"json","effects":["execute"],"method":"PUT","origin":"https://api.currents.dev","path":"/v1/runs/{runId}/reset","scope":{"runId":{"at":"runId","from":"path"}}},
+      "updateAction": {"action":"actions.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.currents.dev","path":"/v1/actions/{actionId}","scope":{"actionId":{"at":"actionId","from":"path"}}},
+      "updateWebhook": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.currents.dev","path":"/v1/webhooks/{hookId}","scope":{"hookId":{"at":"hookId","from":"path"}}}
     }
   }
 }

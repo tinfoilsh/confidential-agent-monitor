@@ -1,50 +1,118 @@
 {
-  "title": "AWS Textract",
   "catalog": {
-    "replaced_by": "aws",
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["http", "slots", 0, "sigv4", "region"]},
-      {"key": "access_key", "label": "Access key ID", "secret": true, "credential": true},
-      {"key": "secret_key", "label": "Secret access key", "secret": true, "credential": true},
-      {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/", "sigv4": {"service": "textract", "region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}},
     "actions": {
-      "generate.textract": {"title": "Generate: textract"},
-      "read": {"title": "Read everything the account can see"},
-      "write.textract": {"title": "Write: textract"}
-    }
+      "textract": {
+        "title": "Textract"
+      },
+      "textract.delete": {
+        "title": "Delete"
+      },
+      "textract.generate": {
+        "title": "Generate"
+      },
+      "textract.read": {
+        "title": "Read"
+      },
+      "textract.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "origin": "https://example.com",
+            "path": "/",
+            "sigv4": {
+              "region": "us-east-1",
+              "secret": "secret_key",
+              "service": "textract",
+              "session": "session_token"
+            },
+            "value": "access_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Service endpoint (https://service.region.amazonaws.com)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "key": "region",
+        "label": "Region (e.g. us-east-1)",
+        "path": [
+          "http",
+          "slots",
+          0,
+          "sigv4",
+          "region"
+        ]
+      },
+      {
+        "credential": true,
+        "key": "access_key",
+        "label": "Access key ID",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "secret_key",
+        "label": "Secret access key",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "session_token",
+        "label": "Session token (temporary credentials only)",
+        "secret": true
+      }
+    ],
+    "group": "api",
+    "replaced_by": "aws"
   },
+  "title": "AWS Textract",
   "http": {
     "origins": {"origin":["https://textract-fips.{region}.amazonaws.com","https://textract.{region}.amazonaws.com"]},
     "operations": {
-      "AnalyzeDocument": {"action":"generate.textract","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.AnalyzeDocument"},"body":"any","scope":{}},
-      "AnalyzeExpense": {"action":"generate.textract","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.AnalyzeExpense"},"body":"any","scope":{}},
-      "AnalyzeID": {"action":"generate.textract","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.AnalyzeID"},"body":"any","scope":{}},
-      "CreateAdapter": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.CreateAdapter"},"body":"any","scope":{}},
-      "CreateAdapterVersion": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.CreateAdapterVersion"},"body":"any","scope":{}},
-      "DeleteAdapter": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.DeleteAdapter"},"body":"any","scope":{}},
-      "DeleteAdapterVersion": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.DeleteAdapterVersion"},"body":"any","scope":{}},
-      "DetectDocumentText": {"action":"generate.textract","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.DetectDocumentText"},"body":"any","scope":{}},
-      "GetAdapter": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.GetAdapter"},"body":"any","scope":{}},
-      "GetAdapterVersion": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.GetAdapterVersion"},"body":"any","scope":{}},
-      "GetDocumentAnalysis": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.GetDocumentAnalysis"},"body":"any","scope":{}},
-      "GetDocumentTextDetection": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.GetDocumentTextDetection"},"body":"any","scope":{}},
-      "GetExpenseAnalysis": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.GetExpenseAnalysis"},"body":"any","scope":{}},
-      "GetLendingAnalysis": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.GetLendingAnalysis"},"body":"any","scope":{}},
-      "GetLendingAnalysisSummary": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.GetLendingAnalysisSummary"},"body":"any","scope":{}},
-      "ListAdapterVersions": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.ListAdapterVersions"},"body":"any","scope":{}},
-      "ListAdapters": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.ListAdapters"},"body":"any","scope":{}},
-      "ListTagsForResource": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.ListTagsForResource"},"body":"any","scope":{}},
-      "StartDocumentAnalysis": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.StartDocumentAnalysis"},"body":"any","scope":{}},
-      "StartDocumentTextDetection": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.StartDocumentTextDetection"},"body":"any","scope":{}},
-      "StartExpenseAnalysis": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.StartExpenseAnalysis"},"body":"any","scope":{}},
-      "StartLendingAnalysis": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.StartLendingAnalysis"},"body":"any","scope":{}},
-      "TagResource": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.TagResource"},"body":"any","scope":{}},
-      "UntagResource": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.UntagResource"},"body":"any","scope":{}},
-      "UpdateAdapter": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.UpdateAdapter"},"body":"any","scope":{}}
+      "AnalyzeDocument": {"action":"textract.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Textract.AnalyzeDocument"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "AnalyzeExpense": {"action":"textract.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Textract.AnalyzeExpense"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "AnalyzeID": {"action":"textract.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Textract.AnalyzeID"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateAdapter": {"action":"textract.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Textract.CreateAdapter"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "CreateAdapterVersion": {"action":"textract.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Textract.CreateAdapterVersion"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteAdapter": {"action":"textract.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"Textract.DeleteAdapter"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DeleteAdapterVersion": {"action":"textract.delete","body":"any","effects":["delete"],"headers":{"X-Amz-Target":"Textract.DeleteAdapterVersion"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "DetectDocumentText": {"action":"textract.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Textract.DetectDocumentText"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetAdapter": {"action":"textract.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Textract.GetAdapter"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetAdapterVersion": {"action":"textract.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Textract.GetAdapterVersion"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetDocumentAnalysis": {"action":"textract.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Textract.GetDocumentAnalysis"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetDocumentTextDetection": {"action":"textract.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Textract.GetDocumentTextDetection"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetExpenseAnalysis": {"action":"textract.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Textract.GetExpenseAnalysis"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetLendingAnalysis": {"action":"textract.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Textract.GetLendingAnalysis"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "GetLendingAnalysisSummary": {"action":"textract.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Textract.GetLendingAnalysisSummary"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListAdapterVersions": {"action":"textract.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Textract.ListAdapterVersions"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListAdapters": {"action":"textract.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Textract.ListAdapters"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "ListTagsForResource": {"action":"textract.read","body":"any","effects":["read"],"headers":{"X-Amz-Target":"Textract.ListTagsForResource"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartDocumentAnalysis": {"action":"textract.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Textract.StartDocumentAnalysis"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartDocumentTextDetection": {"action":"textract.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Textract.StartDocumentTextDetection"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartExpenseAnalysis": {"action":"textract.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Textract.StartExpenseAnalysis"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "StartLendingAnalysis": {"action":"textract.generate","body":"any","effects":["generate"],"headers":{"X-Amz-Target":"Textract.StartLendingAnalysis"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "TagResource": {"action":"textract.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Textract.TagResource"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UntagResource": {"action":"textract.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Textract.UntagResource"},"method":"POST","origin":"{origin}","path":"/","scope":{}},
+      "UpdateAdapter": {"action":"textract.write","body":"any","effects":["write"],"headers":{"X-Amz-Target":"Textract.UpdateAdapter"},"method":"POST","origin":"{origin}","path":"/","scope":{}}
     }
   }
 }

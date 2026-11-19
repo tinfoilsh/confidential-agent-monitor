@@ -1,72 +1,273 @@
 {
-  "title": "Chroma Vector Store",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your Chroma Vector Store origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://example.com", "path": "/api/v2", "header": "x-chroma-token"}]}},
     "actions": {
-      "delete.collections": {"title": "Delete: collections"},
-      "delete.databases": {"title": "Delete: databases"},
-      "delete.delete": {"title": "Delete: delete"},
-      "generate.add": {"title": "Generate: add"},
-      "generate.add_input": {"title": "Generate: add input"},
-      "generate.attach": {"title": "Generate: attach"},
-      "generate.collections": {"title": "Generate: collections"},
-      "generate.commit": {"title": "Generate: commit"},
-      "generate.databases": {"title": "Generate: databases"},
-      "generate.detach": {"title": "Generate: detach"},
-      "generate.fork": {"title": "Generate: fork"},
-      "generate.get": {"title": "Generate: get"},
-      "generate.query": {"title": "Generate: query"},
-      "generate.reset": {"title": "Generate: reset"},
-      "generate.search": {"title": "Generate: search"},
-      "generate.tenants": {"title": "Generate: tenants"},
-      "generate.update": {"title": "Generate: update"},
-      "generate.upsert": {"title": "Generate: upsert"},
-      "read": {"title": "Read everything the account can see"},
-      "write.collections": {"title": "Write: collections"},
-      "write.tenants": {"title": "Write: tenants"}
-    }
+      "auth": {
+        "title": "Auth"
+      },
+      "auth.identity": {
+        "title": "Identity"
+      },
+      "auth.identity.read": {
+        "title": "Read"
+      },
+      "collections": {
+        "title": "Collections"
+      },
+      "collections.read": {
+        "title": "Read"
+      },
+      "healthcheck": {
+        "title": "Healthcheck"
+      },
+      "healthcheck.read": {
+        "title": "Read"
+      },
+      "heartbeat": {
+        "title": "Heartbeat"
+      },
+      "heartbeat.read": {
+        "title": "Read"
+      },
+      "pre_flight_checks": {
+        "title": "Pre flight checks"
+      },
+      "pre_flight_checks.read": {
+        "title": "Read"
+      },
+      "reset": {
+        "title": "Reset"
+      },
+      "reset.admin": {
+        "title": "Manage"
+      },
+      "tenants": {
+        "title": "Tenants"
+      },
+      "tenants.admin": {
+        "title": "Manage"
+      },
+      "tenants.databases": {
+        "title": "Databases"
+      },
+      "tenants.databases.batch": {
+        "title": "Batch"
+      },
+      "tenants.databases.batch.read": {
+        "title": "Read"
+      },
+      "tenants.databases.by_id": {
+        "title": "By id"
+      },
+      "tenants.databases.by_id.read": {
+        "title": "Read"
+      },
+      "tenants.databases.collections": {
+        "title": "Collections"
+      },
+      "tenants.databases.collections.attached_functions": {
+        "title": "Attached functions"
+      },
+      "tenants.databases.collections.attached_functions.input": {
+        "title": "Input"
+      },
+      "tenants.databases.collections.attached_functions.input.write": {
+        "title": "Create and edit"
+      },
+      "tenants.databases.collections.attached_functions.write": {
+        "title": "Create and edit"
+      },
+      "tenants.databases.collections.by_id": {
+        "title": "By id"
+      },
+      "tenants.databases.collections.by_id.read": {
+        "title": "Read"
+      },
+      "tenants.databases.collections.conditional": {
+        "title": "Conditional"
+      },
+      "tenants.databases.collections.conditional.commit": {
+        "title": "Commit"
+      },
+      "tenants.databases.collections.conditional.commit.write": {
+        "title": "Create and edit"
+      },
+      "tenants.databases.collections.conditional.read": {
+        "title": "Read"
+      },
+      "tenants.databases.collections.count": {
+        "title": "Count"
+      },
+      "tenants.databases.collections.count.read": {
+        "title": "Read"
+      },
+      "tenants.databases.collections.delete": {
+        "title": "Delete"
+      },
+      "tenants.databases.collections.fork": {
+        "title": "Fork"
+      },
+      "tenants.databases.collections.fork.write": {
+        "title": "Create and edit"
+      },
+      "tenants.databases.collections.fork_count": {
+        "title": "Fork count"
+      },
+      "tenants.databases.collections.fork_count.read": {
+        "title": "Read"
+      },
+      "tenants.databases.collections.functions": {
+        "title": "Functions"
+      },
+      "tenants.databases.collections.functions.read": {
+        "title": "Read"
+      },
+      "tenants.databases.collections.functions.write": {
+        "title": "Create and edit"
+      },
+      "tenants.databases.collections.indexing_status": {
+        "title": "Indexing status"
+      },
+      "tenants.databases.collections.indexing_status.read": {
+        "title": "Read"
+      },
+      "tenants.databases.collections.read": {
+        "title": "Read"
+      },
+      "tenants.databases.collections.upsert": {
+        "title": "Upsert"
+      },
+      "tenants.databases.collections.upsert.write": {
+        "title": "Create and edit"
+      },
+      "tenants.databases.collections.write": {
+        "title": "Create and edit"
+      },
+      "tenants.databases.collections_count": {
+        "title": "Collections count"
+      },
+      "tenants.databases.collections_count.read": {
+        "title": "Read"
+      },
+      "tenants.databases.delete": {
+        "title": "Delete"
+      },
+      "tenants.databases.read": {
+        "title": "Read"
+      },
+      "tenants.databases.write": {
+        "title": "Create and edit"
+      },
+      "tenants.databases_count": {
+        "title": "Databases count"
+      },
+      "tenants.databases_count.read": {
+        "title": "Read"
+      },
+      "tenants.read": {
+        "title": "Read"
+      },
+      "version": {
+        "title": "Version"
+      },
+      "version.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "x-chroma-token",
+            "origin": "https://example.com",
+            "path": "/api/v2",
+            "value": "api_key"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://example.com",
+            "path": "/api/v2",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Your Chroma Vector Store origin (https://host)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            1,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Chroma Vector Store",
   "http": {
     "operations": {
-      "add_attached_function_input": {"action":"generate.add_input","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/attached_functions/{name}/add_input","body":"json","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"},"name":{"from":"path","at":"name"},"input_collection_id":{"from":"body","at":"/input_collection_id"}}},
-      "attach_function": {"action":"generate.attach","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/functions/attach","body":"json","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"},"name":{"from":"body","at":"/name"},"function_id":{"from":"body","at":"/function_id"}}},
-      "collection_add": {"action":"generate.add","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/add","body":"json","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"}}},
-      "collection_conditional_commit": {"action":"generate.commit","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/conditional/commit","body":"json","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"}}},
-      "collection_conditional_get": {"action":"generate.get","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/conditional/get","body":"json","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"}}},
-      "collection_delete": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/delete","body":"json","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"}}},
-      "collection_get": {"action":"generate.get","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/get","body":"json","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"}}},
-      "collection_query": {"action":"generate.query","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/query","params":["limit","offset"],"body":"json","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"}}},
-      "collection_search": {"action":"generate.search","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/search","body":"json","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"}}},
-      "collection_update": {"action":"generate.update","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/update","body":"json","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"}}},
-      "collection_upsert": {"action":"generate.upsert","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/upsert","body":"json","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"}}},
-      "create_collection": {"action":"generate.collections","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections","body":"json","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"name":{"from":"body","at":"/name"}}},
-      "create_database": {"action":"generate.databases","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases","body":"json","scope":{"tenant":{"from":"path","at":"tenant"},"name":{"from":"body","at":"/name"}}},
-      "create_tenant": {"action":"generate.tenants","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "delete_collection": {"action":"delete.collections","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"}}},
-      "delete_database": {"action":"delete.databases","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"}}},
-      "detach_function": {"action":"generate.detach","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/attached_functions/{name}/detach","body":"json","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"},"name":{"from":"path","at":"name"}}},
-      "fork_collection": {"action":"generate.fork","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/fork","body":"json","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"},"new_name":{"from":"body","at":"/new_name"}}},
-      "get_attached_function": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/functions/{function_name}","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"},"function_name":{"from":"path","at":"function_name"}}},
-      "get_collection": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"}}},
-      "get_collection_by_crn": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/collections/{crn}","scope":{"crn":{"from":"path","at":"crn"}}},
-      "get_collection_by_id": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/by-id/{collection_id}","params":["read_level"],"scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"}}},
-      "get_database": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"}}},
-      "get_database_by_id": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/by-id/{database_id}","params":["limit","offset"],"scope":{"tenant":{"from":"path","at":"tenant"},"database_id":{"from":"path","at":"database_id"}}},
-      "get_tenant": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/tenants/{tenant_name}","scope":{"tenant_name":{"from":"path","at":"tenant_name"}}},
-      "get_user_identity": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/auth/identity","scope":{}},
-      "healthcheck": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/healthcheck","scope":{}},
-      "heartbeat": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/heartbeat","scope":{}},
-      "list_databases": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases","params":["limit","offset"],"scope":{"tenant":{"from":"path","at":"tenant"}}},
-      "pre_flight_checks": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/pre-flight-checks","scope":{}},
-      "reset": {"action":"generate.reset","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/v2/reset","scope":{}},
-      "update_collection": {"action":"write.collections","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}","body":"json","scope":{"tenant":{"from":"path","at":"tenant"},"database":{"from":"path","at":"database"},"collection_id":{"from":"path","at":"collection_id"}}},
-      "update_tenant": {"action":"write.tenants","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v2/tenants/{tenant_name}","body":"json","scope":{"tenant_name":{"from":"path","at":"tenant_name"},"resource_name":{"from":"body","at":"/resource_name"}}},
-      "version": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/version","scope":{}}
+      "add_attached_function_input": {"action":"tenants.databases.collections.attached_functions.input.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/attached_functions/{name}/add_input","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"input_collection_id":{"at":"/input_collection_id","from":"body"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "attach_function": {"action":"tenants.databases.collections.functions.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/functions/attach","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"function_id":{"at":"/function_id","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "collection_add": {"action":"tenants.databases.collections.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/add","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"ids":{"at":"/ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "collection_conditional_commit": {"action":"tenants.databases.collections.conditional.commit.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/conditional/commit","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"read_ids":{"at":"/read_ids","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "collection_conditional_get": {"action":"tenants.databases.collections.conditional.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/conditional/get","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"request":{"at":"","from":"body","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "collection_count": {"action":"tenants.databases.collections.count.read","effects":["read"],"method":"GET","origin":"{origin}","params":["read_level"],"path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/count","path_patterns":{"collection_id":"[^b].*|b(?:|[^y].*|y(?:|[^\\-].*|-(?:|[^i].*|i(?:|[^d].*|d.+))))"},"scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"query":{"at":"","from":"query","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "collection_delete": {"action":"tenants.databases.collections.delete","body":"json","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/delete","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"request":{"at":"","from":"body","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "collection_get": {"action":"tenants.databases.collections.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/get","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"request":{"at":"","from":"body","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "collection_query": {"action":"tenants.databases.collections.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["limit","offset"],"path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/query","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "collection_search": {"action":"tenants.databases.collections.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/search","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"request":{"at":"","from":"body","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "collection_update": {"action":"tenants.databases.collections.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/update","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"ids":{"at":"/ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "collection_upsert": {"action":"tenants.databases.collections.upsert.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/upsert","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"ids":{"at":"/ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "count_collections": {"action":"tenants.databases.collections_count.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections_count","path_patterns":{"database":"[^b].*|b(?:|[^y].*|y(?:|[^\\-].*|-(?:|[^i].*|i(?:|[^d].*|d.+))))"},"scope":{"database":{"at":"database","from":"path"},"tenant":{"at":"tenant","from":"path"}}},
+      "count_databases": {"action":"tenants.databases_count.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases_count","scope":{"tenant":{"at":"tenant","from":"path"}}},
+      "create_collection": {"action":"tenants.databases.collections.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections","scope":{"database":{"at":"database","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "create_database": {"action":"tenants.databases.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "create_tenant": {"action":"tenants.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "delete_collection": {"action":"tenants.databases.collections.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"tenant":{"at":"tenant","from":"path"}}},
+      "delete_database": {"action":"tenants.databases.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}","scope":{"database":{"at":"database","from":"path"},"tenant":{"at":"tenant","from":"path"}}},
+      "detach_function": {"action":"tenants.databases.collections.attached_functions.write","body":"json","effects":["write","delete"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/attached_functions/{name}/detach","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "fork_collection": {"action":"tenants.databases.collections.fork.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/fork","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"new_name":{"at":"/new_name","from":"body"},"request":{"at":"","from":"body","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "fork_count": {"action":"tenants.databases.collections.fork_count.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/fork_count","path_patterns":{"collection_id":"[^b].*|b(?:|[^y].*|y(?:|[^\\-].*|-(?:|[^i].*|i(?:|[^d].*|d.+))))"},"scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"tenant":{"at":"tenant","from":"path"}}},
+      "get_attached_function": {"action":"tenants.databases.collections.functions.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/functions/{function_name}","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"function_name":{"at":"function_name","from":"path"},"tenant":{"at":"tenant","from":"path"}}},
+      "get_collection": {"action":"tenants.databases.collections.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"tenant":{"at":"tenant","from":"path"}}},
+      "get_collection_by_crn": {"action":"collections.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/collections/{crn}","scope":{"crn":{"at":"crn","from":"path"}}},
+      "get_collection_by_id": {"action":"tenants.databases.collections.by_id.read","effects":["read"],"method":"GET","origin":"{origin}","params":["read_level"],"path":"/api/v2/tenants/{tenant}/databases/{database}/collections/by-id/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"tenant":{"at":"tenant","from":"path"}}},
+      "get_database": {"action":"tenants.databases.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}","scope":{"database":{"at":"database","from":"path"},"tenant":{"at":"tenant","from":"path"}}},
+      "get_database_by_id": {"action":"tenants.databases.by_id.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","offset"],"path":"/api/v2/tenants/{tenant}/databases/by-id/{database_id}","scope":{"database_id":{"at":"database_id","from":"path"},"tenant":{"at":"tenant","from":"path"}}},
+      "get_databases_by_ids": {"action":"tenants.databases.batch.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/batch/get","scope":{"ids":{"at":"/ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "get_tenant": {"action":"tenants.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/tenants/{tenant_name}","scope":{"tenant_name":{"at":"tenant_name","from":"path"}}},
+      "get_user_identity": {"action":"auth.identity.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/auth/identity","scope":{}},
+      "healthcheck": {"action":"healthcheck.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/healthcheck","scope":{}},
+      "heartbeat": {"action":"heartbeat.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/heartbeat","scope":{}},
+      "indexing_status": {"action":"tenants.databases.collections.indexing_status.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/indexing_status","path_patterns":{"collection_id":"[^b].*|b(?:|[^y].*|y(?:|[^\\-].*|-(?:|[^i].*|i(?:|[^d].*|d.+))))"},"scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"tenant":{"at":"tenant","from":"path"}}},
+      "list_collections": {"action":"tenants.databases.collections.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","offset"],"path":"/api/v2/tenants/{tenant}/databases/{database}/collections","path_patterns":{"database":"[^b].*|b(?:|[^y].*|y(?:|[^\\-].*|-(?:|[^i].*|i(?:|[^d].*|d.+))))"},"scope":{"database":{"at":"database","from":"path"},"query":{"at":"","from":"query","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "list_databases": {"action":"tenants.databases.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","offset"],"path":"/api/v2/tenants/{tenant}/databases","scope":{"tenant":{"at":"tenant","from":"path"}}},
+      "pre_flight_checks": {"action":"pre_flight_checks.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/pre-flight-checks","scope":{}},
+      "reset": {"action":"reset.admin","effects":["admin","delete"],"method":"POST","origin":"{origin}","path":"/api/v2/reset","scope":{}},
+      "update_collection": {"action":"tenants.databases.collections.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"},"database":{"at":"database","from":"path"},"request":{"at":"","from":"body","type":"object"},"tenant":{"at":"tenant","from":"path"}}},
+      "update_tenant": {"action":"tenants.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/v2/tenants/{tenant_name}","scope":{"request":{"at":"","from":"body","type":"object"},"resource_name":{"at":"/resource_name","from":"body"},"tenant_name":{"at":"tenant_name","from":"path"}}},
+      "version": {"action":"version.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v2/version","scope":{}}
     }
   }
 }

@@ -1,32 +1,100 @@
 {
-  "title": "NVIDIA Nemotron Embeddings",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://integrate.api.nvidia.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "delete.completions": {"title": "Delete: completions"},
-      "delete.models": {"title": "Delete: models"},
-      "generate.completions": {"title": "Generate: completions"},
-      "generate.embeddings": {"title": "Generate: embeddings"},
-      "read": {"title": "Read everything the account can see"}
-    }
+      "chat": {
+        "title": "Chat"
+      },
+      "chat.completions": {
+        "title": "Completions"
+      },
+      "chat.completions.generate": {
+        "title": "Generate"
+      },
+      "chat.completions.read": {
+        "title": "Read"
+      },
+      "completions": {
+        "title": "Completions"
+      },
+      "completions.generate": {
+        "title": "Generate"
+      },
+      "embeddings": {
+        "title": "Embeddings"
+      },
+      "embeddings.generate": {
+        "title": "Generate"
+      },
+      "general": {
+        "title": "General"
+      },
+      "general.generate": {
+        "title": "Generate"
+      },
+      "models": {
+        "title": "Models"
+      },
+      "models.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://integrate.api.nvidia.com",
+            "path": "/v1",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://ai.api.nvidia.com",
+            "path": "/v1",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "default": "https://integrate.api.nvidia.com",
+        "key": "origin",
+        "label": "Your NVIDIA API origin (https://integrate.api.nvidia.com or a self-hosted NIM)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "NVIDIA Nemotron Embeddings",
   "http": {
+    "origins": {"origin":["https://integrate.api.nvidia.com"]},
     "operations": {
-      "createChatCompletion": {"action":"generate.completions","effects":["generate"],"method":"POST","origin":"https://integrate.api.nvidia.com","path":"/v1/chat/completions","body":"json","scope":{}},
-      "createCompletion": {"action":"generate.completions","effects":["generate"],"method":"POST","origin":"https://integrate.api.nvidia.com","path":"/v1/completions","body":"json","scope":{}},
-      "createEmbedding": {"action":"generate.embeddings","effects":["generate"],"method":"POST","origin":"https://integrate.api.nvidia.com","path":"/v1/embeddings","body":"json","scope":{}},
-      "deleteChatCompletion": {"action":"delete.completions","effects":["delete"],"method":"DELETE","origin":"https://integrate.api.nvidia.com","path":"/v1/chat/completions/{completion_id}","scope":{"completion_id":{"from":"path","at":"completion_id"}}},
-      "deleteModel": {"action":"delete.models","effects":["delete"],"method":"DELETE","origin":"https://integrate.api.nvidia.com","path":"/v1/models/{model}","scope":{"model":{"from":"path","at":"model"}}},
-      "getChatCompletion": {"action":"read","effects":["read"],"method":"GET","origin":"https://integrate.api.nvidia.com","path":"/v1/chat/completions/{completion_id}","scope":{"completion_id":{"from":"path","at":"completion_id"}}},
-      "getChatCompletionMessages": {"action":"read","effects":["read"],"method":"GET","origin":"https://integrate.api.nvidia.com","path":"/v1/chat/completions/{completion_id}/messages","params":["after","limit","order"],"scope":{"completion_id":{"from":"path","at":"completion_id"}}},
-      "listChatCompletions": {"action":"read","effects":["read"],"method":"GET","origin":"https://integrate.api.nvidia.com","path":"/v1/chat/completions","params":["model","metadata","after","limit","order"],"scope":{}},
-      "listModels": {"action":"read","effects":["read"],"method":"GET","origin":"https://integrate.api.nvidia.com","path":"/v1/models","scope":{}},
-      "retrieveModel": {"action":"read","effects":["read"],"method":"GET","origin":"https://integrate.api.nvidia.com","path":"/v1/models/{model}","scope":{"model":{"from":"path","at":"model"}}},
-      "updateChatCompletion": {"action":"generate.completions","effects":["generate"],"method":"POST","origin":"https://integrate.api.nvidia.com","path":"/v1/chat/completions/{completion_id}","body":"json","scope":{"completion_id":{"from":"path","at":"completion_id"}}}
+      "ai.inference": {"action":"general.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"https://ai.api.nvidia.com","path":"/v1/{route*}","scope":{"route":{"at":"route","from":"path"}}},
+      "createChatCompletion": {"action":"chat.completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","path":"/v1/chat/completions","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createCompletion": {"action":"completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","path":"/v1/completions","scope":{"request":{"at":"","from":"body","type":"object"},"user":{"at":"/user","from":"body","optional":true}}},
+      "createEmbedding": {"action":"embeddings.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{origin}","path":"/v1/embeddings","scope":{"request":{"at":"","from":"body","type":"object"},"user":{"at":"/user","from":"body","optional":true}}},
+      "listChatCompletions": {"action":"chat.completions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["model","metadata","after","limit","order"],"path":"/v1/chat/completions","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listModels": {"action":"models.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/models","scope":{}}
     }
   }
 }

@@ -1,7 +1,374 @@
 {
-  "title": "YouTube",
   "catalog": {
-    "group": "api",
+    "actions": {
+      "youtube": {
+        "title": "Youtube"
+      },
+      "youtube.abuse_reports": {
+        "title": "Abuse reports"
+      },
+      "youtube.abuse_reports.write": {
+        "title": "Create and edit"
+      },
+      "youtube.activities": {
+        "title": "Activities"
+      },
+      "youtube.activities.read": {
+        "title": "Read"
+      },
+      "youtube.captions": {
+        "title": "Captions"
+      },
+      "youtube.captions.delete": {
+        "title": "Delete"
+      },
+      "youtube.captions.read": {
+        "title": "Read"
+      },
+      "youtube.captions.write": {
+        "title": "Create and edit"
+      },
+      "youtube.channel_banners": {
+        "title": "Channel banners"
+      },
+      "youtube.channel_banners.insert": {
+        "title": "Insert"
+      },
+      "youtube.channel_banners.insert.write": {
+        "title": "Create and edit"
+      },
+      "youtube.channel_sections": {
+        "title": "Channel sections"
+      },
+      "youtube.channel_sections.delete": {
+        "title": "Delete"
+      },
+      "youtube.channel_sections.read": {
+        "title": "Read"
+      },
+      "youtube.channel_sections.write": {
+        "title": "Create and edit"
+      },
+      "youtube.channels": {
+        "title": "Channels"
+      },
+      "youtube.channels.read": {
+        "title": "Read"
+      },
+      "youtube.channels.write": {
+        "title": "Create and edit"
+      },
+      "youtube.comment_threads": {
+        "title": "Comment threads"
+      },
+      "youtube.comment_threads.publish": {
+        "title": "Publish"
+      },
+      "youtube.comment_threads.read": {
+        "title": "Read"
+      },
+      "youtube.comments": {
+        "title": "Comments"
+      },
+      "youtube.comments.delete": {
+        "title": "Delete"
+      },
+      "youtube.comments.mark_as_spam": {
+        "title": "Mark as spam"
+      },
+      "youtube.comments.mark_as_spam.write": {
+        "title": "Create and edit"
+      },
+      "youtube.comments.moderation_status": {
+        "title": "Moderation status"
+      },
+      "youtube.comments.moderation_status.write": {
+        "title": "Create and edit"
+      },
+      "youtube.comments.publish": {
+        "title": "Publish"
+      },
+      "youtube.comments.read": {
+        "title": "Read"
+      },
+      "youtube.comments.write": {
+        "title": "Create and edit"
+      },
+      "youtube.i18n_languages": {
+        "title": "I18n languages"
+      },
+      "youtube.i18n_languages.read": {
+        "title": "Read"
+      },
+      "youtube.i18n_regions": {
+        "title": "I18n regions"
+      },
+      "youtube.i18n_regions.read": {
+        "title": "Read"
+      },
+      "youtube.live_broadcasts": {
+        "title": "Live broadcasts"
+      },
+      "youtube.live_broadcasts.bind": {
+        "title": "Bind"
+      },
+      "youtube.live_broadcasts.bind.write": {
+        "title": "Create and edit"
+      },
+      "youtube.live_broadcasts.cuepoint": {
+        "title": "Cuepoint"
+      },
+      "youtube.live_broadcasts.cuepoint.write": {
+        "title": "Create and edit"
+      },
+      "youtube.live_broadcasts.delete": {
+        "title": "Delete"
+      },
+      "youtube.live_broadcasts.read": {
+        "title": "Read"
+      },
+      "youtube.live_broadcasts.transition": {
+        "title": "Transition"
+      },
+      "youtube.live_broadcasts.transition.publish": {
+        "title": "Publish"
+      },
+      "youtube.live_broadcasts.transition.write": {
+        "title": "Create and edit"
+      },
+      "youtube.live_broadcasts.write": {
+        "title": "Create and edit"
+      },
+      "youtube.live_chat": {
+        "title": "Live chat"
+      },
+      "youtube.live_chat.bans": {
+        "title": "Bans"
+      },
+      "youtube.live_chat.bans.delete": {
+        "title": "Delete"
+      },
+      "youtube.live_chat.bans.write": {
+        "title": "Create and edit"
+      },
+      "youtube.live_chat.messages": {
+        "title": "Messages"
+      },
+      "youtube.live_chat.messages.delete": {
+        "title": "Delete"
+      },
+      "youtube.live_chat.messages.read": {
+        "title": "Read"
+      },
+      "youtube.live_chat.messages.send": {
+        "title": "Send"
+      },
+      "youtube.live_chat.messages.stream": {
+        "title": "Stream"
+      },
+      "youtube.live_chat.messages.stream.read": {
+        "title": "Read"
+      },
+      "youtube.live_chat.messages.transition": {
+        "title": "Transition"
+      },
+      "youtube.live_chat.messages.transition.write": {
+        "title": "Create and edit"
+      },
+      "youtube.live_chat.moderators": {
+        "title": "Moderators"
+      },
+      "youtube.live_chat.moderators.admin": {
+        "title": "Manage"
+      },
+      "youtube.live_chat.moderators.delete": {
+        "title": "Delete"
+      },
+      "youtube.live_chat.moderators.read": {
+        "title": "Read"
+      },
+      "youtube.live_streams": {
+        "title": "Live streams"
+      },
+      "youtube.live_streams.delete": {
+        "title": "Delete"
+      },
+      "youtube.live_streams.read": {
+        "title": "Read"
+      },
+      "youtube.live_streams.write": {
+        "title": "Create and edit"
+      },
+      "youtube.members": {
+        "title": "Members"
+      },
+      "youtube.members.read": {
+        "title": "Read"
+      },
+      "youtube.memberships_levels": {
+        "title": "Memberships levels"
+      },
+      "youtube.memberships_levels.read": {
+        "title": "Read"
+      },
+      "youtube.playlist_images": {
+        "title": "Playlist images"
+      },
+      "youtube.playlist_images.delete": {
+        "title": "Delete"
+      },
+      "youtube.playlist_images.read": {
+        "title": "Read"
+      },
+      "youtube.playlist_images.write": {
+        "title": "Create and edit"
+      },
+      "youtube.playlist_items": {
+        "title": "Playlist items"
+      },
+      "youtube.playlist_items.delete": {
+        "title": "Delete"
+      },
+      "youtube.playlist_items.read": {
+        "title": "Read"
+      },
+      "youtube.playlist_items.write": {
+        "title": "Create and edit"
+      },
+      "youtube.playlists": {
+        "title": "Playlists"
+      },
+      "youtube.playlists.delete": {
+        "title": "Delete"
+      },
+      "youtube.playlists.read": {
+        "title": "Read"
+      },
+      "youtube.playlists.write": {
+        "title": "Create and edit"
+      },
+      "youtube.read": {
+        "title": "Read"
+      },
+      "youtube.subscriptions": {
+        "title": "Subscriptions"
+      },
+      "youtube.subscriptions.delete": {
+        "title": "Delete"
+      },
+      "youtube.subscriptions.read": {
+        "title": "Read"
+      },
+      "youtube.subscriptions.write": {
+        "title": "Create and edit"
+      },
+      "youtube.super_chat_events": {
+        "title": "Super chat events"
+      },
+      "youtube.super_chat_events.read": {
+        "title": "Read"
+      },
+      "youtube.tests": {
+        "title": "Tests"
+      },
+      "youtube.tests.write": {
+        "title": "Create and edit"
+      },
+      "youtube.third_party_links": {
+        "title": "Third party links"
+      },
+      "youtube.third_party_links.delete": {
+        "title": "Delete"
+      },
+      "youtube.third_party_links.read": {
+        "title": "Read"
+      },
+      "youtube.third_party_links.write": {
+        "title": "Create and edit"
+      },
+      "youtube.thumbnails": {
+        "title": "Thumbnails"
+      },
+      "youtube.thumbnails.write": {
+        "title": "Create and edit"
+      },
+      "youtube.video_abuse_report_reasons": {
+        "title": "Video abuse report reasons"
+      },
+      "youtube.video_abuse_report_reasons.read": {
+        "title": "Read"
+      },
+      "youtube.video_categories": {
+        "title": "Video categories"
+      },
+      "youtube.video_categories.read": {
+        "title": "Read"
+      },
+      "youtube.video_trainability": {
+        "title": "Video trainability"
+      },
+      "youtube.video_trainability.read": {
+        "title": "Read"
+      },
+      "youtube.videos": {
+        "title": "Videos"
+      },
+      "youtube.videos.delete": {
+        "title": "Delete"
+      },
+      "youtube.videos.publish": {
+        "title": "Publish"
+      },
+      "youtube.videos.rate": {
+        "title": "Rate"
+      },
+      "youtube.videos.rate.write": {
+        "title": "Create and edit"
+      },
+      "youtube.videos.rating": {
+        "title": "Rating"
+      },
+      "youtube.videos.rating.read": {
+        "title": "Read"
+      },
+      "youtube.videos.read": {
+        "title": "Read"
+      },
+      "youtube.videos.report_abuse": {
+        "title": "Report abuse"
+      },
+      "youtube.videos.report_abuse.write": {
+        "title": "Create and edit"
+      },
+      "youtube.videos.write": {
+        "title": "Create and edit"
+      },
+      "youtube.watermarks": {
+        "title": "Watermarks"
+      },
+      "youtube.watermarks.unset": {
+        "title": "Unset"
+      },
+      "youtube.watermarks.unset.write": {
+        "title": "Create and edit"
+      },
+      "youtube.watermarks.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://youtube.googleapis.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
     "fields": [
       {
         "hint": "Leave empty to use Tinfoil's app",
@@ -16,150 +383,132 @@
         "paths": [],
         "secret": true
       },
-      {"key": "token", "label": "YouTube account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "default_client": {"client_id": "355716529673-semtjk51liuh2uc8mo8cgd3v7v7lgi68.apps.googleusercontent.com", "client_secret": "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", "loopback": true}, "prompt": "consent", "scope": "https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtubepartner"}}
+      {
+        "credential": true,
+        "key": "token",
+        "label": "YouTube account",
+        "oauth": {
+          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
+          "client_id": "{client_id}",
+          "client_secret": "{client_secret}",
+          "default_client": {
+            "client_id": "355716529673-semtjk51liuh2uc8mo8cgd3v7v7lgi68.apps.googleusercontent.com",
+            "client_secret": "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",
+            "loopback": true
+          },
+          "prompt": "consent",
+          "scope": "https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtubepartner",
+          "token_url": "https://oauth2.googleapis.com/token"
+        },
+        "secret": true
+      }
     ],
-    "connection": {"http": {"slots": [{"value": "token", "origin": "https://youtube.googleapis.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
-    "actions": {
-      "admin.subscriptions": {"title": "Admin: subscriptions"},
-      "delete.bans": {"title": "Delete: bans"},
-      "delete.captions": {"title": "Delete: captions"},
-      "delete.channel_sections": {"title": "Delete: channel sections"},
-      "delete.comments": {"title": "Delete: comments"},
-      "delete.live_broadcasts": {"title": "Delete: live broadcasts"},
-      "delete.live_streams": {"title": "Delete: live streams"},
-      "delete.messages": {"title": "Delete: messages"},
-      "delete.moderators": {"title": "Delete: moderators"},
-      "delete.playlist_images": {"title": "Delete: playlist images"},
-      "delete.playlist_items": {"title": "Delete: playlist items"},
-      "delete.playlists": {"title": "Delete: playlists"},
-      "delete.subscriptions": {"title": "Delete: subscriptions"},
-      "delete.third_party_links": {"title": "Delete: third party links"},
-      "delete.videos": {"title": "Delete: videos"},
-      "generate.videos": {"title": "Generate: videos"},
-      "read": {"title": "Read everything the account can see"},
-      "send.comments": {"title": "Send: comments"},
-      "send.messages": {"title": "Send: messages"},
-      "write.abuse_reports": {"title": "Write: abuse reports"},
-      "write.bans": {"title": "Write: bans"},
-      "write.bind": {"title": "Write: bind"},
-      "write.captions": {"title": "Write: captions"},
-      "write.channel_sections": {"title": "Write: channel sections"},
-      "write.channels": {"title": "Write: channels"},
-      "write.comment_threads": {"title": "Write: comment threads"},
-      "write.comments": {"title": "Write: comments"},
-      "write.cuepoint": {"title": "Write: cuepoint"},
-      "write.insert": {"title": "Write: insert"},
-      "write.live_broadcasts": {"title": "Write: live broadcasts"},
-      "write.live_streams": {"title": "Write: live streams"},
-      "write.mark_as_spam": {"title": "Write: mark as spam"},
-      "write.moderators": {"title": "Write: moderators"},
-      "write.playlist_images": {"title": "Write: playlist images"},
-      "write.playlist_items": {"title": "Write: playlist items"},
-      "write.playlists": {"title": "Write: playlists"},
-      "write.rate": {"title": "Write: rate"},
-      "write.report_abuse": {"title": "Write: report abuse"},
-      "write.set": {"title": "Write: set"},
-      "write.set_moderation_status": {"title": "Write: set moderation status"},
-      "write.tests": {"title": "Write: tests"},
-      "write.third_party_links": {"title": "Write: third party links"},
-      "write.transition": {"title": "Write: transition"},
-      "write.unset": {"title": "Write: unset"},
-      "write.videos": {"title": "Write: videos"}
-    }
+    "group": "api"
   },
+  "title": "YouTube",
   "http": {
     "operations": {
-      "abuseReports.insert": {"action":"write.abuse_reports","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/abuseReports","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"body":"json","scope":{}},
-      "activities.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/activities","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","home","maxResults","mine","pageToken","part","publishedAfter","publishedBefore","regionCode"],"scope":{}},
-      "captions.delete": {"action":"delete.captions","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","path":"/youtube/v3/captions","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOf","onBehalfOfContentOwner"],"scope":{}},
-      "captions.download": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/captions/{id}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOf","onBehalfOfContentOwner","tfmt","tlang"],"scope":{"id":{"from":"path","at":"id"}}},
-      "captions.insert": {"action":"write.captions","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/captions","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOf","onBehalfOfContentOwner","part","sync"],"body":"json","scope":{}},
-      "captions.insert.upload": {"action":"write.captions","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/upload/youtube/v3/captions","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOf","onBehalfOfContentOwner","part","sync","uploadType"],"body":"any","scope":{}},
-      "captions.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/captions","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOf","onBehalfOfContentOwner","part","videoId"],"scope":{}},
-      "captions.update": {"action":"write.captions","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","path":"/youtube/v3/captions","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOf","onBehalfOfContentOwner","part","sync"],"body":"json","scope":{}},
-      "captions.update.upload": {"action":"write.captions","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","path":"/upload/youtube/v3/captions","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOf","onBehalfOfContentOwner","part","sync","uploadType"],"body":"any","scope":{}},
-      "channelBanners.insert": {"action":"write.insert","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/channelBanners/insert","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel"],"body":"json","scope":{}},
-      "channelBanners.insert.upload": {"action":"write.insert","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/upload/youtube/v3/channelBanners/insert","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","uploadType"],"body":"any","scope":{}},
-      "channelSections.delete": {"action":"delete.channel_sections","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","path":"/youtube/v3/channelSections","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner"],"scope":{}},
-      "channelSections.insert": {"action":"write.channel_sections","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/channelSections","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"body":"json","scope":{}},
-      "channelSections.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/channelSections","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","hl","id","mine","onBehalfOfContentOwner","part"],"scope":{}},
-      "channelSections.update": {"action":"write.channel_sections","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","path":"/youtube/v3/channelSections","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part"],"body":"json","scope":{}},
-      "channels.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/channels","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","categoryId","forHandle","forUsername","hl","id","managedByMe","maxResults","mine","mySubscribers","onBehalfOfContentOwner","pageToken","part"],"scope":{}},
-      "channels.update": {"action":"write.channels","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","path":"/youtube/v3/channels","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part"],"body":"json","scope":{}},
-      "commentThreads.insert": {"action":"write.comment_threads","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/commentThreads","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"body":"json","scope":{}},
-      "commentThreads.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/commentThreads","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","allThreadsRelatedToChannelId","channelId","id","maxResults","moderationStatus","order","pageToken","part","searchTerms","textFormat","videoId"],"scope":{}},
-      "comments.delete": {"action":"delete.comments","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","path":"/youtube/v3/comments","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id"],"scope":{}},
-      "comments.insert": {"action":"send.comments","effects":["send"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/comments","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "comments.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/comments","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","maxResults","pageToken","parentId","part","textFormat"],"scope":{}},
-      "comments.markAsSpam": {"action":"write.mark_as_spam","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/comments/markAsSpam","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id"],"scope":{}},
-      "comments.setModerationStatus": {"action":"write.set_moderation_status","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/comments/setModerationStatus","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","banAuthor","id","moderationStatus"],"scope":{}},
-      "comments.update": {"action":"write.comments","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","path":"/youtube/v3/comments","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"body":"json","scope":{}},
-      "i18nLanguages.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/i18nLanguages","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","hl","part"],"scope":{}},
-      "i18nRegions.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/i18nRegions","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","hl","part"],"scope":{}},
-      "liveBroadcasts.bind": {"action":"write.bind","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveBroadcasts/bind","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part","streamId"],"scope":{}},
-      "liveBroadcasts.delete": {"action":"delete.live_broadcasts","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveBroadcasts","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel"],"scope":{}},
-      "liveBroadcasts.insert": {"action":"write.live_broadcasts","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveBroadcasts","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"body":"json","scope":{}},
-      "liveBroadcasts.insertCuepoint": {"action":"write.cuepoint","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveBroadcasts/cuepoint","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"body":"json","scope":{}},
-      "liveBroadcasts.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveBroadcasts","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","broadcastStatus","broadcastType","id","maxResults","mine","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","pageToken","part"],"scope":{}},
-      "liveBroadcasts.transition": {"action":"write.transition","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveBroadcasts/transition","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","broadcastStatus","id","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"scope":{}},
-      "liveBroadcasts.update": {"action":"write.live_broadcasts","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveBroadcasts","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"body":"json","scope":{}},
-      "liveChatBans.delete": {"action":"delete.bans","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveChat/bans","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id"],"scope":{}},
-      "liveChatBans.insert": {"action":"write.bans","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveChat/bans","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"body":"json","scope":{}},
-      "liveChatMessages.delete": {"action":"delete.messages","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveChat/messages","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id"],"scope":{}},
-      "liveChatMessages.insert": {"action":"send.messages","effects":["send"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveChat/messages","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "liveChatMessages.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveChat/messages","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","hl","liveChatId","maxResults","pageToken","part","profileImageSize"],"scope":{}},
-      "liveChatMessages.transition": {"action":"write.transition","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveChat/messages/transition","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","status"],"scope":{}},
-      "liveChatModerators.delete": {"action":"delete.moderators","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveChat/moderators","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id"],"scope":{}},
-      "liveChatModerators.insert": {"action":"write.moderators","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveChat/moderators","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"body":"json","scope":{}},
-      "liveChatModerators.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveChat/moderators","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","liveChatId","maxResults","pageToken","part"],"scope":{}},
-      "liveStreams.delete": {"action":"delete.live_streams","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveStreams","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel"],"scope":{}},
-      "liveStreams.insert": {"action":"write.live_streams","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveStreams","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"body":"json","scope":{}},
-      "liveStreams.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveStreams","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","maxResults","mine","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","pageToken","part"],"scope":{}},
-      "liveStreams.update": {"action":"write.live_streams","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveStreams","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"body":"json","scope":{}},
-      "members.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/members","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filterByMemberChannelId","hasAccessToLevel","maxResults","mode","pageToken","part"],"scope":{}},
-      "membershipsLevels.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/membershipsLevels","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"scope":{}},
-      "playlistImages.delete": {"action":"delete.playlist_images","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","path":"/youtube/v3/playlistImages","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner"],"scope":{}},
-      "playlistImages.insert": {"action":"write.playlist_images","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/playlistImages","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"body":"json","scope":{}},
-      "playlistImages.insert.upload": {"action":"write.playlist_images","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/upload/youtube/v3/playlistImages","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part","uploadType"],"body":"any","scope":{}},
-      "playlistImages.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/playlistImages","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","pageToken","parent","part"],"scope":{}},
-      "playlistImages.update": {"action":"write.playlist_images","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","path":"/youtube/v3/playlistImages","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part"],"body":"json","scope":{}},
-      "playlistImages.update.upload": {"action":"write.playlist_images","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","path":"/upload/youtube/v3/playlistImages","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part","uploadType"],"body":"any","scope":{}},
-      "playlistItems.delete": {"action":"delete.playlist_items","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","path":"/youtube/v3/playlistItems","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner"],"scope":{}},
-      "playlistItems.insert": {"action":"write.playlist_items","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/playlistItems","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part"],"body":"json","scope":{}},
-      "playlistItems.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/playlistItems","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","maxResults","onBehalfOfContentOwner","pageToken","part","playlistId","videoId"],"scope":{}},
-      "playlistItems.update": {"action":"write.playlist_items","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","path":"/youtube/v3/playlistItems","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part"],"body":"json","scope":{}},
-      "playlists.delete": {"action":"delete.playlists","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","path":"/youtube/v3/playlists","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner"],"scope":{}},
-      "playlists.insert": {"action":"write.playlists","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/playlists","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"body":"json","scope":{}},
-      "playlists.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/playlists","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","hl","id","maxResults","mine","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","pageToken","part"],"scope":{}},
-      "playlists.update": {"action":"write.playlists","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","path":"/youtube/v3/playlists","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part"],"body":"json","scope":{}},
-      "search.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/search","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","channelType","eventType","forContentOwner","forDeveloper","forMine","location","locationRadius","maxResults","onBehalfOfContentOwner","order","pageToken","part","publishedAfter","publishedBefore","q","regionCode","relevanceLanguage","safeSearch","topicId","type","videoCaption","videoCategoryId","videoDefinition","videoDimension","videoDuration","videoEmbeddable","videoLicense","videoPaidProductPlacement","videoSyndicated","videoType"],"scope":{}},
-      "subscriptions.delete": {"action":"delete.subscriptions","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","path":"/youtube/v3/subscriptions","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id"],"scope":{}},
-      "subscriptions.insert": {"action":"admin.subscriptions","effects":["admin"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/subscriptions","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"body":"json","scope":{}},
-      "subscriptions.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/subscriptions","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","forChannelId","id","maxResults","mine","myRecentSubscribers","mySubscribers","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","order","pageToken","part"],"scope":{}},
-      "superChatEvents.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/superChatEvents","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","hl","maxResults","pageToken","part"],"scope":{}},
-      "tests.insert": {"action":"write.tests","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/tests","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","externalChannelId","onBehalfOfContentOwnerChannel","part"],"body":"json","scope":{}},
-      "thirdPartyLinks.delete": {"action":"delete.third_party_links","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","path":"/youtube/v3/thirdPartyLinks","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","externalChannelId","linkingToken","part","type"],"scope":{}},
-      "thirdPartyLinks.insert": {"action":"write.third_party_links","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/thirdPartyLinks","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","externalChannelId","part"],"body":"json","scope":{}},
-      "thirdPartyLinks.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/thirdPartyLinks","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","externalChannelId","linkingToken","part","type"],"scope":{}},
-      "thirdPartyLinks.update": {"action":"write.third_party_links","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","path":"/youtube/v3/thirdPartyLinks","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","externalChannelId","part"],"body":"json","scope":{}},
-      "thumbnails.set": {"action":"write.set","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/thumbnails/set","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","videoId"],"scope":{}},
-      "thumbnails.set.upload": {"action":"write.set","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/upload/youtube/v3/thumbnails/set","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","videoId","uploadType"],"body":"any","scope":{}},
-      "videoAbuseReportReasons.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/videoAbuseReportReasons","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","hl","part"],"scope":{}},
-      "videoCategories.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/videoCategories","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","hl","id","part","regionCode"],"scope":{}},
-      "videoTrainability.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/videoTrainability","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id"],"scope":{}},
-      "videos.batchGetStats": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/videos:batchGetStats","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner","part"],"scope":{}},
-      "videos.delete": {"action":"delete.videos","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","path":"/youtube/v3/videos","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner"],"scope":{}},
-      "videos.getRating": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/videos/getRating","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner"],"scope":{}},
-      "videos.insert": {"action":"generate.videos","effects":["generate"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/videos","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","autoLevels","notifySubscribers","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part","stabilize"],"body":"json","scope":{}},
-      "videos.insert.upload": {"action":"generate.videos","effects":["generate"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/upload/youtube/v3/videos","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","autoLevels","notifySubscribers","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part","stabilize","uploadType"],"body":"any","scope":{}},
-      "videos.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/videos","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","chart","hl","id","locale","maxHeight","maxResults","maxWidth","myRating","onBehalfOfContentOwner","pageToken","part","regionCode","videoCategoryId"],"scope":{}},
-      "videos.rate": {"action":"write.rate","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/videos/rate","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","rating"],"scope":{}},
-      "videos.reportAbuse": {"action":"write.report_abuse","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/videos/reportAbuse","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner"],"body":"json","scope":{}},
-      "videos.update": {"action":"write.videos","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","path":"/youtube/v3/videos","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part"],"body":"json","scope":{}},
-      "watermarks.set": {"action":"write.set","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/watermarks/set","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","onBehalfOfContentOwner"],"body":"json","scope":{}},
-      "watermarks.set.upload": {"action":"write.set","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/upload/youtube/v3/watermarks/set","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","onBehalfOfContentOwner","uploadType"],"body":"any","scope":{}},
-      "watermarks.unset": {"action":"write.unset","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","path":"/youtube/v3/watermarks/unset","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","onBehalfOfContentOwner"],"scope":{}},
-      "youtube.v3.liveChat.messages.stream": {"action":"read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","path":"/youtube/v3/liveChat/messages/stream","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","hl","liveChatId","maxResults","pageToken","part","profileImageSize"],"scope":{}}
+      "abuseReports.insert": {"action":"youtube.abuse_reports.write","body":"json","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"path":"/youtube/v3/abuseReports","scope":{}},
+      "activities.list": {"action":"youtube.activities.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","home","maxResults","mine","pageToken","part","publishedAfter","publishedBefore","regionCode"],"path":"/youtube/v3/activities","scope":{}},
+      "captions.delete": {"action":"youtube.captions.delete","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOf","onBehalfOfContentOwner"],"path":"/youtube/v3/captions","scope":{}},
+      "captions.download": {"action":"youtube.captions.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOf","onBehalfOfContentOwner","tfmt","tlang"],"path":"/youtube/v3/captions/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "captions.download.download": {"action":"youtube.captions.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOf","onBehalfOfContentOwner","tfmt","tlang"],"path":"/download/youtube/v3/captions/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "captions.insert": {"action":"youtube.captions.write","body":"json","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOf","onBehalfOfContentOwner","part","sync"],"path":"/youtube/v3/captions","scope":{}},
+      "captions.insert.upload": {"action":"youtube.captions.write","body":"any","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOf","onBehalfOfContentOwner","part","sync","upload_id"],"path":"/upload/youtube/v3/captions","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "captions.list": {"action":"youtube.captions.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOf","onBehalfOfContentOwner","part","videoId"],"path":"/youtube/v3/captions","scope":{}},
+      "captions.update": {"action":"youtube.captions.write","body":"json","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOf","onBehalfOfContentOwner","part","sync"],"path":"/youtube/v3/captions","scope":{}},
+      "captions.update.upload": {"action":"youtube.captions.write","body":"any","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOf","onBehalfOfContentOwner","part","sync","upload_id"],"path":"/upload/youtube/v3/captions","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "channelBanners.insert": {"action":"youtube.channel_banners.insert.write","body":"json","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel"],"path":"/youtube/v3/channelBanners/insert","scope":{}},
+      "channelBanners.insert.upload": {"action":"youtube.channel_banners.insert.write","body":"any","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","upload_id"],"path":"/upload/youtube/v3/channelBanners/insert","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "channelBanners.insert.upload.session": {"action":"youtube.channel_banners.insert.write","body":"any","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel"],"path":"/upload/youtube/v3/channelBanners/insert","query":{"upload_id":true},"scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "channelSections.delete": {"action":"youtube.channel_sections.delete","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner"],"path":"/youtube/v3/channelSections","scope":{}},
+      "channelSections.insert": {"action":"youtube.channel_sections.write","body":"json","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"path":"/youtube/v3/channelSections","scope":{}},
+      "channelSections.list": {"action":"youtube.channel_sections.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","hl","id","mine","onBehalfOfContentOwner","part"],"path":"/youtube/v3/channelSections","scope":{}},
+      "channelSections.update": {"action":"youtube.channel_sections.write","body":"json","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part"],"path":"/youtube/v3/channelSections","scope":{}},
+      "channels.list": {"action":"youtube.channels.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","categoryId","forHandle","forUsername","hl","id","managedByMe","maxResults","mine","mySubscribers","onBehalfOfContentOwner","pageToken","part"],"path":"/youtube/v3/channels","scope":{}},
+      "channels.update": {"action":"youtube.channels.write","body":"json","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part"],"path":"/youtube/v3/channels","scope":{}},
+      "commentThreads.insert": {"action":"youtube.comment_threads.publish","body":"json","effects":["publish"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"path":"/youtube/v3/commentThreads","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "commentThreads.list": {"action":"youtube.comment_threads.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","allThreadsRelatedToChannelId","channelId","id","maxResults","moderationStatus","order","pageToken","part","searchTerms","textFormat","videoId"],"path":"/youtube/v3/commentThreads","scope":{}},
+      "comments.delete": {"action":"youtube.comments.delete","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id"],"path":"/youtube/v3/comments","scope":{}},
+      "comments.insert": {"action":"youtube.comments.publish","body":"json","effects":["publish"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"path":"/youtube/v3/comments","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "comments.list": {"action":"youtube.comments.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","maxResults","pageToken","parentId","part","textFormat"],"path":"/youtube/v3/comments","scope":{}},
+      "comments.markAsSpam": {"action":"youtube.comments.mark_as_spam.write","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id"],"path":"/youtube/v3/comments/markAsSpam","scope":{}},
+      "comments.setModerationStatus": {"action":"youtube.comments.moderation_status.write","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","banAuthor","id","moderationStatus"],"path":"/youtube/v3/comments/setModerationStatus","scope":{}},
+      "comments.update": {"action":"youtube.comments.write","body":"json","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"path":"/youtube/v3/comments","scope":{}},
+      "i18nLanguages.list": {"action":"youtube.i18n_languages.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","hl","part"],"path":"/youtube/v3/i18nLanguages","scope":{}},
+      "i18nRegions.list": {"action":"youtube.i18n_regions.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","hl","part"],"path":"/youtube/v3/i18nRegions","scope":{}},
+      "liveBroadcasts.bind": {"action":"youtube.live_broadcasts.bind.write","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part","streamId"],"path":"/youtube/v3/liveBroadcasts/bind","scope":{}},
+      "liveBroadcasts.delete": {"action":"youtube.live_broadcasts.delete","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel"],"path":"/youtube/v3/liveBroadcasts","scope":{}},
+      "liveBroadcasts.insert": {"action":"youtube.live_broadcasts.write","body":"json","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"path":"/youtube/v3/liveBroadcasts","scope":{}},
+      "liveBroadcasts.insertCuepoint": {"action":"youtube.live_broadcasts.cuepoint.write","body":"json","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"path":"/youtube/v3/liveBroadcasts/cuepoint","scope":{}},
+      "liveBroadcasts.list": {"action":"youtube.live_broadcasts.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","broadcastStatus","broadcastType","id","maxResults","mine","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","pageToken","part"],"path":"/youtube/v3/liveBroadcasts","scope":{}},
+      "liveBroadcasts.transition": {"action":"youtube.live_broadcasts.transition.write","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"path":"/youtube/v3/liveBroadcasts/transition","query":{"broadcastStatus":"complete"},"scope":{}},
+      "liveBroadcasts.transition.live": {"action":"youtube.live_broadcasts.transition.publish","effects":["publish"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"path":"/youtube/v3/liveBroadcasts/transition","query":{"broadcastStatus":"live"},"scope":{}},
+      "liveBroadcasts.transition.testing": {"action":"youtube.live_broadcasts.transition.write","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"path":"/youtube/v3/liveBroadcasts/transition","query":{"broadcastStatus":"testing"},"scope":{}},
+      "liveBroadcasts.update": {"action":"youtube.live_broadcasts.write","body":"json","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"path":"/youtube/v3/liveBroadcasts","scope":{}},
+      "liveChatBans.delete": {"action":"youtube.live_chat.bans.delete","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id"],"path":"/youtube/v3/liveChat/bans","scope":{}},
+      "liveChatBans.insert": {"action":"youtube.live_chat.bans.write","body":"json","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"path":"/youtube/v3/liveChat/bans","scope":{}},
+      "liveChatMessages.delete": {"action":"youtube.live_chat.messages.delete","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id"],"path":"/youtube/v3/liveChat/messages","scope":{}},
+      "liveChatMessages.insert": {"action":"youtube.live_chat.messages.send","body":"json","effects":["send"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"path":"/youtube/v3/liveChat/messages","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "liveChatMessages.list": {"action":"youtube.live_chat.messages.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","hl","liveChatId","maxResults","pageToken","part","profileImageSize"],"path":"/youtube/v3/liveChat/messages","scope":{}},
+      "liveChatMessages.transition": {"action":"youtube.live_chat.messages.transition.write","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","status"],"path":"/youtube/v3/liveChat/messages/transition","scope":{}},
+      "liveChatModerators.delete": {"action":"youtube.live_chat.moderators.delete","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id"],"path":"/youtube/v3/liveChat/moderators","scope":{}},
+      "liveChatModerators.insert": {"action":"youtube.live_chat.moderators.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"path":"/youtube/v3/liveChat/moderators","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "liveChatModerators.list": {"action":"youtube.live_chat.moderators.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","liveChatId","maxResults","pageToken","part"],"path":"/youtube/v3/liveChat/moderators","scope":{}},
+      "liveStreams.delete": {"action":"youtube.live_streams.delete","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel"],"path":"/youtube/v3/liveStreams","scope":{}},
+      "liveStreams.insert": {"action":"youtube.live_streams.write","body":"json","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"path":"/youtube/v3/liveStreams","scope":{}},
+      "liveStreams.list": {"action":"youtube.live_streams.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","maxResults","mine","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","pageToken","part"],"path":"/youtube/v3/liveStreams","scope":{}},
+      "liveStreams.update": {"action":"youtube.live_streams.write","body":"json","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"path":"/youtube/v3/liveStreams","scope":{}},
+      "members.list": {"action":"youtube.members.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filterByMemberChannelId","hasAccessToLevel","maxResults","mode","pageToken","part"],"path":"/youtube/v3/members","scope":{}},
+      "membershipsLevels.list": {"action":"youtube.memberships_levels.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"path":"/youtube/v3/membershipsLevels","scope":{}},
+      "playlistImages.delete": {"action":"youtube.playlist_images.delete","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner"],"path":"/youtube/v3/playlistImages","scope":{}},
+      "playlistImages.insert": {"action":"youtube.playlist_images.write","body":"json","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"path":"/youtube/v3/playlistImages","scope":{}},
+      "playlistImages.insert.upload": {"action":"youtube.playlist_images.write","body":"any","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part","upload_id"],"path":"/upload/youtube/v3/playlistImages","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "playlistImages.list": {"action":"youtube.playlist_images.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","pageToken","parent","part"],"path":"/youtube/v3/playlistImages","scope":{}},
+      "playlistImages.update": {"action":"youtube.playlist_images.write","body":"json","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part"],"path":"/youtube/v3/playlistImages","scope":{}},
+      "playlistImages.update.upload": {"action":"youtube.playlist_images.write","body":"any","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part","upload_id"],"path":"/upload/youtube/v3/playlistImages","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "playlistItems.delete": {"action":"youtube.playlist_items.delete","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner"],"path":"/youtube/v3/playlistItems","scope":{}},
+      "playlistItems.insert": {"action":"youtube.playlist_items.write","body":"json","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part"],"path":"/youtube/v3/playlistItems","scope":{}},
+      "playlistItems.list": {"action":"youtube.playlist_items.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","maxResults","onBehalfOfContentOwner","pageToken","part","playlistId","videoId"],"path":"/youtube/v3/playlistItems","scope":{}},
+      "playlistItems.update": {"action":"youtube.playlist_items.write","body":"json","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part"],"path":"/youtube/v3/playlistItems","scope":{}},
+      "playlists.delete": {"action":"youtube.playlists.delete","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner"],"path":"/youtube/v3/playlists","scope":{}},
+      "playlists.insert": {"action":"youtube.playlists.write","body":"json","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part"],"path":"/youtube/v3/playlists","scope":{}},
+      "playlists.list": {"action":"youtube.playlists.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","hl","id","maxResults","mine","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","pageToken","part"],"path":"/youtube/v3/playlists","scope":{}},
+      "playlists.update": {"action":"youtube.playlists.write","body":"json","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part"],"path":"/youtube/v3/playlists","scope":{}},
+      "search.list": {"action":"youtube.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","channelType","eventType","forContentOwner","forDeveloper","forMine","location","locationRadius","maxResults","onBehalfOfContentOwner","order","pageToken","part","publishedAfter","publishedBefore","q","regionCode","relevanceLanguage","safeSearch","topicId","type","videoCaption","videoCategoryId","videoDefinition","videoDimension","videoDuration","videoEmbeddable","videoLicense","videoPaidProductPlacement","videoSyndicated","videoType"],"path":"/youtube/v3/search","scope":{}},
+      "subscriptions.delete": {"action":"youtube.subscriptions.delete","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id"],"path":"/youtube/v3/subscriptions","scope":{}},
+      "subscriptions.insert": {"action":"youtube.subscriptions.write","body":"json","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","part"],"path":"/youtube/v3/subscriptions","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "subscriptions.list": {"action":"youtube.subscriptions.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","forChannelId","id","maxResults","mine","myRecentSubscribers","mySubscribers","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","order","pageToken","part"],"path":"/youtube/v3/subscriptions","scope":{}},
+      "superChatEvents.list": {"action":"youtube.super_chat_events.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","hl","maxResults","pageToken","part"],"path":"/youtube/v3/superChatEvents","scope":{}},
+      "tests.insert": {"action":"youtube.tests.write","body":"json","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","externalChannelId","onBehalfOfContentOwnerChannel","part"],"path":"/youtube/v3/tests","scope":{}},
+      "thirdPartyLinks.delete": {"action":"youtube.third_party_links.delete","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","externalChannelId","linkingToken","part","type"],"path":"/youtube/v3/thirdPartyLinks","scope":{}},
+      "thirdPartyLinks.insert": {"action":"youtube.third_party_links.write","body":"json","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","externalChannelId","part"],"path":"/youtube/v3/thirdPartyLinks","scope":{}},
+      "thirdPartyLinks.list": {"action":"youtube.third_party_links.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","externalChannelId","linkingToken","part","type"],"path":"/youtube/v3/thirdPartyLinks","scope":{}},
+      "thirdPartyLinks.update": {"action":"youtube.third_party_links.write","body":"json","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","externalChannelId","part"],"path":"/youtube/v3/thirdPartyLinks","scope":{}},
+      "thumbnails.set": {"action":"youtube.thumbnails.write","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","videoId"],"path":"/youtube/v3/thumbnails/set","scope":{}},
+      "thumbnails.set.upload": {"action":"youtube.thumbnails.write","body":"any","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","videoId","upload_id"],"path":"/upload/youtube/v3/thumbnails/set","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "thumbnails.set.upload.session": {"action":"youtube.thumbnails.write","body":"any","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","videoId"],"path":"/upload/youtube/v3/thumbnails/set","query":{"upload_id":true},"scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "videoAbuseReportReasons.list": {"action":"youtube.video_abuse_report_reasons.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","hl","part"],"path":"/youtube/v3/videoAbuseReportReasons","scope":{}},
+      "videoCategories.list": {"action":"youtube.video_categories.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","hl","id","part","regionCode"],"path":"/youtube/v3/videoCategories","scope":{}},
+      "videoTrainability.get": {"action":"youtube.video_trainability.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id"],"path":"/youtube/v3/videoTrainability","scope":{}},
+      "videos.batchGetStats": {"action":"youtube.videos.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner","part"],"path":"/youtube/v3/videos:batchGetStats","scope":{}},
+      "videos.delete": {"action":"youtube.videos.delete","effects":["delete"],"method":"DELETE","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner"],"path":"/youtube/v3/videos","scope":{}},
+      "videos.getRating": {"action":"youtube.videos.rating.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","onBehalfOfContentOwner"],"path":"/youtube/v3/videos/getRating","scope":{}},
+      "videos.insert": {"action":"youtube.videos.publish","body":"json","effects":["publish"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","autoLevels","notifySubscribers","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part","stabilize"],"path":"/youtube/v3/videos","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "videos.insert.upload": {"action":"youtube.videos.publish","body":"any","effects":["publish"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","autoLevels","notifySubscribers","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part","stabilize","upload_id"],"path":"/upload/youtube/v3/videos","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "videos.insert.upload.session": {"action":"youtube.videos.publish","body":"any","effects":["publish"],"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","autoLevels","notifySubscribers","onBehalfOfContentOwner","onBehalfOfContentOwnerChannel","part","stabilize"],"path":"/upload/youtube/v3/videos","query":{"upload_id":true},"scope":{}},
+      "videos.list": {"action":"youtube.videos.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","chart","hl","id","locale","maxHeight","maxResults","maxWidth","myRating","onBehalfOfContentOwner","pageToken","part","regionCode","videoCategoryId"],"path":"/youtube/v3/videos","scope":{}},
+      "videos.rate": {"action":"youtube.videos.rate.write","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","id","rating"],"path":"/youtube/v3/videos/rate","scope":{}},
+      "videos.reportAbuse": {"action":"youtube.videos.report_abuse.write","body":"json","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner"],"path":"/youtube/v3/videos/reportAbuse","scope":{}},
+      "videos.update": {"action":"youtube.videos.write","body":"json","effects":["write"],"fields":{"/status/privacyStatus":null,"/status/publishAt":null},"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part"],"path":"/youtube/v3/videos","scope":{}},
+      "videos.update.private": {"action":"youtube.videos.write","body":"json","effects":["write"],"fields":{"/status/privacyStatus":"private","/status/publishAt":null},"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part"],"path":"/youtube/v3/videos","scope":{}},
+      "videos.update.public": {"action":"youtube.videos.publish","body":"json","effects":["publish"],"fields":{"/status/privacyStatus":"public"},"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part"],"path":"/youtube/v3/videos","scope":{}},
+      "videos.update.unlisted": {"action":"youtube.videos.publish","body":"json","effects":["publish"],"fields":{"/status/privacyStatus":"unlisted"},"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","onBehalfOfContentOwner","part"],"path":"/youtube/v3/videos","scope":{}},
+      "watermarks.set": {"action":"youtube.watermarks.write","body":"json","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","onBehalfOfContentOwner"],"path":"/youtube/v3/watermarks/set","scope":{}},
+      "watermarks.set.upload": {"action":"youtube.watermarks.write","body":"any","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","onBehalfOfContentOwner","upload_id"],"path":"/upload/youtube/v3/watermarks/set","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "watermarks.set.upload.session": {"action":"youtube.watermarks.write","body":"any","effects":["write"],"method":"PUT","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","onBehalfOfContentOwner"],"path":"/upload/youtube/v3/watermarks/set","query":{"upload_id":true},"scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "watermarks.unset": {"action":"youtube.watermarks.unset.write","effects":["write"],"method":"POST","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","channelId","onBehalfOfContentOwner"],"path":"/youtube/v3/watermarks/unset","scope":{}},
+      "youtube.v3.liveChat.messages.stream": {"action":"youtube.live_chat.messages.stream.read","effects":["read"],"method":"GET","origin":"https://youtube.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","hl","liveChatId","maxResults","pageToken","part","profileImageSize"],"path":"/youtube/v3/liveChat/messages/stream","scope":{}}
     }
   }
 }
