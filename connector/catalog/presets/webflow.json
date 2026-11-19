@@ -4,11 +4,13 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.ask_webflow_ai": {"title": "Ask webflow ai", "effects": ["generate"]}
     },
-    "connection": {"mcp": {"url": "https://mcp.webflow.com/mcp"}},
+    "connection": {"mcp": {"url": "{url}"}},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.webflow.com/mcp"}}
+      {"key": "url", "label": "Server URL", "default": "https://mcp.webflow.com/mcp", "hint": "Use https://mcp.eu.webflow.com/mcp for EU workspaces.", "path": ["mcp", "url"]},
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}"}}
     ]
   }
 }

@@ -4,7 +4,15 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.approveReimbursement": {"title": "Approve reimbursement", "effects": ["pay"]},
+      "use.archiveBudget": {"title": "Archive budget", "effects": ["delete"]},
+      "use.bulkDeleteBooksJournalEntries": {"title": "Bulk delete books journal entries", "effects": ["delete"]},
+      "use.deleteBooksCategorizationRule": {"title": "Delete books categorization rule", "effects": ["delete"]},
+      "use.deleteBooksLedgers": {"title": "Delete books ledgers", "effects": ["delete"]},
+      "use.deleteBooksPaymentApplications": {"title": "Delete books payment applications", "effects": ["delete"]},
+      "use.requestSendMoney": {"title": "Request send money", "effects": ["pay"]},
+      "use.requestTransferMoney": {"title": "Request transfer money", "effects": ["pay"]}
     },
     "connection": {"mcp": {"url": "https://mcp.mercury.com/mcp"}},
     "fields": [

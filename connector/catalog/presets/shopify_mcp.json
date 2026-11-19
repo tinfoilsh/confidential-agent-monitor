@@ -4,12 +4,26 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.ask_business": {"title": "Ask business", "effects": ["read"]},
+      "use.cancel_cart": {"title": "Cancel cart", "effects": ["delete"]},
+      "use.cancel_checkout": {"title": "Cancel checkout", "effects": ["delete"]},
+      "use.complete_checkout": {"title": "Complete checkout", "effects": ["pay"]},
+      "use.get_cart": {"title": "Get cart", "effects": ["read"]},
+      "use.get_checkout": {"title": "Get checkout", "effects": ["read"]},
+      "use.get_order": {"title": "Get order", "effects": ["read"]},
+      "use.get_product": {"title": "Get product", "effects": ["read"]},
+      "use.lookup_catalog": {"title": "Lookup catalog", "effects": ["read"]},
+      "use.lookup_locations": {"title": "Lookup locations", "effects": ["read"]},
+      "use.search_catalog": {"title": "Search catalog", "effects": ["read"]},
+      "use.search_locations": {"title": "Search locations", "effects": ["read"]}
     },
     "connection": {"mcp": {"url": "{url}"}},
     "fields": [
       {"key": "url", "label": "Server URL", "default": "https://{shop}/api/ucp/mcp", "path": ["mcp", "url"]},
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}"}}
+      {"key": "client_id", "label": "OAuth client ID", "paths": []},
+      {"key": "client_secret", "label": "OAuth client secret", "paths": [], "secret": true},
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}", "client_id": "{client_id}", "client_secret": "{client_secret}"}}
     ]
   }
 }

@@ -8,7 +8,9 @@
     },
     "connection": {"mcp": {"url": "https://clapi.guidepoint.io/mcp-server/v1/mcp"}},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://clapi.guidepoint.io/mcp-server/v1/mcp"}}
+      {"key": "client_id", "label": "OAuth client ID", "paths": []},
+      {"key": "client_secret", "label": "OAuth client secret", "paths": [], "secret": true},
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"auth_url": "https://auth0.guidepoint.com/authorize", "token_url": "https://auth0.guidepoint.com/oauth/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "openid profile email offline_access", "authorize_params": {"audience": "https://clapi.guidepoint.io/mcp-server/v1/mcp"}}}
     ]
   }
 }

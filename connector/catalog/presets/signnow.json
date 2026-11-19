@@ -4,7 +4,12 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.cancel_invite": {"title": "Cancel invite", "effects": ["delete"]},
+      "use.send_invite": {"title": "Send invite", "effects": ["send"]},
+      "use.send_invite_from_template": {"title": "Send invite from template", "effects": ["send"]},
+      "use.send_invite_reminder": {"title": "Send invite reminder", "effects": ["send"]},
+      "use.update_invite_recipient": {"title": "Update invite recipient", "effects": ["delete", "send"]}
     },
     "connection": {"mcp": {"url": "https://mcp-server.signnow.com/mcp"}},
     "fields": [

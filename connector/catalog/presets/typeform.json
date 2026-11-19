@@ -4,11 +4,29 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.accounts-public_delete_domain": {"title": "Accounts public delete domain", "effects": ["delete"]},
+      "use.automations-public_publish_automation": {"title": "Automations public publish automation", "effects": ["execute", "publish", "send"]},
+      "use.automations-public_remove_steps": {"title": "Automations public remove steps", "effects": ["delete"]},
+      "use.contacts-public_delete_contact": {"title": "Contacts public delete contact", "effects": ["delete"]},
+      "use.contacts-public_delete_contacts_database_properties": {"title": "Contacts public delete contacts database properties", "effects": ["delete"]},
+      "use.contacts-public_delete_contacts_database_property": {"title": "Contacts public delete contacts database property", "effects": ["delete"]},
+      "use.contacts-public_delete_contacts_list": {"title": "Contacts public delete contacts list", "effects": ["delete"]},
+      "use.contacts-public_delete_form_property_mappings": {"title": "Contacts public delete form property mappings", "effects": ["delete"]},
+      "use.forms-public_delete_form": {"title": "Forms public delete form", "effects": ["delete"]},
+      "use.forms-public_publish_form": {"title": "Forms public publish form", "effects": ["publish"]},
+      "use.pages-public_create_page_domain_route": {"title": "Pages public create page domain route", "effects": ["publish"]},
+      "use.pages-public_disconnect_page_domain_route": {"title": "Pages public disconnect page domain route", "effects": ["delete"]},
+      "use.pages-public_publish_variant": {"title": "Pages public publish variant", "effects": ["publish"]},
+      "use.pages-public_remove_block": {"title": "Pages public remove block", "effects": ["delete"]},
+      "use.pages-public_soft_delete_page": {"title": "Pages public soft delete page", "effects": ["delete"]},
+      "use.pages-public_update_page_domain_route": {"title": "Pages public update page domain route", "effects": ["publish"]},
+      "use.submit_feedback": {"title": "Submit feedback", "effects": ["send"]}
     },
-    "connection": {"mcp": {"url": "https://api.typeform.com/mcp"}},
+    "connection": {"mcp": {"url": "{url}"}},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://api.typeform.com/mcp", "loopback": true}}
+      {"key": "url", "label": "Server URL", "default": "https://api.typeform.com/mcp", "hint": "Use https://api.eu.typeform.com/mcp or https://api.typeform.eu/mcp for accounts hosted in the EU.", "path": ["mcp", "url"]},
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}", "loopback": true}}
     ]
   }
 }

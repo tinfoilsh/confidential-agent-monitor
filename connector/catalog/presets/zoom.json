@@ -4,13 +4,21 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.ask": {"title": "Ask", "effects": ["generate"]},
+      "use.canvas_add_file_collaborators": {"title": "Canvas add file collaborators", "effects": ["share"]},
+      "use.canvas_modify_file_collaborator_role": {"title": "Canvas modify file collaborator role", "effects": ["share"]},
+      "use.canvas_remove_file_collaborator": {"title": "Canvas remove file collaborator", "effects": ["share"]},
+      "use.capabilities_invoke_write": {"title": "Capabilities invoke write", "effects": ["execute"]},
+      "use.in_meeting_control": {"title": "In meeting control", "effects": ["send", "write"]},
+      "use.meeting_delete": {"title": "Meeting delete", "effects": ["delete"]}
     },
-    "connection": {"mcp": {"url": "https://mcp.zoom.us/mcp/zoom/streamable"}},
+    "connection": {"mcp": {"url": "{url}"}},
     "fields": [
+      {"key": "url", "label": "Server URL", "default": "https://mcp.zoom.us/mcp/zoom/streamable", "hint": "Use a regional gateway such as https://mcp-eu.zoom.us/mcp/zoom/streamable (also mcp-au, mcp-ca, mcp-in, mcp-sa, mcp-sg or mcp-us).", "path": ["mcp", "url"]},
       {"key": "client_id", "label": "OAuth client ID", "paths": []},
       {"key": "client_secret", "label": "OAuth client secret", "paths": [], "secret": true},
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.zoom.us/mcp/zoom/streamable", "client_id": "{client_id}", "client_secret": "{client_secret}"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}", "client_id": "{client_id}", "client_secret": "{client_secret}"}}
     ]
   }
 }

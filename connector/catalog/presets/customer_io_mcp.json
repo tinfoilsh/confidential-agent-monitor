@@ -8,7 +8,8 @@
     },
     "connection": {"mcp": {"url": "https://mcp.customer.io/mcp"}},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.customer.io/mcp"}}
+      {"key": "url", "label": "Server URL", "default": "https://mcp.customer.io/mcp", "help": "Use https://mcp-eu.customer.io/mcp for accounts in the EU region.", "path": ["mcp", "url"]},
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}"}}
     ]
   }
 }

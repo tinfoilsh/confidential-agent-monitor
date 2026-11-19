@@ -6,9 +6,9 @@
       "read": {"title": "Use read-only tools", "effects": ["read"]},
       "use": {"title": "Use tools that change things", "effects": ["write"]}
     },
-    "connection": {"mcp": {"url": "https://mcp.gocardless.com/mcp"}},
+    "connection": {"mcp": {"url": "https://mcp.gocardless.com"}},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.gocardless.com/mcp"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.gocardless.com"}}
     ]
   }
 }

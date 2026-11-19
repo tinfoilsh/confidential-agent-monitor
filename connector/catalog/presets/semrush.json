@@ -10,5 +10,6 @@
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.semrush.com/v2/mcp"}}
     ]
-  }
+  },
+  "mcp": {"token": {"header": "Authorization", "prefix": "Apikey "}}
 }

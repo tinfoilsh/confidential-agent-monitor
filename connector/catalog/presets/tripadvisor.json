@@ -6,7 +6,7 @@
       "read": {"title": "Use read-only tools", "effects": ["read"]},
       "use": {"title": "Use tools that change things", "effects": ["write"]}
     },
-    "connection": {"mcp": {"url": "https://docs.terra.tripadvisor.com/mcp"}},
+    "connection": {"mcp": {"url": "https://production.ai-mcp-extensibility-prd.tamg.cloud/ogMvjY4De1G7CiHanMOAgddl/mcp"}},
     "fields": []
   }
 }

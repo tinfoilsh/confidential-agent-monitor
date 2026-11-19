@@ -4,7 +4,20 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.delete_a_bill": {"title": "Delete a bill", "effects": ["delete"]},
+      "use.delete_a_bill_payment": {"title": "Delete a bill payment", "effects": ["delete"]},
+      "use.delete_a_charge": {"title": "Delete a charge", "effects": ["delete"]},
+      "use.delete_a_contract": {"title": "Delete a contract", "effects": ["delete"]},
+      "use.delete_a_credit_memo": {"title": "Delete a credit memo", "effects": ["delete"]},
+      "use.delete_a_customer": {"title": "Delete a customer", "effects": ["delete"]},
+      "use.delete_a_product": {"title": "Delete a product", "effects": ["delete"]},
+      "use.delete_a_reimbursement": {"title": "Delete a reimbursement", "effects": ["delete"]},
+      "use.delete_a_usage_record": {"title": "Delete a usage record", "effects": ["delete"]},
+      "use.delete_a_vendor": {"title": "Delete a vendor", "effects": ["delete"]},
+      "use.delete_a_vendor_credit": {"title": "Delete a vendor credit", "effects": ["delete"]},
+      "use.delete_an_invoice": {"title": "Delete an invoice", "effects": ["delete"]},
+      "use.delete_field_value": {"title": "Delete field value", "effects": ["delete"]}
     },
     "connection": {"mcp": {"url": "https://api.rillet.com/mcp"}},
     "fields": [

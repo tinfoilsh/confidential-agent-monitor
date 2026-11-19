@@ -4,7 +4,10 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.delete_collection": {"title": "Delete collection", "effects": ["delete"]},
+      "use.remove_dois_from_collection": {"title": "Remove dois from collection", "effects": ["delete"]},
+      "use.update_collection": {"title": "Update collection", "effects": ["share", "write"]}
     },
     "connection": {"mcp": {"url": "https://api.scite.ai/mcp"}},
     "fields": [

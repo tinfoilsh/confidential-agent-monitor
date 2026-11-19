@@ -4,7 +4,19 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.extract_from_browser": {"title": "Extract from browser", "effects": ["generate", "send"]},
+      "use.extract_from_http": {"title": "Extract from http", "effects": ["generate", "send"]},
+      "use.fetch_http": {"title": "Fetch http", "effects": ["execute", "send"]},
+      "use.fetch_page": {"title": "Fetch page", "effects": ["execute", "send"]},
+      "use.scrapy_cloud_create_periodic_job": {"title": "Scrapy cloud create periodic job", "effects": ["execute"]},
+      "use.scrapy_cloud_delete_collection": {"title": "Scrapy cloud delete collection", "effects": ["delete"]},
+      "use.scrapy_cloud_delete_collection_records": {"title": "Scrapy cloud delete collection records", "effects": ["delete"]},
+      "use.scrapy_cloud_delete_periodic_job": {"title": "Scrapy cloud delete periodic job", "effects": ["delete"]},
+      "use.scrapy_cloud_run_script": {"title": "Scrapy cloud run script", "effects": ["execute"]},
+      "use.scrapy_cloud_run_spider": {"title": "Scrapy cloud run spider", "effects": ["execute"]},
+      "use.scrapy_cloud_update_periodic_job": {"title": "Scrapy cloud update periodic job", "effects": ["execute"]},
+      "use.scrapy_cloud_update_project_settings": {"title": "Scrapy cloud update project settings", "effects": ["admin"]}
     },
     "connection": {"mcp": {"url": "https://mcp.zyte.com/v1/mcp"}},
     "fields": [

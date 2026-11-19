@@ -4,7 +4,15 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.notion-calendar-cancel-events": {"title": "Notion calendar cancel events", "effects": ["delete", "send"]},
+      "use.notion-calendar-create-events": {"title": "Notion calendar create events", "effects": ["send", "write"]},
+      "use.notion-calendar-update-events": {"title": "Notion calendar update events", "effects": ["send", "write"]},
+      "use.notion-delete-comment": {"title": "Notion delete comment", "effects": ["delete"]},
+      "use.notion-delete-databases": {"title": "Notion delete databases", "effects": ["delete"]},
+      "use.notion-delete-pages": {"title": "Notion delete pages", "effects": ["delete"]},
+      "use.notion-send-message-to-session": {"title": "Notion send message to session", "effects": ["execute"]},
+      "use.notion-spawn-session": {"title": "Notion spawn session", "effects": ["execute"]}
     },
     "connection": {"mcp": {"url": "https://mcp.notion.com/mcp"}},
     "fields": [
