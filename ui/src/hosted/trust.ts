@@ -42,6 +42,17 @@ const PERIMETERLESS_INBOUND_PORTS = [22];
 // Perimeterless sandboxes that have not been updated still measure this TLS mode.
 const PERIMETERLESS_TLS_MODE = "cert-proxy";
 export const OWNER_SOCKET = "/owner/ws";
+// Toolchain packs a sandbox release may measure, newest first.
+const ALLOWED_WRAPS = [
+  {
+    repo: "nix/sandbox-toolchain@3ihjxavsi7h20k860bppgczg3ry09fwb",
+    mwp: "07ef8039a204ef98bdae69c25fcc26ee100c967e573c0a0c653a1ea83cbc6399_93396746240_443d6531-7126-5e2d-99d6-4757224dca61",
+  },
+  {
+    repo: "nix/sandbox-toolchain@s0v9sdpa9d1ydjkkpm1877h7z7i7wy5s",
+    mwp: "0c9f44f757bb7ca8d1750268057219907cfe46459e64a2bf410ef411d7b47154_87658479616_307c8726-fde5-55e1-bb1f-9c7e1b391f9c",
+  },
+];
 
 export type SandboxMode = "perimeter" | "perimeterless";
 export const NO_MONITOR: Record<SandboxMode, string> = {
@@ -230,12 +241,23 @@ export const sandboxDigest = (
       NO_MONITOR: (v) => v === NO_MONITOR[expect.mode],
     },
     expect.size,
-    (path, value) =>
-      expect.mode === "perimeter"
+    (path, value) => {
+      if (path.length === 2 && path[0] === "models") {
+        // The rest of the model is then matched against the pack it names.
+        Object.assign(
+          expected.models[+path[1]],
+          ALLOWED_WRAPS.find(
+            (wrap) => wrap.mwp === (value as { mwp?: unknown } | null)?.mwp,
+          ) ?? reject("unexpected toolchain pack"),
+        );
+        return false;
+      }
+      return expect.mode === "perimeter"
         ? path.join(".") === "shim.paths" &&
-          JSON.stringify(value) === withoutSocket
+            JSON.stringify(value) === withoutSocket
         : path.join(".") === "shim.tls-mode" &&
-          value === PERIMETERLESS_TLS_MODE,
+            value === PERIMETERLESS_TLS_MODE;
+    },
   );
 };
 
