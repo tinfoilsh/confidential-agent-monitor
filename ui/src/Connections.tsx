@@ -10,6 +10,8 @@ import {
   type JSX,
 } from "solid-js";
 import { createStore } from "solid-js/store";
+import gear from "@phosphor-icons/core/regular/gear.svg?raw";
+import gearOpen from "@phosphor-icons/core/fill/gear-fill.svg?raw";
 import * as owner from "./owner.js";
 import {
   askConfirm,
@@ -409,6 +411,9 @@ function CatalogRow(props: {
         {m.view()!.presets[props.name].title}
       </strong>
       <span class="resource-meta">
+        <Show when={props.name.includes("/")}>
+          <span class="muted">{props.name.split("/")[0]}</span>
+        </Show>
         <Show when={props.added}>
           {(count) => <span class="muted">added ({count()})</span>}
         </Show>
@@ -467,11 +472,251 @@ function CatalogDialog(props: { preset?: string; onClose: () => void }) {
     </Modal>
   );
 }
+const PIN_SHOWN = 12;
+type FetchedSource = owner.CatalogReview & { name: string; url: string };
+function SourceReview(props: {
+  found: FetchedSource;
+  onPin: () => void;
+  onCancel: () => void;
+}) {
+  const m = useMonitor();
+  const pinned = () =>
+    m.view()!.catalogs?.[props.found.name]?.pin === props.found.pin;
+  return (
+    <>
+      <Show when={!pinned()} fallback={<p>This version is already pinned.</p>}>
+        <p>
+          <strong>{props.found.name}</strong> at{" "}
+          <code>{props.found.pin.slice(0, PIN_SHOWN)}</code>. Services:{" "}
+          {props.found.presets} ({props.found.added.length} new,{" "}
+          {props.found.changed.length} changed, {props.found.removed.length}{" "}
+          removed)
+        </p>
+        <For each={Object.entries(props.found.services)}>
+          {([service, changes]) => (
+            <>
+              <span>
+                Changes to your service <strong>{service}</strong>
+              </span>
+              <pre>{changes.join("\n")}</pre>
+            </>
+          )}
+        </For>
+        <Show when={Object.keys(props.found.services).length}>
+          <p class="connection-warning" role="note">
+            Pinning applies these changes now and removes the saved rules of
+            these services.
+          </p>
+        </Show>
+      </Show>
+      <div class="form-actions">
+        <Show when={!pinned()}>
+          <button class="allow" disabled={m.busy()} onClick={props.onPin}>
+            Pin this version
+          </button>
+        </Show>
+        <button onClick={props.onCancel}>Cancel</button>
+      </div>
+    </>
+  );
+}
+function CatalogSources() {
+  const m = useMonitor();
+  const [adding, setAdding] = createSignal(false);
+  const [draft, setDraft] = createStore({ name: "", url: "" });
+  const [fetching, setFetching] = createSignal<string>();
+  const [review, setReview] = createSignal<FetchedSource>();
+  const names = () => Object.keys(m.view()!.catalogs ?? {});
+  const reviewOf = (name: string, known: boolean) => {
+    const found = review();
+    return found?.name === name && names().includes(name) === known
+      ? found
+      : undefined;
+  };
+  const fetchSource = async (name: string, url: string) => {
+    setFetching(name);
+    try {
+      setReview({ ...(await m.api()!.fetchCatalog(name, url)), name, url });
+    } catch (cause) {
+      m.report(cause);
+    } finally {
+      setFetching();
+    }
+  };
+  const pin = async (found: FetchedSource) => {
+    const saved = await m.perform(
+      (client) => client.pinCatalog(found.name, found.url, found.pin),
+      "Catalog source pinned.",
+    );
+    if (!saved) return;
+    setReview();
+    setAdding(false);
+    setDraft({ name: "", url: "" });
+  };
+  return (
+    <div class="resource-list collection-list">
+      <div class="resource-heading">
+        <h2>
+          Sources <span class="count">{names().length}</span>
+        </h2>
+        <button
+          class="button"
+          disabled={adding()}
+          onClick={() => setAdding(true)}
+        >
+          <Icon name="plus" />
+          Add source
+        </button>
+      </div>
+      <Show when={adding()}>
+        <div class="agent-inline form-fields">
+          <Show
+            when={reviewOf(draft.name, false)}
+            fallback={
+              <form
+                class="form-fields"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  if (names().includes(draft.name))
+                    m.report(new Error(`${draft.name} is already a source.`));
+                  else void fetchSource(draft.name, draft.url);
+                }}
+              >
+                <label>
+                  Name
+                  <input
+                    required
+                    pattern="[a-z][a-z0-9_]*"
+                    title="Lowercase letters, digits and underscores"
+                    placeholder="acme"
+                    value={draft.name}
+                    onInput={(e) => setDraft("name", e.currentTarget.value)}
+                  />
+                </label>
+                <label>
+                  Index URL
+                  <input
+                    type="url"
+                    required
+                    placeholder="https://raw.githubusercontent.com/acme/presets/main/index.json"
+                    value={draft.url}
+                    onInput={(e) => setDraft("url", e.currentTarget.value)}
+                  />
+                </label>
+                <div class="form-actions">
+                  <button class="primary" disabled={!!fetching()}>
+                    {fetching() ? "Fetching…" : "Fetch"}
+                  </button>
+                  <button type="button" onClick={() => setAdding(false)}>
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            }
+          >
+            {(found) => (
+              <SourceReview
+                found={found()}
+                onPin={() => void pin(found())}
+                onCancel={() => setReview()}
+              />
+            )}
+          </Show>
+        </div>
+      </Show>
+      <For
+        each={names()}
+        fallback={
+          <Show when={!adding()}>
+            <Empty title="No sources yet">
+              Add the URL of a source's index.json to list its services in the
+              catalog.
+            </Empty>
+          </Show>
+        }
+      >
+        {(name) => {
+          const source = () => m.view()!.catalogs?.[name];
+          return (
+            <div class="menu-row">
+              <ResourceDisclosure
+                class="connection-item"
+                summary={
+                  <>
+                    <Icon name="globe" />
+                    <strong class="collection-name" title={name}>
+                      {name}
+                    </strong>
+                    <span class="collection-description">{source()?.url}</span>
+                    <span class="resource-meta">
+                      <code>{source()?.pin.slice(0, PIN_SHOWN)}</code>
+                    </span>
+                    <span class="collection-chevron">
+                      <Icon name="arrow" />
+                    </span>
+                  </>
+                }
+              >
+                {() => (
+                  <div class="agent-inline form-fields">
+                    <Show
+                      when={reviewOf(name, true)}
+                      fallback={
+                        <button
+                          disabled={!!fetching() || m.busy()}
+                          onClick={() => void fetchSource(name, source()!.url)}
+                        >
+                          {fetching() === name
+                            ? "Checking…"
+                            : "Check for updates"}
+                        </button>
+                      }
+                    >
+                      {(found) => (
+                        <SourceReview
+                          found={found()}
+                          onPin={() => void pin(found())}
+                          onCancel={() => setReview()}
+                        />
+                      )}
+                    </Show>
+                  </div>
+                )}
+              </ResourceDisclosure>
+              <RowMenu name={name}>
+                <button
+                  class="danger"
+                  disabled={m.busy()}
+                  onClick={async () =>
+                    (await askConfirm({
+                      title: `Remove ${name}?`,
+                      description:
+                        "Its services leave the catalog. A source with services you added cannot be removed.",
+                      confirmLabel: "Remove source",
+                      destructive: true,
+                    })) &&
+                    void m.perform(
+                      (client) => client.pinCatalog(name, "", ""),
+                      "Catalog source removed.",
+                    )
+                  }
+                >
+                  Remove source
+                </button>
+              </RowMenu>
+            </div>
+          );
+        }}
+      </For>
+    </div>
+  );
+}
 function Catalog() {
   let catalog!: HTMLDivElement;
   const m = useMonitor(),
     [query, setQuery] = m.search("connections");
   const [chosen, setChosen] = createSignal<string>();
+  const [sources, setSources] = createSignal(false);
   const groups = createMemo(() => owner.catalog(m.view()!));
   const filtered = createMemo(() => {
     const search = query().toLowerCase();
@@ -499,7 +744,23 @@ function Catalog() {
               ?.click()
           }
         />
+        <button
+          class="icon-button"
+          aria-label="Catalog sources"
+          title="Catalog sources"
+          aria-expanded={sources()}
+          onClick={() => setSources(!sources())}
+        >
+          <span
+            class="icon"
+            aria-hidden="true"
+            innerHTML={sources() ? gearOpen : gear}
+          />
+        </button>
       </div>
+      <Show when={sources()}>
+        <CatalogSources />
+      </Show>
       <For each={groups().map((g) => g.group)}>
         {(id) => {
           const group = () => filtered().get(id)!;
