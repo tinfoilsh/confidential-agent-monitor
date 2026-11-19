@@ -4,7 +4,11 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.close_card": {"title": "Close card", "effects": ["delete"]},
+      "use.create_card": {"title": "Create card", "effects": ["pay"]},
+      "use.unpause_card": {"title": "Unpause card", "effects": ["pay"]},
+      "use.update_card_spend_limit": {"title": "Update card spend limit", "effects": ["pay"]}
     },
     "connection": {"mcp": {"url": "https://mcp.privacy.com"}},
     "fields": [

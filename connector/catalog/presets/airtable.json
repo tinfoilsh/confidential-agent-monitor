@@ -70,6 +70,9 @@
       "meta": {
         "title": "Meta"
       },
+      "meta.admin": {
+        "title": "Manage"
+      },
       "meta.bases": {
         "title": "Bases"
       },
@@ -78,6 +81,9 @@
       },
       "meta.bases.block_installations.delete": {
         "title": "Delete"
+      },
+      "meta.bases.block_installations.read": {
+        "title": "Read"
       },
       "meta.bases.block_installations.write": {
         "title": "Create and edit"
@@ -93,12 +99,6 @@
       },
       "meta.bases.delete": {
         "title": "Delete"
-      },
-      "meta.bases.installations": {
-        "title": "Installations"
-      },
-      "meta.bases.installations.read": {
-        "title": "Read"
       },
       "meta.bases.interfaces": {
         "title": "Interfaces"
@@ -118,6 +118,15 @@
       "meta.bases.interfaces.invites.delete": {
         "title": "Delete"
       },
+      "meta.bases.interfaces.portal_collaborators": {
+        "title": "Portal collaborators"
+      },
+      "meta.bases.interfaces.portal_collaborators.delete": {
+        "title": "Delete"
+      },
+      "meta.bases.interfaces.portal_collaborators.share": {
+        "title": "Share"
+      },
       "meta.bases.interfaces.read": {
         "title": "Read"
       },
@@ -126,6 +135,15 @@
       },
       "meta.bases.invites.delete": {
         "title": "Delete"
+      },
+      "meta.bases.portal_collaborators": {
+        "title": "Portal collaborators"
+      },
+      "meta.bases.portal_collaborators.delete": {
+        "title": "Delete"
+      },
+      "meta.bases.portal_collaborators.read": {
+        "title": "Read"
       },
       "meta.bases.read": {
         "title": "Read"
@@ -196,8 +214,8 @@
       "meta.enterprise_accounts.descendants": {
         "title": "Descendants"
       },
-      "meta.enterprise_accounts.descendants.write": {
-        "title": "Create and edit"
+      "meta.enterprise_accounts.descendants.admin": {
+        "title": "Manage"
       },
       "meta.enterprise_accounts.exports": {
         "title": "Exports"
@@ -211,8 +229,8 @@
       "meta.enterprise_accounts.groups": {
         "title": "Groups"
       },
-      "meta.enterprise_accounts.groups.write": {
-        "title": "Create and edit"
+      "meta.enterprise_accounts.groups.admin": {
+        "title": "Manage"
       },
       "meta.enterprise_accounts.packages": {
         "title": "Packages"
@@ -229,11 +247,11 @@
       "meta.enterprise_accounts.personal_access_tokens": {
         "title": "Personal access tokens"
       },
+      "meta.enterprise_accounts.personal_access_tokens.admin": {
+        "title": "Manage"
+      },
       "meta.enterprise_accounts.personal_access_tokens.read": {
         "title": "Read"
-      },
-      "meta.enterprise_accounts.personal_access_tokens.share": {
-        "title": "Share"
       },
       "meta.enterprise_accounts.read": {
         "title": "Read"
@@ -247,14 +265,14 @@
       "meta.enterprise_accounts.users.admin_access": {
         "title": "Admin access"
       },
-      "meta.enterprise_accounts.users.admin_access.share": {
-        "title": "Share"
+      "meta.enterprise_accounts.users.admin_access.admin": {
+        "title": "Manage"
       },
       "meta.enterprise_accounts.users.claim": {
         "title": "Claim"
       },
-      "meta.enterprise_accounts.users.claim.write": {
-        "title": "Create and edit"
+      "meta.enterprise_accounts.users.claim.admin": {
+        "title": "Manage"
       },
       "meta.enterprise_accounts.users.delete": {
         "title": "Delete"
@@ -262,8 +280,8 @@
       "meta.enterprise_accounts.users.logout": {
         "title": "Logout"
       },
-      "meta.enterprise_accounts.users.logout.write": {
-        "title": "Create and edit"
+      "meta.enterprise_accounts.users.logout.admin": {
+        "title": "Manage"
       },
       "meta.enterprise_accounts.users.read": {
         "title": "Read"
@@ -271,23 +289,20 @@
       "meta.enterprise_accounts.workspace_ai_allowlist": {
         "title": "Workspace ai allowlist"
       },
-      "meta.enterprise_accounts.workspace_ai_allowlist.write": {
-        "title": "Create and edit"
+      "meta.enterprise_accounts.workspace_ai_allowlist.admin": {
+        "title": "Manage"
       },
       "meta.enterprise_accounts.workspaces": {
         "title": "Workspaces"
       },
-      "meta.enterprise_accounts.workspaces.write": {
-        "title": "Create and edit"
+      "meta.enterprise_accounts.workspaces.admin": {
+        "title": "Manage"
       },
       "meta.groups": {
         "title": "Groups"
       },
       "meta.groups.read": {
         "title": "Read"
-      },
-      "meta.share": {
-        "title": "Share"
       },
       "meta.whoami": {
         "title": "Whoami"
@@ -331,8 +346,8 @@
       "meta.workspaces.restrictions": {
         "title": "Restrictions"
       },
-      "meta.workspaces.restrictions.write": {
-        "title": "Create and edit"
+      "meta.workspaces.restrictions.admin": {
+        "title": "Manage"
       },
       "record": {
         "title": "Record"
@@ -352,8 +367,8 @@
       "records.delete": {
         "title": "Delete"
       },
-      "records.write": {
-        "title": "Create and edit"
+      "records.read": {
+        "title": "Read"
       },
       "scim": {
         "title": "Scim"
@@ -404,17 +419,34 @@
             "path": "/v0",
             "prefix": "Bearer ",
             "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://content.airtable.com",
+            "path": "/v0",
+            "prefix": "Bearer ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://airtable.com",
+            "path": "/scim/v2",
+            "prefix": "Bearer ",
+            "value": "token"
           }
         ]
       }
     },
     "fields": [
       {
+        "credential": true,
         "key": "token",
         "label": "Airtable account",
-        "credential": true,
-        "secret": true,
-        "oauth": {"issuer": "https://airtable.com/oauth2/v1", "scope": "data.records:read data.records:write data.recordComments:read data.recordComments:write schema.bases:read schema.bases:write workspacesAndBases:read"}
+        "oauth": {
+          "issuer": "https://airtable.com/oauth2/v1",
+          "scope": "data.records:read data.records:write data.recordComments:read data.recordComments:write schema.bases:read schema.bases:write workspacesAndBases:read"
+        },
+        "secret": true
       }
     ],
     "group": "api"
@@ -426,6 +458,8 @@
       "add-base-collaborator.json.85579859d314": {"action":"meta.bases.collaborators.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/collaborators","scope":{"base":{"at":"base","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "add-interface-collaborator": {"action":"meta.bases.interfaces.collaborators.share","effects":["share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/interfaces/{pageBundleId}/collaborators","scope":{"base":{"at":"base","from":"path"},"pageBundleId":{"at":"pageBundleId","from":"path"}}},
       "add-interface-collaborator.json.e0ce1a713022": {"action":"meta.bases.interfaces.collaborators.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/interfaces/{pageBundleId}/collaborators","scope":{"base":{"at":"base","from":"path"},"pageBundleId":{"at":"pageBundleId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "add-interface-portal-collaborators": {"action":"meta.bases.interfaces.portal_collaborators.share","effects":["share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/interfaces/{pageBundleId}/portalCollaborators","scope":{"base":{"at":"base","from":"path"},"pageBundleId":{"at":"pageBundleId","from":"path"}}},
+      "add-interface-portal-collaborators.json.29e14eb332ba": {"action":"meta.bases.interfaces.portal_collaborators.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/interfaces/{pageBundleId}/portalCollaborators","scope":{"base":{"at":"base","from":"path"},"pageBundleId":{"at":"pageBundleId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "add-workspace-collaborator": {"action":"meta.workspaces.collaborators.share","effects":["share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/workspaces/{workspaceId}/collaborators","scope":{"workspaceId":{"at":"workspaceId","from":"path"}}},
       "add-workspace-collaborator.json.141caa7f76ef": {"action":"meta.workspaces.collaborators.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/workspaces/{workspaceId}/collaborators","scope":{"request":{"at":"","from":"body","type":"object"},"workspaceId":{"at":"workspaceId","from":"path"}}},
       "audit-log-events": {"action":"meta.enterprise_accounts.audit_log_events.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["startTime","endTime","originatingUserId","eventType","modelId","pageSize","sortOrder","previous","next","category"],"path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/auditLogEvents","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"modelId":{"at":"modelId","from":"query","optional":true},"originatingUserId":{"at":"originatingUserId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
@@ -438,19 +472,19 @@
       "create-base-from-package-enterprise": {"action":"meta.enterprise_accounts.packages.install.write","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/packages/{packageId}/install","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"packageId":{"at":"packageId","from":"path"}}},
       "create-base-from-package-enterprise.json.8272a08c14c3": {"action":"meta.enterprise_accounts.packages.install.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/packages/{packageId}/install","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"name":{"at":"/name","from":"body"},"packageId":{"at":"packageId","from":"path"},"packageReleaseId":{"at":"/packageReleaseId","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspaceId":{"at":"/workspaceId","from":"body"}}},
       "create-base.json.c43fce789566": {"action":"meta.bases.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/bases","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"tables":{"at":"/tables","from":"body","type":"array"},"workspaceId":{"at":"/workspaceId","from":"body"}}},
-      "create-comment": {"action":"comments.send","effects":["send"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}/{record}/comments","scope":{"base":{"at":"base","from":"path"},"record":{"at":"record","from":"path"},"table":{"at":"table","from":"path"}}},
-      "create-comment.json.eb38ff8bc74b": {"action":"comments.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}/{record}/comments","scope":{"base":{"at":"base","from":"path"},"parentCommentId":{"at":"/parentCommentId","from":"body","optional":true},"record":{"at":"record","from":"path"},"request":{"at":"","from":"body","type":"object"},"table":{"at":"table","from":"path"}}},
-      "create-descendant-enterprise": {"action":"meta.enterprise_accounts.descendants.write","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/descendants","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
-      "create-descendant-enterprise.json.51a1b23af76a": {"action":"meta.enterprise_accounts.descendants.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/descendants","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-comment": {"action":"comments.send","effects":["send"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}/{record}/comments","path_patterns":{"record":"[^s].*|s(?:|[^y].*|y(?:|[^n].*|n(?:|[^c].*|c.+)))"},"scope":{"base":{"at":"base","from":"path"},"record":{"at":"record","from":"path"},"table":{"at":"table","from":"path"}}},
+      "create-comment.json.eb38ff8bc74b": {"action":"comments.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}/{record}/comments","path_patterns":{"record":"[^s].*|s(?:|[^y].*|y(?:|[^n].*|n(?:|[^c].*|c.+)))"},"scope":{"base":{"at":"base","from":"path"},"parentCommentId":{"at":"/parentCommentId","from":"body","optional":true},"record":{"at":"record","from":"path"},"request":{"at":"","from":"body","type":"object"},"table":{"at":"table","from":"path"}}},
+      "create-descendant-enterprise": {"action":"meta.enterprise_accounts.descendants.admin","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/descendants","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
+      "create-descendant-enterprise.json.51a1b23af76a": {"action":"meta.enterprise_accounts.descendants.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/descendants","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
       "create-ediscovery-export": {"action":"meta.enterprise_accounts.exports.write","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/exports","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
       "create-ediscovery-export.json.0ed55cfe7047": {"action":"meta.enterprise_accounts.exports.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/exports","scope":{"baseId":{"at":"/baseId","from":"body"},"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "create-field": {"action":"meta.bases.tables.fields.write","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/tables/{tableId}/fields","scope":{"base":{"at":"base","from":"path"},"tableId":{"at":"tableId","from":"path"}}},
       "create-field.json.80c73d4465a0": {"action":"meta.bases.tables.fields.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/tables/{tableId}/fields","scope":{"base":{"at":"base","from":"path"},"request":{"at":"","from":"body","type":"object"},"tableId":{"at":"tableId","from":"path"}}},
       "create-records": {"action":"record.write","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}","scope":{"base":{"at":"base","from":"path"},"table":{"at":"table","from":"path"}}},
-      "create-scim-group": {"action":"scim.groups.admin","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/scim/v2/Groups","scope":{}},
-      "create-scim-group.json.16161ada1051": {"action":"scim.groups.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/scim/v2/Groups","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "create-scim-user": {"action":"scim.users.admin","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/scim/v2/Users","scope":{}},
-      "create-scim-user.json.f22b985dcb12": {"action":"scim.users.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/scim/v2/Users","scope":{"id":{"at":"/id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"userName":{"at":"/userName","from":"body"}}},
+      "create-scim-group": {"action":"scim.groups.admin","effects":["admin"],"method":"POST","origin":"https://airtable.com","path":"/scim/v2/Groups","scope":{}},
+      "create-scim-group.json.16161ada1051": {"action":"scim.groups.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://airtable.com","path":"/scim/v2/Groups","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "create-scim-user": {"action":"scim.users.admin","effects":["admin"],"method":"POST","origin":"https://airtable.com","path":"/scim/v2/Users","scope":{}},
+      "create-scim-user.json.f22b985dcb12": {"action":"scim.users.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://airtable.com","path":"/scim/v2/Users","scope":{"id":{"at":"/id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"userName":{"at":"/userName","from":"body"}}},
       "create-table": {"action":"meta.bases.tables.write","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/tables","scope":{"base":{"at":"base","from":"path"}}},
       "create-table.json.258056687851": {"action":"meta.bases.tables.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/tables","scope":{"base":{"at":"base","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
       "create-workspace": {"action":"meta.workspaces.admin","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/workspaces","scope":{}},
@@ -459,16 +493,18 @@
       "delete-base": {"action":"meta.bases.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}","scope":{"base":{"at":"base","from":"path"}}},
       "delete-base-collaborator": {"action":"meta.bases.collaborators.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/collaborators/{userOrGroupId}","scope":{"base":{"at":"base","from":"path"},"userOrGroupId":{"at":"userOrGroupId","from":"path"}}},
       "delete-base-invite": {"action":"meta.bases.invites.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/invites/{inviteId}","scope":{"base":{"at":"base","from":"path"},"inviteId":{"at":"inviteId","from":"path"}}},
+      "delete-base-portal-collaborator": {"action":"meta.bases.portal_collaborators.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/portalCollaborators/{collaboratorId}","scope":{"base":{"at":"base","from":"path"},"collaboratorId":{"at":"collaboratorId","from":"path"}}},
       "delete-block-installation": {"action":"meta.bases.block_installations.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/blockInstallations/{blockInstallationId}","scope":{"base":{"at":"base","from":"path"},"blockInstallationId":{"at":"blockInstallationId","from":"path"}}},
       "delete-comment": {"action":"comments.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}/{record}/comments/{rowCommentId}","scope":{"base":{"at":"base","from":"path"},"record":{"at":"record","from":"path"},"rowCommentId":{"at":"rowCommentId","from":"path"},"table":{"at":"table","from":"path"}}},
       "delete-interface-collaborator": {"action":"meta.bases.interfaces.collaborators.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/interfaces/{pageBundleId}/collaborators/{userOrGroupId}","scope":{"base":{"at":"base","from":"path"},"pageBundleId":{"at":"pageBundleId","from":"path"},"userOrGroupId":{"at":"userOrGroupId","from":"path"}}},
       "delete-interface-invite": {"action":"meta.bases.interfaces.invites.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/interfaces/{pageBundleId}/invites/{inviteId}","scope":{"base":{"at":"base","from":"path"},"inviteId":{"at":"inviteId","from":"path"},"pageBundleId":{"at":"pageBundleId","from":"path"}}},
+      "delete-interface-portal-collaborator": {"action":"meta.bases.interfaces.portal_collaborators.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/interfaces/{pageBundleId}/portalCollaborators/{collaboratorId}","scope":{"base":{"at":"base","from":"path"},"collaboratorId":{"at":"collaboratorId","from":"path"},"pageBundleId":{"at":"pageBundleId","from":"path"}}},
       "delete-record": {"action":"record.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}/{record}","scope":{"base":{"at":"base","from":"path"},"record":{"at":"record","from":"path"},"table":{"at":"table","from":"path"}}},
-      "delete-scim-group": {"action":"scim.groups.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","path":"/scim/v2/Groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"}}},
-      "delete-scim-user": {"action":"scim.users.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","path":"/scim/v2/Users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "delete-scim-group": {"action":"scim.groups.delete","effects":["delete","admin"],"method":"DELETE","origin":"https://airtable.com","path":"/scim/v2/Groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"}}},
+      "delete-scim-user": {"action":"scim.users.delete","effects":["delete","admin"],"method":"DELETE","origin":"https://airtable.com","path":"/scim/v2/Users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
       "delete-share": {"action":"meta.bases.shares.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/shares/{shareId}","scope":{"base":{"at":"base","from":"path"},"shareId":{"at":"shareId","from":"path"}}},
-      "delete-user-by-id": {"action":"meta.enterprise_accounts.users.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/{userId}","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"userId":{"at":"userId","from":"path"}}},
-      "delete-users-by-email": {"action":"meta.enterprise_accounts.users.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","params":["email"],"path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users","scope":{"email":{"at":"email","from":"query","optional":true},"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "delete-user-by-id": {"action":"meta.enterprise_accounts.users.delete","effects":["delete","admin"],"method":"DELETE","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/{userId}","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "delete-users-by-email": {"action":"meta.enterprise_accounts.users.delete","effects":["delete","admin"],"method":"DELETE","origin":"https://api.airtable.com","params":["email"],"path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users","scope":{"email":{"at":"email","from":"query","optional":true},"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "delete-view": {"action":"meta.bases.views.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/views/{viewId}","scope":{"base":{"at":"base","from":"path"},"viewId":{"at":"viewId","from":"path"}}},
       "delete-workspace": {"action":"meta.workspaces.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","path":"/v0/meta/workspaces/{workspaceId}","scope":{"workspaceId":{"at":"workspaceId","from":"path"}}},
       "delete-workspace-collaborator": {"action":"meta.workspaces.collaborators.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","path":"/v0/meta/workspaces/{workspaceId}/collaborators/{userOrGroupId}","scope":{"userOrGroupId":{"at":"userOrGroupId","from":"path"},"workspaceId":{"at":"workspaceId","from":"path"}}},
@@ -481,37 +517,39 @@
       "get-ediscovery-export": {"action":"meta.enterprise_accounts.exports.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/exports/{enterpriseTaskId}","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"enterpriseTaskId":{"at":"enterpriseTaskId","from":"path"}}},
       "get-enterprise": {"action":"meta.enterprise_accounts.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["include"],"path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "get-interface": {"action":"meta.bases.interfaces.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["include"],"path":"/v0/meta/bases/app{base}/interfaces/{pageBundleId}","scope":{"base":{"at":"base","from":"path"},"pageBundleId":{"at":"pageBundleId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-      "get-scim-group": {"action":"scim.groups.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","path":"/scim/v2/Groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"}}},
-      "get-scim-user": {"action":"scim.users.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","path":"/scim/v2/Users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "get-scim-group": {"action":"scim.groups.read","effects":["read"],"method":"GET","origin":"https://airtable.com","path":"/scim/v2/Groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"}}},
+      "get-scim-user": {"action":"scim.users.read","effects":["read"],"method":"GET","origin":"https://airtable.com","path":"/scim/v2/Users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
       "get-user-by-id": {"action":"meta.enterprise_accounts.users.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["include"],"path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/{userId}","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
       "get-user-group": {"action":"meta.groups.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["include"],"path":"/v0/meta/groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "get-user-id-scopes": {"action":"meta.whoami.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","path":"/v0/meta/whoami","scope":{}},
       "get-users-by-id-or-email": {"action":"meta.enterprise_accounts.users.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["email","id","include"],"path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users","scope":{"email":{"at":"email","from":"query","optional":true},"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"id":{"at":"id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
       "get-view-metadata": {"action":"meta.bases.views.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["include"],"path":"/v0/meta/bases/app{base}/views/{viewId}","scope":{"base":{"at":"base","from":"path"},"query":{"at":"","from":"query","type":"object"},"viewId":{"at":"viewId","from":"path"}}},
       "get-workspace-collaborators": {"action":"meta.workspaces.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["include"],"path":"/v0/meta/workspaces/{workspaceId}","scope":{"query":{"at":"","from":"query","type":"object"},"workspaceId":{"at":"workspaceId","from":"path"}}},
-      "grant-admin-access": {"action":"meta.enterprise_accounts.users.admin_access.share","effects":["share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/grantAdminAccess","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
-      "grant-admin-access.json.e14d6ec05ce1": {"action":"meta.enterprise_accounts.users.admin_access.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/grantAdminAccess","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"},"users":{"at":"/users","from":"body","type":"array"}}},
+      "grant-admin-access": {"action":"meta.enterprise_accounts.users.admin_access.admin","effects":["admin","share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/grantAdminAccess","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
+      "grant-admin-access.json.e14d6ec05ce1": {"action":"meta.enterprise_accounts.users.admin_access.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/grantAdminAccess","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"},"users":{"at":"/users","from":"body","type":"array"}}},
       "hyperdb-delete-records-by-primary-keys": {"action":"records.delete","effects":["delete"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/{enterpriseAccountId}/{dataTableId}/deleteRecords","scope":{"dataTableId":{"at":"dataTableId","from":"path"},"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
       "hyperdb-delete-records-by-primary-keys.json.4b8644fb754a": {"action":"records.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/{enterpriseAccountId}/{dataTableId}/deleteRecords","scope":{"dataTableId":{"at":"dataTableId","from":"path"},"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "hyperdb-table-read-records": {"action":"records.write","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/{enterpriseAccountId}/{dataTableId}/getRecords","scope":{"dataTableId":{"at":"dataTableId","from":"path"},"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
-      "hyperdb-table-read-records.json.955fe2d62bf9": {"action":"records.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/{enterpriseAccountId}/{dataTableId}/getRecords","scope":{"dataTableId":{"at":"dataTableId","from":"path"},"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "hyperdb-upsert-records-by-primary-keys": {"action":"upsert_records.write","effects":["write"],"method":"PUT","origin":"https://api.airtable.com","path":"/v0/{enterpriseAccountId}/{dataTableId}/upsertRecords","scope":{"dataTableId":{"at":"dataTableId","from":"path"},"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
-      "hyperdb-upsert-records-by-primary-keys.json.399b5e835a38": {"action":"upsert_records.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.airtable.com","path":"/v0/{enterpriseAccountId}/{dataTableId}/upsertRecords","scope":{"dataTableId":{"at":"dataTableId","from":"path"},"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"records":{"at":"/records","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "hyperdb-table-read-records": {"action":"records.read","effects":["read"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/{enterpriseAccountId}/{dataTableId}/getRecords","scope":{"dataTableId":{"at":"dataTableId","from":"path"},"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
+      "hyperdb-table-read-records.json.955fe2d62bf9": {"action":"records.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/{enterpriseAccountId}/{dataTableId}/getRecords","scope":{"dataTableId":{"at":"dataTableId","from":"path"},"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "hyperdb-upsert-records-by-primary-keys": {"action":"upsert_records.write","effects":["write"],"method":"PUT","origin":"https://api.airtable.com","path":"/v0/{enterpriseAccountId}/{dataTableId}/upsertRecords","path_patterns":{"enterpriseAccountId":"[^a].*|a(?:|[^p].*|p(?:|[^p].*))"},"scope":{"dataTableId":{"at":"dataTableId","from":"path"},"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
+      "hyperdb-upsert-records-by-primary-keys.json.399b5e835a38": {"action":"upsert_records.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.airtable.com","path":"/v0/{enterpriseAccountId}/{dataTableId}/upsertRecords","path_patterns":{"enterpriseAccountId":"[^a].*|a(?:|[^p].*|p(?:|[^p].*))"},"scope":{"dataTableId":{"at":"dataTableId","from":"path"},"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"records":{"at":"/records","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
       "list-audit-log-requests": {"action":"meta.enterprise_accounts.audit_logs.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["pageSize","offset"],"path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/auditLogs","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "list-base-portal-collaborators": {"action":"meta.bases.portal_collaborators.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/portalCollaborators","scope":{"base":{"at":"base","from":"path"}}},
       "list-bases": {"action":"meta.bases.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["offset"],"path":"/v0/meta/bases","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "list-block-installations": {"action":"meta.bases.installations.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/blockInstallations","scope":{"base":{"at":"base","from":"path"}}},
+      "list-block-installations": {"action":"meta.bases.block_installations.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/blockInstallations","scope":{"base":{"at":"base","from":"path"}}},
       "list-comments": {"action":"comments.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["pageSize","offset"],"path":"/v0/app{base}/{table}/{record}/comments","scope":{"base":{"at":"base","from":"path"},"query":{"at":"","from":"query","type":"object"},"record":{"at":"record","from":"path"},"table":{"at":"table","from":"path"}}},
       "list-ediscovery-export": {"action":"meta.enterprise_accounts.exports.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["state","pageSize","offset"],"path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/exports","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "list-enterprise-packages": {"action":"meta.enterprise_accounts.packages.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["shouldGetAllPackagesInGrid"],"path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/packages","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"query":{"at":"","from":"query","type":"object"},"shouldGetAllPackagesInGrid":{"at":"shouldGetAllPackagesInGrid","from":"query","optional":true}}},
       "list-enterprise-personal-access-tokens": {"action":"meta.enterprise_accounts.personal_access_tokens.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["includeResources"],"path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/personalAccessTokens","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-      "list-scim-groups": {"action":"scim.groups.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["count","filter"],"path":"/scim/v2/Groups","scope":{"query":{"at":"","from":"query","type":"object"}}},
-      "list-scim-users": {"action":"scim.users.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["startIndex","count","filter"],"path":"/scim/v2/Users","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "list-records-post": {"action":"records.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}/listRecords","scope":{"base":{"at":"base","from":"path"},"request":{"at":"","from":"body","type":"object"},"table":{"at":"table","from":"path"}}},
+      "list-scim-groups": {"action":"scim.groups.read","effects":["read"],"method":"GET","origin":"https://airtable.com","params":["count","filter"],"path":"/scim/v2/Groups","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "list-scim-users": {"action":"scim.users.read","effects":["read"],"method":"GET","origin":"https://airtable.com","params":["startIndex","count","filter"],"path":"/scim/v2/Users","scope":{"query":{"at":"","from":"query","type":"object"}}},
       "list-shares": {"action":"meta.bases.shares.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/shares","scope":{"base":{"at":"base","from":"path"}}},
       "list-views": {"action":"meta.bases.views.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["include"],"path":"/v0/meta/bases/app{base}/views","scope":{"base":{"at":"base","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
       "list-webhook-payloads": {"action":"bases.webhooks.payloads.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["cursor","limit"],"path":"/v0/bases/app{base}/webhooks/{webhookId}/payloads","scope":{"base":{"at":"base","from":"path"},"query":{"at":"","from":"query","type":"object"},"webhookId":{"at":"webhookId","from":"path"}}},
       "list-webhooks": {"action":"bases.webhooks.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","path":"/v0/bases/app{base}/webhooks","scope":{"base":{"at":"base","from":"path"}}},
-      "logout-user": {"action":"meta.enterprise_accounts.users.logout.write","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/{userId}/logout","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"userId":{"at":"userId","from":"path"}}},
-      "logout-user.json.f891b45af547": {"action":"meta.enterprise_accounts.users.logout.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/{userId}/logout","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "logout-user": {"action":"meta.enterprise_accounts.users.logout.admin","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/{userId}/logout","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "logout-user.json.f891b45af547": {"action":"meta.enterprise_accounts.users.logout.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/{userId}/logout","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
       "manage-block-installation": {"action":"meta.bases.block_installations.write","effects":["write"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/blockInstallations/{blockInstallationId}","scope":{"base":{"at":"base","from":"path"},"blockInstallationId":{"at":"blockInstallationId","from":"path"}}},
       "manage-block-installation.json.63282be83d07": {"action":"meta.bases.block_installations.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/blockInstallations/{blockInstallationId}","scope":{"base":{"at":"base","from":"path"},"blockInstallationId":{"at":"blockInstallationId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "manage-share": {"action":"meta.bases.shares.share","effects":["share"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/shares/{shareId}","scope":{"base":{"at":"base","from":"path"},"shareId":{"at":"shareId","from":"path"}}},
@@ -519,38 +557,38 @@
       "manage-user": {"action":"meta.enterprise_accounts.users.admin","effects":["admin"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/{userId}","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"userId":{"at":"userId","from":"path"}}},
       "manage-user-batched": {"action":"meta.enterprise_accounts.users.admin","effects":["admin"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
       "manage-user-batched.json.c421a8ccab89": {"action":"meta.enterprise_accounts.users.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"},"users":{"at":"/users","from":"body","type":"array"}}},
-      "manage-user-membership": {"action":"meta.enterprise_accounts.users.claim.write","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/claim","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
-      "manage-user-membership.json.1a02bc9bcf8a": {"action":"meta.enterprise_accounts.users.claim.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/claim","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"},"users":{"at":"/users","from":"body","type":"array"}}},
+      "manage-user-membership": {"action":"meta.enterprise_accounts.users.claim.admin","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/claim","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
+      "manage-user-membership.json.1a02bc9bcf8a": {"action":"meta.enterprise_accounts.users.claim.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/claim","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"},"users":{"at":"/users","from":"body","type":"array"}}},
       "manage-user.json.5745d1717788": {"action":"meta.enterprise_accounts.users.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/{userId}","scope":{"email":{"at":"/email","from":"body","optional":true},"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"firstName":{"at":"/firstName","from":"body","optional":true},"lastName":{"at":"/lastName","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
       "move-base": {"action":"meta.workspaces.base.admin","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/workspaces/{workspaceId}/moveBase","scope":{"workspaceId":{"at":"workspaceId","from":"path"}}},
       "move-base.json.367a18556a81": {"action":"meta.workspaces.base.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/workspaces/{workspaceId}/moveBase","scope":{"baseId":{"at":"/baseId","from":"body"},"request":{"at":"","from":"body","type":"object"},"targetWorkspaceId":{"at":"/targetWorkspaceId","from":"body"},"workspaceId":{"at":"workspaceId","from":"path"}}},
-      "move-user-groups": {"action":"meta.enterprise_accounts.groups.write","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/moveGroups","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
-      "move-user-groups.json.26892a6dbe9b": {"action":"meta.enterprise_accounts.groups.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/moveGroups","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"groupIds":{"at":"/groupIds","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"targetEnterpriseAccountId":{"at":"/targetEnterpriseAccountId","from":"body"}}},
-      "move-workspaces": {"action":"meta.enterprise_accounts.workspaces.write","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/moveWorkspaces","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
-      "move-workspaces.json.37a8687471a6": {"action":"meta.enterprise_accounts.workspaces.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/moveWorkspaces","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"replacementOwnerId":{"at":"/replacementOwnerId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"targetEnterpriseAccountId":{"at":"/targetEnterpriseAccountId","from":"body"},"workspaceIds":{"at":"/workspaceIds","from":"body","type":"array"}}},
-      "patch-scim-group": {"action":"scim.groups.admin","effects":["admin"],"method":"PATCH","origin":"https://api.airtable.com","path":"/scim/v2/Groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"}}},
-      "patch-scim-group.json.f9faabe6e518": {"action":"scim.groups.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api.airtable.com","path":"/scim/v2/Groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "patch-scim-user": {"action":"scim.users.admin","effects":["admin"],"method":"PATCH","origin":"https://api.airtable.com","path":"/scim/v2/Users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
-      "patch-scim-user.json.8bd040c01cd3": {"action":"scim.users.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api.airtable.com","path":"/scim/v2/Users/{userId}","scope":{"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
-      "post-sync-api-endpoint": {"action":"sync.write","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}/sync/{apiEndpointSyncId}","scope":{"apiEndpointSyncId":{"at":"apiEndpointSyncId","from":"path"},"base":{"at":"base","from":"path"},"table":{"at":"table","from":"path"}}},
-      "put-scim-group": {"action":"scim.groups.admin","effects":["admin"],"method":"PUT","origin":"https://api.airtable.com","path":"/scim/v2/Groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"}}},
-      "put-scim-group.json.74b08d91a86e": {"action":"scim.groups.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.airtable.com","path":"/scim/v2/Groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-      "put-scim-user": {"action":"scim.users.admin","effects":["admin"],"method":"PUT","origin":"https://api.airtable.com","path":"/scim/v2/Users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
-      "put-scim-user.json.875c22869a34": {"action":"scim.users.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.airtable.com","path":"/scim/v2/Users/{userId}","scope":{"id":{"at":"/id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"},"userName":{"at":"/userName","from":"body"}}},
+      "move-user-groups": {"action":"meta.enterprise_accounts.groups.admin","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/moveGroups","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
+      "move-user-groups.json.26892a6dbe9b": {"action":"meta.enterprise_accounts.groups.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/moveGroups","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"groupIds":{"at":"/groupIds","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"targetEnterpriseAccountId":{"at":"/targetEnterpriseAccountId","from":"body"}}},
+      "move-workspaces": {"action":"meta.enterprise_accounts.workspaces.admin","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/moveWorkspaces","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
+      "move-workspaces.json.37a8687471a6": {"action":"meta.enterprise_accounts.workspaces.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/moveWorkspaces","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"replacementOwnerId":{"at":"/replacementOwnerId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"targetEnterpriseAccountId":{"at":"/targetEnterpriseAccountId","from":"body"},"workspaceIds":{"at":"/workspaceIds","from":"body","type":"array"}}},
+      "patch-scim-group": {"action":"scim.groups.admin","effects":["admin"],"method":"PATCH","origin":"https://airtable.com","path":"/scim/v2/Groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"}}},
+      "patch-scim-group.json.f9faabe6e518": {"action":"scim.groups.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://airtable.com","path":"/scim/v2/Groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "patch-scim-user": {"action":"scim.users.admin","effects":["admin"],"method":"PATCH","origin":"https://airtable.com","path":"/scim/v2/Users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "patch-scim-user.json.8bd040c01cd3": {"action":"scim.users.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://airtable.com","path":"/scim/v2/Users/{userId}","scope":{"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "post-sync-api-endpoint": {"action":"sync.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}/sync/{apiEndpointSyncId}","scope":{"apiEndpointSyncId":{"at":"apiEndpointSyncId","from":"path"},"base":{"at":"base","from":"path"},"table":{"at":"table","from":"path"}}},
+      "put-scim-group": {"action":"scim.groups.admin","effects":["admin"],"method":"PUT","origin":"https://airtable.com","path":"/scim/v2/Groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"}}},
+      "put-scim-group.json.74b08d91a86e": {"action":"scim.groups.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://airtable.com","path":"/scim/v2/Groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "put-scim-user": {"action":"scim.users.admin","effects":["admin"],"method":"PUT","origin":"https://airtable.com","path":"/scim/v2/Users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "put-scim-user.json.875c22869a34": {"action":"scim.users.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://airtable.com","path":"/scim/v2/Users/{userId}","scope":{"id":{"at":"/id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"},"userName":{"at":"/userName","from":"body"}}},
       "records.create": {"action":"record.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}","scope":{"base":{"at":"base","from":"path"},"records":{"at":"","from":"body","type":"object"},"table":{"at":"table","from":"path"}}},
-      "records.delete": {"action":"record.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","params":["records[]"],"path":"/v0/app{base}/{table}","scope":{"base":{"at":"base","from":"path"},"query":{"at":"","from":"query","type":"object"},"table":{"at":"table","from":"path"}}},
-      "records.get": {"action":"record.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}/{record}","scope":{"base":{"at":"base","from":"path"},"record":{"at":"record","from":"path"},"table":{"at":"table","from":"path"}}},
-      "records.list": {"action":"record.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["fields[]","filterByFormula","maxRecords","pageSize","sort[0][field]","sort[0][direction]","view","cellFormat","offset"],"path":"/v0/app{base}/{table}","scope":{"base":{"at":"base","from":"path"},"table":{"at":"table","from":"path"}}},
+      "records.delete": {"action":"record.delete","effects":["delete"],"method":"DELETE","origin":"https://api.airtable.com","params":["records[]","records"],"path":"/v0/app{base}/{table}","scope":{"base":{"at":"base","from":"path"},"query":{"at":"","from":"query","type":"object"},"table":{"at":"table","from":"path"}}},
+      "records.get": {"action":"record.read","effects":["read"],"method":"GET","origin":"https://api.airtable.com","params":["cellFormat","includeDateDependencyMetadata","returnFieldsByFieldId"],"path":"/v0/app{base}/{table}/{record}","scope":{"base":{"at":"base","from":"path"},"query":{"at":"","from":"query","type":"object"},"record":{"at":"record","from":"path"},"table":{"at":"table","from":"path"}}},
+      "records.list": {"action":"record.read","effects":["read"],"method":"GET","open_params":true,"origin":"https://api.airtable.com","params":["fields[]","filterByFormula","maxRecords","pageSize","sort[0][field]","sort[0][direction]","view","cellFormat","offset"],"path":"/v0/app{base}/{table}","scope":{"base":{"at":"base","from":"path"},"table":{"at":"table","from":"path"}}},
       "records.update": {"action":"record.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}","scope":{"base":{"at":"base","from":"path"},"records":{"at":"","from":"body","type":"object"},"table":{"at":"table","from":"path"}}},
       "refresh-a-webhook": {"action":"bases.webhooks.refresh.admin","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/bases/app{base}/webhooks/{webhookId}/refresh","scope":{"base":{"at":"base","from":"path"},"webhookId":{"at":"webhookId","from":"path"}}},
       "refresh-a-webhook.json.e62c3d510a40": {"action":"bases.webhooks.refresh.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/bases/app{base}/webhooks/{webhookId}/refresh","scope":{"base":{"at":"base","from":"path"},"request":{"at":"","from":"body","type":"object"},"webhookId":{"at":"webhookId","from":"path"}}},
-      "remove-user-from-enterprise": {"action":"meta.enterprise_accounts.users.delete","effects":["delete"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/{userId}/remove","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"userId":{"at":"userId","from":"path"}}},
-      "remove-user-from-enterprise.json.88dde2fa8e50": {"action":"meta.enterprise_accounts.users.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/{userId}/remove","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
-      "revoke-admin-access": {"action":"meta.enterprise_accounts.users.admin_access.share","effects":["share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/revokeAdminAccess","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
-      "revoke-admin-access.json.9da2ba552fed": {"action":"meta.enterprise_accounts.users.admin_access.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/revokeAdminAccess","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"},"users":{"at":"/users","from":"body","type":"array"}}},
-      "revoke-enterprise-personal-access-tokens": {"action":"meta.enterprise_accounts.personal_access_tokens.share","effects":["share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/personalAccessTokens/revoke","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
-      "revoke-enterprise-personal-access-tokens.json.0a542e133056": {"action":"meta.enterprise_accounts.personal_access_tokens.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/personalAccessTokens/revoke","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"},"tokenIds":{"at":"/tokenIds","from":"body","type":"array"}}},
-      "revoke-personal-access-token": {"action":"meta.share","effects":["share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/revoke","scope":{}},
+      "remove-user-from-enterprise": {"action":"meta.enterprise_accounts.users.delete","effects":["delete","admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/{userId}/remove","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "remove-user-from-enterprise.json.88dde2fa8e50": {"action":"meta.enterprise_accounts.users.delete","body":"json","effects":["delete","admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/{userId}/remove","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "revoke-admin-access": {"action":"meta.enterprise_accounts.users.admin_access.admin","effects":["admin","share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/revokeAdminAccess","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
+      "revoke-admin-access.json.9da2ba552fed": {"action":"meta.enterprise_accounts.users.admin_access.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/users/revokeAdminAccess","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"},"users":{"at":"/users","from":"body","type":"array"}}},
+      "revoke-enterprise-personal-access-tokens": {"action":"meta.enterprise_accounts.personal_access_tokens.admin","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/personalAccessTokens/revoke","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
+      "revoke-enterprise-personal-access-tokens.json.0a542e133056": {"action":"meta.enterprise_accounts.personal_access_tokens.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/personalAccessTokens/revoke","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"},"tokenIds":{"at":"/tokenIds","from":"body","type":"array"}}},
+      "revoke-personal-access-token": {"action":"meta.admin","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/revoke","scope":{}},
       "update-collaborator-base-permission": {"action":"meta.bases.collaborators.share","effects":["share"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/collaborators/{userOrGroupId}","scope":{"base":{"at":"base","from":"path"},"userOrGroupId":{"at":"userOrGroupId","from":"path"}}},
       "update-collaborator-base-permission.json.146416e46869": {"action":"meta.bases.collaborators.share","body":"json","effects":["share"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/collaborators/{userOrGroupId}","scope":{"base":{"at":"base","from":"path"},"request":{"at":"","from":"body","type":"object"},"userOrGroupId":{"at":"userOrGroupId","from":"path"}}},
       "update-comment": {"action":"comments.write","effects":["write"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}/{record}/comments/{rowCommentId}","scope":{"base":{"at":"base","from":"path"},"record":{"at":"record","from":"path"},"rowCommentId":{"at":"rowCommentId","from":"path"},"table":{"at":"table","from":"path"}}},
@@ -561,6 +599,8 @@
       "update-field.json.48fc37ece158": {"action":"meta.bases.tables.fields.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/tables/{tableId}/fields/{columnId}","scope":{"base":{"at":"base","from":"path"},"columnId":{"at":"columnId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"tableId":{"at":"tableId","from":"path"}}},
       "update-interface-collaborator": {"action":"meta.bases.interfaces.collaborators.share","effects":["share"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/interfaces/{pageBundleId}/collaborators/{userOrGroupId}","scope":{"base":{"at":"base","from":"path"},"pageBundleId":{"at":"pageBundleId","from":"path"},"userOrGroupId":{"at":"userOrGroupId","from":"path"}}},
       "update-interface-collaborator.json.eb8755230e1e": {"action":"meta.bases.interfaces.collaborators.share","body":"json","effects":["share"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/interfaces/{pageBundleId}/collaborators/{userOrGroupId}","scope":{"base":{"at":"base","from":"path"},"pageBundleId":{"at":"pageBundleId","from":"path"},"request":{"at":"","from":"body","type":"object"},"userOrGroupId":{"at":"userOrGroupId","from":"path"}}},
+      "update-interface-portal-collaborator": {"action":"meta.bases.interfaces.portal_collaborators.share","effects":["share"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/interfaces/{pageBundleId}/portalCollaborators/{collaboratorId}","scope":{"base":{"at":"base","from":"path"},"collaboratorId":{"at":"collaboratorId","from":"path"},"pageBundleId":{"at":"pageBundleId","from":"path"}}},
+      "update-interface-portal-collaborator.json.f93d89f1bc32": {"action":"meta.bases.interfaces.portal_collaborators.share","body":"json","effects":["share"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/interfaces/{pageBundleId}/portalCollaborators/{collaboratorId}","scope":{"base":{"at":"base","from":"path"},"collaboratorId":{"at":"collaboratorId","from":"path"},"pageBundleId":{"at":"pageBundleId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
       "update-multiple-records": {"action":"record.write","effects":["write"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}","scope":{"base":{"at":"base","from":"path"},"table":{"at":"table","from":"path"}}},
       "update-multiple-records-put": {"action":"general.write","effects":["write"],"method":"PUT","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}","scope":{"base":{"at":"base","from":"path"},"table":{"at":"table","from":"path"}}},
       "update-multiple-records-put.json.248b0602532b": {"action":"general.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}","scope":{"base":{"at":"base","from":"path"},"records":{"at":"/records","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"table":{"at":"table","from":"path"}}},
@@ -570,14 +610,14 @@
       "update-record.json.9d82feb5cad9": {"action":"record.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}/{record}","scope":{"base":{"at":"base","from":"path"},"record":{"at":"record","from":"path"},"request":{"at":"","from":"body","type":"object"},"table":{"at":"table","from":"path"}}},
       "update-table": {"action":"meta.bases.tables.write","effects":["write"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/tables/{table}","scope":{"base":{"at":"base","from":"path"},"table":{"at":"table","from":"path"}}},
       "update-table.json.0610c2e816d5": {"action":"meta.bases.tables.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/bases/app{base}/tables/{table}","scope":{"base":{"at":"base","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"table":{"at":"table","from":"path"}}},
-      "update-workspace-ai-allowlist": {"action":"meta.enterprise_accounts.workspace_ai_allowlist.write","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/workspaceAiAllowlist","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
-      "update-workspace-ai-allowlist.json.4fea360518d4": {"action":"meta.enterprise_accounts.workspace_ai_allowlist.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/workspaceAiAllowlist","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"},"workspaces":{"at":"/workspaces","from":"body","type":"array"}}},
+      "update-workspace-ai-allowlist": {"action":"meta.enterprise_accounts.workspace_ai_allowlist.admin","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/workspaceAiAllowlist","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
+      "update-workspace-ai-allowlist.json.4fea360518d4": {"action":"meta.enterprise_accounts.workspace_ai_allowlist.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/enterpriseAccounts/{enterpriseAccountId}/workspaceAiAllowlist","scope":{"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"request":{"at":"","from":"body","type":"object"},"workspaces":{"at":"/workspaces","from":"body","type":"array"}}},
       "update-workspace-collaborator": {"action":"meta.workspaces.collaborators.share","effects":["share"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/workspaces/{workspaceId}/collaborators/{userOrGroupId}","scope":{"userOrGroupId":{"at":"userOrGroupId","from":"path"},"workspaceId":{"at":"workspaceId","from":"path"}}},
       "update-workspace-collaborator.json.c3fe19bf9b74": {"action":"meta.workspaces.collaborators.share","body":"json","effects":["share"],"method":"PATCH","origin":"https://api.airtable.com","path":"/v0/meta/workspaces/{workspaceId}/collaborators/{userOrGroupId}","scope":{"request":{"at":"","from":"body","type":"object"},"userOrGroupId":{"at":"userOrGroupId","from":"path"},"workspaceId":{"at":"workspaceId","from":"path"}}},
-      "update-workspace-restrictions": {"action":"meta.workspaces.restrictions.write","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/workspaces/{workspaceId}/updateRestrictions","scope":{"workspaceId":{"at":"workspaceId","from":"path"}}},
-      "update-workspace-restrictions.json.bda3656a75f0": {"action":"meta.workspaces.restrictions.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/workspaces/{workspaceId}/updateRestrictions","scope":{"request":{"at":"","from":"body","type":"object"},"workspaceId":{"at":"workspaceId","from":"path"}}},
-      "upload-attachment": {"action":"attachment.write","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/app{base}/{record}/{attachmentFieldIdOrName}/uploadAttachment","scope":{"attachmentFieldIdOrName":{"at":"attachmentFieldIdOrName","from":"path"},"base":{"at":"base","from":"path"},"record":{"at":"record","from":"path"}}},
-      "upload-attachment.json.2551252d15df": {"action":"attachment.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/app{base}/{record}/{attachmentFieldIdOrName}/uploadAttachment","scope":{"attachmentFieldIdOrName":{"at":"attachmentFieldIdOrName","from":"path"},"base":{"at":"base","from":"path"},"file":{"at":"/file","from":"body"},"filename":{"at":"/filename","from":"body"},"record":{"at":"record","from":"path"},"request":{"at":"","from":"body","type":"object"}}}
+      "update-workspace-restrictions": {"action":"meta.workspaces.restrictions.admin","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/workspaces/{workspaceId}/updateRestrictions","scope":{"workspaceId":{"at":"workspaceId","from":"path"}}},
+      "update-workspace-restrictions.json.bda3656a75f0": {"action":"meta.workspaces.restrictions.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.airtable.com","path":"/v0/meta/workspaces/{workspaceId}/updateRestrictions","scope":{"request":{"at":"","from":"body","type":"object"},"workspaceId":{"at":"workspaceId","from":"path"}}},
+      "upload-attachment": {"action":"attachment.write","effects":["write"],"method":"POST","origin":"https://content.airtable.com","path":"/v0/app{base}/{record}/{attachmentFieldIdOrName}/uploadAttachment","scope":{"attachmentFieldIdOrName":{"at":"attachmentFieldIdOrName","from":"path"},"base":{"at":"base","from":"path"},"record":{"at":"record","from":"path"}}},
+      "upload-attachment.json.2551252d15df": {"action":"attachment.write","body":"json","effects":["write"],"method":"POST","origin":"https://content.airtable.com","path":"/v0/app{base}/{record}/{attachmentFieldIdOrName}/uploadAttachment","scope":{"attachmentFieldIdOrName":{"at":"attachmentFieldIdOrName","from":"path"},"base":{"at":"base","from":"path"},"file":{"at":"/file","from":"body"},"filename":{"at":"/filename","from":"body"},"record":{"at":"record","from":"path"},"request":{"at":"","from":"body","type":"object"}}}
     }
   }
 }

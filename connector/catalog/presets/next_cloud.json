@@ -1,142 +1,997 @@
 {
-  "title": "Nextcloud",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your Nextcloud origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"], ["http", "slots", 1, "origin"]]},
-      {"key": "user", "label": "User", "secret": true, "credential": true},
-      {"key": "password", "label": "Password", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "user", "origin": "https://example.com", "path": "/", "basic": "user"}, {"value": "password", "origin": "https://example.com", "path": "/", "basic": "password"}]}},
     "actions": {
-      "admin.apps": {"title": "Admin: apps"},
-      "admin.groups": {"title": "Admin: groups"},
-      "admin.users": {"title": "Admin: users"},
-      "delete.apppassword": {"title": "Delete: apppassword"},
-      "delete.collections": {"title": "Delete: collections"},
-      "delete.groups": {"title": "Delete: groups"},
-      "delete.task": {"title": "Delete: task"},
-      "delete.users": {"title": "Delete: users"},
-      "generate.extract": {"title": "Generate: extract"},
-      "generate.extract_public": {"title": "Generate: extract public"},
-      "generate.translate": {"title": "Generate: translate"},
-      "read": {"title": "Read everything the account can see"},
-      "send.welcome": {"title": "Send: welcome"},
-      "write.by_phone": {"title": "Write: by phone"},
-      "write.check": {"title": "Write: check"},
-      "write.collections": {"title": "Write: collections"},
-      "write.confirm": {"title": "Write: confirm"},
-      "write.login": {"title": "Write: login"},
-      "write.poll": {"title": "Write: poll"},
-      "write.profile": {"title": "Write: profile"},
-      "write.provider": {"title": "Write: provider"},
-      "write.resolve": {"title": "Write: resolve"},
-      "write.resolve_public": {"title": "Write: resolve public"},
-      "write.resources": {"title": "Write: resources"},
-      "write.rotate": {"title": "Write: rotate"},
-      "write.schedule": {"title": "Write: schedule"},
-      "write.success": {"title": "Write: success"},
-      "write.tasks": {"title": "Write: tasks"},
-      "write.wipe": {"title": "Write: wipe"}
-    }
+      "apps": {
+        "title": "Apps"
+      },
+      "apps.files": {
+        "title": "Files"
+      },
+      "apps.files.thumbnail": {
+        "title": "Thumbnail"
+      },
+      "apps.files.thumbnail.read": {
+        "title": "Read"
+      },
+      "apps.files_sharing": {
+        "title": "Files sharing"
+      },
+      "apps.files_sharing.publicpreview": {
+        "title": "Publicpreview"
+      },
+      "apps.files_sharing.publicpreview.read": {
+        "title": "Read"
+      },
+      "apps.files_sharing.shareinfo": {
+        "title": "Shareinfo"
+      },
+      "apps.files_sharing.shareinfo.read": {
+        "title": "Read"
+      },
+      "avatar": {
+        "title": "Avatar"
+      },
+      "avatar.dark": {
+        "title": "Dark"
+      },
+      "avatar.dark.read": {
+        "title": "Read"
+      },
+      "avatar.guest": {
+        "title": "Guest"
+      },
+      "avatar.guest.dark": {
+        "title": "Dark"
+      },
+      "avatar.guest.dark.read": {
+        "title": "Read"
+      },
+      "avatar.guest.read": {
+        "title": "Read"
+      },
+      "avatar.read": {
+        "title": "Read"
+      },
+      "core": {
+        "title": "Core"
+      },
+      "core.mimeicon": {
+        "title": "Mimeicon"
+      },
+      "core.mimeicon.read": {
+        "title": "Read"
+      },
+      "core.preview": {
+        "title": "Preview"
+      },
+      "core.preview.png": {
+        "title": "Png"
+      },
+      "core.preview.png.read": {
+        "title": "Read"
+      },
+      "core.preview.read": {
+        "title": "Read"
+      },
+      "core.references": {
+        "title": "References"
+      },
+      "core.references.preview": {
+        "title": "Preview"
+      },
+      "core.references.preview.read": {
+        "title": "Read"
+      },
+      "core.wipe": {
+        "title": "Wipe"
+      },
+      "core.wipe.read": {
+        "title": "Read"
+      },
+      "core.wipe.success": {
+        "title": "Success"
+      },
+      "core.wipe.success.write": {
+        "title": "Create and edit"
+      },
+      "csrftoken": {
+        "title": "Csrftoken"
+      },
+      "csrftoken.read": {
+        "title": "Read"
+      },
+      "dav": {
+        "title": "Dav"
+      },
+      "dav.files": {
+        "title": "Files"
+      },
+      "dav.files.delete": {
+        "title": "Delete"
+      },
+      "dav.files.read": {
+        "title": "Read"
+      },
+      "dav.files.write": {
+        "title": "Create and edit"
+      },
+      "login": {
+        "title": "Login"
+      },
+      "login.admin": {
+        "title": "Manage"
+      },
+      "login.poll": {
+        "title": "Poll"
+      },
+      "login.poll.admin": {
+        "title": "Manage"
+      },
+      "login.write": {
+        "title": "Create and edit"
+      },
+      "ocm_provider": {
+        "title": "Ocm provider"
+      },
+      "ocm_provider.read": {
+        "title": "Read"
+      },
+      "ocs": {
+        "title": "Ocs"
+      },
+      "ocs.apps": {
+        "title": "Apps"
+      },
+      "ocs.apps.files": {
+        "title": "Files"
+      },
+      "ocs.apps.files.convert": {
+        "title": "Convert"
+      },
+      "ocs.apps.files.convert.write": {
+        "title": "Create and edit"
+      },
+      "ocs.apps.files.direct_editing": {
+        "title": "Direct editing"
+      },
+      "ocs.apps.files.direct_editing.open": {
+        "title": "Open and edit"
+      },
+      "ocs.apps.files.direct_editing.open.write": {
+        "title": "Create and edit"
+      },
+      "ocs.apps.files.direct_editing.read": {
+        "title": "Read"
+      },
+      "ocs.apps.files.direct_editing.templates": {
+        "title": "Templates"
+      },
+      "ocs.apps.files.direct_editing.templates.read": {
+        "title": "Read"
+      },
+      "ocs.apps.files.direct_editing.write": {
+        "title": "Create and edit"
+      },
+      "ocs.apps.files.folder_tree": {
+        "title": "Folder tree"
+      },
+      "ocs.apps.files.folder_tree.read": {
+        "title": "Read"
+      },
+      "ocs.apps.files.opened": {
+        "title": "Opened"
+      },
+      "ocs.apps.files.opened.write": {
+        "title": "Create and edit"
+      },
+      "ocs.apps.files.openlocaleditor": {
+        "title": "Openlocaleditor"
+      },
+      "ocs.apps.files.openlocaleditor.write": {
+        "title": "Create and edit"
+      },
+      "ocs.apps.files.templates": {
+        "title": "Templates"
+      },
+      "ocs.apps.files.templates.fields": {
+        "title": "Fields"
+      },
+      "ocs.apps.files.templates.fields.read": {
+        "title": "Read"
+      },
+      "ocs.apps.files.templates.path": {
+        "title": "Path"
+      },
+      "ocs.apps.files.templates.path.write": {
+        "title": "Create and edit"
+      },
+      "ocs.apps.files.templates.read": {
+        "title": "Read"
+      },
+      "ocs.apps.files.templates.write": {
+        "title": "Create and edit"
+      },
+      "ocs.apps.files.transferownership": {
+        "title": "Transferownership"
+      },
+      "ocs.apps.files.transferownership.share": {
+        "title": "Share"
+      },
+      "ocs.apps.files.transferownership.write": {
+        "title": "Create and edit"
+      },
+      "ocs.apps.files_sharing": {
+        "title": "Files sharing"
+      },
+      "ocs.apps.files_sharing.deletedshares": {
+        "title": "Deletedshares"
+      },
+      "ocs.apps.files_sharing.deletedshares.read": {
+        "title": "Read"
+      },
+      "ocs.apps.files_sharing.deletedshares.share": {
+        "title": "Share"
+      },
+      "ocs.apps.files_sharing.remote_shares": {
+        "title": "Remote shares"
+      },
+      "ocs.apps.files_sharing.remote_shares.delete": {
+        "title": "Delete"
+      },
+      "ocs.apps.files_sharing.remote_shares.pending": {
+        "title": "Pending"
+      },
+      "ocs.apps.files_sharing.remote_shares.pending.delete": {
+        "title": "Delete"
+      },
+      "ocs.apps.files_sharing.remote_shares.pending.read": {
+        "title": "Read"
+      },
+      "ocs.apps.files_sharing.remote_shares.pending.write": {
+        "title": "Create and edit"
+      },
+      "ocs.apps.files_sharing.remote_shares.read": {
+        "title": "Read"
+      },
+      "ocs.apps.files_sharing.sharees": {
+        "title": "Sharees"
+      },
+      "ocs.apps.files_sharing.sharees.read": {
+        "title": "Read"
+      },
+      "ocs.apps.files_sharing.sharees_recommended": {
+        "title": "Sharees recommended"
+      },
+      "ocs.apps.files_sharing.sharees_recommended.read": {
+        "title": "Read"
+      },
+      "ocs.apps.files_sharing.shares": {
+        "title": "Shares"
+      },
+      "ocs.apps.files_sharing.shares.delete": {
+        "title": "Delete"
+      },
+      "ocs.apps.files_sharing.shares.email": {
+        "title": "Email"
+      },
+      "ocs.apps.files_sharing.shares.email.send": {
+        "title": "Send"
+      },
+      "ocs.apps.files_sharing.shares.inherited": {
+        "title": "Inherited"
+      },
+      "ocs.apps.files_sharing.shares.inherited.read": {
+        "title": "Read"
+      },
+      "ocs.apps.files_sharing.shares.pending": {
+        "title": "Pending"
+      },
+      "ocs.apps.files_sharing.shares.pending.read": {
+        "title": "Read"
+      },
+      "ocs.apps.files_sharing.shares.pending.write": {
+        "title": "Create and edit"
+      },
+      "ocs.apps.files_sharing.shares.read": {
+        "title": "Read"
+      },
+      "ocs.apps.files_sharing.shares.share": {
+        "title": "Share"
+      },
+      "ocs.apps.files_sharing.token": {
+        "title": "Token"
+      },
+      "ocs.apps.files_sharing.token.read": {
+        "title": "Read"
+      },
+      "ocs.apps.provisioning_api": {
+        "title": "Provisioning api"
+      },
+      "ocs.apps.provisioning_api.config": {
+        "title": "Config"
+      },
+      "ocs.apps.provisioning_api.config.apps": {
+        "title": "Apps"
+      },
+      "ocs.apps.provisioning_api.config.apps.admin": {
+        "title": "Manage"
+      },
+      "ocs.apps.provisioning_api.config.users": {
+        "title": "Users"
+      },
+      "ocs.apps.provisioning_api.config.users.delete": {
+        "title": "Delete"
+      },
+      "ocs.apps.provisioning_api.config.users.write": {
+        "title": "Create and edit"
+      },
+      "ocs.cloud": {
+        "title": "Cloud"
+      },
+      "ocs.cloud.capabilities": {
+        "title": "Capabilities"
+      },
+      "ocs.cloud.capabilities.read": {
+        "title": "Read"
+      },
+      "ocs.cloud.groups": {
+        "title": "Groups"
+      },
+      "ocs.cloud.groups.details": {
+        "title": "Details"
+      },
+      "ocs.cloud.groups.details.read": {
+        "title": "Read"
+      },
+      "ocs.cloud.groups.read": {
+        "title": "Read"
+      },
+      "ocs.cloud.groups.users": {
+        "title": "Users"
+      },
+      "ocs.cloud.groups.users.details": {
+        "title": "Details"
+      },
+      "ocs.cloud.groups.users.details.read": {
+        "title": "Read"
+      },
+      "ocs.cloud.groups.users.read": {
+        "title": "Read"
+      },
+      "ocs.cloud.user": {
+        "title": "Account"
+      },
+      "ocs.cloud.user.apps": {
+        "title": "Apps"
+      },
+      "ocs.cloud.user.apps.read": {
+        "title": "Read"
+      },
+      "ocs.cloud.user.fields": {
+        "title": "Fields"
+      },
+      "ocs.cloud.user.fields.read": {
+        "title": "Read"
+      },
+      "ocs.cloud.user.read": {
+        "title": "Read"
+      },
+      "ocs.cloud.users": {
+        "title": "Users"
+      },
+      "ocs.cloud.users.admin": {
+        "title": "Manage"
+      },
+      "ocs.cloud.users.details": {
+        "title": "Details"
+      },
+      "ocs.cloud.users.details.read": {
+        "title": "Read"
+      },
+      "ocs.cloud.users.disabled": {
+        "title": "Disabled"
+      },
+      "ocs.cloud.users.disabled.read": {
+        "title": "Read"
+      },
+      "ocs.cloud.users.groups": {
+        "title": "Groups"
+      },
+      "ocs.cloud.users.groups.admin": {
+        "title": "Manage"
+      },
+      "ocs.cloud.users.groups.details": {
+        "title": "Details"
+      },
+      "ocs.cloud.users.groups.details.read": {
+        "title": "Read"
+      },
+      "ocs.cloud.users.groups.read": {
+        "title": "Read"
+      },
+      "ocs.cloud.users.read": {
+        "title": "Read"
+      },
+      "ocs.cloud.users.search": {
+        "title": "Search"
+      },
+      "ocs.cloud.users.search.by_phone": {
+        "title": "By phone"
+      },
+      "ocs.cloud.users.search.by_phone.read": {
+        "title": "Read"
+      },
+      "ocs.cloud.users.subadmins": {
+        "title": "Subadmins"
+      },
+      "ocs.cloud.users.subadmins.details": {
+        "title": "Details"
+      },
+      "ocs.cloud.users.subadmins.details.read": {
+        "title": "Read"
+      },
+      "ocs.cloud.users.welcome": {
+        "title": "Welcome"
+      },
+      "ocs.cloud.users.welcome.send": {
+        "title": "Send"
+      },
+      "ocs.cloud.users.wipe": {
+        "title": "Wipe"
+      },
+      "ocs.cloud.users.wipe.admin": {
+        "title": "Manage"
+      },
+      "ocs.collaboration": {
+        "title": "Collaboration"
+      },
+      "ocs.collaboration.resources": {
+        "title": "Resources"
+      },
+      "ocs.collaboration.resources.collections": {
+        "title": "Collections"
+      },
+      "ocs.collaboration.resources.collections.delete": {
+        "title": "Delete"
+      },
+      "ocs.collaboration.resources.collections.read": {
+        "title": "Read"
+      },
+      "ocs.collaboration.resources.collections.search": {
+        "title": "Search"
+      },
+      "ocs.collaboration.resources.collections.search.read": {
+        "title": "Read"
+      },
+      "ocs.collaboration.resources.collections.write": {
+        "title": "Create and edit"
+      },
+      "ocs.collaboration.resources.read": {
+        "title": "Read"
+      },
+      "ocs.collaboration.resources.write": {
+        "title": "Create and edit"
+      },
+      "ocs.core": {
+        "title": "Core"
+      },
+      "ocs.core.apppassword": {
+        "title": "Apppassword"
+      },
+      "ocs.core.apppassword.admin": {
+        "title": "Manage"
+      },
+      "ocs.core.autocomplete": {
+        "title": "Autocomplete"
+      },
+      "ocs.core.autocomplete.read": {
+        "title": "Read"
+      },
+      "ocs.core.getapppassword": {
+        "title": "Getapppassword"
+      },
+      "ocs.core.getapppassword.admin": {
+        "title": "Manage"
+      },
+      "ocs.core.getapppassword_onetime": {
+        "title": "Getapppassword onetime"
+      },
+      "ocs.core.getapppassword_onetime.admin": {
+        "title": "Manage"
+      },
+      "ocs.core.navigation": {
+        "title": "Navigation"
+      },
+      "ocs.core.navigation.apps": {
+        "title": "Apps"
+      },
+      "ocs.core.navigation.apps.read": {
+        "title": "Read"
+      },
+      "ocs.core.navigation.settings": {
+        "title": "Settings"
+      },
+      "ocs.core.navigation.settings.read": {
+        "title": "Read"
+      },
+      "ocs.hovercard": {
+        "title": "Hovercard"
+      },
+      "ocs.hovercard.read": {
+        "title": "Read"
+      },
+      "ocs.profile": {
+        "title": "Profile"
+      },
+      "ocs.profile.read": {
+        "title": "Read"
+      },
+      "ocs.profile.share": {
+        "title": "Share"
+      },
+      "ocs.references": {
+        "title": "References"
+      },
+      "ocs.references.extract": {
+        "title": "Extract"
+      },
+      "ocs.references.extract.read": {
+        "title": "Read"
+      },
+      "ocs.references.extract_public": {
+        "title": "Extract public"
+      },
+      "ocs.references.extract_public.read": {
+        "title": "Read"
+      },
+      "ocs.references.provider": {
+        "title": "Provider"
+      },
+      "ocs.references.provider.write": {
+        "title": "Create and edit"
+      },
+      "ocs.references.providers": {
+        "title": "Providers"
+      },
+      "ocs.references.providers.read": {
+        "title": "Read"
+      },
+      "ocs.references.resolve": {
+        "title": "Resolve"
+      },
+      "ocs.references.resolve.read": {
+        "title": "Read"
+      },
+      "ocs.references.resolve_public": {
+        "title": "Resolve public"
+      },
+      "ocs.references.resolve_public.read": {
+        "title": "Read"
+      },
+      "ocs.search": {
+        "title": "Search"
+      },
+      "ocs.search.providers": {
+        "title": "Providers"
+      },
+      "ocs.search.providers.read": {
+        "title": "Read"
+      },
+      "ocs.taskprocessing": {
+        "title": "Taskprocessing"
+      },
+      "ocs.taskprocessing.schedule": {
+        "title": "Schedule"
+      },
+      "ocs.taskprocessing.schedule.generate": {
+        "title": "Generate"
+      },
+      "ocs.taskprocessing.task": {
+        "title": "Task"
+      },
+      "ocs.taskprocessing.task.delete": {
+        "title": "Delete"
+      },
+      "ocs.taskprocessing.task.read": {
+        "title": "Read"
+      },
+      "ocs.taskprocessing.tasks": {
+        "title": "Tasks"
+      },
+      "ocs.taskprocessing.tasks.app": {
+        "title": "App"
+      },
+      "ocs.taskprocessing.tasks.app.read": {
+        "title": "Read"
+      },
+      "ocs.taskprocessing.tasks.file": {
+        "title": "File"
+      },
+      "ocs.taskprocessing.tasks.file.read": {
+        "title": "Read"
+      },
+      "ocs.taskprocessing.tasks.queue_position": {
+        "title": "Queue position"
+      },
+      "ocs.taskprocessing.tasks.queue_position.read": {
+        "title": "Read"
+      },
+      "ocs.taskprocessing.tasks.read": {
+        "title": "Read"
+      },
+      "ocs.taskprocessing.tasks.write": {
+        "title": "Create and edit"
+      },
+      "ocs.taskprocessing.tasktypes": {
+        "title": "Tasktypes"
+      },
+      "ocs.taskprocessing.tasktypes.read": {
+        "title": "Read"
+      },
+      "ocs.teams": {
+        "title": "Teams"
+      },
+      "ocs.teams.resources": {
+        "title": "Resources"
+      },
+      "ocs.teams.resources.read": {
+        "title": "Read"
+      },
+      "ocs.text2image": {
+        "title": "Text2image"
+      },
+      "ocs.text2image.is_available": {
+        "title": "Is available"
+      },
+      "ocs.text2image.is_available.read": {
+        "title": "Read"
+      },
+      "ocs.text2image.schedule": {
+        "title": "Schedule"
+      },
+      "ocs.text2image.schedule.generate": {
+        "title": "Generate"
+      },
+      "ocs.text2image.task": {
+        "title": "Task"
+      },
+      "ocs.text2image.task.delete": {
+        "title": "Delete"
+      },
+      "ocs.text2image.task.image": {
+        "title": "Image"
+      },
+      "ocs.text2image.task.image.read": {
+        "title": "Read"
+      },
+      "ocs.text2image.task.read": {
+        "title": "Read"
+      },
+      "ocs.text2image.tasks": {
+        "title": "Tasks"
+      },
+      "ocs.text2image.tasks.app": {
+        "title": "App"
+      },
+      "ocs.text2image.tasks.app.read": {
+        "title": "Read"
+      },
+      "ocs.textprocessing": {
+        "title": "Textprocessing"
+      },
+      "ocs.textprocessing.schedule": {
+        "title": "Schedule"
+      },
+      "ocs.textprocessing.schedule.generate": {
+        "title": "Generate"
+      },
+      "ocs.textprocessing.task": {
+        "title": "Task"
+      },
+      "ocs.textprocessing.task.delete": {
+        "title": "Delete"
+      },
+      "ocs.textprocessing.task.read": {
+        "title": "Read"
+      },
+      "ocs.textprocessing.tasks": {
+        "title": "Tasks"
+      },
+      "ocs.textprocessing.tasks.app": {
+        "title": "App"
+      },
+      "ocs.textprocessing.tasks.app.read": {
+        "title": "Read"
+      },
+      "ocs.textprocessing.tasktypes": {
+        "title": "Tasktypes"
+      },
+      "ocs.textprocessing.tasktypes.read": {
+        "title": "Read"
+      },
+      "ocs.translation": {
+        "title": "Translation"
+      },
+      "ocs.translation.languages": {
+        "title": "Languages"
+      },
+      "ocs.translation.languages.read": {
+        "title": "Read"
+      },
+      "ocs.translation.translate": {
+        "title": "Translate"
+      },
+      "ocs.translation.translate.generate": {
+        "title": "Generate"
+      },
+      "s": {
+        "title": "S"
+      },
+      "s.preview": {
+        "title": "Preview"
+      },
+      "s.preview.read": {
+        "title": "Read"
+      },
+      "status": {
+        "title": "Status"
+      },
+      "status.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "basic": "user",
+            "origin": "https://example.com",
+            "path": "/",
+            "value": "user"
+          },
+          {
+            "basic": "password",
+            "origin": "https://example.com",
+            "path": "/",
+            "value": "password"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Your Nextcloud URL (https://host or https://host/nextcloud)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            1,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "user",
+        "label": "User",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "password",
+        "label": "Password",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Nextcloud",
   "http": {
     "operations": {
-      "app_config-set-value": {"action":"admin.apps","effects":["admin"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/apps/provisioning_api/api/v1/config/apps/{app}/{key}","body":"json","scope":{"app":{"from":"path","at":"app"},"key":{"from":"path","at":"key"}}},
-      "app_password-confirm-user-password": {"action":"write.confirm","effects":["write"],"method":"PUT","origin":"{origin}","path":"/ocs/v2.php/core/apppassword/confirm","body":"json","scope":{}},
-      "app_password-delete-app-password": {"action":"delete.apppassword","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/ocs/v2.php/core/apppassword","scope":{}},
-      "app_password-get-app-password": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/core/getapppassword","scope":{}},
-      "app_password-get-app-password-with-one-time-password": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/core/getapppassword-onetime","scope":{}},
-      "app_password-rotate-app-password": {"action":"write.rotate","effects":["write"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/core/apppassword/rotate","scope":{}},
-      "auto_complete-get": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/core/autocomplete/get","params":["search","itemType","itemId","sorter","shareTypes[]","limit","offset"],"scope":{}},
-      "avatar-get-avatar": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/index.php/avatar/{userId}/{size}","params":["guestFallback","v"],"scope":{"userId":{"from":"path","at":"userId"},"size":{"from":"path","at":"size"}}},
-      "client_flow_login_v2-init": {"action":"write.login","effects":["write"],"method":"POST","origin":"{origin}","path":"/index.php/login/v2","scope":{}},
-      "client_flow_login_v2-poll": {"action":"write.poll","effects":["write"],"method":"POST","origin":"{origin}","path":"/index.php/login/v2/poll","body":"json","scope":{}},
-      "collaboration_resources-create-collection-on-resource": {"action":"write.resources","effects":["write"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/collaboration/resources/{baseResourceType}/{baseResourceId}","body":"json","scope":{"baseResourceType":{"from":"path","at":"baseResourceType"},"baseResourceId":{"from":"path","at":"baseResourceId"},"name":{"from":"body","at":"/name"}}},
-      "collaboration_resources-get-collections-by-resource": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/collaboration/resources/{resourceType}/{resourceId}","scope":{"resourceType":{"from":"path","at":"resourceType"},"resourceId":{"from":"path","at":"resourceId"}}},
-      "collaboration_resources-remove-resource": {"action":"delete.collections","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/ocs/v2.php/collaboration/resources/collections/{collectionId}","params":["resourceType","resourceId"],"scope":{"collectionId":{"from":"path","at":"collectionId"},"resourceId":{"from":"query","at":"resourceId"}}},
-      "collaboration_resources-rename-collection": {"action":"write.collections","effects":["write"],"method":"PUT","origin":"{origin}","path":"/ocs/v2.php/collaboration/resources/collections/{collectionId}","body":"json","scope":{"collectionId":{"from":"path","at":"collectionId"},"collectionName":{"from":"body","at":"/collectionName"}}},
-      "collaboration_resources-search-collections": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/collaboration/resources/collections/search/{filter}","scope":{"filter":{"from":"path","at":"filter"}}},
-      "csrf_token-index": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/index.php/csrftoken","scope":{}},
-      "get-status": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/status.php","scope":{}},
-      "groups-get-group": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/cloud/groups/{groupId}","params":["search","limit","offset"],"scope":{"groupId":{"from":"path","at":"groupId"}}},
-      "groups-get-group-users": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/cloud/groups/{groupId}/users","scope":{"groupId":{"from":"path","at":"groupId"}}},
-      "groups-get-group-users-details": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/cloud/groups/{groupId}/users/details","params":["search","limit","offset"],"scope":{"groupId":{"from":"path","at":"groupId"}}},
-      "groups-get-groups": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/cloud/groups","params":["search","limit","offset"],"scope":{}},
-      "guest_avatar-get-avatar": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/index.php/avatar/guest/{guestName}/{size}","params":["darkTheme","guestFallback","v"],"scope":{"guestName":{"from":"path","at":"guestName"},"size":{"from":"path","at":"size"}}},
-      "guest_avatar-get-avatar-dark": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/index.php/avatar/guest/{guestName}/{size}/dark","scope":{"guestName":{"from":"path","at":"guestName"},"size":{"from":"path","at":"size"}}},
-      "hover_card-get-user": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/hovercard/v1/{userId}","scope":{"userId":{"from":"path","at":"userId"}}},
-      "login-confirm-password": {"action":"write.confirm","effects":["write"],"method":"POST","origin":"{origin}","path":"/index.php/login/confirm","body":"json","scope":{}},
-      "navigation-get-apps-navigation": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/core/navigation/apps","params":["absolute"],"scope":{}},
-      "navigation-get-settings-navigation": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/core/navigation/settings","params":["absolute"],"scope":{}},
-      "ocm-discovery": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/index.php/ocm-provider","scope":{}},
-      "ocs-get-capabilities": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/cloud/capabilities","scope":{}},
-      "preferences-delete-multiple-preference": {"action":"delete.users","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/ocs/v2.php/apps/provisioning_api/api/v1/config/users/{appId}","params":["configKeys[]"],"scope":{"appId":{"from":"path","at":"appId"}}},
-      "preferences-delete-preference": {"action":"delete.users","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/ocs/v2.php/apps/provisioning_api/api/v1/config/users/{appId}/{configKey}","scope":{"appId":{"from":"path","at":"appId"},"configKey":{"from":"path","at":"configKey"}}},
-      "preferences-set-multiple-preferences": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/apps/provisioning_api/api/v1/config/users/{appId}","body":"json","scope":{"appId":{"from":"path","at":"appId"}}},
-      "preferences-set-preference": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/apps/provisioning_api/api/v1/config/users/{appId}/{configKey}","body":"json","scope":{"appId":{"from":"path","at":"appId"},"configKey":{"from":"path","at":"configKey"}}},
-      "preview-get-mime-icon-url": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/index.php/core/mimeicon","params":["mime"],"scope":{}},
-      "preview-get-preview": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/index.php/core/preview.png","params":["file","x","y","a","forceIcon","mode","mimeFallback"],"scope":{}},
-      "preview-get-preview-by-file-id": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/index.php/core/preview","params":["fileId","x","y","a","forceIcon","mode","mimeFallback"],"scope":{"fileId":{"from":"query","at":"fileId"}}},
-      "profile_api-get-profile-fields": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/profile/{targetUserId}","scope":{"targetUserId":{"from":"path","at":"targetUserId"}}},
-      "profile_api-set-visibility": {"action":"write.profile","effects":["write"],"method":"PUT","origin":"{origin}","path":"/ocs/v2.php/profile/{targetUserId}","body":"json","scope":{"targetUserId":{"from":"path","at":"targetUserId"},"paramId":{"from":"body","at":"/paramId"}}},
-      "reference-preview": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/index.php/core/references/preview/{referenceId}","scope":{"referenceId":{"from":"path","at":"referenceId"}}},
-      "reference_api-extract": {"action":"generate.extract","effects":["generate"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/references/extract","body":"json","scope":{}},
-      "reference_api-extract-public": {"action":"generate.extract_public","effects":["generate"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/references/extractPublic","body":"json","scope":{}},
-      "reference_api-get-providers-info": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/references/providers","scope":{}},
-      "reference_api-resolve": {"action":"write.resolve","effects":["write"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/references/resolve","body":"json","scope":{}},
-      "reference_api-resolve-one": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/references/resolve","params":["reference"],"scope":{}},
-      "reference_api-resolve-one-public": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/references/resolvePublic","params":["reference","sharingToken"],"scope":{}},
-      "reference_api-resolve-public": {"action":"write.resolve_public","effects":["write"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/references/resolvePublic","body":"json","scope":{}},
-      "reference_api-touch-provider": {"action":"write.provider","effects":["write"],"method":"PUT","origin":"{origin}","path":"/ocs/v2.php/references/provider/{providerId}","body":"any","scope":{"providerId":{"from":"path","at":"providerId"}}},
-      "task_processing_api-cancel-task": {"action":"write.tasks","effects":["write"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/taskprocessing/tasks/{taskId}/cancel","scope":{"taskId":{"from":"path","at":"taskId"}}},
-      "task_processing_api-delete-task": {"action":"delete.task","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/ocs/v2.php/taskprocessing/task/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "task_processing_api-get-file-contents": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/taskprocessing/tasks/{taskId}/file/{fileId}","scope":{"taskId":{"from":"path","at":"taskId"},"fileId":{"from":"path","at":"fileId"}}},
-      "task_processing_api-get-task": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/taskprocessing/task/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "task_processing_api-list-tasks": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/taskprocessing/tasks","params":["taskType","customId"],"scope":{}},
-      "task_processing_api-list-tasks-by-app": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/taskprocessing/tasks/app/{appId}","params":["customId"],"scope":{"appId":{"from":"path","at":"appId"}}},
-      "task_processing_api-schedule": {"action":"write.schedule","effects":["write"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/taskprocessing/schedule","body":"json","scope":{"appId":{"from":"body","at":"/appId"}}},
-      "task_processing_api-task-types": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/taskprocessing/tasktypes","scope":{}},
-      "teams_api-list-teams": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/teams/resources/{providerId}/{resourceId}","scope":{"providerId":{"from":"path","at":"providerId"},"resourceId":{"from":"path","at":"resourceId"}}},
-      "teams_api-resolve-one": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/teams/{teamId}/resources","scope":{"teamId":{"from":"path","at":"teamId"}}},
-      "text_processing_api-delete-task": {"action":"delete.task","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/ocs/v2.php/textprocessing/task/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "text_processing_api-get-task": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/textprocessing/task/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "text_processing_api-list-tasks-by-app": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/textprocessing/tasks/app/{appId}","params":["identifier"],"scope":{"appId":{"from":"path","at":"appId"}}},
-      "text_processing_api-schedule": {"action":"write.schedule","effects":["write"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/textprocessing/schedule","body":"json","scope":{"appId":{"from":"body","at":"/appId"}}},
-      "text_processing_api-task-types": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/textprocessing/tasktypes","scope":{}},
-      "text_to_image_api-delete-task": {"action":"delete.task","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/ocs/v2.php/text2image/task/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "text_to_image_api-get-image": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/text2image/task/{id}/image/{index}","scope":{"id":{"from":"path","at":"id"},"index":{"from":"path","at":"index"}}},
-      "text_to_image_api-get-task": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/text2image/task/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "text_to_image_api-is-available": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/text2image/is_available","scope":{}},
-      "text_to_image_api-list-tasks-by-app": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/text2image/tasks/app/{appId}","params":["identifier"],"scope":{"appId":{"from":"path","at":"appId"}}},
-      "text_to_image_api-schedule": {"action":"write.schedule","effects":["write"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/text2image/schedule","body":"json","scope":{"appId":{"from":"body","at":"/appId"}}},
-      "translation_api-languages": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/translation/languages","scope":{}},
-      "translation_api-translate": {"action":"generate.translate","effects":["generate"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/translation/translate","body":"json","scope":{}},
-      "unified_search-get-providers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/search/providers","params":["from"],"scope":{}},
-      "unified_search-search": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/search/providers/{providerId}/search","params":["term","sortOrder","limit","cursor","from"],"scope":{"providerId":{"from":"path","at":"providerId"}}},
-      "users-add-to-group": {"action":"admin.groups","effects":["admin"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/cloud/users/{userId}/groups","body":"any","scope":{"userId":{"from":"path","at":"userId"}}},
-      "users-add-user": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/cloud/users","body":"json","scope":{"userid":{"from":"body","at":"/userid"}}},
-      "users-delete-user": {"action":"delete.users","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/ocs/v2.php/cloud/users/{userId}","scope":{"userId":{"from":"path","at":"userId"}}},
-      "users-disable-user": {"action":"admin.users","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/ocs/v2.php/cloud/users/{userId}/disable","scope":{"userId":{"from":"path","at":"userId"}}},
-      "users-edit-user": {"action":"admin.users","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/ocs/v2.php/cloud/users/{userId}","body":"json","scope":{"userId":{"from":"path","at":"userId"},"key":{"from":"body","at":"/key"}}},
-      "users-edit-user-multi-field": {"action":"admin.users","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/ocs/v2.php/cloud/users/{userId}","body":"any","scope":{"userId":{"from":"path","at":"userId"}}},
-      "users-edit-user-multi-value": {"action":"admin.users","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/ocs/v2.php/cloud/users/{userId}/{collectionName}","body":"json","scope":{"userId":{"from":"path","at":"userId"},"collectionName":{"from":"path","at":"collectionName"},"key":{"from":"body","at":"/key"}}},
-      "users-enable-user": {"action":"admin.users","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/ocs/v2.php/cloud/users/{userId}/enable","scope":{"userId":{"from":"path","at":"userId"}}},
-      "users-get-current-user": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/cloud/user","scope":{}},
-      "users-get-editable-fields": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/cloud/user/fields","scope":{}},
-      "users-get-editable-fields-for-user": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/cloud/user/fields/{userId}","scope":{"userId":{"from":"path","at":"userId"}}},
-      "users-get-enabled-apps": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/cloud/user/apps","scope":{}},
-      "users-get-user": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/cloud/users/{userId}","params":["search","limit","offset"],"scope":{"userId":{"from":"path","at":"userId"}}},
-      "users-get-user-sub-admin-groups-details": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/cloud/users/{userId}/subadmins/details","scope":{"userId":{"from":"path","at":"userId"}}},
-      "users-get-users": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/cloud/users","params":["search","limit","offset"],"scope":{}},
-      "users-get-users-groups": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/cloud/users/{userId}/groups","scope":{"userId":{"from":"path","at":"userId"}}},
-      "users-get-users-groups-details": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ocs/v2.php/cloud/users/{userId}/groups/details","scope":{"userId":{"from":"path","at":"userId"}}},
-      "users-remove-from-group": {"action":"delete.groups","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/ocs/v2.php/cloud/users/{userId}/groups","params":["groupid"],"scope":{"userId":{"from":"path","at":"userId"},"groupid":{"from":"query","at":"groupid"}}},
-      "users-resend-welcome-message": {"action":"send.welcome","effects":["send"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/cloud/users/{userId}/welcome","scope":{"userId":{"from":"path","at":"userId"}}},
-      "users-search-by-phone-numbers": {"action":"write.by_phone","effects":["write"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/cloud/users/search/by-phone","body":"json","scope":{}},
-      "users-wipe-user-devices": {"action":"write.wipe","effects":["write"],"method":"POST","origin":"{origin}","path":"/ocs/v2.php/cloud/users/{userId}/wipe","scope":{"userId":{"from":"path","at":"userId"}}},
-      "wipe-check-wipe": {"action":"write.check","effects":["write"],"method":"POST","origin":"{origin}","path":"/index.php/core/wipe/check","body":"json","scope":{}},
-      "wipe-wipe-done": {"action":"write.success","effects":["write"],"method":"POST","origin":"{origin}","path":"/index.php/core/wipe/success","body":"json","scope":{}}
+      "api-get-folder-tree": {"action":"ocs.apps.files.folder_tree.read","effects":["read"],"method":"GET","origin":"{origin}","params":["path","depth","withParents","format"],"path":"/ocs/v2.php/apps/files/api/v1/folder-tree","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "api-get-thumbnail": {"action":"apps.files.thumbnail.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/index.php/apps/files/api/v1/thumbnail/{x}/{y}/{file}","scope":{"file":{"at":"file","from":"path"},"query":{"at":"","from":"query","type":"object"},"x":{"at":"x","from":"path"},"y":{"at":"y","from":"path"}}},
+      "app_config-set-value": {"action":"ocs.apps.provisioning_api.config.apps.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/provisioning_api/api/v1/config/apps/{app}/{key}","scope":{"app":{"at":"app","from":"path"},"key":{"at":"key","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "app_config-set-value.form.d04c27b7582c": {"action":"ocs.apps.provisioning_api.config.apps.admin","body":"form","effects":["admin"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/provisioning_api/api/v1/config/apps/{app}/{key}","scope":{"app":{"at":"app","from":"path"},"key":{"at":"key","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "app_password-confirm-user-password": {"action":"ocs.core.apppassword.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/core/apppassword/confirm","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "app_password-confirm-user-password.form.1dcf2f59f659": {"action":"ocs.core.apppassword.admin","body":"form","effects":["admin"],"method":"PUT","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/core/apppassword/confirm","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "app_password-delete-app-password": {"action":"ocs.core.apppassword.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/core/apppassword","scope":{}},
+      "app_password-get-app-password": {"action":"ocs.core.getapppassword.admin","effects":["admin"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/core/getapppassword","scope":{}},
+      "app_password-get-app-password-with-one-time-password": {"action":"ocs.core.getapppassword_onetime.admin","effects":["admin"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/core/getapppassword-onetime","scope":{}},
+      "app_password-rotate-app-password": {"action":"ocs.core.apppassword.admin","effects":["admin"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/core/apppassword/rotate","scope":{}},
+      "auto_complete-get": {"action":"ocs.core.autocomplete.read","effects":["read"],"method":"GET","origin":"{origin}","params":["search","itemType","itemId","sorter","shareTypes[]","limit","offset","format"],"path":"/ocs/v2.php/core/autocomplete/get","scope":{}},
+      "avatar-get-avatar": {"action":"avatar.read","effects":["read"],"method":"GET","origin":"{origin}","params":["guestFallback","v","format"],"path":"/index.php/avatar/{userId}/{size}","scope":{"query":{"at":"","from":"query","type":"object"},"size":{"at":"size","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "avatar-get-avatar-dark": {"action":"avatar.dark.read","effects":["read"],"method":"GET","origin":"{origin}","params":["guestFallback","v","format"],"path":"/index.php/avatar/{userId}/{size}/dark","path_patterns":{"userId":"[^g].*|g(?:|[^u].*|u(?:|[^e].*|e(?:|[^s].*|s(?:|[^t].*|t.+))))"},"scope":{"query":{"at":"","from":"query","type":"object"},"size":{"at":"size","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "client_flow_login_v2-init": {"action":"login.write","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/index.php/login/v2","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "client_flow_login_v2-poll": {"action":"login.poll.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","params":["format"],"path":"/index.php/login/v2/poll","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "client_flow_login_v2-poll.form.42a70ba10bf9": {"action":"login.poll.admin","body":"form","effects":["admin"],"method":"POST","origin":"{origin}","params":["format"],"path":"/index.php/login/v2/poll","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "collaboration_resources-add-resource": {"action":"ocs.collaboration.resources.collections.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/collaboration/resources/collections/{collectionId}","scope":{"collectionId":{"at":"collectionId","from":"path"},"request":{"at":"","from":"body","type":"object"},"resourceId":{"at":"/resourceId","from":"body"}}},
+      "collaboration_resources-add-resource.form.674fe3ced1b1": {"action":"ocs.collaboration.resources.collections.write","body":"form","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/collaboration/resources/collections/{collectionId}","scope":{"collectionId":{"at":"collectionId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"},"resourceId":{"at":"resourceId","from":"form"}}},
+      "collaboration_resources-create-collection-on-resource": {"action":"ocs.collaboration.resources.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/collaboration/resources/{baseResourceType}/{baseResourceId}","path_patterns":{"baseResourceType":"[^c].*|c(?:|[^o].*|o(?:|[^l].*|l(?:|[^l].*|l(?:|[^e].*|e(?:|[^c].*|c(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s.+))))))))))"},"scope":{"baseResourceId":{"at":"baseResourceId","from":"path"},"baseResourceType":{"at":"baseResourceType","from":"path"},"name":{"at":"/name","from":"body"}}},
+      "collaboration_resources-create-collection-on-resource.form.95f268bc15b6": {"action":"ocs.collaboration.resources.write","body":"form","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/collaboration/resources/{baseResourceType}/{baseResourceId}","path_patterns":{"baseResourceType":"[^c].*|c(?:|[^o].*|o(?:|[^l].*|l(?:|[^l].*|l(?:|[^e].*|e(?:|[^c].*|c(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s.+))))))))))"},"scope":{"baseResourceId":{"at":"baseResourceId","from":"path"},"baseResourceType":{"at":"baseResourceType","from":"path"},"name":{"at":"name","from":"form"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "collaboration_resources-get-collections-by-resource": {"action":"ocs.collaboration.resources.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/collaboration/resources/{resourceType}/{resourceId}","path_patterns":{"resourceType":"[^c].*|c(?:|[^o].*|o(?:|[^l].*|l(?:|[^l].*|l(?:|[^e].*|e(?:|[^c].*|c(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s.+))))))))))"},"scope":{"resourceId":{"at":"resourceId","from":"path"},"resourceType":{"at":"resourceType","from":"path"}}},
+      "collaboration_resources-list-collection": {"action":"ocs.collaboration.resources.collections.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/collaboration/resources/collections/{collectionId}","scope":{"collectionId":{"at":"collectionId","from":"path"}}},
+      "collaboration_resources-remove-resource": {"action":"ocs.collaboration.resources.collections.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["resourceType","resourceId","format"],"path":"/ocs/v2.php/collaboration/resources/collections/{collectionId}","scope":{"collectionId":{"at":"collectionId","from":"path"},"resourceId":{"at":"resourceId","from":"query"}}},
+      "collaboration_resources-rename-collection": {"action":"ocs.collaboration.resources.collections.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/collaboration/resources/collections/{collectionId}","scope":{"collectionId":{"at":"collectionId","from":"path"},"collectionName":{"at":"/collectionName","from":"body"}}},
+      "collaboration_resources-rename-collection.form.d51e1f2b0c1e": {"action":"ocs.collaboration.resources.collections.write","body":"form","effects":["write"],"method":"PUT","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/collaboration/resources/collections/{collectionId}","scope":{"collectionId":{"at":"collectionId","from":"path"},"collectionName":{"at":"collectionName","from":"form"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "collaboration_resources-search-collections": {"action":"ocs.collaboration.resources.collections.search.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/collaboration/resources/collections/search/{filter}","scope":{"filter":{"at":"filter","from":"path"}}},
+      "conversion_api-convert": {"action":"ocs.apps.files.convert.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/convert","scope":{"fileId":{"at":"/fileId","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "conversion_api-convert.form.fbce69ac9d16": {"action":"ocs.apps.files.convert.write","body":"form","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/convert","scope":{"fileId":{"at":"fileId","from":"form"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "csrf_token-index": {"action":"csrftoken.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/index.php/csrftoken","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "dav.files.copy": {"action":"dav.files.write","body":"any","effects":["write"],"method":"COPY","origin":"{origin}","path":"/remote.php/{path*}","path_patterns":{"path":"(?:dav/(?:files|trashbin|versions|uploads)/[^/]+|webdav)(?:/.*)?"},"scope":{"path":{"at":"path","from":"path"}}},
+      "dav.files.delete": {"action":"dav.files.delete","body":"any","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/remote.php/{path*}","path_patterns":{"path":"(?:dav/(?:files|trashbin|versions|uploads)/[^/]+|webdav)(?:/.*)?"},"scope":{"path":{"at":"path","from":"path"}}},
+      "dav.files.get": {"action":"dav.files.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/remote.php/{path*}","path_patterns":{"path":"(?:dav/(?:files|trashbin|versions|uploads)/[^/]+|webdav)(?:/.*)?"},"scope":{"path":{"at":"path","from":"path"}}},
+      "dav.files.mkcol": {"action":"dav.files.write","body":"any","effects":["write"],"method":"MKCOL","origin":"{origin}","path":"/remote.php/{path*}","path_patterns":{"path":"(?:dav/(?:files|trashbin|versions|uploads)/[^/]+|webdav)(?:/.*)?"},"scope":{"path":{"at":"path","from":"path"}}},
+      "dav.files.move": {"action":"dav.files.write","body":"any","effects":["write"],"method":"MOVE","origin":"{origin}","path":"/remote.php/{path*}","path_patterns":{"path":"(?:dav/(?:files|trashbin|versions|uploads)/[^/]+|webdav)(?:/.*)?"},"scope":{"path":{"at":"path","from":"path"}}},
+      "dav.files.propfind": {"action":"dav.files.read","body":"any","effects":["read"],"method":"PROPFIND","origin":"{origin}","path":"/remote.php/{path*}","path_patterns":{"path":"(?:dav/(?:files|trashbin|versions|uploads)/[^/]+|webdav)(?:/.*)?"},"scope":{"path":{"at":"path","from":"path"}}},
+      "dav.files.proppatch": {"action":"dav.files.write","body":"any","effects":["write"],"method":"PROPPATCH","origin":"{origin}","path":"/remote.php/{path*}","path_patterns":{"path":"(?:dav/(?:files|trashbin|versions|uploads)/[^/]+|webdav)(?:/.*)?"},"scope":{"path":{"at":"path","from":"path"}}},
+      "dav.files.put": {"action":"dav.files.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/remote.php/{path*}","path_patterns":{"path":"(?:dav/(?:files|trashbin|versions|uploads)/[^/]+|webdav)(?:/.*)?"},"scope":{"path":{"at":"path","from":"path"}}},
+      "dav.files.report": {"action":"dav.files.read","body":"any","effects":["read"],"method":"REPORT","origin":"{origin}","path":"/remote.php/{path*}","path_patterns":{"path":"(?:dav/(?:files|trashbin|versions|uploads)/[^/]+|webdav)(?:/.*)?"},"scope":{"path":{"at":"path","from":"path"}}},
+      "dav.files.search": {"action":"dav.files.read","body":"any","effects":["read"],"method":"SEARCH","origin":"{origin}","path":"/remote.php/dav/","scope":{}},
+      "deleted_shareapi-index": {"action":"ocs.apps.files_sharing.deletedshares.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/deletedshares","scope":{}},
+      "deleted_shareapi-undelete": {"action":"ocs.apps.files_sharing.deletedshares.share","effects":["share"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/deletedshares/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "direct_editing-create": {"action":"ocs.apps.files.direct_editing.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/directEditing/create","scope":{"creatorId":{"at":"/creatorId","from":"body"},"editorId":{"at":"/editorId","from":"body"},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"/templateId","from":"body","optional":true}}},
+      "direct_editing-create.form.447c66075df8": {"action":"ocs.apps.files.direct_editing.write","body":"form","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/directEditing/create","scope":{"creatorId":{"at":"creatorId","from":"form"},"editorId":{"at":"editorId","from":"form"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"},"templateId":{"at":"templateId","from":"form","optional":true}}},
+      "direct_editing-info": {"action":"ocs.apps.files.direct_editing.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/directEditing","scope":{}},
+      "direct_editing-open": {"action":"ocs.apps.files.direct_editing.open.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/directEditing/open","scope":{"editorId":{"at":"/editorId","from":"body","optional":true},"fileId":{"at":"/fileId","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "direct_editing-open.form.74984d513ef6": {"action":"ocs.apps.files.direct_editing.open.write","body":"form","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/directEditing/open","scope":{"editorId":{"at":"editorId","from":"form","optional":true},"fileId":{"at":"fileId","from":"form","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "direct_editing-templates": {"action":"ocs.apps.files.direct_editing.templates.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/directEditing/templates/{editorId}/{creatorId}","scope":{"creatorId":{"at":"creatorId","from":"path"},"editorId":{"at":"editorId","from":"path"}}},
+      "get-status": {"action":"status.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/status.php","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "groups-get-group": {"action":"ocs.cloud.groups.read","effects":["read"],"method":"GET","origin":"{origin}","params":["search","limit","offset","format"],"path":"/ocs/v2.php/cloud/groups/{groupId}","path_patterns":{"groupId":"[^d].*|d(?:|[^e].*|e(?:|[^t].*|t(?:|[^a].*|a(?:|[^i].*|i(?:|[^l].*|l(?:|[^s].*|s.+))))))"},"scope":{"groupId":{"at":"groupId","from":"path"}}},
+      "groups-get-group-users": {"action":"ocs.cloud.groups.users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/groups/{groupId}/users","scope":{"groupId":{"at":"groupId","from":"path"}}},
+      "groups-get-group-users-details": {"action":"ocs.cloud.groups.users.details.read","effects":["read"],"method":"GET","origin":"{origin}","params":["search","limit","offset","enabled","format"],"path":"/ocs/v2.php/cloud/groups/{groupId}/users/details","scope":{"groupId":{"at":"groupId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "groups-get-groups": {"action":"ocs.cloud.groups.read","effects":["read"],"method":"GET","origin":"{origin}","params":["search","limit","offset","format"],"path":"/ocs/v2.php/cloud/groups","scope":{}},
+      "groups-get-groups-details": {"action":"ocs.cloud.groups.details.read","effects":["read"],"method":"GET","origin":"{origin}","params":["search","limit","offset","format"],"path":"/ocs/v2.php/cloud/groups/details","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "guest_avatar-get-avatar": {"action":"avatar.guest.read","effects":["read"],"method":"GET","origin":"{origin}","params":["darkTheme","guestFallback","v","format"],"path":"/index.php/avatar/guest/{guestName}/{size}","scope":{"guestName":{"at":"guestName","from":"path"},"query":{"at":"","from":"query","type":"object"},"size":{"at":"size","from":"path"}}},
+      "guest_avatar-get-avatar-dark": {"action":"avatar.guest.dark.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/index.php/avatar/guest/{guestName}/{size}/dark","scope":{"guestName":{"at":"guestName","from":"path"},"query":{"at":"","from":"query","type":"object"},"size":{"at":"size","from":"path"}}},
+      "hover_card-get-user": {"action":"ocs.hovercard.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/hovercard/v1/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "login-confirm-password": {"action":"login.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","params":["format"],"path":"/index.php/login/confirm","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "login-confirm-password.form.f40db7fea5d1": {"action":"login.admin","body":"form","effects":["admin"],"method":"POST","origin":"{origin}","params":["format"],"path":"/index.php/login/confirm","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "navigation-get-apps-navigation": {"action":"ocs.core.navigation.apps.read","effects":["read"],"method":"GET","origin":"{origin}","params":["absolute","format"],"path":"/ocs/v2.php/core/navigation/apps","scope":{}},
+      "navigation-get-settings-navigation": {"action":"ocs.core.navigation.settings.read","effects":["read"],"method":"GET","origin":"{origin}","params":["absolute","format"],"path":"/ocs/v2.php/core/navigation/settings","scope":{}},
+      "ocm-discovery": {"action":"ocm_provider.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/index.php/ocm-provider","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "ocs-get-capabilities": {"action":"ocs.cloud.capabilities.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/capabilities","scope":{}},
+      "open_local_editor-create": {"action":"ocs.apps.files.openlocaleditor.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/openlocaleditor","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "open_local_editor-create.form.7f7c2c29c567": {"action":"ocs.apps.files.openlocaleditor.write","body":"form","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/openlocaleditor","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "open_local_editor-validate": {"action":"ocs.apps.files.openlocaleditor.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/openlocaleditor/{token}","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+      "open_local_editor-validate.form.6421264a206b": {"action":"ocs.apps.files.openlocaleditor.write","body":"form","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/openlocaleditor/{token}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+      "opened-opened": {"action":"ocs.apps.files.opened.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/opened","scope":{"fileId":{"at":"/fileId","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "opened-opened.form.bfa6e7a21b6a": {"action":"ocs.apps.files.opened.write","body":"form","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/opened","scope":{"fileId":{"at":"fileId","from":"form"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "preferences-delete-multiple-preference": {"action":"ocs.apps.provisioning_api.config.users.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["configKeys[]","format"],"path":"/ocs/v2.php/apps/provisioning_api/api/v1/config/users/{appId}","scope":{"appId":{"at":"appId","from":"path"}}},
+      "preferences-delete-preference": {"action":"ocs.apps.provisioning_api.config.users.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/provisioning_api/api/v1/config/users/{appId}/{configKey}","scope":{"appId":{"at":"appId","from":"path"},"configKey":{"at":"configKey","from":"path"}}},
+      "preferences-set-multiple-preferences": {"action":"ocs.apps.provisioning_api.config.users.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/provisioning_api/api/v1/config/users/{appId}","scope":{"appId":{"at":"appId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "preferences-set-multiple-preferences.form.4812ba525863": {"action":"ocs.apps.provisioning_api.config.users.write","body":"form","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/provisioning_api/api/v1/config/users/{appId}","scope":{"appId":{"at":"appId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "preferences-set-preference": {"action":"ocs.apps.provisioning_api.config.users.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/provisioning_api/api/v1/config/users/{appId}/{configKey}","scope":{"appId":{"at":"appId","from":"path"},"configKey":{"at":"configKey","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "preferences-set-preference.form.8fe340aca725": {"action":"ocs.apps.provisioning_api.config.users.write","body":"form","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/provisioning_api/api/v1/config/users/{appId}/{configKey}","scope":{"appId":{"at":"appId","from":"path"},"configKey":{"at":"configKey","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "preview-get-mime-icon-url": {"action":"core.mimeicon.read","effects":["read"],"method":"GET","origin":"{origin}","params":["mime","format"],"path":"/index.php/core/mimeicon","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "preview-get-preview": {"action":"core.preview.png.read","effects":["read"],"method":"GET","origin":"{origin}","params":["file","x","y","a","forceIcon","mode","mimeFallback","format"],"path":"/index.php/core/preview.png","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "preview-get-preview-by-file-id": {"action":"core.preview.read","effects":["read"],"method":"GET","origin":"{origin}","params":["fileId","x","y","a","forceIcon","mode","mimeFallback","format"],"path":"/index.php/core/preview","scope":{"fileId":{"at":"fileId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "profile_api-get-profile-fields": {"action":"ocs.profile.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/profile/{targetUserId}","scope":{"targetUserId":{"at":"targetUserId","from":"path"}}},
+      "profile_api-set-visibility": {"action":"ocs.profile.share","body":"json","effects":["share"],"method":"PUT","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/profile/{targetUserId}","scope":{"paramId":{"at":"/paramId","from":"body"},"request":{"at":"","from":"body","type":"object"},"targetUserId":{"at":"targetUserId","from":"path"}}},
+      "profile_api-set-visibility.form.bf49a4491c48": {"action":"ocs.profile.share","body":"form","effects":["share"],"method":"PUT","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/profile/{targetUserId}","scope":{"paramId":{"at":"paramId","from":"form"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"},"targetUserId":{"at":"targetUserId","from":"path"}}},
+      "public_preview-direct-link": {"action":"s.preview.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/index.php/s/{token}/preview","scope":{"query":{"at":"","from":"query","type":"object"},"token":{"at":"token","from":"path"}}},
+      "public_preview-get-preview": {"action":"apps.files_sharing.publicpreview.read","effects":["read"],"method":"GET","origin":"{origin}","params":["file","x","y","a","mimeFallback","format"],"path":"/index.php/apps/files_sharing/publicpreview/{token}","scope":{"file":{"at":"file","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"token":{"at":"token","from":"path"}}},
+      "reference-preview": {"action":"core.references.preview.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/index.php/core/references/preview/{referenceId}","scope":{"query":{"at":"","from":"query","type":"object"},"referenceId":{"at":"referenceId","from":"path"}}},
+      "reference_api-extract": {"action":"ocs.references.extract.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/references/extract","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "reference_api-extract-public": {"action":"ocs.references.extract_public.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/references/extractPublic","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "reference_api-extract-public.form.49992b516877": {"action":"ocs.references.extract_public.read","body":"form","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/references/extractPublic","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "reference_api-extract.form.145912265506": {"action":"ocs.references.extract.read","body":"form","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/references/extract","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "reference_api-get-providers-info": {"action":"ocs.references.providers.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/references/providers","scope":{}},
+      "reference_api-resolve": {"action":"ocs.references.resolve.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/references/resolve","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "reference_api-resolve-one": {"action":"ocs.references.resolve.read","effects":["read"],"method":"GET","origin":"{origin}","params":["reference","format"],"path":"/ocs/v2.php/references/resolve","scope":{}},
+      "reference_api-resolve-one-public": {"action":"ocs.references.resolve_public.read","effects":["read"],"method":"GET","origin":"{origin}","params":["reference","sharingToken","format"],"path":"/ocs/v2.php/references/resolvePublic","scope":{}},
+      "reference_api-resolve-public": {"action":"ocs.references.resolve_public.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/references/resolvePublic","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "reference_api-resolve-public.form.0dabf61dccea": {"action":"ocs.references.resolve_public.read","body":"form","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/references/resolvePublic","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "reference_api-resolve.form.dd247b06058c": {"action":"ocs.references.resolve.read","body":"form","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/references/resolve","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "reference_api-touch-provider": {"action":"ocs.references.provider.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/references/provider/{providerId}","scope":{"providerId":{"at":"providerId","from":"path"}}},
+      "remote-accept-share": {"action":"ocs.apps.files_sharing.remote_shares.pending.write","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/remote_shares/pending/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "remote-decline-share": {"action":"ocs.apps.files_sharing.remote_shares.pending.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/remote_shares/pending/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "remote-get-open-shares": {"action":"ocs.apps.files_sharing.remote_shares.pending.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/remote_shares/pending","scope":{}},
+      "remote-get-share": {"action":"ocs.apps.files_sharing.remote_shares.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/remote_shares/{id}","path_patterns":{"id":"[^p].*|p(?:|[^e].*|e(?:|[^n].*|n(?:|[^d].*|d(?:|[^i].*|i(?:|[^n].*|n(?:|[^g].*|g.+))))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "remote-get-shares": {"action":"ocs.apps.files_sharing.remote_shares.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/remote_shares","scope":{}},
+      "remote-unshare": {"action":"ocs.apps.files_sharing.remote_shares.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/remote_shares/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "share_info-info": {"action":"apps.files_sharing.shareinfo.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/index.php/apps/files_sharing/shareinfo","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "share_info-info.form.380d80c13ef0": {"action":"apps.files_sharing.shareinfo.read","body":"form","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/index.php/apps/files_sharing/shareinfo","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "shareapi-accept-share": {"action":"ocs.apps.files_sharing.shares.pending.write","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/shares/pending/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "shareapi-create-share": {"action":"ocs.apps.files_sharing.shares.share","effects":["share"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/shares","scope":{}},
+      "shareapi-create-share.form.9cc2d77fef47": {"action":"ocs.apps.files_sharing.shares.share","body":"form","effects":["share"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/shares","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "shareapi-create-share.json.094a1e73d2d7": {"action":"ocs.apps.files_sharing.shares.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/shares","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "shareapi-delete-share": {"action":"ocs.apps.files_sharing.shares.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/shares/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "shareapi-generate-token": {"action":"ocs.apps.files_sharing.token.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/token","scope":{}},
+      "shareapi-get-inherited-shares": {"action":"ocs.apps.files_sharing.shares.inherited.read","effects":["read"],"method":"GET","origin":"{origin}","params":["path","format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/shares/inherited","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "shareapi-get-share": {"action":"ocs.apps.files_sharing.shares.read","effects":["read"],"method":"GET","origin":"{origin}","params":["include_tags","format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/shares/{id}","path_patterns":{"id":"[^ip].*|i(?:|[^n].*|n(?:|[^h].*|h(?:|[^e].*|e(?:|[^r].*|r(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e(?:|[^d].*|d.+))))))))|p(?:|[^e].*|e(?:|[^n].*|n(?:|[^d].*|d(?:|[^i].*|i(?:|[^n].*|n(?:|[^g].*|g.+))))))"},"scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "shareapi-get-shares": {"action":"ocs.apps.files_sharing.shares.read","effects":["read"],"method":"GET","origin":"{origin}","params":["shared_with_me","reshares","subfiles","path","include_tags","format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/shares","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "shareapi-pending-shares": {"action":"ocs.apps.files_sharing.shares.pending.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/shares/pending","scope":{}},
+      "shareapi-send-share-email": {"action":"ocs.apps.files_sharing.shares.email.send","effects":["send"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/shares/{id}/send-email","path_patterns":{"id":"[^p].*|p(?:|[^e].*|e(?:|[^n].*|n(?:|[^d].*|d(?:|[^i].*|i(?:|[^n].*|n(?:|[^g].*|g.+))))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "shareapi-send-share-email.form.79b5deeafa50": {"action":"ocs.apps.files_sharing.shares.email.send","body":"form","effects":["send"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/shares/{id}/send-email","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "shareapi-send-share-email.json.56da28dd0627": {"action":"ocs.apps.files_sharing.shares.email.send","body":"json","effects":["send"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/shares/{id}/send-email","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "shareapi-update-share": {"action":"ocs.apps.files_sharing.shares.share","effects":["share"],"method":"PUT","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/shares/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "shareapi-update-share.form.059a0f4edb31": {"action":"ocs.apps.files_sharing.shares.share","body":"form","effects":["share"],"method":"PUT","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/shares/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "shareapi-update-share.json.9fc6b2a0f55f": {"action":"ocs.apps.files_sharing.shares.share","body":"json","effects":["share"],"method":"PUT","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/shares/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "shareesapi-find-recommended": {"action":"ocs.apps.files_sharing.sharees_recommended.read","effects":["read"],"method":"GET","origin":"{origin}","params":["itemType","shareType","format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/sharees_recommended","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "shareesapi-search": {"action":"ocs.apps.files_sharing.sharees.read","effects":["read"],"method":"GET","origin":"{origin}","params":["search","itemType","page","perPage","shareType","lookup","format"],"path":"/ocs/v2.php/apps/files_sharing/api/v1/sharees","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "task_processing_api-cancel-task": {"action":"ocs.taskprocessing.tasks.write","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/taskprocessing/tasks/{taskId}/cancel","scope":{"taskId":{"at":"taskId","from":"path"}}},
+      "task_processing_api-delete-task": {"action":"ocs.taskprocessing.task.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/taskprocessing/task/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "task_processing_api-get-file-contents": {"action":"ocs.taskprocessing.tasks.file.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/taskprocessing/tasks/{taskId}/file/{fileId}","scope":{"fileId":{"at":"fileId","from":"path"},"taskId":{"at":"taskId","from":"path"}}},
+      "task_processing_api-get-task": {"action":"ocs.taskprocessing.task.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/taskprocessing/task/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "task_processing_api-get-task-queue-position": {"action":"ocs.taskprocessing.tasks.queue_position.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/taskprocessing/tasks/{taskId}/queue_position","path_patterns":{"taskId":"[0-9]+"},"scope":{"taskId":{"at":"taskId","from":"path"}}},
+      "task_processing_api-list-tasks": {"action":"ocs.taskprocessing.tasks.read","effects":["read"],"method":"GET","origin":"{origin}","params":["taskType","customId","format"],"path":"/ocs/v2.php/taskprocessing/tasks","scope":{}},
+      "task_processing_api-list-tasks-by-app": {"action":"ocs.taskprocessing.tasks.app.read","effects":["read"],"method":"GET","origin":"{origin}","params":["customId","format"],"path":"/ocs/v2.php/taskprocessing/tasks/app/{appId}","scope":{"appId":{"at":"appId","from":"path"}}},
+      "task_processing_api-schedule": {"action":"ocs.taskprocessing.schedule.generate","body":"json","effects":["generate"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/taskprocessing/schedule","scope":{"appId":{"at":"/appId","from":"body"},"customId":{"at":"/customId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "task_processing_api-schedule.form.cefb797f9961": {"action":"ocs.taskprocessing.schedule.generate","body":"form","effects":["generate"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/taskprocessing/schedule","scope":{"appId":{"at":"appId","from":"form"},"customId":{"at":"customId","from":"form","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "task_processing_api-task-types": {"action":"ocs.taskprocessing.tasktypes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/taskprocessing/tasktypes","scope":{}},
+      "teams_api-list-teams": {"action":"ocs.teams.resources.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/teams/resources/{providerId}/{resourceId}","scope":{"providerId":{"at":"providerId","from":"path"},"resourceId":{"at":"resourceId","from":"path"}}},
+      "teams_api-resolve-one": {"action":"ocs.teams.resources.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/teams/{teamId}/resources","scope":{"teamId":{"at":"teamId","from":"path"}}},
+      "template-create": {"action":"ocs.apps.files.templates.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/templates/create","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "template-create.form.e6b399245709": {"action":"ocs.apps.files.templates.write","body":"form","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/templates/create","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "template-list": {"action":"ocs.apps.files.templates.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/templates","scope":{}},
+      "template-list-template-fields": {"action":"ocs.apps.files.templates.fields.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/templates/fields/{fileId}","scope":{"fileId":{"at":"fileId","from":"path"}}},
+      "template-path": {"action":"ocs.apps.files.templates.path.write","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/templates/path","scope":{}},
+      "template-path.form.b68ed49d4504": {"action":"ocs.apps.files.templates.path.write","body":"form","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/templates/path","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "template-path.json.7ad477392e01": {"action":"ocs.apps.files.templates.path.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/templates/path","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "text_processing_api-delete-task": {"action":"ocs.textprocessing.task.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/textprocessing/task/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "text_processing_api-get-task": {"action":"ocs.textprocessing.task.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/textprocessing/task/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "text_processing_api-list-tasks-by-app": {"action":"ocs.textprocessing.tasks.app.read","effects":["read"],"method":"GET","origin":"{origin}","params":["identifier","format"],"path":"/ocs/v2.php/textprocessing/tasks/app/{appId}","scope":{"appId":{"at":"appId","from":"path"}}},
+      "text_processing_api-schedule": {"action":"ocs.textprocessing.schedule.generate","body":"json","effects":["generate"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/textprocessing/schedule","scope":{"appId":{"at":"/appId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "text_processing_api-schedule.form.2f6c4eb6978f": {"action":"ocs.textprocessing.schedule.generate","body":"form","effects":["generate"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/textprocessing/schedule","scope":{"appId":{"at":"appId","from":"form"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "text_processing_api-task-types": {"action":"ocs.textprocessing.tasktypes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/textprocessing/tasktypes","scope":{}},
+      "text_to_image_api-delete-task": {"action":"ocs.text2image.task.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/text2image/task/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "text_to_image_api-get-image": {"action":"ocs.text2image.task.image.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/text2image/task/{id}/image/{index}","scope":{"id":{"at":"id","from":"path"},"index":{"at":"index","from":"path"}}},
+      "text_to_image_api-get-task": {"action":"ocs.text2image.task.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/text2image/task/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "text_to_image_api-is-available": {"action":"ocs.text2image.is_available.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/text2image/is_available","scope":{}},
+      "text_to_image_api-list-tasks-by-app": {"action":"ocs.text2image.tasks.app.read","effects":["read"],"method":"GET","origin":"{origin}","params":["identifier","format"],"path":"/ocs/v2.php/text2image/tasks/app/{appId}","scope":{"appId":{"at":"appId","from":"path"}}},
+      "text_to_image_api-schedule": {"action":"ocs.text2image.schedule.generate","body":"json","effects":["generate"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/text2image/schedule","scope":{"appId":{"at":"/appId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "text_to_image_api-schedule.form.487675ef5885": {"action":"ocs.text2image.schedule.generate","body":"form","effects":["generate"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/text2image/schedule","scope":{"appId":{"at":"appId","from":"form"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "transfer_ownership-accept": {"action":"ocs.apps.files.transferownership.write","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/transferownership/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "transfer_ownership-reject": {"action":"ocs.apps.files.transferownership.write","effects":["write"],"method":"DELETE","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/transferownership/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "transfer_ownership-transfer": {"action":"ocs.apps.files.transferownership.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/transferownership","scope":{"recipient":{"at":"/recipient","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "transfer_ownership-transfer.form.554c121a25f2": {"action":"ocs.apps.files.transferownership.share","body":"form","effects":["share"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/apps/files/api/v1/transferownership","scope":{"query":{"at":"","from":"query","type":"object"},"recipient":{"at":"recipient","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "translation_api-languages": {"action":"ocs.translation.languages.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/translation/languages","scope":{}},
+      "translation_api-translate": {"action":"ocs.translation.translate.generate","body":"json","effects":["generate"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/translation/translate","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "translation_api-translate.form.666188b6db6e": {"action":"ocs.translation.translate.generate","body":"form","effects":["generate"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/translation/translate","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "unified_search-get-providers": {"action":"ocs.search.providers.read","effects":["read"],"method":"GET","origin":"{origin}","params":["from","format"],"path":"/ocs/v2.php/search/providers","scope":{}},
+      "unified_search-search": {"action":"ocs.search.providers.read","effects":["read"],"method":"GET","origin":"{origin}","params":["term","sortOrder","limit","cursor","from","format"],"path":"/ocs/v2.php/search/providers/{providerId}/search","scope":{"providerId":{"at":"providerId","from":"path"}}},
+      "users-add-to-group": {"action":"ocs.cloud.users.groups.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users/{userId}/groups","scope":{"userId":{"at":"userId","from":"path"}}},
+      "users-add-user": {"action":"ocs.cloud.users.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users","scope":{"userid":{"at":"/userid","from":"body"}}},
+      "users-add-user.form.5883fed658b1": {"action":"ocs.cloud.users.admin","body":"form","effects":["admin"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users","scope":{"displayName":{"at":"displayName","from":"form","optional":true},"email":{"at":"email","from":"form","optional":true},"groups":{"at":"groups","from":"form","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"},"userid":{"at":"userid","from":"form"}}},
+      "users-delete-user": {"action":"ocs.cloud.users.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "users-disable-user": {"action":"ocs.cloud.users.admin","effects":["admin"],"method":"PUT","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users/{userId}/disable","scope":{"userId":{"at":"userId","from":"path"}}},
+      "users-edit-user": {"action":"ocs.cloud.users.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users/{userId}","scope":{"key":{"at":"/key","from":"body"},"userId":{"at":"userId","from":"path"}}},
+      "users-edit-user-multi-field": {"action":"ocs.cloud.users.admin","body":"any","effects":["admin"],"method":"PATCH","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "users-edit-user-multi-value": {"action":"ocs.cloud.users.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users/{userId}/{collectionName}","scope":{"collectionName":{"at":"collectionName","from":"path"},"key":{"at":"/key","from":"body"},"userId":{"at":"userId","from":"path"}}},
+      "users-edit-user-multi-value.form.82a2d46edacb": {"action":"ocs.cloud.users.admin","body":"form","effects":["admin"],"method":"PUT","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users/{userId}/{collectionName}","scope":{"collectionName":{"at":"collectionName","from":"path"},"key":{"at":"key","from":"form"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "users-edit-user.form.6f746d2ea72a": {"action":"ocs.cloud.users.admin","body":"form","effects":["admin"],"method":"PUT","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users/{userId}","scope":{"key":{"at":"key","from":"form"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "users-enable-user": {"action":"ocs.cloud.users.admin","effects":["admin"],"method":"PUT","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users/{userId}/enable","scope":{"userId":{"at":"userId","from":"path"}}},
+      "users-get-current-user": {"action":"ocs.cloud.user.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/user","scope":{}},
+      "users-get-disabled-users-details": {"action":"ocs.cloud.users.disabled.read","effects":["read"],"method":"GET","origin":"{origin}","params":["search","limit","offset","format"],"path":"/ocs/v2.php/cloud/users/disabled","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "users-get-editable-fields": {"action":"ocs.cloud.user.fields.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/user/fields","scope":{}},
+      "users-get-editable-fields-for-user": {"action":"ocs.cloud.user.fields.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/user/fields/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "users-get-enabled-apps": {"action":"ocs.cloud.user.apps.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/user/apps","scope":{}},
+      "users-get-user": {"action":"ocs.cloud.users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["search","limit","offset","format"],"path":"/ocs/v2.php/cloud/users/{userId}","path_patterns":{"userId":"[^d].*|d(?:|[^ei].*|e(?:|[^t].*|t(?:|[^a].*|a(?:|[^i].*|i(?:|[^l].*|l(?:|[^s].*|s.+)))))|i(?:|[^s].*|s(?:|[^a].*|a(?:|[^b].*|b(?:|[^l].*|l(?:|[^e].*|e(?:|[^d].*|d.+)))))))"},"scope":{"userId":{"at":"userId","from":"path"}}},
+      "users-get-user-sub-admin-groups-details": {"action":"ocs.cloud.users.subadmins.details.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users/{userId}/subadmins/details","scope":{"userId":{"at":"userId","from":"path"}}},
+      "users-get-users": {"action":"ocs.cloud.users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["search","limit","offset","format"],"path":"/ocs/v2.php/cloud/users","scope":{}},
+      "users-get-users-details": {"action":"ocs.cloud.users.details.read","effects":["read"],"method":"GET","origin":"{origin}","params":["search","limit","offset","enabled","format"],"path":"/ocs/v2.php/cloud/users/details","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "users-get-users-groups": {"action":"ocs.cloud.users.groups.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users/{userId}/groups","scope":{"userId":{"at":"userId","from":"path"}}},
+      "users-get-users-groups-details": {"action":"ocs.cloud.users.groups.details.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users/{userId}/groups/details","scope":{"userId":{"at":"userId","from":"path"}}},
+      "users-remove-from-group": {"action":"ocs.cloud.users.groups.admin","effects":["admin"],"method":"DELETE","origin":"{origin}","params":["groupid","format"],"path":"/ocs/v2.php/cloud/users/{userId}/groups","scope":{"groupid":{"at":"groupid","from":"query"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "users-resend-welcome-message": {"action":"ocs.cloud.users.welcome.send","effects":["send"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users/{userId}/welcome","scope":{"userId":{"at":"userId","from":"path"}}},
+      "users-search-by-phone-numbers": {"action":"ocs.cloud.users.search.by_phone.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users/search/by-phone","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "users-search-by-phone-numbers.form.235b909f52d8": {"action":"ocs.cloud.users.search.by_phone.read","body":"form","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users/search/by-phone","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "users-wipe-user-devices": {"action":"ocs.cloud.users.wipe.admin","effects":["admin","delete"],"method":"POST","origin":"{origin}","params":["format"],"path":"/ocs/v2.php/cloud/users/{userId}/wipe","scope":{"userId":{"at":"userId","from":"path"}}},
+      "wipe-check-wipe": {"action":"core.wipe.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/index.php/core/wipe/check","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "wipe-check-wipe.form.d3c880e1bc4c": {"action":"core.wipe.read","body":"form","effects":["read"],"method":"POST","origin":"{origin}","params":["format"],"path":"/index.php/core/wipe/check","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+      "wipe-wipe-done": {"action":"core.wipe.success.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/index.php/core/wipe/success","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "wipe-wipe-done.form.242e2bee7d61": {"action":"core.wipe.success.write","body":"form","effects":["write"],"method":"POST","origin":"{origin}","params":["format"],"path":"/index.php/core/wipe/success","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}}
     }
   }
 }

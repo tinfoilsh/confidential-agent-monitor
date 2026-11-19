@@ -8,7 +8,8 @@
     },
     "connection": {"mcp": {"url": "https://app.hex.tech/mcp"}},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://app.hex.tech/mcp"}}
+      {"key": "url", "label": "Server URL", "default": "https://app.hex.tech/mcp", "help": "Use https://eu.hex.tech/mcp for EU, https://hc.hex.tech/mcp for HIPAA, or your single-tenant Hex address followed by /mcp.", "path": ["mcp", "url"]},
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}"}}
     ]
   }
 }

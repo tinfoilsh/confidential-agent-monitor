@@ -1,18 +1,46 @@
 {
-  "title": "DHL",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api-eu.dhl.com", "path": "/track", "header": "DHL-API-Key"}]}},
     "actions": {
-      "read": {"title": "Read everything the account can see"}
-    }
+      "shipments": {
+        "title": "Shipments"
+      },
+      "shipments.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "DHL-API-Key",
+            "origin": "https://api-eu.dhl.com",
+            "path": "/track",
+            "value": "api_key"
+          },
+          {
+            "header": "DHL-API-Key",
+            "origin": "https://api-sandbox.dhl.com",
+            "path": "/track",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "DHL",
   "http": {
+    "origins": {"dhl":["https://api-eu.dhl.com","https://api-sandbox.dhl.com"]},
     "operations": {
-      "getTrackingShipment": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-eu.dhl.com","path":"/track/shipments","params":["trackingNumber","service","requesterCountryCode","originCountryCode","recipientPostalCode","language","offset","limit"],"scope":{}}
+      "getTrackingShipment": {"action":"shipments.read","effects":["read"],"method":"GET","origin":"{dhl}","params":["trackingNumber","service","requesterCountryCode","originCountryCode","recipientPostalCode","language","offset","limit"],"path":"/track/shipments","scope":{}}
     }
   }
 }

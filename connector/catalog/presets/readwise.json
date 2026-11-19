@@ -4,7 +4,12 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.books_create_public_token": {"title": "Books create public token", "effects": ["admin", "share"]},
+      "use.books_delete_books": {"title": "Books delete books", "effects": ["delete"]},
+      "use.books_delete_sessions": {"title": "Books delete sessions", "effects": ["delete"]},
+      "use.books_revoke_public_token": {"title": "Books revoke public token", "effects": ["admin"]},
+      "use.readwise_delete_highlight": {"title": "Readwise delete highlight", "effects": ["delete"]}
     },
     "connection": {"mcp": {"url": "https://mcp2.readwise.io/mcp"}},
     "fields": [

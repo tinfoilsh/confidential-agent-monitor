@@ -4,7 +4,24 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.apply_migration": {"title": "Apply migration", "effects": ["admin", "execute"]},
+      "use.create_branch": {"title": "Create branch", "effects": ["pay"]},
+      "use.create_edge_function_secret": {"title": "Create edge function secret", "effects": ["admin"]},
+      "use.create_project": {"title": "Create project", "effects": ["pay"]},
+      "use.delete_branch": {"title": "Delete branch", "effects": ["delete"]},
+      "use.delete_feedback": {"title": "Delete feedback", "effects": ["delete"]},
+      "use.delete_notebook": {"title": "Delete notebook", "effects": ["delete"]},
+      "use.deploy_edge_function": {"title": "Deploy edge function", "effects": ["execute", "publish"]},
+      "use.execute_sql": {"title": "Execute sql", "effects": ["execute"]},
+      "use.merge_branch": {"title": "Merge branch", "effects": ["execute"]},
+      "use.pause_project": {"title": "Pause project", "effects": ["admin"]},
+      "use.rebase_branch": {"title": "Rebase branch", "effects": ["execute"]},
+      "use.reset_branch": {"title": "Reset branch", "effects": ["delete"]},
+      "use.restore_project": {"title": "Restore project", "effects": ["admin"]},
+      "use.run_notebook": {"title": "Run notebook", "effects": ["execute"]},
+      "use.submit_feedback": {"title": "Submit feedback", "effects": ["send"]},
+      "use.update_storage_config": {"title": "Update storage config", "effects": ["admin"]}
     },
     "connection": {"mcp": {"url": "https://mcp.supabase.com/mcp"}},
     "fields": [

@@ -93,6 +93,9 @@
   "aws_iam": {
     "src": "aws.svg"
   },
+  "aws": {
+    "src": "aws.svg"
+  },
   "aws_lambda": {
     "src": "aws.svg"
   },
@@ -399,6 +402,9 @@
   "google_cloud_natural_language": {
     "src": "google.svg"
   },
+  "google_cloud": {
+    "src": "google_cloud.svg"
+  },
   "google_cloud_storage": {
     "src": "google.svg"
   },
@@ -691,6 +697,9 @@
     "src": "neon.svg"
   },
   "netlify": {
+    "src": "netlify.svg"
+  },
+  "netlify_api": {
     "src": "netlify.svg"
   },
   "next_cloud": {

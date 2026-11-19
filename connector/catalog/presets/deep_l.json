@@ -1,101 +1,345 @@
 {
-  "title": "DeepL",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.deepl.com", "path": "/", "header": "Authorization", "prefix": "DeepL-Auth-Key "}]}},
     "actions": {
-      "delete.custom_instructions": {"title": "Delete: custom instructions"},
-      "delete.dictionaries": {"title": "Delete: dictionaries"},
-      "delete.glossaries": {"title": "Delete: glossaries"},
-      "delete.spoken_terms": {"title": "Delete: spoken terms"},
-      "delete.style_rules": {"title": "Delete: style rules"},
-      "delete.term_lists": {"title": "Delete: term lists"},
-      "delete.translation_memories": {"title": "Delete: translation memories"},
-      "generate.document": {"title": "Generate: document"},
-      "generate.translate": {"title": "Generate: translate"},
-      "read": {"title": "Read everything the account can see"},
-      "write.configured_rules": {"title": "Write: configured rules"},
-      "write.correct": {"title": "Write: correct"},
-      "write.custom_instructions": {"title": "Write: custom instructions"},
-      "write.deactivate": {"title": "Write: deactivate"},
-      "write.developer_keys": {"title": "Write: developer keys"},
-      "write.dictionaries": {"title": "Write: dictionaries"},
-      "write.glossaries": {"title": "Write: glossaries"},
-      "write.import": {"title": "Write: import"},
-      "write.label": {"title": "Write: label"},
-      "write.limits": {"title": "Write: limits"},
-      "write.rephrase": {"title": "Write: rephrase"},
-      "write.spoken_terms": {"title": "Write: spoken terms"},
-      "write.style_rules": {"title": "Write: style rules"},
-      "write.term_lists": {"title": "Write: term lists"},
-      "write.translation_memories": {"title": "Write: translation memories"}
-    }
+      "admin": {
+        "title": "Manage"
+      },
+      "admin.analytics": {
+        "title": "Analytics"
+      },
+      "admin.analytics.custom_tags": {
+        "title": "Custom tags"
+      },
+      "admin.analytics.custom_tags.read": {
+        "title": "Read"
+      },
+      "admin.analytics.read": {
+        "title": "Read"
+      },
+      "admin.developer_keys": {
+        "title": "Developer keys"
+      },
+      "admin.developer_keys.admin": {
+        "title": "Manage"
+      },
+      "admin.developer_keys.deactivate": {
+        "title": "Deactivate"
+      },
+      "admin.developer_keys.deactivate.admin": {
+        "title": "Manage"
+      },
+      "admin.developer_keys.label": {
+        "title": "Label"
+      },
+      "admin.developer_keys.label.admin": {
+        "title": "Manage"
+      },
+      "admin.developer_keys.limits": {
+        "title": "Limits"
+      },
+      "admin.developer_keys.limits.admin": {
+        "title": "Manage"
+      },
+      "admin.developer_keys.read": {
+        "title": "Read"
+      },
+      "document": {
+        "title": "Document"
+      },
+      "document.generate": {
+        "title": "Generate"
+      },
+      "document.read": {
+        "title": "Read"
+      },
+      "document.result": {
+        "title": "Result"
+      },
+      "document.result.read": {
+        "title": "Read"
+      },
+      "glossaries": {
+        "title": "Glossaries"
+      },
+      "glossaries.delete": {
+        "title": "Delete"
+      },
+      "glossaries.dictionaries": {
+        "title": "Dictionaries"
+      },
+      "glossaries.dictionaries.delete": {
+        "title": "Delete"
+      },
+      "glossaries.dictionaries.write": {
+        "title": "Create and edit"
+      },
+      "glossaries.entries": {
+        "title": "Entries"
+      },
+      "glossaries.entries.read": {
+        "title": "Read"
+      },
+      "glossaries.read": {
+        "title": "Read"
+      },
+      "glossaries.write": {
+        "title": "Create and edit"
+      },
+      "glossary_language_pairs": {
+        "title": "Glossary language pairs"
+      },
+      "glossary_language_pairs.read": {
+        "title": "Read"
+      },
+      "jobs": {
+        "title": "Jobs"
+      },
+      "jobs.voice": {
+        "title": "Voice"
+      },
+      "jobs.voice.translate": {
+        "title": "Translate"
+      },
+      "jobs.voice.translate.generate": {
+        "title": "Generate"
+      },
+      "jobs.voice.translate.read": {
+        "title": "Read"
+      },
+      "languages": {
+        "title": "Languages"
+      },
+      "languages.read": {
+        "title": "Read"
+      },
+      "languages.resources": {
+        "title": "Resources"
+      },
+      "languages.resources.read": {
+        "title": "Read"
+      },
+      "quality_evaluations": {
+        "title": "Quality evaluations"
+      },
+      "quality_evaluations.read": {
+        "title": "Read"
+      },
+      "spoken_terms": {
+        "title": "Spoken terms"
+      },
+      "spoken_terms.delete": {
+        "title": "Delete"
+      },
+      "spoken_terms.entries": {
+        "title": "Entries"
+      },
+      "spoken_terms.entries.read": {
+        "title": "Read"
+      },
+      "spoken_terms.read": {
+        "title": "Read"
+      },
+      "spoken_terms.term_lists": {
+        "title": "Term lists"
+      },
+      "spoken_terms.term_lists.delete": {
+        "title": "Delete"
+      },
+      "spoken_terms.term_lists.write": {
+        "title": "Create and edit"
+      },
+      "spoken_terms.write": {
+        "title": "Create and edit"
+      },
+      "style_rules": {
+        "title": "Style rules"
+      },
+      "style_rules.configured_rules": {
+        "title": "Configured rules"
+      },
+      "style_rules.configured_rules.write": {
+        "title": "Create and edit"
+      },
+      "style_rules.custom_instructions": {
+        "title": "Custom instructions"
+      },
+      "style_rules.custom_instructions.delete": {
+        "title": "Delete"
+      },
+      "style_rules.custom_instructions.read": {
+        "title": "Read"
+      },
+      "style_rules.custom_instructions.write": {
+        "title": "Create and edit"
+      },
+      "style_rules.delete": {
+        "title": "Delete"
+      },
+      "style_rules.read": {
+        "title": "Read"
+      },
+      "style_rules.write": {
+        "title": "Create and edit"
+      },
+      "translate": {
+        "title": "Translate"
+      },
+      "translate.generate": {
+        "title": "Generate"
+      },
+      "translation_memories": {
+        "title": "Translation memories"
+      },
+      "translation_memories.delete": {
+        "title": "Delete"
+      },
+      "translation_memories.jobs": {
+        "title": "Jobs"
+      },
+      "translation_memories.jobs.read": {
+        "title": "Read"
+      },
+      "translation_memories.read": {
+        "title": "Read"
+      },
+      "translation_memories.segments": {
+        "title": "Segments"
+      },
+      "translation_memories.segments.read": {
+        "title": "Read"
+      },
+      "translation_memories.write": {
+        "title": "Create and edit"
+      },
+      "usage": {
+        "title": "Usage"
+      },
+      "usage.read": {
+        "title": "Read"
+      },
+      "voice": {
+        "title": "Voice"
+      },
+      "voice.realtime": {
+        "title": "Realtime"
+      },
+      "voice.realtime.generate": {
+        "title": "Generate"
+      },
+      "voice.realtime.read": {
+        "title": "Read"
+      },
+      "write": {
+        "title": "Create and edit"
+      },
+      "write.correct": {
+        "title": "Correct"
+      },
+      "write.correct.generate": {
+        "title": "Generate"
+      },
+      "write.rephrase": {
+        "title": "Rephrase"
+      },
+      "write.rephrase.generate": {
+        "title": "Generate"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.deepl.com",
+            "path": "/",
+            "prefix": "DeepL-Auth-Key ",
+            "value": "api_key"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api-free.deepl.com",
+            "path": "/",
+            "prefix": "DeepL-Auth-Key ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "DeepL",
   "http": {
+    "origins": {"api":["https://api.deepl.com","https://api-free.deepl.com"]},
     "operations": {
-      "adminCreateDeveloperKey": {"action":"write.developer_keys","effects":["write"],"method":"POST","origin":"https://api.deepl.com","path":"/v2/admin/developer-keys","body":"json","scope":{}},
-      "adminDeactivateDeveloperKey": {"action":"write.deactivate","effects":["write"],"method":"PUT","origin":"https://api.deepl.com","path":"/v2/admin/developer-keys/deactivate","body":"json","scope":{"key_id":{"from":"body","at":"/key_id"}}},
-      "adminGetAnalytics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v2/admin/analytics","params":["start_date","end_date","group_by"],"scope":{}},
-      "adminGetCustomTagAnalytics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v2/admin/analytics/custom-tags","params":["start_date","end_date","aggregate_by","page"],"scope":{}},
-      "adminGetDeveloperKeys": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v2/admin/developer-keys","scope":{}},
-      "adminRenameDeveloperKey": {"action":"write.label","effects":["write"],"method":"PUT","origin":"https://api.deepl.com","path":"/v2/admin/developer-keys/label","body":"json","scope":{"key_id":{"from":"body","at":"/key_id"}}},
-      "adminSetDeveloperKeyUsageLimits": {"action":"write.limits","effects":["write"],"method":"PUT","origin":"https://api.deepl.com","path":"/v2/admin/developer-keys/limits","body":"json","scope":{"key_id":{"from":"body","at":"/key_id"}}},
-      "correctText": {"action":"write.correct","effects":["write"],"method":"POST","origin":"https://api.deepl.com","path":"/v2/write/correct","body":"any","scope":{}},
-      "createCustomInstruction": {"action":"write.custom_instructions","effects":["write"],"method":"POST","origin":"https://api.deepl.com","path":"/v3/style_rules/{style_id}/custom_instructions","body":"json","scope":{"style_id":{"from":"path","at":"style_id"}}},
-      "createGlossary": {"action":"write.glossaries","effects":["write"],"method":"POST","origin":"https://api.deepl.com","path":"/v2/glossaries","body":"any","scope":{}},
-      "createMultilingualGlossary": {"action":"write.glossaries","effects":["write"],"method":"POST","origin":"https://api.deepl.com","path":"/v3/glossaries","body":"any","scope":{}},
-      "createSpokenTerms": {"action":"write.spoken_terms","effects":["write"],"method":"POST","origin":"https://api.deepl.com","path":"/v3/spoken-terms","body":"any","scope":{}},
-      "createStyleRuleList": {"action":"write.style_rules","effects":["write"],"method":"POST","origin":"https://api.deepl.com","path":"/v3/style_rules","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "createTranslationMemoryExport": {"action":"write.translation_memories","effects":["write"],"method":"POST","origin":"https://api.deepl.com","path":"/v3/translation_memories/{translation_memory_id}/export","scope":{"translation_memory_id":{"from":"path","at":"translation_memory_id"}}},
-      "createTranslationMemoryImport": {"action":"write.import","effects":["write"],"method":"POST","origin":"https://api.deepl.com","path":"/v3/translation_memories/import","body":"json","scope":{}},
-      "createVoiceTranslateJob": {"action":"generate.translate","effects":["generate"],"method":"POST","origin":"https://api.deepl.com","path":"/v1/jobs/voice/translate","params":["include"],"body":"json","scope":{}},
-      "deleteCustomInstruction": {"action":"delete.custom_instructions","effects":["delete"],"method":"DELETE","origin":"https://api.deepl.com","path":"/v3/style_rules/{style_id}/custom_instructions/{instruction_id}","scope":{"style_id":{"from":"path","at":"style_id"},"instruction_id":{"from":"path","at":"instruction_id"}}},
-      "deleteDictionary": {"action":"delete.dictionaries","effects":["delete"],"method":"DELETE","origin":"https://api.deepl.com","path":"/v3/glossaries/{glossary_id}/dictionaries","params":["source_lang","target_lang"],"scope":{"glossary_id":{"from":"path","at":"glossary_id"}}},
-      "deleteGlossary": {"action":"delete.glossaries","effects":["delete"],"method":"DELETE","origin":"https://api.deepl.com","path":"/v2/glossaries/{glossary_id}","scope":{"glossary_id":{"from":"path","at":"glossary_id"}}},
-      "deleteMultilingualGlossary": {"action":"delete.glossaries","effects":["delete"],"method":"DELETE","origin":"https://api.deepl.com","path":"/v3/glossaries/{glossary_id}","scope":{"glossary_id":{"from":"path","at":"glossary_id"}}},
-      "deleteSpokenTerms": {"action":"delete.spoken_terms","effects":["delete"],"method":"DELETE","origin":"https://api.deepl.com","path":"/v3/spoken-terms/{spoken_terms_id}","scope":{"spoken_terms_id":{"from":"path","at":"spoken_terms_id"}}},
-      "deleteSpokenTermsList": {"action":"delete.term_lists","effects":["delete"],"method":"DELETE","origin":"https://api.deepl.com","path":"/v3/spoken-terms/{spoken_terms_id}/term-lists","params":["lang"],"scope":{"spoken_terms_id":{"from":"path","at":"spoken_terms_id"}}},
-      "deleteStyleRuleList": {"action":"delete.style_rules","effects":["delete"],"method":"DELETE","origin":"https://api.deepl.com","path":"/v3/style_rules/{style_id}","scope":{"style_id":{"from":"path","at":"style_id"}}},
-      "deleteTranslationMemory": {"action":"delete.translation_memories","effects":["delete"],"method":"DELETE","origin":"https://api.deepl.com","path":"/v3/translation_memories/{translation_memory_id}","scope":{"translation_memory_id":{"from":"path","at":"translation_memory_id"}}},
-      "downloadDocument": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.deepl.com","path":"/v2/document/{document_id}/result","body":"any","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "getCustomInstruction": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v3/style_rules/{style_id}/custom_instructions/{instruction_id}","scope":{"style_id":{"from":"path","at":"style_id"},"instruction_id":{"from":"path","at":"instruction_id"}}},
-      "getDocumentStatus": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.deepl.com","path":"/v2/document/{document_id}","body":"any","scope":{"document_id":{"from":"path","at":"document_id"}}},
-      "getGlossary": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v2/glossaries/{glossary_id}","scope":{"glossary_id":{"from":"path","at":"glossary_id"}}},
-      "getGlossaryEntries": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v2/glossaries/{glossary_id}/entries","scope":{"glossary_id":{"from":"path","at":"glossary_id"}}},
-      "getLanguageResources": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v3/languages/resources","scope":{}},
-      "getLanguages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v3/languages","params":["resource","include"],"scope":{}},
-      "getLanguagesV2": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v2/languages","params":["type"],"scope":{}},
-      "getMultilingualGlossary": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v3/glossaries/{glossary_id}","scope":{"glossary_id":{"from":"path","at":"glossary_id"}}},
-      "getMultilingualGlossaryEntries": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v3/glossaries/{glossary_id}/entries","params":["source_lang","target_lang"],"scope":{"glossary_id":{"from":"path","at":"glossary_id"}}},
-      "getSpokenTerms": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v3/spoken-terms/{spoken_terms_id}","scope":{"spoken_terms_id":{"from":"path","at":"spoken_terms_id"}}},
-      "getSpokenTermsEntries": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v3/spoken-terms/{spoken_terms_id}/entries","params":["lang"],"scope":{"spoken_terms_id":{"from":"path","at":"spoken_terms_id"}}},
-      "getStyleRuleList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v3/style_rules/{style_id}","scope":{"style_id":{"from":"path","at":"style_id"}}},
-      "getStyleRuleLists": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v3/style_rules","params":["page","page_size","detailed"],"scope":{}},
-      "getTranslationMemory": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v3/translation_memories/{translation_memory_id}","scope":{"translation_memory_id":{"from":"path","at":"translation_memory_id"}}},
-      "getTranslationMemoryJob": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v3/translation_memories/jobs/{job_id}","params":["page_size","page_cursor","filter_text","filter_case_sensitive"],"scope":{"job_id":{"from":"path","at":"job_id"}}},
-      "getUsage": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v2/usage","scope":{}},
-      "getVoiceStreamingUrl": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.deepl.com","path":"/v3/voice/realtime","body":"json","scope":{}},
-      "getVoiceTranslateJobStatus": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v1/jobs/voice/translate/{job_id}","params":["include"],"scope":{"job_id":{"from":"path","at":"job_id"}}},
-      "listGlossaries": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v2/glossaries","scope":{}},
-      "listGlossaryLanguages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v2/glossary-language-pairs","scope":{}},
-      "listMultilingualGlossaries": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v3/glossaries","scope":{}},
-      "listSpokenTerms": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v3/spoken-terms","scope":{}},
-      "listTranslationMemories": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v3/translation_memories","params":["page","page_size"],"scope":{}},
-      "patchMultilingualGlossary": {"action":"write.glossaries","effects":["write"],"method":"PATCH","origin":"https://api.deepl.com","path":"/v3/glossaries/{glossary_id}","body":"any","scope":{"glossary_id":{"from":"path","at":"glossary_id"}}},
-      "patchSpokenTerms": {"action":"write.spoken_terms","effects":["write"],"method":"PATCH","origin":"https://api.deepl.com","path":"/v3/spoken-terms/{spoken_terms_id}","body":"any","scope":{"spoken_terms_id":{"from":"path","at":"spoken_terms_id"}}},
-      "pollQualityEvaluation": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v1/quality-evaluations/{job_id}","scope":{"job_id":{"from":"path","at":"job_id"}}},
-      "putSpokenTermsList": {"action":"write.term_lists","effects":["write"],"method":"PUT","origin":"https://api.deepl.com","path":"/v3/spoken-terms/{spoken_terms_id}/term-lists","body":"any","scope":{"spoken_terms_id":{"from":"path","at":"spoken_terms_id"}}},
-      "rephraseText": {"action":"write.rephrase","effects":["write"],"method":"POST","origin":"https://api.deepl.com","path":"/v2/write/rephrase","body":"any","scope":{}},
-      "replaceDictionary": {"action":"write.dictionaries","effects":["write"],"method":"PUT","origin":"https://api.deepl.com","path":"/v3/glossaries/{glossary_id}/dictionaries","body":"any","scope":{"glossary_id":{"from":"path","at":"glossary_id"}}},
-      "requestReconnection": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.deepl.com","path":"/v3/voice/realtime","params":["token"],"scope":{}},
-      "translateDocument": {"action":"generate.document","effects":["generate"],"method":"POST","origin":"https://api.deepl.com","path":"/v2/document","body":"any","scope":{}},
-      "translateText": {"action":"generate.translate","effects":["generate"],"method":"POST","origin":"https://api.deepl.com","path":"/v2/translate","body":"any","scope":{}},
-      "updateCustomInstruction": {"action":"write.custom_instructions","effects":["write"],"method":"PUT","origin":"https://api.deepl.com","path":"/v3/style_rules/{style_id}/custom_instructions/{instruction_id}","body":"json","scope":{"style_id":{"from":"path","at":"style_id"},"instruction_id":{"from":"path","at":"instruction_id"}}},
-      "updateStyleRuleConfiguredRules": {"action":"write.configured_rules","effects":["write"],"method":"PUT","origin":"https://api.deepl.com","path":"/v3/style_rules/{style_id}/configured_rules","body":"json","scope":{"style_id":{"from":"path","at":"style_id"}}},
-      "updateStyleRuleList": {"action":"write.style_rules","effects":["write"],"method":"PATCH","origin":"https://api.deepl.com","path":"/v3/style_rules/{style_id}","body":"json","scope":{"style_id":{"from":"path","at":"style_id"}}}
+      "adminCreateDeveloperKey": {"action":"admin.developer_keys.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/v2/admin/developer-keys","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "adminDeactivateDeveloperKey": {"action":"admin.developer_keys.deactivate.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/v2/admin/developer-keys/deactivate","scope":{"key_id":{"at":"/key_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "adminGetAnalytics": {"action":"admin.analytics.read","effects":["read"],"method":"GET","origin":"{api}","params":["start_date","end_date","group_by"],"path":"/v2/admin/analytics","scope":{}},
+      "adminGetCustomTagAnalytics": {"action":"admin.analytics.custom_tags.read","effects":["read"],"method":"GET","origin":"{api}","params":["start_date","end_date","aggregate_by","page"],"path":"/v2/admin/analytics/custom-tags","scope":{}},
+      "adminGetDeveloperKeys": {"action":"admin.developer_keys.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/admin/developer-keys","scope":{}},
+      "adminRenameDeveloperKey": {"action":"admin.developer_keys.label.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/v2/admin/developer-keys/label","scope":{"key_id":{"at":"/key_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "adminSetDeveloperKeyUsageLimits": {"action":"admin.developer_keys.limits.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/v2/admin/developer-keys/limits","scope":{"key_id":{"at":"/key_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "correctText": {"action":"write.correct.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v2/write/correct","scope":{}},
+      "createCustomInstruction": {"action":"style_rules.custom_instructions.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/style_rules/{style_id}/custom_instructions","scope":{"style_id":{"at":"style_id","from":"path"}}},
+      "createGlossary": {"action":"glossaries.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/glossaries","scope":{}},
+      "createMultilingualGlossary": {"action":"glossaries.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/glossaries","scope":{}},
+      "createSpokenTerms": {"action":"spoken_terms.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/spoken-terms","scope":{}},
+      "createStyleRuleList": {"action":"style_rules.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/style_rules","scope":{"name":{"at":"/name","from":"body"}}},
+      "createTranslationMemoryExport": {"action":"translation_memories.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/translation_memories/{translation_memory_id}/export","scope":{"translation_memory_id":{"at":"translation_memory_id","from":"path"}}},
+      "createTranslationMemoryImport": {"action":"translation_memories.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/translation_memories/import","scope":{}},
+      "createVoiceTranslateJob": {"action":"jobs.voice.translate.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","params":["include"],"path":"/v1/jobs/voice/translate","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "deleteCustomInstruction": {"action":"style_rules.custom_instructions.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/style_rules/{style_id}/custom_instructions/{instruction_id}","scope":{"instruction_id":{"at":"instruction_id","from":"path"},"style_id":{"at":"style_id","from":"path"}}},
+      "deleteDictionary": {"action":"glossaries.dictionaries.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["source_lang","target_lang"],"path":"/v3/glossaries/{glossary_id}/dictionaries","scope":{"glossary_id":{"at":"glossary_id","from":"path"}}},
+      "deleteGlossary": {"action":"glossaries.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/glossaries/{glossary_id}","scope":{"glossary_id":{"at":"glossary_id","from":"path"}}},
+      "deleteMultilingualGlossary": {"action":"glossaries.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/glossaries/{glossary_id}","scope":{"glossary_id":{"at":"glossary_id","from":"path"}}},
+      "deleteSpokenTerms": {"action":"spoken_terms.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/spoken-terms/{spoken_terms_id}","scope":{"spoken_terms_id":{"at":"spoken_terms_id","from":"path"}}},
+      "deleteSpokenTermsList": {"action":"spoken_terms.term_lists.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["lang"],"path":"/v3/spoken-terms/{spoken_terms_id}/term-lists","scope":{"spoken_terms_id":{"at":"spoken_terms_id","from":"path"}}},
+      "deleteStyleRuleList": {"action":"style_rules.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/style_rules/{style_id}","scope":{"style_id":{"at":"style_id","from":"path"}}},
+      "deleteTranslationMemory": {"action":"translation_memories.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/translation_memories/{translation_memory_id}","scope":{"translation_memory_id":{"at":"translation_memory_id","from":"path"}}},
+      "downloadDocument": {"action":"document.result.read","body":"any","effects":["read"],"method":"POST","origin":"{api}","path":"/v2/document/{document_id}/result","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "getCustomInstruction": {"action":"style_rules.custom_instructions.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/style_rules/{style_id}/custom_instructions/{instruction_id}","scope":{"instruction_id":{"at":"instruction_id","from":"path"},"style_id":{"at":"style_id","from":"path"}}},
+      "getDocumentStatus": {"action":"document.read","body":"any","effects":["read"],"method":"POST","origin":"{api}","path":"/v2/document/{document_id}","scope":{"document_id":{"at":"document_id","from":"path"}}},
+      "getGlossary": {"action":"glossaries.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/glossaries/{glossary_id}","scope":{"glossary_id":{"at":"glossary_id","from":"path"}}},
+      "getGlossaryEntries": {"action":"glossaries.entries.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/glossaries/{glossary_id}/entries","scope":{"glossary_id":{"at":"glossary_id","from":"path"}}},
+      "getLanguageResources": {"action":"languages.resources.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/languages/resources","scope":{}},
+      "getLanguages": {"action":"languages.read","effects":["read"],"method":"GET","origin":"{api}","params":["resource","include"],"path":"/v3/languages","scope":{}},
+      "getLanguagesV2": {"action":"languages.read","effects":["read"],"method":"GET","origin":"{api}","params":["type"],"path":"/v2/languages","scope":{}},
+      "getMultilingualGlossary": {"action":"glossaries.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/glossaries/{glossary_id}","scope":{"glossary_id":{"at":"glossary_id","from":"path"}}},
+      "getMultilingualGlossaryEntries": {"action":"glossaries.entries.read","effects":["read"],"method":"GET","origin":"{api}","params":["source_lang","target_lang"],"path":"/v3/glossaries/{glossary_id}/entries","scope":{"glossary_id":{"at":"glossary_id","from":"path"}}},
+      "getSpokenTerms": {"action":"spoken_terms.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/spoken-terms/{spoken_terms_id}","scope":{"spoken_terms_id":{"at":"spoken_terms_id","from":"path"}}},
+      "getSpokenTermsEntries": {"action":"spoken_terms.entries.read","effects":["read"],"method":"GET","origin":"{api}","params":["lang"],"path":"/v3/spoken-terms/{spoken_terms_id}/entries","scope":{"spoken_terms_id":{"at":"spoken_terms_id","from":"path"}}},
+      "getStyleRuleList": {"action":"style_rules.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/style_rules/{style_id}","scope":{"style_id":{"at":"style_id","from":"path"}}},
+      "getStyleRuleLists": {"action":"style_rules.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","page_size","detailed"],"path":"/v3/style_rules","scope":{}},
+      "getTranslationMemory": {"action":"translation_memories.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/translation_memories/{translation_memory_id}","scope":{"translation_memory_id":{"at":"translation_memory_id","from":"path"}}},
+      "getTranslationMemoryJob": {"action":"translation_memories.jobs.read","effects":["read"],"method":"GET","origin":"{api}","params":["page_size","page_cursor","filter_text","filter_case_sensitive"],"path":"/v3/translation_memories/jobs/{job_id}","scope":{"job_id":{"at":"job_id","from":"path"}}},
+      "getTranslationMemorySegments": {"action":"translation_memories.segments.read","effects":["read"],"method":"GET","origin":"{api}","params":["page_size","page_cursor","filter_text","filter_case_sensitive"],"path":"/v3/translation_memories/{translation_memory_id}/segments","path_patterns":{"translation_memory_id":"[^j].*|j(?:|[^o].*|o(?:|[^b].*|b(?:|[^s].*|s.+)))"},"scope":{"query":{"at":"","from":"query","type":"object"},"translation_memory_id":{"at":"translation_memory_id","from":"path"}}},
+      "getUsage": {"action":"usage.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/usage","scope":{}},
+      "getVoiceStreamingUrl": {"action":"voice.realtime.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v3/voice/realtime","scope":{"glossary_id":{"at":"/glossary_id","from":"body","optional":true},"glossary_ids":{"at":"/glossary_ids","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"},"spoken_terms_id":{"at":"/spoken_terms_id","from":"body","optional":true}}},
+      "getVoiceTranslateJobStatus": {"action":"jobs.voice.translate.read","effects":["read"],"method":"GET","origin":"{api}","params":["include"],"path":"/v1/jobs/voice/translate/{job_id}","scope":{"job_id":{"at":"job_id","from":"path"}}},
+      "listGlossaries": {"action":"glossaries.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/glossaries","scope":{}},
+      "listGlossaryLanguages": {"action":"glossary_language_pairs.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/glossary-language-pairs","scope":{}},
+      "listMultilingualGlossaries": {"action":"glossaries.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/glossaries","scope":{}},
+      "listSpokenTerms": {"action":"spoken_terms.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/spoken-terms","scope":{}},
+      "listTranslationMemories": {"action":"translation_memories.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","page_size"],"path":"/v3/translation_memories","scope":{}},
+      "patchMultilingualGlossary": {"action":"glossaries.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v3/glossaries/{glossary_id}","scope":{"glossary_id":{"at":"glossary_id","from":"path"}}},
+      "patchSpokenTerms": {"action":"spoken_terms.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v3/spoken-terms/{spoken_terms_id}","scope":{"spoken_terms_id":{"at":"spoken_terms_id","from":"path"}}},
+      "pollQualityEvaluation": {"action":"quality_evaluations.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/quality-evaluations/{job_id}","scope":{"job_id":{"at":"job_id","from":"path"}}},
+      "putSpokenTermsList": {"action":"spoken_terms.term_lists.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/spoken-terms/{spoken_terms_id}/term-lists","scope":{"spoken_terms_id":{"at":"spoken_terms_id","from":"path"}}},
+      "rephraseText": {"action":"write.rephrase.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v2/write/rephrase","scope":{}},
+      "replaceDictionary": {"action":"glossaries.dictionaries.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/glossaries/{glossary_id}/dictionaries","scope":{"glossary_id":{"at":"glossary_id","from":"path"}}},
+      "requestReconnection": {"action":"voice.realtime.read","effects":["read"],"method":"GET","origin":"{api}","params":["token"],"path":"/v3/voice/realtime","scope":{}},
+      "translateDocument": {"action":"document.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v2/document","scope":{}},
+      "translateText": {"action":"translate.generate","body":"any","effects":["generate","pay","send"],"method":"POST","origin":"{api}","path":"/v2/translate","scope":{}},
+      "updateCustomInstruction": {"action":"style_rules.custom_instructions.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/style_rules/{style_id}/custom_instructions/{instruction_id}","scope":{"instruction_id":{"at":"instruction_id","from":"path"},"style_id":{"at":"style_id","from":"path"}}},
+      "updateStyleRuleConfiguredRules": {"action":"style_rules.configured_rules.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/style_rules/{style_id}/configured_rules","scope":{"style_id":{"at":"style_id","from":"path"}}},
+      "updateStyleRuleList": {"action":"style_rules.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v3/style_rules/{style_id}","scope":{"style_id":{"at":"style_id","from":"path"}}}
     }
   }
 }

@@ -1,18 +1,126 @@
 {
-  "title": "NASA",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.nasa.gov", "path": "/planetary", "query": "api_key"}]}},
     "actions": {
-      "read": {"title": "Read everything the account can see"}
-    }
+      "apod": {
+        "title": "Apod"
+      },
+      "apod.read": {
+        "title": "Read"
+      },
+      "donki": {
+        "title": "Donki"
+      },
+      "donki.read": {
+        "title": "Read"
+      },
+      "epic": {
+        "title": "Epic"
+      },
+      "epic.read": {
+        "title": "Read"
+      },
+      "insight_weather": {
+        "title": "Insight weather"
+      },
+      "insight_weather.read": {
+        "title": "Read"
+      },
+      "neo": {
+        "title": "Neo"
+      },
+      "neo.feed": {
+        "title": "Feed"
+      },
+      "neo.feed.read": {
+        "title": "Read"
+      },
+      "neo.feed.today": {
+        "title": "Today"
+      },
+      "neo.feed.today.read": {
+        "title": "Read"
+      },
+      "neo.neo": {
+        "title": "Neo"
+      },
+      "neo.neo.browse": {
+        "title": "Browse"
+      },
+      "neo.neo.browse.read": {
+        "title": "Read"
+      },
+      "neo.neo.read": {
+        "title": "Read"
+      },
+      "neo.stats": {
+        "title": "Stats"
+      },
+      "neo.stats.read": {
+        "title": "Read"
+      },
+      "wp_json": {
+        "title": "Wp json"
+      },
+      "wp_json.wp": {
+        "title": "Wp"
+      },
+      "wp_json.wp.apod_basic": {
+        "title": "Apod basic"
+      },
+      "wp_json.wp.apod_basic.html": {
+        "title": "Html"
+      },
+      "wp_json.wp.apod_basic.html.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.apod_basic.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "origin": "https://api.nasa.gov",
+            "path": "/",
+            "query": "api_key",
+            "value": "api_key"
+          },
+          {
+            "origin": "https://science.nasa.gov",
+            "path": "/wp-json/wp/v2/apod-basic",
+            "query": "api_key",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "NASA",
   "http": {
+    "sensitive_query": ["api_key"],
     "operations": {
-      "GET /planetary/apod": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.nasa.gov","path":"/planetary/apod","params":["date","hd"],"scope":{}}
+      "GET /planetary/apod": {"action":"apod.read","effects":["read"],"method":"GET","origin":"https://api.nasa.gov","params":["api_key","date","start_date","end_date","count","concept_tags","hd","thumbs"],"path":"/planetary/apod","scope":{}},
+      "apod-basic.html": {"action":"wp_json.wp.apod_basic.html.read","effects":["read"],"method":"GET","origin":"https://science.nasa.gov","params":["api_key"],"path":"/wp-json/wp/v2/apod-basic/{id}/html","scope":{"id":{"at":"id","from":"path"}}},
+      "apod-basic.list": {"action":"wp_json.wp.apod_basic.read","effects":["read"],"method":"GET","origin":"https://science.nasa.gov","params":["api_key","date","start_date","end_date","count"],"path":"/wp-json/wp/v2/apod-basic","scope":{}},
+      "apod-basic.list.slash": {"action":"wp_json.wp.apod_basic.read","effects":["read"],"method":"GET","origin":"https://science.nasa.gov","params":["api_key","date","start_date","end_date","count"],"path":"/wp-json/wp/v2/apod-basic/","scope":{}},
+      "donki.list": {"action":"donki.read","effects":["read"],"method":"GET","origin":"https://api.nasa.gov","params":["api_key","startDate","endDate","mostAccurateOnly","completeEntryOnly","speed","halfAngle","catalog","keyword","location","type"],"path":"/DONKI/{type}","scope":{"type":{"at":"type","from":"path"}}},
+      "epic.get": {"action":"epic.read","effects":["read"],"method":"GET","origin":"https://api.nasa.gov","params":["api_key"],"path":"/EPIC/{path*}","scope":{"path":{"at":"path","from":"path"}}},
+      "insight_weather.get": {"action":"insight_weather.read","effects":["read"],"method":"GET","origin":"https://api.nasa.gov","params":["api_key","feedtype","ver","version"],"path":"/insight_weather/","scope":{}},
+      "neo.browse": {"action":"neo.neo.browse.read","effects":["read"],"method":"GET","origin":"https://api.nasa.gov","params":["api_key","page","size"],"path":"/neo/rest/v1/neo/browse","scope":{}},
+      "neo.feed": {"action":"neo.feed.read","effects":["read"],"method":"GET","origin":"https://api.nasa.gov","params":["api_key","start_date","end_date","detailed"],"path":"/neo/rest/v1/feed","scope":{}},
+      "neo.feed.today": {"action":"neo.feed.today.read","effects":["read"],"method":"GET","origin":"https://api.nasa.gov","params":["api_key","detailed"],"path":"/neo/rest/v1/feed/today","scope":{}},
+      "neo.get": {"action":"neo.neo.read","effects":["read"],"method":"GET","origin":"https://api.nasa.gov","params":["api_key"],"path":"/neo/rest/v1/neo/{asteroid_id}","path_patterns":{"asteroid_id":"[0-9]+"},"scope":{"asteroid_id":{"at":"asteroid_id","from":"path"}}},
+      "neo.stats": {"action":"neo.stats.read","effects":["read"],"method":"GET","origin":"https://api.nasa.gov","params":["api_key"],"path":"/neo/rest/v1/stats","scope":{}}
     }
   }
 }

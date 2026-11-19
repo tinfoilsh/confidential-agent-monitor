@@ -1,46 +1,360 @@
 {
-  "title": "Perplexity",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "Perplexity account", "secret": true, "credential": true, "oauth": {"issuer": "https://api.perplexity.ai", "scope": "perplexity_api offline_access"}}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.perplexity.ai", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "delete.skills": {"title": "Delete: skills"},
-      "generate.agent": {"title": "Generate: agent"},
-      "generate.contextualizedembeddings": {"title": "Generate: contextualizedembeddings"},
-      "generate.embeddings": {"title": "Generate: embeddings"},
-      "generate.skills": {"title": "Generate: skills"},
-      "generate.sonar": {"title": "Generate: sonar"},
-      "read": {"title": "Read everything the account can see"},
-      "write.skills": {"title": "Write: skills"}
-    }
+      "admin": {
+        "title": "Manage"
+      },
+      "admin.audit_events": {
+        "title": "Audit events"
+      },
+      "admin.audit_events.read": {
+        "title": "Read"
+      },
+      "agent": {
+        "title": "Agent"
+      },
+      "agent.files": {
+        "title": "Files"
+      },
+      "agent.files.content": {
+        "title": "Content"
+      },
+      "agent.files.content.read": {
+        "title": "Read"
+      },
+      "agent.files.read": {
+        "title": "Read"
+      },
+      "agent.generate": {
+        "title": "Generate"
+      },
+      "agent.read": {
+        "title": "Read"
+      },
+      "agent.write": {
+        "title": "Create and edit"
+      },
+      "analytics": {
+        "title": "Analytics"
+      },
+      "analytics.computer": {
+        "title": "Computer"
+      },
+      "analytics.computer.usage": {
+        "title": "Usage"
+      },
+      "analytics.computer.usage.read": {
+        "title": "Read"
+      },
+      "async": {
+        "title": "Async"
+      },
+      "async.chat": {
+        "title": "Chat"
+      },
+      "async.chat.completions": {
+        "title": "Completions"
+      },
+      "async.chat.completions.generate": {
+        "title": "Generate"
+      },
+      "async.chat.completions.read": {
+        "title": "Read"
+      },
+      "async.sonar": {
+        "title": "Sonar"
+      },
+      "async.sonar.generate": {
+        "title": "Generate"
+      },
+      "async.sonar.read": {
+        "title": "Read"
+      },
+      "auth_token": {
+        "title": "Auth token"
+      },
+      "auth_token.admin": {
+        "title": "Manage"
+      },
+      "batches": {
+        "title": "Batches"
+      },
+      "batches.generate": {
+        "title": "Generate"
+      },
+      "batches.read": {
+        "title": "Read"
+      },
+      "batches.write": {
+        "title": "Create and edit"
+      },
+      "chat": {
+        "title": "Chat"
+      },
+      "chat.completions": {
+        "title": "Completions"
+      },
+      "chat.completions.generate": {
+        "title": "Generate"
+      },
+      "context": {
+        "title": "Context"
+      },
+      "context.read": {
+        "title": "Read"
+      },
+      "contextualizedembeddings": {
+        "title": "Contextualizedembeddings"
+      },
+      "contextualizedembeddings.generate": {
+        "title": "Generate"
+      },
+      "decisions": {
+        "title": "Decisions"
+      },
+      "decisions.generate": {
+        "title": "Generate"
+      },
+      "embeddings": {
+        "title": "Embeddings"
+      },
+      "embeddings.generate": {
+        "title": "Generate"
+      },
+      "files": {
+        "title": "Files"
+      },
+      "files.content": {
+        "title": "Content"
+      },
+      "files.content.read": {
+        "title": "Read"
+      },
+      "files.delete": {
+        "title": "Delete"
+      },
+      "files.read": {
+        "title": "Read"
+      },
+      "files.write": {
+        "title": "Create and edit"
+      },
+      "models": {
+        "title": "Models"
+      },
+      "models.read": {
+        "title": "Read"
+      },
+      "monitors": {
+        "title": "Monitors"
+      },
+      "monitors.delete": {
+        "title": "Delete"
+      },
+      "monitors.execute": {
+        "title": "Run"
+      },
+      "monitors.read": {
+        "title": "Read"
+      },
+      "monitors.runs": {
+        "title": "Runs"
+      },
+      "monitors.runs.read": {
+        "title": "Read"
+      },
+      "monitors.webhook": {
+        "title": "Webhook"
+      },
+      "monitors.webhook.send": {
+        "title": "Send"
+      },
+      "monitors.write": {
+        "title": "Create and edit"
+      },
+      "orchestrator": {
+        "title": "Orchestrator"
+      },
+      "orchestrator.chat": {
+        "title": "Chat"
+      },
+      "orchestrator.chat.completions": {
+        "title": "Completions"
+      },
+      "orchestrator.chat.completions.generate": {
+        "title": "Generate"
+      },
+      "orchestrator.messages": {
+        "title": "Messages"
+      },
+      "orchestrator.messages.generate": {
+        "title": "Generate"
+      },
+      "orchestrator.models": {
+        "title": "Models"
+      },
+      "orchestrator.models.read": {
+        "title": "Read"
+      },
+      "orchestrator.responses": {
+        "title": "Responses"
+      },
+      "orchestrator.responses.generate": {
+        "title": "Generate"
+      },
+      "responses": {
+        "title": "Responses"
+      },
+      "responses.files": {
+        "title": "Files"
+      },
+      "responses.files.content": {
+        "title": "Content"
+      },
+      "responses.files.content.read": {
+        "title": "Read"
+      },
+      "responses.files.read": {
+        "title": "Read"
+      },
+      "responses.generate": {
+        "title": "Generate"
+      },
+      "responses.read": {
+        "title": "Read"
+      },
+      "responses.write": {
+        "title": "Create and edit"
+      },
+      "search": {
+        "title": "Search"
+      },
+      "search.read": {
+        "title": "Read"
+      },
+      "skills": {
+        "title": "Skills"
+      },
+      "skills.delete": {
+        "title": "Delete"
+      },
+      "skills.read": {
+        "title": "Read"
+      },
+      "skills.revisions": {
+        "title": "Revisions"
+      },
+      "skills.revisions.read": {
+        "title": "Read"
+      },
+      "skills.write": {
+        "title": "Create and edit"
+      },
+      "sonar": {
+        "title": "Sonar"
+      },
+      "sonar.generate": {
+        "title": "Generate"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.perplexity.ai",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          },
+          {
+            "header": "X-Api-Key",
+            "origin": "https://api.perplexity.ai",
+            "path": "/orchestrator",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "Perplexity account",
+        "oauth": {
+          "issuer": "https://api.perplexity.ai",
+          "scope": "perplexity_api offline_access"
+        },
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Perplexity",
   "http": {
     "operations": {
-      "cancelAgentResponse": {"action":"generate.agent","effects":["generate"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/agent/{id}/cancel","scope":{"id":{"from":"path","at":"id"}}},
-      "chat_completions_chat_completions_post": {"action":"generate.sonar","effects":["generate"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/sonar","body":"json","scope":{}},
-      "contextualized_embeddings_v1_contextualizedembeddings_post": {"action":"generate.contextualizedembeddings","effects":["generate"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/contextualizedembeddings","body":"json","scope":{}},
-      "createAgent": {"action":"generate.agent","effects":["generate"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/agent","body":"json","scope":{}},
-      "createSkill": {"action":"generate.skills","effects":["generate"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/skills","body":"any","scope":{}},
-      "create_async_chat_completions_async_chat_completions_post": {"action":"generate.sonar","effects":["generate"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/async/sonar","body":"json","scope":{}},
-      "deleteSkill": {"action":"delete.skills","effects":["delete"],"method":"DELETE","origin":"https://api.perplexity.ai","path":"/v1/skills/{skill_id}","params":["expected_revision"],"scope":{"skill_id":{"from":"path","at":"skill_id"}}},
-      "downloadAgentFile": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/agent/{id}/files/{file_id}/content","scope":{"id":{"from":"path","at":"id"},"file_id":{"from":"path","at":"file_id"}}},
-      "downloadSkill": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/skills/{skill_id}/download","params":["revision"],"scope":{"skill_id":{"from":"path","at":"skill_id"}}},
-      "embeddings_v1_embeddings_post": {"action":"generate.embeddings","effects":["generate"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/embeddings","body":"json","scope":{}},
-      "getComputerUsageAnalytics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/analytics/computer/usage","params":["dataset","start_time","end_time","bucket_width","limit","page","user_email"],"scope":{}},
-      "getComputerUsageAnalyticsV2": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v2/analytics/computer/usage","params":["dataset","group_by","start_time","end_time","limit","page"],"scope":{}},
-      "getSkill": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/skills/{skill_id}","params":["revision"],"scope":{"skill_id":{"from":"path","at":"skill_id"}}},
-      "get_async_chat_completion_response_async_chat_completions__api_request__get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/async/sonar/{api_request}","scope":{"api_request":{"from":"path","at":"api_request"}}},
-      "listAgentFiles": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/agent/{id}/files","scope":{"id":{"from":"path","at":"id"}}},
-      "listModels": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/models","scope":{}},
-      "listSkillRevisions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/skills/{skill_id}/revisions","params":["limit","page_token"],"scope":{"skill_id":{"from":"path","at":"skill_id"}}},
-      "listSkills": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/skills","params":["limit","page_token"],"scope":{}},
-      "list_async_chat_completions_async_chat_completions_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/async/sonar","scope":{}},
-      "retrieveAgent": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/agent/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "search_search_post": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.perplexity.ai","path":"/search","body":"json","scope":{}},
-      "updateSkill": {"action":"write.skills","effects":["write"],"method":"PUT","origin":"https://api.perplexity.ai","path":"/v1/skills/{skill_id}","params":["expected_revision"],"body":"any","scope":{"skill_id":{"from":"path","at":"skill_id"}}}
+      "async.chat.completions.create": {"action":"async.chat.completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.perplexity.ai","path":"/async/chat/completions","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "async.chat.completions.get": {"action":"async.chat.completions.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/async/chat/completions/{api_request}","scope":{"api_request":{"at":"api_request","from":"path"}}},
+      "async.chat.completions.list": {"action":"async.chat.completions.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/async/chat/completions","scope":{}},
+      "cancelAgentResponse": {"action":"agent.write","effects":["write"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/agent/{id}/cancel","scope":{"id":{"at":"id","from":"path"}}},
+      "cancelBatch": {"action":"batches.write","effects":["write"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/batches/{batch_id}/cancel","scope":{"batch_id":{"at":"batch_id","from":"path"}}},
+      "chat.completions.create": {"action":"chat.completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.perplexity.ai","path":"/chat/completions","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "chat_completions_chat_completions_post": {"action":"sonar.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/sonar","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "context": {"action":"context.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/context","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "contextualized_embeddings_v1_contextualizedembeddings_post": {"action":"contextualizedembeddings.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/contextualizedembeddings","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createAgent": {"action":"agent.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/agent","scope":{"previous_response_id":{"at":"/previous_response_id","from":"body","optional":true},"prompt_cache_key":{"at":"/prompt_cache_key","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createBatch": {"action":"batches.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/batches","scope":{"input_file_id":{"at":"/input_file_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createFile": {"action":"files.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/files","scope":{}},
+      "createMonitor": {"action":"monitors.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/monitors","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createSkill": {"action":"skills.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/skills","scope":{}},
+      "create_async_chat_completions_async_chat_completions_post": {"action":"async.sonar.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/async/sonar","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "decisions_v1_decisions_post": {"action":"decisions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/decisions","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "deleteFile": {"action":"files.delete","effects":["delete"],"method":"DELETE","origin":"https://api.perplexity.ai","path":"/v1/files/{file_id}","scope":{"file_id":{"at":"file_id","from":"path"}}},
+      "deleteMonitor": {"action":"monitors.delete","effects":["delete"],"method":"DELETE","origin":"https://api.perplexity.ai","path":"/v1/monitors/{monitor_id}","scope":{"monitor_id":{"at":"monitor_id","from":"path"}}},
+      "deleteSkill": {"action":"skills.delete","effects":["delete"],"method":"DELETE","origin":"https://api.perplexity.ai","params":["expected_revision"],"path":"/v1/skills/{skill_id}","scope":{"skill_id":{"at":"skill_id","from":"path"}}},
+      "downloadAgentFile": {"action":"agent.files.content.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/agent/{id}/files/{file_id}/content","scope":{"file_id":{"at":"file_id","from":"path"},"id":{"at":"id","from":"path"}}},
+      "downloadSkill": {"action":"skills.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","params":["revision"],"path":"/v1/skills/{skill_id}/download","scope":{"skill_id":{"at":"skill_id","from":"path"}}},
+      "embeddings_v1_embeddings_post": {"action":"embeddings.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/embeddings","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "gateway_create_chat_completion": {"action":"orchestrator.chat.completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.perplexity.ai","path":"/orchestrator/v1/chat/completions","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "gateway_create_message": {"action":"orchestrator.messages.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.perplexity.ai","path":"/orchestrator/v1/messages","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "gateway_create_response": {"action":"orchestrator.responses.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.perplexity.ai","path":"/orchestrator/v1/responses","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "gateway_list_models": {"action":"orchestrator.models.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/orchestrator/v1/models","scope":{}},
+      "gateway_retrieve_model": {"action":"orchestrator.models.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/orchestrator/v1/models/{model*}","scope":{"model":{"at":"model","from":"path"}}},
+      "generate_auth_token": {"action":"auth_token.admin","effects":["admin"],"method":"POST","origin":"https://api.perplexity.ai","path":"/generate_auth_token","scope":{}},
+      "generate_auth_token.json.4ae6f47a3902": {"action":"auth_token.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.perplexity.ai","path":"/generate_auth_token","scope":{"request":{"at":"","from":"body","type":"object"},"token_name":{"at":"/token_name","from":"body","optional":true}}},
+      "getBatch": {"action":"batches.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/batches/{batch_id}","scope":{"batch_id":{"at":"batch_id","from":"path"}}},
+      "getComputerUsageAnalytics": {"action":"analytics.computer.usage.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","params":["dataset","start_time","end_time","bucket_width","limit","page","user_email"],"path":"/v1/analytics/computer/usage","scope":{}},
+      "getComputerUsageAnalyticsV2": {"action":"analytics.computer.usage.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","params":["dataset","group_by","start_time","end_time","limit","page"],"path":"/v2/analytics/computer/usage","scope":{}},
+      "getFile": {"action":"files.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/files/{file_id}","scope":{"file_id":{"at":"file_id","from":"path"}}},
+      "getFileContent": {"action":"files.content.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/files/{file_id}/content","scope":{"file_id":{"at":"file_id","from":"path"}}},
+      "getMonitor": {"action":"monitors.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/monitors/{monitor_id}","scope":{"monitor_id":{"at":"monitor_id","from":"path"}}},
+      "getMonitorRun": {"action":"monitors.runs.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/monitors/{monitor_id}/runs/{run_id}","scope":{"monitor_id":{"at":"monitor_id","from":"path"},"run_id":{"at":"run_id","from":"path"}}},
+      "getSkill": {"action":"skills.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","params":["revision"],"path":"/v1/skills/{skill_id}","scope":{"skill_id":{"at":"skill_id","from":"path"}}},
+      "get_async_chat_completion_response_async_chat_completions__api_request__get": {"action":"async.sonar.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/async/sonar/{api_request}","scope":{"api_request":{"at":"api_request","from":"path"}}},
+      "listAgentFiles": {"action":"agent.files.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/agent/{id}/files","scope":{"id":{"at":"id","from":"path"}}},
+      "listBatches": {"action":"batches.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","params":["limit","after_id"],"path":"/v1/batches","scope":{"after_id":{"at":"after_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listFiles": {"action":"files.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","params":["limit","after_id","order","purpose"],"path":"/v1/files","scope":{"after_id":{"at":"after_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listModels": {"action":"models.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/models","scope":{}},
+      "listMonitorRuns": {"action":"monitors.runs.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","params":["limit","after"],"path":"/v1/monitors/{monitor_id}/runs","scope":{"monitor_id":{"at":"monitor_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listMonitors": {"action":"monitors.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","params":["limit","after"],"path":"/v1/monitors","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listSkillRevisions": {"action":"skills.revisions.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","params":["limit","page_token"],"path":"/v1/skills/{skill_id}/revisions","scope":{"skill_id":{"at":"skill_id","from":"path"}}},
+      "listSkills": {"action":"skills.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","params":["limit","page_token"],"path":"/v1/skills","scope":{}},
+      "list_admin_audit_events_v1_admin_audit_events_get": {"action":"admin.audit_events.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","params":["limit","start_time","end_time","event_type","after_id","before_id"],"path":"/v1/admin/audit-events","scope":{"after_id":{"at":"after_id","from":"query","optional":true},"before_id":{"at":"before_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "list_async_chat_completions_async_chat_completions_get": {"action":"async.sonar.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/async/sonar","scope":{}},
+      "pauseMonitor": {"action":"monitors.write","effects":["write"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/monitors/{monitor_id}/pause","scope":{"monitor_id":{"at":"monitor_id","from":"path"}}},
+      "responses.cancel": {"action":"responses.write","effects":["write"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/responses/{id}/cancel","scope":{"id":{"at":"id","from":"path"}}},
+      "responses.create": {"action":"responses.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/responses","scope":{"previous_response_id":{"at":"/previous_response_id","from":"body","optional":true},"prompt_cache_key":{"at":"/prompt_cache_key","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "responses.files.content": {"action":"responses.files.content.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/responses/{id}/files/{file_id}/content","scope":{"file_id":{"at":"file_id","from":"path"},"id":{"at":"id","from":"path"}}},
+      "responses.files.list": {"action":"responses.files.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/responses/{id}/files","scope":{"id":{"at":"id","from":"path"}}},
+      "responses.retrieve": {"action":"responses.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/responses/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "resumeMonitor": {"action":"monitors.write","effects":["write"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/monitors/{monitor_id}/resume","scope":{"monitor_id":{"at":"monitor_id","from":"path"}}},
+      "retrieveAgent": {"action":"agent.read","effects":["read"],"method":"GET","origin":"https://api.perplexity.ai","path":"/v1/agent/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "revoke_auth_token": {"action":"auth_token.admin","body":"json","effects":["admin","delete"],"method":"POST","origin":"https://api.perplexity.ai","path":"/revoke_auth_token","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "runMonitor": {"action":"monitors.execute","effects":["execute"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/monitors/{monitor_id}/run","scope":{"monitor_id":{"at":"monitor_id","from":"path"}}},
+      "search_search_post": {"action":"search.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.perplexity.ai","path":"/search","scope":{}},
+      "testMonitorWebhook": {"action":"monitors.webhook.send","effects":["send"],"method":"POST","origin":"https://api.perplexity.ai","path":"/v1/monitors/{monitor_id}/webhook/test","scope":{"monitor_id":{"at":"monitor_id","from":"path"}}},
+      "updateMonitor": {"action":"monitors.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.perplexity.ai","path":"/v1/monitors/{monitor_id}","scope":{"monitor_id":{"at":"monitor_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateSkill": {"action":"skills.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.perplexity.ai","params":["expected_revision"],"path":"/v1/skills/{skill_id}","scope":{"skill_id":{"at":"skill_id","from":"path"}}}
     }
   }
 }

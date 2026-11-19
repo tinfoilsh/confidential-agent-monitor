@@ -4,11 +4,18 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.deleteSegment": {"title": "Delete segment", "effects": ["delete"]},
+      "use.generateFeedbackTopics": {"title": "Generate feedback topics", "effects": ["generate"]},
+      "use.guideSetState": {"title": "Guide set state", "effects": ["publish"]},
+      "use.promoteDiscoveryApp": {"title": "Promote discovery app", "effects": ["admin"]},
+      "use.setOrchestrateJourneySchedule": {"title": "Set orchestrate journey schedule", "effects": ["send", "write"]},
+      "use.updateCommandCenterApp": {"title": "Update command center app", "effects": ["admin"]}
     },
-    "connection": {"mcp": {"url": "https://app.pendo.io/mcp/v0/shttp"}},
+    "connection": {"mcp": {"url": "{url}"}},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://app.pendo.io/mcp/v0/shttp"}}
+      {"key": "url", "label": "Server URL", "default": "https://app.pendo.io/mcp/v0/shttp", "hint": "Use https://us1.app.pendo.io/mcp/v0/shttp, https://app.eu.pendo.io/mcp/v0/shttp, https://app.jpn.pendo.io/mcp/v0/shttp or https://app.au.pendo.io/mcp/v0/shttp for those regions.", "path": ["mcp", "url"]},
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}"}}
     ]
   }
 }

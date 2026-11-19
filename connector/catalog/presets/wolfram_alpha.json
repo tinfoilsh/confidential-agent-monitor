@@ -1,19 +1,116 @@
 {
-  "title": "Wolfram|Alpha",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "app_id", "label": "App ID", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "app_id", "origin": "https://www.wolframalpha.com", "path": "/api/v1", "query": "api_key"}]}},
     "actions": {
-      "read": {"title": "Read everything the account can see"}
-    }
+      "cloud_plugin": {
+        "title": "Cloud plugin"
+      },
+      "cloud_plugin.read": {
+        "title": "Read"
+      },
+      "llm_api": {
+        "title": "Llm api"
+      },
+      "llm_api.read": {
+        "title": "Read"
+      },
+      "query": {
+        "title": "Query"
+      },
+      "query.read": {
+        "title": "Read"
+      },
+      "queryrecognizer": {
+        "title": "Queryrecognizer"
+      },
+      "queryrecognizer.jsp": {
+        "title": "Jsp"
+      },
+      "queryrecognizer.jsp.read": {
+        "title": "Read"
+      },
+      "result": {
+        "title": "Result"
+      },
+      "result.read": {
+        "title": "Read"
+      },
+      "simple": {
+        "title": "Simple"
+      },
+      "simple.read": {
+        "title": "Read"
+      },
+      "spoken": {
+        "title": "Spoken"
+      },
+      "spoken.read": {
+        "title": "Read"
+      },
+      "summaryboxes": {
+        "title": "Summaryboxes"
+      },
+      "summaryboxes.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "origin": "https://www.wolframalpha.com",
+            "path": "/api/v1",
+            "query": "appid",
+            "value": "app_id"
+          },
+          {
+            "origin": "https://www.wolframalpha.com",
+            "path": "/queryrecognizer",
+            "query": "appid",
+            "value": "app_id"
+          },
+          {
+            "origin": "https://www.wolframalpha.com",
+            "path": "/summaryboxes/v1",
+            "query": "appid",
+            "value": "app_id"
+          },
+          {
+            "origin": "https://api.wolframalpha.com",
+            "path": "/v1",
+            "query": "appid",
+            "value": "app_id"
+          },
+          {
+            "origin": "https://api.wolframalpha.com",
+            "path": "/v2",
+            "query": "appid",
+            "value": "app_id"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "app_id",
+        "label": "App ID",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Wolfram|Alpha",
   "http": {
+    "sensitive_query": ["appid"],
     "operations": {
-      "getWolframAlphaResults": {"action":"read","effects":["read"],"method":"GET","origin":"https://www.wolframalpha.com","path":"/api/v1/llm-api","params":["input"],"scope":{}},
-      "getWolframCloudResults": {"action":"read","effects":["read"],"method":"GET","origin":"https://www.wolframalpha.com","path":"/api/v1/cloud-plugin","params":["input"],"scope":{}}
+      "fullResults": {"action":"query.read","effects":["read"],"method":"GET","origin":"https://api.wolframalpha.com","params":["appid","input","format","output","includepodid","excludepodid","podtitle","podindex","scanner","ip","latlong","location","assumption","podstate","units","width","maxwidth","plotwidth","mag","scantimeout","podtimeout","formattimeout","parsetimeout","totaltimeout","async","reinterpret","translation","ignorecase","sig"],"path":"/v2/query","scope":{}},
+      "getWolframAlphaResults": {"action":"llm_api.read","effects":["read"],"method":"GET","origin":"https://www.wolframalpha.com","params":["appid","input","maxchars","assumption","ip","latlong","timezone","location","scantimeout","units","currency","countrycode","languagecode","width","maxwidth","plotwidth","mag","formattimeout","parsetimeout","totaltimeout","id"],"path":"/api/v1/llm-api","scope":{}},
+      "getWolframCloudResults": {"action":"cloud_plugin.read","effects":["read"],"method":"GET","origin":"https://www.wolframalpha.com","params":["appid","input"],"path":"/api/v1/cloud-plugin","scope":{}},
+      "queryRecognizer": {"action":"queryrecognizer.jsp.read","effects":["read"],"method":"GET","origin":"https://www.wolframalpha.com","params":["appid","mode","i"],"path":"/queryrecognizer/query.jsp","scope":{}},
+      "shortAnswers": {"action":"result.read","effects":["read"],"method":"GET","origin":"https://api.wolframalpha.com","params":["appid","i","units","timeout"],"path":"/v1/result","scope":{}},
+      "simple": {"action":"simple.read","effects":["read"],"method":"GET","origin":"https://api.wolframalpha.com","params":["appid","i","layout","background","foreground","fontsize","width","units","timeout"],"path":"/v1/simple","scope":{}},
+      "spokenResults": {"action":"spoken.read","effects":["read"],"method":"GET","origin":"https://api.wolframalpha.com","params":["appid","i","units","timeout"],"path":"/v1/spoken","scope":{}},
+      "summaryBox": {"action":"summaryboxes.read","effects":["read"],"method":"GET","origin":"https://www.wolframalpha.com","params":["appid","path"],"path":"/summaryboxes/v1/query","scope":{}}
     }
   }
 }

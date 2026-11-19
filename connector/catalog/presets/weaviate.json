@@ -1,199 +1,641 @@
 {
-  "title": "Weaviate Vector Store",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your Weaviate Vector Store origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "weaviate_api_key", "label": "Weaviate Api Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "weaviate_api_key", "origin": "https://example.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "admin.groups": {"title": "Admin: groups"},
-      "admin.roles": {"title": "Admin: roles"},
-      "admin.users": {"title": "Admin: users"},
-      "delete.aliases": {"title": "Delete: aliases"},
-      "delete.backups": {"title": "Delete: backups"},
-      "delete.db": {"title": "Delete: db"},
-      "delete.export": {"title": "Delete: export"},
-      "delete.force_delete": {"title": "Delete: force delete"},
-      "delete.index": {"title": "Delete: index"},
-      "delete.mcp": {"title": "Delete: mcp"},
-      "delete.namespaces": {"title": "Delete: namespaces"},
-      "delete.objects": {"title": "Delete: objects"},
-      "delete.references": {"title": "Delete: references"},
-      "delete.remove_permissions": {"title": "Delete: remove permissions"},
-      "delete.replicate": {"title": "Delete: replicate"},
-      "delete.roles": {"title": "Delete: roles"},
-      "delete.schema": {"title": "Delete: schema"},
-      "delete.tenants": {"title": "Delete: tenants"},
-      "generate.add_permissions": {"title": "Generate: add permissions"},
-      "generate.aggregate": {"title": "Generate: aggregate"},
-      "generate.aliases": {"title": "Generate: aliases"},
-      "generate.backups": {"title": "Generate: backups"},
-      "generate.batch": {"title": "Generate: batch"},
-      "generate.bm25": {"title": "Generate: bm25"},
-      "generate.classifications": {"title": "Generate: classifications"},
-      "generate.db": {"title": "Generate: db"},
-      "generate.export": {"title": "Generate: export"},
-      "generate.graphql": {"title": "Generate: graphql"},
-      "generate.has_permission": {"title": "Generate: has permission"},
-      "generate.hybrid": {"title": "Generate: hybrid"},
-      "generate.import_db_users": {"title": "Generate: import db users"},
-      "generate.index": {"title": "Generate: index"},
-      "generate.mcp": {"title": "Generate: mcp"},
-      "generate.namespaces": {"title": "Generate: namespaces"},
-      "generate.near_object": {"title": "Generate: near object"},
-      "generate.near_text": {"title": "Generate: near text"},
-      "generate.near_vector": {"title": "Generate: near vector"},
-      "generate.objects": {"title": "Generate: objects"},
-      "generate.properties": {"title": "Generate: properties"},
-      "generate.rebuild": {"title": "Generate: rebuild"},
-      "generate.references": {"title": "Generate: references"},
-      "generate.replicate": {"title": "Generate: replicate"},
-      "generate.scale": {"title": "Generate: scale"},
-      "generate.schema": {"title": "Generate: schema"},
-      "generate.suspend": {"title": "Generate: suspend"},
-      "generate.tenants": {"title": "Generate: tenants"},
-      "generate.tokenize": {"title": "Generate: tokenize"},
-      "read": {"title": "Read everything the account can see"},
-      "share.groups": {"title": "Share: groups"},
-      "share.users": {"title": "Share: users"},
-      "write.aliases": {"title": "Write: aliases"},
-      "write.index": {"title": "Write: index"},
-      "write.namespaces": {"title": "Write: namespaces"},
-      "write.objects": {"title": "Write: objects"},
-      "write.references": {"title": "Write: references"},
-      "write.schema": {"title": "Write: schema"},
-      "write.shards": {"title": "Write: shards"},
-      "write.tenants": {"title": "Write: tenants"}
-    }
+      "aggregate": {
+        "title": "Aggregate"
+      },
+      "aggregate.read": {
+        "title": "Read"
+      },
+      "aliases": {
+        "title": "Aliases"
+      },
+      "aliases.delete": {
+        "title": "Delete"
+      },
+      "aliases.read": {
+        "title": "Read"
+      },
+      "aliases.write": {
+        "title": "Create and edit"
+      },
+      "authz": {
+        "title": "Authz"
+      },
+      "authz.groups": {
+        "title": "Groups"
+      },
+      "authz.groups.admin": {
+        "title": "Manage"
+      },
+      "authz.groups.assign": {
+        "title": "Assign"
+      },
+      "authz.groups.assign.admin": {
+        "title": "Manage"
+      },
+      "authz.groups.read": {
+        "title": "Read"
+      },
+      "authz.groups.roles": {
+        "title": "Roles"
+      },
+      "authz.groups.roles.read": {
+        "title": "Read"
+      },
+      "authz.roles": {
+        "title": "Roles"
+      },
+      "authz.roles.admin": {
+        "title": "Manage"
+      },
+      "authz.roles.group_assignments": {
+        "title": "Group assignments"
+      },
+      "authz.roles.group_assignments.read": {
+        "title": "Read"
+      },
+      "authz.roles.has_permission": {
+        "title": "Has permission"
+      },
+      "authz.roles.has_permission.read": {
+        "title": "Read"
+      },
+      "authz.roles.permissions": {
+        "title": "Permissions"
+      },
+      "authz.roles.permissions.admin": {
+        "title": "Manage"
+      },
+      "authz.roles.read": {
+        "title": "Read"
+      },
+      "authz.roles.user_assignments": {
+        "title": "User assignments"
+      },
+      "authz.roles.user_assignments.read": {
+        "title": "Read"
+      },
+      "authz.roles.users": {
+        "title": "Users"
+      },
+      "authz.roles.users.read": {
+        "title": "Read"
+      },
+      "authz.users": {
+        "title": "Users"
+      },
+      "authz.users.admin": {
+        "title": "Manage"
+      },
+      "authz.users.assign": {
+        "title": "Assign"
+      },
+      "authz.users.assign.admin": {
+        "title": "Manage"
+      },
+      "authz.users.roles": {
+        "title": "Roles"
+      },
+      "authz.users.roles.read": {
+        "title": "Read"
+      },
+      "backups": {
+        "title": "Backups"
+      },
+      "backups.read": {
+        "title": "Read"
+      },
+      "backups.write": {
+        "title": "Create and edit"
+      },
+      "batch": {
+        "title": "Batch"
+      },
+      "batch.objects": {
+        "title": "Objects"
+      },
+      "batch.objects.delete": {
+        "title": "Delete"
+      },
+      "batch.objects.write": {
+        "title": "Create and edit"
+      },
+      "batch.references": {
+        "title": "References"
+      },
+      "batch.references.write": {
+        "title": "Create and edit"
+      },
+      "classifications": {
+        "title": "Classifications"
+      },
+      "classifications.read": {
+        "title": "Read"
+      },
+      "classifications.write": {
+        "title": "Create and edit"
+      },
+      "cluster": {
+        "title": "Cluster"
+      },
+      "cluster.statistics": {
+        "title": "Statistics"
+      },
+      "cluster.statistics.read": {
+        "title": "Read"
+      },
+      "experimental": {
+        "title": "Experimental"
+      },
+      "experimental.db_users": {
+        "title": "Db users"
+      },
+      "experimental.db_users.admin": {
+        "title": "Manage"
+      },
+      "export": {
+        "title": "Export"
+      },
+      "export.read": {
+        "title": "Read"
+      },
+      "export.write": {
+        "title": "Create and edit"
+      },
+      "general": {
+        "title": "General"
+      },
+      "general.read": {
+        "title": "Read"
+      },
+      "graphql": {
+        "title": "GraphQL"
+      },
+      "graphql.read": {
+        "title": "Read"
+      },
+      "mcp": {
+        "title": "Mcp"
+      },
+      "mcp.read": {
+        "title": "Read"
+      },
+      "mcp.write": {
+        "title": "Create and edit"
+      },
+      "meta": {
+        "title": "Meta"
+      },
+      "meta.read": {
+        "title": "Read"
+      },
+      "namespaces": {
+        "title": "Namespaces"
+      },
+      "namespaces.admin": {
+        "title": "Manage"
+      },
+      "namespaces.read": {
+        "title": "Read"
+      },
+      "namespaces.suspend": {
+        "title": "Suspend"
+      },
+      "namespaces.suspend.admin": {
+        "title": "Manage"
+      },
+      "nodes": {
+        "title": "Nodes"
+      },
+      "nodes.read": {
+        "title": "Read"
+      },
+      "objects": {
+        "title": "Objects"
+      },
+      "objects.delete": {
+        "title": "Delete"
+      },
+      "objects.read": {
+        "title": "Read"
+      },
+      "objects.references": {
+        "title": "References"
+      },
+      "objects.references.delete": {
+        "title": "Delete"
+      },
+      "objects.references.write": {
+        "title": "Create and edit"
+      },
+      "objects.write": {
+        "title": "Create and edit"
+      },
+      "replication": {
+        "title": "Replication"
+      },
+      "replication.rebalance": {
+        "title": "Rebalance"
+      },
+      "replication.rebalance.admin": {
+        "title": "Manage"
+      },
+      "replication.rebalance.read": {
+        "title": "Read"
+      },
+      "replication.replicate": {
+        "title": "Replicate"
+      },
+      "replication.replicate.admin": {
+        "title": "Manage"
+      },
+      "replication.replicate.force_delete": {
+        "title": "Force delete"
+      },
+      "replication.replicate.force_delete.admin": {
+        "title": "Manage"
+      },
+      "replication.replicate.read": {
+        "title": "Read"
+      },
+      "replication.replicate.write": {
+        "title": "Create and edit"
+      },
+      "replication.scale": {
+        "title": "Scale"
+      },
+      "replication.scale.admin": {
+        "title": "Manage"
+      },
+      "replication.scale.read": {
+        "title": "Read"
+      },
+      "replication.sharding_state": {
+        "title": "Sharding state"
+      },
+      "replication.sharding_state.read": {
+        "title": "Read"
+      },
+      "schema": {
+        "title": "Schema"
+      },
+      "schema.delete": {
+        "title": "Delete"
+      },
+      "schema.indexes": {
+        "title": "Indexes"
+      },
+      "schema.indexes.read": {
+        "title": "Read"
+      },
+      "schema.properties": {
+        "title": "Properties"
+      },
+      "schema.properties.index": {
+        "title": "Index"
+      },
+      "schema.properties.index.delete": {
+        "title": "Delete"
+      },
+      "schema.properties.index.rebuild": {
+        "title": "Rebuild"
+      },
+      "schema.properties.index.rebuild.write": {
+        "title": "Create and edit"
+      },
+      "schema.properties.index.write": {
+        "title": "Create and edit"
+      },
+      "schema.properties.tokenize": {
+        "title": "Tokenize"
+      },
+      "schema.properties.tokenize.read": {
+        "title": "Read"
+      },
+      "schema.properties.write": {
+        "title": "Create and edit"
+      },
+      "schema.read": {
+        "title": "Read"
+      },
+      "schema.shards": {
+        "title": "Shards"
+      },
+      "schema.shards.read": {
+        "title": "Read"
+      },
+      "schema.shards.write": {
+        "title": "Create and edit"
+      },
+      "schema.tenants": {
+        "title": "Tenants"
+      },
+      "schema.tenants.delete": {
+        "title": "Delete"
+      },
+      "schema.tenants.read": {
+        "title": "Read"
+      },
+      "schema.tenants.write": {
+        "title": "Create and edit"
+      },
+      "schema.vectors": {
+        "title": "Vectors"
+      },
+      "schema.vectors.index": {
+        "title": "Index"
+      },
+      "schema.vectors.index.delete": {
+        "title": "Delete"
+      },
+      "schema.write": {
+        "title": "Create and edit"
+      },
+      "search": {
+        "title": "Search"
+      },
+      "search.bm25": {
+        "title": "Bm25"
+      },
+      "search.bm25.read": {
+        "title": "Read"
+      },
+      "search.hybrid": {
+        "title": "Hybrid"
+      },
+      "search.hybrid.read": {
+        "title": "Read"
+      },
+      "search.near_object": {
+        "title": "Near object"
+      },
+      "search.near_object.read": {
+        "title": "Read"
+      },
+      "search.near_text": {
+        "title": "Near text"
+      },
+      "search.near_text.read": {
+        "title": "Read"
+      },
+      "search.near_vector": {
+        "title": "Near vector"
+      },
+      "search.near_vector.read": {
+        "title": "Read"
+      },
+      "tasks": {
+        "title": "Tasks"
+      },
+      "tasks.read": {
+        "title": "Read"
+      },
+      "tokenize": {
+        "title": "Tokenize"
+      },
+      "tokenize.read": {
+        "title": "Read"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.db": {
+        "title": "Db"
+      },
+      "users.db.activate": {
+        "title": "Activate"
+      },
+      "users.db.activate.admin": {
+        "title": "Manage"
+      },
+      "users.db.admin": {
+        "title": "Manage"
+      },
+      "users.db.deactivate": {
+        "title": "Deactivate"
+      },
+      "users.db.deactivate.admin": {
+        "title": "Manage"
+      },
+      "users.db.expiration": {
+        "title": "Expiration"
+      },
+      "users.db.expiration.admin": {
+        "title": "Manage"
+      },
+      "users.db.key": {
+        "title": "Key"
+      },
+      "users.db.key.admin": {
+        "title": "Manage"
+      },
+      "users.db.read": {
+        "title": "Read"
+      },
+      "users.own_info": {
+        "title": "Own info"
+      },
+      "users.own_info.read": {
+        "title": "Read"
+      },
+      "well_known": {
+        "title": "Well known"
+      },
+      "well_known.live": {
+        "title": "Live"
+      },
+      "well_known.live.read": {
+        "title": "Read"
+      },
+      "well_known.openid_configuration": {
+        "title": "Openid configuration"
+      },
+      "well_known.openid_configuration.read": {
+        "title": "Read"
+      },
+      "well_known.ready": {
+        "title": "Ready"
+      },
+      "well_known.ready.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://example.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "weaviate_api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Your Weaviate Vector Store origin (https://host)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "weaviate_api_key",
+        "label": "Weaviate Api Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Weaviate Vector Store",
   "http": {
+    "trailing_slash": true,
     "operations": {
-      "GET /.well-known/openid-configuration": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/.well-known/openid-configuration","scope":{}},
-      "activateUser": {"action":"generate.db","effects":["generate"],"method":"POST","origin":"{origin}","path":"/users/db/{user_id}/activate","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "addPermissions": {"action":"generate.add_permissions","effects":["generate"],"method":"POST","origin":"{origin}","path":"/authz/roles/{id}/add-permissions","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "aggregate": {"action":"generate.aggregate","effects":["generate"],"method":"POST","origin":"{origin}","path":"/aggregate/{collection}","body":"json","scope":{"collection":{"from":"path","at":"collection"}}},
-      "aliases.create": {"action":"generate.aliases","effects":["generate"],"method":"POST","origin":"{origin}","path":"/aliases","body":"any","scope":{}},
-      "aliases.delete": {"action":"delete.aliases","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/aliases/{aliasName}","scope":{"aliasName":{"from":"path","at":"aliasName"}}},
-      "aliases.get": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/aliases","params":["class"],"scope":{}},
-      "aliases.get.alias": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/aliases/{aliasName}","scope":{"aliasName":{"from":"path","at":"aliasName"}}},
-      "aliases.update": {"action":"write.aliases","effects":["write"],"method":"PUT","origin":"{origin}","path":"/aliases/{aliasName}","body":"any","scope":{"aliasName":{"from":"path","at":"aliasName"}}},
-      "applyReplicationScalePlan": {"action":"generate.scale","effects":["generate"],"method":"POST","origin":"{origin}","path":"/replication/scale","body":"json","scope":{"planId":{"from":"body","at":"/planId"}}},
-      "assignRoleToGroup": {"action":"admin.groups","effects":["admin"],"method":"POST","origin":"{origin}","path":"/authz/groups/{id}/assign","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "assignRoleToUser": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"{origin}","path":"/authz/users/{id}/assign","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "backups.cancel": {"action":"delete.backups","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/backups/{backend}/{id}","params":["bucket","path"],"scope":{"backend":{"from":"path","at":"backend"},"id":{"from":"path","at":"id"}}},
-      "backups.create": {"action":"generate.backups","effects":["generate"],"method":"POST","origin":"{origin}","path":"/backups/{backend}","body":"any","scope":{"backend":{"from":"path","at":"backend"}}},
-      "backups.create.status": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/backups/{backend}/{id}","params":["bucket","path"],"scope":{"backend":{"from":"path","at":"backend"},"id":{"from":"path","at":"id"}}},
-      "backups.list": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/backups/{backend}","params":["order"],"scope":{"backend":{"from":"path","at":"backend"}}},
-      "backups.restore": {"action":"generate.backups","effects":["generate"],"method":"POST","origin":"{origin}","path":"/backups/{backend}/{id}/restore","body":"any","scope":{"backend":{"from":"path","at":"backend"},"id":{"from":"path","at":"id"}}},
-      "backups.restore.cancel": {"action":"delete.backups","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/backups/{backend}/{id}/restore","params":["bucket","path"],"scope":{"backend":{"from":"path","at":"backend"},"id":{"from":"path","at":"id"}}},
-      "backups.restore.status": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/backups/{backend}/{id}/restore","params":["bucket","path"],"scope":{"backend":{"from":"path","at":"backend"},"id":{"from":"path","at":"id"}}},
-      "batch.objects.create": {"action":"generate.objects","effects":["generate"],"method":"POST","origin":"{origin}","path":"/batch/objects","params":["consistency_level"],"body":"any","scope":{}},
-      "batch.objects.delete": {"action":"delete.objects","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/batch/objects","params":["consistency_level","tenant"],"body":"any","scope":{}},
-      "batch.references.create": {"action":"generate.references","effects":["generate"],"method":"POST","origin":"{origin}","path":"/batch/references","params":["consistency_level"],"body":"any","scope":{}},
-      "cancelReplication": {"action":"generate.replicate","effects":["generate"],"method":"POST","origin":"{origin}","path":"/replication/replicate/{id}/cancel","scope":{"id":{"from":"path","at":"id"}}},
-      "classifications.get": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/classifications/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "classifications.post": {"action":"generate.classifications","effects":["generate"],"method":"POST","origin":"{origin}","path":"/classifications/","body":"any","scope":{}},
-      "cluster.get.statistics": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/cluster/statistics","scope":{}},
-      "createNamespace": {"action":"generate.namespaces","effects":["generate"],"method":"POST","origin":"{origin}","path":"/namespaces/{namespace_id}","body":"any","scope":{"namespace_id":{"from":"path","at":"namespace_id"}}},
-      "createRole": {"action":"admin.roles","effects":["admin"],"method":"POST","origin":"{origin}","path":"/authz/roles","body":"any","scope":{}},
-      "createUser": {"action":"generate.db","effects":["generate"],"method":"POST","origin":"{origin}","path":"/users/db/{user_id}","body":"any","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "deactivateUser": {"action":"generate.db","effects":["generate"],"method":"POST","origin":"{origin}","path":"/users/db/{user_id}/deactivate","body":"any","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "deleteAllReplications": {"action":"delete.replicate","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/replication/replicate","scope":{}},
-      "deleteNamespace": {"action":"delete.namespaces","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/namespaces/{namespace_id}","scope":{"namespace_id":{"from":"path","at":"namespace_id"}}},
-      "deleteReplication": {"action":"delete.replicate","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/replication/replicate/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteRole": {"action":"delete.roles","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/authz/roles/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteUser": {"action":"delete.db","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/users/db/{user_id}","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "distributedTasks.get": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tasks","scope":{}},
-      "export.cancel": {"action":"delete.export","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/export/{backend}/{id}","scope":{"backend":{"from":"path","at":"backend"},"id":{"from":"path","at":"id"}}},
-      "export.create": {"action":"generate.export","effects":["generate"],"method":"POST","origin":"{origin}","path":"/export/{backend}","body":"any","scope":{"backend":{"from":"path","at":"backend"}}},
-      "export.status": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/export/{backend}/{id}","scope":{"backend":{"from":"path","at":"backend"},"id":{"from":"path","at":"id"}}},
-      "exportUsers": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/experimental/export-db-users","scope":{}},
-      "forceDeleteReplications": {"action":"delete.force_delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/replication/replicate/force-delete","body":"any","scope":{}},
-      "getCollectionShardingState": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/replication/sharding-state","params":["collection","shard"],"scope":{}},
-      "getGroups": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/authz/groups/{groupType}","scope":{"groupType":{"from":"path","at":"groupType"}}},
-      "getGroupsForRole": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/authz/roles/{id}/group-assignments","scope":{"id":{"from":"path","at":"id"}}},
-      "getNamespace": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/namespaces/{namespace_id}","scope":{"namespace_id":{"from":"path","at":"namespace_id"}}},
-      "getOwnInfo": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/users/own-info","scope":{}},
-      "getReplicationScalePlan": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/replication/scale","params":["collection","replicationFactor"],"scope":{}},
-      "getRole": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/authz/roles/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getRoles": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/authz/roles","scope":{}},
-      "getRolesForGroup": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/authz/groups/{id}/roles/{groupType}","params":["includeFullRoles"],"scope":{"id":{"from":"path","at":"id"},"groupType":{"from":"path","at":"groupType"}}},
-      "getRolesForUser": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/authz/users/{id}/roles/{userType}","params":["includeFullRoles"],"scope":{"id":{"from":"path","at":"id"},"userType":{"from":"path","at":"userType"}}},
-      "getRolesForUserDeprecated": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/authz/users/{id}/roles","scope":{"id":{"from":"path","at":"id"}}},
-      "getUserInfo": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/users/db/{user_id}","params":["includeLastUsedTime"],"scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "getUsersForRole": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/authz/roles/{id}/user-assignments","scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersForRoleDeprecated": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/authz/roles/{id}/users","scope":{"id":{"from":"path","at":"id"}}},
-      "graphql.batch": {"action":"generate.batch","effects":["generate"],"method":"POST","origin":"{origin}","path":"/graphql/batch","body":"any","scope":{}},
-      "graphql.post": {"action":"generate.graphql","effects":["generate"],"method":"POST","origin":"{origin}","path":"/graphql","body":"any","scope":{}},
-      "hasPermission": {"action":"generate.has_permission","effects":["generate"],"method":"POST","origin":"{origin}","path":"/authz/roles/{id}/has-permission","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "importUsers": {"action":"generate.import_db_users","effects":["generate"],"method":"POST","origin":"{origin}","path":"/experimental/import-db-users","body":"any","scope":{}},
-      "listAllUsers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/users/db","params":["includeLastUsedTime"],"scope":{}},
-      "listNamespaces": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/namespaces","scope":{}},
-      "mcp.delete": {"action":"delete.mcp","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/mcp","scope":{}},
-      "mcp.post": {"action":"generate.mcp","effects":["generate"],"method":"POST","origin":"{origin}","path":"/mcp","scope":{}},
-      "meta.get": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/meta","scope":{}},
-      "nodes.get": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/nodes","params":["output"],"scope":{}},
-      "nodes.get.class": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/nodes/{className}","params":["shardName","output"],"scope":{"className":{"from":"path","at":"className"}}},
-      "objects.class.delete": {"action":"delete.objects","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/objects/{className}/{id}","params":["consistency_level","tenant"],"scope":{"className":{"from":"path","at":"className"},"id":{"from":"path","at":"id"}}},
-      "objects.class.get": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/objects/{className}/{id}","params":["include","consistency_level","node_name","tenant"],"scope":{"className":{"from":"path","at":"className"},"id":{"from":"path","at":"id"}}},
-      "objects.class.head": {"action":"read","effects":["read"],"method":"HEAD","origin":"{origin}","path":"/objects/{className}/{id}","params":["consistency_level","tenant"],"scope":{"className":{"from":"path","at":"className"},"id":{"from":"path","at":"id"}}},
-      "objects.class.patch": {"action":"write.objects","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/objects/{className}/{id}","params":["consistency_level"],"body":"any","scope":{"className":{"from":"path","at":"className"},"id":{"from":"path","at":"id"}}},
-      "objects.class.put": {"action":"write.objects","effects":["write"],"method":"PUT","origin":"{origin}","path":"/objects/{className}/{id}","params":["consistency_level"],"body":"any","scope":{"className":{"from":"path","at":"className"},"id":{"from":"path","at":"id"}}},
-      "objects.class.references.create": {"action":"generate.references","effects":["generate"],"method":"POST","origin":"{origin}","path":"/objects/{className}/{id}/references/{propertyName}","params":["consistency_level","tenant"],"body":"any","scope":{"className":{"from":"path","at":"className"},"id":{"from":"path","at":"id"},"propertyName":{"from":"path","at":"propertyName"}}},
-      "objects.class.references.delete": {"action":"delete.references","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/objects/{className}/{id}/references/{propertyName}","params":["consistency_level","tenant"],"body":"any","scope":{"className":{"from":"path","at":"className"},"id":{"from":"path","at":"id"},"propertyName":{"from":"path","at":"propertyName"}}},
-      "objects.class.references.put": {"action":"write.references","effects":["write"],"method":"PUT","origin":"{origin}","path":"/objects/{className}/{id}/references/{propertyName}","params":["consistency_level","tenant"],"body":"any","scope":{"className":{"from":"path","at":"className"},"id":{"from":"path","at":"id"},"propertyName":{"from":"path","at":"propertyName"}}},
-      "objects.create": {"action":"generate.objects","effects":["generate"],"method":"POST","origin":"{origin}","path":"/objects","params":["consistency_level"],"body":"any","scope":{}},
-      "objects.delete": {"action":"delete.objects","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/objects/{id}","params":["consistency_level","tenant"],"scope":{"id":{"from":"path","at":"id"}}},
-      "objects.get": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/objects/{id}","params":["include"],"scope":{"id":{"from":"path","at":"id"}}},
-      "objects.head": {"action":"read","effects":["read"],"method":"HEAD","origin":"{origin}","path":"/objects/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "objects.list": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/objects","params":["after","offset","limit","include","sort","order","class","tenant"],"scope":{}},
-      "objects.patch": {"action":"write.objects","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/objects/{id}","params":["consistency_level"],"body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "objects.references.create": {"action":"generate.references","effects":["generate"],"method":"POST","origin":"{origin}","path":"/objects/{id}/references/{propertyName}","params":["tenant"],"body":"any","scope":{"id":{"from":"path","at":"id"},"propertyName":{"from":"path","at":"propertyName"}}},
-      "objects.references.delete": {"action":"delete.references","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/objects/{id}/references/{propertyName}","params":["tenant"],"body":"any","scope":{"id":{"from":"path","at":"id"},"propertyName":{"from":"path","at":"propertyName"}}},
-      "objects.references.update": {"action":"write.references","effects":["write"],"method":"PUT","origin":"{origin}","path":"/objects/{id}/references/{propertyName}","params":["tenant"],"body":"any","scope":{"id":{"from":"path","at":"id"},"propertyName":{"from":"path","at":"propertyName"}}},
-      "objects.update": {"action":"write.objects","effects":["write"],"method":"PUT","origin":"{origin}","path":"/objects/{id}","params":["consistency_level"],"body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "objects.validate": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/objects/validate","body":"any","scope":{}},
-      "removePermissions": {"action":"delete.remove_permissions","effects":["delete"],"method":"POST","origin":"{origin}","path":"/authz/roles/{id}/remove-permissions","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "replicate": {"action":"generate.replicate","effects":["generate"],"method":"POST","origin":"{origin}","path":"/replication/replicate","body":"any","scope":{}},
-      "replicationDetails": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/replication/replicate/{id}","params":["includeHistory","targetNode","collection","shard"],"scope":{"id":{"from":"path","at":"id"}}},
-      "resumeNamespace": {"action":"generate.namespaces","effects":["generate"],"method":"POST","origin":"{origin}","path":"/namespaces/{namespace_id}/resume","scope":{"namespace_id":{"from":"path","at":"namespace_id"}}},
-      "revokeRoleFromGroup": {"action":"share.groups","effects":["share"],"method":"POST","origin":"{origin}","path":"/authz/groups/{id}/revoke","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "revokeRoleFromUser": {"action":"share.users","effects":["share"],"method":"POST","origin":"{origin}","path":"/authz/users/{id}/revoke","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "rotateUserApiKey": {"action":"generate.db","effects":["generate"],"method":"POST","origin":"{origin}","path":"/users/db/{user_id}/rotate-key","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "schema.dump": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/schema","scope":{}},
-      "schema.objects.create": {"action":"generate.schema","effects":["generate"],"method":"POST","origin":"{origin}","path":"/schema","body":"any","scope":{}},
-      "schema.objects.delete": {"action":"delete.schema","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/schema/{className}","scope":{"className":{"from":"path","at":"className"}}},
-      "schema.objects.get": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/schema/{className}","scope":{"className":{"from":"path","at":"className"}}},
-      "schema.objects.index.cancel": {"action":"generate.index","effects":["generate"],"method":"POST","origin":"{origin}","path":"/schema/{className}/properties/{propertyName}/index/{indexName}/cancel","scope":{"className":{"from":"path","at":"className"},"propertyName":{"from":"path","at":"propertyName"},"indexName":{"from":"path","at":"indexName"}}},
-      "schema.objects.index.rebuild": {"action":"generate.rebuild","effects":["generate"],"method":"POST","origin":"{origin}","path":"/schema/{className}/properties/{propertyName}/index/{indexName}/rebuild","params":["tenants"],"scope":{"className":{"from":"path","at":"className"},"propertyName":{"from":"path","at":"propertyName"},"indexName":{"from":"path","at":"indexName"}}},
-      "schema.objects.index.upsert": {"action":"write.index","effects":["write"],"method":"PUT","origin":"{origin}","path":"/schema/{className}/properties/{propertyName}/index/{indexName}","params":["tenants"],"body":"any","scope":{"className":{"from":"path","at":"className"},"propertyName":{"from":"path","at":"propertyName"},"indexName":{"from":"path","at":"indexName"}}},
-      "schema.objects.indexes.get": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/schema/{className}/indexes","scope":{"className":{"from":"path","at":"className"}}},
-      "schema.objects.properties.add": {"action":"generate.properties","effects":["generate"],"method":"POST","origin":"{origin}","path":"/schema/{className}/properties","body":"any","scope":{"className":{"from":"path","at":"className"}}},
-      "schema.objects.properties.delete": {"action":"delete.index","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/schema/{className}/properties/{propertyName}/index/{indexName}","scope":{"className":{"from":"path","at":"className"},"propertyName":{"from":"path","at":"propertyName"},"indexName":{"from":"path","at":"indexName"}}},
-      "schema.objects.properties.tokenize": {"action":"generate.tokenize","effects":["generate"],"method":"POST","origin":"{origin}","path":"/schema/{className}/properties/{propertyName}/tokenize","body":"any","scope":{"className":{"from":"path","at":"className"},"propertyName":{"from":"path","at":"propertyName"}}},
-      "schema.objects.shards.get": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/schema/{className}/shards","params":["tenant"],"scope":{"className":{"from":"path","at":"className"}}},
-      "schema.objects.shards.update": {"action":"write.shards","effects":["write"],"method":"PUT","origin":"{origin}","path":"/schema/{className}/shards/{shardName}","body":"any","scope":{"className":{"from":"path","at":"className"},"shardName":{"from":"path","at":"shardName"}}},
-      "schema.objects.update": {"action":"write.schema","effects":["write"],"method":"PUT","origin":"{origin}","path":"/schema/{className}","body":"any","scope":{"className":{"from":"path","at":"className"}}},
-      "schema.objects.vectors.delete": {"action":"delete.index","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/schema/{className}/vectors/{vectorIndexName}/index","scope":{"className":{"from":"path","at":"className"},"vectorIndexName":{"from":"path","at":"vectorIndexName"}}},
-      "search.bm25": {"action":"generate.bm25","effects":["generate"],"method":"POST","origin":"{origin}","path":"/search/{collection}/bm25","body":"json","scope":{"collection":{"from":"path","at":"collection"}}},
-      "search.hybrid": {"action":"generate.hybrid","effects":["generate"],"method":"POST","origin":"{origin}","path":"/search/{collection}/hybrid","body":"json","scope":{"collection":{"from":"path","at":"collection"}}},
-      "search.nearObject": {"action":"generate.near_object","effects":["generate"],"method":"POST","origin":"{origin}","path":"/search/{collection}/near-object","body":"json","scope":{"collection":{"from":"path","at":"collection"}}},
-      "search.nearText": {"action":"generate.near_text","effects":["generate"],"method":"POST","origin":"{origin}","path":"/search/{collection}/near-text","body":"json","scope":{"collection":{"from":"path","at":"collection"}}},
-      "search.nearVector": {"action":"generate.near_vector","effects":["generate"],"method":"POST","origin":"{origin}","path":"/search/{collection}/near-vector","body":"json","scope":{"collection":{"from":"path","at":"collection"}}},
-      "suspendNamespace": {"action":"generate.suspend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/namespaces/{namespace_id}/suspend","scope":{"namespace_id":{"from":"path","at":"namespace_id"}}},
-      "tenant.exists": {"action":"read","effects":["read"],"method":"HEAD","origin":"{origin}","path":"/schema/{className}/tenants/{tenantName}","scope":{"className":{"from":"path","at":"className"},"tenantName":{"from":"path","at":"tenantName"}}},
-      "tenants.create": {"action":"generate.tenants","effects":["generate"],"method":"POST","origin":"{origin}","path":"/schema/{className}/tenants","body":"any","scope":{"className":{"from":"path","at":"className"}}},
-      "tenants.delete": {"action":"delete.tenants","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/schema/{className}/tenants","body":"any","scope":{"className":{"from":"path","at":"className"}}},
-      "tenants.get": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/schema/{className}/tenants","scope":{"className":{"from":"path","at":"className"}}},
-      "tenants.get.one": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/schema/{className}/tenants/{tenantName}","scope":{"className":{"from":"path","at":"className"},"tenantName":{"from":"path","at":"tenantName"}}},
-      "tenants.update": {"action":"write.tenants","effects":["write"],"method":"PUT","origin":"{origin}","path":"/schema/{className}/tenants","body":"any","scope":{"className":{"from":"path","at":"className"}}},
-      "tokenize": {"action":"generate.tokenize","effects":["generate"],"method":"POST","origin":"{origin}","path":"/tokenize","body":"any","scope":{}},
-      "updateNamespace": {"action":"write.namespaces","effects":["write"],"method":"PUT","origin":"{origin}","path":"/namespaces/{namespace_id}","body":"any","scope":{"namespace_id":{"from":"path","at":"namespace_id"}}},
-      "weaviate.root": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/","scope":{}},
-      "weaviate.wellknown.liveness": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/.well-known/live","scope":{}},
-      "weaviate.wellknown.readiness": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/.well-known/ready","scope":{}}
+      "GET /.well-known/openid-configuration": {"action":"well_known.openid_configuration.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/.well-known/openid-configuration","scope":{}},
+      "activateUser": {"action":"users.db.activate.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/users/db/{user_id}/activate","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "addPermissions": {"action":"authz.roles.permissions.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/authz/roles/{id}/add-permissions","scope":{"id":{"at":"id","from":"path"}}},
+      "aggregate": {"action":"aggregate.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v1/aggregate/{collection}","scope":{"collection":{"at":"collection","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "aliases.create": {"action":"aliases.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v1/aliases","scope":{}},
+      "aliases.delete": {"action":"aliases.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v1/aliases/{aliasName}","scope":{"aliasName":{"at":"aliasName","from":"path"}}},
+      "aliases.get": {"action":"aliases.read","effects":["read"],"method":"GET","origin":"{origin}","params":["class"],"path":"/v1/aliases","scope":{}},
+      "aliases.get.alias": {"action":"aliases.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/aliases/{aliasName}","scope":{"aliasName":{"at":"aliasName","from":"path"}}},
+      "aliases.update": {"action":"aliases.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v1/aliases/{aliasName}","scope":{"aliasName":{"at":"aliasName","from":"path"}}},
+      "applyReplicationScalePlan": {"action":"replication.scale.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/replication/scale","scope":{"planId":{"at":"/planId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "approveRebalancePlan": {"action":"replication.rebalance.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/replication/rebalance/approve","scope":{}},
+      "assignRoleToGroup": {"action":"authz.groups.assign.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/authz/groups/{id}/assign","scope":{"id":{"at":"id","from":"path"}}},
+      "assignRoleToUser": {"action":"authz.users.assign.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/authz/users/{id}/assign","scope":{"id":{"at":"id","from":"path"}}},
+      "backups.cancel": {"action":"backups.write","effects":["write"],"method":"DELETE","origin":"{origin}","params":["bucket","path"],"path":"/v1/backups/{backend}/{id}","scope":{"backend":{"at":"backend","from":"path"},"bucket":{"at":"bucket","from":"query","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "backups.create": {"action":"backups.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v1/backups/{backend}","scope":{"backend":{"at":"backend","from":"path"}}},
+      "backups.create.status": {"action":"backups.read","effects":["read"],"method":"GET","origin":"{origin}","params":["bucket","path"],"path":"/v1/backups/{backend}/{id}","scope":{"backend":{"at":"backend","from":"path"},"id":{"at":"id","from":"path"}}},
+      "backups.list": {"action":"backups.read","effects":["read"],"method":"GET","origin":"{origin}","params":["order"],"path":"/v1/backups/{backend}","scope":{"backend":{"at":"backend","from":"path"}}},
+      "backups.restore": {"action":"backups.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v1/backups/{backend}/{id}/restore","scope":{"backend":{"at":"backend","from":"path"},"id":{"at":"id","from":"path"}}},
+      "backups.restore.cancel": {"action":"backups.write","effects":["write"],"method":"DELETE","origin":"{origin}","params":["bucket","path"],"path":"/v1/backups/{backend}/{id}/restore","scope":{"backend":{"at":"backend","from":"path"},"bucket":{"at":"bucket","from":"query","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "backups.restore.status": {"action":"backups.read","effects":["read"],"method":"GET","origin":"{origin}","params":["bucket","path"],"path":"/v1/backups/{backend}/{id}/restore","scope":{"backend":{"at":"backend","from":"path"},"id":{"at":"id","from":"path"}}},
+      "batch.objects.create": {"action":"batch.objects.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["consistency_level"],"path":"/v1/batch/objects","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "batch.objects.delete": {"action":"batch.objects.delete","body":"any","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["consistency_level","tenant"],"path":"/v1/batch/objects","scope":{}},
+      "batch.references.create": {"action":"batch.references.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["consistency_level"],"path":"/v1/batch/references","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "cancelReplication": {"action":"replication.replicate.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/v1/replication/replicate/{id}/cancel","scope":{"id":{"at":"id","from":"path"}}},
+      "classifications.get": {"action":"classifications.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/classifications/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "classifications.post": {"action":"classifications.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v1/classifications/","scope":{}},
+      "cluster.get.statistics": {"action":"cluster.statistics.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/cluster/statistics","scope":{}},
+      "createNamespace": {"action":"namespaces.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/namespaces/{namespace_id}","scope":{"namespace_id":{"at":"namespace_id","from":"path"}}},
+      "createRebalancePlan": {"action":"replication.rebalance.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/replication/rebalance","scope":{}},
+      "createRebalancePlan.json.07998adaa063": {"action":"replication.rebalance.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/replication/rebalance","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createRole": {"action":"authz.roles.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/authz/roles","scope":{}},
+      "createUser": {"action":"users.db.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/users/db/{user_id}","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "deactivateUser": {"action":"users.db.deactivate.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/users/db/{user_id}/deactivate","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "deleteAllReplications": {"action":"replication.replicate.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/v1/replication/replicate","scope":{}},
+      "deleteNamespace": {"action":"namespaces.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/v1/namespaces/{namespace_id}","scope":{"namespace_id":{"at":"namespace_id","from":"path"}}},
+      "deleteRebalancePlan": {"action":"replication.rebalance.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/v1/replication/rebalance","scope":{}},
+      "deleteReplication": {"action":"replication.replicate.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/v1/replication/replicate/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteRole": {"action":"authz.roles.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/v1/authz/roles/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteUser": {"action":"users.db.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/v1/users/db/{user_id}","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "distributedTasks.get": {"action":"tasks.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/tasks","scope":{}},
+      "export.cancel": {"action":"export.write","effects":["write"],"method":"DELETE","origin":"{origin}","path":"/v1/export/{backend}/{id}","scope":{"backend":{"at":"backend","from":"path"},"id":{"at":"id","from":"path"}}},
+      "export.create": {"action":"export.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v1/export/{backend}","scope":{"backend":{"at":"backend","from":"path"}}},
+      "export.status": {"action":"export.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/export/{backend}/{id}","scope":{"backend":{"at":"backend","from":"path"},"id":{"at":"id","from":"path"}}},
+      "exportUsers": {"action":"experimental.db_users.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/experimental/export-db-users","scope":{}},
+      "forceDeleteReplications": {"action":"replication.replicate.force_delete.admin","body":"any","effects":["admin","delete"],"method":"POST","origin":"{origin}","path":"/v1/replication/replicate/force-delete","scope":{}},
+      "getCollectionShardingState": {"action":"replication.sharding_state.read","effects":["read"],"method":"GET","origin":"{origin}","params":["collection","shard"],"path":"/v1/replication/sharding-state","scope":{}},
+      "getGroups": {"action":"authz.groups.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/authz/groups/{groupType}","scope":{"groupType":{"at":"groupType","from":"path"}}},
+      "getGroupsForRole": {"action":"authz.roles.group_assignments.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/authz/roles/{id}/group-assignments","scope":{"id":{"at":"id","from":"path"}}},
+      "getNamespace": {"action":"namespaces.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/namespaces/{namespace_id}","scope":{"namespace_id":{"at":"namespace_id","from":"path"}}},
+      "getOwnInfo": {"action":"users.own_info.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/users/own-info","scope":{}},
+      "getRebalancePlan": {"action":"replication.rebalance.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/replication/rebalance","scope":{}},
+      "getReplicationScalePlan": {"action":"replication.scale.read","effects":["read"],"method":"GET","origin":"{origin}","params":["collection","replicationFactor"],"path":"/v1/replication/scale","scope":{}},
+      "getRole": {"action":"authz.roles.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/authz/roles/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getRoles": {"action":"authz.roles.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/authz/roles","scope":{}},
+      "getRolesForGroup": {"action":"authz.groups.roles.read","effects":["read"],"method":"GET","origin":"{origin}","params":["includeFullRoles"],"path":"/v1/authz/groups/{id}/roles/{groupType}","scope":{"groupType":{"at":"groupType","from":"path"},"id":{"at":"id","from":"path"}}},
+      "getRolesForUser": {"action":"authz.users.roles.read","effects":["read"],"method":"GET","origin":"{origin}","params":["includeFullRoles"],"path":"/v1/authz/users/{id}/roles/{userType}","scope":{"id":{"at":"id","from":"path"},"userType":{"at":"userType","from":"path"}}},
+      "getRolesForUserDeprecated": {"action":"authz.users.roles.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/authz/users/{id}/roles","scope":{"id":{"at":"id","from":"path"}}},
+      "getUserInfo": {"action":"users.db.read","effects":["read"],"method":"GET","origin":"{origin}","params":["includeLastUsedTime"],"path":"/v1/users/db/{user_id}","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "getUsersForRole": {"action":"authz.roles.user_assignments.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/authz/roles/{id}/user-assignments","scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersForRoleDeprecated": {"action":"authz.roles.users.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/authz/roles/{id}/users","scope":{"id":{"at":"id","from":"path"}}},
+      "graphql.batch": {"action":"graphql.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v1/graphql/batch","scope":{}},
+      "graphql.post": {"action":"graphql.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v1/graphql","scope":{}},
+      "hasPermission": {"action":"authz.roles.has_permission.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v1/authz/roles/{id}/has-permission","scope":{"id":{"at":"id","from":"path"}}},
+      "importUsers": {"action":"experimental.db_users.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/experimental/import-db-users","scope":{}},
+      "listAllUsers": {"action":"users.db.read","effects":["read"],"method":"GET","origin":"{origin}","params":["includeLastUsedTime"],"path":"/v1/users/db","scope":{}},
+      "listNamespaces": {"action":"namespaces.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/namespaces","scope":{}},
+      "listReplication": {"action":"replication.replicate.read","effects":["read"],"method":"GET","origin":"{origin}","params":["targetNode","collection","shard","includeHistory"],"path":"/v1/replication/replicate/list","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "mcp.delete": {"action":"mcp.read","effects":["read"],"method":"DELETE","origin":"{origin}","path":"/v1/mcp","scope":{}},
+      "mcp.post": {"action":"mcp.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v1/mcp","scope":{}},
+      "meta.get": {"action":"meta.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/meta","scope":{}},
+      "nodes.get": {"action":"nodes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["output"],"path":"/v1/nodes","scope":{}},
+      "nodes.get.class": {"action":"nodes.read","effects":["read"],"method":"GET","origin":"{origin}","params":["shardName","output"],"path":"/v1/nodes/{className}","scope":{"className":{"at":"className","from":"path"}}},
+      "objects.class.delete": {"action":"objects.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["consistency_level","tenant"],"path":"/v1/objects/{className}/{id}","scope":{"className":{"at":"className","from":"path"},"id":{"at":"id","from":"path"}}},
+      "objects.class.get": {"action":"objects.read","effects":["read"],"method":"GET","origin":"{origin}","params":["include","consistency_level","node_name","tenant"],"path":"/v1/objects/{className}/{id}","scope":{"className":{"at":"className","from":"path"},"id":{"at":"id","from":"path"}}},
+      "objects.class.head": {"action":"objects.read","effects":["read"],"method":"HEAD","origin":"{origin}","params":["consistency_level","tenant"],"path":"/v1/objects/{className}/{id}","scope":{"className":{"at":"className","from":"path"},"id":{"at":"id","from":"path"}}},
+      "objects.class.patch": {"action":"objects.write","body":"any","effects":["write"],"method":"PATCH","origin":"{origin}","params":["consistency_level"],"path":"/v1/objects/{className}/{id}","scope":{"className":{"at":"className","from":"path"},"id":{"at":"id","from":"path"}}},
+      "objects.class.put": {"action":"objects.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["consistency_level"],"path":"/v1/objects/{className}/{id}","scope":{"className":{"at":"className","from":"path"},"id":{"at":"id","from":"path"}}},
+      "objects.class.references.create": {"action":"objects.references.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["consistency_level","tenant"],"path":"/v1/objects/{className}/{id}/references/{propertyName}","scope":{"className":{"at":"className","from":"path"},"id":{"at":"id","from":"path"},"propertyName":{"at":"propertyName","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.class.references.delete": {"action":"objects.references.delete","body":"any","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["consistency_level","tenant"],"path":"/v1/objects/{className}/{id}/references/{propertyName}","scope":{"className":{"at":"className","from":"path"},"id":{"at":"id","from":"path"},"propertyName":{"at":"propertyName","from":"path"}}},
+      "objects.class.references.put": {"action":"objects.references.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["consistency_level","tenant"],"path":"/v1/objects/{className}/{id}/references/{propertyName}","scope":{"className":{"at":"className","from":"path"},"id":{"at":"id","from":"path"},"propertyName":{"at":"propertyName","from":"path"}}},
+      "objects.create": {"action":"objects.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["consistency_level"],"path":"/v1/objects","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "objects.delete": {"action":"objects.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["consistency_level","tenant"],"path":"/v1/objects/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "objects.get": {"action":"objects.read","effects":["read"],"method":"GET","origin":"{origin}","params":["include"],"path":"/v1/objects/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "objects.head": {"action":"objects.read","effects":["read"],"method":"HEAD","origin":"{origin}","path":"/v1/objects/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "objects.list": {"action":"objects.read","effects":["read"],"method":"GET","origin":"{origin}","params":["after","offset","limit","include","sort","order","class","tenant"],"path":"/v1/objects","scope":{}},
+      "objects.patch": {"action":"objects.write","body":"any","effects":["write"],"method":"PATCH","origin":"{origin}","params":["consistency_level"],"path":"/v1/objects/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "objects.references.create": {"action":"objects.references.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["tenant"],"path":"/v1/objects/{id}/references/{propertyName}","scope":{"id":{"at":"id","from":"path"},"propertyName":{"at":"propertyName","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "objects.references.delete": {"action":"objects.references.delete","body":"any","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["tenant"],"path":"/v1/objects/{id}/references/{propertyName}","scope":{"id":{"at":"id","from":"path"},"propertyName":{"at":"propertyName","from":"path"}}},
+      "objects.references.update": {"action":"objects.references.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["tenant"],"path":"/v1/objects/{id}/references/{propertyName}","scope":{"id":{"at":"id","from":"path"},"propertyName":{"at":"propertyName","from":"path"}}},
+      "objects.update": {"action":"objects.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["consistency_level"],"path":"/v1/objects/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "objects.validate": {"action":"objects.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v1/objects/validate","scope":{}},
+      "removePermissions": {"action":"authz.roles.permissions.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/authz/roles/{id}/remove-permissions","scope":{"id":{"at":"id","from":"path"}}},
+      "replicate": {"action":"replication.replicate.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/replication/replicate","scope":{}},
+      "replicationDetails": {"action":"replication.replicate.read","effects":["read"],"method":"GET","origin":"{origin}","params":["includeHistory","targetNode","collection","shard"],"path":"/v1/replication/replicate/{id}","path_patterns":{"id":"[^l].*|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t.+)))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "resumeNamespace": {"action":"namespaces.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/namespaces/{namespace_id}/resume","scope":{"namespace_id":{"at":"namespace_id","from":"path"}}},
+      "revokeRoleFromGroup": {"action":"authz.groups.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/authz/groups/{id}/revoke","scope":{"id":{"at":"id","from":"path"}}},
+      "revokeRoleFromUser": {"action":"authz.users.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/authz/users/{id}/revoke","scope":{"id":{"at":"id","from":"path"}}},
+      "rotateUserApiKey": {"action":"users.db.key.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/users/db/{user_id}/rotate-key","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "schema.dump": {"action":"schema.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/schema","scope":{}},
+      "schema.objects.create": {"action":"schema.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v1/schema","scope":{}},
+      "schema.objects.delete": {"action":"schema.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v1/schema/{className}","scope":{"className":{"at":"className","from":"path"}}},
+      "schema.objects.get": {"action":"schema.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/schema/{className}","scope":{"className":{"at":"className","from":"path"}}},
+      "schema.objects.index.cancel": {"action":"schema.properties.index.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/v1/schema/{className}/properties/{propertyName}/index/{indexName}/cancel","scope":{"className":{"at":"className","from":"path"},"indexName":{"at":"indexName","from":"path"},"propertyName":{"at":"propertyName","from":"path"}}},
+      "schema.objects.index.rebuild": {"action":"schema.properties.index.rebuild.write","effects":["write"],"method":"POST","origin":"{origin}","params":["tenants"],"path":"/v1/schema/{className}/properties/{propertyName}/index/{indexName}/rebuild","scope":{"className":{"at":"className","from":"path"},"indexName":{"at":"indexName","from":"path"},"propertyName":{"at":"propertyName","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "schema.objects.index.upsert": {"action":"schema.properties.index.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["tenants"],"path":"/v1/schema/{className}/properties/{propertyName}/index/{indexName}","scope":{"className":{"at":"className","from":"path"},"indexName":{"at":"indexName","from":"path"},"propertyName":{"at":"propertyName","from":"path"}}},
+      "schema.objects.indexes.get": {"action":"schema.indexes.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/schema/{className}/indexes","scope":{"className":{"at":"className","from":"path"}}},
+      "schema.objects.properties.add": {"action":"schema.properties.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v1/schema/{className}/properties","scope":{"className":{"at":"className","from":"path"}}},
+      "schema.objects.properties.delete": {"action":"schema.properties.index.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v1/schema/{className}/properties/{propertyName}/index/{indexName}","scope":{"className":{"at":"className","from":"path"},"indexName":{"at":"indexName","from":"path"},"propertyName":{"at":"propertyName","from":"path"}}},
+      "schema.objects.properties.tokenize": {"action":"schema.properties.tokenize.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v1/schema/{className}/properties/{propertyName}/tokenize","scope":{"className":{"at":"className","from":"path"},"propertyName":{"at":"propertyName","from":"path"}}},
+      "schema.objects.shards.get": {"action":"schema.shards.read","effects":["read"],"method":"GET","origin":"{origin}","params":["tenant"],"path":"/v1/schema/{className}/shards","scope":{"className":{"at":"className","from":"path"}}},
+      "schema.objects.shards.update": {"action":"schema.shards.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v1/schema/{className}/shards/{shardName}","scope":{"className":{"at":"className","from":"path"},"shardName":{"at":"shardName","from":"path"}}},
+      "schema.objects.update": {"action":"schema.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v1/schema/{className}","scope":{"className":{"at":"className","from":"path"}}},
+      "schema.objects.vectors.delete": {"action":"schema.vectors.index.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v1/schema/{className}/vectors/{vectorIndexName}/index","scope":{"className":{"at":"className","from":"path"},"vectorIndexName":{"at":"vectorIndexName","from":"path"}}},
+      "search.bm25": {"action":"search.bm25.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v1/search/{collection}/bm25","scope":{"collection":{"at":"collection","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "search.hybrid": {"action":"search.hybrid.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v1/search/{collection}/hybrid","scope":{"collection":{"at":"collection","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "search.nearObject": {"action":"search.near_object.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v1/search/{collection}/near-object","scope":{"collection":{"at":"collection","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "search.nearText": {"action":"search.near_text.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v1/search/{collection}/near-text","scope":{"collection":{"at":"collection","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "search.nearVector": {"action":"search.near_vector.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v1/search/{collection}/near-vector","scope":{"collection":{"at":"collection","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "setUserExpiration": {"action":"users.db.expiration.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/v1/users/db/{user_id}/expiration","scope":{"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"user_id","from":"path"}}},
+      "stopRebalancePlan": {"action":"replication.rebalance.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/replication/rebalance/stop","scope":{}},
+      "suspendNamespace": {"action":"namespaces.suspend.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v1/namespaces/{namespace_id}/suspend","scope":{"namespace_id":{"at":"namespace_id","from":"path"}}},
+      "tenant.exists": {"action":"schema.tenants.read","effects":["read"],"method":"HEAD","origin":"{origin}","path":"/v1/schema/{className}/tenants/{tenantName}","scope":{"className":{"at":"className","from":"path"},"tenantName":{"at":"tenantName","from":"path"}}},
+      "tenants.create": {"action":"schema.tenants.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v1/schema/{className}/tenants","scope":{"className":{"at":"className","from":"path"}}},
+      "tenants.delete": {"action":"schema.tenants.delete","body":"any","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v1/schema/{className}/tenants","scope":{"className":{"at":"className","from":"path"}}},
+      "tenants.get": {"action":"schema.tenants.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/schema/{className}/tenants","scope":{"className":{"at":"className","from":"path"}}},
+      "tenants.get.one": {"action":"schema.tenants.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/schema/{className}/tenants/{tenantName}","scope":{"className":{"at":"className","from":"path"},"tenantName":{"at":"tenantName","from":"path"}}},
+      "tenants.update": {"action":"schema.tenants.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v1/schema/{className}/tenants","scope":{"className":{"at":"className","from":"path"}}},
+      "tokenize": {"action":"tokenize.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/v1/tokenize","scope":{}},
+      "updateNamespace": {"action":"namespaces.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/v1/namespaces/{namespace_id}","scope":{"namespace_id":{"at":"namespace_id","from":"path"}}},
+      "weaviate.root": {"action":"general.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1","scope":{}},
+      "weaviate.wellknown.liveness": {"action":"well_known.live.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/.well-known/live","scope":{}},
+      "weaviate.wellknown.readiness": {"action":"well_known.ready.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v1/.well-known/ready","scope":{}}
     }
   }
 }

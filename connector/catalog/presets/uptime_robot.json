@@ -1,95 +1,358 @@
 {
-  "title": "UptimeRobot",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.uptimerobot.com", "path": "/v3", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "admin.integrations": {"title": "Admin: integrations"},
-      "delete.alert_contacts": {"title": "Delete: alert contacts"},
-      "delete.announcements": {"title": "Delete: announcements"},
-      "delete.comments": {"title": "Delete: comments"},
-      "delete.integrations": {"title": "Delete: integrations"},
-      "delete.maintenance_windows": {"title": "Delete: maintenance windows"},
-      "delete.monitor_groups": {"title": "Delete: monitor groups"},
-      "delete.monitors": {"title": "Delete: monitors"},
-      "delete.psps": {"title": "Delete: psps"},
-      "delete.tags": {"title": "Delete: tags"},
-      "read": {"title": "Read everything the account can see"},
-      "send.comments": {"title": "Send: comments"},
-      "write.alert_contacts": {"title": "Write: alert contacts"},
-      "write.announcements": {"title": "Write: announcements"},
-      "write.comments": {"title": "Write: comments"},
-      "write.maintenance_windows": {"title": "Write: maintenance windows"},
-      "write.monitor_groups": {"title": "Write: monitor groups"},
-      "write.monitors": {"title": "Write: monitors"},
-      "write.psps": {"title": "Write: psps"},
-      "write.update": {"title": "Write: update"}
-    }
+      "alert_contacts": {
+        "title": "Alert contacts"
+      },
+      "alert_contacts.delete": {
+        "title": "Delete"
+      },
+      "alert_contacts.read": {
+        "title": "Read"
+      },
+      "alert_contacts.write": {
+        "title": "Create and edit"
+      },
+      "incidents": {
+        "title": "Incidents"
+      },
+      "incidents.activity_log": {
+        "title": "Activity log"
+      },
+      "incidents.activity_log.read": {
+        "title": "Read"
+      },
+      "incidents.alerts": {
+        "title": "Alerts"
+      },
+      "incidents.alerts.read": {
+        "title": "Read"
+      },
+      "incidents.comments": {
+        "title": "Comments"
+      },
+      "incidents.comments.delete": {
+        "title": "Delete"
+      },
+      "incidents.comments.read": {
+        "title": "Read"
+      },
+      "incidents.comments.send": {
+        "title": "Send"
+      },
+      "incidents.comments.write": {
+        "title": "Create and edit"
+      },
+      "incidents.read": {
+        "title": "Read"
+      },
+      "integrations": {
+        "title": "Integrations"
+      },
+      "integrations.admin": {
+        "title": "Manage"
+      },
+      "integrations.delete": {
+        "title": "Delete"
+      },
+      "integrations.read": {
+        "title": "Read"
+      },
+      "maintenance_windows": {
+        "title": "Maintenance windows"
+      },
+      "maintenance_windows.delete": {
+        "title": "Delete"
+      },
+      "maintenance_windows.read": {
+        "title": "Read"
+      },
+      "maintenance_windows.write": {
+        "title": "Create and edit"
+      },
+      "monitor_groups": {
+        "title": "Monitor groups"
+      },
+      "monitor_groups.delete": {
+        "title": "Delete"
+      },
+      "monitor_groups.read": {
+        "title": "Read"
+      },
+      "monitor_groups.write": {
+        "title": "Create and edit"
+      },
+      "monitors": {
+        "title": "Monitors"
+      },
+      "monitors.bulk": {
+        "title": "Bulk"
+      },
+      "monitors.bulk.write": {
+        "title": "Create and edit"
+      },
+      "monitors.delete": {
+        "title": "Delete"
+      },
+      "monitors.dependency": {
+        "title": "Dependency"
+      },
+      "monitors.dependency.incidents": {
+        "title": "Incidents"
+      },
+      "monitors.dependency.incidents.read": {
+        "title": "Read"
+      },
+      "monitors.dependency.status": {
+        "title": "Status"
+      },
+      "monitors.dependency.status.read": {
+        "title": "Read"
+      },
+      "monitors.read": {
+        "title": "Read"
+      },
+      "monitors.stats": {
+        "title": "Stats"
+      },
+      "monitors.stats.response_time": {
+        "title": "Response time"
+      },
+      "monitors.stats.response_time.all": {
+        "title": "All"
+      },
+      "monitors.stats.response_time.all.read": {
+        "title": "Read"
+      },
+      "monitors.stats.response_time.read": {
+        "title": "Read"
+      },
+      "monitors.stats.uptime": {
+        "title": "Uptime"
+      },
+      "monitors.stats.uptime.read": {
+        "title": "Read"
+      },
+      "monitors.storm_protection": {
+        "title": "Storm protection"
+      },
+      "monitors.storm_protection.read": {
+        "title": "Read"
+      },
+      "monitors.storm_protection.write": {
+        "title": "Create and edit"
+      },
+      "monitors.third_party_service": {
+        "title": "Third party service"
+      },
+      "monitors.third_party_service.incidents": {
+        "title": "Incidents"
+      },
+      "monitors.third_party_service.incidents.activity_log": {
+        "title": "Activity log"
+      },
+      "monitors.third_party_service.incidents.activity_log.read": {
+        "title": "Read"
+      },
+      "monitors.third_party_service.incidents.read": {
+        "title": "Read"
+      },
+      "monitors.third_party_service.maintenances": {
+        "title": "Maintenances"
+      },
+      "monitors.third_party_service.maintenances.read": {
+        "title": "Read"
+      },
+      "monitors.third_party_service.status": {
+        "title": "Status"
+      },
+      "monitors.third_party_service.status.read": {
+        "title": "Read"
+      },
+      "monitors.uptime_stats": {
+        "title": "Uptime stats"
+      },
+      "monitors.uptime_stats.read": {
+        "title": "Read"
+      },
+      "monitors.write": {
+        "title": "Create and edit"
+      },
+      "psps": {
+        "title": "Psps"
+      },
+      "psps.announcements": {
+        "title": "Announcements"
+      },
+      "psps.announcements.delete": {
+        "title": "Delete"
+      },
+      "psps.announcements.publish": {
+        "title": "Publish"
+      },
+      "psps.announcements.read": {
+        "title": "Read"
+      },
+      "psps.delete": {
+        "title": "Delete"
+      },
+      "psps.publish": {
+        "title": "Publish"
+      },
+      "psps.read": {
+        "title": "Read"
+      },
+      "tags": {
+        "title": "Tags"
+      },
+      "tags.delete": {
+        "title": "Delete"
+      },
+      "tags.read": {
+        "title": "Read"
+      },
+      "third_party_providers": {
+        "title": "Third party providers"
+      },
+      "third_party_providers.components": {
+        "title": "Components"
+      },
+      "third_party_providers.components.read": {
+        "title": "Read"
+      },
+      "third_party_providers.read": {
+        "title": "Read"
+      },
+      "third_party_services": {
+        "title": "Third party services"
+      },
+      "third_party_services.maintenances": {
+        "title": "Maintenances"
+      },
+      "third_party_services.maintenances.read": {
+        "title": "Read"
+      },
+      "user": {
+        "title": "Account"
+      },
+      "user.alert_contacts": {
+        "title": "Alert contacts"
+      },
+      "user.alert_contacts.read": {
+        "title": "Read"
+      },
+      "user.all_alert_contacts": {
+        "title": "All alert contacts"
+      },
+      "user.all_alert_contacts.read": {
+        "title": "Read"
+      },
+      "user.me": {
+        "title": "Me"
+      },
+      "user.me.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.uptimerobot.com",
+            "path": "/v3",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "UptimeRobot",
   "http": {
     "operations": {
-      "AlertContactsController_create": {"action":"write.alert_contacts","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/alert-contacts","body":"json","scope":{}},
-      "AlertContactsController_delete": {"action":"delete.alert_contacts","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","path":"/v3/alert-contacts/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "AlertContactsController_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/alert-contacts/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "AlertContactsController_list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/alert-contacts","params":["limit","cursor"],"scope":{}},
-      "AlertContactsController_update": {"action":"write.alert_contacts","effects":["write"],"method":"PATCH","origin":"https://api.uptimerobot.com","path":"/v3/alert-contacts/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "BulkMonitorsController_bulkUpdate": {"action":"write.update","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/monitors/bulk/update","body":"json","scope":{}},
-      "IncidentsController_createComment": {"action":"send.comments","effects":["send"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/incidents/{id}/comments","body":"json","scope":{"id":{"from":"path","at":"id"},"request":{"from":"body","at":"","type":"object"}},"grant":["id"]},
-      "IncidentsController_deleteComment": {"action":"delete.comments","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","path":"/v3/incidents/{id}/comments/{commentId}","scope":{"id":{"from":"path","at":"id"},"commentId":{"from":"path","at":"commentId"}}},
-      "IncidentsController_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/incidents/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "IncidentsController_getActivityLog": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/incidents/{id}/activity-log","params":["cursor","limit"],"scope":{"id":{"from":"path","at":"id"}}},
-      "IncidentsController_getAlerts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/incidents/{id}/alerts","params":["cursor","limit"],"scope":{"id":{"from":"path","at":"id"}}},
-      "IncidentsController_list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/incidents","params":["cursor","monitor_id","monitor_name","started_after","started_before","status"],"scope":{}},
-      "IncidentsController_listComments": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/incidents/{id}/comments","params":["cursor","limit"],"scope":{"id":{"from":"path","at":"id"}}},
-      "IncidentsController_updateComment": {"action":"write.comments","effects":["write"],"method":"PATCH","origin":"https://api.uptimerobot.com","path":"/v3/incidents/{id}/comments/{commentId}","body":"json","scope":{"id":{"from":"path","at":"id"},"commentId":{"from":"path","at":"commentId"}}},
-      "IntegrationsController_create": {"action":"admin.integrations","effects":["admin"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/integrations","body":"json","scope":{}},
-      "IntegrationsController_delete": {"action":"delete.integrations","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","path":"/v3/integrations/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "IntegrationsController_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/integrations/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "IntegrationsController_list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/integrations","params":["limit","includeOrgMembers","cursor"],"scope":{}},
-      "IntegrationsController_update": {"action":"admin.integrations","effects":["admin"],"method":"PATCH","origin":"https://api.uptimerobot.com","path":"/v3/integrations/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "MaintenanceWindowsController_create": {"action":"write.maintenance_windows","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/maintenance-windows","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "MaintenanceWindowsController_delete": {"action":"delete.maintenance_windows","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","path":"/v3/maintenance-windows/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "MaintenanceWindowsController_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/maintenance-windows/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "MaintenanceWindowsController_list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/maintenance-windows","params":["limit","cursor"],"scope":{}},
-      "MaintenanceWindowsController_update": {"action":"write.maintenance_windows","effects":["write"],"method":"PATCH","origin":"https://api.uptimerobot.com","path":"/v3/maintenance-windows/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "MonitorGroupsController_create": {"action":"write.monitor_groups","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/monitor-groups","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "MonitorGroupsController_delete": {"action":"delete.monitor_groups","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","path":"/v3/monitor-groups/{id}","params":["monitorsNewGroupId"],"scope":{"id":{"from":"path","at":"id"}}},
-      "MonitorGroupsController_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitor-groups/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "MonitorGroupsController_list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitor-groups","params":["limit","cursor"],"scope":{}},
-      "MonitorGroupsController_update": {"action":"write.monitor_groups","effects":["write"],"method":"PATCH","origin":"https://api.uptimerobot.com","path":"/v3/monitor-groups/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "MonitorsController_create": {"action":"write.monitors","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/monitors","body":"json","scope":{}},
-      "MonitorsController_delete": {"action":"delete.monitors","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "MonitorsController_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}","params":["logLimit","timeFrame","start","end"],"scope":{"id":{"from":"path","at":"id"}}},
-      "MonitorsController_getDependencyIncidents": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/dependency/incidents","scope":{"id":{"from":"path","at":"id"}}},
-      "MonitorsController_getDependencyStatus": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/dependency/status","scope":{"id":{"from":"path","at":"id"}}},
-      "MonitorsController_getMonitorResponseTimeStats": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/stats/response-time","params":["from","to","includeTimeSeries","region"],"scope":{"id":{"from":"path","at":"id"}}},
-      "MonitorsController_getMonitorResponseTimeStatsByRegion": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/stats/response-time/all","params":["from","to","includeTimeSeries"],"scope":{"id":{"from":"path","at":"id"}}},
-      "MonitorsController_getMonitorUptimeStats": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/stats/uptime","params":["from","to"],"scope":{"id":{"from":"path","at":"id"}}},
-      "MonitorsController_list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitors","params":["customField","limit","groupId","status","name","url","tags","cursor"],"scope":{}},
-      "MonitorsController_pause": {"action":"write.monitors","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/pause","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "MonitorsController_reset": {"action":"write.monitors","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/reset","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "MonitorsController_start": {"action":"write.monitors","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/start","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "MonitorsController_update": {"action":"write.monitors","effects":["write"],"method":"PATCH","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "PspAnnouncementsController_create": {"action":"write.announcements","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/psps/{pspId}/announcements","body":"json","scope":{"pspId":{"from":"path","at":"pspId"}}},
-      "PspAnnouncementsController_delete": {"action":"delete.announcements","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","path":"/v3/psps/{pspId}/announcements/{id}","scope":{"pspId":{"from":"path","at":"pspId"},"id":{"from":"path","at":"id"}}},
-      "PspAnnouncementsController_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/psps/{pspId}/announcements/{id}","scope":{"pspId":{"from":"path","at":"pspId"},"id":{"from":"path","at":"id"}}},
-      "PspAnnouncementsController_list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/psps/{pspId}/announcements","params":["limit","status","cursor"],"scope":{"pspId":{"from":"path","at":"pspId"}}},
-      "PspAnnouncementsController_pin": {"action":"write.announcements","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/psps/{pspId}/announcements/{id}/pin","scope":{"pspId":{"from":"path","at":"pspId"},"id":{"from":"path","at":"id"}}},
-      "PspAnnouncementsController_unpin": {"action":"write.announcements","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/psps/{pspId}/announcements/{id}/unpin","scope":{"pspId":{"from":"path","at":"pspId"},"id":{"from":"path","at":"id"}}},
-      "PspAnnouncementsController_update": {"action":"write.announcements","effects":["write"],"method":"PATCH","origin":"https://api.uptimerobot.com","path":"/v3/psps/{pspId}/announcements/{id}","body":"json","scope":{"pspId":{"from":"path","at":"pspId"},"id":{"from":"path","at":"id"}}},
-      "PspController_create": {"action":"write.psps","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/psps","body":"any","scope":{}},
-      "PspController_delete": {"action":"delete.psps","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","path":"/v3/psps/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "PspController_get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/psps/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "PspController_list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/psps","params":["limit","cursor"],"scope":{}},
-      "PspController_update": {"action":"write.psps","effects":["write"],"method":"PATCH","origin":"https://api.uptimerobot.com","path":"/v3/psps/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "TagsController_deleteTag": {"action":"delete.tags","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","path":"/v3/tags/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "TagsController_getTags": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/tags","params":["limit","cursor"],"scope":{}},
-      "UserController_getAlertContacts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/user/alert-contacts","scope":{}},
-      "UserController_getAllAlertContacts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/user/all-alert-contacts","scope":{}},
-      "UserController_getMe": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/user/me","scope":{}}
+      "AlertContactsController_create": {"action":"alert_contacts.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/alert-contacts","scope":{}},
+      "AlertContactsController_delete": {"action":"alert_contacts.delete","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","path":"/v3/alert-contacts/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "AlertContactsController_get": {"action":"alert_contacts.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/alert-contacts/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "AlertContactsController_list": {"action":"alert_contacts.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["limit","cursor"],"path":"/v3/alert-contacts","scope":{}},
+      "AlertContactsController_update": {"action":"alert_contacts.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.uptimerobot.com","path":"/v3/alert-contacts/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "BulkMonitorsController_bulkPause": {"action":"monitors.bulk.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/monitors/bulk/pause","scope":{"groupId":{"at":"/groupId","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"tagId":{"at":"/tagId","from":"body","optional":true,"type":"number"}}},
+      "BulkMonitorsController_bulkStart": {"action":"monitors.bulk.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/monitors/bulk/start","scope":{"groupId":{"at":"/groupId","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"tagId":{"at":"/tagId","from":"body","optional":true,"type":"number"}}},
+      "BulkMonitorsController_bulkUpdate": {"action":"monitors.bulk.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/monitors/bulk/update","scope":{}},
+      "IncidentsController_createComment": {"action":"incidents.comments.send","body":"json","effects":["send"],"grant":["id"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/incidents/{id}/comments","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "IncidentsController_deleteComment": {"action":"incidents.comments.delete","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","path":"/v3/incidents/{id}/comments/{commentId}","scope":{"commentId":{"at":"commentId","from":"path"},"id":{"at":"id","from":"path"}}},
+      "IncidentsController_get": {"action":"incidents.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/incidents/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "IncidentsController_getActivityLog": {"action":"incidents.activity_log.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["cursor","limit"],"path":"/v3/incidents/{id}/activity-log","scope":{"id":{"at":"id","from":"path"}}},
+      "IncidentsController_getAlerts": {"action":"incidents.alerts.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["cursor","limit"],"path":"/v3/incidents/{id}/alerts","scope":{"id":{"at":"id","from":"path"}}},
+      "IncidentsController_list": {"action":"incidents.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["cursor","monitor_id","monitor_name","started_after","started_before","status","cause","limit","type"],"path":"/v3/incidents","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "IncidentsController_listComments": {"action":"incidents.comments.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["cursor","limit"],"path":"/v3/incidents/{id}/comments","scope":{"id":{"at":"id","from":"path"}}},
+      "IncidentsController_updateComment": {"action":"incidents.comments.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.uptimerobot.com","path":"/v3/incidents/{id}/comments/{commentId}","scope":{"commentId":{"at":"commentId","from":"path"},"id":{"at":"id","from":"path"}}},
+      "IntegrationsController_create": {"action":"integrations.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/integrations","scope":{}},
+      "IntegrationsController_delete": {"action":"integrations.delete","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","path":"/v3/integrations/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "IntegrationsController_get": {"action":"integrations.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/integrations/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "IntegrationsController_list": {"action":"integrations.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["limit","includeOrgMembers","cursor"],"path":"/v3/integrations","scope":{}},
+      "IntegrationsController_update": {"action":"integrations.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api.uptimerobot.com","path":"/v3/integrations/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "MaintenanceWindowsController_create": {"action":"maintenance_windows.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/maintenance-windows","scope":{"name":{"at":"/name","from":"body"}}},
+      "MaintenanceWindowsController_delete": {"action":"maintenance_windows.delete","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","path":"/v3/maintenance-windows/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "MaintenanceWindowsController_get": {"action":"maintenance_windows.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/maintenance-windows/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "MaintenanceWindowsController_list": {"action":"maintenance_windows.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["limit","cursor"],"path":"/v3/maintenance-windows","scope":{}},
+      "MaintenanceWindowsController_update": {"action":"maintenance_windows.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.uptimerobot.com","path":"/v3/maintenance-windows/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "MonitorGroupsController_create": {"action":"monitor_groups.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/monitor-groups","scope":{"name":{"at":"/name","from":"body"}}},
+      "MonitorGroupsController_delete": {"action":"monitor_groups.delete","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","params":["monitorsNewGroupId"],"path":"/v3/monitor-groups/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "MonitorGroupsController_get": {"action":"monitor_groups.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitor-groups/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "MonitorGroupsController_list": {"action":"monitor_groups.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["limit","cursor"],"path":"/v3/monitor-groups","scope":{}},
+      "MonitorGroupsController_update": {"action":"monitor_groups.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.uptimerobot.com","path":"/v3/monitor-groups/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "MonitorsController_create": {"action":"monitors.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/monitors","scope":{}},
+      "MonitorsController_delete": {"action":"monitors.delete","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "MonitorsController_get": {"action":"monitors.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["logLimit","timeFrame","start","end"],"path":"/v3/monitors/{id}","path_patterns":{"id":"[^su].*|s(?:|[^t].*|t(?:|[^o].*|o(?:|[^r].*|r(?:|[^m].*|m(?:|[^\\-].*|-(?:|[^p].*|p(?:|[^r].*|r(?:|[^o].*|o(?:|[^t].*|t(?:|[^e].*|e(?:|[^c].*|c(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n.+)))))))))))))))|u(?:|[^p].*|p(?:|[^t].*|t(?:|[^i].*|i(?:|[^m].*|m(?:|[^e].*|e(?:|[^\\-].*|-(?:|[^s].*|s(?:|[^t].*|t(?:|[^a].*|a(?:|[^t].*|t(?:|[^s].*|s.+)))))))))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "MonitorsController_getDependencyIncidents": {"action":"monitors.dependency.incidents.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/dependency/incidents","scope":{"id":{"at":"id","from":"path"}}},
+      "MonitorsController_getDependencyStatus": {"action":"monitors.dependency.status.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/dependency/status","scope":{"id":{"at":"id","from":"path"}}},
+      "MonitorsController_getMonitorResponseTimeStats": {"action":"monitors.stats.response_time.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["from","to","includeTimeSeries","region"],"path":"/v3/monitors/{id}/stats/response-time","scope":{"id":{"at":"id","from":"path"}}},
+      "MonitorsController_getMonitorResponseTimeStatsByRegion": {"action":"monitors.stats.response_time.all.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["from","to","includeTimeSeries"],"path":"/v3/monitors/{id}/stats/response-time/all","scope":{"id":{"at":"id","from":"path"}}},
+      "MonitorsController_getMonitorUptimeStats": {"action":"monitors.stats.uptime.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["from","to"],"path":"/v3/monitors/{id}/stats/uptime","scope":{"id":{"at":"id","from":"path"}}},
+      "MonitorsController_getThirdPartyServiceIncident": {"action":"monitors.third_party_service.incidents.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/third-party-service/incidents/{incidentId}","scope":{"id":{"at":"id","from":"path"},"incidentId":{"at":"incidentId","from":"path"}}},
+      "MonitorsController_getThirdPartyServiceIncidentActivityLog": {"action":"monitors.third_party_service.incidents.activity_log.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/third-party-service/incidents/{incidentId}/activity-log","scope":{"id":{"at":"id","from":"path"},"incidentId":{"at":"incidentId","from":"path"}}},
+      "MonitorsController_getThirdPartyServiceIncidents": {"action":"monitors.third_party_service.incidents.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/third-party-service/incidents","scope":{"id":{"at":"id","from":"path"}}},
+      "MonitorsController_getThirdPartyServiceMaintenances": {"action":"monitors.third_party_service.maintenances.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/third-party-service/maintenances","scope":{"id":{"at":"id","from":"path"}}},
+      "MonitorsController_getThirdPartyServiceStatus": {"action":"monitors.third_party_service.status.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/third-party-service/status","scope":{"id":{"at":"id","from":"path"}}},
+      "MonitorsController_getUptimeStats": {"action":"monitors.uptime_stats.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["logLimit","timeFrame","start","end"],"path":"/v3/monitors/uptime-stats","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "MonitorsController_list": {"action":"monitors.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["customField","limit","groupId","status","name","url","tags","cursor"],"path":"/v3/monitors","scope":{}},
+      "MonitorsController_pause": {"action":"monitors.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/pause","path_patterns":{"id":"[^b].*|b(?:|[^u].*|u(?:|[^l].*|l(?:|[^k].*|k.+)))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "MonitorsController_reset": {"action":"monitors.delete","body":"any","effects":["delete"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/reset","scope":{"id":{"at":"id","from":"path"}}},
+      "MonitorsController_start": {"action":"monitors.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}/start","path_patterns":{"id":"[^b].*|b(?:|[^u].*|u(?:|[^l].*|l(?:|[^k].*|k.+)))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "MonitorsController_update": {"action":"monitors.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.uptimerobot.com","path":"/v3/monitors/{id}","path_patterns":{"id":"[^s].*|s(?:|[^t].*|t(?:|[^o].*|o(?:|[^r].*|r(?:|[^m].*|m(?:|[^\\-].*|-(?:|[^p].*|p(?:|[^r].*|r(?:|[^o].*|o(?:|[^t].*|t(?:|[^e].*|e(?:|[^c].*|c(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n.+)))))))))))))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "PspAnnouncementsController_create": {"action":"psps.announcements.publish","body":"json","effects":["publish"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/psps/{pspId}/announcements","scope":{"pspId":{"at":"pspId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "PspAnnouncementsController_delete": {"action":"psps.announcements.delete","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","path":"/v3/psps/{pspId}/announcements/{id}","scope":{"id":{"at":"id","from":"path"},"pspId":{"at":"pspId","from":"path"}}},
+      "PspAnnouncementsController_get": {"action":"psps.announcements.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/psps/{pspId}/announcements/{id}","scope":{"id":{"at":"id","from":"path"},"pspId":{"at":"pspId","from":"path"}}},
+      "PspAnnouncementsController_list": {"action":"psps.announcements.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["limit","status","cursor"],"path":"/v3/psps/{pspId}/announcements","scope":{"pspId":{"at":"pspId","from":"path"}}},
+      "PspAnnouncementsController_pin": {"action":"psps.announcements.publish","effects":["publish"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/psps/{pspId}/announcements/{id}/pin","scope":{"id":{"at":"id","from":"path"},"pspId":{"at":"pspId","from":"path"}}},
+      "PspAnnouncementsController_unpin": {"action":"psps.announcements.publish","effects":["publish"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/psps/{pspId}/announcements/{id}/unpin","scope":{"id":{"at":"id","from":"path"},"pspId":{"at":"pspId","from":"path"}}},
+      "PspAnnouncementsController_update": {"action":"psps.announcements.publish","body":"json","effects":["publish"],"method":"PATCH","origin":"https://api.uptimerobot.com","path":"/v3/psps/{pspId}/announcements/{id}","scope":{"id":{"at":"id","from":"path"},"pspId":{"at":"pspId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "PspController_create": {"action":"psps.publish","body":"any","effects":["publish"],"method":"POST","origin":"https://api.uptimerobot.com","path":"/v3/psps","scope":{}},
+      "PspController_delete": {"action":"psps.delete","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","path":"/v3/psps/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PspController_get": {"action":"psps.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/psps/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PspController_list": {"action":"psps.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["limit","cursor"],"path":"/v3/psps","scope":{}},
+      "PspController_update": {"action":"psps.publish","body":"any","effects":["publish"],"method":"PATCH","origin":"https://api.uptimerobot.com","path":"/v3/psps/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "StormProtectionController_get": {"action":"monitors.storm_protection.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/monitors/storm-protection","scope":{}},
+      "StormProtectionController_update": {"action":"monitors.storm_protection.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.uptimerobot.com","path":"/v3/monitors/storm-protection","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "TagsController_deleteTag": {"action":"tags.delete","effects":["delete"],"method":"DELETE","origin":"https://api.uptimerobot.com","path":"/v3/tags/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "TagsController_getTags": {"action":"tags.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["limit","cursor"],"path":"/v3/tags","scope":{}},
+      "ThirdPartyProvidersController_getById": {"action":"third_party_providers.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/third-party-providers/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "ThirdPartyProvidersController_search": {"action":"third_party_providers.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["search"],"path":"/v3/third-party-providers","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "ThirdPartyProvidersController_searchComponents": {"action":"third_party_providers.components.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","params":["search","region"],"path":"/v3/third-party-providers/{id}/components","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "ThirdPartyServicesController_getMaintenances": {"action":"third_party_services.maintenances.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/third-party-services/maintenances","scope":{}},
+      "UserController_getAlertContacts": {"action":"user.alert_contacts.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/user/alert-contacts","scope":{}},
+      "UserController_getAllAlertContacts": {"action":"user.all_alert_contacts.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/user/all-alert-contacts","scope":{}},
+      "UserController_getMe": {"action":"user.me.read","effects":["read"],"method":"GET","origin":"https://api.uptimerobot.com","path":"/v3/user/me","scope":{}}
     }
   }
 }

@@ -1,7 +1,392 @@
 {
-  "title": "Google Workspace Admin",
   "catalog": {
-    "group": "api",
+    "actions": {
+      "admin": {
+        "title": "Manage"
+      },
+      "admin.directory": {
+        "title": "Directory"
+      },
+      "admin.directory.channels": {
+        "title": "Channels"
+      },
+      "admin.directory.channels.write": {
+        "title": "Create and edit"
+      },
+      "admin.directory.customer": {
+        "title": "Customer"
+      },
+      "admin.directory.customer.devices": {
+        "title": "Devices"
+      },
+      "admin.directory.customer.devices.chromeos": {
+        "title": "Chromeos"
+      },
+      "admin.directory.customer.devices.chromeos.action": {
+        "title": "Action"
+      },
+      "admin.directory.customer.devices.chromeos.action.execute": {
+        "title": "Run"
+      },
+      "admin.directory.customer.devices.chromeos.commands": {
+        "title": "Commands"
+      },
+      "admin.directory.customer.devices.chromeos.commands.read": {
+        "title": "Read"
+      },
+      "admin.directory.customer.devices.chromeos.devices_to_ou": {
+        "title": "Devices to ou"
+      },
+      "admin.directory.customer.devices.chromeos.devices_to_ou.write": {
+        "title": "Create and edit"
+      },
+      "admin.directory.customer.devices.chromeos.read": {
+        "title": "Read"
+      },
+      "admin.directory.customer.devices.chromeos.write": {
+        "title": "Create and edit"
+      },
+      "admin.directory.customer.devices.mobile": {
+        "title": "Mobile"
+      },
+      "admin.directory.customer.devices.mobile.action": {
+        "title": "Action"
+      },
+      "admin.directory.customer.devices.mobile.action.execute": {
+        "title": "Run"
+      },
+      "admin.directory.customer.devices.mobile.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.customer.devices.mobile.read": {
+        "title": "Read"
+      },
+      "admin.directory.customer.domainaliases": {
+        "title": "Domainaliases"
+      },
+      "admin.directory.customer.domainaliases.admin": {
+        "title": "Manage"
+      },
+      "admin.directory.customer.domainaliases.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.customer.domainaliases.read": {
+        "title": "Read"
+      },
+      "admin.directory.customer.domains": {
+        "title": "Domains"
+      },
+      "admin.directory.customer.domains.admin": {
+        "title": "Manage"
+      },
+      "admin.directory.customer.domains.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.customer.domains.read": {
+        "title": "Read"
+      },
+      "admin.directory.customer.orgunits": {
+        "title": "Orgunits"
+      },
+      "admin.directory.customer.orgunits.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.customer.orgunits.read": {
+        "title": "Read"
+      },
+      "admin.directory.customer.orgunits.write": {
+        "title": "Create and edit"
+      },
+      "admin.directory.customer.resources": {
+        "title": "Resources"
+      },
+      "admin.directory.customer.resources.buildings": {
+        "title": "Buildings"
+      },
+      "admin.directory.customer.resources.buildings.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.customer.resources.buildings.read": {
+        "title": "Read"
+      },
+      "admin.directory.customer.resources.buildings.write": {
+        "title": "Create and edit"
+      },
+      "admin.directory.customer.resources.calendars": {
+        "title": "Calendars"
+      },
+      "admin.directory.customer.resources.calendars.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.customer.resources.calendars.read": {
+        "title": "Read"
+      },
+      "admin.directory.customer.resources.calendars.write": {
+        "title": "Create and edit"
+      },
+      "admin.directory.customer.resources.features": {
+        "title": "Features"
+      },
+      "admin.directory.customer.resources.features.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.customer.resources.features.read": {
+        "title": "Read"
+      },
+      "admin.directory.customer.resources.features.write": {
+        "title": "Create and edit"
+      },
+      "admin.directory.customer.roleassignments": {
+        "title": "Roleassignments"
+      },
+      "admin.directory.customer.roleassignments.admin": {
+        "title": "Manage"
+      },
+      "admin.directory.customer.roleassignments.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.customer.roleassignments.read": {
+        "title": "Read"
+      },
+      "admin.directory.customer.roles": {
+        "title": "Roles"
+      },
+      "admin.directory.customer.roles.admin": {
+        "title": "Manage"
+      },
+      "admin.directory.customer.roles.all": {
+        "title": "All"
+      },
+      "admin.directory.customer.roles.all.privileges": {
+        "title": "Privileges"
+      },
+      "admin.directory.customer.roles.all.privileges.read": {
+        "title": "Read"
+      },
+      "admin.directory.customer.roles.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.customer.roles.read": {
+        "title": "Read"
+      },
+      "admin.directory.customer.schemas": {
+        "title": "Schemas"
+      },
+      "admin.directory.customer.schemas.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.customer.schemas.read": {
+        "title": "Read"
+      },
+      "admin.directory.customer.schemas.write": {
+        "title": "Create and edit"
+      },
+      "admin.directory.customers": {
+        "title": "Customers"
+      },
+      "admin.directory.customers.chrome": {
+        "title": "Chrome"
+      },
+      "admin.directory.customers.chrome.print_servers": {
+        "title": "Print servers"
+      },
+      "admin.directory.customers.chrome.print_servers.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.customers.chrome.print_servers.read": {
+        "title": "Read"
+      },
+      "admin.directory.customers.chrome.print_servers.write": {
+        "title": "Create and edit"
+      },
+      "admin.directory.customers.chrome.printers": {
+        "title": "Printers"
+      },
+      "admin.directory.customers.chrome.printers.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.customers.chrome.printers.read": {
+        "title": "Read"
+      },
+      "admin.directory.customers.chrome.printers.write": {
+        "title": "Create and edit"
+      },
+      "admin.directory.customers.read": {
+        "title": "Read"
+      },
+      "admin.directory.customers.write": {
+        "title": "Create and edit"
+      },
+      "admin.directory.groups": {
+        "title": "Groups"
+      },
+      "admin.directory.groups.admin": {
+        "title": "Manage"
+      },
+      "admin.directory.groups.aliases": {
+        "title": "Aliases"
+      },
+      "admin.directory.groups.aliases.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.groups.aliases.read": {
+        "title": "Read"
+      },
+      "admin.directory.groups.aliases.write": {
+        "title": "Create and edit"
+      },
+      "admin.directory.groups.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.groups.has_member": {
+        "title": "Has member"
+      },
+      "admin.directory.groups.has_member.read": {
+        "title": "Read"
+      },
+      "admin.directory.groups.members": {
+        "title": "Members"
+      },
+      "admin.directory.groups.members.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.groups.members.read": {
+        "title": "Read"
+      },
+      "admin.directory.groups.members.share": {
+        "title": "Share"
+      },
+      "admin.directory.groups.read": {
+        "title": "Read"
+      },
+      "admin.directory.users": {
+        "title": "Users"
+      },
+      "admin.directory.users.admin": {
+        "title": "Manage"
+      },
+      "admin.directory.users.aliases": {
+        "title": "Aliases"
+      },
+      "admin.directory.users.aliases.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.users.aliases.read": {
+        "title": "Read"
+      },
+      "admin.directory.users.aliases.watch": {
+        "title": "Watch"
+      },
+      "admin.directory.users.aliases.watch.write": {
+        "title": "Create and edit"
+      },
+      "admin.directory.users.aliases.write": {
+        "title": "Create and edit"
+      },
+      "admin.directory.users.asps": {
+        "title": "Asps"
+      },
+      "admin.directory.users.asps.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.users.asps.read": {
+        "title": "Read"
+      },
+      "admin.directory.users.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.users.make_admin": {
+        "title": "Make admin"
+      },
+      "admin.directory.users.make_admin.admin": {
+        "title": "Manage"
+      },
+      "admin.directory.users.photos": {
+        "title": "Photos"
+      },
+      "admin.directory.users.photos.thumbnail": {
+        "title": "Thumbnail"
+      },
+      "admin.directory.users.photos.thumbnail.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.users.photos.thumbnail.read": {
+        "title": "Read"
+      },
+      "admin.directory.users.photos.thumbnail.write": {
+        "title": "Create and edit"
+      },
+      "admin.directory.users.read": {
+        "title": "Read"
+      },
+      "admin.directory.users.sign_out": {
+        "title": "Sign out"
+      },
+      "admin.directory.users.sign_out.write": {
+        "title": "Create and edit"
+      },
+      "admin.directory.users.tokens": {
+        "title": "Tokens"
+      },
+      "admin.directory.users.tokens.delete": {
+        "title": "Delete"
+      },
+      "admin.directory.users.tokens.read": {
+        "title": "Read"
+      },
+      "admin.directory.users.two_step_verification": {
+        "title": "Two step verification"
+      },
+      "admin.directory.users.two_step_verification.turn_off": {
+        "title": "Turn off"
+      },
+      "admin.directory.users.two_step_verification.turn_off.admin": {
+        "title": "Manage"
+      },
+      "admin.directory.users.undelete": {
+        "title": "Undelete"
+      },
+      "admin.directory.users.undelete.write": {
+        "title": "Create and edit"
+      },
+      "admin.directory.users.verification_codes": {
+        "title": "Verification codes"
+      },
+      "admin.directory.users.verification_codes.generate": {
+        "title": "Generate"
+      },
+      "admin.directory.users.verification_codes.generate.admin": {
+        "title": "Manage"
+      },
+      "admin.directory.users.verification_codes.invalidate": {
+        "title": "Invalidate"
+      },
+      "admin.directory.users.verification_codes.invalidate.admin": {
+        "title": "Manage"
+      },
+      "admin.directory.users.verification_codes.read": {
+        "title": "Read"
+      },
+      "admin.directory.users.watch": {
+        "title": "Watch"
+      },
+      "admin.directory.users.watch.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://admin.googleapis.com",
+            "path": "/admin",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
     "fields": [
       {
         "hint": "Leave empty to use Tinfoil's app",
@@ -16,189 +401,163 @@
         "paths": [],
         "secret": true
       },
-      {"key": "token", "label": "Google Workspace Admin account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "default_client": {"client_id": "355716529673-semtjk51liuh2uc8mo8cgd3v7v7lgi68.apps.googleusercontent.com", "client_secret": "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", "loopback": true}, "prompt": "consent", "scope": "https://www.googleapis.com/auth/admin.directory.group https://www.googleapis.com/auth/admin.directory.user https://www.googleapis.com/auth/admin.directory.domain.readonly https://www.googleapis.com/auth/admin.directory.userschema.readonly https://www.googleapis.com/auth/admin.directory.device.chromeos https://www.googleapis.com/auth/admin.directory.orgunit.readonly"}}
+      {
+        "credential": true,
+        "key": "token",
+        "label": "Google Workspace Admin account",
+        "oauth": {
+          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
+          "client_id": "{client_id}",
+          "client_secret": "{client_secret}",
+          "default_client": {
+            "client_id": "355716529673-semtjk51liuh2uc8mo8cgd3v7v7lgi68.apps.googleusercontent.com",
+            "client_secret": "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",
+            "loopback": true
+          },
+          "prompt": "consent",
+          "scope": "https://www.googleapis.com/auth/admin.directory.group https://www.googleapis.com/auth/admin.directory.user https://www.googleapis.com/auth/admin.directory.domain.readonly https://www.googleapis.com/auth/admin.directory.userschema.readonly https://www.googleapis.com/auth/admin.directory.device.chromeos https://www.googleapis.com/auth/admin.directory.orgunit.readonly",
+          "token_url": "https://oauth2.googleapis.com/token"
+        },
+        "secret": true
+      }
     ],
-    "connection": {"http": {"slots": [{"value": "token", "origin": "https://admin.googleapis.com", "path": "/admin", "header": "Authorization", "prefix": "Bearer "}]}},
-    "actions": {
-      "admin.domains": {"title": "Admin: domains"},
-      "admin.groups": {"title": "Admin: groups"},
-      "admin.members": {"title": "Admin: members"},
-      "admin.roles": {"title": "Admin: roles"},
-      "admin.users": {"title": "Admin: users"},
-      "delete.aliases": {"title": "Delete: aliases"},
-      "delete.asps": {"title": "Delete: asps"},
-      "delete.buildings": {"title": "Delete: buildings"},
-      "delete.calendars": {"title": "Delete: calendars"},
-      "delete.domainaliases": {"title": "Delete: domainaliases"},
-      "delete.domains": {"title": "Delete: domains"},
-      "delete.features": {"title": "Delete: features"},
-      "delete.groups": {"title": "Delete: groups"},
-      "delete.members": {"title": "Delete: members"},
-      "delete.mobile": {"title": "Delete: mobile"},
-      "delete.orgunits": {"title": "Delete: orgunits"},
-      "delete.print_servers": {"title": "Delete: print servers"},
-      "delete.printers": {"title": "Delete: printers"},
-      "delete.roleassignments": {"title": "Delete: roleassignments"},
-      "delete.roles": {"title": "Delete: roles"},
-      "delete.schemas": {"title": "Delete: schemas"},
-      "delete.thumbnail": {"title": "Delete: thumbnail"},
-      "delete.tokens": {"title": "Delete: tokens"},
-      "delete.users": {"title": "Delete: users"},
-      "execute.action": {"title": "Execute: action"},
-      "generate.generate": {"title": "Generate: generate"},
-      "read": {"title": "Read everything the account can see"},
-      "write.aliases": {"title": "Write: aliases"},
-      "write.buildings": {"title": "Write: buildings"},
-      "write.calendars": {"title": "Write: calendars"},
-      "write.chromeos": {"title": "Write: chromeos"},
-      "write.customers": {"title": "Write: customers"},
-      "write.domainaliases": {"title": "Write: domainaliases"},
-      "write.features": {"title": "Write: features"},
-      "write.invalidate": {"title": "Write: invalidate"},
-      "write.make_admin": {"title": "Write: make admin"},
-      "write.orgunits": {"title": "Write: orgunits"},
-      "write.print_servers": {"title": "Write: print servers"},
-      "write.printers": {"title": "Write: printers"},
-      "write.roleassignments": {"title": "Write: roleassignments"},
-      "write.schemas": {"title": "Write: schemas"},
-      "write.sign_out": {"title": "Write: sign out"},
-      "write.stop": {"title": "Write: stop"},
-      "write.thumbnail": {"title": "Write: thumbnail"},
-      "write.turn_off": {"title": "Write: turn off"},
-      "write.undelete": {"title": "Write: undelete"},
-      "write.watch": {"title": "Write: watch"}
-    }
+    "group": "api"
   },
+  "title": "Google Workspace Admin",
   "http": {
     "operations": {
-      "channels.stop": {"action":"write.stop","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory_v1/channels/stop","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}},
-      "customer.devices.chromeos.batchChangeStatus": {"action":"write.chromeos","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/devices/chromeos:batchChangeStatus","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customerId":{"from":"path","at":"customerId"}}},
-      "customer.devices.chromeos.commands.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/devices/chromeos/{deviceId}/commands/{commandId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customerId":{"from":"path","at":"customerId"},"deviceId":{"from":"path","at":"deviceId"},"commandId":{"from":"path","at":"commandId"}}},
-      "customer.devices.chromeos.countChromeOsDevices": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/devices/chromeos:countChromeOsDevices","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","includeChildOrgunits","orgUnitPath"],"scope":{"customerId":{"from":"path","at":"customerId"}}},
-      "customer.devices.chromeos.issueCommand": {"action":"write.chromeos","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/devices/chromeos/{deviceId}:issueCommand","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customerId":{"from":"path","at":"customerId"},"deviceId":{"from":"path","at":"deviceId"}}},
-      "customers.chrome.printServers.batchCreatePrintServers": {"action":"write.print_servers","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customersId}/chrome/printServers:batchCreatePrintServers","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customersId":{"from":"path","at":"customersId"}}},
-      "customers.chrome.printServers.batchDeletePrintServers": {"action":"delete.print_servers","effects":["delete"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customersId}/chrome/printServers:batchDeletePrintServers","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customersId":{"from":"path","at":"customersId"}}},
-      "customers.chrome.printServers.create": {"action":"write.print_servers","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customersId}/chrome/printServers","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customersId":{"from":"path","at":"customersId"}}},
-      "customers.chrome.printServers.delete": {"action":"delete.print_servers","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customersId}/chrome/printServers/{printServersId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customersId":{"from":"path","at":"customersId"},"printServersId":{"from":"path","at":"printServersId"}}},
-      "customers.chrome.printServers.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customersId}/chrome/printServers/{printServersId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customersId":{"from":"path","at":"customersId"},"printServersId":{"from":"path","at":"printServersId"}}},
-      "customers.chrome.printServers.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customersId}/chrome/printServers","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","orderBy","orgUnitId","pageSize","pageToken"],"scope":{"customersId":{"from":"path","at":"customersId"}}},
-      "customers.chrome.printServers.patch": {"action":"write.print_servers","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customersId}/chrome/printServers/{printServersId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"body":"json","scope":{"customersId":{"from":"path","at":"customersId"},"printServersId":{"from":"path","at":"printServersId"}}},
-      "customers.chrome.printers.batchCreatePrinters": {"action":"write.printers","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customersId}/chrome/printers:batchCreatePrinters","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customersId":{"from":"path","at":"customersId"}}},
-      "customers.chrome.printers.batchDeletePrinters": {"action":"delete.printers","effects":["delete"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customersId}/chrome/printers:batchDeletePrinters","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customersId":{"from":"path","at":"customersId"}}},
-      "customers.chrome.printers.create": {"action":"write.printers","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customersId}/chrome/printers","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customersId":{"from":"path","at":"customersId"}}},
-      "customers.chrome.printers.delete": {"action":"delete.printers","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customersId}/chrome/printers/{printersId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customersId":{"from":"path","at":"customersId"},"printersId":{"from":"path","at":"printersId"}}},
-      "customers.chrome.printers.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customersId}/chrome/printers/{printersId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customersId":{"from":"path","at":"customersId"},"printersId":{"from":"path","at":"printersId"}}},
-      "customers.chrome.printers.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customersId}/chrome/printers","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","orderBy","orgUnitId","pageSize","pageToken"],"scope":{"customersId":{"from":"path","at":"customersId"}}},
-      "customers.chrome.printers.listPrinterModels": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customersId}/chrome/printers:listPrinterModels","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"scope":{"customersId":{"from":"path","at":"customersId"}}},
-      "customers.chrome.printers.patch": {"action":"write.printers","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customersId}/chrome/printers/{printersId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","clearMask","updateMask"],"body":"json","scope":{"customersId":{"from":"path","at":"customersId"},"printersId":{"from":"path","at":"printersId"}}},
-      "directory.asps.delete": {"action":"delete.asps","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/asps/{codeId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"userKey":{"from":"path","at":"userKey"},"codeId":{"from":"path","at":"codeId"}}},
-      "directory.asps.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/asps/{codeId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"userKey":{"from":"path","at":"userKey"},"codeId":{"from":"path","at":"codeId"}}},
-      "directory.asps.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/asps","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.chromeosdevices.action": {"action":"execute.action","effects":["execute"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/devices/chromeos/{resourceId}/action","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customerId":{"from":"path","at":"customerId"},"resourceId":{"from":"path","at":"resourceId"}}},
-      "directory.chromeosdevices.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/devices/chromeos/{deviceId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","projection"],"scope":{"customerId":{"from":"path","at":"customerId"},"deviceId":{"from":"path","at":"deviceId"}}},
-      "directory.chromeosdevices.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/devices/chromeos","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","includeChildOrgunits","maxResults","orderBy","orgUnitPath","pageToken","projection","query","sortOrder"],"scope":{"customerId":{"from":"path","at":"customerId"}}},
-      "directory.chromeosdevices.moveDevicesToOu": {"action":"write.chromeos","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/devices/chromeos/moveDevicesToOu","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","orgUnitPath"],"body":"json","scope":{"customerId":{"from":"path","at":"customerId"}}},
-      "directory.chromeosdevices.patch": {"action":"write.chromeos","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/devices/chromeos/{deviceId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","projection"],"body":"json","scope":{"customerId":{"from":"path","at":"customerId"},"deviceId":{"from":"path","at":"deviceId"}}},
-      "directory.chromeosdevices.update": {"action":"write.chromeos","effects":["write"],"method":"PUT","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/devices/chromeos/{deviceId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","projection"],"body":"json","scope":{"customerId":{"from":"path","at":"customerId"},"deviceId":{"from":"path","at":"deviceId"}}},
-      "directory.customers.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customerKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customerKey":{"from":"path","at":"customerKey"}}},
-      "directory.customers.patch": {"action":"write.customers","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customerKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customerKey":{"from":"path","at":"customerKey"}}},
-      "directory.customers.update": {"action":"write.customers","effects":["write"],"method":"PUT","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customers/{customerKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customerKey":{"from":"path","at":"customerKey"}}},
-      "directory.domainAliases.delete": {"action":"delete.domainaliases","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/domainaliases/{domainAliasName}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customer":{"from":"path","at":"customer"},"domainAliasName":{"from":"path","at":"domainAliasName"}}},
-      "directory.domainAliases.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/domainaliases/{domainAliasName}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customer":{"from":"path","at":"customer"},"domainAliasName":{"from":"path","at":"domainAliasName"}}},
-      "directory.domainAliases.insert": {"action":"write.domainaliases","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/domainaliases","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customer":{"from":"path","at":"customer"}}},
-      "directory.domainAliases.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/domainaliases","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","parentDomainName"],"scope":{"customer":{"from":"path","at":"customer"}}},
-      "directory.domains.delete": {"action":"delete.domains","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/domains/{domainName}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customer":{"from":"path","at":"customer"},"domainName":{"from":"path","at":"domainName"}}},
-      "directory.domains.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/domains/{domainName}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customer":{"from":"path","at":"customer"},"domainName":{"from":"path","at":"domainName"}}},
-      "directory.domains.insert": {"action":"admin.domains","effects":["admin"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/domains","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customer":{"from":"path","at":"customer"}}},
-      "directory.domains.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/domains","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customer":{"from":"path","at":"customer"}}},
-      "directory.groups.aliases.delete": {"action":"delete.aliases","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/groups/{groupKey}/aliases/{alias}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"groupKey":{"from":"path","at":"groupKey"},"alias":{"from":"path","at":"alias"}}},
-      "directory.groups.aliases.insert": {"action":"write.aliases","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/groups/{groupKey}/aliases","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"groupKey":{"from":"path","at":"groupKey"}}},
-      "directory.groups.aliases.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/groups/{groupKey}/aliases","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"groupKey":{"from":"path","at":"groupKey"}}},
-      "directory.groups.delete": {"action":"delete.groups","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/groups/{groupKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"groupKey":{"from":"path","at":"groupKey"}}},
-      "directory.groups.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/groups/{groupKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"groupKey":{"from":"path","at":"groupKey"}}},
-      "directory.groups.insert": {"action":"admin.groups","effects":["admin"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/groups","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}},
-      "directory.groups.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/groups","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","customer","domain","maxResults","orderBy","pageToken","query","sortOrder","userKey"],"scope":{}},
-      "directory.groups.patch": {"action":"admin.groups","effects":["admin"],"method":"PATCH","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/groups/{groupKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"groupKey":{"from":"path","at":"groupKey"}}},
-      "directory.groups.update": {"action":"admin.groups","effects":["admin"],"method":"PUT","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/groups/{groupKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"groupKey":{"from":"path","at":"groupKey"}}},
-      "directory.members.delete": {"action":"delete.members","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/groups/{groupKey}/members/{memberKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"groupKey":{"from":"path","at":"groupKey"},"memberKey":{"from":"path","at":"memberKey"}}},
-      "directory.members.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/groups/{groupKey}/members/{memberKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"groupKey":{"from":"path","at":"groupKey"},"memberKey":{"from":"path","at":"memberKey"}}},
-      "directory.members.hasMember": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/groups/{groupKey}/hasMember/{memberKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"groupKey":{"from":"path","at":"groupKey"},"memberKey":{"from":"path","at":"memberKey"}}},
-      "directory.members.insert": {"action":"admin.members","effects":["admin"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/groups/{groupKey}/members","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"groupKey":{"from":"path","at":"groupKey"}}},
-      "directory.members.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/groups/{groupKey}/members","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","includeDerivedMembership","maxResults","pageToken","roles"],"scope":{"groupKey":{"from":"path","at":"groupKey"}}},
-      "directory.members.patch": {"action":"admin.members","effects":["admin"],"method":"PATCH","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/groups/{groupKey}/members/{memberKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"groupKey":{"from":"path","at":"groupKey"},"memberKey":{"from":"path","at":"memberKey"}}},
-      "directory.members.update": {"action":"admin.members","effects":["admin"],"method":"PUT","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/groups/{groupKey}/members/{memberKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"groupKey":{"from":"path","at":"groupKey"},"memberKey":{"from":"path","at":"memberKey"}}},
-      "directory.mobiledevices.action": {"action":"execute.action","effects":["execute"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/devices/mobile/{resourceId}/action","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customerId":{"from":"path","at":"customerId"},"resourceId":{"from":"path","at":"resourceId"}}},
-      "directory.mobiledevices.delete": {"action":"delete.mobile","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/devices/mobile/{resourceId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customerId":{"from":"path","at":"customerId"},"resourceId":{"from":"path","at":"resourceId"}}},
-      "directory.mobiledevices.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/devices/mobile/{resourceId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","projection"],"scope":{"customerId":{"from":"path","at":"customerId"},"resourceId":{"from":"path","at":"resourceId"}}},
-      "directory.mobiledevices.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/devices/mobile","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","orderBy","pageToken","projection","query","sortOrder"],"scope":{"customerId":{"from":"path","at":"customerId"}}},
-      "directory.orgunits.delete": {"action":"delete.orgunits","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/orgunits/{orgunitsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customerId":{"from":"path","at":"customerId"},"orgunitsId":{"from":"path","at":"orgunitsId"}}},
-      "directory.orgunits.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/orgunits/{orgunitsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customerId":{"from":"path","at":"customerId"},"orgunitsId":{"from":"path","at":"orgunitsId"}}},
-      "directory.orgunits.insert": {"action":"write.orgunits","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/orgunits","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customerId":{"from":"path","at":"customerId"}}},
-      "directory.orgunits.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/orgunits","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","orgUnitPath","type"],"scope":{"customerId":{"from":"path","at":"customerId"}}},
-      "directory.orgunits.patch": {"action":"write.orgunits","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/orgunits/{orgunitsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customerId":{"from":"path","at":"customerId"},"orgunitsId":{"from":"path","at":"orgunitsId"}}},
-      "directory.orgunits.update": {"action":"write.orgunits","effects":["write"],"method":"PUT","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/orgunits/{orgunitsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customerId":{"from":"path","at":"customerId"},"orgunitsId":{"from":"path","at":"orgunitsId"}}},
-      "directory.privileges.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/roles/ALL/privileges","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customer":{"from":"path","at":"customer"}}},
-      "directory.resources.buildings.delete": {"action":"delete.buildings","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/buildings/{buildingId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customer":{"from":"path","at":"customer"},"buildingId":{"from":"path","at":"buildingId"}}},
-      "directory.resources.buildings.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/buildings/{buildingId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customer":{"from":"path","at":"customer"},"buildingId":{"from":"path","at":"buildingId"}}},
-      "directory.resources.buildings.insert": {"action":"write.buildings","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/buildings","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","coordinatesSource"],"body":"json","scope":{"customer":{"from":"path","at":"customer"}}},
-      "directory.resources.buildings.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/buildings","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","pageToken"],"scope":{"customer":{"from":"path","at":"customer"}}},
-      "directory.resources.buildings.patch": {"action":"write.buildings","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/buildings/{buildingId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","coordinatesSource"],"body":"json","scope":{"customer":{"from":"path","at":"customer"},"buildingId":{"from":"path","at":"buildingId"}}},
-      "directory.resources.buildings.update": {"action":"write.buildings","effects":["write"],"method":"PUT","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/buildings/{buildingId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","coordinatesSource"],"body":"json","scope":{"customer":{"from":"path","at":"customer"},"buildingId":{"from":"path","at":"buildingId"}}},
-      "directory.resources.calendars.delete": {"action":"delete.calendars","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/calendars/{calendarResourceId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customer":{"from":"path","at":"customer"},"calendarResourceId":{"from":"path","at":"calendarResourceId"}}},
-      "directory.resources.calendars.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/calendars/{calendarResourceId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customer":{"from":"path","at":"customer"},"calendarResourceId":{"from":"path","at":"calendarResourceId"}}},
-      "directory.resources.calendars.insert": {"action":"write.calendars","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/calendars","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customer":{"from":"path","at":"customer"}}},
-      "directory.resources.calendars.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/calendars","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","orderBy","pageToken","query"],"scope":{"customer":{"from":"path","at":"customer"}}},
-      "directory.resources.calendars.patch": {"action":"write.calendars","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/calendars/{calendarResourceId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customer":{"from":"path","at":"customer"},"calendarResourceId":{"from":"path","at":"calendarResourceId"}}},
-      "directory.resources.calendars.update": {"action":"write.calendars","effects":["write"],"method":"PUT","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/calendars/{calendarResourceId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customer":{"from":"path","at":"customer"},"calendarResourceId":{"from":"path","at":"calendarResourceId"}}},
-      "directory.resources.features.delete": {"action":"delete.features","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/features/{featureKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customer":{"from":"path","at":"customer"},"featureKey":{"from":"path","at":"featureKey"}}},
-      "directory.resources.features.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/features/{featureKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customer":{"from":"path","at":"customer"},"featureKey":{"from":"path","at":"featureKey"}}},
-      "directory.resources.features.insert": {"action":"write.features","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/features","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customer":{"from":"path","at":"customer"}}},
-      "directory.resources.features.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/features","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","pageToken"],"scope":{"customer":{"from":"path","at":"customer"}}},
-      "directory.resources.features.patch": {"action":"write.features","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/features/{featureKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customer":{"from":"path","at":"customer"},"featureKey":{"from":"path","at":"featureKey"}}},
-      "directory.resources.features.rename": {"action":"write.features","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/features/{oldName}/rename","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customer":{"from":"path","at":"customer"},"oldName":{"from":"path","at":"oldName"}}},
-      "directory.resources.features.update": {"action":"write.features","effects":["write"],"method":"PUT","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/resources/features/{featureKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customer":{"from":"path","at":"customer"},"featureKey":{"from":"path","at":"featureKey"}}},
-      "directory.roleAssignments.delete": {"action":"delete.roleassignments","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/roleassignments/{roleAssignmentId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customer":{"from":"path","at":"customer"},"roleAssignmentId":{"from":"path","at":"roleAssignmentId"}}},
-      "directory.roleAssignments.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/roleassignments/{roleAssignmentId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customer":{"from":"path","at":"customer"},"roleAssignmentId":{"from":"path","at":"roleAssignmentId"}}},
-      "directory.roleAssignments.insert": {"action":"write.roleassignments","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/roleassignments","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customer":{"from":"path","at":"customer"}}},
-      "directory.roleAssignments.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/roleassignments","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","includeIndirectRoleAssignments","maxResults","pageToken","roleId","userKey"],"scope":{"customer":{"from":"path","at":"customer"}}},
-      "directory.roles.delete": {"action":"delete.roles","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/roles/{roleId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customer":{"from":"path","at":"customer"},"roleId":{"from":"path","at":"roleId"}}},
-      "directory.roles.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/roles/{roleId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customer":{"from":"path","at":"customer"},"roleId":{"from":"path","at":"roleId"}}},
-      "directory.roles.insert": {"action":"admin.roles","effects":["admin"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/roles","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customer":{"from":"path","at":"customer"}}},
-      "directory.roles.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/roles","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","pageToken"],"scope":{"customer":{"from":"path","at":"customer"}}},
-      "directory.roles.patch": {"action":"admin.roles","effects":["admin"],"method":"PATCH","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/roles/{roleId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customer":{"from":"path","at":"customer"},"roleId":{"from":"path","at":"roleId"}}},
-      "directory.roles.update": {"action":"admin.roles","effects":["admin"],"method":"PUT","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customer}/roles/{roleId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customer":{"from":"path","at":"customer"},"roleId":{"from":"path","at":"roleId"}}},
-      "directory.schemas.delete": {"action":"delete.schemas","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/schemas/{schemaKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customerId":{"from":"path","at":"customerId"},"schemaKey":{"from":"path","at":"schemaKey"}}},
-      "directory.schemas.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/schemas/{schemaKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customerId":{"from":"path","at":"customerId"},"schemaKey":{"from":"path","at":"schemaKey"}}},
-      "directory.schemas.insert": {"action":"write.schemas","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/schemas","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customerId":{"from":"path","at":"customerId"}}},
-      "directory.schemas.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/schemas","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"customerId":{"from":"path","at":"customerId"}}},
-      "directory.schemas.patch": {"action":"write.schemas","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/schemas/{schemaKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customerId":{"from":"path","at":"customerId"},"schemaKey":{"from":"path","at":"schemaKey"}}},
-      "directory.schemas.update": {"action":"write.schemas","effects":["write"],"method":"PUT","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/customer/{customerId}/schemas/{schemaKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"customerId":{"from":"path","at":"customerId"},"schemaKey":{"from":"path","at":"schemaKey"}}},
-      "directory.tokens.delete": {"action":"delete.tokens","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/tokens/{clientId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"userKey":{"from":"path","at":"userKey"},"clientId":{"from":"path","at":"clientId"}}},
-      "directory.tokens.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/tokens/{clientId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"userKey":{"from":"path","at":"userKey"},"clientId":{"from":"path","at":"clientId"}}},
-      "directory.tokens.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/tokens","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.twoStepVerification.turnOff": {"action":"write.turn_off","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/twoStepVerification/turnOff","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.users.aliases.delete": {"action":"delete.aliases","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/aliases/{alias}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"userKey":{"from":"path","at":"userKey"},"alias":{"from":"path","at":"alias"}}},
-      "directory.users.aliases.insert": {"action":"write.aliases","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/aliases","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.users.aliases.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/aliases","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","event"],"scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.users.aliases.watch": {"action":"write.watch","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/aliases/watch","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","event"],"body":"json","scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.users.createGuest": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users:createGuest","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}},
-      "directory.users.delete": {"action":"delete.users","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.users.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","customFieldMask","projection","viewType"],"scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.users.insert": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","resolveConflictAccount"],"body":"json","scope":{}},
-      "directory.users.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","customFieldMask","customer","domain","event","maxResults","orderBy","pageToken","projection","query","showDeleted","sortOrder","viewType"],"scope":{}},
-      "directory.users.makeAdmin": {"action":"write.make_admin","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/makeAdmin","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.users.patch": {"action":"admin.users","effects":["admin"],"method":"PATCH","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.users.photos.delete": {"action":"delete.thumbnail","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/photos/thumbnail","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.users.photos.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/photos/thumbnail","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.users.photos.patch": {"action":"write.thumbnail","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/photos/thumbnail","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.users.photos.update": {"action":"write.thumbnail","effects":["write"],"method":"PUT","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/photos/thumbnail","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.users.signOut": {"action":"write.sign_out","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/signOut","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.users.undelete": {"action":"write.undelete","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/undelete","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.users.update": {"action":"admin.users","effects":["admin"],"method":"PUT","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.users.watch": {"action":"write.watch","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/watch","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","customFieldMask","customer","domain","event","maxResults","orderBy","pageToken","projection","query","showDeleted","sortOrder","viewType"],"body":"json","scope":{}},
-      "directory.verificationCodes.generate": {"action":"generate.generate","effects":["generate"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/verificationCodes/generate","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.verificationCodes.invalidate": {"action":"write.invalidate","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/verificationCodes/invalidate","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"userKey":{"from":"path","at":"userKey"}}},
-      "directory.verificationCodes.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","path":"/admin/directory/v1/users/{userKey}/verificationCodes","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"scope":{"userKey":{"from":"path","at":"userKey"}}}
+      "channels.stop": {"action":"admin.directory.channels.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory_v1/channels/stop","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "customer.devices.chromeos.batchChangeStatus": {"action":"admin.directory.customer.devices.chromeos.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/devices/chromeos:batchChangeStatus","scope":{"customerId":{"at":"customerId","from":"path"}}},
+      "customer.devices.chromeos.commands.get": {"action":"admin.directory.customer.devices.chromeos.commands.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/devices/chromeos/{deviceId}/commands/{commandId}","scope":{"commandId":{"at":"commandId","from":"path"},"customerId":{"at":"customerId","from":"path"},"deviceId":{"at":"deviceId","from":"path"}}},
+      "customer.devices.chromeos.countChromeOsDevices": {"action":"admin.directory.customer.devices.chromeos.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","includeChildOrgunits","orgUnitPath"],"path":"/admin/directory/v1/customer/{customerId}/devices/chromeos:countChromeOsDevices","scope":{"customerId":{"at":"customerId","from":"path"}}},
+      "customer.devices.chromeos.issueCommand": {"action":"admin.directory.customer.devices.chromeos.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/devices/chromeos/{deviceId}:issueCommand","scope":{"customerId":{"at":"customerId","from":"path"},"deviceId":{"at":"deviceId","from":"path"}}},
+      "customers.chrome.printServers.batchCreatePrintServers": {"action":"admin.directory.customers.chrome.print_servers.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customers/{customersId}/chrome/printServers:batchCreatePrintServers","scope":{"customersId":{"at":"customersId","from":"path"}}},
+      "customers.chrome.printServers.batchDeletePrintServers": {"action":"admin.directory.customers.chrome.print_servers.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customers/{customersId}/chrome/printServers:batchDeletePrintServers","scope":{"customersId":{"at":"customersId","from":"path"}}},
+      "customers.chrome.printServers.create": {"action":"admin.directory.customers.chrome.print_servers.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customers/{customersId}/chrome/printServers","scope":{"customersId":{"at":"customersId","from":"path"}}},
+      "customers.chrome.printServers.delete": {"action":"admin.directory.customers.chrome.print_servers.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customers/{customersId}/chrome/printServers/{printServersId}","scope":{"customersId":{"at":"customersId","from":"path"},"printServersId":{"at":"printServersId","from":"path"}}},
+      "customers.chrome.printServers.get": {"action":"admin.directory.customers.chrome.print_servers.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customers/{customersId}/chrome/printServers/{printServersId}","scope":{"customersId":{"at":"customersId","from":"path"},"printServersId":{"at":"printServersId","from":"path"}}},
+      "customers.chrome.printServers.list": {"action":"admin.directory.customers.chrome.print_servers.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","orderBy","orgUnitId","pageSize","pageToken"],"path":"/admin/directory/v1/customers/{customersId}/chrome/printServers","scope":{"customersId":{"at":"customersId","from":"path"}}},
+      "customers.chrome.printServers.patch": {"action":"admin.directory.customers.chrome.print_servers.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/admin/directory/v1/customers/{customersId}/chrome/printServers/{printServersId}","scope":{"customersId":{"at":"customersId","from":"path"},"printServersId":{"at":"printServersId","from":"path"}}},
+      "customers.chrome.printers.batchCreatePrinters": {"action":"admin.directory.customers.chrome.printers.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customers/{customersId}/chrome/printers:batchCreatePrinters","scope":{"customersId":{"at":"customersId","from":"path"}}},
+      "customers.chrome.printers.batchDeletePrinters": {"action":"admin.directory.customers.chrome.printers.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customers/{customersId}/chrome/printers:batchDeletePrinters","scope":{"customersId":{"at":"customersId","from":"path"}}},
+      "customers.chrome.printers.create": {"action":"admin.directory.customers.chrome.printers.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customers/{customersId}/chrome/printers","scope":{"customersId":{"at":"customersId","from":"path"}}},
+      "customers.chrome.printers.delete": {"action":"admin.directory.customers.chrome.printers.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customers/{customersId}/chrome/printers/{printersId}","scope":{"customersId":{"at":"customersId","from":"path"},"printersId":{"at":"printersId","from":"path"}}},
+      "customers.chrome.printers.get": {"action":"admin.directory.customers.chrome.printers.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customers/{customersId}/chrome/printers/{printersId}","scope":{"customersId":{"at":"customersId","from":"path"},"printersId":{"at":"printersId","from":"path"}}},
+      "customers.chrome.printers.list": {"action":"admin.directory.customers.chrome.printers.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","orderBy","orgUnitId","pageSize","pageToken"],"path":"/admin/directory/v1/customers/{customersId}/chrome/printers","scope":{"customersId":{"at":"customersId","from":"path"}}},
+      "customers.chrome.printers.listPrinterModels": {"action":"admin.directory.customers.chrome.printers.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"path":"/admin/directory/v1/customers/{customersId}/chrome/printers:listPrinterModels","scope":{"customersId":{"at":"customersId","from":"path"}}},
+      "customers.chrome.printers.patch": {"action":"admin.directory.customers.chrome.printers.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","clearMask","updateMask"],"path":"/admin/directory/v1/customers/{customersId}/chrome/printers/{printersId}","scope":{"customersId":{"at":"customersId","from":"path"},"printersId":{"at":"printersId","from":"path"}}},
+      "directory.asps.delete": {"action":"admin.directory.users.asps.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/asps/{codeId}","scope":{"codeId":{"at":"codeId","from":"path"},"userKey":{"at":"userKey","from":"path"}}},
+      "directory.asps.get": {"action":"admin.directory.users.asps.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/asps/{codeId}","scope":{"codeId":{"at":"codeId","from":"path"},"userKey":{"at":"userKey","from":"path"}}},
+      "directory.asps.list": {"action":"admin.directory.users.asps.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/asps","scope":{"userKey":{"at":"userKey","from":"path"}}},
+      "directory.chromeosdevices.action": {"action":"admin.directory.customer.devices.chromeos.action.execute","body":"json","effects":["execute"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/devices/chromeos/{resourceId}/action","scope":{"customerId":{"at":"customerId","from":"path"},"resourceId":{"at":"resourceId","from":"path"}}},
+      "directory.chromeosdevices.get": {"action":"admin.directory.customer.devices.chromeos.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","projection"],"path":"/admin/directory/v1/customer/{customerId}/devices/chromeos/{deviceId}","scope":{"customerId":{"at":"customerId","from":"path"},"deviceId":{"at":"deviceId","from":"path"}}},
+      "directory.chromeosdevices.list": {"action":"admin.directory.customer.devices.chromeos.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","includeChildOrgunits","maxResults","orderBy","orgUnitPath","pageToken","projection","query","sortOrder"],"path":"/admin/directory/v1/customer/{customerId}/devices/chromeos","scope":{"customerId":{"at":"customerId","from":"path"}}},
+      "directory.chromeosdevices.moveDevicesToOu": {"action":"admin.directory.customer.devices.chromeos.devices_to_ou.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","orgUnitPath"],"path":"/admin/directory/v1/customer/{customerId}/devices/chromeos/moveDevicesToOu","scope":{"customerId":{"at":"customerId","from":"path"}}},
+      "directory.chromeosdevices.patch": {"action":"admin.directory.customer.devices.chromeos.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","projection"],"path":"/admin/directory/v1/customer/{customerId}/devices/chromeos/{deviceId}","scope":{"customerId":{"at":"customerId","from":"path"},"deviceId":{"at":"deviceId","from":"path"}}},
+      "directory.chromeosdevices.update": {"action":"admin.directory.customer.devices.chromeos.write","body":"json","effects":["write"],"method":"PUT","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","projection"],"path":"/admin/directory/v1/customer/{customerId}/devices/chromeos/{deviceId}","scope":{"customerId":{"at":"customerId","from":"path"},"deviceId":{"at":"deviceId","from":"path"}}},
+      "directory.customers.get": {"action":"admin.directory.customers.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customers/{customerKey}","scope":{"customerKey":{"at":"customerKey","from":"path"}}},
+      "directory.customers.patch": {"action":"admin.directory.customers.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customers/{customerKey}","scope":{"customerKey":{"at":"customerKey","from":"path"}}},
+      "directory.customers.update": {"action":"admin.directory.customers.write","body":"json","effects":["write"],"method":"PUT","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customers/{customerKey}","scope":{"customerKey":{"at":"customerKey","from":"path"}}},
+      "directory.domainAliases.delete": {"action":"admin.directory.customer.domainaliases.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/domainaliases/{domainAliasName}","scope":{"customer":{"at":"customer","from":"path"},"domainAliasName":{"at":"domainAliasName","from":"path"}}},
+      "directory.domainAliases.get": {"action":"admin.directory.customer.domainaliases.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/domainaliases/{domainAliasName}","scope":{"customer":{"at":"customer","from":"path"},"domainAliasName":{"at":"domainAliasName","from":"path"}}},
+      "directory.domainAliases.insert": {"action":"admin.directory.customer.domainaliases.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/domainaliases","scope":{"customer":{"at":"customer","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "directory.domainAliases.list": {"action":"admin.directory.customer.domainaliases.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","parentDomainName"],"path":"/admin/directory/v1/customer/{customer}/domainaliases","scope":{"customer":{"at":"customer","from":"path"}}},
+      "directory.domains.delete": {"action":"admin.directory.customer.domains.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/domains/{domainName}","scope":{"customer":{"at":"customer","from":"path"},"domainName":{"at":"domainName","from":"path"}}},
+      "directory.domains.get": {"action":"admin.directory.customer.domains.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/domains/{domainName}","scope":{"customer":{"at":"customer","from":"path"},"domainName":{"at":"domainName","from":"path"}}},
+      "directory.domains.insert": {"action":"admin.directory.customer.domains.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/domains","scope":{"customer":{"at":"customer","from":"path"}}},
+      "directory.domains.list": {"action":"admin.directory.customer.domains.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/domains","scope":{"customer":{"at":"customer","from":"path"}}},
+      "directory.groups.aliases.delete": {"action":"admin.directory.groups.aliases.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/groups/{groupKey}/aliases/{alias}","scope":{"alias":{"at":"alias","from":"path"},"groupKey":{"at":"groupKey","from":"path"}}},
+      "directory.groups.aliases.insert": {"action":"admin.directory.groups.aliases.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/groups/{groupKey}/aliases","scope":{"groupKey":{"at":"groupKey","from":"path"}}},
+      "directory.groups.aliases.list": {"action":"admin.directory.groups.aliases.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/groups/{groupKey}/aliases","scope":{"groupKey":{"at":"groupKey","from":"path"}}},
+      "directory.groups.delete": {"action":"admin.directory.groups.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/groups/{groupKey}","scope":{"groupKey":{"at":"groupKey","from":"path"}}},
+      "directory.groups.get": {"action":"admin.directory.groups.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/groups/{groupKey}","scope":{"groupKey":{"at":"groupKey","from":"path"}}},
+      "directory.groups.insert": {"action":"admin.directory.groups.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/groups","scope":{}},
+      "directory.groups.list": {"action":"admin.directory.groups.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","customer","domain","maxResults","orderBy","pageToken","query","sortOrder","userKey"],"path":"/admin/directory/v1/groups","scope":{}},
+      "directory.groups.patch": {"action":"admin.directory.groups.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/groups/{groupKey}","scope":{"groupKey":{"at":"groupKey","from":"path"}}},
+      "directory.groups.update": {"action":"admin.directory.groups.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/groups/{groupKey}","scope":{"groupKey":{"at":"groupKey","from":"path"}}},
+      "directory.members.delete": {"action":"admin.directory.groups.members.delete","effects":["delete","share"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/groups/{groupKey}/members/{memberKey}","scope":{"groupKey":{"at":"groupKey","from":"path"},"memberKey":{"at":"memberKey","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "directory.members.get": {"action":"admin.directory.groups.members.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/groups/{groupKey}/members/{memberKey}","scope":{"groupKey":{"at":"groupKey","from":"path"},"memberKey":{"at":"memberKey","from":"path"}}},
+      "directory.members.hasMember": {"action":"admin.directory.groups.has_member.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/groups/{groupKey}/hasMember/{memberKey}","scope":{"groupKey":{"at":"groupKey","from":"path"},"memberKey":{"at":"memberKey","from":"path"}}},
+      "directory.members.insert": {"action":"admin.directory.groups.members.share","body":"json","effects":["share"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/groups/{groupKey}/members","scope":{"groupKey":{"at":"groupKey","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "directory.members.list": {"action":"admin.directory.groups.members.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","includeDerivedMembership","maxResults","pageToken","roles"],"path":"/admin/directory/v1/groups/{groupKey}/members","scope":{"groupKey":{"at":"groupKey","from":"path"}}},
+      "directory.members.patch": {"action":"admin.directory.groups.members.share","body":"json","effects":["share"],"method":"PATCH","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/groups/{groupKey}/members/{memberKey}","scope":{"groupKey":{"at":"groupKey","from":"path"},"memberKey":{"at":"memberKey","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "directory.members.update": {"action":"admin.directory.groups.members.share","body":"json","effects":["share"],"method":"PUT","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/groups/{groupKey}/members/{memberKey}","scope":{"groupKey":{"at":"groupKey","from":"path"},"memberKey":{"at":"memberKey","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "directory.mobiledevices.action": {"action":"admin.directory.customer.devices.mobile.action.execute","body":"json","effects":["execute"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/devices/mobile/{resourceId}/action","scope":{"customerId":{"at":"customerId","from":"path"},"resourceId":{"at":"resourceId","from":"path"}}},
+      "directory.mobiledevices.delete": {"action":"admin.directory.customer.devices.mobile.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/devices/mobile/{resourceId}","scope":{"customerId":{"at":"customerId","from":"path"},"resourceId":{"at":"resourceId","from":"path"}}},
+      "directory.mobiledevices.get": {"action":"admin.directory.customer.devices.mobile.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","projection"],"path":"/admin/directory/v1/customer/{customerId}/devices/mobile/{resourceId}","scope":{"customerId":{"at":"customerId","from":"path"},"resourceId":{"at":"resourceId","from":"path"}}},
+      "directory.mobiledevices.list": {"action":"admin.directory.customer.devices.mobile.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","orderBy","pageToken","projection","query","sortOrder"],"path":"/admin/directory/v1/customer/{customerId}/devices/mobile","scope":{"customerId":{"at":"customerId","from":"path"}}},
+      "directory.orgunits.delete": {"action":"admin.directory.customer.orgunits.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/orgunits/{orgunitsId}","scope":{"customerId":{"at":"customerId","from":"path"},"orgunitsId":{"at":"orgunitsId","from":"path"}}},
+      "directory.orgunits.delete.nested": {"action":"admin.directory.customer.orgunits.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/orgunits/{orgUnitPath*}","path_patterns":{"orgUnitPath":"[^/]+/.+"},"scope":{"customerId":{"at":"customerId","from":"path"},"orgUnitPath":{"at":"orgUnitPath","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "directory.orgunits.get": {"action":"admin.directory.customer.orgunits.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/orgunits/{orgunitsId}","scope":{"customerId":{"at":"customerId","from":"path"},"orgunitsId":{"at":"orgunitsId","from":"path"}}},
+      "directory.orgunits.get.nested": {"action":"admin.directory.customer.orgunits.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/orgunits/{orgUnitPath*}","path_patterns":{"orgUnitPath":"[^/]+/.+"},"scope":{"customerId":{"at":"customerId","from":"path"},"orgUnitPath":{"at":"orgUnitPath","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "directory.orgunits.insert": {"action":"admin.directory.customer.orgunits.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/orgunits","scope":{"customerId":{"at":"customerId","from":"path"}}},
+      "directory.orgunits.list": {"action":"admin.directory.customer.orgunits.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","orgUnitPath","type"],"path":"/admin/directory/v1/customer/{customerId}/orgunits","scope":{"customerId":{"at":"customerId","from":"path"}}},
+      "directory.orgunits.patch": {"action":"admin.directory.customer.orgunits.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/orgunits/{orgunitsId}","scope":{"customerId":{"at":"customerId","from":"path"},"orgunitsId":{"at":"orgunitsId","from":"path"}}},
+      "directory.orgunits.patch.nested": {"action":"admin.directory.customer.orgunits.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/orgunits/{orgUnitPath*}","path_patterns":{"orgUnitPath":"[^/]+/.+"},"scope":{"customerId":{"at":"customerId","from":"path"},"orgUnitPath":{"at":"orgUnitPath","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "directory.orgunits.update": {"action":"admin.directory.customer.orgunits.write","body":"json","effects":["write"],"method":"PUT","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/orgunits/{orgunitsId}","scope":{"customerId":{"at":"customerId","from":"path"},"orgunitsId":{"at":"orgunitsId","from":"path"}}},
+      "directory.orgunits.update.nested": {"action":"admin.directory.customer.orgunits.write","body":"json","effects":["write"],"method":"PUT","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/orgunits/{orgUnitPath*}","path_patterns":{"orgUnitPath":"[^/]+/.+"},"scope":{"customerId":{"at":"customerId","from":"path"},"orgUnitPath":{"at":"orgUnitPath","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "directory.privileges.list": {"action":"admin.directory.customer.roles.all.privileges.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/roles/ALL/privileges","scope":{"customer":{"at":"customer","from":"path"}}},
+      "directory.resources.buildings.delete": {"action":"admin.directory.customer.resources.buildings.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/resources/buildings/{buildingId}","scope":{"buildingId":{"at":"buildingId","from":"path"},"customer":{"at":"customer","from":"path"}}},
+      "directory.resources.buildings.get": {"action":"admin.directory.customer.resources.buildings.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/resources/buildings/{buildingId}","scope":{"buildingId":{"at":"buildingId","from":"path"},"customer":{"at":"customer","from":"path"}}},
+      "directory.resources.buildings.insert": {"action":"admin.directory.customer.resources.buildings.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","coordinatesSource"],"path":"/admin/directory/v1/customer/{customer}/resources/buildings","scope":{"customer":{"at":"customer","from":"path"}}},
+      "directory.resources.buildings.list": {"action":"admin.directory.customer.resources.buildings.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","pageToken"],"path":"/admin/directory/v1/customer/{customer}/resources/buildings","scope":{"customer":{"at":"customer","from":"path"}}},
+      "directory.resources.buildings.patch": {"action":"admin.directory.customer.resources.buildings.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","coordinatesSource"],"path":"/admin/directory/v1/customer/{customer}/resources/buildings/{buildingId}","scope":{"buildingId":{"at":"buildingId","from":"path"},"customer":{"at":"customer","from":"path"}}},
+      "directory.resources.buildings.update": {"action":"admin.directory.customer.resources.buildings.write","body":"json","effects":["write"],"method":"PUT","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","coordinatesSource"],"path":"/admin/directory/v1/customer/{customer}/resources/buildings/{buildingId}","scope":{"buildingId":{"at":"buildingId","from":"path"},"customer":{"at":"customer","from":"path"}}},
+      "directory.resources.calendars.delete": {"action":"admin.directory.customer.resources.calendars.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/resources/calendars/{calendarResourceId}","scope":{"calendarResourceId":{"at":"calendarResourceId","from":"path"},"customer":{"at":"customer","from":"path"}}},
+      "directory.resources.calendars.get": {"action":"admin.directory.customer.resources.calendars.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/resources/calendars/{calendarResourceId}","scope":{"calendarResourceId":{"at":"calendarResourceId","from":"path"},"customer":{"at":"customer","from":"path"}}},
+      "directory.resources.calendars.insert": {"action":"admin.directory.customer.resources.calendars.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/resources/calendars","scope":{"customer":{"at":"customer","from":"path"}}},
+      "directory.resources.calendars.list": {"action":"admin.directory.customer.resources.calendars.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","orderBy","pageToken","query"],"path":"/admin/directory/v1/customer/{customer}/resources/calendars","scope":{"customer":{"at":"customer","from":"path"}}},
+      "directory.resources.calendars.patch": {"action":"admin.directory.customer.resources.calendars.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/resources/calendars/{calendarResourceId}","scope":{"calendarResourceId":{"at":"calendarResourceId","from":"path"},"customer":{"at":"customer","from":"path"}}},
+      "directory.resources.calendars.update": {"action":"admin.directory.customer.resources.calendars.write","body":"json","effects":["write"],"method":"PUT","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/resources/calendars/{calendarResourceId}","scope":{"calendarResourceId":{"at":"calendarResourceId","from":"path"},"customer":{"at":"customer","from":"path"}}},
+      "directory.resources.features.delete": {"action":"admin.directory.customer.resources.features.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/resources/features/{featureKey}","scope":{"customer":{"at":"customer","from":"path"},"featureKey":{"at":"featureKey","from":"path"}}},
+      "directory.resources.features.get": {"action":"admin.directory.customer.resources.features.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/resources/features/{featureKey}","scope":{"customer":{"at":"customer","from":"path"},"featureKey":{"at":"featureKey","from":"path"}}},
+      "directory.resources.features.insert": {"action":"admin.directory.customer.resources.features.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/resources/features","scope":{"customer":{"at":"customer","from":"path"}}},
+      "directory.resources.features.list": {"action":"admin.directory.customer.resources.features.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","pageToken"],"path":"/admin/directory/v1/customer/{customer}/resources/features","scope":{"customer":{"at":"customer","from":"path"}}},
+      "directory.resources.features.patch": {"action":"admin.directory.customer.resources.features.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/resources/features/{featureKey}","scope":{"customer":{"at":"customer","from":"path"},"featureKey":{"at":"featureKey","from":"path"}}},
+      "directory.resources.features.rename": {"action":"admin.directory.customer.resources.features.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/resources/features/{oldName}/rename","scope":{"customer":{"at":"customer","from":"path"},"oldName":{"at":"oldName","from":"path"}}},
+      "directory.resources.features.update": {"action":"admin.directory.customer.resources.features.write","body":"json","effects":["write"],"method":"PUT","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/resources/features/{featureKey}","scope":{"customer":{"at":"customer","from":"path"},"featureKey":{"at":"featureKey","from":"path"}}},
+      "directory.roleAssignments.delete": {"action":"admin.directory.customer.roleassignments.delete","effects":["delete","admin"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/roleassignments/{roleAssignmentId}","scope":{"customer":{"at":"customer","from":"path"},"query":{"at":"","from":"query","type":"object"},"roleAssignmentId":{"at":"roleAssignmentId","from":"path"}}},
+      "directory.roleAssignments.get": {"action":"admin.directory.customer.roleassignments.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/roleassignments/{roleAssignmentId}","scope":{"customer":{"at":"customer","from":"path"},"roleAssignmentId":{"at":"roleAssignmentId","from":"path"}}},
+      "directory.roleAssignments.insert": {"action":"admin.directory.customer.roleassignments.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/roleassignments","scope":{"customer":{"at":"customer","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "directory.roleAssignments.list": {"action":"admin.directory.customer.roleassignments.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","includeIndirectRoleAssignments","maxResults","pageToken","roleId","userKey"],"path":"/admin/directory/v1/customer/{customer}/roleassignments","scope":{"customer":{"at":"customer","from":"path"}}},
+      "directory.roles.delete": {"action":"admin.directory.customer.roles.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/roles/{roleId}","scope":{"customer":{"at":"customer","from":"path"},"roleId":{"at":"roleId","from":"path"}}},
+      "directory.roles.get": {"action":"admin.directory.customer.roles.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/roles/{roleId}","scope":{"customer":{"at":"customer","from":"path"},"roleId":{"at":"roleId","from":"path"}}},
+      "directory.roles.insert": {"action":"admin.directory.customer.roles.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/roles","scope":{"customer":{"at":"customer","from":"path"}}},
+      "directory.roles.list": {"action":"admin.directory.customer.roles.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","pageToken"],"path":"/admin/directory/v1/customer/{customer}/roles","scope":{"customer":{"at":"customer","from":"path"}}},
+      "directory.roles.patch": {"action":"admin.directory.customer.roles.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/roles/{roleId}","scope":{"customer":{"at":"customer","from":"path"},"roleId":{"at":"roleId","from":"path"}}},
+      "directory.roles.update": {"action":"admin.directory.customer.roles.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customer}/roles/{roleId}","scope":{"customer":{"at":"customer","from":"path"},"roleId":{"at":"roleId","from":"path"}}},
+      "directory.schemas.delete": {"action":"admin.directory.customer.schemas.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/schemas/{schemaKey}","scope":{"customerId":{"at":"customerId","from":"path"},"schemaKey":{"at":"schemaKey","from":"path"}}},
+      "directory.schemas.get": {"action":"admin.directory.customer.schemas.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/schemas/{schemaKey}","scope":{"customerId":{"at":"customerId","from":"path"},"schemaKey":{"at":"schemaKey","from":"path"}}},
+      "directory.schemas.insert": {"action":"admin.directory.customer.schemas.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/schemas","scope":{"customerId":{"at":"customerId","from":"path"}}},
+      "directory.schemas.list": {"action":"admin.directory.customer.schemas.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/schemas","scope":{"customerId":{"at":"customerId","from":"path"}}},
+      "directory.schemas.patch": {"action":"admin.directory.customer.schemas.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/schemas/{schemaKey}","scope":{"customerId":{"at":"customerId","from":"path"},"schemaKey":{"at":"schemaKey","from":"path"}}},
+      "directory.schemas.update": {"action":"admin.directory.customer.schemas.write","body":"json","effects":["write"],"method":"PUT","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/customer/{customerId}/schemas/{schemaKey}","scope":{"customerId":{"at":"customerId","from":"path"},"schemaKey":{"at":"schemaKey","from":"path"}}},
+      "directory.tokens.delete": {"action":"admin.directory.users.tokens.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/tokens/{clientId}","scope":{"clientId":{"at":"clientId","from":"path"},"userKey":{"at":"userKey","from":"path"}}},
+      "directory.tokens.get": {"action":"admin.directory.users.tokens.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/tokens/{clientId}","scope":{"clientId":{"at":"clientId","from":"path"},"userKey":{"at":"userKey","from":"path"}}},
+      "directory.tokens.list": {"action":"admin.directory.users.tokens.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/tokens","scope":{"userKey":{"at":"userKey","from":"path"}}},
+      "directory.twoStepVerification.turnOff": {"action":"admin.directory.users.two_step_verification.turn_off.admin","effects":["admin"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/twoStepVerification/turnOff","scope":{"query":{"at":"","from":"query","type":"object"},"userKey":{"at":"userKey","from":"path"}}},
+      "directory.users.aliases.delete": {"action":"admin.directory.users.aliases.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/aliases/{alias}","scope":{"alias":{"at":"alias","from":"path"},"userKey":{"at":"userKey","from":"path"}}},
+      "directory.users.aliases.insert": {"action":"admin.directory.users.aliases.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/aliases","scope":{"userKey":{"at":"userKey","from":"path"}}},
+      "directory.users.aliases.list": {"action":"admin.directory.users.aliases.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","event"],"path":"/admin/directory/v1/users/{userKey}/aliases","scope":{"userKey":{"at":"userKey","from":"path"}}},
+      "directory.users.aliases.watch": {"action":"admin.directory.users.aliases.watch.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","event"],"path":"/admin/directory/v1/users/{userKey}/aliases/watch","scope":{"userKey":{"at":"userKey","from":"path"}}},
+      "directory.users.createGuest": {"action":"admin.directory.users.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users:createGuest","scope":{}},
+      "directory.users.delete": {"action":"admin.directory.users.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}","scope":{"userKey":{"at":"userKey","from":"path"}}},
+      "directory.users.get": {"action":"admin.directory.users.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","customFieldMask","projection","viewType"],"path":"/admin/directory/v1/users/{userKey}","scope":{"userKey":{"at":"userKey","from":"path"}}},
+      "directory.users.insert": {"action":"admin.directory.users.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","resolveConflictAccount"],"path":"/admin/directory/v1/users","scope":{}},
+      "directory.users.list": {"action":"admin.directory.users.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","customFieldMask","customer","domain","event","maxResults","orderBy","pageToken","projection","query","showDeleted","sortOrder","viewType"],"path":"/admin/directory/v1/users","scope":{}},
+      "directory.users.makeAdmin": {"action":"admin.directory.users.make_admin.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/makeAdmin","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userKey":{"at":"userKey","from":"path"}}},
+      "directory.users.patch": {"action":"admin.directory.users.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}","scope":{"userKey":{"at":"userKey","from":"path"}}},
+      "directory.users.photos.delete": {"action":"admin.directory.users.photos.thumbnail.delete","effects":["delete"],"method":"DELETE","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/photos/thumbnail","scope":{"userKey":{"at":"userKey","from":"path"}}},
+      "directory.users.photos.get": {"action":"admin.directory.users.photos.thumbnail.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/photos/thumbnail","scope":{"userKey":{"at":"userKey","from":"path"}}},
+      "directory.users.photos.patch": {"action":"admin.directory.users.photos.thumbnail.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/photos/thumbnail","scope":{"userKey":{"at":"userKey","from":"path"}}},
+      "directory.users.photos.update": {"action":"admin.directory.users.photos.thumbnail.write","body":"json","effects":["write"],"method":"PUT","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/photos/thumbnail","scope":{"userKey":{"at":"userKey","from":"path"}}},
+      "directory.users.signOut": {"action":"admin.directory.users.sign_out.write","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/signOut","scope":{"userKey":{"at":"userKey","from":"path"}}},
+      "directory.users.undelete": {"action":"admin.directory.users.undelete.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/undelete","scope":{"userKey":{"at":"userKey","from":"path"}}},
+      "directory.users.update": {"action":"admin.directory.users.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}","scope":{"userKey":{"at":"userKey","from":"path"}}},
+      "directory.users.watch": {"action":"admin.directory.users.watch.write","body":"json","effects":["write"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","customFieldMask","customer","domain","event","maxResults","orderBy","pageToken","projection","query","showDeleted","sortOrder","viewType"],"path":"/admin/directory/v1/users/watch","scope":{}},
+      "directory.verificationCodes.generate": {"action":"admin.directory.users.verification_codes.generate.admin","effects":["admin"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/verificationCodes/generate","scope":{"query":{"at":"","from":"query","type":"object"},"userKey":{"at":"userKey","from":"path"}}},
+      "directory.verificationCodes.invalidate": {"action":"admin.directory.users.verification_codes.invalidate.admin","effects":["admin"],"method":"POST","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/verificationCodes/invalidate","scope":{"query":{"at":"","from":"query","type":"object"},"userKey":{"at":"userKey","from":"path"}}},
+      "directory.verificationCodes.list": {"action":"admin.directory.users.verification_codes.read","effects":["read"],"method":"GET","origin":"https://admin.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/admin/directory/v1/users/{userKey}/verificationCodes","scope":{"userKey":{"at":"userKey","from":"path"}}}
     }
   }
 }

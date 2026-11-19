@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"maps"
 	"net"
 	"net/http"
 	"slices"
+	"strings"
 	"sync"
 	"time"
 
@@ -25,6 +27,8 @@ const (
 var (
 	errNoTarget = errors.New("no connection serves this target")
 	errNoServe  = errors.New("the connector serves no streams")
+
+	ErrAmbiguous = errors.New("ambiguous target")
 )
 
 type Watch = func(ctx context.Context, end func()) (connector.Gate, bool)
@@ -68,7 +72,7 @@ type connection struct {
 type Table struct {
 	reaches      func(context.Context, facts.Principal, string) bool
 	admit        func(context.Context, facts.Principal, Request) (Watch, error)
-	selectTarget func(connector.Target, []Candidate) (string, bool, bool)
+	selectTarget func(connector.Target, []Candidate) (string, bool, error)
 	openTimeout  time.Duration
 	mu           sync.Mutex
 	connections  map[string]*connection
@@ -78,7 +82,7 @@ type Table struct {
 
 func New(reaches func(ctx context.Context, p facts.Principal, connection string) bool,
 	admit func(ctx context.Context, p facts.Principal, r Request) (Watch, error),
-	selectTarget func(target connector.Target, candidates []Candidate) (name string, explicit, ok bool),
+	selectTarget func(target connector.Target, candidates []Candidate) (name string, explicit bool, err error),
 	openTimeout time.Duration) *Table {
 	return &Table{reaches: reaches, admit: admit, selectTarget: selectTarget, openTimeout: openTimeout, connections: map[string]*connection{}}
 }
@@ -214,20 +218,27 @@ type candidate struct {
 	s *setup
 }
 
-func BestClaim(target connector.Target, candidates []Candidate) (name string, explicit, ok bool) {
-	best, tied := -1, false
+func BestClaim(target connector.Target, candidates []Candidate) (name string, explicit bool, err error) {
+	best, tied := -1, []string(nil)
 	for _, c := range candidates {
 		if c.Claim == nil {
 			continue
 		}
 		switch score := c.Claim(target); {
 		case score > best:
-			name, best, tied = c.Name, score, false
+			best, tied = score, []string{c.Name}
 		case score == best:
-			tied = true
+			tied = append(tied, c.Name)
 		}
 	}
-	return name, false, best >= 0 && !tied
+	switch {
+	case best < 0:
+		return "", false, errNoTarget
+	case len(tied) > 1:
+		slices.Sort(tied)
+		return "", false, fmt.Errorf("%w: connections %s serve %s:%d equally; address one of them explicitly", ErrAmbiguous, strings.Join(tied, ", "), target.Host, target.Port)
+	}
+	return tied[0], false, nil
 }
 
 func (t *Table) Open(p facts.Principal) netx.Open {
@@ -250,9 +261,12 @@ func (t *Table) open(ctx context.Context, p facts.Principal, target connector.Ta
 	for i, r := range ready {
 		offered[i] = Candidate{Name: r.c.name, Claim: r.s.claim}
 	}
-	name, explicit, ok := t.selectTarget(target, offered)
+	name, explicit, err := t.selectTarget(target, offered)
+	if err != nil {
+		return err
+	}
 	i := slices.IndexFunc(ready, func(r candidate) bool { return r.c.name == name })
-	if !ok || i < 0 {
+	if i < 0 {
 		return errNoTarget
 	}
 	c, s := ready[i].c, ready[i].s

@@ -12,6 +12,18 @@
       "inference.count_tokens": {
         "title": "Count input tokens"
       },
+      "inference.embeddings": {
+        "title": "Create embeddings"
+      },
+      "inference.decisions": {
+        "title": "Answer decision questions"
+      },
+      "inference.audio": {
+        "title": "Transcribe and synthesize speech"
+      },
+      "inference.documents": {
+        "title": "Convert documents to Markdown"
+      },
       "models.read": {
         "title": "List models"
       }
@@ -127,7 +139,7 @@
       "messages.count_tokens": {
         "action": "inference.count_tokens",
         "effects": [
-          "send"
+          "read"
         ],
         "method": "POST",
         "origin": "https://inference.tinfoil.sh",
@@ -150,6 +162,196 @@
         "grant": [
           "model"
         ],
+        "sends": "connection"
+      },
+      "completions": {
+        "action": "inference.generate",
+        "effects": [
+          "generate",
+          "pay",
+          "send"
+        ],
+        "method": "POST",
+        "origin": "https://inference.tinfoil.sh",
+        "path": "/v1/completions",
+        "body": "json",
+        "scope": {
+          "model": {
+            "from": "body",
+            "at": "/model"
+          },
+          "request": {
+            "from": "body",
+            "at": "",
+            "type": "object"
+          }
+        },
+        "grant": [
+          "model"
+        ],
+        "sends": "connection"
+      },
+      "chat.input_tokens": {
+        "action": "inference.count_tokens",
+        "effects": [
+          "read"
+        ],
+        "method": "POST",
+        "origin": "https://inference.tinfoil.sh",
+        "path": "/v1/chat/completions/input_tokens",
+        "body": "json",
+        "scope": {
+          "model": {
+            "from": "body",
+            "at": "/model"
+          },
+          "request": {
+            "from": "body",
+            "at": "",
+            "type": "object"
+          }
+        },
+        "grant": [
+          "model"
+        ],
+        "sends": "connection"
+      },
+      "responses.input_tokens": {
+        "action": "inference.count_tokens",
+        "effects": [
+          "read"
+        ],
+        "method": "POST",
+        "origin": "https://inference.tinfoil.sh",
+        "path": "/v1/responses/input_tokens",
+        "body": "json",
+        "scope": {
+          "model": {
+            "from": "body",
+            "at": "/model"
+          },
+          "request": {
+            "from": "body",
+            "at": "",
+            "type": "object"
+          }
+        },
+        "grant": [
+          "model"
+        ],
+        "sends": "connection"
+      },
+      "embeddings": {
+        "action": "inference.embeddings",
+        "effects": [
+          "generate",
+          "pay",
+          "send"
+        ],
+        "method": "POST",
+        "origin": "https://inference.tinfoil.sh",
+        "path": "/v1/embeddings",
+        "body": "json",
+        "scope": {
+          "model": {
+            "from": "body",
+            "at": "/model"
+          },
+          "request": {
+            "from": "body",
+            "at": "",
+            "type": "object"
+          }
+        },
+        "grant": [
+          "model"
+        ],
+        "sends": "connection"
+      },
+      "decisions": {
+        "action": "inference.decisions",
+        "effects": [
+          "generate",
+          "pay",
+          "send"
+        ],
+        "method": "POST",
+        "origin": "https://inference.tinfoil.sh",
+        "path": "/v1/decisions",
+        "body": "json",
+        "scope": {
+          "model": {
+            "from": "body",
+            "at": "/model"
+          },
+          "request": {
+            "from": "body",
+            "at": "",
+            "type": "object"
+          }
+        },
+        "grant": [
+          "model"
+        ],
+        "sends": "connection"
+      },
+      "audio.speech": {
+        "action": "inference.audio",
+        "effects": [
+          "generate",
+          "pay",
+          "send"
+        ],
+        "method": "POST",
+        "origin": "https://inference.tinfoil.sh",
+        "path": "/v1/audio/speech",
+        "body": "json",
+        "scope": {
+          "model": {
+            "from": "body",
+            "at": "/model",
+            "optional": true
+          },
+          "request": {
+            "from": "body",
+            "at": "",
+            "type": "object"
+          }
+        },
+        "grant": [
+          "model"
+        ],
+        "sends": "connection"
+      },
+      "audio.transcriptions": {
+        "action": "inference.audio",
+        "effects": [
+          "generate",
+          "pay",
+          "send"
+        ],
+        "method": "POST",
+        "origin": "https://inference.tinfoil.sh",
+        "path": "/v1/audio/transcriptions",
+        "body": "any",
+        "scope": {},
+        "sends": "connection"
+      },
+      "convert.file": {
+        "action": "inference.documents",
+        "effects": [
+          "generate",
+          "pay",
+          "send"
+        ],
+        "method": "POST",
+        "origin": "https://inference.tinfoil.sh",
+        "path": "/v1/convert/file",
+        "body": "any",
+        "params": [
+          "mode"
+        ],
+        "scope": {},
         "sends": "connection"
       },
       "models.list": {

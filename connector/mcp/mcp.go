@@ -1,6 +1,7 @@
 package mcp
 
 import (
+	"cmp"
 	"context"
 	"crypto/tls"
 	"encoding/json"
@@ -19,17 +20,30 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 )
 
-var errURL = errors.New("MCP requires an http:// or https:// server URL")
+const basicUser = "user"
+
+var (
+	errURL             = errors.New("MCP requires an http:// or https:// server URL")
+	bearerToken        = &Placement{Header: "Authorization", Prefix: "Bearer "}
+	destructiveEffects = []string{"delete"}
+)
 
 type Setup struct {
 	URL    string    `json:"url"`
 	Pin    *Snapshot `json:"pin"`
 	Preset *Preset   `json:"-"`
+
+	actions map[string]catalogAction
+}
+
+type catalogAction struct {
+	Effects []string `json:"effects"`
 }
 
 type Client struct {
 	HTTP    *http.Client
 	Token   func(context.Context) (string, error)
+	Place   *Placement
 	Expose  func(current *Snapshot) (tools []*sdk.Tool, instructions string)
 	Timeout time.Duration
 	TLS     func(ctx context.Context, host string) *tls.Config
@@ -60,7 +74,10 @@ func Decode(config, definition json.RawMessage, into any, setup *Setup) error {
 		return err
 	}
 	var preset struct {
-		MCP *Preset `json:"mcp"`
+		MCP     *Preset `json:"mcp"`
+		Catalog struct {
+			Actions map[string]catalogAction `json:"actions"`
+		} `json:"catalog"`
 	}
 	if len(definition) != 0 {
 		if err := json.Unmarshal(definition, &preset); err != nil {
@@ -74,7 +91,7 @@ func Decode(config, definition json.RawMessage, into any, setup *Setup) error {
 	if _, password := u.User.Password(); password {
 		return errURL
 	}
-	setup.Preset = preset.MCP
+	setup.Preset, setup.actions = preset.MCP, preset.Catalog.Actions
 	return nil
 }
 
@@ -94,6 +111,7 @@ func Open(ctx context.Context, setup *Setup, c Client) (*Session, error) {
 
 type bearer struct {
 	token func(context.Context) (string, error)
+	place *Placement
 	base  http.RoundTripper
 }
 
@@ -103,7 +121,18 @@ func (b bearer) RoundTrip(r *http.Request) (*http.Response, error) {
 		return nil, err
 	}
 	r = r.Clone(r.Context())
-	r.Header.Set("Authorization", "Bearer "+token)
+	switch p := cmp.Or(b.place, bearerToken); {
+	case p.Header != "":
+		r.Header.Set(p.Header, p.Prefix+token)
+	case p.Query != "":
+		query := r.URL.Query()
+		query.Set(p.Query, token)
+		r.URL.RawQuery = query.Encode()
+	case p.Basic == basicUser:
+		r.SetBasicAuth(token, "")
+	default:
+		r.SetBasicAuth("", token)
+	}
 	resp, err := b.base.RoundTrip(r)
 	if err != nil {
 		if ctxErr := r.Context().Err(); ctxErr != nil {
@@ -132,7 +161,8 @@ func (m *Session) Serve(ctx context.Context, conn net.Conn, _ string, target con
 		server := sdk.NewServer(m.client.info(), &sdk.ServerOptions{Instructions: m.instructions})
 		for _, t := range m.tools {
 			server.AddTool(t, func(ctx context.Context, req *sdk.CallToolRequest) (*sdk.CallToolResult, error) {
-				if err := gate(ctx, facts.Capture((&Request{Tool: t.Name, Arguments: req.Params.Arguments, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint}).Describe(m.setup.Preset))); err != nil {
+				hints := cmp.Or(t.Annotations, &sdk.ToolAnnotations{})
+				if err := gate(ctx, facts.Capture((&Request{Tool: t.Name, Arguments: req.Params.Arguments, ReadOnly: hints.ReadOnlyHint, Destructive: hints.DestructiveHint != nil && *hints.DestructiveHint}).Describe(m.setup))); err != nil {
 					log.Printf("%s: blocked %s: %v", m.setup.URL, t.Name, err)
 					return &sdk.CallToolResult{IsError: true, Content: []sdk.Content{&sdk.TextContent{Text: "blocked by policy: " + err.Error()}}}, nil
 				}
@@ -152,11 +182,11 @@ func (m *Session) connect(ctx context.Context) error {
 			return errors.New("an MCP token needs an https server URL")
 		}
 		authorized := *client
-		authorized.Transport = bearer{m.client.Token, client.Transport}
+		authorized.Transport = bearer{m.client.Token, m.client.Place, client.Transport}
 		client = &authorized
 	}
 	session, err := sdk.NewClient(m.client.info(), nil).
-		Connect(ctx, &sdk.StreamableClientTransport{Endpoint: m.setup.URL, HTTPClient: client}, nil)
+		Connect(ctx, &sdk.StreamableClientTransport{Endpoint: m.setup.URL, HTTPClient: client, DisableStandaloneSSE: true}, nil)
 	if err != nil {
 		return err
 	}
@@ -186,12 +216,13 @@ func (m *Session) connect(ctx context.Context) error {
 }
 
 type Request struct {
-	Tool      string          `json:"tool"`
-	Arguments json.RawMessage `json:"arguments"`
-	ReadOnly  bool            `json:"read_only"`
+	Tool        string          `json:"tool"`
+	Arguments   json.RawMessage `json:"arguments"`
+	ReadOnly    bool            `json:"read_only"`
+	Destructive bool            `json:"destructive"`
 }
 
-func (r *Request) Describe(p *Preset) (facts.Observation, error) {
+func (r *Request) Describe(s *Setup) (facts.Observation, error) {
 	f := facts.Observation{Details: Details{MCP: &MCPFacts{Tool: r.Tool, Arguments: r.Arguments, ReadOnly: r.ReadOnly}}, Title: "Use " + r.Tool}
 	action := "use." + r.Tool
 	if r.ReadOnly {
@@ -204,7 +235,10 @@ func (r *Request) Describe(p *Preset) (facts.Observation, error) {
 	f.Parameters = map[string]any{"arguments": args}
 	f.Details.(Details).MCP.Arguments = args
 	f.Operation = &facts.Operation{Action: action}
-	if p != nil {
+	if r.Destructive && !r.ReadOnly && s.actions[action].Effects == nil {
+		f.Operation.Effects = destructiveEffects
+	}
+	if p := s.Preset; p != nil {
 		scope, err := facts.Select(p.scope, args)
 		maps.Copy(f.Parameters, scope)
 		f.Scope = facts.Project(scope, p.Grant)
@@ -218,7 +252,15 @@ type Preset struct {
 	Grant    []string                  `json:"grant,omitempty"`
 	Sends    json.RawMessage           `json:"sends,omitempty"`
 	Observes json.RawMessage           `json:"observes,omitempty"`
+	Token    *Placement                `json:"token,omitempty"`
 	scope    []facts.Compiled
+}
+
+type Placement struct {
+	Header string `json:"header,omitempty"`
+	Prefix string `json:"prefix,omitempty"`
+	Query  string `json:"query,omitempty"`
+	Basic  string `json:"basic,omitempty"`
 }
 
 func (p *Preset) UnmarshalJSON(raw []byte) error {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"cmp"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -11,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"slices"
 	"strings"
 )
@@ -154,6 +156,12 @@ func operationSpec(op map[string]any) specOp {
 		o.Body = "none"
 	}
 	o.Query, _ = op["query"].(map[string]any)
+	if patterns, ok := op["path_patterns"].(map[string]any); ok {
+		o.PathPatterns = map[string]string{}
+		for name, pattern := range patterns {
+			o.PathPatterns[name], _ = pattern.(string)
+		}
+	}
 	if g, ok := op["graphql"].(map[string]any); ok {
 		kind, _ := g["operation"].(string)
 		field, _ := g["field"].(string)
@@ -169,14 +177,41 @@ func operationSpec(op map[string]any) specOp {
 	return o
 }
 
+// A descriptor accepting any body covers every body variant of its route; others never cover an uninspectable one.
 func sameRoute(a, b specOp) bool {
-	if a.Method != b.Method || a.Origin != b.Origin || a.Body != b.Body {
+	if a.Method != b.Method || a.Origin != b.Origin || a.Body != "any" && (a.Body != b.Body || b.Unsupported != "") {
 		return false
 	}
-	if a.GraphQL != nil || b.GraphQL != nil {
+	if a.GraphQL != nil && b.GraphQL != nil {
 		return graphqlOverlap(a.GraphQL, b.GraphQL)
 	}
 	return routeShape(a.Method, a.Path) == routeShape(b.Method, b.Path)
+}
+
+func sameEffects(a, b any) bool {
+	x, _ := a.([]any)
+	y, _ := b.([]any)
+	x, y = slices.Clone(x), slices.Clone(y)
+	byName := func(p, q any) int { return strings.Compare(p.(string), q.(string)) }
+	slices.SortFunc(x, byName)
+	slices.SortFunc(y, byName)
+	return slices.Equal(x, y)
+}
+
+// acceptAnyBody drops the body conditions and selectors a descriptor cannot apply once it accepts any body.
+func acceptAnyBody(op map[string]any) {
+	op["body"] = "any"
+	delete(op, "fields")
+	delete(op, "present")
+	scope := op["scope"].(map[string]any)
+	for name, selector := range scope {
+		if s, _ := selector.(map[string]any); s["from"] == "body" || s["from"] == "form" {
+			delete(scope, name)
+		}
+	}
+	if grant, ok := op["grant"].([]any); ok {
+		op["grant"] = slices.DeleteFunc(grant, func(name any) bool { return scope[name.(string)] == nil })
+	}
 }
 
 // Each matcher is an operation kind followed by the root fields it accepts; "*" accepts any.
@@ -187,31 +222,70 @@ func graphqlOverlap(a, b []string) bool {
 	return a[1] == "*" || b[1] == "*" || slices.ContainsFunc(a[1:], func(f string) bool { return slices.Contains(b[1:], f) })
 }
 
-func conditionsOverlap(a, b map[string]any) bool {
+// conditionsOverlap reports whether one request can meet both sets of conditions; with presence, true accepts any single value.
+func conditionsOverlap(a, b map[string]any, presence bool) bool {
 	for key, value := range a {
-		if other, ok := b[key]; ok && !reflect.DeepEqual(value, other) {
+		other, ok := b[key]
+		_, text := value.(string)
+		_, otherText := other.(string)
+		if ok && !reflect.DeepEqual(value, other) && !(presence && (value == true && otherText || other == true && text)) {
 			return false
 		}
 	}
 	return true
 }
 
+func headerConditions(op map[string]any) map[string]any {
+	headers, _ := op["headers"].(map[string]any)
+	lower := map[string]any{}
+	for key, value := range headers {
+		lower[strings.ToLower(key)] = value
+	}
+	return lower
+}
+
+// mediaBody returns the body kind the matcher infers from a Content-Type header value.
+func contentTypeAllows(condition any, body string) bool {
+	switch body {
+	case "any", "none":
+		return true
+	case "graphql":
+		body = "json"
+	}
+	contentType, literal := condition.(string)
+	return condition == true || literal && mediaBody(contentType) == body
+}
+
 func recordOverlap(a, b map[string]any) bool {
 	x, y := operationSpec(a), operationSpec(b)
-	if x.Method != y.Method || x.Origin != y.Origin || !bodiesOverlap(x.Body, y.Body) || !segmentsOverlap(x.Path, y.Path) {
+	if x.Method != y.Method || x.Origin != y.Origin || !bodiesOverlap(x.Body, y.Body) || !segmentsOverlap(x, y) {
 		return false
 	}
-	if x.GraphQL != nil || y.GraphQL != nil {
+	if x.GraphQL != nil && y.GraphQL != nil {
 		return graphqlOverlap(x.GraphQL, y.GraphQL)
 	}
 	for _, key := range []string{"query", "headers", "fields"} {
 		am, _ := a[key].(map[string]any)
 		bm, _ := b[key].(map[string]any)
-		if !conditionsOverlap(am, bm) {
+		if key == "headers" {
+			am, bm = headerConditions(a), headerConditions(b)
+		}
+		if !conditionsOverlap(am, bm, key != "fields" || x.Body == "form" || y.Body == "form") {
 			return false
 		}
 	}
 	for _, pair := range [][2]map[string]any{{a, b}, {b, a}} {
+		if contentType, ok := headerConditions(pair[0])["content-type"]; ok && !contentTypeAllows(contentType, operationSpec(pair[1]).Body) {
+			return false
+		}
+		present, _ := pair[0]["present"].([]any)
+		fields, _ := pair[1]["fields"].(map[string]any)
+		for _, at := range present {
+			pointer, _ := at.(string)
+			if value, ok := fields[pointer]; ok && value == nil {
+				return false
+			}
+		}
 		q, _ := pair[0]["query"].(map[string]any)
 		allowed := map[string]bool{}
 		if params, ok := pair[1]["params"].([]any); ok {
@@ -232,6 +306,207 @@ func recordOverlap(a, b map[string]any) bool {
 		}
 	}
 	return true
+}
+
+// An exclusion rejects a literal value, or with prefix the values starting with text, or with infix the values containing it.
+type exclusion struct {
+	text          string
+	prefix, infix bool
+}
+
+const customMethodSeparator = ":"
+
+// separateRoutes excludes another operation's more specific segment from a capture when that operation accepts every other segment of the capture's operation, or else applies source patterns that separate the segments; a source pattern replaces exclusions it also rejects.
+func separateRoutes(operations []map[string]any, precise map[string]map[string]string) (overlaps [][2]int) {
+	type capture struct {
+		op   int
+		name string
+	}
+	excluded := map[capture][]exclusion{}
+	specs, segments, documented := make([]specOp, len(operations)), make([][]string, len(operations)), make([]map[string]string, len(operations))
+	for i, op := range operations {
+		specs[i] = operationSpec(op)
+		segments[i] = strings.Split(specs[i].Path, "/")
+		documented[i] = precise[specs[i].Origin+" "+specs[i].Path]
+	}
+	for i, a := range operations {
+	pairs:
+		for j := i + 1; j < len(operations); j++ {
+			if !recordOverlap(a, operations[j]) {
+				continue
+			}
+			overlaps = append(overlaps, [2]int{i, j})
+			x, y, as, bs := specs[i], specs[j], segments[i], segments[j]
+			if len(as) != len(bs) || strings.Contains(x.Path+y.Path, "*}") {
+				continue
+			}
+			sides := []struct {
+				op, peer       int
+				spec, other    specOp
+				segs, siblings []string
+			}{{i, j, x, y, as, bs}, {j, i, y, x, bs, as}}
+			assignable := func(spec specOp, name string) bool {
+				return spec.PathPatterns[name] == "" && strings.Count(spec.Path, "{"+name+"}") == 1
+			}
+			for k := range as {
+				for _, side := range sides {
+					s, t := side.segs[k], side.siblings[k]
+					prefix, name, suffix, ok := paramParts(s)
+					tPrefix, tName, tSuffix, sibling := paramParts(t)
+					patternPrefix := literalPrefix(cmp.Or(side.other.PathPatterns[tName], documented[side.peer][tName]))
+					tPrefix += patternPrefix
+					// A bare capture cannot hold a value of a sibling's custom method, such as {id} beside {id}:verb.
+					verb := sibling && prefix+suffix == "" && strings.HasPrefix(tSuffix, customMethodSeparator)
+					if !ok || s == t || !assignable(side.spec, name) || sibling && !verb && (len(tPrefix) <= len(prefix+literalPrefix(documented[side.op][name])) || !strings.HasPrefix(tPrefix, prefix)) {
+						continue
+					}
+					lossless := true
+					for m := range side.segs {
+						lossless = lossless && (m == k || within(side.segs[m], side.siblings[m], side.spec.PathPatterns, side.other.PathPatterns))
+					}
+					if !lossless {
+						continue
+					}
+					e := exclusion{text: t[len(prefix) : len(t)-len(suffix)]}
+					switch {
+					case verb:
+						e = exclusion{text: customMethodSeparator, infix: true}
+					case sibling:
+						e = exclusion{text: tPrefix[len(prefix):], prefix: true}
+						if _, ok := excluded[capture{side.peer, tName}]; !ok && patternPrefix != "" && assignable(side.other, tName) {
+							excluded[capture{side.peer, tName}] = nil
+						}
+					}
+					c := capture{side.op, name}
+					excluded[c] = append(excluded[c], e)
+					continue pairs
+				}
+			}
+			for k := range as {
+				var exprs []string
+				var sourced []capture
+				for _, side := range sides {
+					patterns := side.spec.PathPatterns
+					if _, name, _, ok := paramParts(side.segs[k]); ok && documented[side.op][name] != "" && assignable(side.spec, name) {
+						patterns = map[string]string{name: documented[side.op][name]}
+						sourced = append(sourced, capture{side.op, name})
+					}
+					exprs = append(exprs, segmentExpr(side.segs[k], patterns))
+				}
+				if len(sourced) > 0 && !intersect(exprs[0], exprs[1]) {
+					for _, c := range sourced {
+						if _, ok := excluded[c]; !ok {
+							excluded[c] = nil
+						}
+					}
+					continue pairs
+				}
+			}
+			// A peer narrower only by a namespace and a final literal, such as settings/layouts beside {module}/{id}, claims the namespace.
+			for _, side := range sides {
+				var literals []int
+				for m := range side.segs {
+					_, _, _, param := paramParts(side.segs[m])
+					if _, _, _, sibling := paramParts(side.siblings[m]); param && !sibling {
+						literals = append(literals, m)
+					} else if !within(side.segs[m], side.siblings[m], side.spec.PathPatterns, side.other.PathPatterns) {
+						literals = nil
+						break
+					}
+				}
+				if len(literals) != 2 || literals[1] != len(side.segs)-1 {
+					continue
+				}
+				prefix, name, suffix, _ := paramParts(side.segs[literals[0]])
+				if !assignable(side.spec, name) {
+					continue
+				}
+				t, c := side.siblings[literals[0]], capture{side.op, name}
+				excluded[c] = append(excluded[c], exclusion{text: t[len(prefix) : len(t)-len(suffix)]})
+				continue pairs
+			}
+		}
+	}
+	for c, values := range excluded {
+		var exprs []string
+		for _, e := range values {
+			expr := regexp.QuoteMeta(e.text)
+			if e.prefix || e.infix {
+				expr += ".*"
+			}
+			if e.infix {
+				expr = ".*" + expr
+			}
+			exprs = append(exprs, expr)
+		}
+		pattern := documented[c.op][c.name]
+		if pattern == "" || len(exprs) > 0 && intersect(pattern, strings.Join(exprs, "|")) {
+			pattern = complement(values)
+		}
+		patterns, _ := operations[c.op]["path_patterns"].(map[string]any)
+		if patterns == nil {
+			patterns = map[string]any{}
+			operations[c.op]["path_patterns"] = patterns
+		}
+		patterns[c.name] = pattern
+	}
+	return overlaps
+}
+
+// complement returns an expression for the nonempty values that are neither an excluded literal nor start with an excluded prefix nor contain an excluded infix.
+func complement(excluded []exclusion) string {
+	type node struct {
+		next     map[rune]*node
+		end, cut bool
+	}
+	class := func(runes string) string { return strings.ReplaceAll(regexp.QuoteMeta(runes), "-", `\-`) }
+	var banned string
+	for _, e := range excluded {
+		if e.infix && !strings.Contains(banned, e.text) {
+			banned += e.text
+		}
+	}
+	anyRune := "."
+	if banned != "" {
+		anyRune = "[^" + class(banned) + "]"
+	}
+	root := &node{next: map[rune]*node{}}
+	for _, e := range excluded {
+		if e.infix || strings.ContainsAny(e.text, banned) {
+			continue
+		}
+		n := root
+		for _, r := range e.text {
+			if n.next[r] == nil {
+				n.next[r] = &node{next: map[rune]*node{}}
+			}
+			n = n.next[r]
+		}
+		n.end, n.cut = true, n.cut || e.prefix
+	}
+	var render func(n *node) string
+	render = func(n *node) string {
+		var alternatives []string
+		if !n.end && n != root {
+			alternatives = append(alternatives, "")
+		}
+		keys := slices.Sorted(maps.Keys(n.next))
+		if len(keys) == 0 {
+			alternatives = append(alternatives, anyRune+"+")
+		} else {
+			alternatives = append(alternatives, "[^"+class(banned+string(keys))+"]"+anyRune+"*")
+		}
+		for _, r := range keys {
+			if child := n.next[r]; !child.cut {
+				alternatives = append(alternatives, regexp.QuoteMeta(string(r))+render(child))
+			}
+		}
+		if n != root && len(alternatives) > 1 {
+			return "(?:" + strings.Join(alternatives, "|") + ")"
+		}
+		return strings.Join(alternatives, "|")
+	}
+	return render(root)
 }
 
 func normalizeProvider(name string, o specOp) specOp {
@@ -301,7 +576,8 @@ func normalizeProvider(name string, o specOp) specOp {
 	return o
 }
 
-func generateService(name string, src source, lock lockFile) (generationReport, error) {
+func generateService(name string, sources map[string]source, lock lockFile) (generationReport, error) {
+	src := sources[name]
 	r := generationReport{Service: name, Presets: strings.Split(src.Preset, ","), Sources: lock[name], Note: src.Note, Counts: map[string]int{}, Operations: []inventoryOperation{}, Conflicts: [][2]string{}}
 	r.Definition = src
 	if src.Preset == "" {
@@ -333,7 +609,8 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 	if len(src.Specs) == 0 {
 		return r, fmt.Errorf("no specification configured: %s", src.Note)
 	}
-	p, err := specOps(name, src, lock)
+	origins, _ := httpSection(candidate)["origins"].(map[string]any)
+	p, err := specOps(name, src, lock, origins)
 	if err != nil {
 		return r, err
 	}
@@ -347,24 +624,71 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 		ids[o["id"].(string)] = true
 	}
 	generated := map[string]string{}
+	precise := map[string]map[string]string{}
+	reviewer := map[string]string{}
 	ai := name == "anthropic" || name == "open_ai" || name == "google_gemini"
 	for _, raw := range p.Ops {
 		o := normalizeProvider(name, raw)
+		if raw.Reviewed {
+			o.Effects = raw.Effects
+		}
+		route := o.Origin + " " + o.Path
+		if precise[route] == nil {
+			precise[route] = map[string]string{}
+		}
+		for capture, pattern := range o.PathPatterns {
+			if known, ok := precise[route][capture]; ok && known != pattern {
+				pattern = ""
+			}
+			precise[route][capture] = pattern
+		}
 		entry := inventoryOperation{ID: o.SourceID, Source: documentStamp{o.SourceURL, o.SourceHash}, Method: o.Method, Origin: o.Origin, Path: o.Path, Body: o.Body, Query: o.Query, Descriptors: []string{}}
-		if o.Unsupported != "" || o.Method == "" || o.Path == "" {
+		if o.Method == "" || o.Path == "" {
 			entry.Status = "unsupported"
 			entry.Reason = o.Unsupported
 			if entry.Reason == "" {
 				entry.Reason = "source does not describe a method and path"
 			}
 		} else {
+			base := cmp.Or(o.ID, o.Method+" "+o.Path)
+			drafted := operationObj(draftOps(parsed{Ops: []specOp{o}}, ai)[0], "")
+			patterns := map[string]any{}
+			for capture, pattern := range o.PathPatterns {
+				patterns[capture] = pattern
+			}
+			documented := maps.Clone(drafted)
+			documented["path_patterns"] = patterns
+			opaque := o.Opaque
+			var matched, targets []map[string]any
 			for _, override := range baseline {
-				if sameRoute(operationSpec(override), o) {
-					entry.Descriptors = append(entry.Descriptors, override["id"].(string))
-					// Reviewed effects are the source of truth for the descriptor generated from that operation.
-					if o.Reviewed && override["id"] == o.ID {
-						maps.Copy(override, operationObj(draftOps(parsed{Ops: []specOp{o}}, ai)[0], o.ID))
+				shipped, id := operationSpec(override), override["id"].(string)
+				// Separation may narrow a descriptor below its own operation's source path patterns, so those only rule out other descriptors.
+				named := id == base || strings.HasPrefix(id, base+"."+shipped.Body+".")
+				if (sameRoute(shipped, o) || opaque && shipped.GraphQL == nil && sameRoute(o, shipped)) && (named && recordOverlap(override, drafted) || recordOverlap(override, documented)) {
+					if opaque && shipped.Body != "any" {
+						acceptAnyBody(override)
 					}
+					entry.Descriptors = append(entry.Descriptors, id)
+					matched = append(matched, override)
+					if named {
+						targets = append(targets, override)
+					}
+				}
+			}
+			// Reviewed effects apply to the descriptors named after the operation, or else to every descriptor serving it.
+			if !o.Reviewed {
+				targets = nil
+			} else if len(targets) == 0 {
+				targets = matched
+			}
+			for _, override := range targets {
+				id, changed := override["id"].(string), !sameEffects(override["effects"], documented["effects"])
+				if other, ok := reviewer[id]; ok && changed {
+					return r, fmt.Errorf("reviewed effects of %s and %s disagree for %s", other, o.SourceID, id)
+				}
+				reviewer[id] = o.SourceID
+				if changed {
+					override["effects"], override["action"] = documented["effects"], documented["action"]
 				}
 			}
 			if len(entry.Descriptors) > 0 {
@@ -376,28 +700,36 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 					}
 				}
 				slices.Sort(params)
+				accepts := func(override map[string]any, param string) bool {
+					q, _ := override["query"].(map[string]any)
+					if constraint, exists := q[param]; exists {
+						literal, fixed := o.Query[param]
+						return constraint != nil && (!fixed || reflect.DeepEqual(literal, constraint))
+					}
+					ps, _ := override["params"].([]any)
+					return override["open_params"] == true || slices.Contains(ps, any(param))
+				}
 				for _, param := range params {
-					allowed := false
-					for _, override := range baseline {
-						if !slices.Contains(entry.Descriptors, override["id"].(string)) {
+					if slices.ContainsFunc(matched, func(override map[string]any) bool { return accepts(override, param) }) {
+						continue
+					}
+					for _, override := range matched {
+						q, _ := override["query"].(map[string]any)
+						if _, conditioned := q[param]; conditioned {
 							continue
 						}
-						accepts := false
-						if override["open_params"] == true {
-							accepts = true
+						ps, _ := override["params"].([]any)
+						override["params"] = append(ps, param)
+						if scope := override["scope"].(map[string]any); !slices.ContainsFunc(slices.Collect(maps.Values(scope)), func(s any) bool {
+							m, _ := s.(map[string]any)
+							return m["from"] == "query" && m["at"] == ""
+						}) {
+							bind(scope, "query", map[string]any{"from": "query", "at": "", "type": "object"})
 						}
-						if ps, ok := override["params"].([]any); ok && slices.Contains(ps, any(param)) {
-							accepts = true
-						}
-						if q, ok := override["query"].(map[string]any); ok {
-							if constraint, exists := q[param]; exists {
-								literal, fixed := o.Query[param]
-								accepts = constraint != nil && (!fixed || reflect.DeepEqual(literal, constraint))
-							}
-						}
-						allowed = allowed || accepts
 					}
-					if !allowed {
+				}
+				for _, param := range params {
+					if !slices.ContainsFunc(matched, func(override map[string]any) bool { return accepts(override, param) }) {
 						entry.MissingParams = append(entry.MissingParams, param)
 					}
 				}
@@ -405,9 +737,9 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 					r.Counts["parameter_gaps"]++
 				}
 			} else {
-				if o.Body == "any" || o.Body == "opaque" {
+				if o.Unsupported != "" || (o.Body == "any" || o.Body == "opaque") && !o.Opaque {
 					entry.Status = "unsupported"
-					entry.Reason = "payload is not inspectable; a generated approval cannot bind it"
+					entry.Reason = cmp.Or(o.Unsupported, "payload is not inspectable; a generated approval cannot bind it")
 					r.Counts[entry.Status]++
 					r.Operations = append(r.Operations, entry)
 					continue
@@ -418,16 +750,16 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 				if id, ok := generated[string(fingerprint)]; ok {
 					entry.Descriptors = []string{id}
 				} else {
-					id := o.ID
-					if id == "" {
-						id = o.Method + " " + o.Path
+					// A taken ID gets a suffix from the request the descriptor matches, not its inferred or reviewed semantics.
+					route := maps.Clone(definition)
+					for _, key := range []string{"action", "effects", "params", "scope"} {
+						delete(route, key)
 					}
-					sum := sha256.Sum256(fingerprint)
-					if ids[id] {
-						id += "." + o.Body + "." + hex.EncodeToString(sum[:6])
-					}
-					if ids[id] {
-						return r, fmt.Errorf("duplicate generated operation id %q", id)
+					identity, _ := json.Marshal(route)
+					id := base
+					for attempt := 0; ids[id]; attempt++ {
+						sum := sha256.Sum256(fmt.Appendf(nil, "%s\x00%d", identity, attempt))
+						id = base + "." + o.Body + "." + hex.EncodeToString(sum[:6])
 					}
 					ids[id] = true
 					definition["id"] = id
@@ -441,11 +773,23 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 		r.Counts[entry.Status]++
 		r.Operations = append(r.Operations, entry)
 	}
-	for i, a := range operations {
-		for _, b := range operations[i+1:] {
-			if recordOverlap(a, b) {
-				r.Conflicts = append(r.Conflicts, [2]string{a["id"].(string), b["id"].(string)})
-			}
+	served := map[string]bool{}
+	for _, entry := range r.Operations {
+		served[entry.ID] = served[entry.ID] || len(entry.Descriptors) > 0
+	}
+	for _, o := range p.Ops {
+		if o.Reviewed && !served[o.SourceID] {
+			return r, fmt.Errorf("reviewed effects for %s apply to no descriptor", o.SourceID)
+		}
+	}
+	for _, o := range p.Excluded {
+		key, _ := sourceKey(src.Exclusions, o)
+		r.Operations = append(r.Operations, inventoryOperation{ID: o.SourceID, Source: documentStamp{o.SourceURL, o.SourceHash}, Method: o.Method, Origin: o.Origin, Path: o.Path, Body: o.Body, Query: o.Query, Descriptors: []string{}, Status: "excluded", Reason: src.Exclusions[key]})
+		r.Counts["excluded"]++
+	}
+	for _, pair := range separateRoutes(operations, precise) {
+		if a, b := operations[pair[0]], operations[pair[1]]; recordOverlap(a, b) {
+			r.Conflicts = append(r.Conflicts, [2]string{a["id"].(string), b["id"].(string)})
 		}
 	}
 	for i := range r.Operations {
@@ -485,7 +829,25 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 		named[op["id"].(string)] = definition
 	}
 	httpSection(candidate)["operations"] = named
-	r.Counts["regrouped"] = groupRecord(candidate, groupHints(operations, p, name))
+	for set, hosts := range p.Origins {
+		if origins == nil {
+			origins = map[string]any{}
+			httpSection(candidate)["origins"] = origins
+		}
+		shipped, _ := origins[set].([]any)
+		for _, host := range shipped {
+			if host, ok := host.(string); ok {
+				hosts = append(hosts, host)
+			}
+		}
+		slices.Sort(hosts)
+		origins[set] = jsonStrings(slices.Compact(hosts))
+	}
+	hints, err := presetHints(operations, r.Presets, sources, lock, origins, map[string]parsed{name: p})
+	if err != nil {
+		return r, err
+	}
+	r.Counts["regrouped"] = groupRecord(candidate, hints)
 	r.Counts["source_variants"] = len(r.Operations)
 	r.Counts["descriptors"] = len(operations)
 	r.Counts["conflicts"] = len(r.Conflicts)
@@ -539,7 +901,7 @@ func generate(only []string) error {
 		if len(only) > 0 && !selected[name] || len(only) == 0 && sources[name].Preset == "" {
 			continue
 		}
-		r, err := generateService(name, sources[name], lock)
+		r, err := generateService(name, sources, lock)
 		r.GeneratorSHA256 = digest
 		if err != nil {
 			r.Error = err.Error()

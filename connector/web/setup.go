@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"path"
@@ -15,7 +16,7 @@ import (
 type Slots interface {
 	Claim(connector.Target) int
 	Covers(origin, path string) bool
-	Bind(r *http.Request, origin string, placeholder func(string) string) (names []string, place func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error), err error)
+	Bind(r *http.Request, origin string, placeholder func(string) string) (names, query []string, place func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error), err error)
 	Answer(r *http.Request, origin string, form url.Values, placeholder func(string) string) http.HandlerFunc
 }
 
@@ -50,7 +51,14 @@ func New(definition, options json.RawMessage, hosts []string, slots Slots) (*Set
 			return nil, err
 		}
 	}
-	return &Setup{Hosts: hosts, Preset: preset.HTTP, title: preset.Title, origin: option.Origin, slots: slots}, nil
+	origin, base := option.Origin, ""
+	if u, err := url.Parse(option.Origin); err == nil && u.Host != "" && u.Path != "" {
+		origin, base = u.Scheme+"://"+u.Host, strings.TrimSuffix(u.Path, "/")
+		if origin+u.Path != option.Origin || canonicalPath(u) != nil || strings.Contains(u.Path, "//") {
+			return nil, fmt.Errorf("origin %s may add only a canonical base path", option.Origin)
+		}
+	}
+	return &Setup{Hosts: hosts, Preset: preset.HTTP, title: preset.Title, origin: origin, base: base, slots: slots}, nil
 }
 
 func (h *Setup) Claim(target connector.Target) int {

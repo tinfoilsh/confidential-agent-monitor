@@ -1,302 +1,1510 @@
 {
-  "title": "X (Formerly Twitter)",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "client_id", "label": "OAuth client ID", "paths": []},
-      {"key": "client_secret", "label": "OAuth client secret", "secret": true, "paths": []},
-      {"key": "token", "label": "X (Formerly Twitter) account", "secret": true, "credential": true, "oauth": {"auth_url": "https://x.com/i/oauth2/authorize", "token_url": "https://api.x.com/2/oauth2/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "tweet.read users.read tweet.write tweet.moderate.write users.read follows.read follows.write offline.access like.read like.write dm.write dm.read list.read list.write"}}
-    ],
-    "connection": {"http": {"slots": [{"value": "token", "origin": "https://api.x.com", "path": "/2", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "admin.account": {"title": "Admin: account"},
-      "admin.admins": {"title": "Admin: admins"},
-      "admin.group": {"title": "Admin: group"},
-      "admin.keys": {"title": "Admin: keys"},
-      "admin.members": {"title": "Admin: members"},
-      "admin.settings": {"title": "Admin: settings"},
-      "admin.subscriptions": {"title": "Admin: subscriptions"},
-      "admin.token": {"title": "Admin: token"},
-      "admin.users": {"title": "Admin: users"},
-      "admin.webhooks": {"title": "Admin: webhooks"},
-      "delete.all": {"title": "Delete: all"},
-      "delete.blocking": {"title": "Delete: blocking"},
-      "delete.bookmarks": {"title": "Delete: bookmarks"},
-      "delete.bots": {"title": "Delete: bots"},
-      "delete.chat": {"title": "Delete: chat"},
-      "delete.connections": {"title": "Delete: connections"},
-      "delete.conversations": {"title": "Delete: conversations"},
-      "delete.delete": {"title": "Delete: delete"},
-      "delete.dm_events": {"title": "Delete: dm events"},
-      "delete.followed_lists": {"title": "Delete: followed lists"},
-      "delete.following": {"title": "Delete: following"},
-      "delete.jobs": {"title": "Delete: jobs"},
-      "delete.likes": {"title": "Delete: likes"},
-      "delete.lists": {"title": "Delete: lists"},
-      "delete.members": {"title": "Delete: members"},
-      "delete.message_ttl": {"title": "Delete: message ttl"},
-      "delete.moderators": {"title": "Delete: moderators"},
-      "delete.mutes": {"title": "Delete: mutes"},
-      "delete.muting": {"title": "Delete: muting"},
-      "delete.notes": {"title": "Delete: notes"},
-      "delete.pinned_lists": {"title": "Delete: pinned lists"},
-      "delete.remove": {"title": "Delete: remove"},
-      "delete.retweets": {"title": "Delete: retweets"},
-      "delete.scheduled": {"title": "Delete: scheduled"},
-      "delete.subscriptions": {"title": "Delete: subscriptions"},
-      "delete.subtitles": {"title": "Delete: subtitles"},
-      "delete.token": {"title": "Delete: token"},
-      "delete.tweets": {"title": "Delete: tweets"},
-      "delete.webhooks": {"title": "Delete: webhooks"},
-      "execute.jobs": {"title": "Execute: jobs"},
-      "pay.screen_capture": {"title": "Pay: screen capture"},
-      "publish.articles": {"title": "Publish: articles"},
-      "publish.chat": {"title": "Publish: chat"},
-      "publish.live": {"title": "Publish: live"},
-      "publish.scheduled": {"title": "Publish: scheduled"},
-      "read": {"title": "Read everything the account can see"},
-      "send.dm_conversations": {"title": "Send: dm conversations"},
-      "send.hidden": {"title": "Send: hidden"},
-      "send.messages": {"title": "Send: messages"},
-      "send.notes": {"title": "Send: notes"},
-      "send.tweets": {"title": "Send: tweets"},
-      "send.typing": {"title": "Send: typing"},
-      "share.conversations": {"title": "Share: conversations"},
-      "write.admin_requests": {"title": "Write: admin requests"},
-      "write.admin_settings": {"title": "Write: admin settings"},
-      "write.all": {"title": "Write: all"},
-      "write.append": {"title": "Write: append"},
-      "write.bookmarks": {"title": "Write: bookmarks"},
-      "write.bots": {"title": "Write: bots"},
-      "write.conversations": {"title": "Write: conversations"},
-      "write.dm": {"title": "Write: dm"},
-      "write.draft": {"title": "Write: draft"},
-      "write.evaluate": {"title": "Write: evaluate"},
-      "write.finalize": {"title": "Write: finalize"},
-      "write.folders": {"title": "Write: folders"},
-      "write.initialize": {"title": "Write: initialize"},
-      "write.jobs": {"title": "Write: jobs"},
-      "write.join_requests": {"title": "Write: join requests"},
-      "write.likes": {"title": "Write: likes"},
-      "write.lists": {"title": "Write: lists"},
-      "write.message_ttl": {"title": "Write: message ttl"},
-      "write.metadata": {"title": "Write: metadata"},
-      "write.moderators": {"title": "Write: moderators"},
-      "write.muting": {"title": "Write: muting"},
-      "write.public_keys": {"title": "Write: public keys"},
-      "write.read": {"title": "Write: read"},
-      "write.replay": {"title": "Write: replay"},
-      "write.retweets": {"title": "Write: retweets"},
-      "write.rules": {"title": "Write: rules"},
-      "write.subtitles": {"title": "Write: subtitles"},
-      "write.upload": {"title": "Write: upload"}
-    }
+      "account": {
+        "title": "Account"
+      },
+      "account.admin": {
+        "title": "Manage"
+      },
+      "account.read": {
+        "title": "Read"
+      },
+      "account_activity": {
+        "title": "Account activity"
+      },
+      "account_activity.subscriptions": {
+        "title": "Subscriptions"
+      },
+      "account_activity.subscriptions.count": {
+        "title": "Count"
+      },
+      "account_activity.subscriptions.count.read": {
+        "title": "Read"
+      },
+      "account_activity.webhooks": {
+        "title": "Webhooks"
+      },
+      "account_activity.webhooks.subscriptions": {
+        "title": "Subscriptions"
+      },
+      "account_activity.webhooks.subscriptions.all": {
+        "title": "All"
+      },
+      "account_activity.webhooks.subscriptions.all.delete": {
+        "title": "Delete"
+      },
+      "account_activity.webhooks.subscriptions.all.read": {
+        "title": "Read"
+      },
+      "account_activity.webhooks.subscriptions.all.write": {
+        "title": "Create and edit"
+      },
+      "activity": {
+        "title": "Activity"
+      },
+      "activity.stream": {
+        "title": "Stream"
+      },
+      "activity.stream.read": {
+        "title": "Read"
+      },
+      "activity.subscriptions": {
+        "title": "Subscriptions"
+      },
+      "activity.subscriptions.admin": {
+        "title": "Manage"
+      },
+      "activity.subscriptions.delete": {
+        "title": "Delete"
+      },
+      "activity.subscriptions.read": {
+        "title": "Read"
+      },
+      "articles": {
+        "title": "Articles"
+      },
+      "articles.draft": {
+        "title": "Draft"
+      },
+      "articles.draft.write": {
+        "title": "Create and edit"
+      },
+      "articles.publish": {
+        "title": "Publish"
+      },
+      "bots": {
+        "title": "Bots"
+      },
+      "bots.delete": {
+        "title": "Delete"
+      },
+      "bots.read": {
+        "title": "Read"
+      },
+      "bots.token": {
+        "title": "Token"
+      },
+      "bots.token.admin": {
+        "title": "Manage"
+      },
+      "bots.write": {
+        "title": "Create and edit"
+      },
+      "broadcasts": {
+        "title": "Broadcasts"
+      },
+      "broadcasts.categories": {
+        "title": "Categories"
+      },
+      "broadcasts.categories.read": {
+        "title": "Read"
+      },
+      "broadcasts.chat": {
+        "title": "Chat"
+      },
+      "broadcasts.chat.delete": {
+        "title": "Delete"
+      },
+      "broadcasts.chat.moderators": {
+        "title": "Moderators"
+      },
+      "broadcasts.chat.moderators.delete": {
+        "title": "Delete"
+      },
+      "broadcasts.chat.moderators.read": {
+        "title": "Read"
+      },
+      "broadcasts.chat.moderators.write": {
+        "title": "Create and edit"
+      },
+      "broadcasts.chat.mutes": {
+        "title": "Mutes"
+      },
+      "broadcasts.chat.mutes.delete": {
+        "title": "Delete"
+      },
+      "broadcasts.chat.mutes.read": {
+        "title": "Read"
+      },
+      "broadcasts.chat.mutes.write": {
+        "title": "Create and edit"
+      },
+      "broadcasts.chat.publish": {
+        "title": "Publish"
+      },
+      "broadcasts.chat.read": {
+        "title": "Read"
+      },
+      "broadcasts.delete": {
+        "title": "Delete"
+      },
+      "broadcasts.publish": {
+        "title": "Publish"
+      },
+      "broadcasts.read": {
+        "title": "Read"
+      },
+      "broadcasts.scheduled": {
+        "title": "Scheduled"
+      },
+      "broadcasts.scheduled.delete": {
+        "title": "Delete"
+      },
+      "broadcasts.scheduled.live": {
+        "title": "Live"
+      },
+      "broadcasts.scheduled.live.publish": {
+        "title": "Publish"
+      },
+      "broadcasts.scheduled.publish": {
+        "title": "Publish"
+      },
+      "broadcasts.scheduled.read": {
+        "title": "Read"
+      },
+      "broadcasts.state": {
+        "title": "State"
+      },
+      "broadcasts.state.publish": {
+        "title": "Publish"
+      },
+      "broadcasts.write": {
+        "title": "Create and edit"
+      },
+      "calls": {
+        "title": "Calls"
+      },
+      "calls.read": {
+        "title": "Read"
+      },
+      "calls.scheduled": {
+        "title": "Scheduled"
+      },
+      "calls.scheduled.delete": {
+        "title": "Delete"
+      },
+      "calls.scheduled.read": {
+        "title": "Read"
+      },
+      "calls.scheduled.rsvp": {
+        "title": "Rsvp"
+      },
+      "calls.scheduled.rsvp.write": {
+        "title": "Create and edit"
+      },
+      "calls.scheduled.send": {
+        "title": "Send"
+      },
+      "calls.scheduled.write": {
+        "title": "Create and edit"
+      },
+      "calls.send": {
+        "title": "Send"
+      },
+      "calls.write": {
+        "title": "Create and edit"
+      },
+      "chat": {
+        "title": "Chat"
+      },
+      "chat.conversations": {
+        "title": "Conversations"
+      },
+      "chat.conversations.admin_requests": {
+        "title": "Admin requests"
+      },
+      "chat.conversations.admin_requests.read": {
+        "title": "Read"
+      },
+      "chat.conversations.admin_requests.write": {
+        "title": "Create and edit"
+      },
+      "chat.conversations.admin_settings": {
+        "title": "Admin settings"
+      },
+      "chat.conversations.admin_settings.write": {
+        "title": "Create and edit"
+      },
+      "chat.conversations.admins": {
+        "title": "Admins"
+      },
+      "chat.conversations.admins.admin": {
+        "title": "Manage"
+      },
+      "chat.conversations.admins.delete": {
+        "title": "Delete"
+      },
+      "chat.conversations.delete": {
+        "title": "Delete"
+      },
+      "chat.conversations.events": {
+        "title": "Events"
+      },
+      "chat.conversations.events.read": {
+        "title": "Read"
+      },
+      "chat.conversations.group": {
+        "title": "Group"
+      },
+      "chat.conversations.group.initialize": {
+        "title": "Initialize"
+      },
+      "chat.conversations.group.initialize.write": {
+        "title": "Create and edit"
+      },
+      "chat.conversations.group.write": {
+        "title": "Create and edit"
+      },
+      "chat.conversations.invites": {
+        "title": "Invites"
+      },
+      "chat.conversations.invites.read": {
+        "title": "Read"
+      },
+      "chat.conversations.join_requests": {
+        "title": "Join requests"
+      },
+      "chat.conversations.join_requests.write": {
+        "title": "Create and edit"
+      },
+      "chat.conversations.keys": {
+        "title": "Keys"
+      },
+      "chat.conversations.keys.write": {
+        "title": "Create and edit"
+      },
+      "chat.conversations.members": {
+        "title": "Members"
+      },
+      "chat.conversations.members.delete": {
+        "title": "Delete"
+      },
+      "chat.conversations.members.write": {
+        "title": "Create and edit"
+      },
+      "chat.conversations.message_ttl": {
+        "title": "Message ttl"
+      },
+      "chat.conversations.message_ttl.delete": {
+        "title": "Delete"
+      },
+      "chat.conversations.message_ttl.write": {
+        "title": "Create and edit"
+      },
+      "chat.conversations.messages": {
+        "title": "Messages"
+      },
+      "chat.conversations.messages.delete": {
+        "title": "Delete"
+      },
+      "chat.conversations.messages.send": {
+        "title": "Send"
+      },
+      "chat.conversations.pinned_messages": {
+        "title": "Pinned messages"
+      },
+      "chat.conversations.pinned_messages.read": {
+        "title": "Read"
+      },
+      "chat.conversations.read": {
+        "title": "Read"
+      },
+      "chat.conversations.screen_capture": {
+        "title": "Screen capture"
+      },
+      "chat.conversations.screen_capture.write": {
+        "title": "Create and edit"
+      },
+      "chat.conversations.share": {
+        "title": "Share"
+      },
+      "chat.conversations.typing": {
+        "title": "Typing"
+      },
+      "chat.conversations.typing.write": {
+        "title": "Create and edit"
+      },
+      "chat.conversations.unread": {
+        "title": "Unread"
+      },
+      "chat.conversations.unread.write": {
+        "title": "Create and edit"
+      },
+      "chat.conversations.write": {
+        "title": "Create and edit"
+      },
+      "chat.media": {
+        "title": "Media"
+      },
+      "chat.media.append": {
+        "title": "Append"
+      },
+      "chat.media.append.write": {
+        "title": "Create and edit"
+      },
+      "chat.media.finalize": {
+        "title": "Finalize"
+      },
+      "chat.media.finalize.write": {
+        "title": "Create and edit"
+      },
+      "chat.media.initialize": {
+        "title": "Initialize"
+      },
+      "chat.media.initialize.write": {
+        "title": "Create and edit"
+      },
+      "chat.media.read": {
+        "title": "Read"
+      },
+      "chat.message_requests": {
+        "title": "Message requests"
+      },
+      "chat.message_requests.read": {
+        "title": "Read"
+      },
+      "chat.message_requests.write": {
+        "title": "Create and edit"
+      },
+      "chat.settings": {
+        "title": "Settings"
+      },
+      "chat.settings.read": {
+        "title": "Read"
+      },
+      "chat.settings.write": {
+        "title": "Create and edit"
+      },
+      "communities": {
+        "title": "Communities"
+      },
+      "communities.read": {
+        "title": "Read"
+      },
+      "compliance": {
+        "title": "Compliance"
+      },
+      "compliance.jobs": {
+        "title": "Jobs"
+      },
+      "compliance.jobs.delete": {
+        "title": "Delete"
+      },
+      "compliance.jobs.read": {
+        "title": "Read"
+      },
+      "compliance.jobs.write": {
+        "title": "Create and edit"
+      },
+      "connections": {
+        "title": "Connections"
+      },
+      "connections.all": {
+        "title": "All"
+      },
+      "connections.all.delete": {
+        "title": "Delete"
+      },
+      "connections.delete": {
+        "title": "Delete"
+      },
+      "connections.read": {
+        "title": "Read"
+      },
+      "dm_conversations": {
+        "title": "Dm conversations"
+      },
+      "dm_conversations.dm_events": {
+        "title": "Dm events"
+      },
+      "dm_conversations.dm_events.read": {
+        "title": "Read"
+      },
+      "dm_conversations.media": {
+        "title": "Media"
+      },
+      "dm_conversations.media.read": {
+        "title": "Read"
+      },
+      "dm_conversations.messages": {
+        "title": "Messages"
+      },
+      "dm_conversations.messages.send": {
+        "title": "Send"
+      },
+      "dm_conversations.send": {
+        "title": "Send"
+      },
+      "dm_conversations.with": {
+        "title": "With"
+      },
+      "dm_conversations.with.dm_events": {
+        "title": "Dm events"
+      },
+      "dm_conversations.with.dm_events.read": {
+        "title": "Read"
+      },
+      "dm_conversations.with.messages": {
+        "title": "Messages"
+      },
+      "dm_conversations.with.messages.send": {
+        "title": "Send"
+      },
+      "dm_events": {
+        "title": "Dm events"
+      },
+      "dm_events.delete": {
+        "title": "Delete"
+      },
+      "dm_events.read": {
+        "title": "Read"
+      },
+      "likes": {
+        "title": "Likes"
+      },
+      "likes.compliance": {
+        "title": "Compliance"
+      },
+      "likes.compliance.stream": {
+        "title": "Stream"
+      },
+      "likes.compliance.stream.read": {
+        "title": "Read"
+      },
+      "likes.firehose": {
+        "title": "Firehose"
+      },
+      "likes.firehose.stream": {
+        "title": "Stream"
+      },
+      "likes.firehose.stream.read": {
+        "title": "Read"
+      },
+      "likes.sample10": {
+        "title": "Sample10"
+      },
+      "likes.sample10.stream": {
+        "title": "Stream"
+      },
+      "likes.sample10.stream.read": {
+        "title": "Read"
+      },
+      "lists": {
+        "title": "Lists"
+      },
+      "lists.delete": {
+        "title": "Delete"
+      },
+      "lists.followers": {
+        "title": "Followers"
+      },
+      "lists.followers.read": {
+        "title": "Read"
+      },
+      "lists.members": {
+        "title": "Members"
+      },
+      "lists.members.delete": {
+        "title": "Delete"
+      },
+      "lists.members.read": {
+        "title": "Read"
+      },
+      "lists.members.write": {
+        "title": "Create and edit"
+      },
+      "lists.read": {
+        "title": "Read"
+      },
+      "lists.tweets": {
+        "title": "Tweets"
+      },
+      "lists.tweets.read": {
+        "title": "Read"
+      },
+      "lists.write": {
+        "title": "Create and edit"
+      },
+      "media": {
+        "title": "Media"
+      },
+      "media.amplify": {
+        "title": "Amplify"
+      },
+      "media.amplify.posts": {
+        "title": "Posts"
+      },
+      "media.amplify.posts.publish": {
+        "title": "Publish"
+      },
+      "media.amplify.programs": {
+        "title": "Programs"
+      },
+      "media.amplify.programs.posts": {
+        "title": "Posts"
+      },
+      "media.amplify.programs.posts.read": {
+        "title": "Read"
+      },
+      "media.amplify.programs.read": {
+        "title": "Read"
+      },
+      "media.analytics": {
+        "title": "Analytics"
+      },
+      "media.analytics.read": {
+        "title": "Read"
+      },
+      "media.append": {
+        "title": "Append"
+      },
+      "media.append.write": {
+        "title": "Create and edit"
+      },
+      "media.finalize": {
+        "title": "Finalize"
+      },
+      "media.finalize.write": {
+        "title": "Create and edit"
+      },
+      "media.initialize": {
+        "title": "Initialize"
+      },
+      "media.initialize.write": {
+        "title": "Create and edit"
+      },
+      "media.library": {
+        "title": "Library"
+      },
+      "media.library.categories": {
+        "title": "Categories"
+      },
+      "media.library.categories.read": {
+        "title": "Read"
+      },
+      "media.library.delete": {
+        "title": "Delete"
+      },
+      "media.library.write": {
+        "title": "Create and edit"
+      },
+      "media.metadata": {
+        "title": "Metadata"
+      },
+      "media.metadata.write": {
+        "title": "Create and edit"
+      },
+      "media.read": {
+        "title": "Read"
+      },
+      "media.subtitles": {
+        "title": "Subtitles"
+      },
+      "media.subtitles.delete": {
+        "title": "Delete"
+      },
+      "media.subtitles.write": {
+        "title": "Create and edit"
+      },
+      "media.write": {
+        "title": "Create and edit"
+      },
+      "news": {
+        "title": "News"
+      },
+      "news.read": {
+        "title": "Read"
+      },
+      "notes": {
+        "title": "Notes"
+      },
+      "notes.delete": {
+        "title": "Delete"
+      },
+      "notes.evaluate": {
+        "title": "Evaluate"
+      },
+      "notes.evaluate.read": {
+        "title": "Read"
+      },
+      "notes.publish": {
+        "title": "Publish"
+      },
+      "notes.search": {
+        "title": "Search"
+      },
+      "notes.search.notes_written": {
+        "title": "Notes written"
+      },
+      "notes.search.notes_written.read": {
+        "title": "Read"
+      },
+      "notes.search.posts_eligible_for_notes": {
+        "title": "Posts eligible for notes"
+      },
+      "notes.search.posts_eligible_for_notes.read": {
+        "title": "Read"
+      },
+      "openapi": {
+        "title": "Openapi"
+      },
+      "openapi.read": {
+        "title": "Read"
+      },
+      "region": {
+        "title": "Region"
+      },
+      "region.read": {
+        "title": "Read"
+      },
+      "sources": {
+        "title": "Sources"
+      },
+      "sources.delete": {
+        "title": "Delete"
+      },
+      "sources.read": {
+        "title": "Read"
+      },
+      "sources.stream_key": {
+        "title": "Stream key"
+      },
+      "sources.stream_key.read": {
+        "title": "Read"
+      },
+      "sources.write": {
+        "title": "Create and edit"
+      },
+      "spaces": {
+        "title": "Spaces"
+      },
+      "spaces.buyers": {
+        "title": "Buyers"
+      },
+      "spaces.buyers.read": {
+        "title": "Read"
+      },
+      "spaces.by": {
+        "title": "By"
+      },
+      "spaces.by.creator_ids": {
+        "title": "Creator ids"
+      },
+      "spaces.by.creator_ids.read": {
+        "title": "Read"
+      },
+      "spaces.read": {
+        "title": "Read"
+      },
+      "spaces.tweets": {
+        "title": "Tweets"
+      },
+      "spaces.tweets.read": {
+        "title": "Read"
+      },
+      "trends": {
+        "title": "Trends"
+      },
+      "trends.by": {
+        "title": "By"
+      },
+      "trends.by.woeid": {
+        "title": "Woeid"
+      },
+      "trends.by.woeid.read": {
+        "title": "Read"
+      },
+      "tweets": {
+        "title": "Tweets"
+      },
+      "tweets.analytics": {
+        "title": "Analytics"
+      },
+      "tweets.analytics.read": {
+        "title": "Read"
+      },
+      "tweets.compliance": {
+        "title": "Compliance"
+      },
+      "tweets.compliance.stream": {
+        "title": "Stream"
+      },
+      "tweets.compliance.stream.read": {
+        "title": "Read"
+      },
+      "tweets.counts": {
+        "title": "Counts"
+      },
+      "tweets.counts.all": {
+        "title": "All"
+      },
+      "tweets.counts.all.read": {
+        "title": "Read"
+      },
+      "tweets.counts.recent": {
+        "title": "Recent"
+      },
+      "tweets.counts.recent.read": {
+        "title": "Read"
+      },
+      "tweets.delete": {
+        "title": "Delete"
+      },
+      "tweets.firehose": {
+        "title": "Firehose"
+      },
+      "tweets.firehose.stream": {
+        "title": "Stream"
+      },
+      "tweets.firehose.stream.lang": {
+        "title": "Lang"
+      },
+      "tweets.firehose.stream.lang.en": {
+        "title": "En"
+      },
+      "tweets.firehose.stream.lang.en.read": {
+        "title": "Read"
+      },
+      "tweets.firehose.stream.lang.ja": {
+        "title": "Ja"
+      },
+      "tweets.firehose.stream.lang.ja.read": {
+        "title": "Read"
+      },
+      "tweets.firehose.stream.lang.ko": {
+        "title": "Ko"
+      },
+      "tweets.firehose.stream.lang.ko.read": {
+        "title": "Read"
+      },
+      "tweets.firehose.stream.lang.pt": {
+        "title": "Pt"
+      },
+      "tweets.firehose.stream.lang.pt.read": {
+        "title": "Read"
+      },
+      "tweets.firehose.stream.read": {
+        "title": "Read"
+      },
+      "tweets.hidden": {
+        "title": "Hidden"
+      },
+      "tweets.hidden.write": {
+        "title": "Create and edit"
+      },
+      "tweets.label": {
+        "title": "Label"
+      },
+      "tweets.label.stream": {
+        "title": "Stream"
+      },
+      "tweets.label.stream.read": {
+        "title": "Read"
+      },
+      "tweets.liking_users": {
+        "title": "Liking users"
+      },
+      "tweets.liking_users.read": {
+        "title": "Read"
+      },
+      "tweets.publish": {
+        "title": "Publish"
+      },
+      "tweets.quote_tweets": {
+        "title": "Quote tweets"
+      },
+      "tweets.quote_tweets.read": {
+        "title": "Read"
+      },
+      "tweets.read": {
+        "title": "Read"
+      },
+      "tweets.retweeted_by": {
+        "title": "Retweeted by"
+      },
+      "tweets.retweeted_by.read": {
+        "title": "Read"
+      },
+      "tweets.retweets": {
+        "title": "Retweets"
+      },
+      "tweets.retweets.read": {
+        "title": "Read"
+      },
+      "tweets.sample": {
+        "title": "Sample"
+      },
+      "tweets.sample.stream": {
+        "title": "Stream"
+      },
+      "tweets.sample.stream.read": {
+        "title": "Read"
+      },
+      "tweets.sample10": {
+        "title": "Sample10"
+      },
+      "tweets.sample10.stream": {
+        "title": "Stream"
+      },
+      "tweets.sample10.stream.read": {
+        "title": "Read"
+      },
+      "tweets.search": {
+        "title": "Search"
+      },
+      "tweets.search.all": {
+        "title": "All"
+      },
+      "tweets.search.all.read": {
+        "title": "Read"
+      },
+      "tweets.search.recent": {
+        "title": "Recent"
+      },
+      "tweets.search.recent.read": {
+        "title": "Read"
+      },
+      "tweets.search.stream": {
+        "title": "Stream"
+      },
+      "tweets.search.stream.read": {
+        "title": "Read"
+      },
+      "tweets.search.stream.rules": {
+        "title": "Rules"
+      },
+      "tweets.search.stream.rules.counts": {
+        "title": "Counts"
+      },
+      "tweets.search.stream.rules.counts.read": {
+        "title": "Read"
+      },
+      "tweets.search.stream.rules.read": {
+        "title": "Read"
+      },
+      "tweets.search.stream.rules.write": {
+        "title": "Create and edit"
+      },
+      "tweets.search.webhooks": {
+        "title": "Webhooks"
+      },
+      "tweets.search.webhooks.admin": {
+        "title": "Manage"
+      },
+      "tweets.search.webhooks.delete": {
+        "title": "Delete"
+      },
+      "tweets.search.webhooks.read": {
+        "title": "Read"
+      },
+      "usage": {
+        "title": "Usage"
+      },
+      "usage.credits": {
+        "title": "Credits"
+      },
+      "usage.credits.read": {
+        "title": "Read"
+      },
+      "usage.tweets": {
+        "title": "Tweets"
+      },
+      "usage.tweets.read": {
+        "title": "Read"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.affiliates": {
+        "title": "Affiliates"
+      },
+      "users.affiliates.read": {
+        "title": "Read"
+      },
+      "users.blocking": {
+        "title": "Blocking"
+      },
+      "users.blocking.delete": {
+        "title": "Delete"
+      },
+      "users.blocking.read": {
+        "title": "Read"
+      },
+      "users.blocking.write": {
+        "title": "Create and edit"
+      },
+      "users.bookmarks": {
+        "title": "Bookmarks"
+      },
+      "users.bookmarks.delete": {
+        "title": "Delete"
+      },
+      "users.bookmarks.folders": {
+        "title": "Folders"
+      },
+      "users.bookmarks.folders.read": {
+        "title": "Read"
+      },
+      "users.bookmarks.folders.write": {
+        "title": "Create and edit"
+      },
+      "users.bookmarks.read": {
+        "title": "Read"
+      },
+      "users.bookmarks.write": {
+        "title": "Create and edit"
+      },
+      "users.broadcasts": {
+        "title": "Broadcasts"
+      },
+      "users.broadcasts.delete": {
+        "title": "Delete"
+      },
+      "users.broadcasts.publish": {
+        "title": "Publish"
+      },
+      "users.broadcasts.read": {
+        "title": "Read"
+      },
+      "users.broadcasts.state": {
+        "title": "State"
+      },
+      "users.broadcasts.state.publish": {
+        "title": "Publish"
+      },
+      "users.by": {
+        "title": "By"
+      },
+      "users.by.read": {
+        "title": "Read"
+      },
+      "users.by.username": {
+        "title": "Username"
+      },
+      "users.by.username.read": {
+        "title": "Read"
+      },
+      "users.compliance": {
+        "title": "Compliance"
+      },
+      "users.compliance.stream": {
+        "title": "Stream"
+      },
+      "users.compliance.stream.read": {
+        "title": "Read"
+      },
+      "users.dm": {
+        "title": "Dm"
+      },
+      "users.dm.write": {
+        "title": "Create and edit"
+      },
+      "users.followed_lists": {
+        "title": "Followed lists"
+      },
+      "users.followed_lists.delete": {
+        "title": "Delete"
+      },
+      "users.followed_lists.read": {
+        "title": "Read"
+      },
+      "users.followed_lists.write": {
+        "title": "Create and edit"
+      },
+      "users.followers": {
+        "title": "Followers"
+      },
+      "users.followers.read": {
+        "title": "Read"
+      },
+      "users.following": {
+        "title": "Following"
+      },
+      "users.following.delete": {
+        "title": "Delete"
+      },
+      "users.following.read": {
+        "title": "Read"
+      },
+      "users.following.write": {
+        "title": "Create and edit"
+      },
+      "users.liked_tweets": {
+        "title": "Liked tweets"
+      },
+      "users.liked_tweets.read": {
+        "title": "Read"
+      },
+      "users.likes": {
+        "title": "Likes"
+      },
+      "users.likes.delete": {
+        "title": "Delete"
+      },
+      "users.likes.write": {
+        "title": "Create and edit"
+      },
+      "users.me": {
+        "title": "Me"
+      },
+      "users.me.followers": {
+        "title": "Followers"
+      },
+      "users.me.followers.read": {
+        "title": "Read"
+      },
+      "users.me.following": {
+        "title": "Following"
+      },
+      "users.me.following.read": {
+        "title": "Read"
+      },
+      "users.me.read": {
+        "title": "Read"
+      },
+      "users.memberships": {
+        "title": "Memberships"
+      },
+      "users.memberships.read": {
+        "title": "Read"
+      },
+      "users.mentions": {
+        "title": "Mentions"
+      },
+      "users.mentions.read": {
+        "title": "Read"
+      },
+      "users.muting": {
+        "title": "Muting"
+      },
+      "users.muting.delete": {
+        "title": "Delete"
+      },
+      "users.muting.read": {
+        "title": "Read"
+      },
+      "users.muting.write": {
+        "title": "Create and edit"
+      },
+      "users.owned_lists": {
+        "title": "Owned lists"
+      },
+      "users.owned_lists.read": {
+        "title": "Read"
+      },
+      "users.personalized_trends": {
+        "title": "Personalized trends"
+      },
+      "users.personalized_trends.read": {
+        "title": "Read"
+      },
+      "users.pinned_lists": {
+        "title": "Pinned lists"
+      },
+      "users.pinned_lists.delete": {
+        "title": "Delete"
+      },
+      "users.pinned_lists.read": {
+        "title": "Read"
+      },
+      "users.pinned_lists.write": {
+        "title": "Create and edit"
+      },
+      "users.public_keys": {
+        "title": "Public keys"
+      },
+      "users.public_keys.read": {
+        "title": "Read"
+      },
+      "users.public_keys.write": {
+        "title": "Create and edit"
+      },
+      "users.read": {
+        "title": "Read"
+      },
+      "users.reposts_of_me": {
+        "title": "Reposts of me"
+      },
+      "users.reposts_of_me.read": {
+        "title": "Read"
+      },
+      "users.retweets": {
+        "title": "Retweets"
+      },
+      "users.retweets.delete": {
+        "title": "Delete"
+      },
+      "users.retweets.publish": {
+        "title": "Publish"
+      },
+      "users.sources": {
+        "title": "Sources"
+      },
+      "users.sources.delete": {
+        "title": "Delete"
+      },
+      "users.sources.read": {
+        "title": "Read"
+      },
+      "users.sources.write": {
+        "title": "Create and edit"
+      },
+      "users.timelines": {
+        "title": "Timelines"
+      },
+      "users.timelines.reverse_chronological": {
+        "title": "Reverse chronological"
+      },
+      "users.timelines.reverse_chronological.read": {
+        "title": "Read"
+      },
+      "users.tweets": {
+        "title": "Tweets"
+      },
+      "users.tweets.read": {
+        "title": "Read"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.delete": {
+        "title": "Delete"
+      },
+      "webhooks.read": {
+        "title": "Read"
+      },
+      "webhooks.replay": {
+        "title": "Replay"
+      },
+      "webhooks.replay.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.x.com",
+            "path": "/2",
+            "prefix": "Bearer ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api.twitter.com",
+            "path": "/2",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "client_id",
+        "label": "OAuth client ID",
+        "paths": []
+      },
+      {
+        "key": "client_secret",
+        "label": "OAuth client secret",
+        "paths": [],
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "token",
+        "label": "X (Formerly Twitter) account",
+        "oauth": {
+          "auth_url": "https://x.com/i/oauth2/authorize",
+          "client_id": "{client_id}",
+          "client_secret": "{client_secret}",
+          "scope": "tweet.read tweet.write tweet.moderate.write users.read users.email follows.read follows.write offline.access space.read mute.read mute.write like.read like.write list.read list.write block.read block.write bookmark.read bookmark.write dm.read dm.write media.write broadcast.read broadcast.write",
+          "token_url": "https://api.x.com/2/oauth2/token"
+        },
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "X (Formerly Twitter)",
   "http": {
+    "origins": {"api":["https://api.x.com","https://api.twitter.com"]},
     "operations": {
-      "activityStream": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/activity/stream","params":["backfill_minutes","start_time","end_time"],"scope":{}},
-      "addChatGroupAdmins": {"action":"admin.admins","effects":["admin"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/admins","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "addChatGroupMembers": {"action":"admin.members","effects":["admin"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/members","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "addChatModerator": {"action":"write.moderators","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/broadcasts/chat/moderators","body":"json","scope":{"user_id":{"from":"body","at":"/user_id"}}},
-      "addConversationKeys": {"action":"admin.keys","effects":["admin"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/keys","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "addListsMember": {"action":"admin.members","effects":["admin"],"method":"POST","origin":"https://api.x.com","path":"/2/lists/{id}/members","body":"json","scope":{"id":{"from":"path","at":"id"},"user_id":{"from":"body","at":"/user_id"}}},
-      "addUserPublicKey": {"action":"write.public_keys","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/users/{id}/public_keys","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "appendMediaUpload": {"action":"write.append","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/media/upload/{id}/append","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "approveChatGroupAdminRequest": {"action":"write.admin_requests","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/admin_requests/{user_id}/approve","body":"json","scope":{"id":{"from":"path","at":"id"},"user_id":{"from":"path","at":"user_id"}}},
-      "articleCreateDraft": {"action":"write.draft","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/articles/draft","body":"json","scope":{}},
-      "articlePublish": {"action":"publish.articles","effects":["publish"],"method":"POST","origin":"https://api.x.com","path":"/2/articles/{article_id}/publish","scope":{"article_id":{"from":"path","at":"article_id"}}},
-      "blockUsersDms": {"action":"write.dm","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/users/{id}/dm/block","scope":{"id":{"from":"path","at":"id"}}},
-      "chatMediaDownload": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/chat/media/{id}/{media_hash_key}","scope":{"id":{"from":"path","at":"id"},"media_hash_key":{"from":"path","at":"media_hash_key"}}},
-      "chatMediaUploadAppend": {"action":"write.append","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/media/upload/{id}/append","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "chatMediaUploadFinalize": {"action":"write.finalize","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/media/upload/{id}/finalize","body":"json","scope":{"id":{"from":"path","at":"id"},"conversation_id":{"from":"body","at":"/conversation_id"},"media_hash_key":{"from":"body","at":"/media_hash_key"}}},
-      "chatMediaUploadInitialize": {"action":"write.initialize","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/media/upload/initialize","body":"json","scope":{"conversation_id":{"from":"body","at":"/conversation_id"}}},
-      "createAccountActivitySubscription": {"action":"write.all","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/account_activity/webhooks/{webhook_id}/subscriptions/all","body":"json","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "createActivitySubscription": {"action":"admin.subscriptions","effects":["admin"],"method":"POST","origin":"https://api.x.com","path":"/2/activity/subscriptions","body":"json","scope":{}},
-      "createBot": {"action":"write.bots","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/bots","body":"json","scope":{}},
-      "createChatConversation": {"action":"admin.group","effects":["admin"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/group","body":"json","scope":{"conversation_id":{"from":"body","at":"/conversation_id"}}},
-      "createChatGroupAdminRequest": {"action":"write.admin_requests","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/admin_requests","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "createChatGroupJoinRequest": {"action":"write.conversations","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/join_requests","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "createCommunityNotes": {"action":"send.notes","effects":["send"],"method":"POST","origin":"https://api.x.com","path":"/2/notes","body":"json","scope":{"post_id":{"from":"body","at":"/post_id"},"request":{"from":"body","at":"","type":"object"}},"grant":["post_id"]},
-      "createComplianceJobs": {"action":"execute.jobs","effects":["execute"],"method":"POST","origin":"https://api.x.com","path":"/2/compliance/jobs","params":["compliance_job.fields"],"body":"json","scope":{}},
-      "createDirectMessagesByConversationId": {"action":"send.messages","effects":["send"],"method":"POST","origin":"https://api.x.com","path":"/2/dm_conversations/{dm_conversation_id}/messages","body":"json","scope":{"dm_conversation_id":{"from":"path","at":"dm_conversation_id"},"request":{"from":"body","at":"","type":"object"}},"grant":["dm_conversation_id"]},
-      "createDirectMessagesByParticipantId": {"action":"send.messages","effects":["send"],"method":"POST","origin":"https://api.x.com","path":"/2/dm_conversations/with/{participant_id}/messages","body":"json","scope":{"participant_id":{"from":"path","at":"participant_id"},"request":{"from":"body","at":"","type":"object"}},"grant":["participant_id"]},
-      "createDirectMessagesConversation": {"action":"send.dm_conversations","effects":["send"],"method":"POST","origin":"https://api.x.com","path":"/2/dm_conversations","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "createLists": {"action":"write.lists","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/lists","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "createMediaMetadata": {"action":"write.metadata","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/media/metadata","body":"json","scope":{"id":{"from":"body","at":"/id"}}},
-      "createMediaSubtitles": {"action":"write.subtitles","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/media/subtitles","body":"json","scope":{"id":{"from":"body","at":"/id"}}},
-      "createPosts": {"action":"send.tweets","effects":["send"],"method":"POST","origin":"https://api.x.com","path":"/2/tweets","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "createScheduledBroadcast": {"action":"publish.scheduled","effects":["publish"],"method":"POST","origin":"https://api.x.com","path":"/2/broadcasts/scheduled","body":"json","scope":{"source_id":{"from":"body","at":"/source_id"},"request":{"from":"body","at":"","type":"object"}},"grant":["source_id"]},
-      "createUsersBookmark": {"action":"write.bookmarks","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/users/{id}/bookmarks","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "createUsersBookmarkFolder": {"action":"write.folders","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/users/{id}/bookmarks/folders","body":"json","scope":{"id":{"from":"path","at":"id"},"name":{"from":"body","at":"/name"}}},
-      "createWebhookReplayJob": {"action":"write.replay","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/webhooks/replay","body":"json","scope":{"webhook_id":{"from":"body","at":"/webhook_id"}}},
-      "createWebhooks": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.x.com","path":"/2/webhooks","body":"json","scope":{"url":{"from":"body","at":"/url"}}},
-      "createWebhooksStreamLink": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.x.com","path":"/2/tweets/search/webhooks/{webhook_id}","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "deleteAccountActivitySubscription": {"action":"delete.all","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/account_activity/webhooks/{webhook_id}/subscriptions/{user_id}/all","scope":{"webhook_id":{"from":"path","at":"webhook_id"},"user_id":{"from":"path","at":"user_id"}}},
-      "deleteActivitySubscription": {"action":"delete.subscriptions","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/activity/subscriptions/{subscription_id}","scope":{"subscription_id":{"from":"path","at":"subscription_id"}}},
-      "deleteActivitySubscriptionsByIds": {"action":"delete.subscriptions","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/activity/subscriptions","params":["ids"],"scope":{"ids":{"from":"query","at":"ids"}}},
-      "deleteBot": {"action":"delete.bots","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/bots/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteBroadcastChatMessage": {"action":"delete.chat","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/broadcasts/{id}/chat/{message_id}","scope":{"id":{"from":"path","at":"id"},"message_id":{"from":"path","at":"message_id"}}},
-      "deleteChatConversation": {"action":"delete.conversations","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/chat/conversations/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteChatConversationMessageTtl": {"action":"delete.message_ttl","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/message_ttl","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteChatMessages": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/messages/delete","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteCommunityNotes": {"action":"delete.notes","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/notes/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteComplianceJobsById": {"action":"delete.jobs","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/compliance/jobs/{id}","params":["compliance_job.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "deleteConnectionsByEndpoint": {"action":"delete.connections","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/connections/{endpoint_id}","scope":{"endpoint_id":{"from":"path","at":"endpoint_id"}}},
-      "deleteConnectionsByUuids": {"action":"delete.connections","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/connections","body":"json","scope":{}},
-      "deleteDirectMessagesEvents": {"action":"delete.dm_events","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/dm_events/{event_id}","scope":{"event_id":{"from":"path","at":"event_id"}}},
-      "deleteLists": {"action":"delete.lists","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/lists/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteMediaSubtitles": {"action":"delete.subtitles","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/media/subtitles","body":"json","scope":{"id":{"from":"body","at":"/id"}}},
-      "deletePosts": {"action":"delete.tweets","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/tweets/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteScheduledBroadcast": {"action":"delete.scheduled","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/broadcasts/scheduled/{id}","params":["roll_forward"],"scope":{"id":{"from":"path","at":"id"}}},
-      "deleteUsersBookmark": {"action":"delete.bookmarks","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/users/{id}/bookmarks/{tweet_id}","scope":{"id":{"from":"path","at":"id"},"tweet_id":{"from":"path","at":"tweet_id"}}},
-      "deleteWebhooks": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/webhooks/{webhook_id}","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "deleteWebhooksStreamLink": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/tweets/search/webhooks/{webhook_id}","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "disableChatGroupInvite": {"action":"delete.conversations","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/invite","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "dmConversationsMediaDownload": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/dm_conversations/media/{dm_id}/{media_id}/{resource_id}","scope":{"dm_id":{"from":"path","at":"dm_id"},"media_id":{"from":"path","at":"media_id"},"resource_id":{"from":"path","at":"resource_id"}}},
-      "downloadComplianceJobResults": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/compliance/jobs/{id}/download","params":["token","compliance_job.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "enableChatGroupInvite": {"action":"share.conversations","effects":["share"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/invite","body":"json","scope":{"id":{"from":"path","at":"id"},"request":{"from":"body","at":"","type":"object"}},"grant":["id"]},
-      "ensureAccount": {"action":"admin.account","effects":["admin"],"method":"POST","origin":"https://api.x.com","path":"/2/account","body":"json","scope":{}},
-      "evaluateCommunityNotes": {"action":"write.evaluate","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/notes/evaluate","body":"json","scope":{"post_id":{"from":"body","at":"/post_id"}}},
-      "finalizeMediaUpload": {"action":"write.finalize","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/media/upload/{id}/finalize","scope":{"id":{"from":"path","at":"id"}}},
-      "followList": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"https://api.x.com","path":"/2/users/{id}/followed_lists","body":"json","scope":{"id":{"from":"path","at":"id"},"list_id":{"from":"body","at":"/list_id"}}},
-      "followUser": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"https://api.x.com","path":"/2/users/{id}/following","body":"json","scope":{"id":{"from":"path","at":"id"},"target_user_id":{"from":"body","at":"/target_user_id"}}},
-      "getAccountActivitySubscriptionCount": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/account_activity/subscriptions/count","scope":{}},
-      "getAccountActivitySubscriptions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/account_activity/webhooks/{webhook_id}/subscriptions/all/list","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "getActivitySubscriptions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/activity/subscriptions","params":["max_results","pagination_token","user_id"],"scope":{}},
-      "getBots": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/bots","params":["user.fields","expansions","post.fields"],"scope":{}},
-      "getBroadcast": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/broadcasts/{id}","params":["broadcast.fields","max_results","oldest_start_time","newest_start_time","pagination_token"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getChatConversation": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/chat/conversations/{id}","params":["chat_conversation.fields","expansions","user.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getChatConversationEvents": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/events","params":["max_results","pagination_token","chat_message_event.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getChatConversationPinnedMessages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/pinned_messages","params":["pagination_token"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getChatConversations": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/chat/conversations","params":["max_results","pagination_token","chat_conversation.fields","expansions","user.fields"],"scope":{}},
-      "getChatGroupAdminRequests": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/admin_requests","params":["pagination_token","user.fields","expansions","post.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getChatGroupInvite": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/invites/{token}","scope":{"id":{"from":"path","at":"id"},"token":{"from":"path","at":"token"}}},
-      "getChatModerators": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/broadcasts/chat/moderators","params":["user.fields","expansions","post.fields"],"scope":{}},
-      "getChatSettings": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/chat/settings","scope":{}},
-      "getCommunitiesById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/communities/{id}","params":["community.fields","query","max_results","next_token","pagination_token"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getComplianceJobs": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/compliance/jobs","params":["type","status","compliance_job.fields"],"scope":{}},
-      "getComplianceJobsById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/compliance/jobs/{id}","params":["compliance_job.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getConnectionHistory": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/connections","params":["status","endpoints","max_results","pagination_token","connection.fields"],"scope":{}},
-      "getDeveloperAccount": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/account","scope":{}},
-      "getDirectMessagesEvents": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/dm_events","params":["max_results","pagination_token","event_types","dm_event.fields","expansions","user.fields","post.fields","media.fields"],"scope":{}},
-      "getDirectMessagesEventsByConversationId": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/dm_conversations/{id}/dm_events","params":["max_results","pagination_token","event_types","dm_event.fields","expansions","user.fields","post.fields","media.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getDirectMessagesEventsById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/dm_events/{event_id}","params":["dm_event.fields","expansions","user.fields","post.fields","media.fields"],"scope":{"event_id":{"from":"path","at":"event_id"}}},
-      "getDirectMessagesEventsByParticipantId": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/dm_conversations/with/{participant_id}/dm_events","params":["max_results","pagination_token","event_types","dm_event.fields","expansions","user.fields","post.fields","media.fields"],"scope":{"participant_id":{"from":"path","at":"participant_id"}}},
-      "getListsById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/lists/{id}","params":["list.fields","expansions","user.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getListsFollowers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/lists/{id}/followers","params":["max_results","pagination_token","user.fields","expansions","post.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getListsMembers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/lists/{id}/members","params":["max_results","pagination_token","user.fields","expansions","post.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getListsPosts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/lists/{id}/tweets","params":["max_results","pagination_token","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getMediaByMediaKey": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/media/{media_key}","params":["media.fields","media_keys","start_time","end_time","granularity","media_analytics.fields","media_id","command"],"scope":{"media_key":{"from":"path","at":"media_key"}}},
-      "getMediaByMediaKeys": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/media","params":["media_keys","media.fields"],"scope":{}},
-      "getNews": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/news/{id}","params":["news.fields","query","max_results","max_age_hours"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getOpenApiSpec": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/openapi.json","scope":{}},
-      "getPostsById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/{id}","params":["post.fields","expansions","user.fields","media.fields","poll.fields","place.fields","ids","start_time","end_time","granularity","analytics.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getPostsByIds": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets","params":["ids","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields"],"scope":{"ids":{"from":"query","at":"ids"}}},
-      "getPostsCountsAll": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/counts/all","params":["query","start_time","end_time","since_id","until_id","next_token","pagination_token","granularity","search_count.fields"],"scope":{}},
-      "getPostsCountsRecent": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/counts/recent","params":["query","start_time","end_time","since_id","until_id","next_token","pagination_token","granularity","search_count.fields"],"scope":{}},
-      "getPostsLikingUsers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/{id}/liking_users","params":["max_results","pagination_token","user.fields","expansions","post.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getPostsQuotedPosts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/{id}/quote_tweets","params":["max_results","pagination_token","exclude","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getPostsRepostedBy": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/{id}/retweeted_by","params":["max_results","pagination_token","user.fields","expansions","post.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getPostsReposts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/{id}/retweets","params":["max_results","pagination_token","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getRuleCounts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/search/stream/rules/counts","params":["rules_count.fields"],"scope":{}},
-      "getRules": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/search/stream/rules","params":["ids","max_results","pagination_token"],"scope":{}},
-      "getScheduledBroadcast": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/broadcasts/scheduled/{id}","params":["max_results","pagination_token","broadcast_chat_message.fields","expansions","user.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getSpacesBuyers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/spaces/{id}/buyers","params":["max_results","pagination_token","user.fields","expansions","post.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getSpacesByCreatorIds": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/spaces/by/creator_ids","params":["user_ids","space.fields","expansions","user.fields","topic.fields"],"scope":{"user_ids":{"from":"query","at":"user_ids"}}},
-      "getSpacesById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/spaces/{id}","params":["space.fields","expansions","user.fields","topic.fields","query","state","max_results"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getSpacesByIds": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/spaces","params":["ids","space.fields","expansions","user.fields","topic.fields"],"scope":{"ids":{"from":"query","at":"ids"}}},
-      "getSpacesPosts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/spaces/{id}/tweets","params":["max_results","pagination_token","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getTrendsByWoeid": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/trends/by/woeid/{woeid}","params":["max_trends","trend.fields"],"scope":{"woeid":{"from":"path","at":"woeid"}}},
-      "getUsage": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/usage/tweets","params":["days","usage.fields"],"scope":{}},
-      "getUsageCredits": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/usage/credits","scope":{}},
-      "getUsersAffiliates": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}/affiliates","params":["max_results","pagination_token","user.fields","expansions","post.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersBlocking": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}/blocking","params":["max_results","pagination_token","user.fields","expansions","post.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersBookmarkFolders": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}/bookmarks/folders","params":["max_results","pagination_token"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersBookmarks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}/bookmarks","params":["max_results","pagination_token","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersBookmarksByFolderId": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}/bookmarks/folders/{folder_id}","params":["max_results","pagination_token"],"scope":{"id":{"from":"path","at":"id"},"folder_id":{"from":"path","at":"folder_id"}}},
-      "getUsersById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}","params":["user.fields","expansions","post.fields","usernames","personalized_trend.fields","ids","public_key.fields","max_results","pagination_token","media.fields","poll.fields","place.fields","query","next_token"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersByIds": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users","params":["ids","user.fields","expansions","post.fields"],"scope":{"ids":{"from":"query","at":"ids"}}},
-      "getUsersByUsername": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/by/username/{username}","params":["user.fields","expansions","post.fields"],"scope":{"username":{"from":"path","at":"username"}}},
-      "getUsersFollowedLists": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}/followed_lists","params":["max_results","pagination_token","list.fields","expansions","user.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersFollowers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}/followers","params":["max_results","pagination_token","user.fields","expansions","post.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersFollowing": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}/following","params":["max_results","pagination_token","user.fields","expansions","post.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersLikedPosts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}/liked_tweets","params":["max_results","pagination_token","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersListMemberships": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}/list_memberships","params":["max_results","pagination_token","list.fields","expansions","user.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersMentions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}/mentions","params":["max_results","pagination_token","start_time","end_time","since_id","until_id","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersMuting": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}/muting","params":["max_results","pagination_token","user.fields","expansions","post.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersOwnedLists": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}/owned_lists","params":["max_results","pagination_token","list.fields","expansions","user.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersPinnedLists": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}/pinned_lists","params":["list.fields","expansions","user.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersPosts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}/tweets","params":["max_results","pagination_token","start_time","end_time","since_id","until_id","exclude","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersPublicKey": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}/public_keys","params":["public_key.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersTimeline": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/{id}/timelines/reverse_chronological","params":["max_results","pagination_token","start_time","end_time","since_id","until_id","exclude","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getWebhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/webhooks","params":["webhook_config.fields"],"scope":{}},
-      "getWebhooksStreamLinks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/search/webhooks","scope":{}},
-      "goLiveScheduledBroadcast": {"action":"publish.live","effects":["publish"],"method":"POST","origin":"https://api.x.com","path":"/2/broadcasts/scheduled/{id}/live","scope":{"id":{"from":"path","at":"id"}}},
-      "hidePostsReply": {"action":"send.hidden","effects":["send"],"method":"PUT","origin":"https://api.x.com","path":"/2/tweets/{tweet_id}/hidden","body":"json","scope":{"tweet_id":{"from":"path","at":"tweet_id"},"request":{"from":"body","at":"","type":"object"}},"grant":["tweet_id"]},
-      "initializeChatGroup": {"action":"write.initialize","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/group/initialize","scope":{}},
-      "initializeMediaUpload": {"action":"write.initialize","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/media/upload/initialize","body":"json","scope":{}},
-      "likePost": {"action":"write.likes","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/users/{id}/likes","body":"json","scope":{"id":{"from":"path","at":"id"},"tweet_id":{"from":"body","at":"/tweet_id"}}},
-      "listBroadcasts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/broadcasts","params":["ids","max_results","pagination_token","broadcast.fields"],"scope":{}},
-      "markChatConversationRead": {"action":"write.read","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/read","body":"json","scope":{"id":{"from":"path","at":"id"},"seen_until_sequence_id":{"from":"body","at":"/seen_until_sequence_id"}}},
-      "mediaUpload": {"action":"write.upload","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/media/upload","body":"any","scope":{}},
-      "muteBroadcastChatUser": {"action":"publish.chat","effects":["publish"],"method":"POST","origin":"https://api.x.com","path":"/2/broadcasts/{id}/chat/mutes","body":"json","scope":{"id":{"from":"path","at":"id"},"user_id":{"from":"body","at":"/user_id"},"request":{"from":"body","at":"","type":"object"}},"grant":["id","user_id"]},
-      "muteChatConversation": {"action":"write.conversations","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/mute","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "muteUser": {"action":"write.muting","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/users/{id}/muting","body":"json","scope":{"id":{"from":"path","at":"id"},"target_user_id":{"from":"body","at":"/target_user_id"}}},
-      "pinList": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"https://api.x.com","path":"/2/users/{id}/pinned_lists","body":"json","scope":{"id":{"from":"path","at":"id"},"list_id":{"from":"body","at":"/list_id"}}},
-      "rejectChatGroupAdminRequest": {"action":"write.admin_requests","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/admin_requests/{user_id}/reject","body":"json","scope":{"id":{"from":"path","at":"id"},"user_id":{"from":"path","at":"user_id"}}},
-      "rejectChatGroupJoinRequests": {"action":"write.join_requests","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/join_requests/reject","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "removeChatGroupAdmins": {"action":"delete.remove","effects":["delete"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/admins/remove","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "removeChatGroupMembers": {"action":"delete.remove","effects":["delete"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/members/remove","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "removeChatModerator": {"action":"delete.moderators","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/broadcasts/chat/moderators/{user_id}","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "removeListsMemberByUserId": {"action":"delete.members","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/lists/{id}/members/{user_id}","scope":{"id":{"from":"path","at":"id"},"user_id":{"from":"path","at":"user_id"}}},
-      "repostPost": {"action":"write.retweets","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/users/{id}/retweets","body":"json","scope":{"id":{"from":"path","at":"id"},"tweet_id":{"from":"body","at":"/tweet_id"}}},
-      "revokeBotToken": {"action":"delete.token","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/bots/{id}/token","scope":{"id":{"from":"path","at":"id"}}},
-      "rotateBotToken": {"action":"admin.token","effects":["admin"],"method":"POST","origin":"https://api.x.com","path":"/2/bots/{id}/token","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "searchCommunityNotesWritten": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/notes/search/notes_written","params":["test_mode","max_results","pagination_token","note.fields"],"scope":{}},
-      "searchEligiblePosts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/notes/search/posts_eligible_for_notes","params":["test_mode","max_results","pagination_token","post_selection","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields"],"scope":{}},
-      "searchPostsAll": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/search/all","params":["query","start_time","end_time","since_id","until_id","max_results","next_token","pagination_token","sort_order","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields"],"scope":{}},
-      "searchPostsRecent": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/search/recent","params":["query","max_results","next_token","pagination_token","start_time","end_time","since_id","until_id","sort_order","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields"],"scope":{}},
-      "sendBroadcastChat": {"action":"publish.chat","effects":["publish"],"method":"POST","origin":"https://api.x.com","path":"/2/broadcasts/{id}/chat","body":"json","scope":{"id":{"from":"path","at":"id"},"request":{"from":"body","at":"","type":"object"}},"grant":["id"]},
-      "sendChatMessage": {"action":"send.messages","effects":["send"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/messages","body":"json","scope":{"id":{"from":"path","at":"id"},"message_id":{"from":"body","at":"/message_id"},"request":{"from":"body","at":"","type":"object"}},"grant":["id","message_id"]},
-      "sendChatTypingIndicator": {"action":"send.typing","effects":["send"],"method":"POST","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/typing","scope":{"id":{"from":"path","at":"id"}}},
-      "streamLabelsCompliance": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/label/stream","params":["backfill_minutes","start_time","end_time"],"scope":{}},
-      "streamLikesCompliance": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/likes/compliance/stream","params":["backfill_minutes","start_time","end_time"],"scope":{}},
-      "streamLikesFirehose": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/likes/firehose/stream","params":["backfill_minutes","partition","start_time","end_time","like_with_tweet_author.fields","expansions","media.fields","user.fields","tweet.fields"],"scope":{}},
-      "streamLikesSample10": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/likes/sample10/stream","params":["backfill_minutes","partition","start_time","end_time","like_with_tweet_author.fields","expansions","media.fields","user.fields","tweet.fields"],"scope":{}},
-      "streamPosts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/search/stream","params":["backfill_minutes","start_time","end_time","tweet.fields","expansions","media.fields","poll.fields","user.fields","place.fields"],"scope":{}},
-      "streamPostsCompliance": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/compliance/stream","params":["backfill_minutes","partition","start_time","end_time"],"scope":{}},
-      "streamPostsFirehose": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/firehose/stream","params":["backfill_minutes","tweet.fields","expansions","media.fields","poll.fields","user.fields","place.fields","partition","start_time","end_time"],"scope":{}},
-      "streamPostsFirehoseEn": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/firehose/stream/lang/en","params":["backfill_minutes","tweet.fields","expansions","media.fields","poll.fields","user.fields","place.fields","partition","start_time","end_time"],"scope":{}},
-      "streamPostsFirehoseJa": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/firehose/stream/lang/ja","params":["backfill_minutes","tweet.fields","expansions","media.fields","poll.fields","user.fields","place.fields","partition","start_time","end_time"],"scope":{}},
-      "streamPostsFirehoseKo": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/firehose/stream/lang/ko","params":["backfill_minutes","tweet.fields","expansions","media.fields","poll.fields","user.fields","place.fields","partition","start_time","end_time"],"scope":{}},
-      "streamPostsFirehosePt": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/firehose/stream/lang/pt","params":["backfill_minutes","tweet.fields","expansions","media.fields","poll.fields","user.fields","place.fields","partition","start_time","end_time"],"scope":{}},
-      "streamPostsSample": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/sample/stream","params":["backfill_minutes","tweet.fields","expansions","media.fields","poll.fields","user.fields","place.fields"],"scope":{}},
-      "streamPostsSample10": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/tweets/sample10/stream","params":["backfill_minutes","tweet.fields","expansions","media.fields","poll.fields","user.fields","place.fields","partition","start_time","end_time"],"scope":{}},
-      "streamUsersCompliance": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/users/compliance/stream","params":["backfill_minutes","partition","start_time","end_time"],"scope":{}},
-      "unblockUsersDms": {"action":"write.dm","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/users/{id}/dm/unblock","scope":{"id":{"from":"path","at":"id"}}},
-      "unfollowList": {"action":"delete.followed_lists","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/users/{id}/followed_lists/{list_id}","scope":{"id":{"from":"path","at":"id"},"list_id":{"from":"path","at":"list_id"}}},
-      "unfollowUser": {"action":"delete.following","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/users/{source_user_id}/following/{target_user_id}","scope":{"source_user_id":{"from":"path","at":"source_user_id"},"target_user_id":{"from":"path","at":"target_user_id"}}},
-      "unlikePost": {"action":"delete.likes","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/users/{id}/likes/{tweet_id}","scope":{"id":{"from":"path","at":"id"},"tweet_id":{"from":"path","at":"tweet_id"}}},
-      "unmuteBroadcastChatUser": {"action":"delete.mutes","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/broadcasts/{id}/chat/mutes/{user_id}","scope":{"id":{"from":"path","at":"id"},"user_id":{"from":"path","at":"user_id"}}},
-      "unmuteChatConversation": {"action":"delete.conversations","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/mute","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "unmuteUser": {"action":"delete.muting","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/users/{source_user_id}/muting/{target_user_id}","scope":{"source_user_id":{"from":"path","at":"source_user_id"},"target_user_id":{"from":"path","at":"target_user_id"}}},
-      "unpinList": {"action":"delete.pinned_lists","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/users/{id}/pinned_lists/{list_id}","scope":{"id":{"from":"path","at":"id"},"list_id":{"from":"path","at":"list_id"}}},
-      "unrepostPost": {"action":"delete.retweets","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/users/{id}/retweets/{source_tweet_id}","scope":{"id":{"from":"path","at":"id"},"source_tweet_id":{"from":"path","at":"source_tweet_id"}}},
-      "updateActivitySubscription": {"action":"admin.subscriptions","effects":["admin"],"method":"PUT","origin":"https://api.x.com","path":"/2/activity/subscriptions/{subscription_id}","body":"json","scope":{"subscription_id":{"from":"path","at":"subscription_id"}}},
-      "updateBot": {"action":"write.bots","effects":["write"],"method":"PUT","origin":"https://api.x.com","path":"/2/bots/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "updateChatConversationMessageTtl": {"action":"write.message_ttl","effects":["write"],"method":"PUT","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/message_ttl","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "updateChatConversationScreenCapture": {"action":"pay.screen_capture","effects":["pay"],"method":"PUT","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/screen_capture","body":"json","scope":{"id":{"from":"path","at":"id"},"request":{"from":"body","at":"","type":"object"}},"grant":["id"]},
-      "updateChatGroup": {"action":"write.conversations","effects":["write"],"method":"PUT","origin":"https://api.x.com","path":"/2/chat/conversations/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "updateChatGroupAdminSettings": {"action":"write.admin_settings","effects":["write"],"method":"PUT","origin":"https://api.x.com","path":"/2/chat/conversations/{id}/admin_settings","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "updateChatSettings": {"action":"admin.settings","effects":["admin"],"method":"PUT","origin":"https://api.x.com","path":"/2/chat/settings","body":"json","scope":{}},
-      "updateLists": {"action":"write.lists","effects":["write"],"method":"PUT","origin":"https://api.x.com","path":"/2/lists/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "updateRules": {"action":"write.rules","effects":["write"],"method":"POST","origin":"https://api.x.com","path":"/2/tweets/search/stream/rules","params":["dry_run","delete_all"],"body":"json","scope":{}},
-      "updateScheduledBroadcast": {"action":"publish.scheduled","effects":["publish"],"method":"PUT","origin":"https://api.x.com","path":"/2/broadcasts/scheduled/{id}","body":"json","scope":{"id":{"from":"path","at":"id"},"scheduled_broadcast_id":{"from":"body","at":"/scheduled_broadcast_id"},"request":{"from":"body","at":"","type":"object"}},"grant":["id","scheduled_broadcast_id"]},
-      "uploadComplianceJobSubmission": {"action":"write.jobs","effects":["write"],"method":"PUT","origin":"https://api.x.com","path":"/2/compliance/jobs/{id}/upload","params":["token","compliance_job.fields"],"body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "usersIdBlock": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"https://api.x.com","path":"/2/users/{id}/blocking","body":"json","scope":{"id":{"from":"path","at":"id"},"target_user_id":{"from":"body","at":"/target_user_id"}}},
-      "usersIdUnblock": {"action":"delete.blocking","effects":["delete"],"method":"DELETE","origin":"https://api.x.com","path":"/2/users/{source_user_id}/blocking/{target_user_id}","scope":{"source_user_id":{"from":"path","at":"source_user_id"},"target_user_id":{"from":"path","at":"target_user_id"}}},
-      "validateAccountActivitySubscription": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.x.com","path":"/2/account_activity/webhooks/{webhook_id}/subscriptions/all","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "validateWebhooks": {"action":"admin.webhooks","effects":["admin"],"method":"PUT","origin":"https://api.x.com","path":"/2/webhooks/{webhook_id}","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}}
+      "acceptChatMessageRequest": {"action":"chat.message_requests.write","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/message_requests/{id}/accept","scope":{"id":{"at":"id","from":"path"}}},
+      "activityStream": {"action":"activity.stream.read","effects":["read"],"method":"GET","origin":"{api}","params":["backfill_minutes","start_time","end_time"],"path":"/2/activity/stream","scope":{}},
+      "addChatGroupAdmins": {"action":"chat.conversations.admins.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/admins","scope":{"id":{"at":"id","from":"path"}}},
+      "addChatGroupMembers": {"action":"chat.conversations.members.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/members","scope":{"conversation_participant_keys":{"at":"/conversation_participant_keys","from":"body","optional":true,"type":"array"},"encrypted_avatar_url":{"at":"/encrypted_avatar_url","from":"body","optional":true},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_ids":{"at":"/user_ids","from":"body","type":"array"}}},
+      "addChatModerator": {"action":"broadcasts.chat.moderators.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/broadcasts/chat/moderators","scope":{"user_id":{"at":"/user_id","from":"body"}}},
+      "addConversationKeys": {"action":"chat.conversations.keys.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/keys","scope":{"conversation_participant_keys":{"at":"/conversation_participant_keys","from":"body","type":"array"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "addListsMember": {"action":"lists.members.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/lists/{id}/members","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body"}}},
+      "addMediaToLibrary": {"action":"media.library.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/media/library","scope":{"media_key":{"at":"/media_key","from":"body"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "addPostToAmplifyPrograms": {"action":"media.amplify.posts.publish","body":"json","effects":["publish"],"method":"POST","origin":"{api}","path":"/2/media/amplify/posts","scope":{"blocked_advertiser_ids":{"at":"/blocked_advertiser_ids","from":"body","optional":true,"type":"array"},"post_id":{"at":"/post_id","from":"body"},"program_ids":{"at":"/program_ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "addUserPublicKey": {"action":"users.public_keys.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/users/{id}/public_keys","scope":{"id":{"at":"id","from":"path"}}},
+      "appendMediaUpload": {"action":"media.append.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/2/media/upload/{id}/append","scope":{"id":{"at":"id","from":"path"}}},
+      "approveChatGroupAdminRequest": {"action":"chat.conversations.admin_requests.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/admin_requests/{user_id}/approve","scope":{"id":{"at":"id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+      "archiveChatConversation": {"action":"chat.conversations.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/archive","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "articleCreateDraft": {"action":"articles.draft.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/articles/draft","scope":{}},
+      "articlePublish": {"action":"articles.publish","effects":["publish"],"method":"POST","origin":"{api}","path":"/2/articles/{article_id}/publish","scope":{"article_id":{"at":"article_id","from":"path"}}},
+      "blockUsersDms": {"action":"users.dm.write","effects":["write"],"method":"POST","origin":"{api}","path":"/2/users/{id}/dm/block","scope":{"id":{"at":"id","from":"path"}}},
+      "cancelScheduledCall": {"action":"calls.scheduled.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["scope","occurrence_start_time","notify_invitees"],"path":"/2/calls/scheduled/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "chatMediaDownload": {"action":"chat.media.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/chat/media/{id}/{media_hash_key}","scope":{"id":{"at":"id","from":"path"},"media_hash_key":{"at":"media_hash_key","from":"path"}}},
+      "chatMediaUploadAppend": {"action":"chat.media.append.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/media/upload/{id}/append","scope":{"id":{"at":"id","from":"path"}}},
+      "chatMediaUploadFinalize": {"action":"chat.media.finalize.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/media/upload/{id}/finalize","scope":{"conversation_id":{"at":"/conversation_id","from":"body"},"id":{"at":"id","from":"path"},"media_hash_key":{"at":"/media_hash_key","from":"body"}}},
+      "chatMediaUploadInitialize": {"action":"chat.media.initialize.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/media/upload/initialize","scope":{"conversation_id":{"at":"/conversation_id","from":"body"}}},
+      "createAccountActivitySubscription": {"action":"account_activity.webhooks.subscriptions.all.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/account_activity/webhooks/{webhook_id}/subscriptions/all","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "createActivitySubscription": {"action":"activity.subscriptions.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/2/activity/subscriptions","scope":{}},
+      "createBot": {"action":"bots.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/bots","scope":{}},
+      "createBroadcast": {"action":"broadcasts.publish","body":"json","effects":["publish"],"method":"POST","origin":"{api}","path":"/2/broadcasts","scope":{"additional_source_ids":{"at":"/additional_source_ids","from":"body","optional":true,"type":"array"},"live_category_id":{"at":"/live_category_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"source_id":{"at":"/source_id","from":"body"}}},
+      "createCall": {"action":"calls.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/2/calls","scope":{"conversation_id":{"at":"/conversation_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createChatConversation": {"action":"chat.conversations.group.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/group","scope":{"conversation_id":{"at":"/conversation_id","from":"body"},"conversation_participant_keys":{"at":"/conversation_participant_keys","from":"body","type":"array"},"group_avatar_url":{"at":"/group_avatar_url","from":"body","optional":true},"group_name":{"at":"/group_name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createChatGroupAdminRequest": {"action":"chat.conversations.admin_requests.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/admin_requests","scope":{"id":{"at":"id","from":"path"}}},
+      "createChatGroupJoinRequest": {"action":"chat.conversations.join_requests.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/join_requests","scope":{"id":{"at":"id","from":"path"}}},
+      "createCommunityNotes": {"action":"notes.publish","body":"json","effects":["publish"],"grant":["post_id"],"method":"POST","origin":"{api}","path":"/2/notes","scope":{"post_id":{"at":"/post_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createComplianceJobs": {"action":"compliance.jobs.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","params":["compliance_job.fields"],"path":"/2/compliance/jobs","scope":{"name":{"at":"/name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createDirectMessagesByConversationId": {"action":"dm_conversations.messages.send","body":"json","effects":["send"],"grant":["dm_conversation_id"],"method":"POST","origin":"{api}","path":"/2/dm_conversations/{dm_conversation_id}/messages","scope":{"dm_conversation_id":{"at":"dm_conversation_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createDirectMessagesByParticipantId": {"action":"dm_conversations.with.messages.send","body":"json","effects":["send"],"grant":["participant_id"],"method":"POST","origin":"{api}","path":"/2/dm_conversations/with/{participant_id}/messages","scope":{"participant_id":{"at":"participant_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createDirectMessagesConversation": {"action":"dm_conversations.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/2/dm_conversations","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createLists": {"action":"lists.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/lists","scope":{"name":{"at":"/name","from":"body"}}},
+      "createMediaMetadata": {"action":"media.metadata.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/media/metadata","scope":{"id":{"at":"/id","from":"body"}}},
+      "createMediaSubtitles": {"action":"media.subtitles.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/media/subtitles","scope":{"id":{"at":"/id","from":"body"}}},
+      "createPosts": {"action":"tweets.publish","body":"json","effects":["publish"],"method":"POST","origin":"{api}","path":"/2/tweets","scope":{"community_id":{"at":"/community_id","from":"body","optional":true},"quote_tweet_id":{"at":"/quote_tweet_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createScheduledBroadcast": {"action":"broadcasts.scheduled.publish","body":"json","effects":["publish"],"grant":["source_id"],"method":"POST","origin":"{api}","path":"/2/broadcasts/scheduled","scope":{"request":{"at":"","from":"body","type":"object"},"source_id":{"at":"/source_id","from":"body"}}},
+      "createSource": {"action":"sources.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/sources","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createUserBroadcast": {"action":"users.broadcasts.publish","body":"json","effects":["publish"],"method":"POST","origin":"{api}","path":"/2/users/{id}/broadcasts","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"source_id":{"at":"/source_id","from":"body"}}},
+      "createUserSource": {"action":"users.sources.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/users/{id}/sources","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createUsersBookmark": {"action":"users.bookmarks.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/users/{id}/bookmarks","scope":{"id":{"at":"id","from":"path"}}},
+      "createUsersBookmarkFolder": {"action":"users.bookmarks.folders.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/users/{id}/bookmarks/folders","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body"}}},
+      "createWebhookReplayJob": {"action":"webhooks.replay.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/webhooks/replay","scope":{"webhook_id":{"at":"/webhook_id","from":"body"}}},
+      "createWebhooks": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/2/webhooks","scope":{"url":{"at":"/url","from":"body"}}},
+      "createWebhooksStreamLink": {"action":"tweets.search.webhooks.admin","effects":["admin"],"method":"POST","origin":"{api}","path":"/2/tweets/search/webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "deleteAccountActivitySubscription": {"action":"account_activity.webhooks.subscriptions.all.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/account_activity/webhooks/{webhook_id}/subscriptions/{user_id}/all","scope":{"user_id":{"at":"user_id","from":"path"},"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "deleteActivitySubscription": {"action":"activity.subscriptions.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/activity/subscriptions/{subscription_id}","scope":{"subscription_id":{"at":"subscription_id","from":"path"}}},
+      "deleteActivitySubscriptionsByIds": {"action":"activity.subscriptions.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["ids"],"path":"/2/activity/subscriptions","scope":{"ids":{"at":"ids","from":"query"}}},
+      "deleteAllConnections": {"action":"connections.all.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/connections/all","scope":{}},
+      "deleteBot": {"action":"bots.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/bots/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteBroadcast": {"action":"broadcasts.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/broadcasts/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteBroadcastChatMessage": {"action":"broadcasts.chat.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/broadcasts/{id}/chat/{message_id}","scope":{"id":{"at":"id","from":"path"},"message_id":{"at":"message_id","from":"path"}}},
+      "deleteChatConversation": {"action":"chat.conversations.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/chat/conversations/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteChatConversationMessageTtl": {"action":"chat.conversations.message_ttl.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/chat/conversations/{id}/message_ttl","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteChatMessages": {"action":"chat.conversations.messages.delete","body":"json","effects":["delete"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/messages/delete","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteCommunityNotes": {"action":"notes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/notes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteComplianceJobsById": {"action":"compliance.jobs.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["compliance_job.fields"],"path":"/2/compliance/jobs/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteConnectionsByEndpoint": {"action":"connections.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/connections/{endpoint_id}","path_patterns":{"endpoint_id":"filtered_stream|firehose_stream|firehose_stream_lang_en|firehose_stream_lang_ja|firehose_stream_lang_ko|firehose_stream_lang_pt|likes_compliance_stream|likes_firehose_stream|likes_sample10_stream|sample10_stream|sample_stream|tweet_label_stream|tweets_compliance_stream|users_compliance_stream"},"scope":{"endpoint_id":{"at":"endpoint_id","from":"path"}}},
+      "deleteConnectionsByUuids": {"action":"connections.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/connections","scope":{}},
+      "deleteDirectMessagesEvents": {"action":"dm_events.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/dm_events/{event_id}","scope":{"event_id":{"at":"event_id","from":"path"}}},
+      "deleteLists": {"action":"lists.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/lists/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteMediaSubtitles": {"action":"media.subtitles.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/media/subtitles","scope":{"id":{"at":"/id","from":"body"}}},
+      "deletePosts": {"action":"tweets.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/tweets/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteScheduledBroadcast": {"action":"broadcasts.scheduled.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["roll_forward"],"path":"/2/broadcasts/scheduled/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteSource": {"action":"sources.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/sources/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteUserBroadcast": {"action":"users.broadcasts.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/users/{id}/broadcasts/{broadcast_id}","scope":{"broadcast_id":{"at":"broadcast_id","from":"path"},"id":{"at":"id","from":"path"}}},
+      "deleteUserSource": {"action":"users.sources.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/users/{id}/sources/{source_id}","scope":{"id":{"at":"id","from":"path"},"source_id":{"at":"source_id","from":"path"}}},
+      "deleteUsersBookmark": {"action":"users.bookmarks.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/users/{id}/bookmarks/{tweet_id}","scope":{"id":{"at":"id","from":"path"},"tweet_id":{"at":"tweet_id","from":"path"}}},
+      "deleteWebhooks": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "deleteWebhooksStreamLink": {"action":"tweets.search.webhooks.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/tweets/search/webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "disableChatGroupInvite": {"action":"chat.conversations.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/chat/conversations/{id}/invite","scope":{"id":{"at":"id","from":"path"}}},
+      "dmConversationsMediaDownload": {"action":"dm_conversations.media.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/dm_conversations/media/{dm_id}/{media_id}/{resource_id}","scope":{"dm_id":{"at":"dm_id","from":"path"},"media_id":{"at":"media_id","from":"path"},"resource_id":{"at":"resource_id","from":"path"}}},
+      "downloadComplianceJobResults": {"action":"compliance.jobs.read","effects":["read"],"method":"GET","origin":"{api}","params":["token","compliance_job.fields"],"path":"/2/compliance/jobs/{id}/download","scope":{"id":{"at":"id","from":"path"}}},
+      "enableChatGroupInvite": {"action":"chat.conversations.share","body":"json","effects":["share"],"grant":["id"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/invite","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "ensureAccount": {"action":"account.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/2/account","scope":{}},
+      "evaluateCommunityNotes": {"action":"notes.evaluate.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/2/notes/evaluate","scope":{"post_id":{"at":"/post_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "finalizeMediaUpload": {"action":"media.finalize.write","effects":["write"],"method":"POST","origin":"{api}","path":"/2/media/upload/{id}/finalize","scope":{"id":{"at":"id","from":"path"}}},
+      "followList": {"action":"users.followed_lists.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/users/{id}/followed_lists","scope":{"id":{"at":"id","from":"path"},"list_id":{"at":"/list_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "followUser": {"action":"users.following.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/users/{id}/following","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"target_user_id":{"at":"/target_user_id","from":"body"}}},
+      "getAccountActivitySubscriptionCount": {"action":"account_activity.subscriptions.count.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/account_activity/subscriptions/count","scope":{}},
+      "getAccountActivitySubscriptions": {"action":"account_activity.webhooks.subscriptions.all.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/account_activity/webhooks/{webhook_id}/subscriptions/all/list","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "getActivitySubscriptions": {"action":"activity.subscriptions.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","user_id"],"path":"/2/activity/subscriptions","scope":{}},
+      "getAmplifyProgram": {"action":"media.amplify.programs.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/media/amplify/programs/{program_id}","scope":{"program_id":{"at":"program_id","from":"path"}}},
+      "getAmplifyProgramPosts": {"action":"media.amplify.programs.posts.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/media/amplify/programs/{program_id}/posts","scope":{"program_id":{"at":"program_id","from":"path"}}},
+      "getAmplifyPrograms": {"action":"media.amplify.programs.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/media/amplify/programs","scope":{}},
+      "getBots": {"action":"bots.read","effects":["read"],"method":"GET","origin":"{api}","params":["user.fields","expansions","post.fields","tweet.fields"],"path":"/2/bots","scope":{}},
+      "getBroadcast": {"action":"broadcasts.read","effects":["read"],"method":"GET","origin":"{api}","params":["broadcast.fields","max_results","oldest_start_time","newest_start_time","pagination_token"],"path":"/2/broadcasts/{id}","path_patterns":{"id":"[^cs].*|c(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^g].*|g(?:|[^o].*|o(?:|[^r].*|r(?:|[^i].*|i(?:|[^e].*|e(?:|[^s].*|s.+)))))))))|s(?:|[^c].*|c(?:|[^h].*|h(?:|[^e].*|e(?:|[^d].*|d(?:|[^u].*|u(?:|[^l].*|l(?:|[^e].*|e(?:|[^d].*|d.+))))))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "getBroadcastChat": {"action":"broadcasts.chat.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","broadcast_chat_message.fields","expansions","user.fields"],"path":"/2/broadcasts/{id}/chat","path_patterns":{"id":"[^s].*|s(?:|[^c].*|c(?:|[^h].*|h(?:|[^e].*|e(?:|[^d].*|d(?:|[^u].*|u(?:|[^l].*|l(?:|[^e].*|e(?:|[^d].*|d.+))))))))"},"scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getCall": {"action":"calls.read","effects":["read"],"method":"GET","origin":"{api}","params":["call.fields","expansions","user.fields"],"path":"/2/calls/{id}","path_patterns":{"id":"[^s].*|s(?:|[^c].*|c(?:|[^h].*|h(?:|[^e].*|e(?:|[^d].*|d(?:|[^u].*|u(?:|[^l].*|l(?:|[^e].*|e(?:|[^d].*|d.+))))))))"},"scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getChatConversation": {"action":"chat.conversations.read","effects":["read"],"method":"GET","origin":"{api}","params":["chat_conversation.fields","expansions","user.fields"],"path":"/2/chat/conversations/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getChatConversationEvents": {"action":"chat.conversations.events.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","chat_message_event.fields"],"path":"/2/chat/conversations/{id}/events","scope":{"id":{"at":"id","from":"path"}}},
+      "getChatConversationPinnedMessages": {"action":"chat.conversations.pinned_messages.read","effects":["read"],"method":"GET","origin":"{api}","params":["pagination_token","chat_pinned_message.fields"],"path":"/2/chat/conversations/{id}/pinned_messages","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getChatConversations": {"action":"chat.conversations.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","chat_conversation.fields","expansions","user.fields","end_time","is_archived","is_muted","participant_ids","participant_query","start_time","type","unread_only"],"path":"/2/chat/conversations","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getChatGroupAdminRequests": {"action":"chat.conversations.admin_requests.read","effects":["read"],"method":"GET","origin":"{api}","params":["pagination_token","user.fields","expansions","post.fields","tweet.fields"],"path":"/2/chat/conversations/{id}/admin_requests","scope":{"id":{"at":"id","from":"path"}}},
+      "getChatGroupInvite": {"action":"chat.conversations.invites.read","effects":["read"],"method":"GET","origin":"{api}","params":["chat_group_invite.fields"],"path":"/2/chat/conversations/{id}/invites/{token}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"token":{"at":"token","from":"path"}}},
+      "getChatMessageRequest": {"action":"chat.message_requests.read","effects":["read"],"method":"GET","origin":"{api}","params":["chat_message_request_detail.fields"],"path":"/2/chat/message_requests/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getChatMessageRequests": {"action":"chat.message_requests.read","effects":["read"],"method":"GET","origin":"{api}","params":["inbox_type","max_results","pagination_token","chat_message_request.fields"],"path":"/2/chat/message_requests","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getChatModerators": {"action":"broadcasts.chat.moderators.read","effects":["read"],"method":"GET","origin":"{api}","params":["user.fields","expansions","post.fields","tweet.fields"],"path":"/2/broadcasts/chat/moderators","scope":{}},
+      "getChatMutedUsers": {"action":"broadcasts.chat.mutes.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","broadcast_chat_mute.fields","expansions","user.fields"],"path":"/2/broadcasts/chat/mutes","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getChatSettings": {"action":"chat.settings.read","effects":["read"],"method":"GET","origin":"{api}","params":["chat_settings.fields"],"path":"/2/chat/settings","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getCommunitiesById": {"action":"communities.read","effects":["read"],"method":"GET","origin":"{api}","params":["community.fields","query","max_results","next_token","pagination_token"],"path":"/2/communities/{id}","path_patterns":{"id":"[0-9]{1,19}"},"scope":{"id":{"at":"id","from":"path"}}},
+      "getComplianceJobs": {"action":"compliance.jobs.read","effects":["read"],"method":"GET","origin":"{api}","params":["type","status","compliance_job.fields"],"path":"/2/compliance/jobs","scope":{}},
+      "getComplianceJobsById": {"action":"compliance.jobs.read","effects":["read"],"method":"GET","origin":"{api}","params":["compliance_job.fields"],"path":"/2/compliance/jobs/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getConnectionHistory": {"action":"connections.read","effects":["read"],"method":"GET","origin":"{api}","params":["status","endpoints","max_results","pagination_token","connection.fields"],"path":"/2/connections","scope":{}},
+      "getDeveloperAccount": {"action":"account.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/account","scope":{}},
+      "getDirectMessagesEvents": {"action":"dm_events.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","event_types","dm_event.fields","expansions","user.fields","post.fields","media.fields","tweet.fields"],"path":"/2/dm_events","scope":{}},
+      "getDirectMessagesEventsByConversationId": {"action":"dm_conversations.dm_events.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","event_types","dm_event.fields","expansions","user.fields","post.fields","media.fields","tweet.fields"],"path":"/2/dm_conversations/{id}/dm_events","scope":{"id":{"at":"id","from":"path"}}},
+      "getDirectMessagesEventsById": {"action":"dm_events.read","effects":["read"],"method":"GET","origin":"{api}","params":["dm_event.fields","expansions","user.fields","post.fields","media.fields","tweet.fields"],"path":"/2/dm_events/{event_id}","scope":{"event_id":{"at":"event_id","from":"path"}}},
+      "getDirectMessagesEventsByParticipantId": {"action":"dm_conversations.with.dm_events.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","event_types","dm_event.fields","expansions","user.fields","post.fields","media.fields","tweet.fields"],"path":"/2/dm_conversations/with/{participant_id}/dm_events","scope":{"participant_id":{"at":"participant_id","from":"path"}}},
+      "getListsById": {"action":"lists.read","effects":["read"],"method":"GET","origin":"{api}","params":["list.fields","expansions","user.fields"],"path":"/2/lists/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getListsFollowers": {"action":"lists.followers.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","user.fields","expansions","post.fields","tweet.fields"],"path":"/2/lists/{id}/followers","scope":{"id":{"at":"id","from":"path"}}},
+      "getListsMembers": {"action":"lists.members.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","user.fields","expansions","post.fields","tweet.fields"],"path":"/2/lists/{id}/members","scope":{"id":{"at":"id","from":"path"}}},
+      "getListsPosts": {"action":"lists.tweets.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields","tweet.fields"],"path":"/2/lists/{id}/tweets","scope":{"id":{"at":"id","from":"path"}}},
+      "getMediaAnalytics": {"action":"media.analytics.read","effects":["read"],"method":"GET","origin":"{api}","params":["media_keys","start_time","end_time","granularity","media_analytics.fields"],"path":"/2/media/analytics","scope":{"media_keys":{"at":"media_keys","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "getMediaByMediaKey": {"action":"media.read","effects":["read"],"method":"GET","origin":"{api}","params":["media.fields","media_keys","start_time","end_time","granularity","media_analytics.fields","media_id","command"],"path":"/2/media/{media_key}","path_patterns":{"media_key":"([0-9]+)_([0-9]+)"},"scope":{"media_key":{"at":"media_key","from":"path"}}},
+      "getMediaByMediaKeys": {"action":"media.read","effects":["read"],"method":"GET","origin":"{api}","params":["media_keys","media.fields"],"path":"/2/media","scope":{}},
+      "getMediaLibraryCategories": {"action":"media.library.categories.read","effects":["read"],"method":"GET","origin":"{api}","params":["lang"],"path":"/2/media/library/categories","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getMediaUploadStatus": {"action":"media.read","effects":["read"],"method":"GET","origin":"{api}","params":["media_id","command"],"path":"/2/media/upload","scope":{"media_id":{"at":"media_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "getNews": {"action":"news.read","effects":["read"],"method":"GET","origin":"{api}","params":["news.fields","query","max_results","max_age_hours"],"path":"/2/news/{id}","path_patterns":{"id":"[0-9]{1,19}"},"scope":{"id":{"at":"id","from":"path"}}},
+      "getOpenApiSpec": {"action":"openapi.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/openapi.json","scope":{}},
+      "getPostsAnalytics": {"action":"tweets.analytics.read","effects":["read"],"method":"GET","origin":"{api}","params":["ids","start_time","end_time","granularity","analytics.fields"],"path":"/2/tweets/analytics","scope":{"ids":{"at":"ids","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "getPostsById": {"action":"tweets.read","effects":["read"],"method":"GET","origin":"{api}","params":["post.fields","expansions","user.fields","media.fields","poll.fields","place.fields","ids","start_time","end_time","granularity","analytics.fields","tweet.fields"],"path":"/2/tweets/{id}","path_patterns":{"id":"[0-9]{1,19}"},"scope":{"id":{"at":"id","from":"path"}}},
+      "getPostsByIds": {"action":"tweets.read","effects":["read"],"method":"GET","origin":"{api}","params":["ids","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields","tweet.fields"],"path":"/2/tweets","scope":{"ids":{"at":"ids","from":"query"}}},
+      "getPostsCountsAll": {"action":"tweets.counts.all.read","effects":["read"],"method":"GET","origin":"{api}","params":["query","start_time","end_time","since_id","until_id","next_token","pagination_token","granularity","search_count.fields"],"path":"/2/tweets/counts/all","scope":{}},
+      "getPostsCountsRecent": {"action":"tweets.counts.recent.read","effects":["read"],"method":"GET","origin":"{api}","params":["query","start_time","end_time","since_id","until_id","next_token","pagination_token","granularity","search_count.fields"],"path":"/2/tweets/counts/recent","scope":{}},
+      "getPostsLikingUsers": {"action":"tweets.liking_users.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","user.fields","expansions","post.fields","tweet.fields"],"path":"/2/tweets/{id}/liking_users","scope":{"id":{"at":"id","from":"path"}}},
+      "getPostsQuotedPosts": {"action":"tweets.quote_tweets.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","exclude","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields","tweet.fields"],"path":"/2/tweets/{id}/quote_tweets","scope":{"id":{"at":"id","from":"path"}}},
+      "getPostsRepostedBy": {"action":"tweets.retweeted_by.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","user.fields","expansions","post.fields","tweet.fields"],"path":"/2/tweets/{id}/retweeted_by","scope":{"id":{"at":"id","from":"path"}}},
+      "getPostsReposts": {"action":"tweets.retweets.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields","tweet.fields"],"path":"/2/tweets/{id}/retweets","scope":{"id":{"at":"id","from":"path"}}},
+      "getRegion": {"action":"region.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/region","scope":{}},
+      "getRuleCounts": {"action":"tweets.search.stream.rules.counts.read","effects":["read"],"method":"GET","origin":"{api}","params":["rules_count.fields"],"path":"/2/tweets/search/stream/rules/counts","scope":{}},
+      "getRules": {"action":"tweets.search.stream.rules.read","effects":["read"],"method":"GET","origin":"{api}","params":["ids","max_results","pagination_token"],"path":"/2/tweets/search/stream/rules","scope":{}},
+      "getScheduledBroadcast": {"action":"broadcasts.scheduled.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","broadcast_chat_message.fields","expansions","user.fields"],"path":"/2/broadcasts/scheduled/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getScheduledCall": {"action":"calls.scheduled.read","effects":["read"],"method":"GET","origin":"{api}","params":["scheduled_call.fields","expansions","call.fields","user.fields"],"path":"/2/calls/scheduled/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getSource": {"action":"sources.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/sources/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getSourceStreamKey": {"action":"sources.stream_key.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/sources/{id}/stream_key","scope":{"id":{"at":"id","from":"path"}}},
+      "getSpacesBuyers": {"action":"spaces.buyers.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","user.fields","expansions","post.fields","tweet.fields"],"path":"/2/spaces/{id}/buyers","scope":{"id":{"at":"id","from":"path"}}},
+      "getSpacesByCreatorIds": {"action":"spaces.by.creator_ids.read","effects":["read"],"method":"GET","origin":"{api}","params":["user_ids","space.fields","expansions","user.fields","topic.fields"],"path":"/2/spaces/by/creator_ids","scope":{"user_ids":{"at":"user_ids","from":"query"}}},
+      "getSpacesById": {"action":"spaces.read","effects":["read"],"method":"GET","origin":"{api}","params":["space.fields","expansions","user.fields","topic.fields","query","state","max_results"],"path":"/2/spaces/{id}","path_patterns":{"id":"[^s].*|s(?:|[^e].*|e(?:|[^a].*|a(?:|[^r].*|r(?:|[^c].*|c(?:|[^h].*|h.+)))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "getSpacesByIds": {"action":"spaces.read","effects":["read"],"method":"GET","origin":"{api}","params":["ids","space.fields","expansions","user.fields","topic.fields"],"path":"/2/spaces","scope":{"ids":{"at":"ids","from":"query"}}},
+      "getSpacesPosts": {"action":"spaces.tweets.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields","tweet.fields"],"path":"/2/spaces/{id}/tweets","scope":{"id":{"at":"id","from":"path"}}},
+      "getTrendsByWoeid": {"action":"trends.by.woeid.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_trends","trend.fields"],"path":"/2/trends/by/woeid/{woeid}","scope":{"woeid":{"at":"woeid","from":"path"}}},
+      "getTrendsPersonalizedTrends": {"action":"users.personalized_trends.read","effects":["read"],"method":"GET","origin":"{api}","params":["personalized_trend.fields"],"path":"/2/users/personalized_trends","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getUsage": {"action":"usage.tweets.read","effects":["read"],"method":"GET","origin":"{api}","params":["days","usage.fields"],"path":"/2/usage/tweets","scope":{}},
+      "getUsageCredits": {"action":"usage.credits.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/usage/credits","scope":{}},
+      "getUserBroadcast": {"action":"users.broadcasts.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/users/{id}/broadcasts/{broadcast_id}","scope":{"broadcast_id":{"at":"broadcast_id","from":"path"},"id":{"at":"id","from":"path"}}},
+      "getUserSource": {"action":"users.sources.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/users/{id}/sources/{source_id}","scope":{"id":{"at":"id","from":"path"},"source_id":{"at":"source_id","from":"path"}}},
+      "getUsersAffiliates": {"action":"users.affiliates.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","user.fields","expansions","post.fields","tweet.fields"],"path":"/2/users/{id}/affiliates","scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersBlocking": {"action":"users.blocking.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","user.fields","expansions","post.fields","tweet.fields"],"path":"/2/users/{id}/blocking","scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersBookmarkFolders": {"action":"users.bookmarks.folders.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token"],"path":"/2/users/{id}/bookmarks/folders","scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersBookmarks": {"action":"users.bookmarks.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields","tweet.fields"],"path":"/2/users/{id}/bookmarks","scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersBookmarksByFolderId": {"action":"users.bookmarks.folders.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token"],"path":"/2/users/{id}/bookmarks/folders/{folder_id}","scope":{"folder_id":{"at":"folder_id","from":"path"},"id":{"at":"id","from":"path"}}},
+      "getUsersById": {"action":"users.read","effects":["read"],"method":"GET","origin":"{api}","params":["user.fields","expansions","post.fields","usernames","personalized_trend.fields","ids","public_key.fields","max_results","pagination_token","media.fields","poll.fields","place.fields","query","next_token","tweet.fields"],"path":"/2/users/{id}","path_patterns":{"id":"[0-9]{1,19}"},"scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersByIds": {"action":"users.read","effects":["read"],"method":"GET","origin":"{api}","params":["ids","user.fields","expansions","post.fields","tweet.fields"],"path":"/2/users","scope":{"ids":{"at":"ids","from":"query"}}},
+      "getUsersByUsername": {"action":"users.by.username.read","effects":["read"],"method":"GET","origin":"{api}","params":["user.fields","expansions","post.fields","tweet.fields"],"path":"/2/users/by/username/{username}","scope":{"username":{"at":"username","from":"path"}}},
+      "getUsersByUsernames": {"action":"users.by.read","effects":["read"],"method":"GET","origin":"{api}","params":["usernames","user.fields","expansions","post.fields","tweet.fields"],"path":"/2/users/by","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getUsersFollowedLists": {"action":"users.followed_lists.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","list.fields","expansions","user.fields"],"path":"/2/users/{id}/followed_lists","scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersFollowers": {"action":"users.followers.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","user.fields","expansions","post.fields","tweet.fields"],"path":"/2/users/{id}/followers","path_patterns":{"id":"[0-9]{1,19}"},"scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersFollowing": {"action":"users.following.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","user.fields","expansions","post.fields","tweet.fields"],"path":"/2/users/{id}/following","path_patterns":{"id":"[0-9]{1,19}"},"scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersLikedPosts": {"action":"users.liked_tweets.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields","tweet.fields"],"path":"/2/users/{id}/liked_tweets","scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersListMemberships": {"action":"users.memberships.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","list.fields","expansions","user.fields"],"path":"/2/users/{id}/list_memberships","scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersMe": {"action":"users.me.read","effects":["read"],"method":"GET","origin":"{api}","params":["user.fields","expansions","post.fields","tweet.fields"],"path":"/2/users/me","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getUsersMeFollowers": {"action":"users.me.followers.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","user.fields","expansions","post.fields","tweet.fields"],"path":"/2/users/me/followers","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getUsersMeFollowing": {"action":"users.me.following.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","user.fields","expansions","post.fields","tweet.fields"],"path":"/2/users/me/following","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getUsersMentions": {"action":"users.mentions.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","start_time","end_time","since_id","until_id","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields","tweet.fields"],"path":"/2/users/{id}/mentions","scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersMuting": {"action":"users.muting.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","user.fields","expansions","post.fields","tweet.fields"],"path":"/2/users/{id}/muting","scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersOwnedLists": {"action":"users.owned_lists.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","list.fields","expansions","user.fields"],"path":"/2/users/{id}/owned_lists","scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersPinnedLists": {"action":"users.pinned_lists.read","effects":["read"],"method":"GET","origin":"{api}","params":["list.fields","expansions","user.fields"],"path":"/2/users/{id}/pinned_lists","scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersPosts": {"action":"users.tweets.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","start_time","end_time","since_id","until_id","exclude","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields","tweet.fields"],"path":"/2/users/{id}/tweets","scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersPublicKey": {"action":"users.public_keys.read","effects":["read"],"method":"GET","origin":"{api}","params":["public_key.fields"],"path":"/2/users/{id}/public_keys","scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersPublicKeys": {"action":"users.public_keys.read","effects":["read"],"method":"GET","origin":"{api}","params":["ids","public_key.fields"],"path":"/2/users/public_keys","scope":{"ids":{"at":"ids","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "getUsersRepostsOfMe": {"action":"users.reposts_of_me.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields","tweet.fields"],"path":"/2/users/reposts_of_me","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getUsersTimeline": {"action":"users.timelines.reverse_chronological.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","pagination_token","start_time","end_time","since_id","until_id","exclude","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields","tweet.fields"],"path":"/2/users/{id}/timelines/reverse_chronological","scope":{"id":{"at":"id","from":"path"}}},
+      "getWebhooks": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"{api}","params":["webhook_config.fields"],"path":"/2/webhooks","scope":{}},
+      "getWebhooksStreamLinks": {"action":"tweets.search.webhooks.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/tweets/search/webhooks","scope":{}},
+      "goLiveScheduledBroadcast": {"action":"broadcasts.scheduled.live.publish","effects":["publish"],"method":"POST","origin":"{api}","path":"/2/broadcasts/scheduled/{id}/live","scope":{"id":{"at":"id","from":"path"}}},
+      "hidePostsReply": {"action":"tweets.hidden.write","body":"json","effects":["write"],"grant":["tweet_id"],"method":"PUT","origin":"{api}","path":"/2/tweets/{tweet_id}/hidden","scope":{"request":{"at":"","from":"body","type":"object"},"tweet_id":{"at":"tweet_id","from":"path"}}},
+      "initializeChatGroup": {"action":"chat.conversations.group.initialize.write","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/group/initialize","scope":{}},
+      "initializeMediaUpload": {"action":"media.initialize.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/media/upload/initialize","scope":{}},
+      "joinCall": {"action":"calls.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/calls/{id}/join","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "leaveCall": {"action":"calls.write","effects":["write"],"method":"POST","origin":"{api}","path":"/2/calls/{id}/leave","scope":{"id":{"at":"id","from":"path"}}},
+      "likePost": {"action":"users.likes.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/users/{id}/likes","scope":{"id":{"at":"id","from":"path"},"tweet_id":{"at":"/tweet_id","from":"body"}}},
+      "listBroadcasts": {"action":"broadcasts.read","effects":["read"],"method":"GET","origin":"{api}","params":["ids","max_results","pagination_token","broadcast.fields"],"path":"/2/broadcasts","scope":{}},
+      "listLiveCategories": {"action":"broadcasts.categories.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/broadcasts/categories","scope":{}},
+      "listScheduledBroadcasts": {"action":"broadcasts.scheduled.read","effects":["read"],"method":"GET","origin":"{api}","params":["max_results","oldest_start_time","newest_start_time","pagination_token"],"path":"/2/broadcasts/scheduled","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listScheduledCalls": {"action":"calls.scheduled.read","effects":["read"],"method":"GET","origin":"{api}","params":["start_time","end_time","max_results","scheduled_call.fields","expansions","call.fields","user.fields"],"path":"/2/calls/scheduled","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listSources": {"action":"sources.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/sources","scope":{}},
+      "listUserBroadcasts": {"action":"users.broadcasts.read","effects":["read"],"method":"GET","origin":"{api}","params":["pagination_token"],"path":"/2/users/{id}/broadcasts","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listUserSources": {"action":"users.sources.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/users/{id}/sources","scope":{"id":{"at":"id","from":"path"}}},
+      "markChatConversationRead": {"action":"chat.conversations.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/read","scope":{"id":{"at":"id","from":"path"},"seen_until_sequence_id":{"at":"/seen_until_sequence_id","from":"body"}}},
+      "markChatConversationUnread": {"action":"chat.conversations.unread.write","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/unread","scope":{"id":{"at":"id","from":"path"}}},
+      "mediaUpload": {"action":"media.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/2/media/upload","scope":{}},
+      "muteBroadcastChatUser": {"action":"broadcasts.chat.mutes.write","body":"json","effects":["write"],"grant":["id","user_id"],"method":"POST","origin":"{api}","path":"/2/broadcasts/{id}/chat/mutes","scope":{"id":{"at":"id","from":"path"},"message_id":{"at":"/message_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body"}}},
+      "muteChatConversation": {"action":"chat.conversations.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/mute","scope":{"id":{"at":"id","from":"path"}}},
+      "muteChatUser": {"action":"broadcasts.chat.mutes.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/broadcasts/chat/mutes","scope":{"broadcast_id":{"at":"/broadcast_id","from":"body","optional":true},"message_id":{"at":"/message_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body"}}},
+      "muteUser": {"action":"users.muting.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/users/{id}/muting","scope":{"id":{"at":"id","from":"path"},"target_user_id":{"at":"/target_user_id","from":"body"}}},
+      "pinList": {"action":"users.pinned_lists.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/users/{id}/pinned_lists","scope":{"id":{"at":"id","from":"path"},"list_id":{"at":"/list_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "rejectChatGroupAdminRequest": {"action":"chat.conversations.admin_requests.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/admin_requests/{user_id}/reject","scope":{"id":{"at":"id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+      "rejectChatGroupJoinRequests": {"action":"chat.conversations.join_requests.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/join_requests/reject","scope":{"id":{"at":"id","from":"path"}}},
+      "removeChatGroupAdmins": {"action":"chat.conversations.admins.delete","body":"json","effects":["delete"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/admins/remove","scope":{"id":{"at":"id","from":"path"}}},
+      "removeChatGroupMembers": {"action":"chat.conversations.members.delete","body":"json","effects":["delete"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/members/remove","scope":{"id":{"at":"id","from":"path"}}},
+      "removeChatModerator": {"action":"broadcasts.chat.moderators.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/broadcasts/chat/moderators/{user_id}","scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "removeListsMemberByUserId": {"action":"lists.members.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/lists/{id}/members/{user_id}","scope":{"id":{"at":"id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+      "removeMediaFromLibrary": {"action":"media.library.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/media/library/{media_key}","scope":{"media_key":{"at":"media_key","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "repostPost": {"action":"users.retweets.publish","body":"json","effects":["publish"],"method":"POST","origin":"{api}","path":"/2/users/{id}/retweets","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"tweet_id":{"at":"/tweet_id","from":"body"}}},
+      "respondToScheduledCall": {"action":"calls.scheduled.rsvp.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/calls/scheduled/{id}/rsvp","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "revokeBotToken": {"action":"bots.token.admin","effects":["admin","delete"],"method":"DELETE","origin":"{api}","path":"/2/bots/{id}/token","scope":{"id":{"at":"id","from":"path"}}},
+      "rotateBotToken": {"action":"bots.token.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/2/bots/{id}/token","scope":{"id":{"at":"id","from":"path"}}},
+      "scheduleCall": {"action":"calls.scheduled.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/2/calls/scheduled","scope":{"invitee_ids":{"at":"/invitee_ids","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "searchCommunities": {"action":"communities.read","effects":["read"],"method":"GET","origin":"{api}","params":["query","max_results","next_token","pagination_token","community.fields"],"path":"/2/communities/search","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "searchCommunityNotesWritten": {"action":"notes.search.notes_written.read","effects":["read"],"method":"GET","origin":"{api}","params":["test_mode","max_results","pagination_token","note.fields"],"path":"/2/notes/search/notes_written","scope":{}},
+      "searchEligiblePosts": {"action":"notes.search.posts_eligible_for_notes.read","effects":["read"],"method":"GET","origin":"{api}","params":["test_mode","max_results","pagination_token","post_selection","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields","tweet.fields"],"path":"/2/notes/search/posts_eligible_for_notes","scope":{}},
+      "searchNews": {"action":"news.read","effects":["read"],"method":"GET","origin":"{api}","params":["query","max_results","max_age_hours","news.fields"],"path":"/2/news/search","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "searchPostsAll": {"action":"tweets.search.all.read","effects":["read"],"method":"GET","origin":"{api}","params":["query","start_time","end_time","since_id","until_id","max_results","next_token","pagination_token","sort_order","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields","tweet.fields"],"path":"/2/tweets/search/all","scope":{}},
+      "searchPostsRecent": {"action":"tweets.search.recent.read","effects":["read"],"method":"GET","origin":"{api}","params":["query","max_results","next_token","pagination_token","start_time","end_time","since_id","until_id","sort_order","post.fields","expansions","user.fields","media.fields","poll.fields","place.fields","tweet.fields"],"path":"/2/tweets/search/recent","scope":{}},
+      "searchSpaces": {"action":"spaces.read","effects":["read"],"method":"GET","origin":"{api}","params":["query","state","max_results","space.fields","expansions","user.fields","topic.fields"],"path":"/2/spaces/search","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "searchUsers": {"action":"users.read","effects":["read"],"method":"GET","origin":"{api}","params":["query","max_results","next_token","user.fields","expansions","post.fields","tweet.fields"],"path":"/2/users/search","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "sendBroadcastChat": {"action":"broadcasts.chat.publish","body":"json","effects":["publish"],"grant":["id"],"method":"POST","origin":"{api}","path":"/2/broadcasts/{id}/chat","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "sendChatMessage": {"action":"chat.conversations.messages.send","body":"json","effects":["send"],"grant":["id","message_id"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/messages","scope":{"id":{"at":"id","from":"path"},"message_id":{"at":"/message_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "sendChatTypingIndicator": {"action":"chat.conversations.typing.write","effects":["write"],"method":"POST","origin":"{api}","path":"/2/chat/conversations/{id}/typing","scope":{"id":{"at":"id","from":"path"}}},
+      "streamLabelsCompliance": {"action":"tweets.label.stream.read","effects":["read"],"method":"GET","origin":"{api}","params":["backfill_minutes","start_time","end_time"],"path":"/2/tweets/label/stream","scope":{}},
+      "streamLikesCompliance": {"action":"likes.compliance.stream.read","effects":["read"],"method":"GET","origin":"{api}","params":["backfill_minutes","start_time","end_time"],"path":"/2/likes/compliance/stream","scope":{}},
+      "streamLikesFirehose": {"action":"likes.firehose.stream.read","effects":["read"],"method":"GET","origin":"{api}","params":["backfill_minutes","partition","start_time","end_time","like_with_tweet_author.fields","expansions","media.fields","user.fields","tweet.fields"],"path":"/2/likes/firehose/stream","scope":{}},
+      "streamLikesSample10": {"action":"likes.sample10.stream.read","effects":["read"],"method":"GET","origin":"{api}","params":["backfill_minutes","partition","start_time","end_time","like_with_tweet_author.fields","expansions","media.fields","user.fields","tweet.fields"],"path":"/2/likes/sample10/stream","scope":{}},
+      "streamPosts": {"action":"tweets.search.stream.read","effects":["read"],"method":"GET","origin":"{api}","params":["backfill_minutes","start_time","end_time","tweet.fields","expansions","media.fields","poll.fields","user.fields","place.fields"],"path":"/2/tweets/search/stream","scope":{}},
+      "streamPostsCompliance": {"action":"tweets.compliance.stream.read","effects":["read"],"method":"GET","origin":"{api}","params":["backfill_minutes","partition","start_time","end_time"],"path":"/2/tweets/compliance/stream","scope":{}},
+      "streamPostsFirehose": {"action":"tweets.firehose.stream.read","effects":["read"],"method":"GET","origin":"{api}","params":["backfill_minutes","tweet.fields","expansions","media.fields","poll.fields","user.fields","place.fields","partition","start_time","end_time"],"path":"/2/tweets/firehose/stream","scope":{}},
+      "streamPostsFirehoseEn": {"action":"tweets.firehose.stream.lang.en.read","effects":["read"],"method":"GET","origin":"{api}","params":["backfill_minutes","tweet.fields","expansions","media.fields","poll.fields","user.fields","place.fields","partition","start_time","end_time"],"path":"/2/tweets/firehose/stream/lang/en","scope":{}},
+      "streamPostsFirehoseJa": {"action":"tweets.firehose.stream.lang.ja.read","effects":["read"],"method":"GET","origin":"{api}","params":["backfill_minutes","tweet.fields","expansions","media.fields","poll.fields","user.fields","place.fields","partition","start_time","end_time"],"path":"/2/tweets/firehose/stream/lang/ja","scope":{}},
+      "streamPostsFirehoseKo": {"action":"tweets.firehose.stream.lang.ko.read","effects":["read"],"method":"GET","origin":"{api}","params":["backfill_minutes","tweet.fields","expansions","media.fields","poll.fields","user.fields","place.fields","partition","start_time","end_time"],"path":"/2/tweets/firehose/stream/lang/ko","scope":{}},
+      "streamPostsFirehosePt": {"action":"tweets.firehose.stream.lang.pt.read","effects":["read"],"method":"GET","origin":"{api}","params":["backfill_minutes","tweet.fields","expansions","media.fields","poll.fields","user.fields","place.fields","partition","start_time","end_time"],"path":"/2/tweets/firehose/stream/lang/pt","scope":{}},
+      "streamPostsSample": {"action":"tweets.sample.stream.read","effects":["read"],"method":"GET","origin":"{api}","params":["backfill_minutes","tweet.fields","expansions","media.fields","poll.fields","user.fields","place.fields"],"path":"/2/tweets/sample/stream","scope":{}},
+      "streamPostsSample10": {"action":"tweets.sample10.stream.read","effects":["read"],"method":"GET","origin":"{api}","params":["backfill_minutes","tweet.fields","expansions","media.fields","poll.fields","user.fields","place.fields","partition","start_time","end_time"],"path":"/2/tweets/sample10/stream","scope":{}},
+      "streamUsersCompliance": {"action":"users.compliance.stream.read","effects":["read"],"method":"GET","origin":"{api}","params":["backfill_minutes","partition","start_time","end_time"],"path":"/2/users/compliance/stream","scope":{}},
+      "unarchiveChatConversation": {"action":"chat.conversations.write","body":"json","effects":["write"],"method":"DELETE","origin":"{api}","path":"/2/chat/conversations/{id}/archive","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "unblockUsersDms": {"action":"users.dm.write","effects":["write"],"method":"POST","origin":"{api}","path":"/2/users/{id}/dm/unblock","scope":{"id":{"at":"id","from":"path"}}},
+      "unfollowList": {"action":"users.followed_lists.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/users/{id}/followed_lists/{list_id}","scope":{"id":{"at":"id","from":"path"},"list_id":{"at":"list_id","from":"path"}}},
+      "unfollowUser": {"action":"users.following.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/users/{source_user_id}/following/{target_user_id}","scope":{"source_user_id":{"at":"source_user_id","from":"path"},"target_user_id":{"at":"target_user_id","from":"path"}}},
+      "unlikePost": {"action":"users.likes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/users/{id}/likes/{tweet_id}","scope":{"id":{"at":"id","from":"path"},"tweet_id":{"at":"tweet_id","from":"path"}}},
+      "unmuteBroadcastChatUser": {"action":"broadcasts.chat.mutes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/broadcasts/{id}/chat/mutes/{user_id}","scope":{"id":{"at":"id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+      "unmuteChatConversation": {"action":"chat.conversations.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/chat/conversations/{id}/mute","scope":{"id":{"at":"id","from":"path"}}},
+      "unmuteChatUser": {"action":"broadcasts.chat.mutes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["broadcast_id"],"path":"/2/broadcasts/chat/mutes/{user_id}","scope":{"broadcast_id":{"at":"broadcast_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"user_id":{"at":"user_id","from":"path"}}},
+      "unmuteUser": {"action":"users.muting.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/users/{source_user_id}/muting/{target_user_id}","scope":{"source_user_id":{"at":"source_user_id","from":"path"},"target_user_id":{"at":"target_user_id","from":"path"}}},
+      "unpinList": {"action":"users.pinned_lists.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/users/{id}/pinned_lists/{list_id}","scope":{"id":{"at":"id","from":"path"},"list_id":{"at":"list_id","from":"path"}}},
+      "unrepostPost": {"action":"users.retweets.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/users/{id}/retweets/{source_tweet_id}","scope":{"id":{"at":"id","from":"path"},"source_tweet_id":{"at":"source_tweet_id","from":"path"}}},
+      "updateActivitySubscription": {"action":"activity.subscriptions.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/2/activity/subscriptions/{subscription_id}","scope":{"subscription_id":{"at":"subscription_id","from":"path"}}},
+      "updateBot": {"action":"bots.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/2/bots/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateBroadcast": {"action":"broadcasts.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/2/broadcasts/{id}","scope":{"id":{"at":"id","from":"path"},"live_category_id":{"at":"/live_category_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateBroadcastState": {"action":"broadcasts.state.publish","body":"json","effects":["publish"],"method":"PUT","origin":"{api}","path":"/2/broadcasts/{id}/state","path_patterns":{"id":"[^s].*|s(?:|[^c].*|c(?:|[^h].*|h(?:|[^e].*|e(?:|[^d].*|d(?:|[^u].*|u(?:|[^l].*|l(?:|[^e].*|e(?:|[^d].*|d.+))))))))"},"scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateChatConversationMessageTtl": {"action":"chat.conversations.message_ttl.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/2/chat/conversations/{id}/message_ttl","scope":{"id":{"at":"id","from":"path"}}},
+      "updateChatConversationScreenCapture": {"action":"chat.conversations.screen_capture.write","body":"json","effects":["write"],"grant":["id"],"method":"PUT","origin":"{api}","path":"/2/chat/conversations/{id}/screen_capture","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateChatGroup": {"action":"chat.conversations.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/2/chat/conversations/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateChatGroupAdminSettings": {"action":"chat.conversations.admin_settings.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/2/chat/conversations/{id}/admin_settings","scope":{"id":{"at":"id","from":"path"}}},
+      "updateChatSettings": {"action":"chat.settings.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/2/chat/settings","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "updateLists": {"action":"lists.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/2/lists/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateMediaInLibrary": {"action":"media.library.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/2/media/library/{media_key}","scope":{"media_key":{"at":"media_key","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateRules": {"action":"tweets.search.stream.rules.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","params":["dry_run","delete_all"],"path":"/2/tweets/search/stream/rules","scope":{}},
+      "updateScheduledBroadcast": {"action":"broadcasts.scheduled.publish","body":"json","effects":["publish"],"grant":["id","scheduled_broadcast_id"],"method":"PUT","origin":"{api}","path":"/2/broadcasts/scheduled/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"scheduled_broadcast_id":{"at":"/scheduled_broadcast_id","from":"body"}}},
+      "updateScheduledCall": {"action":"calls.scheduled.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/2/calls/scheduled/{id}","scope":{"id":{"at":"id","from":"path"},"invitee_ids":{"at":"/invitee_ids","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateSource": {"action":"sources.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/2/sources/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateUserBroadcastState": {"action":"users.broadcasts.state.publish","body":"json","effects":["publish"],"method":"PUT","origin":"{api}","path":"/2/users/{id}/broadcasts/{broadcast_id}/state","scope":{"broadcast_id":{"at":"broadcast_id","from":"path"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateUserSource": {"action":"users.sources.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/2/users/{id}/sources/{source_id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"source_id":{"at":"source_id","from":"path"}}},
+      "uploadComplianceJobSubmission": {"action":"compliance.jobs.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","params":["token","compliance_job.fields"],"path":"/2/compliance/jobs/{id}/upload","scope":{"id":{"at":"id","from":"path"}}},
+      "usersIdBlock": {"action":"users.blocking.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/2/users/{id}/blocking","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"target_user_id":{"at":"/target_user_id","from":"body"}}},
+      "usersIdUnblock": {"action":"users.blocking.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/2/users/{source_user_id}/blocking/{target_user_id}","scope":{"source_user_id":{"at":"source_user_id","from":"path"},"target_user_id":{"at":"target_user_id","from":"path"}}},
+      "validateAccountActivitySubscription": {"action":"account_activity.webhooks.subscriptions.all.read","effects":["read"],"method":"GET","origin":"{api}","path":"/2/account_activity/webhooks/{webhook_id}/subscriptions/all","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "validateWebhooks": {"action":"webhooks.admin","effects":["admin"],"method":"PUT","origin":"{api}","path":"/2/webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}}
     }
   }
 }

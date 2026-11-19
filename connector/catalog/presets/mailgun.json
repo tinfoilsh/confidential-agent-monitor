@@ -1,306 +1,1280 @@
 {
-  "title": "Mailgun",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.mailgun.net", "path": "/", "basic": "password"}]}},
     "actions": {
-      "admin.accounts": {"title": "Admin: accounts"},
-      "admin.domain": {"title": "Admin: domain"},
-      "admin.domains": {"title": "Admin: domains"},
-      "admin.keys": {"title": "Admin: keys"},
-      "admin.members": {"title": "Admin: members"},
-      "admin.settings": {"title": "Admin: settings"},
-      "admin.webhooks": {"title": "Admin: webhooks"},
-      "delete.all": {"title": "Delete: all"},
-      "delete.auth_recipients": {"title": "Delete: auth recipients"},
-      "delete.bounces": {"title": "Delete: bounces"},
-      "delete.complaints": {"title": "Delete: complaints"},
-      "delete.credentials": {"title": "Delete: credentials"},
-      "delete.domains": {"title": "Delete: domains"},
-      "delete.events": {"title": "Delete: events"},
-      "delete.forwards": {"title": "Delete: forwards"},
-      "delete.ip_pool": {"title": "Delete: ip pool"},
-      "delete.ip_pools": {"title": "Delete: ip pools"},
-      "delete.ip_warmups": {"title": "Delete: ip warmups"},
-      "delete.ip_whitelist": {"title": "Delete: ip whitelist"},
-      "delete.ips": {"title": "Delete: ips"},
-      "delete.keys": {"title": "Delete: keys"},
-      "delete.limits": {"title": "Delete: limits"},
-      "delete.lists": {"title": "Delete: lists"},
-      "delete.members": {"title": "Delete: members"},
-      "delete.monthly": {"title": "Delete: monthly"},
-      "delete.oauth": {"title": "Delete: oauth"},
-      "delete.override": {"title": "Delete: override"},
-      "delete.pool": {"title": "Delete: pool"},
-      "delete.routes": {"title": "Delete: routes"},
-      "delete.send": {"title": "Delete: send"},
-      "delete.slack": {"title": "Delete: slack"},
-      "delete.subaccounts": {"title": "Delete: subaccounts"},
-      "delete.tags": {"title": "Delete: tags"},
-      "delete.templates": {"title": "Delete: templates"},
-      "delete.unsubscribes": {"title": "Delete: unsubscribes"},
-      "delete.versions": {"title": "Delete: versions"},
-      "delete.webhooks": {"title": "Delete: webhooks"},
-      "delete.whitelists": {"title": "Delete: whitelists"},
-      "read": {"title": "Read everything the account can see"},
-      "send.messages": {"title": "Send: messages"},
-      "send.resend_activation_email": {"title": "Send: resend activation email"},
-      "send.send": {"title": "Send: send"},
-      "write.all": {"title": "Write: all"},
-      "write.auth_recipients": {"title": "Write: auth recipients"},
-      "write.click": {"title": "Write: click"},
-      "write.copy": {"title": "Write: copy"},
-      "write.credentials": {"title": "Write: credentials"},
-      "write.dynamic_pools": {"title": "Write: dynamic pools"},
-      "write.enable": {"title": "Write: enable"},
-      "write.enroll": {"title": "Write: enroll"},
-      "write.events": {"title": "Write: events"},
-      "write.features": {"title": "Write: features"},
-      "write.forwards": {"title": "Write: forwards"},
-      "write.http_signing_key": {"title": "Write: http signing key"},
-      "write.ip_band": {"title": "Write: ip band"},
-      "write.ip_pool": {"title": "Write: ip pool"},
-      "write.ip_pools": {"title": "Write: ip pools"},
-      "write.ip_whitelist": {"title": "Write: ip whitelist"},
-      "write.ips": {"title": "Write: ips"},
-      "write.limits": {"title": "Write: limits"},
-      "write.lists": {"title": "Write: lists"},
-      "write.logs": {"title": "Write: logs"},
-      "write.metrics": {"title": "Write: metrics"},
-      "write.monthly": {"title": "Write: monthly"},
-      "write.new": {"title": "Write: new"},
-      "write.open": {"title": "Write: open"},
-      "write.override": {"title": "Write: override"},
-      "write.public": {"title": "Write: public"},
-      "write.rename": {"title": "Write: rename"},
-      "write.rotation": {"title": "Write: rotation"},
-      "write.routes": {"title": "Write: routes"},
-      "write.signing_key": {"title": "Write: signing key"},
-      "write.slack": {"title": "Write: slack"},
-      "write.subaccounts": {"title": "Write: subaccounts"},
-      "write.tags": {"title": "Write: tags"},
-      "write.templates": {"title": "Write: templates"},
-      "write.test": {"title": "Write: test"},
-      "write.tracking": {"title": "Write: tracking"},
-      "write.versions": {"title": "Write: versions"},
-      "write.x509": {"title": "Write: x509"}
-    }
+      "accounts": {
+        "title": "Accounts"
+      },
+      "accounts.admin": {
+        "title": "Manage"
+      },
+      "accounts.features": {
+        "title": "Features"
+      },
+      "accounts.features.write": {
+        "title": "Create and edit"
+      },
+      "accounts.http_signing_key": {
+        "title": "Http signing key"
+      },
+      "accounts.http_signing_key.read": {
+        "title": "Read"
+      },
+      "accounts.http_signing_key.write": {
+        "title": "Create and edit"
+      },
+      "accounts.limit": {
+        "title": "Limit"
+      },
+      "accounts.limit.custom": {
+        "title": "Custom"
+      },
+      "accounts.limit.custom.monthly": {
+        "title": "Monthly"
+      },
+      "accounts.limit.custom.monthly.delete": {
+        "title": "Delete"
+      },
+      "accounts.limit.custom.monthly.read": {
+        "title": "Read"
+      },
+      "accounts.limit.custom.monthly.write": {
+        "title": "Create and edit"
+      },
+      "accounts.limit.custom.write": {
+        "title": "Create and edit"
+      },
+      "accounts.resend_activation_email": {
+        "title": "Resend activation email"
+      },
+      "accounts.resend_activation_email.send": {
+        "title": "Send"
+      },
+      "accounts.subaccounts": {
+        "title": "Subaccounts"
+      },
+      "accounts.subaccounts.delete": {
+        "title": "Delete"
+      },
+      "accounts.subaccounts.features": {
+        "title": "Features"
+      },
+      "accounts.subaccounts.features.write": {
+        "title": "Create and edit"
+      },
+      "accounts.subaccounts.ip_pool": {
+        "title": "Ip pool"
+      },
+      "accounts.subaccounts.ip_pool.delete": {
+        "title": "Delete"
+      },
+      "accounts.subaccounts.ip_pool.write": {
+        "title": "Create and edit"
+      },
+      "accounts.subaccounts.ip_pools": {
+        "title": "Ip pools"
+      },
+      "accounts.subaccounts.ip_pools.all": {
+        "title": "All"
+      },
+      "accounts.subaccounts.ip_pools.all.read": {
+        "title": "Read"
+      },
+      "accounts.subaccounts.limit": {
+        "title": "Limit"
+      },
+      "accounts.subaccounts.limit.custom": {
+        "title": "Custom"
+      },
+      "accounts.subaccounts.limit.custom.monthly": {
+        "title": "Monthly"
+      },
+      "accounts.subaccounts.limit.custom.monthly.delete": {
+        "title": "Delete"
+      },
+      "accounts.subaccounts.limit.custom.monthly.read": {
+        "title": "Read"
+      },
+      "accounts.subaccounts.limit.custom.monthly.write": {
+        "title": "Create and edit"
+      },
+      "accounts.subaccounts.read": {
+        "title": "Read"
+      },
+      "accounts.subaccounts.write": {
+        "title": "Create and edit"
+      },
+      "aggregates": {
+        "title": "Aggregates"
+      },
+      "aggregates.countries": {
+        "title": "Countries"
+      },
+      "aggregates.countries.read": {
+        "title": "Read"
+      },
+      "aggregates.devices": {
+        "title": "Devices"
+      },
+      "aggregates.devices.read": {
+        "title": "Read"
+      },
+      "aggregates.providers": {
+        "title": "Providers"
+      },
+      "aggregates.providers.read": {
+        "title": "Read"
+      },
+      "alerts": {
+        "title": "Alerts"
+      },
+      "alerts.email": {
+        "title": "Email"
+      },
+      "alerts.email.send": {
+        "title": "Send"
+      },
+      "alerts.events": {
+        "title": "Events"
+      },
+      "alerts.events.read": {
+        "title": "Read"
+      },
+      "alerts.settings": {
+        "title": "Settings"
+      },
+      "alerts.settings.events": {
+        "title": "Events"
+      },
+      "alerts.settings.events.delete": {
+        "title": "Delete"
+      },
+      "alerts.settings.events.write": {
+        "title": "Create and edit"
+      },
+      "alerts.settings.read": {
+        "title": "Read"
+      },
+      "alerts.settings.slack": {
+        "title": "Slack"
+      },
+      "alerts.settings.slack.delete": {
+        "title": "Delete"
+      },
+      "alerts.settings.slack.write": {
+        "title": "Create and edit"
+      },
+      "alerts.settings.webhooks": {
+        "title": "Webhooks"
+      },
+      "alerts.settings.webhooks.signing_key": {
+        "title": "Signing key"
+      },
+      "alerts.settings.webhooks.signing_key.write": {
+        "title": "Create and edit"
+      },
+      "alerts.slack": {
+        "title": "Slack"
+      },
+      "alerts.slack.channels": {
+        "title": "Channels"
+      },
+      "alerts.slack.channels.read": {
+        "title": "Read"
+      },
+      "alerts.slack.oauth": {
+        "title": "Oauth"
+      },
+      "alerts.slack.oauth.delete": {
+        "title": "Delete"
+      },
+      "alerts.slack.send": {
+        "title": "Send"
+      },
+      "alerts.webhooks": {
+        "title": "Webhooks"
+      },
+      "alerts.webhooks.send": {
+        "title": "Send"
+      },
+      "analytics": {
+        "title": "Analytics"
+      },
+      "analytics.logs": {
+        "title": "Logs"
+      },
+      "analytics.logs.write": {
+        "title": "Create and edit"
+      },
+      "analytics.metrics": {
+        "title": "Metrics"
+      },
+      "analytics.metrics.write": {
+        "title": "Create and edit"
+      },
+      "analytics.tags": {
+        "title": "Tags"
+      },
+      "analytics.tags.delete": {
+        "title": "Delete"
+      },
+      "analytics.tags.limits": {
+        "title": "Limits"
+      },
+      "analytics.tags.limits.read": {
+        "title": "Read"
+      },
+      "analytics.tags.write": {
+        "title": "Create and edit"
+      },
+      "analytics.usage": {
+        "title": "Usage"
+      },
+      "analytics.usage.metrics": {
+        "title": "Metrics"
+      },
+      "analytics.usage.metrics.write": {
+        "title": "Create and edit"
+      },
+      "bounce_classification": {
+        "title": "Bounce classification"
+      },
+      "bounce_classification.metrics": {
+        "title": "Metrics"
+      },
+      "bounce_classification.metrics.write": {
+        "title": "Create and edit"
+      },
+      "bounces": {
+        "title": "Bounces"
+      },
+      "bounces.delete": {
+        "title": "Delete"
+      },
+      "bounces.read": {
+        "title": "Read"
+      },
+      "bounces.write": {
+        "title": "Create and edit"
+      },
+      "complaints": {
+        "title": "Complaints"
+      },
+      "complaints.delete": {
+        "title": "Delete"
+      },
+      "complaints.read": {
+        "title": "Read"
+      },
+      "complaints.write": {
+        "title": "Create and edit"
+      },
+      "dkim": {
+        "title": "Dkim"
+      },
+      "dkim.keys": {
+        "title": "Keys"
+      },
+      "dkim.keys.admin": {
+        "title": "Manage"
+      },
+      "dkim.keys.delete": {
+        "title": "Delete"
+      },
+      "dkim.keys.read": {
+        "title": "Read"
+      },
+      "dkim_management": {
+        "title": "Dkim management"
+      },
+      "dkim_management.domains": {
+        "title": "Domains"
+      },
+      "dkim_management.domains.admin": {
+        "title": "Manage"
+      },
+      "dkim_management.domains.rotation": {
+        "title": "Rotation"
+      },
+      "dkim_management.domains.rotation.write": {
+        "title": "Create and edit"
+      },
+      "domains": {
+        "title": "Domains"
+      },
+      "domains.admin": {
+        "title": "Manage"
+      },
+      "domains.all": {
+        "title": "All"
+      },
+      "domains.all.dynamic_pools": {
+        "title": "Dynamic pools"
+      },
+      "domains.all.dynamic_pools.enroll": {
+        "title": "Enroll"
+      },
+      "domains.all.dynamic_pools.enroll.write": {
+        "title": "Create and edit"
+      },
+      "domains.credentials": {
+        "title": "Credentials"
+      },
+      "domains.credentials.delete": {
+        "title": "Delete"
+      },
+      "domains.credentials.read": {
+        "title": "Read"
+      },
+      "domains.credentials.write": {
+        "title": "Create and edit"
+      },
+      "domains.delete": {
+        "title": "Delete"
+      },
+      "domains.dkim_authority": {
+        "title": "Dkim authority"
+      },
+      "domains.dkim_authority.write": {
+        "title": "Create and edit"
+      },
+      "domains.dkim_selector": {
+        "title": "Dkim selector"
+      },
+      "domains.dkim_selector.write": {
+        "title": "Create and edit"
+      },
+      "domains.dynamic_pools": {
+        "title": "Dynamic pools"
+      },
+      "domains.dynamic_pools.assignable": {
+        "title": "Assignable"
+      },
+      "domains.dynamic_pools.assignable.read": {
+        "title": "Read"
+      },
+      "domains.dynamic_pools.delete": {
+        "title": "Delete"
+      },
+      "domains.dynamic_pools.write": {
+        "title": "Create and edit"
+      },
+      "domains.ips": {
+        "title": "Ips"
+      },
+      "domains.ips.delete": {
+        "title": "Delete"
+      },
+      "domains.keys": {
+        "title": "Keys"
+      },
+      "domains.keys.activate": {
+        "title": "Activate"
+      },
+      "domains.keys.activate.admin": {
+        "title": "Manage"
+      },
+      "domains.keys.deactivate": {
+        "title": "Deactivate"
+      },
+      "domains.keys.deactivate.admin": {
+        "title": "Manage"
+      },
+      "domains.keys.read": {
+        "title": "Read"
+      },
+      "domains.limits": {
+        "title": "Limits"
+      },
+      "domains.limits.tag": {
+        "title": "Tag"
+      },
+      "domains.limits.tag.read": {
+        "title": "Read"
+      },
+      "domains.messages": {
+        "title": "Messages"
+      },
+      "domains.messages.read": {
+        "title": "Read"
+      },
+      "domains.messages.send": {
+        "title": "Send"
+      },
+      "domains.pool": {
+        "title": "Pool"
+      },
+      "domains.pool.delete": {
+        "title": "Delete"
+      },
+      "domains.read": {
+        "title": "Read"
+      },
+      "domains.sending_queues": {
+        "title": "Sending queues"
+      },
+      "domains.sending_queues.read": {
+        "title": "Read"
+      },
+      "domains.tag": {
+        "title": "Tag"
+      },
+      "domains.tag.countries": {
+        "title": "Countries"
+      },
+      "domains.tag.countries.read": {
+        "title": "Read"
+      },
+      "domains.tag.devices": {
+        "title": "Devices"
+      },
+      "domains.tag.devices.read": {
+        "title": "Read"
+      },
+      "domains.tag.providers": {
+        "title": "Providers"
+      },
+      "domains.tag.providers.read": {
+        "title": "Read"
+      },
+      "domains.tracking": {
+        "title": "Tracking"
+      },
+      "domains.tracking.click": {
+        "title": "Click"
+      },
+      "domains.tracking.click.write": {
+        "title": "Create and edit"
+      },
+      "domains.tracking.open": {
+        "title": "Open and edit"
+      },
+      "domains.tracking.open.write": {
+        "title": "Create and edit"
+      },
+      "domains.tracking.read": {
+        "title": "Read"
+      },
+      "domains.tracking.write": {
+        "title": "Create and edit"
+      },
+      "domains.webhooks": {
+        "title": "Webhooks"
+      },
+      "domains.webhooks.admin": {
+        "title": "Manage"
+      },
+      "domains.webhooks.delete": {
+        "title": "Delete"
+      },
+      "domains.webhooks.read": {
+        "title": "Read"
+      },
+      "dynamic_pools": {
+        "title": "Dynamic pools"
+      },
+      "dynamic_pools.all": {
+        "title": "All"
+      },
+      "dynamic_pools.all.delete": {
+        "title": "Delete"
+      },
+      "dynamic_pools.all.write": {
+        "title": "Create and edit"
+      },
+      "dynamic_pools.domains": {
+        "title": "Domains"
+      },
+      "dynamic_pools.domains.history": {
+        "title": "History"
+      },
+      "dynamic_pools.domains.history.read": {
+        "title": "Read"
+      },
+      "dynamic_pools.domains.override": {
+        "title": "Override"
+      },
+      "dynamic_pools.domains.override.delete": {
+        "title": "Delete"
+      },
+      "dynamic_pools.domains.override.write": {
+        "title": "Create and edit"
+      },
+      "dynamic_pools.domains.preview": {
+        "title": "Preview"
+      },
+      "dynamic_pools.domains.preview.read": {
+        "title": "Read"
+      },
+      "dynamic_pools.domains.read": {
+        "title": "Read"
+      },
+      "dynamic_pools.history": {
+        "title": "History"
+      },
+      "dynamic_pools.history.read": {
+        "title": "Read"
+      },
+      "dynamic_pools.read": {
+        "title": "Read"
+      },
+      "dynamic_pools.write": {
+        "title": "Create and edit"
+      },
+      "envelopes": {
+        "title": "Envelopes"
+      },
+      "envelopes.delete": {
+        "title": "Delete"
+      },
+      "events": {
+        "title": "Events"
+      },
+      "events.read": {
+        "title": "Read"
+      },
+      "forwards": {
+        "title": "Forwards"
+      },
+      "forwards.delete": {
+        "title": "Delete"
+      },
+      "forwards.read": {
+        "title": "Read"
+      },
+      "forwards.write": {
+        "title": "Create and edit"
+      },
+      "ip_pools": {
+        "title": "Ip pools"
+      },
+      "ip_pools.delegate": {
+        "title": "Delegate"
+      },
+      "ip_pools.delegate.delete": {
+        "title": "Delete"
+      },
+      "ip_pools.delegate.write": {
+        "title": "Create and edit"
+      },
+      "ip_pools.delete": {
+        "title": "Delete"
+      },
+      "ip_pools.domains": {
+        "title": "Domains"
+      },
+      "ip_pools.domains.read": {
+        "title": "Read"
+      },
+      "ip_pools.ips": {
+        "title": "Ips"
+      },
+      "ip_pools.ips.delete": {
+        "title": "Delete"
+      },
+      "ip_pools.ips.write": {
+        "title": "Create and edit"
+      },
+      "ip_pools.read": {
+        "title": "Read"
+      },
+      "ip_pools.write": {
+        "title": "Create and edit"
+      },
+      "ip_warmups": {
+        "title": "Ip warmups"
+      },
+      "ip_warmups.delete": {
+        "title": "Delete"
+      },
+      "ip_warmups.read": {
+        "title": "Read"
+      },
+      "ip_warmups.write": {
+        "title": "Create and edit"
+      },
+      "ip_whitelist": {
+        "title": "Ip whitelist"
+      },
+      "ip_whitelist.delete": {
+        "title": "Delete"
+      },
+      "ip_whitelist.read": {
+        "title": "Read"
+      },
+      "ip_whitelist.write": {
+        "title": "Create and edit"
+      },
+      "ips": {
+        "title": "Ips"
+      },
+      "ips.account": {
+        "title": "Account"
+      },
+      "ips.account.settings": {
+        "title": "Settings"
+      },
+      "ips.account.settings.admin": {
+        "title": "Manage"
+      },
+      "ips.account.settings.read": {
+        "title": "Read"
+      },
+      "ips.details": {
+        "title": "Details"
+      },
+      "ips.details.all": {
+        "title": "All"
+      },
+      "ips.details.all.read": {
+        "title": "Read"
+      },
+      "ips.domain": {
+        "title": "Domain"
+      },
+      "ips.domain.admin": {
+        "title": "Manage"
+      },
+      "ips.domain.read": {
+        "title": "Read"
+      },
+      "ips.domains": {
+        "title": "Domains"
+      },
+      "ips.domains.admin": {
+        "title": "Manage"
+      },
+      "ips.domains.delete": {
+        "title": "Delete"
+      },
+      "ips.domains.read": {
+        "title": "Read"
+      },
+      "ips.ip_band": {
+        "title": "Ip band"
+      },
+      "ips.ip_band.write": {
+        "title": "Create and edit"
+      },
+      "ips.read": {
+        "title": "Read"
+      },
+      "ips.request": {
+        "title": "Request"
+      },
+      "ips.request.new": {
+        "title": "New"
+      },
+      "ips.request.new.read": {
+        "title": "Read"
+      },
+      "ips.request.new.write": {
+        "title": "Create and edit"
+      },
+      "ips.subaccounts": {
+        "title": "Subaccounts"
+      },
+      "ips.subaccounts.write": {
+        "title": "Create and edit"
+      },
+      "keys": {
+        "title": "Keys"
+      },
+      "keys.admin": {
+        "title": "Manage"
+      },
+      "keys.delete": {
+        "title": "Delete"
+      },
+      "keys.public": {
+        "title": "Public"
+      },
+      "keys.public.write": {
+        "title": "Create and edit"
+      },
+      "keys.read": {
+        "title": "Read"
+      },
+      "lists": {
+        "title": "Lists"
+      },
+      "lists.delete": {
+        "title": "Delete"
+      },
+      "lists.members": {
+        "title": "Members"
+      },
+      "lists.members.csv": {
+        "title": "Csv"
+      },
+      "lists.members.csv.write": {
+        "title": "Create and edit"
+      },
+      "lists.members.delete": {
+        "title": "Delete"
+      },
+      "lists.members.pages": {
+        "title": "Pages"
+      },
+      "lists.members.pages.read": {
+        "title": "Read"
+      },
+      "lists.members.read": {
+        "title": "Read"
+      },
+      "lists.members.write": {
+        "title": "Create and edit"
+      },
+      "lists.pages": {
+        "title": "Pages"
+      },
+      "lists.pages.read": {
+        "title": "Read"
+      },
+      "lists.read": {
+        "title": "Read"
+      },
+      "lists.write": {
+        "title": "Create and edit"
+      },
+      "messages": {
+        "title": "Messages"
+      },
+      "messages.mime": {
+        "title": "Mime"
+      },
+      "messages.mime.send": {
+        "title": "Send"
+      },
+      "messages.send": {
+        "title": "Send"
+      },
+      "routes": {
+        "title": "Routes"
+      },
+      "routes.delete": {
+        "title": "Delete"
+      },
+      "routes.match": {
+        "title": "Match"
+      },
+      "routes.match.read": {
+        "title": "Read"
+      },
+      "routes.read": {
+        "title": "Read"
+      },
+      "routes.write": {
+        "title": "Create and edit"
+      },
+      "sandbox": {
+        "title": "Sandbox"
+      },
+      "sandbox.auth_recipients": {
+        "title": "Auth recipients"
+      },
+      "sandbox.auth_recipients.delete": {
+        "title": "Delete"
+      },
+      "sandbox.auth_recipients.read": {
+        "title": "Read"
+      },
+      "sandbox.auth_recipients.write": {
+        "title": "Create and edit"
+      },
+      "stats": {
+        "title": "Stats"
+      },
+      "stats.filter": {
+        "title": "Filter"
+      },
+      "stats.filter.read": {
+        "title": "Read"
+      },
+      "stats.total": {
+        "title": "Total"
+      },
+      "stats.total.domains": {
+        "title": "Domains"
+      },
+      "stats.total.domains.read": {
+        "title": "Read"
+      },
+      "stats.total.read": {
+        "title": "Read"
+      },
+      "tag": {
+        "title": "Tag"
+      },
+      "tag.delete": {
+        "title": "Delete"
+      },
+      "tag.read": {
+        "title": "Read"
+      },
+      "tag.stats": {
+        "title": "Stats"
+      },
+      "tag.stats.aggregates": {
+        "title": "Aggregates"
+      },
+      "tag.stats.aggregates.read": {
+        "title": "Read"
+      },
+      "tag.stats.read": {
+        "title": "Read"
+      },
+      "tag.write": {
+        "title": "Create and edit"
+      },
+      "tags": {
+        "title": "Tags"
+      },
+      "tags.read": {
+        "title": "Read"
+      },
+      "templates": {
+        "title": "Templates"
+      },
+      "templates.delete": {
+        "title": "Delete"
+      },
+      "templates.read": {
+        "title": "Read"
+      },
+      "templates.rename": {
+        "title": "Rename"
+      },
+      "templates.rename.write": {
+        "title": "Create and edit"
+      },
+      "templates.versions": {
+        "title": "Versions"
+      },
+      "templates.versions.copy": {
+        "title": "Copy"
+      },
+      "templates.versions.copy.write": {
+        "title": "Create and edit"
+      },
+      "templates.versions.delete": {
+        "title": "Delete"
+      },
+      "templates.versions.read": {
+        "title": "Read"
+      },
+      "templates.versions.write": {
+        "title": "Create and edit"
+      },
+      "templates.write": {
+        "title": "Create and edit"
+      },
+      "thresholds": {
+        "title": "Thresholds"
+      },
+      "thresholds.alerts": {
+        "title": "Alerts"
+      },
+      "thresholds.alerts.send": {
+        "title": "Send"
+      },
+      "thresholds.alerts.send.delete": {
+        "title": "Delete"
+      },
+      "thresholds.alerts.send.read": {
+        "title": "Read"
+      },
+      "thresholds.alerts.send.write": {
+        "title": "Create and edit"
+      },
+      "thresholds.hits": {
+        "title": "Hits"
+      },
+      "thresholds.hits.read": {
+        "title": "Read"
+      },
+      "thresholds.limits": {
+        "title": "Limits"
+      },
+      "thresholds.limits.delete": {
+        "title": "Delete"
+      },
+      "thresholds.limits.read": {
+        "title": "Read"
+      },
+      "thresholds.limits.write": {
+        "title": "Create and edit"
+      },
+      "thresholds.limits_primary": {
+        "title": "Limits primary"
+      },
+      "thresholds.limits_primary.delete": {
+        "title": "Delete"
+      },
+      "thresholds.limits_primary.read": {
+        "title": "Read"
+      },
+      "thresholds.limits_primary.write": {
+        "title": "Create and edit"
+      },
+      "unsubscribes": {
+        "title": "Unsubscribes"
+      },
+      "unsubscribes.delete": {
+        "title": "Delete"
+      },
+      "unsubscribes.read": {
+        "title": "Read"
+      },
+      "unsubscribes.write": {
+        "title": "Create and edit"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.me": {
+        "title": "Me"
+      },
+      "users.me.read": {
+        "title": "Read"
+      },
+      "users.read": {
+        "title": "Read"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.delete": {
+        "title": "Delete"
+      },
+      "webhooks.read": {
+        "title": "Read"
+      },
+      "whitelists": {
+        "title": "Whitelists"
+      },
+      "whitelists.delete": {
+        "title": "Delete"
+      },
+      "whitelists.read": {
+        "title": "Read"
+      },
+      "whitelists.write": {
+        "title": "Create and edit"
+      },
+      "x509": {
+        "title": "X509"
+      },
+      "x509.status": {
+        "title": "Status"
+      },
+      "x509.status.read": {
+        "title": "Read"
+      },
+      "x509.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "basic": "password",
+            "origin": "https://api.mailgun.net",
+            "path": "/",
+            "value": "api_key"
+          },
+          {
+            "basic": "password",
+            "origin": "https://api.eu.mailgun.net",
+            "path": "/",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Mailgun",
   "http": {
+    "origins": {"api":["https://api.mailgun.net","https://api.eu.mailgun.net"]},
     "operations": {
-      "DELETE-v1-alerts-settings-events--id-": {"action":"delete.events","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v1/alerts/settings/events/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE-v1-alerts-settings-slack": {"action":"delete.slack","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v1/alerts/settings/slack","scope":{}},
-      "DELETE-v1-alerts-slack-oauth": {"action":"delete.oauth","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v1/alerts/slack/oauth","scope":{}},
-      "DELETE-v1-analytics-tags": {"action":"delete.tags","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v1/analytics/tags","body":"json","scope":{}},
-      "DELETE-v1-dkim-keys": {"action":"delete.keys","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v1/dkim/keys","params":["signing_domain","selector"],"scope":{}},
-      "DELETE-v1-dynamic-pools-domains--name--override": {"action":"delete.override","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v1/dynamic_pools/domains/{name}/override","scope":{"name":{"from":"path","at":"name"}}},
-      "DELETE-v1-keys--key-id-": {"action":"delete.keys","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v1/keys/{key_id}","scope":{"key_id":{"from":"path","at":"key_id"}}},
-      "DELETE-v1-thresholds-alerts-send--name-": {"action":"delete.send","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v1/thresholds/alerts/send/{name}","scope":{"name":{"from":"path","at":"name"}}},
-      "DELETE-v1-thresholds-limits--name-": {"action":"delete.limits","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v1/thresholds/limits/{name}","scope":{"name":{"from":"path","at":"name"}}},
-      "DELETE-v1-webhooks": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v1/webhooks","params":["webhook_ids","all"],"scope":{}},
-      "DELETE-v1-webhooks--webhook-id-": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v1/webhooks/{webhook_id}","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "DELETE-v2-ip-whitelist": {"action":"delete.ip_whitelist","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v2/ip_whitelist","params":["address"],"scope":{}},
-      "DELETE-v3--domain-name--templates--template-name-": {"action":"delete.templates","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/{domain_name}/templates/{template_name}","scope":{"domain_name":{"from":"path","at":"domain_name"},"template_name":{"from":"path","at":"template_name"}}},
-      "DELETE-v3--domain-name--templates--template-name--versions--version-name-": {"action":"delete.versions","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/{domain_name}/templates/{template_name}/versions/{version_name}","scope":{"domain_name":{"from":"path","at":"domain_name"},"template_name":{"from":"path","at":"template_name"},"version_name":{"from":"path","at":"version_name"}}},
-      "DELETE-v3--domainID--bounces--address-": {"action":"delete.bounces","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/{domain_name}/bounces/{address}","params":["replacement_ip","replacement_pool_id","alternative"],"scope":{"domain_name":{"from":"path","at":"domain_name"},"address":{"from":"path","at":"address"}}},
-      "DELETE-v3--domainID--complaints--address-": {"action":"delete.complaints","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/{domain_name}/complaints/{address}","scope":{"domain_name":{"from":"path","at":"domain_name"},"address":{"from":"path","at":"address"}}},
-      "DELETE-v3--domainID--unsubscribes--address-": {"action":"delete.unsubscribes","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/{domain_name}/unsubscribes/{address}","scope":{"domain_name":{"from":"path","at":"domain_name"},"address":{"from":"path","at":"address"}}},
-      "DELETE-v3--domainID--whitelists--value-": {"action":"delete.whitelists","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/{domain_name}/whitelists/{value}","scope":{"domain_name":{"from":"path","at":"domain_name"},"value":{"from":"path","at":"value"}}},
-      "DELETE-v3-domains--domain-name--credentials--spec-": {"action":"delete.credentials","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/domains/{domain_name}/credentials/{spec}","scope":{"domain_name":{"from":"path","at":"domain_name"},"spec":{"from":"path","at":"spec"}}},
-      "DELETE-v3-domains--domain-name--webhooks--webhook-name-": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/domains/{domain_name}/webhooks/{webhook_name}","scope":{"domain_name":{"from":"path","at":"domain_name"},"webhook_name":{"from":"path","at":"webhook_name"}}},
-      "DELETE-v3-domains--name-": {"action":"delete.domains","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/domains/{name}","params":["tag"],"scope":{"name":{"from":"path","at":"name"}}},
-      "DELETE-v3-domains--name--ips--ip-": {"action":"delete.ips","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/domains/{name}/ips/{ip}","params":["ip","pool_id"],"scope":{"name":{"from":"path","at":"name"},"ip":{"from":"path","at":"ip"}}},
-      "DELETE-v3-domains--name--pool--ip-": {"action":"delete.pool","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/domains/{name}/pool/{ip}","params":["ip","pool_id"],"scope":{"name":{"from":"path","at":"name"},"ip":{"from":"path","at":"ip"}}},
-      "DELETE-v3-dynamic-pools-all": {"action":"delete.all","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/dynamic_pools/all","scope":{}},
-      "DELETE-v3-forwards--id-": {"action":"delete.forwards","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/forwards/{id}","params":["domain.name"],"scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE-v3-ip-pools--pool-id-": {"action":"delete.ip_pools","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/ip_pools/{pool_id}","params":["ip","pool_id"],"scope":{"pool_id":{"from":"path","at":"pool_id"}}},
-      "DELETE-v3-ip-pools--pool-id--ips--ip-": {"action":"delete.ips","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/ip_pools/{pool_id}/ips/{ip}","scope":{"pool_id":{"from":"path","at":"pool_id"},"ip":{"from":"path","at":"ip"}}},
-      "DELETE-v3-ip-warmups--addr-": {"action":"delete.ip_warmups","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/ip_warmups/{addr}","scope":{"addr":{"from":"path","at":"addr"}}},
-      "DELETE-v4-domains--domain--webhooks": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v4/domains/{domain}/webhooks","params":["url"],"scope":{"domain":{"from":"path","at":"domain"},"url":{"from":"query","at":"url"}}},
-      "DELETE-v4-templates": {"action":"delete.templates","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v4/templates","scope":{}},
-      "DELETE-v4-templates--template-name-": {"action":"delete.templates","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v4/templates/{template_name}","scope":{"template_name":{"from":"path","at":"template_name"}}},
-      "DELETE-v4-templates--template-name--versions--version-name-": {"action":"delete.versions","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v4/templates/{template_name}/versions/{version_name}","scope":{"template_name":{"from":"path","at":"template_name"},"version_name":{"from":"path","at":"version_name"}}},
-      "DELETE-v5-accounts-subaccounts--subaccountId--ip-pool": {"action":"delete.ip_pool","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v5/accounts/subaccounts/{subaccountId}/ip_pool","params":["pool_id"],"scope":{"subaccountId":{"from":"path","at":"subaccountId"},"pool_id":{"from":"query","at":"pool_id"}}},
-      "GET-v1-alerts-events": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/alerts/events","scope":{}},
-      "GET-v1-alerts-settings": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/alerts/settings","scope":{}},
-      "GET-v1-alerts-slack-channels": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/alerts/slack/channels","params":["page","limit"],"scope":{}},
-      "GET-v1-alerts-slack-channels--id-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/alerts/slack/channels/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET-v1-analytics-tags-limits": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/analytics/tags/limits","scope":{}},
-      "GET-v1-dkim-keys": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/dkim/keys","body":"any","scope":{}},
-      "GET-v1-dynamic-pools-domains": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/dynamic_pools/domains","params":["limit","account","pool","sort_by","sort_order"],"scope":{}},
-      "GET-v1-dynamic-pools-domains--name--history": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/dynamic_pools/domains/{name}/history","scope":{"name":{"from":"path","at":"name"}}},
-      "GET-v1-dynamic-pools-domains--name--preview": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/dynamic_pools/domains/{name}/preview","scope":{"name":{"from":"path","at":"name"}}},
-      "GET-v1-dynamic-pools-history": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/dynamic_pools/history","params":["Limit","include_subaccounts","domain","before","after","moved_to","moved_from"],"scope":{}},
-      "GET-v1-keys": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/keys","params":["domain_name","kind"],"scope":{}},
-      "GET-v1-thresholds-alerts-send": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/thresholds/alerts/send","scope":{}},
-      "GET-v1-thresholds-alerts-send--name-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/thresholds/alerts/send/{name}","scope":{"name":{"from":"path","at":"name"}}},
-      "GET-v1-thresholds-hits": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/thresholds/hits","scope":{}},
-      "GET-v1-thresholds-limits": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/thresholds/limits","scope":{}},
-      "GET-v1-thresholds-limits--name-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/thresholds/limits/{name}","scope":{"name":{"from":"path","at":"name"}}},
-      "GET-v1-webhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/webhooks","params":["webhook_ids"],"scope":{}},
-      "GET-v1-webhooks--webhook-id-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v1/webhooks/{webhook_id}","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "GET-v2-ip-whitelist": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v2/ip_whitelist","scope":{}},
-      "GET-v2-x509--domain--status": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v2/x509/{domain}/status","scope":{"domain":{"from":"path","at":"domain"}}},
-      "GET-v3--domain--aggregates-countries": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/{domain}/aggregates/countries","scope":{"domain":{"from":"path","at":"domain"}}},
-      "GET-v3--domain--aggregates-devices": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/{domain}/aggregates/devices","scope":{"domain":{"from":"path","at":"domain"}}},
-      "GET-v3--domain--aggregates-providers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/{domain}/aggregates/providers","scope":{"domain":{"from":"path","at":"domain"}}},
-      "GET-v3--domain--stats-total": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/{domain}/stats/total","params":["start","end","resolution","duration","event"],"scope":{"domain":{"from":"path","at":"domain"}}},
-      "GET-v3--domain--tag-stats": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/{domain}/tag/stats","params":["start","end","resolution","duration","provider","device","country","event","tag"],"scope":{"domain":{"from":"path","at":"domain"}}},
-      "GET-v3--domain--tag-stats-aggregates": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/{domain}/tag/stats/aggregates","params":["tag","type"],"scope":{"domain":{"from":"path","at":"domain"}}},
-      "GET-v3--domain-name--templates--template-name-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/{domain_name}/templates/{template_name}","params":["active"],"scope":{"domain_name":{"from":"path","at":"domain_name"},"template_name":{"from":"path","at":"template_name"}}},
-      "GET-v3--domain-name--templates--template-name--versions--version-name-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/{domain_name}/templates/{template_name}/versions/{version_name}","scope":{"domain_name":{"from":"path","at":"domain_name"},"template_name":{"from":"path","at":"template_name"},"version_name":{"from":"path","at":"version_name"}}},
-      "GET-v3--domainID--bounces--address-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/{domain_name}/bounces/{address}","params":["skip","limit","page","search","sort_by","sort_order","address","subscribed"],"scope":{"domain_name":{"from":"path","at":"domain_name"},"address":{"from":"path","at":"address"}}},
-      "GET-v3--domainID--complaints--address-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/{domain_name}/complaints/{address}","scope":{"domain_name":{"from":"path","at":"domain_name"},"address":{"from":"path","at":"address"}}},
-      "GET-v3--domainID--unsubscribes--address-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/{domain_name}/unsubscribes/{address}","scope":{"domain_name":{"from":"path","at":"domain_name"},"address":{"from":"path","at":"address"}}},
-      "GET-v3--domainID--whitelists--value-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/{domain_name}/whitelists/{value}","scope":{"domain_name":{"from":"path","at":"domain_name"},"value":{"from":"path","at":"value"}}},
-      "GET-v3-domains--domain--limits-tag": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/domains/{domain}/limits/tag","scope":{"domain":{"from":"path","at":"domain"}}},
-      "GET-v3-domains--domain--tag-countries": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/domains/{domain}/tag/countries","scope":{"domain":{"from":"path","at":"domain"}}},
-      "GET-v3-domains--domain--tag-devices": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/domains/{domain}/tag/devices","scope":{"domain":{"from":"path","at":"domain"}}},
-      "GET-v3-domains--domain--tag-providers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/domains/{domain}/tag/providers","scope":{"domain":{"from":"path","at":"domain"}}},
-      "GET-v3-domains--domain-name--messages--storage-key-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/domains/{domain_name}/messages/{storage_key}","params":["page","limit","p"],"scope":{"domain_name":{"from":"path","at":"domain_name"},"storage_key":{"from":"path","at":"storage_key"}}},
-      "GET-v3-domains--domain-name--webhooks--webhook-name-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/domains/{domain_name}/webhooks/{webhook_name}","scope":{"domain_name":{"from":"path","at":"domain_name"},"webhook_name":{"from":"path","at":"webhook_name"}}},
-      "GET-v3-domains-dynamic-pools-assignable": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/domains/dynamic_pools/assignable","params":["subaccount_id","domain"],"scope":{}},
-      "GET-v3-dynamic-pools": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/dynamic_pools","scope":{}},
-      "GET-v3-forwards": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/forwards","params":["page","limit","domain.name","search"],"scope":{"page":{"from":"query","at":"page"}}},
-      "GET-v3-forwards--id-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/forwards/{id}","params":["limit","page","term","address","begin","end","ascending","event","list","attachment","from","message-id","subject","to","size","recipient","recipients","tags","severity","p","tag","prefix"],"scope":{"id":{"from":"path","at":"id"}}},
-      "GET-v3-ip-pools": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/ip_pools","scope":{}},
-      "GET-v3-ip-pools--pool-id-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/ip_pools/{pool_id}","scope":{"pool_id":{"from":"path","at":"pool_id"}}},
-      "GET-v3-ip-warmups": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/ip_warmups","params":["page","limit"],"scope":{}},
-      "GET-v3-ip-warmups--addr-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/ip_warmups/{addr}","scope":{"addr":{"from":"path","at":"addr"}}},
-      "GET-v3-ips": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/ips","params":["dedicated","enabled"],"scope":{}},
-      "GET-v3-ips--ip-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/ips/{ip}","scope":{"ip":{"from":"path","at":"ip"}}},
-      "GET-v3-ips-account-settings": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/ips/account/settings","scope":{}},
-      "GET-v3-ips-details-all": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/ips/details/all","params":["limit","skip","pool_id","domain_id","subaccount_id","ip","sort_by","sort_order"],"scope":{}},
-      "GET-v3-ips-domain--name-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/ips/domain/{name}","params":["limit","search","skip"],"scope":{"name":{"from":"path","at":"name"}}},
-      "GET-v3-ips-request-new": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/ips/request/new","scope":{}},
-      "GET-v3-stats-filter": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/stats/filter","params":["start","end","resolution","duration","event","filter","group"],"scope":{}},
-      "GET-v3-stats-total": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/stats/total","params":["start","end","resolution","duration","event"],"scope":{}},
-      "GET-v3-stats-total-domains": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/stats/total/domains","params":["event","limit","resolution","timestamp"],"scope":{}},
-      "GET-v4-domains": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v4/domains","params":["limit","skip","state","sort","authority","search","include_subaccounts"],"scope":{}},
-      "GET-v4-domains--authority-name--keys": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v4/domains/{authority_name}/keys","scope":{"authority_name":{"from":"path","at":"authority_name"}}},
-      "GET-v4-domains--name-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v4/domains/{name}","scope":{"name":{"from":"path","at":"name"}}},
-      "GET-v4-templates": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v4/templates","params":["page","limit","p"],"scope":{}},
-      "GET-v4-templates--template-name-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v4/templates/{template_name}","params":["active"],"scope":{"template_name":{"from":"path","at":"template_name"}}},
-      "GET-v4-templates--template-name--versions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v4/templates/{template_name}/versions","params":["page","limit","p"],"scope":{"template_name":{"from":"path","at":"template_name"}}},
-      "GET-v4-templates--template-name--versions--version-name-": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v4/templates/{template_name}/versions/{version_name}","scope":{"template_name":{"from":"path","at":"template_name"},"version_name":{"from":"path","at":"version_name"}}},
-      "GET-v5-accounts-subaccounts-ip-pools-all": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v5/accounts/subaccounts/ip_pools/all","scope":{}},
-      "PATCH-v3-dynamic-pools--pool-name-": {"action":"write.dynamic_pools","effects":["write"],"method":"PATCH","origin":"https://api.mailgun.net","path":"/v3/dynamic_pools/{pool_name}","body":"any","scope":{"pool_name":{"from":"path","at":"pool_name"}}},
-      "PATCH-v3-ip-pools--pool-id-": {"action":"write.ip_pools","effects":["write"],"method":"PATCH","origin":"https://api.mailgun.net","path":"/v3/ip_pools/{pool_id}","body":"any","scope":{"pool_id":{"from":"path","at":"pool_id"}}},
-      "PATCH-v3-ips-account-settings": {"action":"admin.settings","effects":["admin"],"method":"PATCH","origin":"https://api.mailgun.net","path":"/v3/ips/account/settings","body":"json","scope":{}},
-      "PATCH-v3-ips-domain--name-": {"action":"admin.domain","effects":["admin"],"method":"PATCH","origin":"https://api.mailgun.net","path":"/v3/ips/domain/{name}","body":"json","scope":{"name":{"from":"path","at":"name"}}},
-      "PATCH-v3-ips-subaccounts": {"action":"write.subaccounts","effects":["write"],"method":"PATCH","origin":"https://api.mailgun.net","path":"/v3/ips/subaccounts","scope":{}},
-      "POST-v1-alerts-email-test": {"action":"write.test","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v1/alerts/email/test","body":"json","scope":{}},
-      "POST-v1-alerts-settings-events": {"action":"write.events","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v1/alerts/settings/events","body":"json","scope":{"channel":{"from":"body","at":"/channel"}}},
-      "POST-v1-alerts-slack-test": {"action":"write.test","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v1/alerts/slack/test","body":"json","scope":{}},
-      "POST-v1-alerts-webhooks-test": {"action":"write.test","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v1/alerts/webhooks/test","body":"json","scope":{"url":{"from":"body","at":"/url"}}},
-      "POST-v1-analytics-logs": {"action":"write.logs","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v1/analytics/logs","body":"json","scope":{}},
-      "POST-v1-analytics-metrics": {"action":"write.metrics","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v1/analytics/metrics","body":"any","scope":{}},
-      "POST-v1-analytics-tags": {"action":"write.tags","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v1/analytics/tags","body":"json","scope":{}},
-      "POST-v1-analytics-usage-metrics": {"action":"write.metrics","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v1/analytics/usage/metrics","body":"any","scope":{}},
-      "POST-v1-dkim-keys": {"action":"admin.keys","effects":["admin"],"method":"POST","origin":"https://api.mailgun.net","path":"/v1/dkim/keys","body":"any","scope":{}},
-      "POST-v1-dkim-management-domains--name--rotate": {"action":"admin.domains","effects":["admin"],"method":"POST","origin":"https://api.mailgun.net","path":"/v1/dkim_management/domains/{name}/rotate","scope":{"name":{"from":"path","at":"name"}}},
-      "POST-v1-keys": {"action":"admin.keys","effects":["admin"],"method":"POST","origin":"https://api.mailgun.net","path":"/v1/keys","body":"any","scope":{}},
-      "POST-v1-keys-public": {"action":"write.public","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v1/keys/public","scope":{}},
-      "POST-v1-thresholds-alerts-send": {"action":"send.send","effects":["send"],"method":"POST","origin":"https://api.mailgun.net","path":"/v1/thresholds/alerts/send","body":"json","scope":{"name":{"from":"body","at":"/name"},"request":{"from":"body","at":"","type":"object"}},"grant":["name"]},
-      "POST-v1-thresholds-limits": {"action":"write.limits","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v1/thresholds/limits","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "POST-v1-webhooks": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.mailgun.net","path":"/v1/webhooks","body":"any","scope":{}},
-      "POST-v2-bounce-classification-metrics": {"action":"write.metrics","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v2/bounce-classification/metrics","body":"json","scope":{}},
-      "POST-v2-ip-whitelist": {"action":"write.ip_whitelist","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v2/ip_whitelist","body":"any","scope":{}},
-      "POST-v2-x509--domain-": {"action":"write.x509","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v2/x509/{domain}","scope":{"domain":{"from":"path","at":"domain"}}},
-      "POST-v3-domains--domain--webhooks": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/domains/{domain}/webhooks","body":"any","scope":{"domain":{"from":"path","at":"domain"}}},
-      "POST-v3-domains--domain-name--credentials": {"action":"write.credentials","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/domains/{domain_name}/credentials","body":"any","scope":{"domain_name":{"from":"path","at":"domain_name"}}},
-      "POST-v3-domains--domain-name--messages--storage-key-": {"action":"send.messages","effects":["send"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/domains/{domain_name}/messages/{storage_key}","body":"any","scope":{"domain_name":{"from":"path","at":"domain_name"},"storage_key":{"from":"path","at":"storage_key"}}},
-      "POST-v3-domains--name--dynamic-pools": {"action":"write.dynamic_pools","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/domains/{name}/dynamic_pools","params":["replacement_ip"],"scope":{"name":{"from":"path","at":"name"}}},
-      "POST-v3-domains-all-dynamic-pools-enroll": {"action":"write.enroll","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/domains/all/dynamic_pools/enroll","params":["include_subaccounts"],"scope":{}},
-      "POST-v3-dynamic-pools--pool-name---ip-": {"action":"write.dynamic_pools","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/dynamic_pools/{pool_name}/{ip}","scope":{"pool_name":{"from":"path","at":"pool_name"},"ip":{"from":"path","at":"ip"}}},
-      "POST-v3-dynamic-pools-all": {"action":"write.all","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/dynamic_pools/all","body":"any","scope":{}},
-      "POST-v3-forwards": {"action":"write.forwards","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/forwards","params":["match","forward.url","forward.recipient","forward.store"],"scope":{}},
-      "POST-v3-ip-pools": {"action":"write.ip_pools","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/ip_pools","body":"any","scope":{}},
-      "POST-v3-ip-pools--pool-id--ips-json": {"action":"write.ips","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/ip_pools/{pool_id}/ips.json","body":"json","scope":{"pool_id":{"from":"path","at":"pool_id"}}},
-      "POST-v3-ip-warmups--addr-": {"action":"send.messages","effects":["send"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/ip_warmups/{addr}","scope":{"addr":{"from":"path","at":"addr"}}},
-      "POST-v3-ips--addr--ip-band": {"action":"write.ip_band","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/ips/{addr}/ip_band","body":"any","scope":{"addr":{"from":"path","at":"addr"}}},
-      "POST-v3-ips--ip--domains": {"action":"admin.domains","effects":["admin"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/ips/{ip}/domains","scope":{"ip":{"from":"path","at":"ip"}}},
-      "POST-v3-ips-request-new": {"action":"write.new","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/ips/request/new","scope":{}},
-      "POST-v4-domains": {"action":"admin.domains","effects":["admin"],"method":"POST","origin":"https://api.mailgun.net","path":"/v4/domains","body":"any","scope":{}},
-      "POST-v4-domains--domain--webhooks": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.mailgun.net","path":"/v4/domains/{domain}/webhooks","body":"form","scope":{"domain":{"from":"path","at":"domain"},"url":{"from":"form","at":"url"}}},
-      "POST-v4-templates": {"action":"write.templates","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v4/templates","body":"any","scope":{}},
-      "POST-v4-templates--template-name--versions": {"action":"write.versions","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v4/templates/{template_name}/versions","body":"any","scope":{"template_name":{"from":"path","at":"template_name"}}},
-      "PUT-v1-alerts-settings-events--id-": {"action":"write.events","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v1/alerts/settings/events/{id}","body":"json","scope":{"id":{"from":"path","at":"id"},"channel":{"from":"body","at":"/channel"}}},
-      "PUT-v1-alerts-settings-slack": {"action":"write.slack","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v1/alerts/settings/slack","body":"json","scope":{}},
-      "PUT-v1-alerts-settings-webhooks-signing-key": {"action":"write.signing_key","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v1/alerts/settings/webhooks/signing_key","scope":{}},
-      "PUT-v1-analytics-tags": {"action":"write.tags","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v1/analytics/tags","body":"json","scope":{}},
-      "PUT-v1-dkim-management-domains--name--rotation": {"action":"write.rotation","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v1/dkim_management/domains/{name}/rotation","body":"any","scope":{"name":{"from":"path","at":"name"}}},
-      "PUT-v1-dynamic-pools-domains--name--override": {"action":"write.override","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v1/dynamic_pools/domains/{name}/override","body":"any","scope":{"name":{"from":"path","at":"name"}}},
-      "PUT-v1-thresholds-alerts-send--name-": {"action":"send.send","effects":["send"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v1/thresholds/alerts/send/{name}","body":"json","scope":{"name":{"from":"path","at":"name"},"request":{"from":"body","at":"","type":"object"}},"grant":["name"]},
-      "PUT-v1-thresholds-limits--name-": {"action":"write.limits","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v1/thresholds/limits/{name}","body":"json","scope":{"name":{"from":"path","at":"name"}}},
-      "PUT-v1-webhooks--webhook-id-": {"action":"admin.webhooks","effects":["admin"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v1/webhooks/{webhook_id}","body":"any","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "PUT-v2-ip-whitelist": {"action":"write.ip_whitelist","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v2/ip_whitelist","body":"any","scope":{}},
-      "PUT-v2-x509--domain-": {"action":"write.x509","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v2/x509/{domain}","scope":{"domain":{"from":"path","at":"domain"}}},
-      "PUT-v3--domain-name--templates--template-name-": {"action":"write.templates","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v3/{domain_name}/templates/{template_name}","body":"any","scope":{"domain_name":{"from":"path","at":"domain_name"},"template_name":{"from":"path","at":"template_name"}}},
-      "PUT-v3--domain-name--templates--template-name--rename--new-template-name-": {"action":"write.rename","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v3/{domain_name}/templates/{template_name}/rename/{new_template_name}","scope":{"domain_name":{"from":"path","at":"domain_name"},"template_name":{"from":"path","at":"template_name"},"new_template_name":{"from":"path","at":"new_template_name"}}},
-      "PUT-v3--domain-name--templates--template-name--versions--version-name-": {"action":"write.versions","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v3/{domain_name}/templates/{template_name}/versions/{version_name}","body":"any","scope":{"domain_name":{"from":"path","at":"domain_name"},"template_name":{"from":"path","at":"template_name"},"version_name":{"from":"path","at":"version_name"}}},
-      "PUT-v3--domain-name--templates--template-name--versions--version-name--copy--new-version-name-": {"action":"write.copy","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v3/{domain_name}/templates/{template_name}/versions/{version_name}/copy/{new_version_name}","params":["comment"],"scope":{"domain_name":{"from":"path","at":"domain_name"},"template_name":{"from":"path","at":"template_name"},"version_name":{"from":"path","at":"version_name"},"new_version_name":{"from":"path","at":"new_version_name"}}},
-      "PUT-v3-domains--domain-name--credentials--spec-": {"action":"write.credentials","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v3/domains/{domain_name}/credentials/{spec}","body":"any","scope":{"domain_name":{"from":"path","at":"domain_name"},"spec":{"from":"path","at":"spec"}}},
-      "PUT-v3-domains--domain-name--webhooks--webhook-name-": {"action":"admin.webhooks","effects":["admin"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v3/domains/{domain_name}/webhooks/{webhook_name}","body":"any","scope":{"domain_name":{"from":"path","at":"domain_name"},"webhook_name":{"from":"path","at":"webhook_name"}}},
-      "PUT-v3-domains--name--tracking-click": {"action":"write.click","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v3/domains/{name}/tracking/click","body":"any","scope":{"name":{"from":"path","at":"name"}}},
-      "PUT-v3-domains--name--tracking-open": {"action":"write.open","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v3/domains/{name}/tracking/open","body":"any","scope":{"name":{"from":"path","at":"name"}}},
-      "PUT-v3-domains--name--tracking-unsubscribe": {"action":"write.tracking","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v3/domains/{name}/tracking/unsubscribe","body":"any","scope":{"name":{"from":"path","at":"name"}}},
-      "PUT-v3-forwards--id-": {"action":"write.forwards","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v3/forwards/{id}","params":["match","forward.url","forward.recipient","forward.store","tag","description"],"scope":{"id":{"from":"path","at":"id"}}},
-      "PUT-v3-ip-pools--pool-id--ips--ip-": {"action":"write.ips","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v3/ip_pools/{pool_id}/ips/{ip}","scope":{"pool_id":{"from":"path","at":"pool_id"},"ip":{"from":"path","at":"ip"}}},
-      "PUT-v4-domains--authority-name--keys--selector--activate": {"action":"admin.keys","effects":["admin"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v4/domains/{authority_name}/keys/{selector}/activate","scope":{"authority_name":{"from":"path","at":"authority_name"},"selector":{"from":"path","at":"selector"}}},
-      "PUT-v4-domains--authority-name--keys--selector--deactivate": {"action":"admin.keys","effects":["admin"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v4/domains/{authority_name}/keys/{selector}/deactivate","scope":{"authority_name":{"from":"path","at":"authority_name"},"selector":{"from":"path","at":"selector"}}},
-      "PUT-v4-domains--domain--webhooks": {"action":"admin.webhooks","effects":["admin"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v4/domains/{domain}/webhooks","body":"form","scope":{"domain":{"from":"path","at":"domain"},"url":{"from":"form","at":"url"}}},
-      "PUT-v4-domains--name-": {"action":"admin.domains","effects":["admin"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v4/domains/{name}","body":"any","scope":{"name":{"from":"path","at":"name"}}},
-      "PUT-v4-domains--name--verify": {"action":"admin.domains","effects":["admin"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v4/domains/{name}/verify","scope":{"name":{"from":"path","at":"name"}}},
-      "PUT-v4-templates--template-name-": {"action":"write.templates","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v4/templates/{template_name}","body":"any","scope":{"template_name":{"from":"path","at":"template_name"}}},
-      "PUT-v4-templates--template-name--copy": {"action":"write.templates","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v4/templates/{template_name}/copy","body":"json","scope":{"template_name":{"from":"path","at":"template_name"}}},
-      "PUT-v4-templates--template-name--rename--new-template-name-": {"action":"write.rename","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v4/templates/{template_name}/rename/{new_template_name}","scope":{"template_name":{"from":"path","at":"template_name"},"new_template_name":{"from":"path","at":"new_template_name"}}},
-      "PUT-v4-templates--template-name--versions--version-name-": {"action":"write.versions","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v4/templates/{template_name}/versions/{version_name}","body":"any","scope":{"template_name":{"from":"path","at":"template_name"},"version_name":{"from":"path","at":"version_name"}}},
-      "PUT-v4-templates--template-name--versions--version-name--copy--new-version-name-": {"action":"write.copy","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v4/templates/{template_name}/versions/{version_name}/copy/{new_version_name}","params":["comment"],"scope":{"template_name":{"from":"path","at":"template_name"},"version_name":{"from":"path","at":"version_name"},"new_version_name":{"from":"path","at":"new_version_name"}}},
-      "PUT-v5-accounts-subaccounts--subaccountId--ip-pool": {"action":"write.ip_pool","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v5/accounts/subaccounts/{subaccountId}/ip_pool","scope":{"subaccountId":{"from":"path","at":"subaccountId"}}},
-      "delete-lists-list_address-members-member_address": {"action":"delete.members","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/lists/{list_address}/members/{member_address}","scope":{"list_address":{"from":"path","at":"list_address"},"member_address":{"from":"path","at":"member_address"}}},
-      "delete-v3-lists-address": {"action":"delete.lists","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/lists/{list_address}","scope":{"list_address":{"from":"path","at":"list_address"}}},
-      "delete-v3-routes-id": {"action":"delete.routes","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v3/routes/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "delete-v5-accounts-limit-custom-monthly": {"action":"delete.monthly","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v5/accounts/limit/custom/monthly","scope":{}},
-      "delete-v5-accounts-subaccounts-subaccount_id": {"action":"delete.subaccounts","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v5/accounts/subaccounts","scope":{}},
-      "delete-v5-accounts-subaccounts-subaccount_id-limit-custom-monthly": {"action":"delete.monthly","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v5/accounts/subaccounts/{subaccount_id}/limit/custom/monthly","scope":{"subaccount_id":{"from":"path","at":"subaccount_id"}}},
-      "delete-v5-sandbox-auth_recipients-email": {"action":"delete.auth_recipients","effects":["delete"],"method":"DELETE","origin":"https://api.mailgun.net","path":"/v5/sandbox/auth_recipients/{email}","scope":{"email":{"from":"path","at":"email"}}},
-      "get-lists-list_address-members-member_address": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/lists/{list_address}/members/{member_address}","params":["subscribed","limit","address","page"],"scope":{"list_address":{"from":"path","at":"list_address"},"member_address":{"from":"path","at":"member_address"}}},
-      "get-v3-lists": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/lists","params":["limit","skip","address"],"scope":{}},
-      "get-v3-lists-address": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/lists/{list_address}","params":["limit"],"scope":{"list_address":{"from":"path","at":"list_address"}}},
-      "get-v3-routes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/routes","params":["skip","limit"],"scope":{}},
-      "get-v3-routes-id": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v3/routes/{id}","params":["address"],"scope":{"id":{"from":"path","at":"id"}}},
-      "get-v5-accounts-http_signing_key": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v5/accounts/http_signing_key","scope":{}},
-      "get-v5-accounts-limit-custom-monthly": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v5/accounts/limit/custom/monthly","scope":{}},
-      "get-v5-accounts-subaccounts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v5/accounts/subaccounts","params":["sort","filter","limit","skip","enabled","closed"],"scope":{}},
-      "get-v5-accounts-subaccounts-subaccount_id": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v5/accounts/subaccounts/{subaccount_id}","scope":{"subaccount_id":{"from":"path","at":"subaccount_id"}}},
-      "get-v5-accounts-subaccounts-subaccount_id-limit-custom-monthly": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v5/accounts/subaccounts/{subaccount_id}/limit/custom/monthly","scope":{"subaccount_id":{"from":"path","at":"subaccount_id"}}},
-      "get-v5-sandbox-auth_recipients": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v5/sandbox/auth_recipients","scope":{}},
-      "get-v5-users": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v5/users","params":["role","limit","skip"],"scope":{}},
-      "get-v5-users-user_id": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.mailgun.net","path":"/v5/users/{user_id}","scope":{"user_id":{"from":"path","at":"user_id"}}},
-      "post-lists-list_address-members.csv": {"action":"admin.members","effects":["admin"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/lists/{list_address}/members.csv","body":"any","scope":{"list_address":{"from":"path","at":"list_address"}}},
-      "post-lists-list_address-members.json": {"action":"admin.members","effects":["admin"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/lists/{list_address}/members.json","params":["members","upsert"],"scope":{"list_address":{"from":"path","at":"list_address"}}},
-      "post-lists-string:list_address-members": {"action":"admin.members","effects":["admin"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/lists/{list_address}/members","body":"any","scope":{"list_address":{"from":"path","at":"list_address"}}},
-      "post-v3-lists": {"action":"write.lists","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/lists","body":"any","scope":{}},
-      "post-v3-routes": {"action":"write.routes","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v3/routes","body":"any","scope":{}},
-      "post-v5-accounts-http_signing_key": {"action":"write.http_signing_key","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v5/accounts/http_signing_key","scope":{}},
-      "post-v5-accounts-resend_activation_email": {"action":"send.resend_activation_email","effects":["send"],"method":"POST","origin":"https://api.mailgun.net","path":"/v5/accounts/resend_activation_email","scope":{}},
-      "post-v5-accounts-subaccounts": {"action":"write.subaccounts","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v5/accounts/subaccounts","params":["name"],"scope":{"name":{"from":"query","at":"name"}}},
-      "post-v5-accounts-subaccounts-subaccount_id-disable": {"action":"write.subaccounts","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v5/accounts/subaccounts/{subaccount_id}/disable","params":["reason","note"],"scope":{"subaccount_id":{"from":"path","at":"subaccount_id"}}},
-      "post-v5-accounts-subaccounts-subaccount_id-enable": {"action":"write.subaccounts","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v5/accounts/subaccounts/{subaccount_id}/enable","scope":{"subaccount_id":{"from":"path","at":"subaccount_id"}}},
-      "post-v5-sandbox-auth_recipients": {"action":"write.auth_recipients","effects":["write"],"method":"POST","origin":"https://api.mailgun.net","path":"/v5/sandbox/auth_recipients","params":["email"],"scope":{"email":{"from":"query","at":"email"}}},
-      "put-lists-list_address-members-member_address": {"action":"admin.members","effects":["admin"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v3/lists/{list_address}/members/{member_address}","body":"any","scope":{"list_address":{"from":"path","at":"list_address"},"member_address":{"from":"path","at":"member_address"}}},
-      "put-v3-lists-address": {"action":"write.lists","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v3/lists/{list_address}","body":"any","scope":{"list_address":{"from":"path","at":"list_address"}}},
-      "put-v3-routes-id": {"action":"write.routes","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v3/routes/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "put-v5-accounts": {"action":"admin.accounts","effects":["admin"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v5/accounts","params":["name","inactive_session_timeout","absolute_session_timeout","logout_redirect_url"],"scope":{}},
-      "put-v5-accounts-features": {"action":"write.features","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v5/accounts/features","body":"any","scope":{}},
-      "put-v5-accounts-limit-custom-enable": {"action":"write.enable","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v5/accounts/limit/custom/enable","scope":{}},
-      "put-v5-accounts-limit-custom-monthly": {"action":"write.monthly","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v5/accounts/limit/custom/monthly","params":["limit"],"scope":{}},
-      "put-v5-accounts-subaccounts-subaccount_id-features": {"action":"write.features","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v5/accounts/subaccounts/{subaccount_id}/features","body":"any","scope":{"subaccount_id":{"from":"path","at":"subaccount_id"}}},
-      "put-v5-accounts-subaccounts-subaccount_id-limit-custom-monthly": {"action":"write.monthly","effects":["write"],"method":"PUT","origin":"https://api.mailgun.net","path":"/v5/accounts/subaccounts/{subaccount_id}/limit/custom/monthly","params":["limit"],"scope":{"subaccount_id":{"from":"path","at":"subaccount_id"}}}
+      "DELETE-v1-alerts-settings-events--id-": {"action":"alerts.settings.events.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v1/alerts/settings/events/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE-v1-alerts-settings-slack": {"action":"alerts.settings.slack.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v1/alerts/settings/slack","scope":{}},
+      "DELETE-v1-alerts-slack-oauth": {"action":"alerts.slack.oauth.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v1/alerts/slack/oauth","scope":{}},
+      "DELETE-v1-analytics-tags": {"action":"analytics.tags.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v1/analytics/tags","scope":{}},
+      "DELETE-v1-dkim-keys": {"action":"dkim.keys.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["signing_domain","selector"],"path":"/v1/dkim/keys","scope":{}},
+      "DELETE-v1-dynamic-pools-domains--name--override": {"action":"dynamic_pools.domains.override.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v1/dynamic_pools/domains/{name}/override","scope":{"name":{"at":"name","from":"path"}}},
+      "DELETE-v1-keys--key-id-": {"action":"keys.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v1/keys/{key_id}","scope":{"key_id":{"at":"key_id","from":"path"}}},
+      "DELETE-v1-thresholds-alerts-send--name-": {"action":"thresholds.alerts.send.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v1/thresholds/alerts/send/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "DELETE-v1-thresholds-limits--name-": {"action":"thresholds.limits.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v1/thresholds/limits/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "DELETE-v1-webhooks": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["webhook_ids","all"],"path":"/v1/webhooks","scope":{}},
+      "DELETE-v1-webhooks--webhook-id-": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v1/webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "DELETE-v2-ip-whitelist": {"action":"ip_whitelist.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["address"],"path":"/v2/ip_whitelist","scope":{}},
+      "DELETE-v2-thresholds-limits--metric-": {"action":"thresholds.limits.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/thresholds/limits/{metric}","scope":{"metric":{"at":"metric","from":"path"}}},
+      "DELETE-v2-thresholds-limits-primary": {"action":"thresholds.limits_primary.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v2/thresholds/limits-primary","scope":{}},
+      "DELETE-v3--domain--tag": {"action":"tag.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["tag"],"path":"/v3/{domain}/tag","path_patterns":{"domain":"[^dfilr].*|d(?:|[^o].*|o(?:|[^m].*|m(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^s].*|s.+))))))|f(?:|[^o].*|o(?:|[^r].*|r(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^d].*|d(?:|[^s].*|s.+)))))))|i(?:|[^p].*|p(?:|[^_].*|_(?:|[^pw].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))"},"scope":{"domain":{"at":"domain","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "DELETE-v3--domain-name--envelopes": {"action":"envelopes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/{domain_name}/envelopes","path_patterns":{"domain_name":"[^dfilr].*|d(?:|[^o].*|o(?:|[^m].*|m(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^s].*|s.+))))))|f(?:|[^o].*|o(?:|[^r].*|r(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^d].*|d(?:|[^s].*|s.+)))))))|i(?:|[^p].*|p(?:|[^_].*|_(?:|[^pw].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"}}},
+      "DELETE-v3--domain-name--templates": {"action":"templates.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/{domain_name}/templates","path_patterns":{"domain_name":"[^dfilr].*|d(?:|[^o].*|o(?:|[^m].*|m(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^s].*|s.+))))))|f(?:|[^o].*|o(?:|[^r].*|r(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^d].*|d(?:|[^s].*|s.+)))))))|i(?:|[^p].*|p(?:|[^_].*|_(?:|[^pw].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"}}},
+      "DELETE-v3--domain-name--templates--template-name-": {"action":"templates.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/{domain_name}/templates/{template_name}","scope":{"domain_name":{"at":"domain_name","from":"path"},"template_name":{"at":"template_name","from":"path"}}},
+      "DELETE-v3--domain-name--templates--template-name--versions--version-name-": {"action":"templates.versions.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/{domain_name}/templates/{template_name}/versions/{version_name}","scope":{"domain_name":{"at":"domain_name","from":"path"},"template_name":{"at":"template_name","from":"path"},"version_name":{"at":"version_name","from":"path"}}},
+      "DELETE-v3--domainID--bounces": {"action":"bounces.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/{domain_name}/bounces","path_patterns":{"domain_name":"[^dfilr].*|d(?:|[^o].*|o(?:|[^m].*|m(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^s].*|s.+))))))|f(?:|[^o].*|o(?:|[^r].*|r(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^d].*|d(?:|[^s].*|s.+)))))))|i(?:|[^p].*|p(?:|[^_].*|_(?:|[^pw].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"}}},
+      "DELETE-v3--domainID--bounces--address-": {"action":"bounces.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["replacement_ip","replacement_pool_id","alternative"],"path":"/v3/{domain_name}/bounces/{address}","scope":{"address":{"at":"address","from":"path"},"domain_name":{"at":"domain_name","from":"path"}}},
+      "DELETE-v3--domainID--complaints": {"action":"complaints.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/{domain_name}/complaints","path_patterns":{"domain_name":"[^dfilr].*|d(?:|[^o].*|o(?:|[^m].*|m(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^s].*|s.+))))))|f(?:|[^o].*|o(?:|[^r].*|r(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^d].*|d(?:|[^s].*|s.+)))))))|i(?:|[^p].*|p(?:|[^_].*|_(?:|[^pw].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"}}},
+      "DELETE-v3--domainID--complaints--address-": {"action":"complaints.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/{domain_name}/complaints/{address}","scope":{"address":{"at":"address","from":"path"},"domain_name":{"at":"domain_name","from":"path"}}},
+      "DELETE-v3--domainID--unsubscribes": {"action":"unsubscribes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/{domain_name}/unsubscribes","path_patterns":{"domain_name":"[^dfilr].*|d(?:|[^o].*|o(?:|[^m].*|m(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^s].*|s.+))))))|f(?:|[^o].*|o(?:|[^r].*|r(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^d].*|d(?:|[^s].*|s.+)))))))|i(?:|[^p].*|p(?:|[^_].*|_(?:|[^pw].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"}}},
+      "DELETE-v3--domainID--unsubscribes--address-": {"action":"unsubscribes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/{domain_name}/unsubscribes/{address}","scope":{"address":{"at":"address","from":"path"},"domain_name":{"at":"domain_name","from":"path"}}},
+      "DELETE-v3--domainID--whitelists": {"action":"whitelists.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/{domain_name}/whitelists","path_patterns":{"domain_name":"[^dfilr].*|d(?:|[^o].*|o(?:|[^m].*|m(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^s].*|s.+))))))|f(?:|[^o].*|o(?:|[^r].*|r(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^d].*|d(?:|[^s].*|s.+)))))))|i(?:|[^p].*|p(?:|[^_].*|_(?:|[^pw].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"}}},
+      "DELETE-v3--domainID--whitelists--value-": {"action":"whitelists.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/{domain_name}/whitelists/{value}","scope":{"domain_name":{"at":"domain_name","from":"path"},"value":{"at":"value","from":"path"}}},
+      "DELETE-v3-domains--domain-name--credentials": {"action":"domains.credentials.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/domains/{domain_name}/credentials","path_patterns":{"domain_name":"[^bctuw].*|b(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))|c(?:|[^o].*|o(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+)))))))))|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))|u(?:|[^n].*|n(?:|[^s].*|s(?:|[^u].*|u(?:|[^b].*|b(?:|[^s].*|s(?:|[^c].*|c(?:|[^r].*|r(?:|[^i].*|i(?:|[^b].*|b(?:|[^e].*|e(?:|[^s].*|s.+)))))))))))|w(?:|[^h].*|h(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e(?:|[^l].*|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+)))))))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"}}},
+      "DELETE-v3-domains--domain-name--credentials--spec-": {"action":"domains.credentials.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/domains/{domain_name}/credentials/{spec}","scope":{"domain_name":{"at":"domain_name","from":"path"},"spec":{"at":"spec","from":"path"}}},
+      "DELETE-v3-domains--domain-name--webhooks--webhook-name-": {"action":"domains.webhooks.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/domains/{domain_name}/webhooks/{webhook_name}","scope":{"domain_name":{"at":"domain_name","from":"path"},"webhook_name":{"at":"webhook_name","from":"path"}}},
+      "DELETE-v3-domains--name-": {"action":"domains.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["tag"],"path":"/v3/domains/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "DELETE-v3-domains--name--dynamic-pools": {"action":"domains.dynamic_pools.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["replacement_ip","replacement_pool_id"],"path":"/v3/domains/{name}/dynamic_pools","path_patterns":{"name":"[^bctuw].*|b(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))|c(?:|[^o].*|o(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+)))))))))|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))|u(?:|[^n].*|n(?:|[^s].*|s(?:|[^u].*|u(?:|[^b].*|b(?:|[^s].*|s(?:|[^c].*|c(?:|[^r].*|r(?:|[^i].*|i(?:|[^b].*|b(?:|[^e].*|e(?:|[^s].*|s.+)))))))))))|w(?:|[^h].*|h(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e(?:|[^l].*|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+)))))))))"},"scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"replacement_pool_id":{"at":"replacement_pool_id","from":"query"}}},
+      "DELETE-v3-domains--name--ips--ip-": {"action":"domains.ips.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["ip","pool_id"],"path":"/v3/domains/{name}/ips/{ip}","scope":{"ip":{"at":"ip","from":"path"},"name":{"at":"name","from":"path"}}},
+      "DELETE-v3-domains--name--pool--ip-": {"action":"domains.pool.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["ip","pool_id"],"path":"/v3/domains/{name}/pool/{ip}","scope":{"ip":{"at":"ip","from":"path"},"name":{"at":"name","from":"path"}}},
+      "DELETE-v3-dynamic-pools-all": {"action":"dynamic_pools.all.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/dynamic_pools/all","scope":{}},
+      "DELETE-v3-forwards--id-": {"action":"forwards.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["domain.name"],"path":"/v3/forwards/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE-v3-ip-pools--pool-id-": {"action":"ip_pools.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["ip","pool_id"],"path":"/v3/ip_pools/{pool_id}","scope":{"pool_id":{"at":"pool_id","from":"path"}}},
+      "DELETE-v3-ip-pools--pool-id--delegate": {"action":"ip_pools.delegate.delete","body":"any","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/ip_pools/{pool_id}/delegate","path_patterns":{"pool_id":"[^bctuw].*|b(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))|c(?:|[^o].*|o(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+)))))))))|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))|u(?:|[^n].*|n(?:|[^s].*|s(?:|[^u].*|u(?:|[^b].*|b(?:|[^s].*|s(?:|[^c].*|c(?:|[^r].*|r(?:|[^i].*|i(?:|[^b].*|b(?:|[^e].*|e(?:|[^s].*|s.+)))))))))))|w(?:|[^h].*|h(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e(?:|[^l].*|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+)))))))))"},"scope":{"pool_id":{"at":"pool_id","from":"path"}}},
+      "DELETE-v3-ip-pools--pool-id--ips--ip-": {"action":"ip_pools.ips.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/ip_pools/{pool_id}/ips/{ip}","scope":{"ip":{"at":"ip","from":"path"},"pool_id":{"at":"pool_id","from":"path"}}},
+      "DELETE-v3-ip-warmups--addr-": {"action":"ip_warmups.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/ip_warmups/{addr}","scope":{"addr":{"at":"addr","from":"path"}}},
+      "DELETE-v3-ips--ip--domains": {"action":"ips.domains.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["alternative"],"path":"/v3/ips/{ip}/domains","path_patterns":{"ip":"[^bctuw].*|b(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))|c(?:|[^o].*|o(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+)))))))))|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))|u(?:|[^n].*|n(?:|[^s].*|s(?:|[^u].*|u(?:|[^b].*|b(?:|[^s].*|s(?:|[^c].*|c(?:|[^r].*|r(?:|[^i].*|i(?:|[^b].*|b(?:|[^e].*|e(?:|[^s].*|s.+)))))))))))|w(?:|[^h].*|h(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e(?:|[^l].*|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+)))))))))"},"scope":{"ip":{"at":"ip","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "DELETE-v4-domains--domain--webhooks": {"action":"domains.webhooks.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["url"],"path":"/v4/domains/{domain}/webhooks","scope":{"domain":{"at":"domain","from":"path"},"url":{"at":"url","from":"query"}}},
+      "DELETE-v4-templates": {"action":"templates.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v4/templates","scope":{}},
+      "DELETE-v4-templates--template-name-": {"action":"templates.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v4/templates/{template_name}","scope":{"template_name":{"at":"template_name","from":"path"}}},
+      "DELETE-v4-templates--template-name--versions--version-name-": {"action":"templates.versions.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v4/templates/{template_name}/versions/{version_name}","scope":{"template_name":{"at":"template_name","from":"path"},"version_name":{"at":"version_name","from":"path"}}},
+      "DELETE-v5-accounts-subaccounts--subaccountId--ip-pool": {"action":"accounts.subaccounts.ip_pool.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["pool_id"],"path":"/v5/accounts/subaccounts/{subaccountId}/ip_pool","scope":{"pool_id":{"at":"pool_id","from":"query"},"subaccountId":{"at":"subaccountId","from":"path"}}},
+      "GET-v1-alerts-events": {"action":"alerts.events.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/alerts/events","scope":{}},
+      "GET-v1-alerts-settings": {"action":"alerts.settings.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/alerts/settings","scope":{}},
+      "GET-v1-alerts-slack-channels": {"action":"alerts.slack.channels.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","limit"],"path":"/v1/alerts/slack/channels","scope":{}},
+      "GET-v1-alerts-slack-channels--id-": {"action":"alerts.slack.channels.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/alerts/slack/channels/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET-v1-analytics-tags-limits": {"action":"analytics.tags.limits.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/analytics/tags/limits","scope":{}},
+      "GET-v1-dkim-keys": {"action":"dkim.keys.read","body":"any","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/dkim/keys","scope":{}},
+      "GET-v1-dynamic-pools-domains": {"action":"dynamic_pools.domains.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","account","pool","sort_by","sort_order"],"path":"/v1/dynamic_pools/domains","scope":{}},
+      "GET-v1-dynamic-pools-domains--name--history": {"action":"dynamic_pools.domains.history.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/dynamic_pools/domains/{name}/history","scope":{"name":{"at":"name","from":"path"}}},
+      "GET-v1-dynamic-pools-domains--name--preview": {"action":"dynamic_pools.domains.preview.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/dynamic_pools/domains/{name}/preview","scope":{"name":{"at":"name","from":"path"}}},
+      "GET-v1-dynamic-pools-history": {"action":"dynamic_pools.history.read","effects":["read"],"method":"GET","origin":"{api}","params":["Limit","include_subaccounts","domain","before","after","moved_to","moved_from"],"path":"/v1/dynamic_pools/history","scope":{}},
+      "GET-v1-keys": {"action":"keys.read","effects":["read"],"method":"GET","origin":"{api}","params":["domain_name","kind"],"path":"/v1/keys","scope":{}},
+      "GET-v1-thresholds-alerts-send": {"action":"thresholds.alerts.send.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/thresholds/alerts/send","scope":{}},
+      "GET-v1-thresholds-alerts-send--name-": {"action":"thresholds.alerts.send.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/thresholds/alerts/send/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "GET-v1-thresholds-hits": {"action":"thresholds.hits.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/thresholds/hits","scope":{}},
+      "GET-v1-thresholds-limits": {"action":"thresholds.limits.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/thresholds/limits","scope":{}},
+      "GET-v1-thresholds-limits--name-": {"action":"thresholds.limits.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/thresholds/limits/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "GET-v1-webhooks": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"{api}","params":["webhook_ids"],"path":"/v1/webhooks","scope":{}},
+      "GET-v1-webhooks--webhook-id-": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v1/webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "GET-v2-ip-whitelist": {"action":"ip_whitelist.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/ip_whitelist","scope":{}},
+      "GET-v2-thresholds-limits": {"action":"thresholds.limits.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/thresholds/limits","scope":{}},
+      "GET-v2-thresholds-limits--metric-": {"action":"thresholds.limits.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/thresholds/limits/{metric}","scope":{"metric":{"at":"metric","from":"path"}}},
+      "GET-v2-thresholds-limits-primary": {"action":"thresholds.limits_primary.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/thresholds/limits-primary","scope":{}},
+      "GET-v2-x509--domain--status": {"action":"x509.status.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v2/x509/{domain}/status","scope":{"domain":{"at":"domain","from":"path"}}},
+      "GET-v3--domain--aggregates-countries": {"action":"aggregates.countries.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/{domain}/aggregates/countries","scope":{"domain":{"at":"domain","from":"path"}}},
+      "GET-v3--domain--aggregates-devices": {"action":"aggregates.devices.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/{domain}/aggregates/devices","scope":{"domain":{"at":"domain","from":"path"}}},
+      "GET-v3--domain--aggregates-providers": {"action":"aggregates.providers.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/{domain}/aggregates/providers","scope":{"domain":{"at":"domain","from":"path"}}},
+      "GET-v3--domain--stats-total": {"action":"stats.total.read","effects":["read"],"method":"GET","origin":"{api}","params":["start","end","resolution","duration","event"],"path":"/v3/{domain}/stats/total","scope":{"domain":{"at":"domain","from":"path"}}},
+      "GET-v3--domain--tag": {"action":"tag.read","effects":["read"],"method":"GET","origin":"{api}","params":["tag"],"path":"/v3/{domain}/tag","path_patterns":{"domain":"[^filr].*|f(?:|[^o].*|o(?:|[^r].*|r(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^d].*|d(?:|[^s].*|s.+)))))))|i(?:|[^p].*|p(?:|[^_s].*|_(?:|[^pw].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))|s.+))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))"},"scope":{"domain":{"at":"domain","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "GET-v3--domain--tag-stats": {"action":"tag.stats.read","effects":["read"],"method":"GET","origin":"{api}","params":["start","end","resolution","duration","provider","device","country","event","tag"],"path":"/v3/{domain}/tag/stats","scope":{"domain":{"at":"domain","from":"path"}}},
+      "GET-v3--domain--tag-stats-aggregates": {"action":"tag.stats.aggregates.read","effects":["read"],"method":"GET","origin":"{api}","params":["tag","type"],"path":"/v3/{domain}/tag/stats/aggregates","scope":{"domain":{"at":"domain","from":"path"}}},
+      "GET-v3--domain--tags": {"action":"tags.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","limit","tag","prefix"],"path":"/v3/{domain}/tags","path_patterns":{"domain":"[^filr].*|f(?:|[^o].*|o(?:|[^r].*|r(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^d].*|d(?:|[^s].*|s.+)))))))|i(?:|[^p].*|p(?:|[^_s].*|_(?:|[^pw].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))|s.+))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))"},"scope":{"domain":{"at":"domain","from":"path"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "GET-v3--domain-name--templates": {"action":"templates.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","limit","p"],"path":"/v3/{domain_name}/templates","path_patterns":{"domain_name":"[^filr].*|f(?:|[^o].*|o(?:|[^r].*|r(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^d].*|d(?:|[^s].*|s.+)))))))|i(?:|[^p].*|p(?:|[^_s].*|_(?:|[^pw].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))|s.+))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "GET-v3--domain-name--templates--template-name-": {"action":"templates.read","effects":["read"],"method":"GET","origin":"{api}","params":["active"],"path":"/v3/{domain_name}/templates/{template_name}","scope":{"domain_name":{"at":"domain_name","from":"path"},"template_name":{"at":"template_name","from":"path"}}},
+      "GET-v3--domain-name--templates--template-name--versions": {"action":"templates.versions.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","limit","p"],"path":"/v3/{domain_name}/templates/{template_name}/versions","path_patterns":{"domain_name":"[^dl].*|d(?:|[^o].*|o(?:|[^m].*|m(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^s].*|s.+))))))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"template_name":{"at":"template_name","from":"path"}}},
+      "GET-v3--domain-name--templates--template-name--versions--version-name-": {"action":"templates.versions.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/{domain_name}/templates/{template_name}/versions/{version_name}","scope":{"domain_name":{"at":"domain_name","from":"path"},"template_name":{"at":"template_name","from":"path"},"version_name":{"at":"version_name","from":"path"}}},
+      "GET-v3--domainID--bounces": {"action":"bounces.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","page","term"],"path":"/v3/{domain_name}/bounces","path_patterns":{"domain_name":"[^filr].*|f(?:|[^o].*|o(?:|[^r].*|r(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^d].*|d(?:|[^s].*|s.+)))))))|i(?:|[^p].*|p(?:|[^_s].*|_(?:|[^pw].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))|s.+))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"},"page":{"at":"page","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "GET-v3--domainID--bounces--address-": {"action":"bounces.read","effects":["read"],"method":"GET","origin":"{api}","params":["skip","limit","page","search","sort_by","sort_order","address","subscribed"],"path":"/v3/{domain_name}/bounces/{address}","scope":{"address":{"at":"address","from":"path"},"domain_name":{"at":"domain_name","from":"path"}}},
+      "GET-v3--domainID--complaints": {"action":"complaints.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","page","address","term"],"path":"/v3/{domain_name}/complaints","path_patterns":{"domain_name":"[^filr].*|f(?:|[^o].*|o(?:|[^r].*|r(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^d].*|d(?:|[^s].*|s.+)))))))|i(?:|[^p].*|p(?:|[^_s].*|_(?:|[^pw].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))|s.+))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "GET-v3--domainID--complaints--address-": {"action":"complaints.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/{domain_name}/complaints/{address}","scope":{"address":{"at":"address","from":"path"},"domain_name":{"at":"domain_name","from":"path"}}},
+      "GET-v3--domainID--unsubscribes": {"action":"unsubscribes.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","page","address","term"],"path":"/v3/{domain_name}/unsubscribes","path_patterns":{"domain_name":"[^filr].*|f(?:|[^o].*|o(?:|[^r].*|r(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^d].*|d(?:|[^s].*|s.+)))))))|i(?:|[^p].*|p(?:|[^_s].*|_(?:|[^pw].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))|s.+))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "GET-v3--domainID--unsubscribes--address-": {"action":"unsubscribes.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/{domain_name}/unsubscribes/{address}","scope":{"address":{"at":"address","from":"path"},"domain_name":{"at":"domain_name","from":"path"}}},
+      "GET-v3--domainID--whitelists": {"action":"whitelists.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","page","address","term"],"path":"/v3/{domain_name}/whitelists","path_patterns":{"domain_name":"[^filr].*|f(?:|[^o].*|o(?:|[^r].*|r(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^d].*|d(?:|[^s].*|s.+)))))))|i(?:|[^p].*|p(?:|[^_s].*|_(?:|[^pw].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))|s.+))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "GET-v3--domainID--whitelists--value-": {"action":"whitelists.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/{domain_name}/whitelists/{value}","scope":{"domain_name":{"at":"domain_name","from":"path"},"value":{"at":"value","from":"path"}}},
+      "GET-v3-domains--domain--limits-tag": {"action":"domains.limits.tag.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/domains/{domain}/limits/tag","scope":{"domain":{"at":"domain","from":"path"}}},
+      "GET-v3-domains--domain--tag-countries": {"action":"domains.tag.countries.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/domains/{domain}/tag/countries","scope":{"domain":{"at":"domain","from":"path"}}},
+      "GET-v3-domains--domain--tag-devices": {"action":"domains.tag.devices.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/domains/{domain}/tag/devices","scope":{"domain":{"at":"domain","from":"path"}}},
+      "GET-v3-domains--domain--tag-providers": {"action":"domains.tag.providers.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/domains/{domain}/tag/providers","scope":{"domain":{"at":"domain","from":"path"}}},
+      "GET-v3-domains--domain--webhooks": {"action":"domains.webhooks.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/domains/{domain}/webhooks","path_patterns":{"domain":"[^bctuw].*|b(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))|c(?:|[^o].*|o(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+)))))))))|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))|u(?:|[^n].*|n(?:|[^s].*|s(?:|[^u].*|u(?:|[^b].*|b(?:|[^s].*|s(?:|[^c].*|c(?:|[^r].*|r(?:|[^i].*|i(?:|[^b].*|b(?:|[^e].*|e(?:|[^s].*|s.+)))))))))))|w(?:|[^h].*|h(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e(?:|[^l].*|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+)))))))))"},"scope":{"domain":{"at":"domain","from":"path"}}},
+      "GET-v3-domains--domain-name--credentials": {"action":"domains.credentials.read","effects":["read"],"method":"GET","origin":"{api}","params":["skip","limit"],"path":"/v3/domains/{domain_name}/credentials","path_patterns":{"domain_name":"[^bctuw].*|b(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))|c(?:|[^o].*|o(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+)))))))))|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))|u(?:|[^n].*|n(?:|[^s].*|s(?:|[^u].*|u(?:|[^b].*|b(?:|[^s].*|s(?:|[^c].*|c(?:|[^r].*|r(?:|[^i].*|i(?:|[^b].*|b(?:|[^e].*|e(?:|[^s].*|s.+)))))))))))|w(?:|[^h].*|h(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e(?:|[^l].*|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+)))))))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "GET-v3-domains--domain-name--messages--storage-key-": {"action":"domains.messages.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","limit","p"],"path":"/v3/domains/{domain_name}/messages/{storage_key}","scope":{"domain_name":{"at":"domain_name","from":"path"},"storage_key":{"at":"storage_key","from":"path"}}},
+      "GET-v3-domains--domain-name--webhooks--webhook-name-": {"action":"domains.webhooks.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/domains/{domain_name}/webhooks/{webhook_name}","path_patterns":{"webhook_name":"accepted|clicked|complained|delivered|opened|permanent_fail|temporary_fail|unsubscribed"},"scope":{"domain_name":{"at":"domain_name","from":"path"},"webhook_name":{"at":"webhook_name","from":"path"}}},
+      "GET-v3-domains--name--sending-queues": {"action":"domains.sending_queues.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/domains/{name}/sending_queues","path_patterns":{"name":"[^bctuw].*|b(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))|c(?:|[^o].*|o(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+)))))))))|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))|u(?:|[^n].*|n(?:|[^s].*|s(?:|[^u].*|u(?:|[^b].*|b(?:|[^s].*|s(?:|[^c].*|c(?:|[^r].*|r(?:|[^i].*|i(?:|[^b].*|b(?:|[^e].*|e(?:|[^s].*|s.+)))))))))))|w(?:|[^h].*|h(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e(?:|[^l].*|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+)))))))))"},"scope":{"name":{"at":"name","from":"path"}}},
+      "GET-v3-domains--name--tracking": {"action":"domains.tracking.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/domains/{name}/tracking","path_patterns":{"name":"[^bctuw].*|b(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))|c(?:|[^o].*|o(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+)))))))))|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))|u(?:|[^n].*|n(?:|[^s].*|s(?:|[^u].*|u(?:|[^b].*|b(?:|[^s].*|s(?:|[^c].*|c(?:|[^r].*|r(?:|[^i].*|i(?:|[^b].*|b(?:|[^e].*|e(?:|[^s].*|s.+)))))))))))|w(?:|[^h].*|h(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e(?:|[^l].*|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+)))))))))"},"scope":{"name":{"at":"name","from":"path"}}},
+      "GET-v3-domains-dynamic-pools-assignable": {"action":"domains.dynamic_pools.assignable.read","effects":["read"],"method":"GET","origin":"{api}","params":["subaccount_id","domain"],"path":"/v3/domains/dynamic_pools/assignable","scope":{}},
+      "GET-v3-dynamic-pools": {"action":"dynamic_pools.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/dynamic_pools","scope":{}},
+      "GET-v3-forwards": {"action":"forwards.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","limit","domain.name","search"],"path":"/v3/forwards","scope":{"page":{"at":"page","from":"query"}}},
+      "GET-v3-forwards--id-": {"action":"forwards.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","page","term","address","begin","end","ascending","event","list","attachment","from","message-id","subject","to","size","recipient","recipients","tags","severity","p","tag","prefix"],"path":"/v3/forwards/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET-v3-ip-pools": {"action":"ip_pools.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/ip_pools","scope":{}},
+      "GET-v3-ip-pools--pool-id-": {"action":"ip_pools.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/ip_pools/{pool_id}","scope":{"pool_id":{"at":"pool_id","from":"path"}}},
+      "GET-v3-ip-pools--pool-id--domains": {"action":"ip_pools.domains.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","page","search","sort_by","sort_order"],"path":"/v3/ip_pools/{pool_id}/domains","path_patterns":{"pool_id":"[^bctuw].*|b(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))|c(?:|[^o].*|o(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+)))))))))|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))|u(?:|[^n].*|n(?:|[^s].*|s(?:|[^u].*|u(?:|[^b].*|b(?:|[^s].*|s(?:|[^c].*|c(?:|[^r].*|r(?:|[^i].*|i(?:|[^b].*|b(?:|[^e].*|e(?:|[^s].*|s.+)))))))))))|w(?:|[^h].*|h(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e(?:|[^l].*|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+)))))))))"},"scope":{"page":{"at":"page","from":"query","optional":true},"pool_id":{"at":"pool_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "GET-v3-ip-warmups": {"action":"ip_warmups.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","limit"],"path":"/v3/ip_warmups","scope":{}},
+      "GET-v3-ip-warmups--addr-": {"action":"ip_warmups.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/ip_warmups/{addr}","scope":{"addr":{"at":"addr","from":"path"}}},
+      "GET-v3-ips": {"action":"ips.read","effects":["read"],"method":"GET","origin":"{api}","params":["dedicated","enabled"],"path":"/v3/ips","scope":{}},
+      "GET-v3-ips--ip-": {"action":"ips.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/ips/{ip}","scope":{"ip":{"at":"ip","from":"path"}}},
+      "GET-v3-ips--ip--domains": {"action":"ips.domains.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","search","skip"],"path":"/v3/ips/{ip}/domains","path_patterns":{"ip":"[^bcdtuw].*|b(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))|c(?:|[^o].*|o(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+)))))))))|d(?:|[^o].*|o(?:|[^m].*|m(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n.+)))))|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))|u(?:|[^n].*|n(?:|[^s].*|s(?:|[^u].*|u(?:|[^b].*|b(?:|[^s].*|s(?:|[^c].*|c(?:|[^r].*|r(?:|[^i].*|i(?:|[^b].*|b(?:|[^e].*|e(?:|[^s].*|s.+)))))))))))|w(?:|[^h].*|h(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e(?:|[^l].*|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+)))))))))"},"scope":{"ip":{"at":"ip","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "GET-v3-ips-account-settings": {"action":"ips.account.settings.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/ips/account/settings","scope":{}},
+      "GET-v3-ips-details-all": {"action":"ips.details.all.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","skip","pool_id","domain_id","subaccount_id","ip","sort_by","sort_order"],"path":"/v3/ips/details/all","scope":{}},
+      "GET-v3-ips-domain--name-": {"action":"ips.domain.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","search","skip"],"path":"/v3/ips/domain/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "GET-v3-ips-request-new": {"action":"ips.request.new.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/ips/request/new","scope":{}},
+      "GET-v3-stats-filter": {"action":"stats.filter.read","effects":["read"],"method":"GET","origin":"{api}","params":["start","end","resolution","duration","event","filter","group"],"path":"/v3/stats/filter","scope":{}},
+      "GET-v3-stats-total": {"action":"stats.total.read","effects":["read"],"method":"GET","origin":"{api}","params":["start","end","resolution","duration","event"],"path":"/v3/stats/total","scope":{}},
+      "GET-v3-stats-total-domains": {"action":"stats.total.domains.read","effects":["read"],"method":"GET","origin":"{api}","params":["event","limit","resolution","timestamp"],"path":"/v3/stats/total/domains","scope":{}},
+      "GET-v4-domains": {"action":"domains.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","skip","state","sort","authority","search","include_subaccounts"],"path":"/v4/domains","scope":{}},
+      "GET-v4-domains--authority-name--keys": {"action":"domains.keys.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v4/domains/{authority_name}/keys","scope":{"authority_name":{"at":"authority_name","from":"path"}}},
+      "GET-v4-domains--name-": {"action":"domains.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v4/domains/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "GET-v4-templates": {"action":"templates.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","limit","p"],"path":"/v4/templates","scope":{}},
+      "GET-v4-templates--template-name-": {"action":"templates.read","effects":["read"],"method":"GET","origin":"{api}","params":["active"],"path":"/v4/templates/{template_name}","scope":{"template_name":{"at":"template_name","from":"path"}}},
+      "GET-v4-templates--template-name--versions": {"action":"templates.versions.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","limit","p"],"path":"/v4/templates/{template_name}/versions","scope":{"template_name":{"at":"template_name","from":"path"}}},
+      "GET-v4-templates--template-name--versions--version-name-": {"action":"templates.versions.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v4/templates/{template_name}/versions/{version_name}","scope":{"template_name":{"at":"template_name","from":"path"},"version_name":{"at":"version_name","from":"path"}}},
+      "GET-v5-accounts-subaccounts-ip-pools-all": {"action":"accounts.subaccounts.ip_pools.all.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v5/accounts/subaccounts/ip_pools/all","scope":{}},
+      "PATCH-v3-dynamic-pools--pool-name-": {"action":"dynamic_pools.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v3/dynamic_pools/{pool_name}","scope":{"pool_name":{"at":"pool_name","from":"path"}}},
+      "PATCH-v3-ip-pools--pool-id-": {"action":"ip_pools.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v3/ip_pools/{pool_id}","scope":{"pool_id":{"at":"pool_id","from":"path"}}},
+      "PATCH-v3-ips-account-settings": {"action":"ips.account.settings.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/v3/ips/account/settings","scope":{}},
+      "PATCH-v3-ips-domain--name-": {"action":"ips.domain.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/v3/ips/domain/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "PATCH-v3-ips-subaccounts": {"action":"ips.subaccounts.write","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v3/ips/subaccounts","scope":{}},
+      "POST-v1-alerts-email-test": {"action":"alerts.email.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/v1/alerts/email/test","scope":{"emails":{"at":"/emails","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST-v1-alerts-settings-events": {"action":"alerts.settings.events.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v1/alerts/settings/events","scope":{"channel":{"at":"/channel","from":"body"}}},
+      "POST-v1-alerts-slack-test": {"action":"alerts.slack.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/v1/alerts/slack/test","scope":{"channel_ids":{"at":"/channel_ids","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST-v1-alerts-webhooks-test": {"action":"alerts.webhooks.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/v1/alerts/webhooks/test","scope":{"request":{"at":"","from":"body","type":"object"},"url":{"at":"/url","from":"body"}}},
+      "POST-v1-analytics-logs": {"action":"analytics.logs.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v1/analytics/logs","scope":{}},
+      "POST-v1-analytics-metrics": {"action":"analytics.metrics.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v1/analytics/metrics","scope":{}},
+      "POST-v1-analytics-tags": {"action":"analytics.tags.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v1/analytics/tags","scope":{}},
+      "POST-v1-analytics-usage-metrics": {"action":"analytics.usage.metrics.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v1/analytics/usage/metrics","scope":{}},
+      "POST-v1-dkim-keys": {"action":"dkim.keys.admin","body":"any","effects":["admin"],"method":"POST","origin":"{api}","path":"/v1/dkim/keys","scope":{}},
+      "POST-v1-dkim-management-domains--name--rotate": {"action":"dkim_management.domains.admin","effects":["admin"],"method":"POST","origin":"{api}","path":"/v1/dkim_management/domains/{name}/rotate","scope":{"name":{"at":"name","from":"path"}}},
+      "POST-v1-keys": {"action":"keys.admin","body":"any","effects":["admin"],"method":"POST","origin":"{api}","path":"/v1/keys","scope":{}},
+      "POST-v1-keys-public": {"action":"keys.public.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v1/keys/public","scope":{}},
+      "POST-v1-thresholds-alerts-send": {"action":"thresholds.alerts.send.write","body":"json","effects":["write"],"grant":["name"],"method":"POST","origin":"{api}","path":"/v1/thresholds/alerts/send","scope":{"alert_channels":{"at":"/alert_channels","from":"body","optional":true,"type":"array"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST-v1-thresholds-limits": {"action":"thresholds.limits.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v1/thresholds/limits","scope":{"name":{"at":"/name","from":"body"}}},
+      "POST-v1-webhooks": {"action":"webhooks.admin","body":"any","effects":["admin"],"method":"POST","origin":"{api}","path":"/v1/webhooks","scope":{}},
+      "POST-v2-bounce-classification-metrics": {"action":"bounce_classification.metrics.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/bounce-classification/metrics","scope":{}},
+      "POST-v2-ip-whitelist": {"action":"ip_whitelist.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/ip_whitelist","scope":{}},
+      "POST-v2-thresholds-limits": {"action":"thresholds.limits.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/thresholds/limits","scope":{"request":{"at":"","from":"body","type":"object"},"subaccount_id":{"at":"/subaccount_id","from":"body"}}},
+      "POST-v2-thresholds-limits-primary": {"action":"thresholds.limits_primary.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/thresholds/limits-primary","scope":{"alert_channels":{"at":"/alert_channels","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST-v2-x509--domain-": {"action":"x509.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v2/x509/{domain}","scope":{"domain":{"at":"domain","from":"path"}}},
+      "POST-v3--domain-name--messages": {"action":"messages.send","body":"any","effects":["send"],"method":"POST","origin":"{api}","path":"/v3/{domain_name}/messages","path_patterns":{"domain_name":"[^i].*|i(?:|[^p].*|p(?:|[^_].*|_(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"}}},
+      "POST-v3--domain-name--messages-mime": {"action":"messages.mime.send","body":"any","effects":["send"],"method":"POST","origin":"{api}","path":"/v3/{domain_name}/messages.mime","path_patterns":{"domain_name":"[^i].*|i(?:|[^p].*|p(?:|[^_].*|_(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"}}},
+      "POST-v3--domain-name--templates": {"action":"templates.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/{domain_name}/templates","path_patterns":{"domain_name":"[^i].*|i(?:|[^p].*|p(?:|[^_].*|_(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"}}},
+      "POST-v3--domain-name--templates--template-name--versions": {"action":"templates.versions.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/{domain_name}/templates/{template_name}/versions","path_patterns":{"domain_name":"[^dl].*|d(?:|[^o].*|o(?:|[^m].*|m(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^s].*|s.+))))))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"},"template_name":{"at":"template_name","from":"path"}}},
+      "POST-v3--domainID--bounces": {"action":"bounces.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/{domain_name}/bounces","scope":{"domain_name":{"at":"domain_name","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+      "POST-v3--domainID--bounces-import": {"action":"bounces.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/{domain_name}/bounces/import","path_patterns":{"domain_name":"[^d].*|d(?:|[^y].*|y(?:|[^n].*|n(?:|[^a].*|a(?:|[^m].*|m(?:|[^i].*|i(?:|[^c].*|c(?:|[^_].*|_(?:|[^p].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))))))))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"}}},
+      "POST-v3--domainID--complaints": {"action":"complaints.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/{domain_name}/complaints","scope":{"domain_name":{"at":"domain_name","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+      "POST-v3--domainID--complaints-import": {"action":"complaints.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/{domain_name}/complaints/import","path_patterns":{"domain_name":"[^d].*|d(?:|[^y].*|y(?:|[^n].*|n(?:|[^a].*|a(?:|[^m].*|m(?:|[^i].*|i(?:|[^c].*|c(?:|[^_].*|_(?:|[^p].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))))))))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"}}},
+      "POST-v3--domainID--unsubscribes": {"action":"unsubscribes.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/{domain_name}/unsubscribes","scope":{"domain_name":{"at":"domain_name","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+      "POST-v3--domainID--unsubscribes-import": {"action":"unsubscribes.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/{domain_name}/unsubscribes/import","path_patterns":{"domain_name":"[^d].*|d(?:|[^y].*|y(?:|[^n].*|n(?:|[^a].*|a(?:|[^m].*|m(?:|[^i].*|i(?:|[^c].*|c(?:|[^_].*|_(?:|[^p].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))))))))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"}}},
+      "POST-v3--domainID--whitelists-import": {"action":"whitelists.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/{domain_name}/whitelists/import","path_patterns":{"domain_name":"[^d].*|d(?:|[^y].*|y(?:|[^n].*|n(?:|[^a].*|a(?:|[^m].*|m(?:|[^i].*|i(?:|[^c].*|c(?:|[^_].*|_(?:|[^p].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))))))))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"}}},
+      "POST-v3-domains--domain--webhooks": {"action":"domains.webhooks.admin","body":"any","effects":["admin"],"method":"POST","origin":"{api}","path":"/v3/domains/{domain}/webhooks","scope":{"domain":{"at":"domain","from":"path"}}},
+      "POST-v3-domains--domain-name--credentials": {"action":"domains.credentials.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/domains/{domain_name}/credentials","scope":{"domain_name":{"at":"domain_name","from":"path"}}},
+      "POST-v3-domains--domain-name--messages--storage-key-": {"action":"domains.messages.send","body":"any","effects":["send"],"method":"POST","origin":"{api}","path":"/v3/domains/{domain_name}/messages/{storage_key}","scope":{"domain_name":{"at":"domain_name","from":"path"},"storage_key":{"at":"storage_key","from":"path"}}},
+      "POST-v3-domains--name--dynamic-pools": {"action":"domains.dynamic_pools.write","effects":["write"],"method":"POST","origin":"{api}","params":["replacement_ip"],"path":"/v3/domains/{name}/dynamic_pools","scope":{"name":{"at":"name","from":"path"}}},
+      "POST-v3-domains-all-dynamic-pools-enroll": {"action":"domains.all.dynamic_pools.enroll.write","effects":["write"],"method":"POST","origin":"{api}","params":["include_subaccounts"],"path":"/v3/domains/all/dynamic_pools/enroll","scope":{}},
+      "POST-v3-dynamic-pools--pool-name---ip-": {"action":"dynamic_pools.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/dynamic_pools/{pool_name}/{ip}","scope":{"ip":{"at":"ip","from":"path"},"pool_name":{"at":"pool_name","from":"path"}}},
+      "POST-v3-dynamic-pools-all": {"action":"dynamic_pools.all.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/dynamic_pools/all","scope":{}},
+      "POST-v3-forwards": {"action":"forwards.write","effects":["write"],"method":"POST","origin":"{api}","params":["match","forward.url","forward.recipient","forward.store"],"path":"/v3/forwards","scope":{}},
+      "POST-v3-ip-pools": {"action":"ip_pools.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/ip_pools","scope":{}},
+      "POST-v3-ip-pools--pool-id--ips-json": {"action":"ip_pools.ips.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/ip_pools/{pool_id}/ips.json","scope":{"pool_id":{"at":"pool_id","from":"path"}}},
+      "POST-v3-ip-warmups--addr-": {"action":"ip_warmups.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/ip_warmups/{addr}","scope":{"addr":{"at":"addr","from":"path"}}},
+      "POST-v3-ips--addr--ip-band": {"action":"ips.ip_band.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/ips/{addr}/ip_band","scope":{"addr":{"at":"addr","from":"path"}}},
+      "POST-v3-ips--ip--domains": {"action":"ips.domains.admin","effects":["admin"],"method":"POST","origin":"{api}","path":"/v3/ips/{ip}/domains","scope":{"ip":{"at":"ip","from":"path"}}},
+      "POST-v3-ips-request-new": {"action":"ips.request.new.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/ips/request/new","scope":{}},
+      "POST-v4-domains": {"action":"domains.admin","body":"any","effects":["admin"],"method":"POST","origin":"{api}","path":"/v4/domains","scope":{}},
+      "POST-v4-domains--domain--webhooks": {"action":"domains.webhooks.admin","body":"form","effects":["admin"],"method":"POST","origin":"{api}","path":"/v4/domains/{domain}/webhooks","scope":{"domain":{"at":"domain","from":"path"},"url":{"at":"url","from":"form"}}},
+      "POST-v4-templates": {"action":"templates.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v4/templates","scope":{}},
+      "POST-v4-templates--template-name--versions": {"action":"templates.versions.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v4/templates/{template_name}/versions","scope":{"template_name":{"at":"template_name","from":"path"}}},
+      "PUT-v1-alerts-settings-events--id-": {"action":"alerts.settings.events.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v1/alerts/settings/events/{id}","scope":{"channel":{"at":"/channel","from":"body"},"id":{"at":"id","from":"path"}}},
+      "PUT-v1-alerts-settings-slack": {"action":"alerts.settings.slack.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v1/alerts/settings/slack","scope":{}},
+      "PUT-v1-alerts-settings-webhooks-signing-key": {"action":"alerts.settings.webhooks.signing_key.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/v1/alerts/settings/webhooks/signing_key","scope":{}},
+      "PUT-v1-analytics-tags": {"action":"analytics.tags.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v1/analytics/tags","scope":{}},
+      "PUT-v1-dkim-management-domains--name--rotation": {"action":"dkim_management.domains.rotation.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v1/dkim_management/domains/{name}/rotation","scope":{"name":{"at":"name","from":"path"}}},
+      "PUT-v1-dynamic-pools-domains--name--override": {"action":"dynamic_pools.domains.override.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v1/dynamic_pools/domains/{name}/override","scope":{"name":{"at":"name","from":"path"}}},
+      "PUT-v1-thresholds-alerts-send--name-": {"action":"thresholds.alerts.send.write","body":"json","effects":["write"],"grant":["name"],"method":"PUT","origin":"{api}","path":"/v1/thresholds/alerts/send/{name}","scope":{"alert_channels":{"at":"/alert_channels","from":"body","optional":true,"type":"array"},"body.name":{"at":"/name","from":"body"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "PUT-v1-thresholds-limits--name-": {"action":"thresholds.limits.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v1/thresholds/limits/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "PUT-v1-webhooks--webhook-id-": {"action":"webhooks.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{api}","path":"/v1/webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "PUT-v2-ip-whitelist": {"action":"ip_whitelist.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v2/ip_whitelist","scope":{}},
+      "PUT-v2-thresholds-limits--metric-": {"action":"thresholds.limits.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v2/thresholds/limits/{metric}","scope":{"metric":{"at":"metric","from":"path"},"request":{"at":"","from":"body","type":"object"},"subaccount_id":{"at":"/subaccount_id","from":"body"}}},
+      "PUT-v2-thresholds-limits-primary": {"action":"thresholds.limits_primary.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v2/thresholds/limits-primary","scope":{"alert_channels":{"at":"/alert_channels","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "PUT-v2-x509--domain-": {"action":"x509.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/v2/x509/{domain}","scope":{"domain":{"at":"domain","from":"path"}}},
+      "PUT-v3--domain--tag": {"action":"tag.write","effects":["write"],"method":"PUT","origin":"{api}","params":["tag","description"],"path":"/v3/{domain}/tag","path_patterns":{"domain":"[^flr].*|f(?:|[^o].*|o(?:|[^r].*|r(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^d].*|d(?:|[^s].*|s.+)))))))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))"},"scope":{"domain":{"at":"domain","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "PUT-v3--domain-name--templates--template-name-": {"action":"templates.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/{domain_name}/templates/{template_name}","scope":{"domain_name":{"at":"domain_name","from":"path"},"template_name":{"at":"template_name","from":"path"}}},
+      "PUT-v3--domain-name--templates--template-name--copy": {"action":"templates.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/{domain_name}/templates/{template_name}/copy","path_patterns":{"domain_name":"[^dl].*|d(?:|[^o].*|o(?:|[^m].*|m(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^s].*|s.+))))))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"},"request":{"at":"","from":"body","type":"object"},"template_name":{"at":"template_name","from":"path"}}},
+      "PUT-v3--domain-name--templates--template-name--rename--new-template-name-": {"action":"templates.rename.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/{domain_name}/templates/{template_name}/rename/{new_template_name}","scope":{"domain_name":{"at":"domain_name","from":"path"},"new_template_name":{"at":"new_template_name","from":"path"},"template_name":{"at":"template_name","from":"path"}}},
+      "PUT-v3--domain-name--templates--template-name--versions--version-name-": {"action":"templates.versions.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/{domain_name}/templates/{template_name}/versions/{version_name}","scope":{"domain_name":{"at":"domain_name","from":"path"},"template_name":{"at":"template_name","from":"path"},"version_name":{"at":"version_name","from":"path"}}},
+      "PUT-v3--domain-name--templates--template-name--versions--version-name--copy--new-version-name-": {"action":"templates.versions.copy.write","effects":["write"],"method":"PUT","origin":"{api}","params":["comment"],"path":"/v3/{domain_name}/templates/{template_name}/versions/{version_name}/copy/{new_version_name}","scope":{"domain_name":{"at":"domain_name","from":"path"},"new_version_name":{"at":"new_version_name","from":"path"},"template_name":{"at":"template_name","from":"path"},"version_name":{"at":"version_name","from":"path"}}},
+      "PUT-v3-domains--domain-name--credentials--spec-": {"action":"domains.credentials.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/domains/{domain_name}/credentials/{spec}","scope":{"domain_name":{"at":"domain_name","from":"path"},"spec":{"at":"spec","from":"path"}}},
+      "PUT-v3-domains--domain-name--webhooks--webhook-name-": {"action":"domains.webhooks.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{api}","path":"/v3/domains/{domain_name}/webhooks/{webhook_name}","path_patterns":{"webhook_name":"accepted|clicked|complained|delivered|opened|permanent_fail|temporary_fail|unsubscribed"},"scope":{"domain_name":{"at":"domain_name","from":"path"},"webhook_name":{"at":"webhook_name","from":"path"}}},
+      "PUT-v3-domains--name--dkim-authority": {"action":"domains.dkim_authority.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/domains/{name}/dkim_authority","path_patterns":{"name":"[^t].*|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))"},"scope":{"name":{"at":"name","from":"path"}}},
+      "PUT-v3-domains--name--dkim-selector": {"action":"domains.dkim_selector.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/domains/{name}/dkim_selector","path_patterns":{"name":"[^t].*|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))"},"scope":{"name":{"at":"name","from":"path"}}},
+      "PUT-v3-domains--name--tracking-click": {"action":"domains.tracking.click.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/domains/{name}/tracking/click","scope":{"name":{"at":"name","from":"path"}}},
+      "PUT-v3-domains--name--tracking-open": {"action":"domains.tracking.open.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/domains/{name}/tracking/open","scope":{"name":{"at":"name","from":"path"}}},
+      "PUT-v3-domains--name--tracking-unsubscribe": {"action":"domains.tracking.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/domains/{name}/tracking/unsubscribe","scope":{"name":{"at":"name","from":"path"}}},
+      "PUT-v3-forwards--id-": {"action":"forwards.write","effects":["write"],"method":"PUT","origin":"{api}","params":["match","forward.url","forward.recipient","forward.store","tag","description"],"path":"/v3/forwards/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT-v3-ip-pools--pool-id--delegate": {"action":"ip_pools.delegate.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/ip_pools/{pool_id}/delegate","path_patterns":{"pool_id":"[^t].*|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))"},"scope":{"pool_id":{"at":"pool_id","from":"path"}}},
+      "PUT-v3-ip-pools--pool-id--ips--ip-": {"action":"ip_pools.ips.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/ip_pools/{pool_id}/ips/{ip}","scope":{"ip":{"at":"ip","from":"path"},"pool_id":{"at":"pool_id","from":"path"}}},
+      "PUT-v4-domains--authority-name--keys--selector--activate": {"action":"domains.keys.activate.admin","effects":["admin"],"method":"PUT","origin":"{api}","path":"/v4/domains/{authority_name}/keys/{selector}/activate","scope":{"authority_name":{"at":"authority_name","from":"path"},"selector":{"at":"selector","from":"path"}}},
+      "PUT-v4-domains--authority-name--keys--selector--deactivate": {"action":"domains.keys.deactivate.admin","effects":["admin"],"method":"PUT","origin":"{api}","path":"/v4/domains/{authority_name}/keys/{selector}/deactivate","scope":{"authority_name":{"at":"authority_name","from":"path"},"selector":{"at":"selector","from":"path"}}},
+      "PUT-v4-domains--domain--webhooks": {"action":"domains.webhooks.admin","body":"form","effects":["admin"],"method":"PUT","origin":"{api}","path":"/v4/domains/{domain}/webhooks","scope":{"domain":{"at":"domain","from":"path"},"url":{"at":"url","from":"form"}}},
+      "PUT-v4-domains--name-": {"action":"domains.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{api}","path":"/v4/domains/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "PUT-v4-domains--name--verify": {"action":"domains.admin","effects":["admin"],"method":"PUT","origin":"{api}","path":"/v4/domains/{name}/verify","scope":{"name":{"at":"name","from":"path"}}},
+      "PUT-v4-templates--template-name-": {"action":"templates.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v4/templates/{template_name}","scope":{"template_name":{"at":"template_name","from":"path"}}},
+      "PUT-v4-templates--template-name--copy": {"action":"templates.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v4/templates/{template_name}/copy","scope":{"template_name":{"at":"template_name","from":"path"}}},
+      "PUT-v4-templates--template-name--rename--new-template-name-": {"action":"templates.rename.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/v4/templates/{template_name}/rename/{new_template_name}","scope":{"new_template_name":{"at":"new_template_name","from":"path"},"template_name":{"at":"template_name","from":"path"}}},
+      "PUT-v4-templates--template-name--versions--version-name-": {"action":"templates.versions.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v4/templates/{template_name}/versions/{version_name}","scope":{"template_name":{"at":"template_name","from":"path"},"version_name":{"at":"version_name","from":"path"}}},
+      "PUT-v4-templates--template-name--versions--version-name--copy--new-version-name-": {"action":"templates.versions.copy.write","effects":["write"],"method":"PUT","origin":"{api}","params":["comment"],"path":"/v4/templates/{template_name}/versions/{version_name}/copy/{new_version_name}","scope":{"new_version_name":{"at":"new_version_name","from":"path"},"template_name":{"at":"template_name","from":"path"},"version_name":{"at":"version_name","from":"path"}}},
+      "PUT-v5-accounts-subaccounts--subaccountId--ip-pool": {"action":"accounts.subaccounts.ip_pool.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/v5/accounts/subaccounts/{subaccountId}/ip_pool","scope":{"subaccountId":{"at":"subaccountId","from":"path"}}},
+      "delete-lists-list_address-members-member_address": {"action":"lists.members.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/lists/{list_address}/members/{member_address}","scope":{"list_address":{"at":"list_address","from":"path"},"member_address":{"at":"member_address","from":"path"}}},
+      "delete-v3-lists-address": {"action":"lists.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/lists/{list_address}","scope":{"list_address":{"at":"list_address","from":"path"}}},
+      "delete-v3-routes-id": {"action":"routes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/routes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "delete-v5-accounts-limit-custom-monthly": {"action":"accounts.limit.custom.monthly.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v5/accounts/limit/custom/monthly","scope":{}},
+      "delete-v5-accounts-subaccounts-subaccount_id": {"action":"accounts.subaccounts.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v5/accounts/subaccounts","scope":{}},
+      "delete-v5-accounts-subaccounts-subaccount_id-limit-custom-monthly": {"action":"accounts.subaccounts.limit.custom.monthly.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v5/accounts/subaccounts/{subaccount_id}/limit/custom/monthly","scope":{"subaccount_id":{"at":"subaccount_id","from":"path"}}},
+      "delete-v5-sandbox-auth_recipients-email": {"action":"sandbox.auth_recipients.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v5/sandbox/auth_recipients/{email}","scope":{"email":{"at":"email","from":"path"}}},
+      "get-lists-list_address-members-member_address": {"action":"lists.members.read","effects":["read"],"method":"GET","origin":"{api}","params":["subscribed","limit","address","page"],"path":"/v3/lists/{list_address}/members/{member_address}","path_patterns":{"member_address":"[^p].*|p(?:|[^a].*|a(?:|[^g].*|g(?:|[^e].*|e(?:|[^s].*|s.+))))"},"scope":{"list_address":{"at":"list_address","from":"path"},"member_address":{"at":"member_address","from":"path"}}},
+      "get-lists-list_address-members-pages": {"action":"lists.members.pages.read","effects":["read"],"method":"GET","origin":"{api}","params":["subscribed","limit","address","page"],"path":"/v3/lists/{list_address}/members/pages","scope":{"list_address":{"at":"list_address","from":"path"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "get-lists-string:list_address-members": {"action":"lists.members.read","effects":["read"],"method":"GET","origin":"{api}","params":["address","subscribed","limit","skip"],"path":"/v3/lists/{list_address}/members","path_patterns":{"list_address":"[^bctuw].*|b(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))|c(?:|[^o].*|o(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^i].*|i(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+)))))))))|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))|u(?:|[^n].*|n(?:|[^s].*|s(?:|[^u].*|u(?:|[^b].*|b(?:|[^s].*|s(?:|[^c].*|c(?:|[^r].*|r(?:|[^i].*|i(?:|[^b].*|b(?:|[^e].*|e(?:|[^s].*|s.+)))))))))))|w(?:|[^h].*|h(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e(?:|[^l].*|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+)))))))))"},"scope":{"list_address":{"at":"list_address","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "get-v3-domain_name-events": {"action":"events.read","effects":["read"],"method":"GET","origin":"{api}","params":["begin","end","ascending","limit","event","list","attachment","from","message-id","subject","to","size","recipient","recipients","tags","severity"],"path":"/v3/{domain_name}/events","path_patterns":{"domain_name":"[^filr].*|f(?:|[^o].*|o(?:|[^r].*|r(?:|[^w].*|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^d].*|d(?:|[^s].*|s.+)))))))|i(?:|[^p].*|p(?:|[^_s].*|_(?:|[^pw].*|p(?:|[^o].*|o(?:|[^o].*|o(?:|[^l].*|l(?:|[^s].*|s.+))))|w(?:|[^a].*|a(?:|[^r].*|r(?:|[^m].*|m(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))|s.+))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))"},"scope":{"domain_name":{"at":"domain_name","from":"path"},"list":{"at":"list","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"recipient":{"at":"recipient","from":"query","optional":true},"recipients":{"at":"recipients","from":"query","optional":true}}},
+      "get-v3-lists": {"action":"lists.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","skip","address"],"path":"/v3/lists","scope":{}},
+      "get-v3-lists-address": {"action":"lists.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit"],"path":"/v3/lists/{list_address}","path_patterns":{"list_address":"[^p].*|p(?:|[^a].*|a(?:|[^g].*|g(?:|[^e].*|e(?:|[^s].*|s.+))))"},"scope":{"list_address":{"at":"list_address","from":"path"}}},
+      "get-v3-lists-pages": {"action":"lists.pages.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit"],"path":"/v3/lists/pages","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "get-v3-routes": {"action":"routes.read","effects":["read"],"method":"GET","origin":"{api}","params":["skip","limit"],"path":"/v3/routes","scope":{}},
+      "get-v3-routes-id": {"action":"routes.read","effects":["read"],"method":"GET","origin":"{api}","params":["address"],"path":"/v3/routes/{id}","path_patterns":{"id":"[^m].*|m(?:|[^a].*|a(?:|[^t].*|t(?:|[^c].*|c(?:|[^h].*|h.+))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "get-v3-routes-match": {"action":"routes.match.read","effects":["read"],"method":"GET","origin":"{api}","params":["address"],"path":"/v3/routes/match","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "get-v5-accounts-http_signing_key": {"action":"accounts.http_signing_key.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v5/accounts/http_signing_key","scope":{}},
+      "get-v5-accounts-limit-custom-monthly": {"action":"accounts.limit.custom.monthly.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v5/accounts/limit/custom/monthly","scope":{}},
+      "get-v5-accounts-subaccounts": {"action":"accounts.subaccounts.read","effects":["read"],"method":"GET","origin":"{api}","params":["sort","filter","limit","skip","enabled","closed"],"path":"/v5/accounts/subaccounts","scope":{}},
+      "get-v5-accounts-subaccounts-subaccount_id": {"action":"accounts.subaccounts.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v5/accounts/subaccounts/{subaccount_id}","scope":{"subaccount_id":{"at":"subaccount_id","from":"path"}}},
+      "get-v5-accounts-subaccounts-subaccount_id-limit-custom-monthly": {"action":"accounts.subaccounts.limit.custom.monthly.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v5/accounts/subaccounts/{subaccount_id}/limit/custom/monthly","scope":{"subaccount_id":{"at":"subaccount_id","from":"path"}}},
+      "get-v5-sandbox-auth_recipients": {"action":"sandbox.auth_recipients.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v5/sandbox/auth_recipients","scope":{}},
+      "get-v5-users": {"action":"users.read","effects":["read"],"method":"GET","origin":"{api}","params":["role","limit","skip"],"path":"/v5/users","scope":{}},
+      "get-v5-users-me": {"action":"users.me.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v5/users/me","scope":{}},
+      "get-v5-users-user_id": {"action":"users.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v5/users/{user_id}","path_patterns":{"user_id":"[^m].*|m(?:|[^e].*|e.+)"},"scope":{"user_id":{"at":"user_id","from":"path"}}},
+      "post-lists-list_address-members.csv": {"action":"lists.members.csv.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/lists/{list_address}/members.csv","scope":{"list_address":{"at":"list_address","from":"path"}}},
+      "post-lists-list_address-members.json": {"action":"lists.members.write","effects":["write"],"method":"POST","origin":"{api}","params":["members","upsert"],"path":"/v3/lists/{list_address}/members.json","scope":{"list_address":{"at":"list_address","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "post-lists-string:list_address-members": {"action":"lists.members.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/lists/{list_address}/members","scope":{"list_address":{"at":"list_address","from":"path"}}},
+      "post-v3-lists": {"action":"lists.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/lists","scope":{}},
+      "post-v3-routes": {"action":"routes.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/routes","scope":{}},
+      "post-v5-accounts-http_signing_key": {"action":"accounts.http_signing_key.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v5/accounts/http_signing_key","scope":{}},
+      "post-v5-accounts-resend_activation_email": {"action":"accounts.resend_activation_email.send","effects":["send"],"method":"POST","origin":"{api}","path":"/v5/accounts/resend_activation_email","scope":{}},
+      "post-v5-accounts-subaccounts": {"action":"accounts.subaccounts.write","effects":["write"],"method":"POST","origin":"{api}","params":["name"],"path":"/v5/accounts/subaccounts","scope":{"name":{"at":"name","from":"query"}}},
+      "post-v5-accounts-subaccounts-subaccount_id-disable": {"action":"accounts.subaccounts.write","effects":["write"],"method":"POST","origin":"{api}","params":["reason","note"],"path":"/v5/accounts/subaccounts/{subaccount_id}/disable","scope":{"subaccount_id":{"at":"subaccount_id","from":"path"}}},
+      "post-v5-accounts-subaccounts-subaccount_id-enable": {"action":"accounts.subaccounts.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v5/accounts/subaccounts/{subaccount_id}/enable","scope":{"subaccount_id":{"at":"subaccount_id","from":"path"}}},
+      "post-v5-sandbox-auth_recipients": {"action":"sandbox.auth_recipients.write","effects":["write"],"method":"POST","origin":"{api}","params":["email"],"path":"/v5/sandbox/auth_recipients","scope":{"email":{"at":"email","from":"query"}}},
+      "put-lists-list_address-members-member_address": {"action":"lists.members.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/lists/{list_address}/members/{member_address}","scope":{"list_address":{"at":"list_address","from":"path"},"member_address":{"at":"member_address","from":"path"}}},
+      "put-v3-lists-address": {"action":"lists.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/lists/{list_address}","scope":{"list_address":{"at":"list_address","from":"path"}}},
+      "put-v3-routes-id": {"action":"routes.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/routes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "put-v5-accounts": {"action":"accounts.admin","effects":["admin"],"method":"PUT","origin":"{api}","params":["name","inactive_session_timeout","absolute_session_timeout","logout_redirect_url"],"path":"/v5/accounts","scope":{}},
+      "put-v5-accounts-features": {"action":"accounts.features.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v5/accounts/features","scope":{}},
+      "put-v5-accounts-limit-custom-enable": {"action":"accounts.limit.custom.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/v5/accounts/limit/custom/enable","scope":{}},
+      "put-v5-accounts-limit-custom-monthly": {"action":"accounts.limit.custom.monthly.write","effects":["write"],"method":"PUT","origin":"{api}","params":["limit"],"path":"/v5/accounts/limit/custom/monthly","scope":{}},
+      "put-v5-accounts-subaccounts-subaccount_id-features": {"action":"accounts.subaccounts.features.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v5/accounts/subaccounts/{subaccount_id}/features","scope":{"subaccount_id":{"at":"subaccount_id","from":"path"}}},
+      "put-v5-accounts-subaccounts-subaccount_id-limit-custom-monthly": {"action":"accounts.subaccounts.limit.custom.monthly.write","effects":["write"],"method":"PUT","origin":"{api}","params":["limit"],"path":"/v5/accounts/subaccounts/{subaccount_id}/limit/custom/monthly","scope":{"subaccount_id":{"at":"subaccount_id","from":"path"}}}
     }
   }
 }

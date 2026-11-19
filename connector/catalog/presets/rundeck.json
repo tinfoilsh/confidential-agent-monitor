@@ -1,324 +1,1569 @@
 {
-  "title": "Rundeck",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your Rundeck origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "token", "label": "Token", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "token", "origin": "https://example.com", "path": "/", "header": "X-Rundeck-Auth-Token"}]}},
     "actions": {
-      "admin.config": {"title": "Admin: config"},
-      "admin.keys": {"title": "Admin: keys"},
-      "admin.role": {"title": "Admin: role"},
-      "admin.tokens": {"title": "Admin: tokens"},
-      "admin.user": {"title": "Admin: user"},
-      "admin.webhook": {"title": "Admin: webhook"},
-      "delete.acl": {"title": "Delete: acl"},
-      "delete.calendars": {"title": "Delete: calendars"},
-      "delete.config": {"title": "Delete: config"},
-      "delete.delete": {"title": "Delete: delete"},
-      "delete.execution": {"title": "Delete: execution"},
-      "delete.executions": {"title": "Delete: executions"},
-      "delete.job": {"title": "Delete: job"},
-      "delete.keys": {"title": "Delete: keys"},
-      "delete.project": {"title": "Delete: project"},
-      "delete.remove_expired": {"title": "Delete: remove expired"},
-      "delete.remove_project_association": {"title": "Delete: remove project association"},
-      "delete.replica": {"title": "Delete: replica"},
-      "delete.role": {"title": "Delete: role"},
-      "delete.runner": {"title": "Delete: runner"},
-      "delete.token": {"title": "Delete: token"},
-      "delete.user": {"title": "Delete: user"},
-      "delete.webhook": {"title": "Delete: webhook"},
-      "execute.action": {"title": "Execute: action"},
-      "execute.command": {"title": "Execute: command"},
-      "execute.config": {"title": "Execute: config"},
-      "execute.execution": {"title": "Execute: execution"},
-      "execute.executions": {"title": "Execute: executions"},
-      "execute.job": {"title": "Execute: job"},
-      "execute.jobs": {"title": "Execute: jobs"},
-      "execute.script": {"title": "Execute: script"},
-      "execute.url": {"title": "Execute: url"},
-      "read": {"title": "Read everything the account can see"},
-      "send.generatepasswordreset": {"title": "Send: generatepasswordreset"},
-      "send.runner": {"title": "Send: runner"},
-      "share.acl": {"title": "Share: acl"},
-      "write.all": {"title": "Write: all"},
-      "write.async": {"title": "Write: async"},
-      "write.browse": {"title": "Write: browse"},
-      "write.calendars": {"title": "Write: calendars"},
-      "write.create": {"title": "Write: create"},
-      "write.disable": {"title": "Write: disable"},
-      "write.enable": {"title": "Write: enable"},
-      "write.file": {"title": "Write: file"},
-      "write.healthcheck": {"title": "Write: healthcheck"},
-      "write.import": {"title": "Write: import"},
-      "write.info": {"title": "Write: info"},
-      "write.later": {"title": "Write: later"},
-      "write.license": {"title": "Write: license"},
-      "write.plugin": {"title": "Write: plugin"},
-      "write.plugins": {"title": "Write: plugins"},
-      "write.project": {"title": "Write: project"},
-      "write.projects": {"title": "Write: projects"},
-      "write.refresh": {"title": "Write: refresh"},
-      "write.replicas": {"title": "Write: replicas"},
-      "write.resources": {"title": "Write: resources"},
-      "write.restart": {"title": "Write: restart"},
-      "write.resume": {"title": "Write: resume"},
-      "write.retry": {"title": "Write: retry"},
-      "write.runner": {"title": "Write: runner"},
-      "write.runner_management": {"title": "Write: runner management"},
-      "write.runners": {"title": "Write: runners"},
-      "write.save": {"title": "Write: save"},
-      "write.save_storage_plugins": {"title": "Write: save storage plugins"},
-      "write.schedule": {"title": "Write: schedule"},
-      "write.setup": {"title": "Write: setup"},
-      "write.startup": {"title": "Write: startup"},
-      "write.takeover": {"title": "Write: takeover"},
-      "write.toggle": {"title": "Write: toggle"},
-      "write.tours": {"title": "Write: tours"},
-      "write.update": {"title": "Write: update"},
-      "write.update_members": {"title": "Write: update members"}
-    }
+      "api": {
+        "title": "Api"
+      },
+      "api.read": {
+        "title": "Read"
+      },
+      "authorizations": {
+        "title": "Authorizations"
+      },
+      "authorizations.application": {
+        "title": "Application"
+      },
+      "authorizations.application.read": {
+        "title": "Read"
+      },
+      "authorizations.project": {
+        "title": "Project"
+      },
+      "authorizations.project.job": {
+        "title": "Job"
+      },
+      "authorizations.project.job.read": {
+        "title": "Read"
+      },
+      "authorizations.project.read": {
+        "title": "Read"
+      },
+      "config": {
+        "title": "Config"
+      },
+      "config.admin": {
+        "title": "Manage"
+      },
+      "config.categories": {
+        "title": "Categories"
+      },
+      "config.categories.read": {
+        "title": "Read"
+      },
+      "config.delete": {
+        "title": "Delete"
+      },
+      "config.meta_list": {
+        "title": "Meta list"
+      },
+      "config.meta_list.read": {
+        "title": "Read"
+      },
+      "config.read": {
+        "title": "Read"
+      },
+      "config.refresh": {
+        "title": "Refresh"
+      },
+      "config.refresh.admin": {
+        "title": "Manage"
+      },
+      "config.save": {
+        "title": "Save"
+      },
+      "config.save.admin": {
+        "title": "Manage"
+      },
+      "config.save_storage_plugins": {
+        "title": "Save storage plugins"
+      },
+      "config.save_storage_plugins.admin": {
+        "title": "Manage"
+      },
+      "config.storage_plugins": {
+        "title": "Storage plugins"
+      },
+      "config.storage_plugins.read": {
+        "title": "Read"
+      },
+      "enterprise": {
+        "title": "Enterprise"
+      },
+      "enterprise.cluster": {
+        "title": "Cluster"
+      },
+      "enterprise.cluster.executions": {
+        "title": "Executions"
+      },
+      "enterprise.cluster.executions.write": {
+        "title": "Create and edit"
+      },
+      "enterprise.license": {
+        "title": "License"
+      },
+      "enterprise.license.admin": {
+        "title": "Manage"
+      },
+      "enterprise.license.read": {
+        "title": "Read"
+      },
+      "enterprise.project": {
+        "title": "Project"
+      },
+      "enterprise.project.webhooks": {
+        "title": "Webhooks"
+      },
+      "enterprise.project.webhooks.debug_events": {
+        "title": "Debug events"
+      },
+      "enterprise.project.webhooks.debug_events.read": {
+        "title": "Read"
+      },
+      "enterprise.system_report": {
+        "title": "System report"
+      },
+      "enterprise.system_report.datasets": {
+        "title": "Datasets"
+      },
+      "enterprise.system_report.datasets.read": {
+        "title": "Read"
+      },
+      "execution": {
+        "title": "Execution"
+      },
+      "execution.delete": {
+        "title": "Delete"
+      },
+      "execution.execute": {
+        "title": "Run"
+      },
+      "execution.input": {
+        "title": "Input"
+      },
+      "execution.input.files": {
+        "title": "Files"
+      },
+      "execution.input.files.read": {
+        "title": "Read"
+      },
+      "execution.output": {
+        "title": "Output"
+      },
+      "execution.output.node": {
+        "title": "Node"
+      },
+      "execution.output.node.read": {
+        "title": "Read"
+      },
+      "execution.output.node.step": {
+        "title": "Step"
+      },
+      "execution.output.node.step.read": {
+        "title": "Read"
+      },
+      "execution.output.read": {
+        "title": "Read"
+      },
+      "execution.output.state": {
+        "title": "State"
+      },
+      "execution.output.state.read": {
+        "title": "Read"
+      },
+      "execution.output.step": {
+        "title": "Step"
+      },
+      "execution.output.step.read": {
+        "title": "Read"
+      },
+      "execution.read": {
+        "title": "Read"
+      },
+      "execution.result": {
+        "title": "Result"
+      },
+      "execution.result.data": {
+        "title": "Data"
+      },
+      "execution.result.data.read": {
+        "title": "Read"
+      },
+      "execution.result.data_available": {
+        "title": "Data available"
+      },
+      "execution.result.data_available.read": {
+        "title": "Read"
+      },
+      "execution.roimetrics": {
+        "title": "Roimetrics"
+      },
+      "execution.roimetrics.available": {
+        "title": "Available"
+      },
+      "execution.roimetrics.available.read": {
+        "title": "Read"
+      },
+      "execution.roimetrics.data": {
+        "title": "Data"
+      },
+      "execution.roimetrics.data.read": {
+        "title": "Read"
+      },
+      "execution.state": {
+        "title": "State"
+      },
+      "execution.state.read": {
+        "title": "Read"
+      },
+      "executions": {
+        "title": "Executions"
+      },
+      "executions.delete": {
+        "title": "Delete"
+      },
+      "executions.metrics": {
+        "title": "Metrics"
+      },
+      "executions.metrics.read": {
+        "title": "Read"
+      },
+      "feature": {
+        "title": "Feature"
+      },
+      "feature.read": {
+        "title": "Read"
+      },
+      "home": {
+        "title": "Home"
+      },
+      "home.summary": {
+        "title": "Summary"
+      },
+      "home.summary.read": {
+        "title": "Read"
+      },
+      "job": {
+        "title": "Job"
+      },
+      "job.delete": {
+        "title": "Delete"
+      },
+      "job.execute": {
+        "title": "Run"
+      },
+      "job.execution": {
+        "title": "Execution"
+      },
+      "job.execution.write": {
+        "title": "Create and edit"
+      },
+      "job.executions": {
+        "title": "Executions"
+      },
+      "job.executions.delete": {
+        "title": "Delete"
+      },
+      "job.executions.execute": {
+        "title": "Run"
+      },
+      "job.executions.read": {
+        "title": "Read"
+      },
+      "job.forecast": {
+        "title": "Forecast"
+      },
+      "job.forecast.read": {
+        "title": "Read"
+      },
+      "job.info": {
+        "title": "Info"
+      },
+      "job.info.read": {
+        "title": "Read"
+      },
+      "job.input": {
+        "title": "Input"
+      },
+      "job.input.file": {
+        "title": "File"
+      },
+      "job.input.file.write": {
+        "title": "Create and edit"
+      },
+      "job.meta": {
+        "title": "Meta"
+      },
+      "job.meta.read": {
+        "title": "Read"
+      },
+      "job.read": {
+        "title": "Read"
+      },
+      "job.retry": {
+        "title": "Retry"
+      },
+      "job.retry.execute": {
+        "title": "Run"
+      },
+      "job.schedule": {
+        "title": "Schedule"
+      },
+      "job.schedule.write": {
+        "title": "Create and edit"
+      },
+      "job.scm": {
+        "title": "Scm"
+      },
+      "job.scm.action": {
+        "title": "Action"
+      },
+      "job.scm.action.execute": {
+        "title": "Run"
+      },
+      "job.scm.action.input": {
+        "title": "Input"
+      },
+      "job.scm.action.input.read": {
+        "title": "Read"
+      },
+      "job.scm.diff": {
+        "title": "Diff"
+      },
+      "job.scm.diff.read": {
+        "title": "Read"
+      },
+      "job.scm.status": {
+        "title": "Status"
+      },
+      "job.scm.status.read": {
+        "title": "Read"
+      },
+      "job.tags": {
+        "title": "Tags"
+      },
+      "job.tags.read": {
+        "title": "Read"
+      },
+      "job.workflow": {
+        "title": "Workflow"
+      },
+      "job.workflow.read": {
+        "title": "Read"
+      },
+      "jobs": {
+        "title": "Jobs"
+      },
+      "jobs.delete": {
+        "title": "Delete"
+      },
+      "jobs.execution": {
+        "title": "Execution"
+      },
+      "jobs.execution.write": {
+        "title": "Create and edit"
+      },
+      "jobs.file": {
+        "title": "File"
+      },
+      "jobs.file.read": {
+        "title": "Read"
+      },
+      "jobs.schedule": {
+        "title": "Schedule"
+      },
+      "jobs.schedule.write": {
+        "title": "Create and edit"
+      },
+      "metrics": {
+        "title": "Metrics"
+      },
+      "metrics.healthcheck": {
+        "title": "Healthcheck"
+      },
+      "metrics.healthcheck.read": {
+        "title": "Read"
+      },
+      "metrics.metrics": {
+        "title": "Metrics"
+      },
+      "metrics.metrics.read": {
+        "title": "Read"
+      },
+      "metrics.ping": {
+        "title": "Ping"
+      },
+      "metrics.ping.read": {
+        "title": "Read"
+      },
+      "metrics.read": {
+        "title": "Read"
+      },
+      "metrics.threads": {
+        "title": "Threads"
+      },
+      "metrics.threads.read": {
+        "title": "Read"
+      },
+      "plugin": {
+        "title": "Plugin"
+      },
+      "plugin.read": {
+        "title": "Read"
+      },
+      "project": {
+        "title": "Project"
+      },
+      "project.acl": {
+        "title": "Acl"
+      },
+      "project.acl.delete": {
+        "title": "Delete"
+      },
+      "project.acl.read": {
+        "title": "Read"
+      },
+      "project.acl.share": {
+        "title": "Share"
+      },
+      "project.admin": {
+        "title": "Manage"
+      },
+      "project.all_jobs": {
+        "title": "All jobs"
+      },
+      "project.all_jobs.read": {
+        "title": "Read"
+      },
+      "project.calendars": {
+        "title": "Calendars"
+      },
+      "project.calendars.delete": {
+        "title": "Delete"
+      },
+      "project.calendars.read": {
+        "title": "Read"
+      },
+      "project.calendars.write": {
+        "title": "Create and edit"
+      },
+      "project.config": {
+        "title": "Config"
+      },
+      "project.config.admin": {
+        "title": "Manage"
+      },
+      "project.config.delete": {
+        "title": "Delete"
+      },
+      "project.config.read": {
+        "title": "Read"
+      },
+      "project.delete": {
+        "title": "Delete"
+      },
+      "project.disable": {
+        "title": "Disable"
+      },
+      "project.disable.later": {
+        "title": "Later"
+      },
+      "project.disable.later.write": {
+        "title": "Create and edit"
+      },
+      "project.enable": {
+        "title": "Enable"
+      },
+      "project.enable.later": {
+        "title": "Later"
+      },
+      "project.enable.later.write": {
+        "title": "Create and edit"
+      },
+      "project.executions": {
+        "title": "Executions"
+      },
+      "project.executions.metrics": {
+        "title": "Metrics"
+      },
+      "project.executions.metrics.read": {
+        "title": "Read"
+      },
+      "project.executions.read": {
+        "title": "Read"
+      },
+      "project.executions.running": {
+        "title": "Running"
+      },
+      "project.executions.running.read": {
+        "title": "Read"
+      },
+      "project.export": {
+        "title": "Export"
+      },
+      "project.export.async": {
+        "title": "Async"
+      },
+      "project.export.async.read": {
+        "title": "Read"
+      },
+      "project.export.read": {
+        "title": "Read"
+      },
+      "project.export.status": {
+        "title": "Status"
+      },
+      "project.export.status.read": {
+        "title": "Read"
+      },
+      "project.healthcheck": {
+        "title": "Healthcheck"
+      },
+      "project.healthcheck.enhancer": {
+        "title": "Enhancer"
+      },
+      "project.healthcheck.enhancer.read": {
+        "title": "Read"
+      },
+      "project.healthcheck.refresh": {
+        "title": "Refresh"
+      },
+      "project.healthcheck.refresh.all": {
+        "title": "All"
+      },
+      "project.healthcheck.refresh.all.write": {
+        "title": "Create and edit"
+      },
+      "project.healthcheck.refresh.write": {
+        "title": "Create and edit"
+      },
+      "project.healthcheck.status": {
+        "title": "Status"
+      },
+      "project.healthcheck.status.all": {
+        "title": "All"
+      },
+      "project.healthcheck.status.all.read": {
+        "title": "Read"
+      },
+      "project.healthcheck.status.read": {
+        "title": "Read"
+      },
+      "project.history": {
+        "title": "History"
+      },
+      "project.history.read": {
+        "title": "Read"
+      },
+      "project.job_tags": {
+        "title": "Job tags"
+      },
+      "project.job_tags.read": {
+        "title": "Read"
+      },
+      "project.jobs": {
+        "title": "Jobs"
+      },
+      "project.jobs.browse": {
+        "title": "Browse"
+      },
+      "project.jobs.browse.read": {
+        "title": "Read"
+      },
+      "project.jobs.option": {
+        "title": "Option"
+      },
+      "project.jobs.option.read": {
+        "title": "Read"
+      },
+      "project.jobs.read": {
+        "title": "Read"
+      },
+      "project.jobs.write": {
+        "title": "Create and edit"
+      },
+      "project.meta": {
+        "title": "Meta"
+      },
+      "project.meta.read": {
+        "title": "Read"
+      },
+      "project.nodes": {
+        "title": "Nodes"
+      },
+      "project.nodes.tags": {
+        "title": "Tags"
+      },
+      "project.nodes.tags.read": {
+        "title": "Read"
+      },
+      "project.plugins": {
+        "title": "Plugins"
+      },
+      "project.plugins.save": {
+        "title": "Save"
+      },
+      "project.plugins.save.write": {
+        "title": "Create and edit"
+      },
+      "project.read": {
+        "title": "Read"
+      },
+      "project.resource": {
+        "title": "Resource"
+      },
+      "project.resource.read": {
+        "title": "Read"
+      },
+      "project.resources": {
+        "title": "Resources"
+      },
+      "project.resources.read": {
+        "title": "Read"
+      },
+      "project.run": {
+        "title": "Run"
+      },
+      "project.run.command": {
+        "title": "Command"
+      },
+      "project.run.command.execute": {
+        "title": "Run"
+      },
+      "project.run.script": {
+        "title": "Script"
+      },
+      "project.run.script.execute": {
+        "title": "Run"
+      },
+      "project.run.url": {
+        "title": "Url"
+      },
+      "project.run.url.execute": {
+        "title": "Run"
+      },
+      "project.runner_management": {
+        "title": "Runner management"
+      },
+      "project.runner_management.check_ping": {
+        "title": "Check ping"
+      },
+      "project.runner_management.check_ping.read": {
+        "title": "Read"
+      },
+      "project.runner_management.config": {
+        "title": "Config"
+      },
+      "project.runner_management.config.admin": {
+        "title": "Manage"
+      },
+      "project.runner_management.config.read": {
+        "title": "Read"
+      },
+      "project.runner_management.node_dispatch": {
+        "title": "Node dispatch"
+      },
+      "project.runner_management.node_dispatch.config": {
+        "title": "Config"
+      },
+      "project.runner_management.node_dispatch.config.write": {
+        "title": "Create and edit"
+      },
+      "project.runner_management.read": {
+        "title": "Read"
+      },
+      "project.runner_management.runner": {
+        "title": "Runner"
+      },
+      "project.runner_management.runner.creds": {
+        "title": "Creds"
+      },
+      "project.runner_management.runner.creds.admin": {
+        "title": "Manage"
+      },
+      "project.runner_management.runner.delete": {
+        "title": "Delete"
+      },
+      "project.runner_management.runner.ping": {
+        "title": "Ping"
+      },
+      "project.runner_management.runner.ping.write": {
+        "title": "Create and edit"
+      },
+      "project.runner_management.runner.project_association": {
+        "title": "Project association"
+      },
+      "project.runner_management.runner.project_association.delete": {
+        "title": "Delete"
+      },
+      "project.runner_management.runner.read": {
+        "title": "Read"
+      },
+      "project.runner_management.runner.replica": {
+        "title": "Replica"
+      },
+      "project.runner_management.runner.replica.delete": {
+        "title": "Delete"
+      },
+      "project.runner_management.runner.replicas": {
+        "title": "Replicas"
+      },
+      "project.runner_management.runner.replicas.read": {
+        "title": "Read"
+      },
+      "project.runner_management.runner.replicas.write": {
+        "title": "Create and edit"
+      },
+      "project.runner_management.runner.write": {
+        "title": "Create and edit"
+      },
+      "project.runner_management.runners": {
+        "title": "Runners"
+      },
+      "project.runner_management.runners.read": {
+        "title": "Read"
+      },
+      "project.runner_management.runners.write": {
+        "title": "Create and edit"
+      },
+      "project.runner_management.ui": {
+        "title": "Ui"
+      },
+      "project.runner_management.ui.read": {
+        "title": "Read"
+      },
+      "project.scm": {
+        "title": "Scm"
+      },
+      "project.scm.action": {
+        "title": "Action"
+      },
+      "project.scm.action.execute": {
+        "title": "Run"
+      },
+      "project.scm.action.input": {
+        "title": "Input"
+      },
+      "project.scm.action.input.read": {
+        "title": "Read"
+      },
+      "project.scm.config": {
+        "title": "Config"
+      },
+      "project.scm.config.read": {
+        "title": "Read"
+      },
+      "project.scm.plugin": {
+        "title": "Plugin"
+      },
+      "project.scm.plugin.input": {
+        "title": "Input"
+      },
+      "project.scm.plugin.input.read": {
+        "title": "Read"
+      },
+      "project.scm.plugin.setup": {
+        "title": "Setup"
+      },
+      "project.scm.plugin.setup.write": {
+        "title": "Create and edit"
+      },
+      "project.scm.plugin.write": {
+        "title": "Create and edit"
+      },
+      "project.scm.plugins": {
+        "title": "Plugins"
+      },
+      "project.scm.plugins.read": {
+        "title": "Read"
+      },
+      "project.scm.status": {
+        "title": "Status"
+      },
+      "project.scm.status.read": {
+        "title": "Read"
+      },
+      "project.scm.toggle": {
+        "title": "Toggle"
+      },
+      "project.scm.toggle.write": {
+        "title": "Create and edit"
+      },
+      "project.source": {
+        "title": "Source"
+      },
+      "project.source.read": {
+        "title": "Read"
+      },
+      "project.source.resources": {
+        "title": "Resources"
+      },
+      "project.source.resources.read": {
+        "title": "Read"
+      },
+      "project.source.resources.write": {
+        "title": "Create and edit"
+      },
+      "project.sources": {
+        "title": "Sources"
+      },
+      "project.sources.read": {
+        "title": "Read"
+      },
+      "project.tour": {
+        "title": "Tour"
+      },
+      "project.tour.import": {
+        "title": "Import"
+      },
+      "project.tour.import.write": {
+        "title": "Create and edit"
+      },
+      "project.tours": {
+        "title": "Tours"
+      },
+      "project.tours.read": {
+        "title": "Read"
+      },
+      "project.tours.resource": {
+        "title": "Resource"
+      },
+      "project.tours.resource.read": {
+        "title": "Read"
+      },
+      "project.tours.write": {
+        "title": "Create and edit"
+      },
+      "project.webhook": {
+        "title": "Webhook"
+      },
+      "project.webhook.admin": {
+        "title": "Manage"
+      },
+      "project.webhook.delete": {
+        "title": "Delete"
+      },
+      "project.webhook.read": {
+        "title": "Read"
+      },
+      "project.webhooks": {
+        "title": "Webhooks"
+      },
+      "project.webhooks.read": {
+        "title": "Read"
+      },
+      "project.write": {
+        "title": "Create and edit"
+      },
+      "projects": {
+        "title": "Projects"
+      },
+      "projects.read": {
+        "title": "Read"
+      },
+      "projects.write": {
+        "title": "Create and edit"
+      },
+      "runner": {
+        "title": "Runner"
+      },
+      "runner.startup": {
+        "title": "Startup"
+      },
+      "runner.startup.write": {
+        "title": "Create and edit"
+      },
+      "runner_management": {
+        "title": "Runner management"
+      },
+      "runner_management.check_ping": {
+        "title": "Check ping"
+      },
+      "runner_management.check_ping.read": {
+        "title": "Read"
+      },
+      "runner_management.read": {
+        "title": "Read"
+      },
+      "runner_management.runner": {
+        "title": "Runner"
+      },
+      "runner_management.runner.creds": {
+        "title": "Creds"
+      },
+      "runner_management.runner.creds.admin": {
+        "title": "Manage"
+      },
+      "runner_management.runner.delete": {
+        "title": "Delete"
+      },
+      "runner_management.runner.keys": {
+        "title": "Keys"
+      },
+      "runner_management.runner.keys.read": {
+        "title": "Read"
+      },
+      "runner_management.runner.ping": {
+        "title": "Ping"
+      },
+      "runner_management.runner.ping.write": {
+        "title": "Create and edit"
+      },
+      "runner_management.runner.read": {
+        "title": "Read"
+      },
+      "runner_management.runner.replica": {
+        "title": "Replica"
+      },
+      "runner_management.runner.replica.delete": {
+        "title": "Delete"
+      },
+      "runner_management.runner.replicas": {
+        "title": "Replicas"
+      },
+      "runner_management.runner.replicas.read": {
+        "title": "Read"
+      },
+      "runner_management.runner.replicas.write": {
+        "title": "Create and edit"
+      },
+      "runner_management.runner.tags": {
+        "title": "Tags"
+      },
+      "runner_management.runner.tags.read": {
+        "title": "Read"
+      },
+      "runner_management.runner.write": {
+        "title": "Create and edit"
+      },
+      "runner_management.runners": {
+        "title": "Runners"
+      },
+      "runner_management.runners.read": {
+        "title": "Read"
+      },
+      "runner_management.runners.write": {
+        "title": "Create and edit"
+      },
+      "runner_management.tags": {
+        "title": "Tags"
+      },
+      "runner_management.tags.read": {
+        "title": "Read"
+      },
+      "runner_management.ui": {
+        "title": "Ui"
+      },
+      "runner_management.ui.read": {
+        "title": "Read"
+      },
+      "runner_tag": {
+        "title": "Runner tag"
+      },
+      "runner_tag.tags": {
+        "title": "Tags"
+      },
+      "runner_tag.tags.read": {
+        "title": "Read"
+      },
+      "scheduler": {
+        "title": "Scheduler"
+      },
+      "scheduler.jobs": {
+        "title": "Jobs"
+      },
+      "scheduler.jobs.read": {
+        "title": "Read"
+      },
+      "scheduler.server": {
+        "title": "Server"
+      },
+      "scheduler.server.jobs": {
+        "title": "Jobs"
+      },
+      "scheduler.server.jobs.read": {
+        "title": "Read"
+      },
+      "scheduler.takeover": {
+        "title": "Takeover"
+      },
+      "scheduler.takeover.write": {
+        "title": "Create and edit"
+      },
+      "secure": {
+        "title": "Secure"
+      },
+      "secure.generatepasswordreset": {
+        "title": "Generatepasswordreset"
+      },
+      "secure.generatepasswordreset.send": {
+        "title": "Send"
+      },
+      "secure.role": {
+        "title": "Role"
+      },
+      "secure.role.admin": {
+        "title": "Manage"
+      },
+      "secure.role.delete": {
+        "title": "Delete"
+      },
+      "secure.role.members": {
+        "title": "Members"
+      },
+      "secure.role.members.admin": {
+        "title": "Manage"
+      },
+      "secure.role.read": {
+        "title": "Read"
+      },
+      "secure.roles": {
+        "title": "Roles"
+      },
+      "secure.roles.admin": {
+        "title": "Manage"
+      },
+      "secure.roles.read": {
+        "title": "Read"
+      },
+      "secure.user": {
+        "title": "Account"
+      },
+      "secure.user.admin": {
+        "title": "Manage"
+      },
+      "secure.user.delete": {
+        "title": "Delete"
+      },
+      "secure.user.read": {
+        "title": "Read"
+      },
+      "secure.user.roles": {
+        "title": "Roles"
+      },
+      "secure.user.roles.read": {
+        "title": "Read"
+      },
+      "secure.users": {
+        "title": "Users"
+      },
+      "secure.users.admin": {
+        "title": "Manage"
+      },
+      "secure.users.read": {
+        "title": "Read"
+      },
+      "storage": {
+        "title": "Storage"
+      },
+      "storage.keys": {
+        "title": "Keys"
+      },
+      "storage.keys.admin": {
+        "title": "Manage"
+      },
+      "storage.keys.delete": {
+        "title": "Delete"
+      },
+      "storage.keys.read": {
+        "title": "Read"
+      },
+      "system": {
+        "title": "System"
+      },
+      "system.acl": {
+        "title": "Acl"
+      },
+      "system.acl.delete": {
+        "title": "Delete"
+      },
+      "system.acl.read": {
+        "title": "Read"
+      },
+      "system.acl.share": {
+        "title": "Share"
+      },
+      "system.calendars": {
+        "title": "Calendars"
+      },
+      "system.calendars.delete": {
+        "title": "Delete"
+      },
+      "system.calendars.read": {
+        "title": "Read"
+      },
+      "system.calendars.write": {
+        "title": "Create and edit"
+      },
+      "system.executions": {
+        "title": "Executions"
+      },
+      "system.executions.disable": {
+        "title": "Disable"
+      },
+      "system.executions.disable.later": {
+        "title": "Later"
+      },
+      "system.executions.disable.later.write": {
+        "title": "Create and edit"
+      },
+      "system.executions.disable.write": {
+        "title": "Create and edit"
+      },
+      "system.executions.enable": {
+        "title": "Enable"
+      },
+      "system.executions.enable.later": {
+        "title": "Later"
+      },
+      "system.executions.enable.later.write": {
+        "title": "Create and edit"
+      },
+      "system.executions.enable.write": {
+        "title": "Create and edit"
+      },
+      "system.executions.status": {
+        "title": "Status"
+      },
+      "system.executions.status.read": {
+        "title": "Read"
+      },
+      "system.info": {
+        "title": "Info"
+      },
+      "system.info.read": {
+        "title": "Read"
+      },
+      "system.logstorage": {
+        "title": "Logstorage"
+      },
+      "system.logstorage.incomplete": {
+        "title": "Incomplete"
+      },
+      "system.logstorage.incomplete.read": {
+        "title": "Read"
+      },
+      "system.logstorage.incomplete.write": {
+        "title": "Create and edit"
+      },
+      "system.logstorage.read": {
+        "title": "Read"
+      },
+      "system.tour": {
+        "title": "Tour"
+      },
+      "system.tour.import": {
+        "title": "Import"
+      },
+      "system.tour.import.write": {
+        "title": "Create and edit"
+      },
+      "system.tours": {
+        "title": "Tours"
+      },
+      "system.tours.read": {
+        "title": "Read"
+      },
+      "system.tours.resource": {
+        "title": "Resource"
+      },
+      "system.tours.resource.read": {
+        "title": "Read"
+      },
+      "system.tours.write": {
+        "title": "Create and edit"
+      },
+      "token": {
+        "title": "Token"
+      },
+      "token.delete": {
+        "title": "Delete"
+      },
+      "token.read": {
+        "title": "Read"
+      },
+      "tokens": {
+        "title": "Tokens"
+      },
+      "tokens.admin": {
+        "title": "Manage"
+      },
+      "tokens.expired": {
+        "title": "Expired"
+      },
+      "tokens.expired.delete": {
+        "title": "Delete"
+      },
+      "tokens.read": {
+        "title": "Read"
+      },
+      "tours": {
+        "title": "Tours"
+      },
+      "tours.endpoints": {
+        "title": "Endpoints"
+      },
+      "tours.endpoints.read": {
+        "title": "Read"
+      },
+      "user": {
+        "title": "Account"
+      },
+      "user.info": {
+        "title": "Info"
+      },
+      "user.info.read": {
+        "title": "Read"
+      },
+      "user.info.write": {
+        "title": "Create and edit"
+      },
+      "user.read": {
+        "title": "Read"
+      },
+      "user.roles": {
+        "title": "Roles"
+      },
+      "user.roles.read": {
+        "title": "Read"
+      },
+      "userclass": {
+        "title": "Userclass"
+      },
+      "userclass.admin": {
+        "title": "Manage"
+      },
+      "userclass.allocations": {
+        "title": "Allocations"
+      },
+      "userclass.allocations.read": {
+        "title": "Read"
+      },
+      "userclass.available": {
+        "title": "Available"
+      },
+      "userclass.available.read": {
+        "title": "Read"
+      },
+      "userclass.enabled": {
+        "title": "Enabled"
+      },
+      "userclass.enabled.read": {
+        "title": "Read"
+      },
+      "userclass.self": {
+        "title": "Self"
+      },
+      "userclass.self.read": {
+        "title": "Read"
+      },
+      "userclass.state": {
+        "title": "State"
+      },
+      "userclass.state.read": {
+        "title": "Read"
+      },
+      "userclass.user": {
+        "title": "Account"
+      },
+      "userclass.user.admin": {
+        "title": "Manage"
+      },
+      "userclass.user.delete": {
+        "title": "Delete"
+      },
+      "userclass.user.read": {
+        "title": "Read"
+      },
+      "webhook": {
+        "title": "Webhook"
+      },
+      "webhook.execute": {
+        "title": "Run"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "X-Rundeck-Auth-Token",
+            "origin": "https://example.com",
+            "path": "/",
+            "value": "token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Your Rundeck URL (https://host or https://host/rundeck)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "token",
+        "label": "Token",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Rundeck",
   "http": {
+    "trailing_slash": true,
     "operations": {
-      "ConfigDelete": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/config/delete","body":"any","scope":{}},
-      "ConfigGet": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/config/get","params":["key","strata"],"scope":{"key":{"from":"query","at":"key"}}},
-      "ConfigGetCategories": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/config/getCategories","scope":{}},
-      "ConfigList": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/config/list","scope":{}},
-      "ConfigMetaList": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/config/metaList","scope":{}},
-      "ConfigSave": {"action":"write.save","effects":["write"],"method":"POST","origin":"{origin}","path":"/config/save","body":"json","scope":{}},
-      "StorageConfigList": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/config/listStoragePlugins","scope":{}},
-      "StorageConfigSave": {"action":"write.save_storage_plugins","effects":["write"],"method":"POST","origin":"{origin}","path":"/config/saveStoragePlugins","body":"json","scope":{}},
-      "apiCreate": {"action":"write.create","effects":["write"],"method":"PUT","origin":"{origin}","path":"/secure/roles/create","body":"json","scope":{}},
-      "apiCreate_1": {"action":"write.create","effects":["write"],"method":"PUT","origin":"{origin}","path":"/secure/users/create","body":"json","scope":{"username":{"from":"body","at":"/username"}}},
-      "apiDelete": {"action":"delete.role","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/secure/role/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "apiDeleteProjectCalendar": {"action":"delete.calendars","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/project/{project}/calendars/{id}","scope":{"project":{"from":"path","at":"project"},"id":{"from":"path","at":"id"}}},
-      "apiDeleteResource": {"action":"delete.keys","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/storage/keys/{path}","scope":{"path":{"from":"path","at":"path"}}},
-      "apiDeleteSystemCalendar": {"action":"delete.calendars","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/system/calendars/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "apiDelete_1": {"action":"delete.user","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/secure/user/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "apiEdit": {"action":"admin.role","effects":["admin"],"method":"POST","origin":"{origin}","path":"/secure/role/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "apiEdit_1": {"action":"admin.user","effects":["admin"],"method":"POST","origin":"{origin}","path":"/secure/user/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "apiExecution": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/execution/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "apiExecutionAbort": {"action":"execute.execution","effects":["execute"],"method":"POST","origin":"{origin}","path":"/execution/{id}/abort","params":["asUser","forceIncomplete"],"scope":{"id":{"from":"path","at":"id"}}},
-      "apiExecutionDataAvailable": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/execution/{id}/result/dataAvailable","scope":{"id":{"from":"path","at":"id"}}},
-      "apiExecutionDataExport": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/execution/{id}/result/data","params":["wait"],"scope":{"id":{"from":"path","at":"id"}}},
-      "apiExecutionDelete": {"action":"delete.execution","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/execution/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "apiExecutionDeleteBulk": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/executions/delete","params":["ids"],"body":"any","scope":{}},
-      "apiExecutionInputFiles": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/execution/{id}/input/files","scope":{"id":{"from":"path","at":"id"}}},
-      "apiExecutionMetricsProject_docs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/executions/metrics","scope":{"project":{"from":"path","at":"project"}}},
-      "apiExecutionMetrics_docs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/executions/metrics","params":["project","statusFilter","abortedbyFilter","jobIdListFilter","excludeJobIdListFilter","jobListFilter","excludeJobListFilter","groupPath","groupPathExact","excludeGroupPath","excludeGroupPathExact","jobFilter","excludeJobFilter","jobExactFilter","excludeJobExactFilter","startafterFilter","startbeforeFilter","endafterFilter","endbeforeFilter","begin","end","adhoc","recentFilter","olderFilter","userFilter","executionTypeFilter","useStats","groupByJob","max","offset"],"scope":{}},
-      "apiExecutionModeActive": {"action":"write.enable","effects":["write"],"method":"POST","origin":"{origin}","path":"/system/executions/enable","scope":{}},
-      "apiExecutionModeLaterActive": {"action":"write.later","effects":["write"],"method":"POST","origin":"{origin}","path":"/system/executions/enable/later","body":"json","scope":{}},
-      "apiExecutionModeLaterPassive": {"action":"write.later","effects":["write"],"method":"POST","origin":"{origin}","path":"/system/executions/disable/later","body":"json","scope":{}},
-      "apiExecutionModePassive": {"action":"write.disable","effects":["write"],"method":"POST","origin":"{origin}","path":"/system/executions/disable","scope":{}},
-      "apiExecutionModeStatus": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/system/executions/status","params":["passiveAs503"],"scope":{}},
-      "apiExecutionOutput": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/execution/{id}/output","params":["nodename","stepctx","offset","lastlines","lastmod","maxlines","compacted","format"],"scope":{"id":{"from":"path","at":"id"}}},
-      "apiExecutionOutputNodeFilter": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/execution/{id}/output/node/{nodename}","scope":{"id":{"from":"path","at":"id"},"nodename":{"from":"path","at":"nodename"}}},
-      "apiExecutionOutputNodeStepFilter": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/execution/{id}/output/node/{nodename}/step/{stepctx}","scope":{"id":{"from":"path","at":"id"},"nodename":{"from":"path","at":"nodename"},"stepctx":{"from":"path","at":"stepctx"}}},
-      "apiExecutionOutputStepFilter": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/execution/{id}/output/step/{stepctx}","scope":{"id":{"from":"path","at":"id"},"stepctx":{"from":"path","at":"stepctx"}}},
-      "apiExecutionState": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/execution/{id}/state","scope":{"id":{"from":"path","at":"id"}}},
-      "apiExecutionStateOutput": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/execution/{id}/output/state","params":["stateOnly"],"scope":{"id":{"from":"path","at":"id"}}},
-      "apiExecutionsRunningv14": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/executions/running","params":["max","offset","jobIdFilter","includePostponed"],"scope":{"project":{"from":"path","at":"project"}}},
-      "apiFlipExecutionDisabled": {"action":"execute.execution","effects":["execute"],"method":"POST","origin":"{origin}","path":"/job/{id}/execution/disable","scope":{"id":{"from":"path","at":"id"}}},
-      "apiFlipExecutionDisabledBulk": {"action":"write.disable","effects":["write"],"method":"POST","origin":"{origin}","path":"/jobs/execution/disable","params":["ids","idlist"],"body":"any","scope":{}},
-      "apiFlipExecutionEnabled": {"action":"execute.execution","effects":["execute"],"method":"POST","origin":"{origin}","path":"/job/{id}/execution/enable","scope":{"id":{"from":"path","at":"id"}}},
-      "apiFlipExecutionEnabledBulk": {"action":"write.enable","effects":["write"],"method":"POST","origin":"{origin}","path":"/jobs/execution/enable","params":["ids","idlist"],"body":"any","scope":{}},
-      "apiFlipScheduleDisabled": {"action":"write.schedule","effects":["write"],"method":"POST","origin":"{origin}","path":"/job/{id}/schedule/disable","scope":{"id":{"from":"path","at":"id"}}},
-      "apiFlipScheduleDisabledBulk": {"action":"write.disable","effects":["write"],"method":"POST","origin":"{origin}","path":"/jobs/schedule/disable","params":["ids","idlist"],"body":"any","scope":{}},
-      "apiFlipScheduleEnabled": {"action":"write.schedule","effects":["write"],"method":"POST","origin":"{origin}","path":"/job/{id}/schedule/enable","scope":{"id":{"from":"path","at":"id"}}},
-      "apiFlipScheduleEnabledBulk": {"action":"write.enable","effects":["write"],"method":"POST","origin":"{origin}","path":"/jobs/schedule/enable","params":["ids","idlist"],"body":"any","scope":{}},
-      "apiGet": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/secure/role/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "apiGetProjectResource": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/tours/resource/{path}","scope":{"project":{"from":"path","at":"project"},"path":{"from":"path","at":"path"}}},
-      "apiGetResource": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/storage/keys/{path}","scope":{"path":{"from":"path","at":"path"}}},
-      "apiGetSystemResource": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/system/tours/resource/{path}","scope":{"path":{"from":"path","at":"path"}}},
-      "apiGetUserRoles": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/secure/user/roles/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "apiGet_1": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/secure/user/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "apiHomeSummary": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/home/summary","scope":{}},
-      "apiJobActionInput": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/job/{id}/scm/{integration}/action/{actionId}/input","scope":{"id":{"from":"path","at":"id"},"integration":{"from":"path","at":"integration"},"actionId":{"from":"path","at":"actionId"}}},
-      "apiJobActionPerform": {"action":"execute.action","effects":["execute"],"method":"POST","origin":"{origin}","path":"/job/{id}/scm/{integration}/action/{actionId}","body":"json","scope":{"id":{"from":"path","at":"id"},"integration":{"from":"path","at":"integration"},"actionId":{"from":"path","at":"actionId"}}},
-      "apiJobBrowse": {"action":"write.browse","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/jobs/browse","params":["metaExclude","path","meta","breakpoint","max"],"body":"any","scope":{"project":{"from":"path","at":"project"}}},
-      "apiJobBrowseGet_docs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/jobs/browse","params":["path","meta","metaExclude","breakpoint"],"scope":{"project":{"from":"path","at":"project"}}},
-      "apiJobClusterTakeoverSchedule": {"action":"write.takeover","effects":["write"],"method":"PUT","origin":"{origin}","path":"/scheduler/takeover","body":"json","scope":{}},
-      "apiJobDelete": {"action":"delete.job","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/job/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "apiJobDeleteBulk": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/jobs/delete","body":"any","scope":{}},
-      "apiJobDeleteBulk_docs2": {"action":"delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/jobs/delete","params":["ids","idlist"],"scope":{}},
-      "apiJobDetail": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/job/{id}/info","scope":{"id":{"from":"path","at":"id"}}},
-      "apiJobDiff": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/job/{id}/scm/{integration}/diff","scope":{"id":{"from":"path","at":"id"},"integration":{"from":"path","at":"integration"}}},
-      "apiJobExecutions": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/job/{id}/executions","params":["status","max","offset","includeJobRef"],"scope":{"id":{"from":"path","at":"id"}}},
-      "apiJobExecutionsDelete": {"action":"delete.executions","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/job/{id}/executions","scope":{"id":{"from":"path","at":"id"}}},
-      "apiJobExport": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/job/{id}","params":["format"],"scope":{"id":{"from":"path","at":"id"}}},
-      "apiJobFileInfo": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/jobs/file/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "apiJobFileMultiUpload": {"action":"write.file","effects":["write"],"method":"POST","origin":"{origin}","path":"/job/{id}/input/file","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "apiJobFileUpload": {"action":"write.file","effects":["write"],"method":"POST","origin":"{origin}","path":"/job/{id}/input/file/{optionName}","params":["fileName"],"body":"any","scope":{"id":{"from":"path","at":"id"},"optionName":{"from":"path","at":"optionName"}}},
-      "apiJobForecast": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/job/{id}/forecast","params":["time","past","max"],"scope":{"id":{"from":"path","at":"id"}}},
-      "apiJobMeta": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/job/{id}/meta","params":["meta","metaExclude"],"scope":{"id":{"from":"path","at":"id"}}},
-      "apiJobRetry": {"action":"write.retry","effects":["write"],"method":"POST","origin":"{origin}","path":"/job/{id}/retry/{executionId}","params":["failedNodes","argString","loglevel","asUser","filter","runAtTime","option.OPTNAME","meta.KEY"],"body":"any","scope":{"id":{"from":"path","at":"id"},"executionId":{"from":"path","at":"executionId"}}},
-      "apiJobRun": {"action":"execute.executions","effects":["execute"],"method":"POST","origin":"{origin}","path":"/job/{id}/executions","params":["argString","loglevel","asUser","filter","runAtTime","option.OPTNAME","meta.KEY"],"body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "apiJobRun_1": {"action":"execute.job","effects":["execute"],"method":"POST","origin":"{origin}","path":"/job/{id}/run","params":["argString","loglevel","asUser","filter","runAtTime","option.OPTNAME","meta.KEY"],"body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "apiJobStatus": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/job/{id}/scm/{integration}/status","scope":{"id":{"from":"path","at":"id"},"integration":{"from":"path","at":"integration"}}},
-      "apiJobWorkflow": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/job/{id}/workflow","scope":{"id":{"from":"path","at":"id"}}},
-      "apiJobsExportv14": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/jobs/export","params":["idlist","groupPath","jobFilter","format","max","offset","sortBy","sortOrder","jobExactFilter","projFilter","groupPathExact","descFilter","loglevelFilter","scheduledFilter","scheduleEnabledFilter","executionEnabledFilter","serverNodeUUIDFilter","daysAhead","runJobLaterFilter","paginatedRequired"],"scope":{"project":{"from":"path","at":"project"}}},
-      "apiJobsImportv14": {"action":"execute.jobs","effects":["execute"],"method":"POST","origin":"{origin}","path":"/project/{project}/jobs/import","params":["fileformat","dupeOption","uuidOption"],"body":"any","scope":{"project":{"from":"path","at":"project"}}},
-      "apiList": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/secure/roles","scope":{}},
-      "apiListRoles": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/user/roles","scope":{}},
-      "apiList_1": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/secure/users","scope":{}},
-      "apiLoadProjectCalendars": {"action":"write.calendars","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/calendars","body":"any","scope":{"project":{"from":"path","at":"project"}}},
-      "apiLoadSystemCalendars": {"action":"write.calendars","effects":["write"],"method":"POST","origin":"{origin}","path":"/system/calendars","body":"any","scope":{}},
-      "apiLogstorageInfo": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/system/logstorage","scope":{}},
-      "apiLogstorageListIncompleteExecutions": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/system/logstorage/incomplete","params":["query"],"scope":{}},
-      "apiMetricsHealthcheck_docs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/metrics/healthcheck","scope":{}},
-      "apiMetricsList_docs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/metrics","scope":{}},
-      "apiMetricsMetrics_docs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/metrics/metrics","scope":{}},
-      "apiMetricsPing_docs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/metrics/ping","scope":{}},
-      "apiMetricsThreads_docs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/metrics/threads","scope":{}},
-      "apiNodeHealth": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/healthcheck/status","params":["node"],"scope":{"project":{"from":"path","at":"project"}}},
-      "apiNodeHealthAll": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/healthcheck/status/all","params":["includeChecks"],"scope":{"project":{"from":"path","at":"project"}}},
-      "apiOtherUserDataPost_docs": {"action":"write.info","effects":["write"],"method":"POST","origin":"{origin}","path":"/user/info/{username}","body":"any","scope":{"username":{"from":"path","at":"username"}}},
-      "apiPluginInput": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/scm/{integration}/plugin/{type}/input","scope":{"project":{"from":"path","at":"project"},"integration":{"from":"path","at":"integration"},"type":{"from":"path","at":"type"}}},
-      "apiPlugins": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/scm/{integration}/plugins","scope":{"project":{"from":"path","at":"project"},"integration":{"from":"path","at":"integration"}}},
-      "apiPostResource": {"action":"admin.keys","effects":["admin"],"method":"POST","origin":"{origin}","path":"/storage/keys/{path}","body":"any","scope":{"path":{"from":"path","at":"path"}}},
-      "apiProjectAclsDelete_docs": {"action":"delete.acl","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/project/{project}/acl/{path}","scope":{"project":{"from":"path","at":"project"},"path":{"from":"path","at":"path"}}},
-      "apiProjectAclsGet_docs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/acl/{path}","scope":{"project":{"from":"path","at":"project"},"path":{"from":"path","at":"path"}}},
-      "apiProjectAclsPost_docs": {"action":"share.acl","effects":["share"],"method":"POST","origin":"{origin}","path":"/project/{project}/acl/{path}","body":"any","scope":{"project":{"from":"path","at":"project"},"path":{"from":"path","at":"path"}}},
-      "apiProjectAclsPut_docs": {"action":"share.acl","effects":["share"],"method":"PUT","origin":"{origin}","path":"/project/{project}/acl/{path}","body":"any","scope":{"project":{"from":"path","at":"project"},"path":{"from":"path","at":"path"}}},
-      "apiProjectActionInput": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/scm/{integration}/action/{actionId}/input","scope":{"project":{"from":"path","at":"project"},"integration":{"from":"path","at":"integration"},"actionId":{"from":"path","at":"actionId"}}},
-      "apiProjectActionPerform": {"action":"execute.action","effects":["execute"],"method":"POST","origin":"{origin}","path":"/project/{project}/scm/{integration}/action/{actionId}","body":"json","scope":{"project":{"from":"path","at":"project"},"integration":{"from":"path","at":"integration"},"actionId":{"from":"path","at":"actionId"}}},
-      "apiProjectConfig": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/scm/{integration}/config","scope":{"project":{"from":"path","at":"project"},"integration":{"from":"path","at":"integration"}}},
-      "apiProjectConfigKeyDelete": {"action":"delete.config","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/project/{project}/config/{keypath}","scope":{"project":{"from":"path","at":"project"},"keypath":{"from":"path","at":"keypath"}}},
-      "apiProjectConfigKeyGet": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/config/{keypath}","scope":{"project":{"from":"path","at":"project"},"keypath":{"from":"path","at":"keypath"}}},
-      "apiProjectConfigKeyPut": {"action":"admin.config","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/project/{project}/config/{keypath}","params":["enablePluginValidation"],"body":"any","scope":{"project":{"from":"path","at":"project"},"keypath":{"from":"path","at":"keypath"}}},
-      "apiProjectCreate": {"action":"write.projects","effects":["write"],"method":"POST","origin":"{origin}","path":"/projects","body":"any","scope":{}},
-      "apiProjectDelete": {"action":"delete.project","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/project/{project}","params":["deferred"],"scope":{"project":{"from":"path","at":"project"}}},
-      "apiProjectDisable": {"action":"write.plugin","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/scm/{integration}/plugin/{type}/disable","scope":{"project":{"from":"path","at":"project"},"integration":{"from":"path","at":"integration"},"type":{"from":"path","at":"type"}}},
-      "apiProjectDisableLater": {"action":"write.later","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/disable/later","body":"json","scope":{"project":{"from":"path","at":"project"}}},
-      "apiProjectEnable": {"action":"write.plugin","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/scm/{integration}/plugin/{type}/enable","scope":{"project":{"from":"path","at":"project"},"integration":{"from":"path","at":"integration"},"type":{"from":"path","at":"type"}}},
-      "apiProjectEnableLater": {"action":"write.later","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/enable/later","body":"json","scope":{"project":{"from":"path","at":"project"}}},
-      "apiProjectExportAsyncDownload": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/export/download/{token}","scope":{"project":{"from":"path","at":"project"},"token":{"from":"path","at":"token"}}},
-      "apiProjectExportAsyncPost_docs": {"action":"write.async","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/export/async","params":["executionIds","exportAll","exportJobs","exportExecutions","exportConfigs","exportReadmes","exportAcls","exportScm","exportWebhooks","whkIncludeAuthTokens","whkRegenUuid"],"scope":{"project":{"from":"path","at":"project"}}},
-      "apiProjectExportAsyncStatus": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/export/status/{token}","scope":{"project":{"from":"path","at":"project"},"token":{"from":"path","at":"token"}}},
-      "apiProjectExportAsync_docs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/export/async","params":["executionIds","exportAll","exportJobs","exportExecutions","exportConfigs","exportReadmes","exportAcls","exportComponents.calendars","exportComponents.Schedule%20Definitions","exportComponents.tours-manager","exportComponents.node-wizard"],"scope":{"project":{"from":"path","at":"project"}}},
-      "apiProjectExportPost_docs": {"action":"write.project","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/export","params":["executionIds","exportAll","exportJobs","exportExecutions","exportConfigs","exportReadmes","exportAcls","exportScm","exportWebhooks","whkIncludeAuthTokens","whkRegenUuid"],"scope":{"project":{"from":"path","at":"project"}}},
-      "apiProjectFileDelete": {"action":"delete.project","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/project/{project}/{filename}","scope":{"project":{"from":"path","at":"project"},"filename":{"from":"path","at":"filename"}}},
-      "apiProjectFileGet": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/{filename}","params":["statusFilter","abortedbyFilter","jobIdListFilter","excludeJobIdListFilter","jobListFilter","excludeJobListFilter","groupPath","groupPathExact","excludeGroupPath","excludeGroupPathExact","jobFilter","excludeJobFilter","jobExactFilter","excludeJobExactFilter","startafterFilter","startbeforeFilter","endafterFilter","endbeforeFilter","begin","end","adhoc","recentFilter","olderFilter","userFilter","executionTypeFilter","useStats","groupByJob","adhocStringFilter","nodeFilter","optionFilter","max","offset","executionIds","exportAll","exportJobs","exportExecutions","exportConfigs","exportReadmes","exportAcls","exportComponents.calendars","exportComponents.Schedule%20Definitions","exportComponents.tours-manager","exportComponents.node-wizard","archiveParams","jobIdFilter","reportIdFilter","statFilter","tags","sortBy","sortOrder","projFilter","descFilter","loglevelFilter","idlist","scheduledFilter","scheduleEnabledFilter","executionEnabledFilter","serverNodeUUIDFilter","daysAhead","runJobLaterFilter","paginatedRequired","meta","filter"],"scope":{"project":{"from":"path","at":"project"},"filename":{"from":"path","at":"filename"}}},
-      "apiProjectFilePut": {"action":"admin.config","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/project/{project}/{filename}","params":["jobUuidOption","importExecutions","importConfig","importACL","importScm","importWebhooks","whkRegenAuthTokens","importNodesSources","importComponents.NAME","importOpts.NAME.KEY"],"body":"any","scope":{"project":{"from":"path","at":"project"},"filename":{"from":"path","at":"filename"}}},
-      "apiProjectGet": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}","scope":{"project":{"from":"path","at":"project"}}},
-      "apiProjectHasHealthStatusEnhancer": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/healthcheck/enhancer","scope":{"project":{"from":"path","at":"project"}}},
-      "apiProjectImportTour": {"action":"write.import","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/tour/import/{tourFolder}/{manifestFileName}","body":"any","scope":{"project":{"from":"path","at":"project"},"tourFolder":{"from":"path","at":"tourFolder"},"manifestFileName":{"from":"path","at":"manifestFileName"}}},
-      "apiProjectList": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/projects","params":["meta"],"scope":{}},
-      "apiProjectLoadResource": {"action":"write.tours","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/tours/{path}","body":"any","scope":{"project":{"from":"path","at":"project"},"path":{"from":"path","at":"path"}}},
-      "apiProjectSetup": {"action":"write.setup","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/scm/{integration}/plugin/{type}/setup","body":"any","scope":{"project":{"from":"path","at":"project"},"integration":{"from":"path","at":"integration"},"type":{"from":"path","at":"type"}}},
-      "apiProjectStatus": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/scm/{integration}/status","scope":{"project":{"from":"path","at":"project"},"integration":{"from":"path","at":"integration"}}},
-      "apiProjectToggleSCM": {"action":"write.toggle","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/scm/toggle","body":"any","scope":{"project":{"from":"path","at":"project"}}},
-      "apiPutResource": {"action":"admin.keys","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/storage/keys/{path}","body":"any","scope":{"path":{"from":"path","at":"path"}}},
-      "apiRefreshHealthCheck": {"action":"write.healthcheck","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/healthcheck/refresh","params":["node"],"body":"any","scope":{"project":{"from":"path","at":"project"}}},
-      "apiRefreshHealthCheckAll": {"action":"write.all","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/healthcheck/refresh/all","scope":{"project":{"from":"path","at":"project"}}},
-      "apiResourcev14": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/resource/{name}","scope":{"project":{"from":"path","at":"project"},"name":{"from":"path","at":"name"}}},
-      "apiResumeIncompleteLogstorage": {"action":"write.resume","effects":["write"],"method":"POST","origin":"{origin}","path":"/system/logstorage/incomplete/resume","scope":{}},
-      "apiRunCommandv14": {"action":"execute.command","effects":["execute"],"method":"POST","origin":"{origin}","path":"/project/{project}/run/command","params":["filter","exec","nodeThreadcount","nodeKeepgoing","asUser"],"body":"any","scope":{"project":{"from":"path","at":"project"}}},
-      "apiRunScriptUrlv14": {"action":"execute.url","effects":["execute"],"method":"POST","origin":"{origin}","path":"/project/{project}/run/url","params":["filter","argString","scriptURL","nodeThreadcount","nodeKeepgoing","asUser","scriptInterpreter","fileExtension","interpreterArgsQuoted"],"body":"any","scope":{"project":{"from":"path","at":"project"}}},
-      "apiRunScriptv14": {"action":"execute.script","effects":["execute"],"method":"POST","origin":"{origin}","path":"/project/{project}/run/script","params":["filter","argString","nodeThreadcount","nodeKeepgoing","asUser","scriptInterpreter","fileExtension","interpreterArgsQuoted"],"body":"any","scope":{"project":{"from":"path","at":"project"}}},
-      "apiRundeckEndpoints": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tours/endpoints","scope":{}},
-      "apiSchedulerListJobs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/scheduler/server/{uuid}/jobs","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "apiSchedulerListJobsCurrent_docs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/scheduler/jobs","scope":{}},
-      "apiSendPasswordReset": {"action":"send.generatepasswordreset","effects":["send"],"method":"POST","origin":"{origin}","path":"/secure/generatepasswordreset/{username}","scope":{"username":{"from":"path","at":"username"}}},
-      "apiSourceGet": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/source/{index}","scope":{"project":{"from":"path","at":"project"},"index":{"from":"path","at":"index"}}},
-      "apiSourceGetContent": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/source/{index}/resources","scope":{"project":{"from":"path","at":"project"},"index":{"from":"path","at":"index"}}},
-      "apiSourceWriteContent": {"action":"write.resources","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/source/{index}/resources","body":"any","scope":{"project":{"from":"path","at":"project"},"index":{"from":"path","at":"index"}}},
-      "apiStoreLicense": {"action":"write.license","effects":["write"],"method":"POST","origin":"{origin}","path":"/enterprise/license","params":["license_agreement"],"body":"any","scope":{}},
-      "apiSystemAcls": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/system/acl/{path}","scope":{"path":{"from":"path","at":"path"}}},
-      "apiSystemAcls_DELETE_docs": {"action":"delete.acl","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/system/acl/{path}","scope":{"path":{"from":"path","at":"path"}}},
-      "apiSystemAcls_POST_docs": {"action":"share.acl","effects":["share"],"method":"POST","origin":"{origin}","path":"/system/acl/{path}","body":"any","scope":{"path":{"from":"path","at":"path"}}},
-      "apiSystemAcls_PUT_docs": {"action":"share.acl","effects":["share"],"method":"PUT","origin":"{origin}","path":"/system/acl/{path}","body":"any","scope":{"path":{"from":"path","at":"path"}}},
-      "apiSystemCalendars": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/system/calendars","scope":{}},
-      "apiSystemImportTour": {"action":"write.import","effects":["write"],"method":"POST","origin":"{origin}","path":"/system/tour/import/{tourFolder}/{manifestFileName}","body":"any","scope":{"tourFolder":{"from":"path","at":"tourFolder"},"manifestFileName":{"from":"path","at":"manifestFileName"}}},
-      "apiSystemInfo": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/system/info","scope":{}},
-      "apiSystemList": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/system/tours","scope":{}},
-      "apiSystemLoadResource": {"action":"write.tours","effects":["write"],"method":"POST","origin":"{origin}","path":"/system/tours/{path}","body":"any","scope":{"path":{"from":"path","at":"path"}}},
-      "apiTagsForNodes": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/nodes/tags","scope":{"project":{"from":"path","at":"project"}}},
-      "apiToggle": {"action":"write.disable","effects":["write"],"method":"POST","origin":"{origin}","path":"/enterprise/cluster/executions/disable","params":["uuid"],"scope":{"uuid":{"from":"query","at":"uuid"}}},
-      "apiToggle_1": {"action":"write.enable","effects":["write"],"method":"POST","origin":"{origin}","path":"/enterprise/cluster/executions/enable","params":["uuid"],"scope":{"uuid":{"from":"query","at":"uuid"}}},
-      "apiTokenCreate": {"action":"admin.tokens","effects":["admin"],"method":"POST","origin":"{origin}","path":"/tokens/{user}","body":"json","scope":{"user":{"from":"path","at":"user"}}},
-      "apiTokenDelete": {"action":"delete.token","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/token/{tokenid}","scope":{"tokenid":{"from":"path","at":"tokenid"}}},
-      "apiTokenGet": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/token/{tokenid}","scope":{"tokenid":{"from":"path","at":"tokenid"}}},
-      "apiTokenList": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tokens/{user}","scope":{"user":{"from":"path","at":"user"}}},
-      "apiTokenRemoveExpired": {"action":"delete.remove_expired","effects":["delete"],"method":"POST","origin":"{origin}","path":"/tokens/{user}/removeExpired","scope":{"user":{"from":"path","at":"user"}}},
-      "apiUpdateMembers": {"action":"write.update_members","effects":["write"],"method":"POST","origin":"{origin}","path":"/secure/role/{id}/updateMembers","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "apiUserData": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/user/info/{username}","scope":{"username":{"from":"path","at":"username"}}},
-      "apiUserDataPost_docs": {"action":"write.info","effects":["write"],"method":"POST","origin":"{origin}","path":"/user/info","body":"any","scope":{}},
-      "apiUserData_docs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/user/info","scope":{}},
-      "apiUserList": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/user/list","scope":{}},
-      "apiValidateOption": {"action":"execute.jobs","effects":["execute"],"method":"POST","origin":"{origin}","path":"/project/{project}/jobs/validateOption","params":["jobWasScheduled"],"body":"any","scope":{"project":{"from":"path","at":"project"}}},
-      "appContextAuthorizationsForResourceKind": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/authorizations/application/{kind}","params":["actions"],"scope":{"kind":{"from":"path","at":"kind"}}},
-      "appContextAuthorizationsForTypeWithSpecifier": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/authorizations/application/{type}/{specifier}","params":["actions"],"scope":{"type":{"from":"path","at":"type"},"specifier":{"from":"path","at":"specifier"}}},
-      "checkPing": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/runnerManagement/checkPing/{token}","scope":{"token":{"from":"path","at":"token"}}},
-      "createNoEphemeralReplica": {"action":"write.replicas","effects":["write"],"method":"POST","origin":"{origin}","path":"/runnerManagement/runner/{runnerId}/replicas","scope":{"runnerId":{"from":"path","at":"runnerId"}}},
-      "createProjectNoEphemeralReplica": {"action":"write.replicas","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/runnerManagement/runner/{runnerId}/replicas","scope":{"project":{"from":"path","at":"project"},"runnerId":{"from":"path","at":"runnerId"}}},
-      "createProjectRunner": {"action":"write.runner_management","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/runnerManagement/runners","body":"any","scope":{"project":{"from":"path","at":"project"}}},
-      "createRunner": {"action":"write.runners","effects":["write"],"method":"POST","origin":"{origin}","path":"/runnerManagement/runners","body":"any","scope":{}},
-      "createWebhook_docs": {"action":"admin.webhook","effects":["admin"],"method":"POST","origin":"{origin}","path":"/project/{project}/webhook","body":"any","scope":{"project":{"from":"path","at":"project"}}},
-      "deleteProjectRunner": {"action":"delete.runner","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/project/{project}/runnerManagement/runner/{runnerId}","scope":{"project":{"from":"path","at":"project"},"runnerId":{"from":"path","at":"runnerId"}}},
-      "deleteProjectRunnerReplica": {"action":"delete.replica","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/project/{project}/runnerManagement/runner/{runnerId}/replica/{replicaId}","scope":{"project":{"from":"path","at":"project"},"runnerId":{"from":"path","at":"runnerId"},"replicaId":{"from":"path","at":"replicaId"}}},
-      "deleteRunner": {"action":"delete.runner","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/runnerManagement/runner/{runnerId}","scope":{"runnerId":{"from":"path","at":"runnerId"}}},
-      "deleteRunnerReplica": {"action":"delete.replica","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/runnerManagement/runner/{runnerId}/replica/{replicaId}","scope":{"runnerId":{"from":"path","at":"runnerId"},"replicaId":{"from":"path","at":"replicaId"}}},
-      "downloadRunner": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/runnerManagement/download/{token}","scope":{"token":{"from":"path","at":"token"}}},
-      "featureQuery": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/feature/{featureName}","scope":{"featureName":{"from":"path","at":"featureName"}}},
-      "featureQueryAll": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/feature","scope":{}},
-      "get": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/webhook/{id}","scope":{"project":{"from":"path","at":"project"},"id":{"from":"path","at":"id"}}},
-      "getDataset": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/enterprise/system-report/datasets/{dataset}","scope":{"dataset":{"from":"path","at":"dataset"}}},
-      "getDebugEvents": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/enterprise/project/{project}/webhooks/{id}/debug-events","scope":{"project":{"from":"path","at":"project"},"id":{"from":"path","at":"id"}}},
-      "getEnabled": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/userclass/enabled","scope":{}},
-      "getRoiMetricsDataApi": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/execution/{id}/roimetrics/data","params":["wait"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getRoiMetricsDataAvailability": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/execution/{id}/roimetrics/available","scope":{"id":{"from":"path","at":"id"}}},
-      "getRunnerKey": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/runnerManagement/runner/{id}/keys","params":["path","refresh"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getUserClass": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/userclass/user/{username}","scope":{"username":{"from":"path","at":"username"}}},
-      "getUserClassAllocations": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/userclass/allocations","scope":{}},
-      "getUserClassAllocationsState": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/userclass/state","scope":{}},
-      "getUserClassSelf": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/userclass/self","scope":{}},
-      "getUserClassesAvailable": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/userclass/available","scope":{}},
-      "info": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/","scope":{}},
-      "job": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/job/{id}/tags","scope":{"id":{"from":"path","at":"id"}}},
-      "listDatasets": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/enterprise/system-report/datasets","scope":{}},
-      "listPlugins": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/plugin/list","scope":{}},
-      "listProjectAssociatedTags": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/runnerManagement/tags","params":["project"],"scope":{"project":{"from":"query","at":"project"}}},
-      "listProjectRunners": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/runnerManagement/runners","params":["tags","localOnly","filter","status"],"scope":{"project":{"from":"path","at":"project"}}},
-      "listProjectRunnersReplicas": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/runnerManagement/runner/{runnerId}/replicas","scope":{"project":{"from":"path","at":"project"},"runnerId":{"from":"path","at":"runnerId"}}},
-      "listRunnerTags": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/runnerManagement/runner/{id}/tags","scope":{"id":{"from":"path","at":"id"}}},
-      "listRunners": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/runnerManagement/runners","params":["tags","localOnly","filter","status"],"scope":{}},
-      "listRunnersReplicas": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/runnerManagement/runner/{runnerId}/replicas","scope":{"runnerId":{"from":"path","at":"runnerId"}}},
-      "pingProjectRunner": {"action":"send.runner","effects":["send"],"method":"POST","origin":"{origin}","path":"/project/{project}/runnerManagement/runner/{id}/ping","scope":{"project":{"from":"path","at":"project"},"id":{"from":"path","at":"id"}}},
-      "pingRunner": {"action":"send.runner","effects":["send"],"method":"POST","origin":"{origin}","path":"/runnerManagement/runner/{id}/ping","scope":{"id":{"from":"path","at":"id"}}},
-      "post": {"action":"admin.webhook","effects":["admin"],"method":"POST","origin":"{origin}","path":"/webhook/{authtoken}","scope":{"authtoken":{"from":"path","at":"authtoken"}}},
-      "projectCheckPing": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/runnerManagement/checkPing/{token}","scope":{"project":{"from":"path","at":"project"},"token":{"from":"path","at":"token"}}},
-      "projectContextAuthorizationsForResourceKind": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/authorizations/project/{project}/{kind}","params":["actions"],"scope":{"project":{"from":"path","at":"project"},"kind":{"from":"path","at":"kind"}}},
-      "projectContextAuthorizationsForTypeWithSpecifier": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/authorizations/project/{project}/{type}/{specifier}","params":["actions"],"scope":{"project":{"from":"path","at":"project"},"type":{"from":"path","at":"type"},"specifier":{"from":"path","at":"specifier"}}},
-      "projectContextRunnerConfig": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/runnerManagement/config","scope":{"project":{"from":"path","at":"project"}}},
-      "projectDownloadRunner": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/runnerManagement/download/{token}","scope":{"project":{"from":"path","at":"project"},"token":{"from":"path","at":"token"}}},
-      "projectRunnerInfo": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/runnerManagement/runner/{runnerId}","scope":{"project":{"from":"path","at":"project"},"runnerId":{"from":"path","at":"runnerId"}}},
-      "projectUi": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/runnerManagement/ui","scope":{"project":{"from":"path","at":"project"}}},
-      "query": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/project/{project}/jobTags/query","params":["sortOrders","jobFilter","jobExactFilter","projFilter","groupPath","groupPathExact","descFilter","loglevelFilter","idlist","scheduledFilter","scheduleEnabledFilter","executionEnabledFilter","serverNodeUUIDFilter","daysAhead","runJobLaterFilter","max","offset","sortBy","sortOrder","inputParamMap","paginatedRequired"],"scope":{"project":{"from":"path","at":"project"}}},
-      "refresh": {"action":"write.refresh","effects":["write"],"method":"POST","origin":"{origin}","path":"/config/refresh","scope":{}},
-      "regenerateProjectRunnerCreds": {"action":"write.runner","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/runnerManagement/runner/{id}/regenerateCreds","scope":{"project":{"from":"path","at":"project"},"id":{"from":"path","at":"id"}}},
-      "regenerateRunnerCreds": {"action":"write.runner","effects":["write"],"method":"POST","origin":"{origin}","path":"/runnerManagement/runner/{id}/regenerateCreds","scope":{"id":{"from":"path","at":"id"}}},
-      "remove": {"action":"delete.webhook","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/project/{project}/webhook/{id}","scope":{"project":{"from":"path","at":"project"},"id":{"from":"path","at":"id"}}},
-      "removeProjectAssociation": {"action":"delete.remove_project_association","effects":["delete"],"method":"POST","origin":"{origin}","path":"/project/{project}/runnerManagement/runner/{runnerId}/removeProjectAssociation","body":"any","scope":{"project":{"from":"path","at":"project"},"runnerId":{"from":"path","at":"runnerId"}}},
-      "removeUserClass": {"action":"delete.user","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/userclass/user/{username}","scope":{"username":{"from":"path","at":"username"}}},
-      "restart": {"action":"write.restart","effects":["write"],"method":"POST","origin":"{origin}","path":"/config/restart","scope":{}},
-      "runnerInfo": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/runnerManagement/runner/{runnerId}","scope":{"runnerId":{"from":"path","at":"runnerId"}}},
-      "save": {"action":"admin.webhook","effects":["admin"],"method":"POST","origin":"{origin}","path":"/project/{project}/webhook/{id}","body":"any","scope":{"project":{"from":"path","at":"project"},"id":{"from":"path","at":"id"}}},
-      "saveProjectContextRunnerConfig": {"action":"admin.config","effects":["admin"],"method":"POST","origin":"{origin}","path":"/project/{project}/runnerManagement/config","body":"json","scope":{"project":{"from":"path","at":"project"}}},
-      "saveProjectPlugins": {"action":"write.plugins","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/plugins/save","params":["serviceName","configPrefix"],"body":"json","scope":{"project":{"from":"path","at":"project"},"serviceName":{"from":"query","at":"serviceName"}}},
-      "saveProjectRunner": {"action":"write.runner","effects":["write"],"method":"POST","origin":"{origin}","path":"/project/{project}/runnerManagement/runner/{runnerId}","body":"any","scope":{"project":{"from":"path","at":"project"},"runnerId":{"from":"path","at":"runnerId"}}},
-      "saveProjectRunnerNodeDispatchSettings": {"action":"execute.config","effects":["execute"],"method":"POST","origin":"{origin}","path":"/project/{project}/runnerManagement/nodeDispatch/config","body":"any","scope":{"project":{"from":"path","at":"project"}}},
-      "saveRunner": {"action":"write.runner","effects":["write"],"method":"POST","origin":"{origin}","path":"/runnerManagement/runner/{runnerId}","body":"any","scope":{"runnerId":{"from":"path","at":"runnerId"}}},
-      "searchTags": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/runnerTag/searchTags","params":["keyword","offset","limit"],"scope":{}},
-      "setUserClass": {"action":"admin.user","effects":["admin"],"method":"POST","origin":"{origin}","path":"/userclass/user/{username}","body":"any","scope":{"username":{"from":"path","at":"username"}}},
-      "startupOperation": {"action":"write.startup","effects":["write"],"method":"POST","origin":"{origin}","path":"/runner/startup","body":"any","scope":{}},
-      "storeUserClasses": {"action":"write.update","effects":["write"],"method":"POST","origin":"{origin}","path":"/userclass/update","body":"any","scope":{}},
-      "ui": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/runnerManagement/ui","scope":{}},
-      "verify": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/enterprise/license","scope":{}}
+      "ConfigDelete": {"action":"config.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/{version}/config/delete","scope":{}},
+      "ConfigGet": {"action":"config.read","effects":["read"],"method":"GET","origin":"{origin}","params":["key","strata"],"path":"/api/{version}/config/get","scope":{"key":{"at":"key","from":"query"}}},
+      "ConfigGetCategories": {"action":"config.categories.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/config/getCategories","scope":{}},
+      "ConfigList": {"action":"config.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/config/list","scope":{}},
+      "ConfigMetaList": {"action":"config.meta_list.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/config/metaList","scope":{}},
+      "ConfigSave": {"action":"config.save.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/{version}/config/save","scope":{"request":{"at":"","from":"body","type":"array"},"version":{"at":"version","from":"path"}}},
+      "StorageConfigList": {"action":"config.storage_plugins.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/config/listStoragePlugins","scope":{}},
+      "StorageConfigSave": {"action":"config.save_storage_plugins.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/{version}/config/saveStoragePlugins","scope":{"request":{"at":"","from":"body","type":"array"},"version":{"at":"version","from":"path"}}},
+      "apiCreate": {"action":"secure.roles.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/{version}/secure/roles/create","scope":{"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "apiCreate_1": {"action":"secure.users.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/{version}/secure/users/create","scope":{"email":{"at":"/email","from":"body","optional":true},"firstname":{"at":"/firstname","from":"body","optional":true},"lastname":{"at":"/lastname","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"username":{"at":"/username","from":"body"},"version":{"at":"version","from":"path"}}},
+      "apiDelete": {"action":"secure.role.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/secure/role/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "apiDeleteProjectCalendar": {"action":"project.calendars.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/project/{project}/calendars/{id}","scope":{"id":{"at":"id","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiDeleteResource": {"action":"storage.keys.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/storage/keys/{path}","scope":{"path":{"at":"path","from":"path"}}},
+      "apiDeleteSystemCalendar": {"action":"system.calendars.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/system/calendars/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "apiDelete_1": {"action":"secure.user.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/secure/user/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "apiEdit": {"action":"secure.role.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/{version}/secure/role/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "apiEdit_1": {"action":"secure.user.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/{version}/secure/user/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "apiExecution": {"action":"execution.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/execution/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "apiExecutionAbort": {"action":"execution.execute","effects":["execute"],"method":"POST","origin":"{origin}","params":["asUser","forceIncomplete"],"path":"/api/{version}/execution/{id}/abort","scope":{"id":{"at":"id","from":"path"}}},
+      "apiExecutionDataAvailable": {"action":"execution.result.data_available.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/execution/{id}/result/dataAvailable","scope":{"id":{"at":"id","from":"path"}}},
+      "apiExecutionDataExport": {"action":"execution.result.data.read","effects":["read"],"method":"GET","origin":"{origin}","params":["wait"],"path":"/api/{version}/execution/{id}/result/data","scope":{"id":{"at":"id","from":"path"}}},
+      "apiExecutionDelete": {"action":"execution.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/execution/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "apiExecutionDeleteBulk": {"action":"executions.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","params":["ids"],"path":"/api/{version}/executions/delete","scope":{}},
+      "apiExecutionInputFiles": {"action":"execution.input.files.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/execution/{id}/input/files","scope":{"id":{"at":"id","from":"path"}}},
+      "apiExecutionMetricsProject_docs": {"action":"project.executions.metrics.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/executions/metrics","scope":{"project":{"at":"project","from":"path"}}},
+      "apiExecutionMetrics_docs": {"action":"executions.metrics.read","effects":["read"],"method":"GET","origin":"{origin}","params":["project","statusFilter","abortedbyFilter","jobIdListFilter","excludeJobIdListFilter","jobListFilter","excludeJobListFilter","groupPath","groupPathExact","excludeGroupPath","excludeGroupPathExact","jobFilter","excludeJobFilter","jobExactFilter","excludeJobExactFilter","startafterFilter","startbeforeFilter","endafterFilter","endbeforeFilter","begin","end","adhoc","recentFilter","olderFilter","userFilter","executionTypeFilter","useStats","groupByJob","max","offset"],"path":"/api/{version}/executions/metrics","scope":{}},
+      "apiExecutionModeActive": {"action":"system.executions.enable.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/system/executions/enable","scope":{}},
+      "apiExecutionModeLaterActive": {"action":"system.executions.enable.later.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/system/executions/enable/later","scope":{}},
+      "apiExecutionModeLaterPassive": {"action":"system.executions.disable.later.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/system/executions/disable/later","scope":{}},
+      "apiExecutionModePassive": {"action":"system.executions.disable.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/system/executions/disable","scope":{}},
+      "apiExecutionModeStatus": {"action":"system.executions.status.read","effects":["read"],"method":"GET","origin":"{origin}","params":["passiveAs503"],"path":"/api/{version}/system/executions/status","scope":{}},
+      "apiExecutionOutput": {"action":"execution.output.read","effects":["read"],"method":"GET","origin":"{origin}","params":["nodename","stepctx","offset","lastlines","lastmod","maxlines","compacted","format"],"path":"/api/{version}/execution/{id}/output","scope":{"id":{"at":"id","from":"path"}}},
+      "apiExecutionOutputNodeFilter": {"action":"execution.output.node.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/execution/{id}/output/node/{nodename}","scope":{"id":{"at":"id","from":"path"},"nodename":{"at":"nodename","from":"path"}}},
+      "apiExecutionOutputNodeStepFilter": {"action":"execution.output.node.step.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/execution/{id}/output/node/{nodename}/step/{stepctx}","scope":{"id":{"at":"id","from":"path"},"nodename":{"at":"nodename","from":"path"},"stepctx":{"at":"stepctx","from":"path"}}},
+      "apiExecutionOutputStepFilter": {"action":"execution.output.step.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/execution/{id}/output/step/{stepctx}","scope":{"id":{"at":"id","from":"path"},"stepctx":{"at":"stepctx","from":"path"}}},
+      "apiExecutionState": {"action":"execution.state.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/execution/{id}/state","scope":{"id":{"at":"id","from":"path"}}},
+      "apiExecutionStateOutput": {"action":"execution.output.state.read","effects":["read"],"method":"GET","origin":"{origin}","params":["stateOnly"],"path":"/api/{version}/execution/{id}/output/state","scope":{"id":{"at":"id","from":"path"}}},
+      "apiExecutionsQueryv14_docs": {"action":"project.executions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["statusFilter","abortedbyFilter","jobIdListFilter","excludeJobIdListFilter","jobListFilter","excludeJobListFilter","groupPath","groupPathExact","excludeGroupPath","excludeGroupPathExact","jobFilter","excludeJobFilter","jobExactFilter","excludeJobExactFilter","startafterFilter","startbeforeFilter","endafterFilter","endbeforeFilter","begin","end","adhoc","recentFilter","olderFilter","userFilter","executionTypeFilter","useStats","groupByJob","adhocStringFilter","nodeFilter","optionFilter","max","offset"],"path":"/api/{version}/project/{project}/executions","scope":{"project":{"at":"project","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "apiExecutionsRunningv14": {"action":"project.executions.running.read","effects":["read"],"method":"GET","origin":"{origin}","params":["max","offset","jobIdFilter","includePostponed"],"path":"/api/{version}/project/{project}/executions/running","scope":{"project":{"at":"project","from":"path"}}},
+      "apiFlipExecutionDisabled": {"action":"job.execution.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/job/{id}/execution/disable","scope":{"id":{"at":"id","from":"path"},"version":{"at":"version","from":"path"}}},
+      "apiFlipExecutionDisabledBulk": {"action":"jobs.execution.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["ids","idlist"],"path":"/api/{version}/jobs/execution/disable","scope":{}},
+      "apiFlipExecutionEnabled": {"action":"job.execution.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/job/{id}/execution/enable","scope":{"id":{"at":"id","from":"path"},"version":{"at":"version","from":"path"}}},
+      "apiFlipExecutionEnabledBulk": {"action":"jobs.execution.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["ids","idlist"],"path":"/api/{version}/jobs/execution/enable","scope":{}},
+      "apiFlipScheduleDisabled": {"action":"job.schedule.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/job/{id}/schedule/disable","scope":{"id":{"at":"id","from":"path"}}},
+      "apiFlipScheduleDisabledBulk": {"action":"jobs.schedule.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["ids","idlist"],"path":"/api/{version}/jobs/schedule/disable","scope":{}},
+      "apiFlipScheduleEnabled": {"action":"job.schedule.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/job/{id}/schedule/enable","scope":{"id":{"at":"id","from":"path"}}},
+      "apiFlipScheduleEnabledBulk": {"action":"jobs.schedule.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["ids","idlist"],"path":"/api/{version}/jobs/schedule/enable","scope":{}},
+      "apiGet": {"action":"secure.role.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/secure/role/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "apiGetProjectResource": {"action":"project.tours.resource.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/tours/resource/{path}","scope":{"path":{"at":"path","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiGetResource": {"action":"storage.keys.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/storage/keys/{path}","scope":{"path":{"at":"path","from":"path"}}},
+      "apiGetSystemResource": {"action":"system.tours.resource.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/system/tours/resource/{path}","scope":{"path":{"at":"path","from":"path"}}},
+      "apiGetUserRoles": {"action":"secure.user.roles.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/secure/user/roles/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "apiGet_1": {"action":"secure.user.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/secure/user/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "apiHistoryv14": {"action":"project.history.read","effects":["read"],"method":"GET","origin":"{origin}","params":["jobIdFilter","reportIdFilter","userFilter","statFilter","jobListFilter","excludeJobListFilter","recentFilter","begin","end","max","offset"],"path":"/api/{version}/project/{project}/history","scope":{"project":{"at":"project","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "apiHomeSummary": {"action":"home.summary.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/home/summary","scope":{}},
+      "apiJobActionInput": {"action":"job.scm.action.input.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/job/{id}/scm/{integration}/action/{actionId}/input","scope":{"actionId":{"at":"actionId","from":"path"},"id":{"at":"id","from":"path"},"integration":{"at":"integration","from":"path"}}},
+      "apiJobActionPerform": {"action":"job.scm.action.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/{version}/job/{id}/scm/{integration}/action/{actionId}","scope":{"actionId":{"at":"actionId","from":"path"},"id":{"at":"id","from":"path"},"integration":{"at":"integration","from":"path"}}},
+      "apiJobBrowse": {"action":"project.jobs.browse.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","params":["metaExclude","path","meta","breakpoint","max"],"path":"/api/{version}/project/{project}/jobs/browse","scope":{"project":{"at":"project","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "apiJobBrowseGet_docs": {"action":"project.jobs.browse.read","effects":["read"],"method":"GET","origin":"{origin}","params":["path","meta","metaExclude","breakpoint"],"path":"/api/{version}/project/{project}/jobs/browse","scope":{"project":{"at":"project","from":"path"}}},
+      "apiJobClusterTakeoverSchedule": {"action":"scheduler.takeover.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/{version}/scheduler/takeover","scope":{}},
+      "apiJobDelete": {"action":"job.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/job/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "apiJobDeleteBulk": {"action":"jobs.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/{version}/jobs/delete","scope":{}},
+      "apiJobDeleteBulk_docs2": {"action":"jobs.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["ids","idlist"],"path":"/api/{version}/jobs/delete","scope":{}},
+      "apiJobDetail": {"action":"job.info.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/job/{id}/info","scope":{"id":{"at":"id","from":"path"}}},
+      "apiJobDiff": {"action":"job.scm.diff.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/job/{id}/scm/{integration}/diff","scope":{"id":{"at":"id","from":"path"},"integration":{"at":"integration","from":"path"}}},
+      "apiJobExecutions": {"action":"job.executions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["status","max","offset","includeJobRef"],"path":"/api/{version}/job/{id}/executions","scope":{"id":{"at":"id","from":"path"}}},
+      "apiJobExecutionsDelete": {"action":"job.executions.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/job/{id}/executions","scope":{"id":{"at":"id","from":"path"}}},
+      "apiJobExport": {"action":"job.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/api/{version}/job/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "apiJobFileInfo": {"action":"jobs.file.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/jobs/file/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "apiJobFileMultiUpload": {"action":"job.input.file.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/job/{id}/input/file","scope":{"id":{"at":"id","from":"path"}}},
+      "apiJobFileUpload": {"action":"job.input.file.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["fileName"],"path":"/api/{version}/job/{id}/input/file/{optionName}","scope":{"id":{"at":"id","from":"path"},"optionName":{"at":"optionName","from":"path"}}},
+      "apiJobForecast": {"action":"job.forecast.read","effects":["read"],"method":"GET","origin":"{origin}","params":["time","past","max"],"path":"/api/{version}/job/{id}/forecast","scope":{"id":{"at":"id","from":"path"}}},
+      "apiJobMeta": {"action":"job.meta.read","effects":["read"],"method":"GET","origin":"{origin}","params":["meta","metaExclude"],"path":"/api/{version}/job/{id}/meta","scope":{"id":{"at":"id","from":"path"}}},
+      "apiJobRetry": {"action":"job.retry.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","params":["failedNodes","argString","loglevel","asUser","filter","runAtTime","option.OPTNAME","meta.KEY"],"path":"/api/{version}/job/{id}/retry/{executionId}","scope":{"executionId":{"at":"executionId","from":"path"},"id":{"at":"id","from":"path"},"option.OPTNAME":{"at":"option.OPTNAME","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "apiJobRun": {"action":"job.executions.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","params":["argString","loglevel","asUser","filter","runAtTime","option.OPTNAME","meta.KEY"],"path":"/api/{version}/job/{id}/executions","scope":{"id":{"at":"id","from":"path"}}},
+      "apiJobRun_1": {"action":"job.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","params":["argString","loglevel","asUser","filter","runAtTime","option.OPTNAME","meta.KEY"],"path":"/api/{version}/job/{id}/run","scope":{"id":{"at":"id","from":"path"}}},
+      "apiJobStatus": {"action":"job.scm.status.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/job/{id}/scm/{integration}/status","scope":{"id":{"at":"id","from":"path"},"integration":{"at":"integration","from":"path"}}},
+      "apiJobWorkflow": {"action":"job.workflow.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/job/{id}/workflow","scope":{"id":{"at":"id","from":"path"}}},
+      "apiJobsExportv14": {"action":"project.jobs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["idlist","groupPath","jobFilter","format","max","offset","sortBy","sortOrder","jobExactFilter","projFilter","groupPathExact","descFilter","loglevelFilter","scheduledFilter","scheduleEnabledFilter","executionEnabledFilter","serverNodeUUIDFilter","daysAhead","runJobLaterFilter","paginatedRequired"],"path":"/api/{version}/project/{project}/jobs/export","scope":{"project":{"at":"project","from":"path"}}},
+      "apiJobsImportv14": {"action":"project.jobs.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["fileformat","dupeOption","uuidOption"],"path":"/api/{version}/project/{project}/jobs/import","scope":{"project":{"at":"project","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "apiJobsListv2": {"action":"project.jobs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["max","offset","tags","sortBy","sortOrder","jobFilter","jobExactFilter","projFilter","groupPath","groupPathExact","descFilter","loglevelFilter","idlist","scheduledFilter","scheduleEnabledFilter","executionEnabledFilter","serverNodeUUIDFilter","daysAhead","runJobLaterFilter","paginatedRequired"],"path":"/api/{version}/project/{project}/jobs","scope":{"project":{"at":"project","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "apiList": {"action":"secure.roles.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/secure/roles","scope":{}},
+      "apiListAllJobsInProject": {"action":"project.all_jobs.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/listAllJobs","scope":{"project":{"at":"project","from":"path"},"version":{"at":"version","from":"path"}}},
+      "apiListRoles": {"action":"user.roles.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/user/roles","scope":{}},
+      "apiList_1": {"action":"secure.users.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/secure/users","scope":{}},
+      "apiLoadProjectCalendars": {"action":"project.calendars.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/calendars","scope":{"project":{"at":"project","from":"path"}}},
+      "apiLoadSystemCalendars": {"action":"system.calendars.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/system/calendars","scope":{}},
+      "apiLogstorageInfo": {"action":"system.logstorage.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/system/logstorage","scope":{}},
+      "apiLogstorageListIncompleteExecutions": {"action":"system.logstorage.incomplete.read","effects":["read"],"method":"GET","origin":"{origin}","params":["query"],"path":"/api/{version}/system/logstorage/incomplete","scope":{}},
+      "apiMetricsHealthcheck_docs": {"action":"metrics.healthcheck.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/metrics/healthcheck","scope":{}},
+      "apiMetricsList_docs": {"action":"metrics.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/metrics","scope":{}},
+      "apiMetricsMetrics_docs": {"action":"metrics.metrics.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/metrics/metrics","scope":{}},
+      "apiMetricsPing_docs": {"action":"metrics.ping.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/metrics/ping","scope":{}},
+      "apiMetricsThreads_docs": {"action":"metrics.threads.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/metrics/threads","scope":{}},
+      "apiNodeHealth": {"action":"project.healthcheck.status.read","effects":["read"],"method":"GET","origin":"{origin}","params":["node"],"path":"/api/{version}/project/{project}/healthcheck/status","scope":{"project":{"at":"project","from":"path"}}},
+      "apiNodeHealthAll": {"action":"project.healthcheck.status.all.read","effects":["read"],"method":"GET","origin":"{origin}","params":["includeChecks"],"path":"/api/{version}/project/{project}/healthcheck/status/all","scope":{"project":{"at":"project","from":"path"}}},
+      "apiOtherUserDataPost_docs": {"action":"user.info.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/user/info/{username}","scope":{"username":{"at":"username","from":"path"}}},
+      "apiPluginInput": {"action":"project.scm.plugin.input.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/scm/{integration}/plugin/{type}/input","scope":{"integration":{"at":"integration","from":"path"},"project":{"at":"project","from":"path"},"type":{"at":"type","from":"path"}}},
+      "apiPlugins": {"action":"project.scm.plugins.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/scm/{integration}/plugins","scope":{"integration":{"at":"integration","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiPostResource": {"action":"storage.keys.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/{version}/storage/keys/{path}","scope":{"path":{"at":"path","from":"path"}}},
+      "apiProjectAclsDelete_docs": {"action":"project.acl.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/project/{project}/acl/{path}","scope":{"path":{"at":"path","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiProjectAclsGet_docs": {"action":"project.acl.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/acl/{path}","scope":{"path":{"at":"path","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiProjectAclsPost_docs": {"action":"project.acl.share","body":"any","effects":["share"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/acl/{path}","scope":{"path":{"at":"path","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiProjectAclsPut_docs": {"action":"project.acl.share","body":"any","effects":["share"],"method":"PUT","origin":"{origin}","path":"/api/{version}/project/{project}/acl/{path}","scope":{"path":{"at":"path","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiProjectActionInput": {"action":"project.scm.action.input.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/scm/{integration}/action/{actionId}/input","scope":{"actionId":{"at":"actionId","from":"path"},"integration":{"at":"integration","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiProjectActionPerform": {"action":"project.scm.action.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/scm/{integration}/action/{actionId}","scope":{"actionId":{"at":"actionId","from":"path"},"integration":{"at":"integration","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiProjectCalendars": {"action":"project.calendars.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/calendars","scope":{"project":{"at":"project","from":"path"},"version":{"at":"version","from":"path"}}},
+      "apiProjectConfig": {"action":"project.scm.config.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/scm/{integration}/config","scope":{"integration":{"at":"integration","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiProjectConfigGet": {"action":"project.config.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/config","scope":{"project":{"at":"project","from":"path"},"version":{"at":"version","from":"path"}}},
+      "apiProjectConfigKeyDelete": {"action":"project.config.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/project/{project}/config/{keypath}","scope":{"keypath":{"at":"keypath","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiProjectConfigKeyGet": {"action":"project.config.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/config/{keypath}","scope":{"keypath":{"at":"keypath","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiProjectConfigKeyPut": {"action":"project.config.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","params":["enablePluginValidation"],"path":"/api/{version}/project/{project}/config/{keypath}","scope":{"keypath":{"at":"keypath","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiProjectConfigPut": {"action":"project.config.admin","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/{version}/project/{project}/config","scope":{"project":{"at":"project","from":"path"},"version":{"at":"version","from":"path"}}},
+      "apiProjectConfigPut.json.6f2878218d3c": {"action":"project.config.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/{version}/project/{project}/config","scope":{"project":{"at":"project","from":"path"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "apiProjectCreate": {"action":"projects.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/projects","scope":{}},
+      "apiProjectDelete": {"action":"project.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["deferred"],"path":"/api/{version}/project/{project}","scope":{"project":{"at":"project","from":"path"}}},
+      "apiProjectDisable": {"action":"project.scm.plugin.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/scm/{integration}/plugin/{type}/disable","scope":{"integration":{"at":"integration","from":"path"},"project":{"at":"project","from":"path"},"type":{"at":"type","from":"path"}}},
+      "apiProjectDisableLater": {"action":"project.disable.later.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/disable/later","scope":{"project":{"at":"project","from":"path"}}},
+      "apiProjectEnable": {"action":"project.scm.plugin.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/scm/{integration}/plugin/{type}/enable","scope":{"integration":{"at":"integration","from":"path"},"project":{"at":"project","from":"path"},"type":{"at":"type","from":"path"}}},
+      "apiProjectEnableLater": {"action":"project.enable.later.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/enable/later","scope":{"project":{"at":"project","from":"path"}}},
+      "apiProjectExport": {"action":"project.export.read","effects":["read"],"method":"GET","origin":"{origin}","params":["executionIds","exportAll","exportJobs","exportExecutions","exportConfigs","exportReadmes","exportAcls","exportComponents.calendars","exportComponents.Schedule%20Definitions","exportComponents.tours-manager","exportComponents.node-wizard","archiveParams"],"path":"/api/{version}/project/{project}/export","scope":{"executionIds":{"at":"executionIds","from":"query","optional":true},"project":{"at":"project","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "apiProjectExportAsyncDownload": {"action":"project.export.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/export/download/{token}","scope":{"project":{"at":"project","from":"path"},"token":{"at":"token","from":"path"}}},
+      "apiProjectExportAsyncPost_docs": {"action":"project.export.async.read","effects":["read"],"method":"POST","origin":"{origin}","params":["executionIds","exportAll","exportJobs","exportExecutions","exportConfigs","exportReadmes","exportAcls","exportScm","exportWebhooks","whkIncludeAuthTokens","whkRegenUuid"],"path":"/api/{version}/project/{project}/export/async","scope":{"executionIds":{"at":"executionIds","from":"query","optional":true},"project":{"at":"project","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"},"whkRegenUuid":{"at":"whkRegenUuid","from":"query","optional":true}}},
+      "apiProjectExportAsyncStatus": {"action":"project.export.status.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/export/status/{token}","scope":{"project":{"at":"project","from":"path"},"token":{"at":"token","from":"path"}}},
+      "apiProjectExportAsync_docs": {"action":"project.export.async.read","effects":["read"],"method":"GET","origin":"{origin}","params":["executionIds","exportAll","exportJobs","exportExecutions","exportConfigs","exportReadmes","exportAcls","exportComponents.calendars","exportComponents.Schedule%20Definitions","exportComponents.tours-manager","exportComponents.node-wizard"],"path":"/api/{version}/project/{project}/export/async","scope":{"project":{"at":"project","from":"path"}}},
+      "apiProjectExportPost_docs": {"action":"project.export.read","effects":["read"],"method":"POST","origin":"{origin}","params":["executionIds","exportAll","exportJobs","exportExecutions","exportConfigs","exportReadmes","exportAcls","exportScm","exportWebhooks","whkIncludeAuthTokens","whkRegenUuid"],"path":"/api/{version}/project/{project}/export","scope":{"executionIds":{"at":"executionIds","from":"query","optional":true},"project":{"at":"project","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"},"whkRegenUuid":{"at":"whkRegenUuid","from":"query","optional":true}}},
+      "apiProjectFileDelete": {"action":"project.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/project/{project}/{filename}","scope":{"filename":{"at":"filename","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiProjectFileGet": {"action":"project.read","effects":["read"],"method":"GET","origin":"{origin}","params":["statusFilter","abortedbyFilter","jobIdListFilter","excludeJobIdListFilter","jobListFilter","excludeJobListFilter","groupPath","groupPathExact","excludeGroupPath","excludeGroupPathExact","jobFilter","excludeJobFilter","jobExactFilter","excludeJobExactFilter","startafterFilter","startbeforeFilter","endafterFilter","endbeforeFilter","begin","end","adhoc","recentFilter","olderFilter","userFilter","executionTypeFilter","useStats","groupByJob","adhocStringFilter","nodeFilter","optionFilter","max","offset","executionIds","exportAll","exportJobs","exportExecutions","exportConfigs","exportReadmes","exportAcls","exportComponents.calendars","exportComponents.Schedule%20Definitions","exportComponents.tours-manager","exportComponents.node-wizard","archiveParams","jobIdFilter","reportIdFilter","statFilter","tags","sortBy","sortOrder","projFilter","descFilter","loglevelFilter","idlist","scheduledFilter","scheduleEnabledFilter","executionEnabledFilter","serverNodeUUIDFilter","daysAhead","runJobLaterFilter","paginatedRequired","meta","filter"],"path":"/api/{version}/project/{project}/{filename}","path_patterns":{"filename":"[^cehjlmrstw].*|c(?:|[^ao].*|a(?:|[^l].*|l(?:|[^e].*|e(?:|[^n].*|n(?:|[^d].*|d(?:|[^a].*|a(?:|[^r].*|r(?:|[^s].*|s.+)))))))|o(?:|[^n].*|n(?:|[^f].*|f(?:|[^i].*|i(?:|[^g].*|g.+)))))|e(?:|[^x].*|x(?:|[^ep].*|e(?:|[^c].*|c(?:|[^u].*|u(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s.+)))))))|p(?:|[^o].*|o(?:|[^r].*|r(?:|[^t].*|t.+)))))|h(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^o].*|o(?:|[^r].*|r(?:|[^y].*|y.+))))))|j(?:|[^o].*|o(?:|[^b].*|b(?:|[^s].*|s.+)))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^A].*|A(?:|[^l].*|l(?:|[^l].*|l(?:|[^J].*|J(?:|[^o].*|o(?:|[^b].*|b(?:|[^s].*|s.+))))))))))|m(?:|[^e].*|e(?:|[^t].*|t(?:|[^a].*|a.+)))|r(?:|[^e].*|e(?:|[^s].*|s(?:|[^o].*|o(?:|[^u].*|u(?:|[^r].*|r(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))))|s(?:|[^o].*|o(?:|[^u].*|u(?:|[^r].*|r(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))|t(?:|[^o].*|o(?:|[^u].*|u(?:|[^r].*|r(?:|[^s].*|s.+))))|w(?:|[^e].*|e(?:|[^b].*|b(?:|[^h].*|h(?:|[^o].*|o(?:|[^o].*|o(?:|[^k].*|k(?:|[^s].*|s.+)))))))"},"scope":{"filename":{"at":"filename","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiProjectFilePut": {"action":"project.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","params":["jobUuidOption","importExecutions","importConfig","importACL","importScm","importWebhooks","whkRegenAuthTokens","importNodesSources","importComponents.NAME","importOpts.NAME.KEY"],"path":"/api/{version}/project/{project}/{filename}","path_patterns":{"filename":"[^ci].*|c(?:|[^o].*|o(?:|[^n].*|n(?:|[^f].*|f(?:|[^i].*|i(?:|[^g].*|g.+)))))|i(?:|[^m].*|m(?:|[^p].*|p(?:|[^o].*|o(?:|[^r].*|r(?:|[^t].*|t.+)))))"},"scope":{"filename":{"at":"filename","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiProjectGet": {"action":"project.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}","scope":{"project":{"at":"project","from":"path"}}},
+      "apiProjectHasHealthStatusEnhancer": {"action":"project.healthcheck.enhancer.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/healthcheck/enhancer","scope":{"project":{"at":"project","from":"path"}}},
+      "apiProjectImport": {"action":"project.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["jobUuidOption","importExecutions","importConfig","importACL","importScm","importWebhooks","whkRegenAuthTokens","importNodesSources","importComponents.NAME","importOpts.NAME.KEY"],"path":"/api/{version}/project/{project}/import","scope":{"project":{"at":"project","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "apiProjectImportTour": {"action":"project.tour.import.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/tour/import/{tourFolder}/{manifestFileName}","scope":{"manifestFileName":{"at":"manifestFileName","from":"path"},"project":{"at":"project","from":"path"},"tourFolder":{"at":"tourFolder","from":"path"}}},
+      "apiProjectList": {"action":"projects.read","effects":["read"],"method":"GET","origin":"{origin}","params":["meta"],"path":"/api/{version}/projects","scope":{}},
+      "apiProjectLoadResource": {"action":"project.tours.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/tours/{path}","scope":{"path":{"at":"path","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiProjectMeta": {"action":"project.meta.read","effects":["read"],"method":"GET","origin":"{origin}","params":["meta"],"path":"/api/{version}/project/{project}/meta","scope":{"project":{"at":"project","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "apiProjectSetup": {"action":"project.scm.plugin.setup.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/scm/{integration}/plugin/{type}/setup","scope":{"integration":{"at":"integration","from":"path"},"project":{"at":"project","from":"path"},"type":{"at":"type","from":"path"}}},
+      "apiProjectStatus": {"action":"project.scm.status.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/scm/{integration}/status","scope":{"integration":{"at":"integration","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiProjectToggleSCM": {"action":"project.scm.toggle.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/scm/toggle","scope":{"project":{"at":"project","from":"path"}}},
+      "apiProjectToursList": {"action":"project.tours.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/tours","scope":{"project":{"at":"project","from":"path"},"version":{"at":"version","from":"path"}}},
+      "apiPutResource": {"action":"storage.keys.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/{version}/storage/keys/{path}","scope":{"path":{"at":"path","from":"path"}}},
+      "apiRefreshHealthCheck": {"action":"project.healthcheck.refresh.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["node"],"path":"/api/{version}/project/{project}/healthcheck/refresh","scope":{"project":{"at":"project","from":"path"}}},
+      "apiRefreshHealthCheckAll": {"action":"project.healthcheck.refresh.all.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/healthcheck/refresh/all","scope":{"project":{"at":"project","from":"path"}}},
+      "apiResourcesv2": {"action":"project.resources.read","effects":["read"],"method":"GET","origin":"{origin}","params":["filter"],"path":"/api/{version}/project/{project}/resources","scope":{"project":{"at":"project","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "apiResourcev14": {"action":"project.resource.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/resource/{name}","scope":{"name":{"at":"name","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiResumeIncompleteLogstorage": {"action":"system.logstorage.incomplete.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/system/logstorage/incomplete/resume","scope":{}},
+      "apiRunCommandv14": {"action":"project.run.command.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","params":["filter","exec","nodeThreadcount","nodeKeepgoing","asUser"],"path":"/api/{version}/project/{project}/run/command","scope":{"project":{"at":"project","from":"path"}}},
+      "apiRunScriptUrlv14": {"action":"project.run.url.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","params":["filter","argString","scriptURL","nodeThreadcount","nodeKeepgoing","asUser","scriptInterpreter","fileExtension","interpreterArgsQuoted"],"path":"/api/{version}/project/{project}/run/url","scope":{"project":{"at":"project","from":"path"}}},
+      "apiRunScriptv14": {"action":"project.run.script.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","params":["filter","argString","nodeThreadcount","nodeKeepgoing","asUser","scriptInterpreter","fileExtension","interpreterArgsQuoted"],"path":"/api/{version}/project/{project}/run/script","scope":{"project":{"at":"project","from":"path"}}},
+      "apiRundeckEndpoints": {"action":"tours.endpoints.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/tours/endpoints","scope":{}},
+      "apiSchedulerListJobs": {"action":"scheduler.server.jobs.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/scheduler/server/{uuid}/jobs","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "apiSchedulerListJobsCurrent_docs": {"action":"scheduler.jobs.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/scheduler/jobs","scope":{}},
+      "apiSendPasswordReset": {"action":"secure.generatepasswordreset.send","effects":["send"],"method":"POST","origin":"{origin}","path":"/api/{version}/secure/generatepasswordreset/{username}","scope":{"username":{"at":"username","from":"path"}}},
+      "apiSourceGet": {"action":"project.source.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/source/{index}","scope":{"index":{"at":"index","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiSourceGetContent": {"action":"project.source.resources.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/source/{index}/resources","scope":{"index":{"at":"index","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiSourceWriteContent": {"action":"project.source.resources.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/source/{index}/resources","scope":{"index":{"at":"index","from":"path"},"project":{"at":"project","from":"path"}}},
+      "apiSourcesList": {"action":"project.sources.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/sources","scope":{"project":{"at":"project","from":"path"},"version":{"at":"version","from":"path"}}},
+      "apiStoreLicense": {"action":"enterprise.license.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","params":["license_agreement"],"path":"/api/{version}/enterprise/license","scope":{"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "apiSystemAcls": {"action":"system.acl.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/system/acl/{path}","scope":{"path":{"at":"path","from":"path"}}},
+      "apiSystemAcls_DELETE_docs": {"action":"system.acl.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/system/acl/{path}","scope":{"path":{"at":"path","from":"path"}}},
+      "apiSystemAcls_POST_docs": {"action":"system.acl.share","body":"any","effects":["share"],"method":"POST","origin":"{origin}","path":"/api/{version}/system/acl/{path}","scope":{"path":{"at":"path","from":"path"}}},
+      "apiSystemAcls_PUT_docs": {"action":"system.acl.share","body":"any","effects":["share"],"method":"PUT","origin":"{origin}","path":"/api/{version}/system/acl/{path}","scope":{"path":{"at":"path","from":"path"}}},
+      "apiSystemCalendars": {"action":"system.calendars.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/system/calendars","scope":{}},
+      "apiSystemImportTour": {"action":"system.tour.import.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/system/tour/import/{tourFolder}/{manifestFileName}","scope":{"manifestFileName":{"at":"manifestFileName","from":"path"},"tourFolder":{"at":"tourFolder","from":"path"}}},
+      "apiSystemInfo": {"action":"system.info.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/system/info","scope":{}},
+      "apiSystemList": {"action":"system.tours.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/system/tours","scope":{}},
+      "apiSystemLoadResource": {"action":"system.tours.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/system/tours/{path}","scope":{"path":{"at":"path","from":"path"}}},
+      "apiTagsForNodes": {"action":"project.nodes.tags.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/nodes/tags","scope":{"project":{"at":"project","from":"path"}}},
+      "apiToggle": {"action":"enterprise.cluster.executions.write","effects":["write"],"method":"POST","origin":"{origin}","params":["uuid"],"path":"/api/{version}/enterprise/cluster/executions/disable","scope":{"uuid":{"at":"uuid","from":"query"}}},
+      "apiToggle_1": {"action":"enterprise.cluster.executions.write","effects":["write"],"method":"POST","origin":"{origin}","params":["uuid"],"path":"/api/{version}/enterprise/cluster/executions/enable","scope":{"uuid":{"at":"uuid","from":"query"}}},
+      "apiTokenCreate": {"action":"tokens.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/{version}/tokens/{user}","scope":{"user":{"at":"user","from":"path"}}},
+      "apiTokenDelete": {"action":"token.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/token/{tokenid}","scope":{"tokenid":{"at":"tokenid","from":"path"}}},
+      "apiTokenGet": {"action":"token.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/token/{tokenid}","scope":{"tokenid":{"at":"tokenid","from":"path"}}},
+      "apiTokenList": {"action":"tokens.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/tokens/{user}","scope":{"user":{"at":"user","from":"path"}}},
+      "apiTokenRemoveExpired": {"action":"tokens.expired.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/{version}/tokens/{user}/removeExpired","scope":{"user":{"at":"user","from":"path"}}},
+      "apiUpdateMembers": {"action":"secure.role.members.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/{version}/secure/role/{id}/updateMembers","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"version":{"at":"version","from":"path"}}},
+      "apiUserData": {"action":"user.info.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/user/info/{username}","scope":{"username":{"at":"username","from":"path"}}},
+      "apiUserDataPost_docs": {"action":"user.info.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/user/info","scope":{}},
+      "apiUserData_docs": {"action":"user.info.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/user/info","scope":{}},
+      "apiUserList": {"action":"user.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/user/list","scope":{}},
+      "apiValidateOption": {"action":"project.jobs.option.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","params":["jobWasScheduled"],"path":"/api/{version}/project/{project}/jobs/validateOption","scope":{"project":{"at":"project","from":"path"},"query":{"at":"","from":"query","type":"object"},"version":{"at":"version","from":"path"}}},
+      "appContextAuthorizationsForResourceKind": {"action":"authorizations.application.read","effects":["read"],"method":"GET","origin":"{origin}","params":["actions"],"path":"/api/{version}/authorizations/application/{kind}","scope":{"kind":{"at":"kind","from":"path"}}},
+      "appContextAuthorizationsForTypeWithSpecifier": {"action":"authorizations.application.read","effects":["read"],"method":"GET","origin":"{origin}","params":["actions"],"path":"/api/{version}/authorizations/application/{type}/{specifier}","scope":{"specifier":{"at":"specifier","from":"path"},"type":{"at":"type","from":"path"}}},
+      "checkPing": {"action":"runner_management.check_ping.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/runnerManagement/checkPing/{token}","scope":{"token":{"at":"token","from":"path"}}},
+      "createNoEphemeralReplica": {"action":"runner_management.runner.replicas.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/runnerManagement/runner/{runnerId}/replicas","scope":{"runnerId":{"at":"runnerId","from":"path"}}},
+      "createProjectNoEphemeralReplica": {"action":"project.runner_management.runner.replicas.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/runnerManagement/runner/{runnerId}/replicas","scope":{"project":{"at":"project","from":"path"},"runnerId":{"at":"runnerId","from":"path"}}},
+      "createProjectRunner": {"action":"project.runner_management.runners.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/runnerManagement/runners","scope":{"project":{"at":"project","from":"path"}}},
+      "createRunner": {"action":"runner_management.runners.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/runnerManagement/runners","scope":{}},
+      "createWebhook_docs": {"action":"project.webhook.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/webhook","scope":{"project":{"at":"project","from":"path"}}},
+      "deleteProjectRunner": {"action":"project.runner_management.runner.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/project/{project}/runnerManagement/runner/{runnerId}","scope":{"project":{"at":"project","from":"path"},"runnerId":{"at":"runnerId","from":"path"}}},
+      "deleteProjectRunnerReplica": {"action":"project.runner_management.runner.replica.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/project/{project}/runnerManagement/runner/{runnerId}/replica/{replicaId}","scope":{"project":{"at":"project","from":"path"},"replicaId":{"at":"replicaId","from":"path"},"runnerId":{"at":"runnerId","from":"path"}}},
+      "deleteRunner": {"action":"runner_management.runner.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/runnerManagement/runner/{runnerId}","scope":{"runnerId":{"at":"runnerId","from":"path"}}},
+      "deleteRunnerReplica": {"action":"runner_management.runner.replica.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/runnerManagement/runner/{runnerId}/replica/{replicaId}","scope":{"replicaId":{"at":"replicaId","from":"path"},"runnerId":{"at":"runnerId","from":"path"}}},
+      "downloadRunner": {"action":"runner_management.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/runnerManagement/download/{token}","scope":{"token":{"at":"token","from":"path"}}},
+      "featureQuery": {"action":"feature.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/feature/{featureName}","scope":{"featureName":{"at":"featureName","from":"path"}}},
+      "featureQueryAll": {"action":"feature.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/feature","scope":{}},
+      "get": {"action":"project.webhook.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/webhook/{id}","scope":{"id":{"at":"id","from":"path"},"project":{"at":"project","from":"path"}}},
+      "getDataset": {"action":"enterprise.system_report.datasets.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/enterprise/system-report/datasets/{dataset}","scope":{"dataset":{"at":"dataset","from":"path"}}},
+      "getDebugEvents": {"action":"enterprise.project.webhooks.debug_events.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/enterprise/project/{project}/webhooks/{id}/debug-events","scope":{"id":{"at":"id","from":"path"},"project":{"at":"project","from":"path"}}},
+      "getEnabled": {"action":"userclass.enabled.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/userclass/enabled","scope":{}},
+      "getRoiMetricsDataApi": {"action":"execution.roimetrics.data.read","effects":["read"],"method":"GET","origin":"{origin}","params":["wait"],"path":"/api/{version}/execution/{id}/roimetrics/data","scope":{"id":{"at":"id","from":"path"}}},
+      "getRoiMetricsDataAvailability": {"action":"execution.roimetrics.available.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/execution/{id}/roimetrics/available","scope":{"id":{"at":"id","from":"path"}}},
+      "getRunnerKey": {"action":"runner_management.runner.keys.read","effects":["read"],"method":"GET","origin":"{origin}","params":["path","refresh"],"path":"/api/{version}/runnerManagement/runner/{id}/keys","scope":{"id":{"at":"id","from":"path"}}},
+      "getUserClass": {"action":"userclass.user.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/userclass/user/{username}","scope":{"username":{"at":"username","from":"path"}}},
+      "getUserClassAllocations": {"action":"userclass.allocations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/userclass/allocations","scope":{}},
+      "getUserClassAllocationsState": {"action":"userclass.state.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/userclass/state","scope":{}},
+      "getUserClassSelf": {"action":"userclass.self.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/userclass/self","scope":{}},
+      "getUserClassesAvailable": {"action":"userclass.available.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/userclass/available","scope":{}},
+      "info": {"action":"api.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}","scope":{}},
+      "job": {"action":"job.tags.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/job/{id}/tags","scope":{"id":{"at":"id","from":"path"}}},
+      "list": {"action":"project.webhooks.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/webhooks","scope":{"project":{"at":"project","from":"path"},"version":{"at":"version","from":"path"}}},
+      "listDatasets": {"action":"enterprise.system_report.datasets.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/enterprise/system-report/datasets","scope":{}},
+      "listPlugins": {"action":"plugin.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/plugin/list","scope":{}},
+      "listProjectAssociatedTags": {"action":"runner_management.tags.read","effects":["read"],"method":"GET","origin":"{origin}","params":["project"],"path":"/api/{version}/runnerManagement/tags","scope":{"project":{"at":"project","from":"query"}}},
+      "listProjectRunners": {"action":"project.runner_management.runners.read","effects":["read"],"method":"GET","origin":"{origin}","params":["tags","localOnly","filter","status"],"path":"/api/{version}/project/{project}/runnerManagement/runners","scope":{"project":{"at":"project","from":"path"}}},
+      "listProjectRunnersReplicas": {"action":"project.runner_management.runner.replicas.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/runnerManagement/runner/{runnerId}/replicas","scope":{"project":{"at":"project","from":"path"},"runnerId":{"at":"runnerId","from":"path"}}},
+      "listRunnerTags": {"action":"runner_management.runner.tags.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/runnerManagement/runner/{id}/tags","scope":{"id":{"at":"id","from":"path"}}},
+      "listRunners": {"action":"runner_management.runners.read","effects":["read"],"method":"GET","origin":"{origin}","params":["tags","localOnly","filter","status"],"path":"/api/{version}/runnerManagement/runners","scope":{}},
+      "listRunnersReplicas": {"action":"runner_management.runner.replicas.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/runnerManagement/runner/{runnerId}/replicas","scope":{"runnerId":{"at":"runnerId","from":"path"}}},
+      "pingProjectRunner": {"action":"project.runner_management.runner.ping.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/runnerManagement/runner/{id}/ping","scope":{"id":{"at":"id","from":"path"},"project":{"at":"project","from":"path"},"version":{"at":"version","from":"path"}}},
+      "pingRunner": {"action":"runner_management.runner.ping.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/runnerManagement/runner/{id}/ping","scope":{"id":{"at":"id","from":"path"},"version":{"at":"version","from":"path"}}},
+      "post": {"action":"webhook.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/{version}/webhook/{authtoken}","scope":{"authtoken":{"at":"authtoken","from":"path"},"version":{"at":"version","from":"path"}}},
+      "projectCheckPing": {"action":"project.runner_management.check_ping.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/runnerManagement/checkPing/{token}","scope":{"project":{"at":"project","from":"path"},"token":{"at":"token","from":"path"}}},
+      "projectContextAuthorizationsForJob": {"action":"authorizations.project.job.read","effects":["read"],"method":"GET","origin":"{origin}","params":["actions"],"path":"/api/{version}/authorizations/project/{project}/job/{specifier}","scope":{"project":{"at":"project","from":"path"},"query":{"at":"","from":"query","type":"object"},"specifier":{"at":"specifier","from":"path"},"version":{"at":"version","from":"path"}}},
+      "projectContextAuthorizationsForResourceKind": {"action":"authorizations.project.read","effects":["read"],"method":"GET","origin":"{origin}","params":["actions"],"path":"/api/{version}/authorizations/project/{project}/{kind}","scope":{"kind":{"at":"kind","from":"path"},"project":{"at":"project","from":"path"}}},
+      "projectContextAuthorizationsForTypeWithSpecifier": {"action":"authorizations.project.read","effects":["read"],"method":"GET","origin":"{origin}","params":["actions"],"path":"/api/{version}/authorizations/project/{project}/{type}/{specifier}","path_patterns":{"type":"[^j].*|j(?:|[^o].*|o(?:|[^b].*|b.+))"},"scope":{"project":{"at":"project","from":"path"},"specifier":{"at":"specifier","from":"path"},"type":{"at":"type","from":"path"}}},
+      "projectContextRunnerConfig": {"action":"project.runner_management.config.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/runnerManagement/config","scope":{"project":{"at":"project","from":"path"}}},
+      "projectDownloadRunner": {"action":"project.runner_management.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/runnerManagement/download/{token}","scope":{"project":{"at":"project","from":"path"},"token":{"at":"token","from":"path"}}},
+      "projectRunnerInfo": {"action":"project.runner_management.runner.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/runnerManagement/runner/{runnerId}","scope":{"project":{"at":"project","from":"path"},"runnerId":{"at":"runnerId","from":"path"}}},
+      "projectUi": {"action":"project.runner_management.ui.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/project/{project}/runnerManagement/ui","scope":{"project":{"at":"project","from":"path"}}},
+      "query": {"action":"project.job_tags.read","effects":["read"],"method":"GET","origin":"{origin}","params":["sortOrders","jobFilter","jobExactFilter","projFilter","groupPath","groupPathExact","descFilter","loglevelFilter","idlist","scheduledFilter","scheduleEnabledFilter","executionEnabledFilter","serverNodeUUIDFilter","daysAhead","runJobLaterFilter","max","offset","sortBy","sortOrder","inputParamMap","paginatedRequired"],"path":"/api/{version}/project/{project}/jobTags/query","scope":{"project":{"at":"project","from":"path"}}},
+      "refresh": {"action":"config.refresh.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/{version}/config/refresh","scope":{"version":{"at":"version","from":"path"}}},
+      "regenerateProjectRunnerCreds": {"action":"project.runner_management.runner.creds.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/runnerManagement/runner/{id}/regenerateCreds","scope":{"id":{"at":"id","from":"path"},"project":{"at":"project","from":"path"},"version":{"at":"version","from":"path"}}},
+      "regenerateRunnerCreds": {"action":"runner_management.runner.creds.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/{version}/runnerManagement/runner/{id}/regenerateCreds","scope":{"id":{"at":"id","from":"path"},"version":{"at":"version","from":"path"}}},
+      "remove": {"action":"project.webhook.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/project/{project}/webhook/{id}","scope":{"id":{"at":"id","from":"path"},"project":{"at":"project","from":"path"}}},
+      "removeProjectAssociation": {"action":"project.runner_management.runner.project_association.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/runnerManagement/runner/{runnerId}/removeProjectAssociation","scope":{"project":{"at":"project","from":"path"},"runnerId":{"at":"runnerId","from":"path"}}},
+      "removeUserClass": {"action":"userclass.user.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/{version}/userclass/user/{username}","scope":{"username":{"at":"username","from":"path"}}},
+      "restart": {"action":"config.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/{version}/config/restart","scope":{"version":{"at":"version","from":"path"}}},
+      "runnerInfo": {"action":"runner_management.runner.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/runnerManagement/runner/{runnerId}","scope":{"runnerId":{"at":"runnerId","from":"path"}}},
+      "save": {"action":"project.webhook.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/webhook/{id}","scope":{"id":{"at":"id","from":"path"},"project":{"at":"project","from":"path"}}},
+      "saveProjectContextRunnerConfig": {"action":"project.runner_management.config.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/runnerManagement/config","scope":{"project":{"at":"project","from":"path"}}},
+      "saveProjectPlugins": {"action":"project.plugins.save.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["serviceName","configPrefix"],"path":"/api/{version}/project/{project}/plugins/save","scope":{"project":{"at":"project","from":"path"},"serviceName":{"at":"serviceName","from":"query"}}},
+      "saveProjectRunner": {"action":"project.runner_management.runner.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/runnerManagement/runner/{runnerId}","scope":{"project":{"at":"project","from":"path"},"runnerId":{"at":"runnerId","from":"path"}}},
+      "saveProjectRunnerNodeDispatchSettings": {"action":"project.runner_management.node_dispatch.config.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/project/{project}/runnerManagement/nodeDispatch/config","scope":{"project":{"at":"project","from":"path"},"version":{"at":"version","from":"path"}}},
+      "saveRunner": {"action":"runner_management.runner.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/runnerManagement/runner/{runnerId}","scope":{"runnerId":{"at":"runnerId","from":"path"}}},
+      "searchTags": {"action":"runner_tag.tags.read","effects":["read"],"method":"GET","origin":"{origin}","params":["keyword","offset","limit"],"path":"/api/{version}/runnerTag/searchTags","scope":{}},
+      "setUserClass": {"action":"userclass.user.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/{version}/userclass/user/{username}","scope":{"username":{"at":"username","from":"path"}}},
+      "startupOperation": {"action":"runner.startup.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/{version}/runner/startup","scope":{}},
+      "storeUserClasses": {"action":"userclass.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/{version}/userclass/update","scope":{"version":{"at":"version","from":"path"}}},
+      "ui": {"action":"runner_management.ui.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/runnerManagement/ui","scope":{}},
+      "verify": {"action":"enterprise.license.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/{version}/enterprise/license","scope":{}}
     }
   }
 }

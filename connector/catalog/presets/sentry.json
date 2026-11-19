@@ -4,11 +4,25 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.add_team_to_project": {"title": "Add team to project", "effects": ["admin"]},
+      "use.analyze_issue_with_seer": {"title": "Analyze issue with seer", "effects": ["generate"]},
+      "use.create_dsn": {"title": "Create dsn", "effects": ["admin"]},
+      "use.create_team": {"title": "Create team", "effects": ["admin"]},
+      "use.delete_alert_rule": {"title": "Delete alert rule", "effects": ["delete"]},
+      "use.delete_metric_monitor": {"title": "Delete metric monitor", "effects": ["delete"]},
+      "use.delete_monitor_environment": {"title": "Delete monitor environment", "effects": ["delete"]},
+      "use.delete_uptime_monitor": {"title": "Delete uptime monitor", "effects": ["delete"]},
+      "use.remove_team_from_project": {"title": "Remove team from project", "effects": ["admin"]},
+      "use.submit_feedback_to_sentry_team": {"title": "Submit feedback to sentry team", "effects": ["send"]},
+      "use.unlink_issue": {"title": "Unlink issue", "effects": ["delete"]},
+      "use.update_dsn": {"title": "Update dsn", "effects": ["admin"]},
+      "use.update_project": {"title": "Update project", "effects": ["admin"]}
     },
     "connection": {"mcp": {"url": "https://mcp.sentry.dev/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.sentry.dev/mcp"}}
     ]
-  }
+  },
+  "mcp": {"token": {"header": "Authorization", "prefix": "Sentry-Bearer "}}
 }

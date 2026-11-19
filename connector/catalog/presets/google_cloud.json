@@ -1,0 +1,18 @@
+{
+  "title": "Google Cloud",
+  "catalog": {
+    "group": "api",
+    "fields": [
+      {"key": "credentials", "label": "Service account key or authorized user credentials (JSON)", "paths": [], "secret": true, "multiline": true},
+      {"key": "token", "label": "Google Cloud credentials", "credential": true, "secret": true, "compose": {"google": "{credentials}"}}
+    ],
+    "connection": {"http": {"slots": [{"value": "token", "origin": "https://*.googleapis.com", "header": "Authorization", "prefix": "Bearer "}]}}
+  },
+  "fragments": {
+    "bigquery": "google_big_query",
+    "firestore": "google_firebase_cloud_firestore",
+    "language": "google_cloud_natural_language",
+    "storage": "google_cloud_storage",
+    "translate": "google_translate"
+  }
+}

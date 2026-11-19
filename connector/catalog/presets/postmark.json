@@ -1,100 +1,476 @@
 {
-  "title": "Postmark",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "server_token", "label": "Server API Token", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "server_token", "origin": "https://api.postmarkapp.com", "path": "/", "header": "X-Postmark-Server-Token"}]}},
     "actions": {
-      "admin.domains": {"title": "Admin: domains"},
-      "delete.domains": {"title": "Delete: domains"},
-      "delete.inboundrules": {"title": "Delete: inboundrules"},
-      "delete.senders": {"title": "Delete: senders"},
-      "delete.servers": {"title": "Delete: servers"},
-      "delete.templates": {"title": "Delete: templates"},
-      "read": {"title": "Read everything the account can see"},
-      "send.batch": {"title": "Send: batch"},
-      "send.batch_with_templates": {"title": "Send: batch with templates"},
-      "send.email": {"title": "Send: email"},
-      "send.resend": {"title": "Send: resend"},
-      "send.with_template": {"title": "Send: with template"},
-      "write.bounces": {"title": "Write: bounces"},
-      "write.bypass": {"title": "Write: bypass"},
-      "write.inbound": {"title": "Write: inbound"},
-      "write.inboundrules": {"title": "Write: inboundrules"},
-      "write.requestnewdkim": {"title": "Write: requestnewdkim"},
-      "write.senders": {"title": "Write: senders"},
-      "write.server": {"title": "Write: server"},
-      "write.servers": {"title": "Write: servers"},
-      "write.templates": {"title": "Write: templates"}
-    }
+      "bounces": {
+        "title": "Bounces"
+      },
+      "bounces.activate": {
+        "title": "Activate"
+      },
+      "bounces.activate.write": {
+        "title": "Create and edit"
+      },
+      "bounces.dump": {
+        "title": "Dump"
+      },
+      "bounces.dump.read": {
+        "title": "Read"
+      },
+      "bounces.read": {
+        "title": "Read"
+      },
+      "data_removals": {
+        "title": "Data removals"
+      },
+      "data_removals.delete": {
+        "title": "Delete"
+      },
+      "data_removals.read": {
+        "title": "Read"
+      },
+      "deliverystats": {
+        "title": "Deliverystats"
+      },
+      "deliverystats.read": {
+        "title": "Read"
+      },
+      "domains": {
+        "title": "Domains"
+      },
+      "domains.admin": {
+        "title": "Manage"
+      },
+      "domains.delete": {
+        "title": "Delete"
+      },
+      "domains.read": {
+        "title": "Read"
+      },
+      "domains.rotatedkim": {
+        "title": "Rotatedkim"
+      },
+      "domains.rotatedkim.admin": {
+        "title": "Manage"
+      },
+      "domains.verifydkim": {
+        "title": "Verifydkim"
+      },
+      "domains.verifydkim.admin": {
+        "title": "Manage"
+      },
+      "domains.verifyreturnpath": {
+        "title": "Verifyreturnpath"
+      },
+      "domains.verifyreturnpath.admin": {
+        "title": "Manage"
+      },
+      "domains.verifyspf": {
+        "title": "Verifyspf"
+      },
+      "domains.verifyspf.admin": {
+        "title": "Manage"
+      },
+      "email": {
+        "title": "Email"
+      },
+      "email.bulk": {
+        "title": "Bulk"
+      },
+      "email.bulk.read": {
+        "title": "Read"
+      },
+      "email.bulk.send": {
+        "title": "Send"
+      },
+      "email.send": {
+        "title": "Send"
+      },
+      "email.with_template": {
+        "title": "With template"
+      },
+      "email.with_template.send": {
+        "title": "Send"
+      },
+      "email.with_templates": {
+        "title": "With templates"
+      },
+      "email.with_templates.send": {
+        "title": "Send"
+      },
+      "message_streams": {
+        "title": "Message streams"
+      },
+      "message_streams.delete": {
+        "title": "Delete"
+      },
+      "message_streams.read": {
+        "title": "Read"
+      },
+      "message_streams.suppressions": {
+        "title": "Suppressions"
+      },
+      "message_streams.suppressions.delete": {
+        "title": "Delete"
+      },
+      "message_streams.suppressions.dump": {
+        "title": "Dump"
+      },
+      "message_streams.suppressions.dump.read": {
+        "title": "Read"
+      },
+      "message_streams.suppressions.write": {
+        "title": "Create and edit"
+      },
+      "message_streams.write": {
+        "title": "Create and edit"
+      },
+      "messages": {
+        "title": "Messages"
+      },
+      "messages.inbound": {
+        "title": "Inbound"
+      },
+      "messages.inbound.bypass": {
+        "title": "Bypass"
+      },
+      "messages.inbound.bypass.write": {
+        "title": "Create and edit"
+      },
+      "messages.inbound.details": {
+        "title": "Details"
+      },
+      "messages.inbound.details.read": {
+        "title": "Read"
+      },
+      "messages.inbound.read": {
+        "title": "Read"
+      },
+      "messages.inbound.write": {
+        "title": "Create and edit"
+      },
+      "messages.outbound": {
+        "title": "Outbound"
+      },
+      "messages.outbound.clicks": {
+        "title": "Clicks"
+      },
+      "messages.outbound.clicks.read": {
+        "title": "Read"
+      },
+      "messages.outbound.details": {
+        "title": "Details"
+      },
+      "messages.outbound.details.read": {
+        "title": "Read"
+      },
+      "messages.outbound.dump": {
+        "title": "Dump"
+      },
+      "messages.outbound.dump.read": {
+        "title": "Read"
+      },
+      "messages.outbound.opens": {
+        "title": "Opens"
+      },
+      "messages.outbound.opens.read": {
+        "title": "Read"
+      },
+      "messages.outbound.read": {
+        "title": "Read"
+      },
+      "senders": {
+        "title": "Senders"
+      },
+      "senders.delete": {
+        "title": "Delete"
+      },
+      "senders.read": {
+        "title": "Read"
+      },
+      "senders.requestnewdkim": {
+        "title": "Requestnewdkim"
+      },
+      "senders.requestnewdkim.write": {
+        "title": "Create and edit"
+      },
+      "senders.resend": {
+        "title": "Resend"
+      },
+      "senders.resend.send": {
+        "title": "Send"
+      },
+      "senders.verifyspf": {
+        "title": "Verifyspf"
+      },
+      "senders.verifyspf.write": {
+        "title": "Create and edit"
+      },
+      "senders.write": {
+        "title": "Create and edit"
+      },
+      "server": {
+        "title": "Server"
+      },
+      "server.read": {
+        "title": "Read"
+      },
+      "server.write": {
+        "title": "Create and edit"
+      },
+      "servers": {
+        "title": "Servers"
+      },
+      "servers.delete": {
+        "title": "Delete"
+      },
+      "servers.read": {
+        "title": "Read"
+      },
+      "servers.write": {
+        "title": "Create and edit"
+      },
+      "stats": {
+        "title": "Stats"
+      },
+      "stats.outbound": {
+        "title": "Outbound"
+      },
+      "stats.outbound.bounces": {
+        "title": "Bounces"
+      },
+      "stats.outbound.bounces.read": {
+        "title": "Read"
+      },
+      "stats.outbound.clicks": {
+        "title": "Clicks"
+      },
+      "stats.outbound.clicks.browserfamilies": {
+        "title": "Browserfamilies"
+      },
+      "stats.outbound.clicks.browserfamilies.read": {
+        "title": "Read"
+      },
+      "stats.outbound.clicks.location": {
+        "title": "Location"
+      },
+      "stats.outbound.clicks.location.read": {
+        "title": "Read"
+      },
+      "stats.outbound.clicks.platforms": {
+        "title": "Platforms"
+      },
+      "stats.outbound.clicks.platforms.read": {
+        "title": "Read"
+      },
+      "stats.outbound.clicks.read": {
+        "title": "Read"
+      },
+      "stats.outbound.opens": {
+        "title": "Opens"
+      },
+      "stats.outbound.opens.emailclients": {
+        "title": "Emailclients"
+      },
+      "stats.outbound.opens.emailclients.read": {
+        "title": "Read"
+      },
+      "stats.outbound.opens.platforms": {
+        "title": "Platforms"
+      },
+      "stats.outbound.opens.platforms.read": {
+        "title": "Read"
+      },
+      "stats.outbound.opens.read": {
+        "title": "Read"
+      },
+      "stats.outbound.read": {
+        "title": "Read"
+      },
+      "stats.outbound.sends": {
+        "title": "Sends"
+      },
+      "stats.outbound.sends.read": {
+        "title": "Read"
+      },
+      "stats.outbound.spam": {
+        "title": "Spam"
+      },
+      "stats.outbound.spam.read": {
+        "title": "Read"
+      },
+      "stats.outbound.tracked": {
+        "title": "Tracked"
+      },
+      "stats.outbound.tracked.read": {
+        "title": "Read"
+      },
+      "templates": {
+        "title": "Templates"
+      },
+      "templates.delete": {
+        "title": "Delete"
+      },
+      "templates.push": {
+        "title": "Push commits"
+      },
+      "templates.push.write": {
+        "title": "Create and edit"
+      },
+      "templates.read": {
+        "title": "Read"
+      },
+      "templates.write": {
+        "title": "Create and edit"
+      },
+      "triggers": {
+        "title": "Triggers"
+      },
+      "triggers.inboundrules": {
+        "title": "Inboundrules"
+      },
+      "triggers.inboundrules.delete": {
+        "title": "Delete"
+      },
+      "triggers.inboundrules.read": {
+        "title": "Read"
+      },
+      "triggers.inboundrules.write": {
+        "title": "Create and edit"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.delete": {
+        "title": "Delete"
+      },
+      "webhooks.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "X-Postmark-Server-Token",
+            "origin": "https://api.postmarkapp.com",
+            "path": "/",
+            "value": "server_token"
+          },
+          {
+            "header": "X-Postmark-Account-Token",
+            "origin": "https://api.postmarkapp.com",
+            "path": "/",
+            "value": "account_token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "server_token",
+        "label": "Server API Token",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "account_token",
+        "label": "Account API Token",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Postmark",
   "http": {
     "operations": {
-      "GET /bounces/{bounceid}/dump": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/bounces/{bounceid}/dump","scope":{"bounceid":{"from":"path","at":"bounceid"}}},
-      "POST /templates": {"action":"write.templates","effects":["write"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/templates","body":"json","scope":{"Name":{"from":"body","at":"/Name"}}},
-      "activateBounce": {"action":"write.bounces","effects":["write"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/bounces/{bounceid}/activate","scope":{"bounceid":{"from":"path","at":"bounceid"}}},
-      "bypassRulesForInboundMessage": {"action":"write.bypass","effects":["write"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/messages/inbound/{messageid}/bypass","scope":{"messageid":{"from":"path","at":"messageid"}}},
-      "createDomain": {"action":"admin.domains","effects":["admin"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/domains","body":"any","scope":{}},
-      "createInboundRule": {"action":"write.inboundrules","effects":["write"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/triggers/inboundrules","body":"any","scope":{}},
-      "createSenderSignature": {"action":"write.senders","effects":["write"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/senders","body":"any","scope":{}},
-      "createServer": {"action":"write.servers","effects":["write"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/servers","body":"any","scope":{}},
-      "deleteDomain": {"action":"delete.domains","effects":["delete"],"method":"DELETE","origin":"https://api.postmarkapp.com","path":"/domains/{domainid}","scope":{"domainid":{"from":"path","at":"domainid"}}},
-      "deleteInboundRule": {"action":"delete.inboundrules","effects":["delete"],"method":"DELETE","origin":"https://api.postmarkapp.com","path":"/triggers/inboundrules/{triggerid}","scope":{"triggerid":{"from":"path","at":"triggerid"}}},
-      "deleteSenderSignature": {"action":"delete.senders","effects":["delete"],"method":"DELETE","origin":"https://api.postmarkapp.com","path":"/senders/{signatureid}","scope":{"signatureid":{"from":"path","at":"signatureid"}}},
-      "deleteServer": {"action":"delete.servers","effects":["delete"],"method":"DELETE","origin":"https://api.postmarkapp.com","path":"/servers/{serverid}","scope":{"serverid":{"from":"path","at":"serverid"}}},
-      "deleteTemplate": {"action":"delete.templates","effects":["delete"],"method":"DELETE","origin":"https://api.postmarkapp.com","path":"/templates/{templateIdOrAlias}","scope":{"templateIdOrAlias":{"from":"path","at":"templateIdOrAlias"}}},
-      "editCurrentServerConfiguration": {"action":"write.server","effects":["write"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/server","body":"any","scope":{}},
-      "editDomain": {"action":"admin.domains","effects":["admin"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/domains/{domainid}","body":"any","scope":{"domainid":{"from":"path","at":"domainid"}}},
-      "editSenderSignature": {"action":"write.senders","effects":["write"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/senders/{signatureid}","body":"any","scope":{"signatureid":{"from":"path","at":"signatureid"}}},
-      "editServerInformation": {"action":"write.servers","effects":["write"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/servers/{serverid}","body":"any","scope":{"serverid":{"from":"path","at":"serverid"}}},
-      "getBounceCounts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/stats/outbound/bounces","params":["tag","fromdate","todate"],"scope":{}},
-      "getBounces": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/bounces","params":["count","offset","type","inactive","emailFilter","messageID","tag","todate","fromdate"],"scope":{}},
-      "getClicksForSingleOutboundMessage": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/messages/outbound/clicks/{messageid}","params":["count","offset"],"scope":{"messageid":{"from":"path","at":"messageid"}}},
-      "getCurrentServerConfiguration": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/server","scope":{}},
-      "getDeliveryStats": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/deliverystats","scope":{}},
-      "getDomain": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/domains/{domainid}","scope":{"domainid":{"from":"path","at":"domainid"}}},
-      "getInboundMessageDetails": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/messages/inbound/{messageid}/details","scope":{"messageid":{"from":"path","at":"messageid"}}},
-      "getOpensForSingleOutboundMessage": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/messages/outbound/opens/{messageid}","params":["count","offset"],"scope":{"messageid":{"from":"path","at":"messageid"}}},
-      "getOutboundClickCounts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/stats/outbound/clicks","params":["tag","fromdate","todate"],"scope":{}},
-      "getOutboundClickCountsByBrowserFamily": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/stats/outbound/clicks/browserfamilies","params":["tag","fromdate","todate"],"scope":{}},
-      "getOutboundClickCountsByLocation": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/stats/outbound/clicks/location","params":["tag","fromdate","todate"],"scope":{}},
-      "getOutboundClickCountsByPlatform": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/stats/outbound/clicks/platforms","params":["tag","fromdate","todate"],"scope":{}},
-      "getOutboundOpenCounts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/stats/outbound/opens","params":["tag","fromdate","todate"],"scope":{}},
-      "getOutboundOpenCountsByEmailClient": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/stats/outbound/opens/emailclients","params":["tag","fromdate","todate"],"scope":{}},
-      "getOutboundOpenCountsByPlatform": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/stats/outbound/opens/platforms","params":["tag","fromdate","todate"],"scope":{}},
-      "getOutboundOverviewStatistics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/stats/outbound","params":["tag","fromdate","todate"],"scope":{}},
-      "getSenderSignature": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/senders/{signatureid}","scope":{"signatureid":{"from":"path","at":"signatureid"}}},
-      "getSentCounts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/stats/outbound/sends","params":["tag","fromdate","todate"],"scope":{}},
-      "getServerInformation": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/servers/{serverid}","scope":{"serverid":{"from":"path","at":"serverid"}}},
-      "getSingleBounce": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/bounces/{bounceid}","scope":{"bounceid":{"from":"path","at":"bounceid"}}},
-      "getSingleTemplate": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/templates/{templateIdOrAlias}","scope":{"templateIdOrAlias":{"from":"path","at":"templateIdOrAlias"}}},
-      "getSpamComplaints": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/stats/outbound/spam","params":["tag","fromdate","todate"],"scope":{}},
-      "getTrackedEmailCounts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/stats/outbound/tracked","params":["tag","fromdate","todate"],"scope":{}},
-      "listDomains": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/domains","params":["count","offset"],"scope":{}},
-      "listInboundRules": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/triggers/inboundrules","params":["count","offset"],"scope":{}},
-      "listSenderSignatures": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/senders","params":["count","offset"],"scope":{}},
-      "listServers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/servers","params":["count","offset","name"],"scope":{}},
-      "listTemplates": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/templates","params":["Count","Offset"],"scope":{}},
-      "requestDkimVerificationForDomain": {"action":"admin.domains","effects":["admin"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/domains/{domainid}/verifydkim","scope":{"domainid":{"from":"path","at":"domainid"}}},
-      "requestNewDKIMKeyForSenderSignature": {"action":"write.requestnewdkim","effects":["write"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/senders/{signatureid}/requestnewdkim","scope":{"signatureid":{"from":"path","at":"signatureid"}}},
-      "requestReturnPathVerificationForDomain": {"action":"admin.domains","effects":["admin"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/domains/{domainid}/verifyreturnpath","scope":{"domainid":{"from":"path","at":"domainid"}}},
-      "requestSPFVerificationForDomain": {"action":"admin.domains","effects":["admin"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/domains/{domainid}/verifyspf","scope":{"domainid":{"from":"path","at":"domainid"}}},
-      "requestSPFVerificationForSenderSignature": {"action":"write.senders","effects":["write"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/senders/{signatureid}/verifyspf","scope":{"signatureid":{"from":"path","at":"signatureid"}}},
-      "resendSenderSignatureConfirmationEmail": {"action":"send.resend","effects":["send"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/senders/{signatureid}/resend","scope":{"signatureid":{"from":"path","at":"signatureid"}}},
-      "retryInboundMessageProcessing": {"action":"write.inbound","effects":["write"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/messages/inbound/{messageid}/retry","scope":{"messageid":{"from":"path","at":"messageid"}}},
-      "rotateDKIMKeyForDomain": {"action":"admin.domains","effects":["admin"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/domains/{domainid}/rotatedkim","scope":{"domainid":{"from":"path","at":"domainid"}}},
-      "searchClicksForOutboundMessages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/messages/outbound/clicks","params":["count","offset","recipient","tag","client_name","client_company","client_family","os_name","os_family","os_company","platform","country","region","city"],"scope":{}},
-      "searchInboundMessages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/messages/inbound","params":["count","offset","recipient","fromemail","subject","mailboxhash","tag","status","todate","fromdate"],"scope":{}},
-      "searchOpensForOutboundMessages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/messages/outbound/opens","params":["count","offset","recipient","tag","client_name","client_company","client_family","os_name","os_family","os_company","platform","country","region","city"],"scope":{}},
-      "searchOutboundMessages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/messages/outbound","params":["count","offset","recipient","fromemail","tag","status","todate","fromdate"],"scope":{}},
-      "sendEmail": {"action":"send.email","effects":["send"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/email","body":"any","scope":{}},
-      "sendEmailBatch": {"action":"send.batch","effects":["send"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/email/batch","body":"any","scope":{}},
-      "sendEmailBatchWithTemplates": {"action":"send.batch_with_templates","effects":["send"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/email/batchWithTemplates","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "sendEmailWithTemplate": {"action":"send.with_template","effects":["send"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/email/withTemplate","body":"json","scope":{"TemplateId":{"from":"body","at":"/TemplateId","type":"number"},"request":{"from":"body","at":"","type":"object"}},"grant":["TemplateId"]},
-      "testTemplateContent": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/templates/validate","body":"any","scope":{}},
-      "updateTemplate": {"action":"write.templates","effects":["write"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/templates/{templateIdOrAlias}","body":"json","scope":{"templateIdOrAlias":{"from":"path","at":"templateIdOrAlias"}}}
+      "GET /bounces/{bounceid}/dump": {"action":"bounces.dump.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/bounces/{bounceid}/dump","scope":{"bounceid":{"at":"bounceid","from":"path"}}},
+      "POST /templates": {"action":"templates.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/templates","scope":{"Name":{"at":"/Name","from":"body"}}},
+      "activateBounce": {"action":"bounces.activate.write","effects":["write"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/bounces/{bounceid}/activate","scope":{"bounceid":{"at":"bounceid","from":"path"}}},
+      "bypassRulesForInboundMessage": {"action":"messages.inbound.bypass.write","effects":["write"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/messages/inbound/{messageid}/bypass","scope":{"messageid":{"at":"messageid","from":"path"}}},
+      "createDomain": {"action":"domains.admin","body":"any","effects":["admin"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/domains","scope":{}},
+      "createInboundRule": {"action":"triggers.inboundrules.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/triggers/inboundrules","scope":{}},
+      "createSenderSignature": {"action":"senders.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/senders","scope":{}},
+      "createServer": {"action":"servers.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/servers","scope":{}},
+      "data_removals.create": {"action":"data_removals.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/data-removals","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "data_removals.get": {"action":"data_removals.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/data-removals/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteDomain": {"action":"domains.delete","effects":["delete"],"method":"DELETE","origin":"https://api.postmarkapp.com","path":"/domains/{domainid}","scope":{"domainid":{"at":"domainid","from":"path"}}},
+      "deleteInboundRule": {"action":"triggers.inboundrules.delete","effects":["delete"],"method":"DELETE","origin":"https://api.postmarkapp.com","path":"/triggers/inboundrules/{triggerid}","scope":{"triggerid":{"at":"triggerid","from":"path"}}},
+      "deleteSenderSignature": {"action":"senders.delete","effects":["delete"],"method":"DELETE","origin":"https://api.postmarkapp.com","path":"/senders/{signatureid}","scope":{"signatureid":{"at":"signatureid","from":"path"}}},
+      "deleteServer": {"action":"servers.delete","effects":["delete"],"method":"DELETE","origin":"https://api.postmarkapp.com","path":"/servers/{serverid}","scope":{"serverid":{"at":"serverid","from":"path"}}},
+      "deleteTemplate": {"action":"templates.delete","effects":["delete"],"method":"DELETE","origin":"https://api.postmarkapp.com","path":"/templates/{templateIdOrAlias}","scope":{"templateIdOrAlias":{"at":"templateIdOrAlias","from":"path"}}},
+      "editCurrentServerConfiguration": {"action":"server.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/server","scope":{}},
+      "editDomain": {"action":"domains.admin","body":"any","effects":["admin"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/domains/{domainid}","scope":{"domainid":{"at":"domainid","from":"path"}}},
+      "editSenderSignature": {"action":"senders.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/senders/{signatureid}","scope":{"signatureid":{"at":"signatureid","from":"path"}}},
+      "editServerInformation": {"action":"servers.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/servers/{serverid}","scope":{"serverid":{"at":"serverid","from":"path"}}},
+      "email.bulk": {"action":"email.bulk.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/email/bulk","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "email.bulk.get": {"action":"email.bulk.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/email/bulk/{bulkRequestId}","scope":{"bulkRequestId":{"at":"bulkRequestId","from":"path"}}},
+      "getBounceCounts": {"action":"stats.outbound.bounces.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["tag","fromdate","todate"],"path":"/stats/outbound/bounces","scope":{}},
+      "getBounces": {"action":"bounces.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["count","offset","type","inactive","emailFilter","messageID","tag","todate","fromdate"],"path":"/bounces","scope":{}},
+      "getClicksForSingleOutboundMessage": {"action":"messages.outbound.clicks.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["count","offset"],"path":"/messages/outbound/clicks/{messageid}","scope":{"messageid":{"at":"messageid","from":"path"}}},
+      "getCurrentServerConfiguration": {"action":"server.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/server","scope":{}},
+      "getDeliveryStats": {"action":"deliverystats.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/deliverystats","scope":{}},
+      "getDomain": {"action":"domains.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/domains/{domainid}","scope":{"domainid":{"at":"domainid","from":"path"}}},
+      "getInboundMessageDetails": {"action":"messages.inbound.details.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/messages/inbound/{messageid}/details","scope":{"messageid":{"at":"messageid","from":"path"}}},
+      "getOpensForSingleOutboundMessage": {"action":"messages.outbound.opens.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["count","offset"],"path":"/messages/outbound/opens/{messageid}","scope":{"messageid":{"at":"messageid","from":"path"}}},
+      "getOutboundClickCounts": {"action":"stats.outbound.clicks.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["tag","fromdate","todate"],"path":"/stats/outbound/clicks","scope":{}},
+      "getOutboundClickCountsByBrowserFamily": {"action":"stats.outbound.clicks.browserfamilies.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["tag","fromdate","todate"],"path":"/stats/outbound/clicks/browserfamilies","scope":{}},
+      "getOutboundClickCountsByLocation": {"action":"stats.outbound.clicks.location.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["tag","fromdate","todate"],"path":"/stats/outbound/clicks/location","scope":{}},
+      "getOutboundClickCountsByPlatform": {"action":"stats.outbound.clicks.platforms.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["tag","fromdate","todate"],"path":"/stats/outbound/clicks/platforms","scope":{}},
+      "getOutboundMessageDetails": {"action":"messages.outbound.details.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/messages/outbound/{messageid}/details","path_patterns":{"messageid":"[^co].*|c(?:|[^l].*|l(?:|[^i].*|i(?:|[^c].*|c(?:|[^k].*|k(?:|[^s].*|s.+)))))|o(?:|[^p].*|p(?:|[^e].*|e(?:|[^n].*|n(?:|[^s].*|s.+))))"},"scope":{"messageid":{"at":"messageid","from":"path"}}},
+      "getOutboundMessageDump": {"action":"messages.outbound.dump.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/messages/outbound/{messageid}/dump","path_patterns":{"messageid":"[^co].*|c(?:|[^l].*|l(?:|[^i].*|i(?:|[^c].*|c(?:|[^k].*|k(?:|[^s].*|s.+)))))|o(?:|[^p].*|p(?:|[^e].*|e(?:|[^n].*|n(?:|[^s].*|s.+))))"},"scope":{"messageid":{"at":"messageid","from":"path"}}},
+      "getOutboundOpenCounts": {"action":"stats.outbound.opens.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["tag","fromdate","todate"],"path":"/stats/outbound/opens","scope":{}},
+      "getOutboundOpenCountsByEmailClient": {"action":"stats.outbound.opens.emailclients.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["tag","fromdate","todate"],"path":"/stats/outbound/opens/emailclients","scope":{}},
+      "getOutboundOpenCountsByPlatform": {"action":"stats.outbound.opens.platforms.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["tag","fromdate","todate"],"path":"/stats/outbound/opens/platforms","scope":{}},
+      "getOutboundOverviewStatistics": {"action":"stats.outbound.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["tag","fromdate","todate"],"path":"/stats/outbound","scope":{}},
+      "getSenderSignature": {"action":"senders.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/senders/{signatureid}","scope":{"signatureid":{"at":"signatureid","from":"path"}}},
+      "getSentCounts": {"action":"stats.outbound.sends.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["tag","fromdate","todate"],"path":"/stats/outbound/sends","scope":{}},
+      "getServerInformation": {"action":"servers.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/servers/{serverid}","scope":{"serverid":{"at":"serverid","from":"path"}}},
+      "getSingleBounce": {"action":"bounces.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/bounces/{bounceid}","scope":{"bounceid":{"at":"bounceid","from":"path"}}},
+      "getSingleTemplate": {"action":"templates.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/templates/{templateIdOrAlias}","scope":{"templateIdOrAlias":{"at":"templateIdOrAlias","from":"path"}}},
+      "getSpamComplaints": {"action":"stats.outbound.spam.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["tag","fromdate","todate"],"path":"/stats/outbound/spam","scope":{}},
+      "getTrackedEmailCounts": {"action":"stats.outbound.tracked.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["tag","fromdate","todate"],"path":"/stats/outbound/tracked","scope":{}},
+      "listDomains": {"action":"domains.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["count","offset"],"path":"/domains","scope":{}},
+      "listInboundRules": {"action":"triggers.inboundrules.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["count","offset"],"path":"/triggers/inboundrules","scope":{}},
+      "listSenderSignatures": {"action":"senders.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["count","offset"],"path":"/senders","scope":{}},
+      "listServers": {"action":"servers.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["count","offset","name"],"path":"/servers","scope":{}},
+      "listTemplates": {"action":"templates.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["Count","Offset"],"path":"/templates","scope":{}},
+      "message_streams.archive": {"action":"message_streams.delete","effects":["delete"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/message-streams/{stream_ID}/archive","scope":{"stream_ID":{"at":"stream_ID","from":"path"}}},
+      "message_streams.create": {"action":"message_streams.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/message-streams","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "message_streams.get": {"action":"message_streams.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/message-streams/{stream_ID}","scope":{"stream_ID":{"at":"stream_ID","from":"path"}}},
+      "message_streams.list": {"action":"message_streams.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["MessageStreamType","IncludeArchivedStreams"],"path":"/message-streams","scope":{}},
+      "message_streams.unarchive": {"action":"message_streams.write","effects":["write"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/message-streams/{stream_ID}/unarchive","scope":{"stream_ID":{"at":"stream_ID","from":"path"}}},
+      "message_streams.update": {"action":"message_streams.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.postmarkapp.com","path":"/message-streams/{stream_ID}","scope":{"request":{"at":"","from":"body","type":"object"},"stream_ID":{"at":"stream_ID","from":"path"}}},
+      "pushTemplates": {"action":"templates.push.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/templates/push","scope":{"DestinationServerId":{"at":"/DestinationServerId","from":"body","optional":true,"type":"number"},"SourceServerId":{"at":"/SourceServerId","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "requestDkimVerificationForDomain": {"action":"domains.verifydkim.admin","effects":["admin"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/domains/{domainid}/verifydkim","scope":{"domainid":{"at":"domainid","from":"path"}}},
+      "requestNewDKIMKeyForSenderSignature": {"action":"senders.requestnewdkim.write","effects":["write"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/senders/{signatureid}/requestnewdkim","scope":{"signatureid":{"at":"signatureid","from":"path"}}},
+      "requestReturnPathVerificationForDomain": {"action":"domains.verifyreturnpath.admin","effects":["admin"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/domains/{domainid}/verifyreturnpath","scope":{"domainid":{"at":"domainid","from":"path"}}},
+      "requestSPFVerificationForDomain": {"action":"domains.verifyspf.admin","effects":["admin"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/domains/{domainid}/verifyspf","scope":{"domainid":{"at":"domainid","from":"path"}}},
+      "requestSPFVerificationForSenderSignature": {"action":"senders.verifyspf.write","effects":["write"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/senders/{signatureid}/verifyspf","scope":{"signatureid":{"at":"signatureid","from":"path"}}},
+      "resendSenderSignatureConfirmationEmail": {"action":"senders.resend.send","effects":["send"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/senders/{signatureid}/resend","scope":{"signatureid":{"at":"signatureid","from":"path"}}},
+      "retryInboundMessageProcessing": {"action":"messages.inbound.write","effects":["write"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/messages/inbound/{messageid}/retry","scope":{"messageid":{"at":"messageid","from":"path"}}},
+      "rotateDKIMKeyForDomain": {"action":"domains.rotatedkim.admin","effects":["admin"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/domains/{domainid}/rotatedkim","scope":{"domainid":{"at":"domainid","from":"path"}}},
+      "searchClicksForOutboundMessages": {"action":"messages.outbound.clicks.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["count","offset","recipient","tag","client_name","client_company","client_family","os_name","os_family","os_company","platform","country","region","city"],"path":"/messages/outbound/clicks","scope":{}},
+      "searchInboundMessages": {"action":"messages.inbound.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["count","offset","recipient","fromemail","subject","mailboxhash","tag","status","todate","fromdate"],"path":"/messages/inbound","scope":{}},
+      "searchOpensForOutboundMessages": {"action":"messages.outbound.opens.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["count","offset","recipient","tag","client_name","client_company","client_family","os_name","os_family","os_company","platform","country","region","city"],"path":"/messages/outbound/opens","scope":{}},
+      "searchOutboundMessages": {"action":"messages.outbound.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["count","offset","recipient","fromemail","tag","status","todate","fromdate"],"path":"/messages/outbound","scope":{}},
+      "sendEmail": {"action":"email.send","body":"any","effects":["send"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/email","scope":{}},
+      "sendEmailBatch": {"action":"email.send","body":"any","effects":["send"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/email/batch","scope":{}},
+      "sendEmailBatchWithTemplates": {"action":"email.with_templates.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/email/batchWithTemplates","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "sendEmailWithTemplate": {"action":"email.with_template.send","body":"json","effects":["send"],"grant":["TemplateId"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/email/withTemplate","scope":{"TemplateId":{"at":"/TemplateId","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "suppressions.create": {"action":"message_streams.suppressions.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/message-streams/{stream_ID}/suppressions","scope":{"request":{"at":"","from":"body","type":"object"},"stream_ID":{"at":"stream_ID","from":"path"}}},
+      "suppressions.delete": {"action":"message_streams.suppressions.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/message-streams/{stream_ID}/suppressions/delete","scope":{"request":{"at":"","from":"body","type":"object"},"stream_ID":{"at":"stream_ID","from":"path"}}},
+      "suppressions.dump": {"action":"message_streams.suppressions.dump.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["SuppressionReason","Origin","todate","fromdate","EmailAddress"],"path":"/message-streams/{stream_ID}/suppressions/dump","scope":{"stream_ID":{"at":"stream_ID","from":"path"}}},
+      "testTemplateContent": {"action":"templates.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/templates/validate","scope":{}},
+      "updateTemplate": {"action":"templates.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/templates/{templateIdOrAlias}","path_patterns":{"templateIdOrAlias":"[^p].*|p(?:|[^u].*|u(?:|[^s].*|s(?:|[^h].*|h.+)))"},"scope":{"templateIdOrAlias":{"at":"templateIdOrAlias","from":"path"}}},
+      "webhooks.create": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.postmarkapp.com","path":"/webhooks","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "webhooks.delete": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"https://api.postmarkapp.com","path":"/webhooks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "webhooks.get": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","path":"/webhooks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "webhooks.list": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://api.postmarkapp.com","params":["MessageStream"],"path":"/webhooks","scope":{}},
+      "webhooks.update": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.postmarkapp.com","path":"/webhooks/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}}
     }
   }
 }

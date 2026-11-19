@@ -1,93 +1,459 @@
 {
-  "title": "Pinecone Vector Store",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your Pinecone Vector Store origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 1, "origin"]]},
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.pinecone.io", "path": "/", "header": "Api-Key"}, {"value": "api_key", "origin": "https://example.com", "path": "/", "header": "Api-Key"}]}},
     "actions": {
-      "delete.backup_schedules": {"title": "Delete: backup schedules"},
-      "delete.backups": {"title": "Delete: backups"},
-      "delete.collections": {"title": "Delete: collections"},
-      "delete.delete": {"title": "Delete: delete"},
-      "delete.imports": {"title": "Delete: imports"},
-      "delete.indexes": {"title": "Delete: indexes"},
-      "delete.namespace_aliases": {"title": "Delete: namespace aliases"},
-      "delete.namespaces": {"title": "Delete: namespaces"},
-      "generate.backup_schedules": {"title": "Generate: backup schedules"},
-      "generate.backups": {"title": "Generate: backups"},
-      "generate.collections": {"title": "Generate: collections"},
-      "generate.create_for_model": {"title": "Generate: create for model"},
-      "generate.create_index": {"title": "Generate: create index"},
-      "generate.imports": {"title": "Generate: imports"},
-      "generate.indexes": {"title": "Generate: indexes"},
-      "generate.namespace_aliases": {"title": "Generate: namespace aliases"},
-      "generate.namespaces": {"title": "Generate: namespaces"},
-      "generate.update": {"title": "Generate: update"},
-      "generate.upsert": {"title": "Generate: upsert"},
-      "read": {"title": "Read everything the account can see"},
-      "write.backup_schedules": {"title": "Write: backup schedules"},
-      "write.indexes": {"title": "Write: indexes"},
-      "write.namespace_aliases": {"title": "Write: namespace aliases"}
-    }
+      "assistant": {
+        "title": "Assistant"
+      },
+      "assistant.assistants": {
+        "title": "Assistants"
+      },
+      "assistant.assistants.delete": {
+        "title": "Delete"
+      },
+      "assistant.assistants.read": {
+        "title": "Read"
+      },
+      "assistant.assistants.write": {
+        "title": "Create and edit"
+      },
+      "assistant.chat": {
+        "title": "Chat"
+      },
+      "assistant.chat.chat": {
+        "title": "Chat"
+      },
+      "assistant.chat.chat.completions": {
+        "title": "Completions"
+      },
+      "assistant.chat.chat.completions.generate": {
+        "title": "Generate"
+      },
+      "assistant.chat.context": {
+        "title": "Context"
+      },
+      "assistant.chat.context.read": {
+        "title": "Read"
+      },
+      "assistant.chat.generate": {
+        "title": "Generate"
+      },
+      "assistant.evaluation": {
+        "title": "Evaluation"
+      },
+      "assistant.evaluation.metrics": {
+        "title": "Metrics"
+      },
+      "assistant.evaluation.metrics.alignment": {
+        "title": "Alignment"
+      },
+      "assistant.evaluation.metrics.alignment.generate": {
+        "title": "Generate"
+      },
+      "assistant.files": {
+        "title": "Files"
+      },
+      "assistant.files.delete": {
+        "title": "Delete"
+      },
+      "assistant.files.read": {
+        "title": "Read"
+      },
+      "assistant.files.write": {
+        "title": "Create and edit"
+      },
+      "assistant.operations": {
+        "title": "Operations"
+      },
+      "assistant.operations.read": {
+        "title": "Read"
+      },
+      "backup_schedules": {
+        "title": "Backup schedules"
+      },
+      "backup_schedules.delete": {
+        "title": "Delete"
+      },
+      "backup_schedules.history": {
+        "title": "History"
+      },
+      "backup_schedules.history.read": {
+        "title": "Read"
+      },
+      "backup_schedules.read": {
+        "title": "Read"
+      },
+      "backup_schedules.write": {
+        "title": "Create and edit"
+      },
+      "backups": {
+        "title": "Backups"
+      },
+      "backups.delete": {
+        "title": "Delete"
+      },
+      "backups.index": {
+        "title": "Index"
+      },
+      "backups.index.write": {
+        "title": "Create and edit"
+      },
+      "backups.read": {
+        "title": "Read"
+      },
+      "bulk": {
+        "title": "Bulk"
+      },
+      "bulk.imports": {
+        "title": "Imports"
+      },
+      "bulk.imports.read": {
+        "title": "Read"
+      },
+      "bulk.imports.write": {
+        "title": "Create and edit"
+      },
+      "collections": {
+        "title": "Collections"
+      },
+      "collections.delete": {
+        "title": "Delete"
+      },
+      "collections.read": {
+        "title": "Read"
+      },
+      "collections.write": {
+        "title": "Create and edit"
+      },
+      "conversion_jobs": {
+        "title": "Conversion jobs"
+      },
+      "conversion_jobs.read": {
+        "title": "Read"
+      },
+      "conversion_jobs.write": {
+        "title": "Create and edit"
+      },
+      "describe_index_stats": {
+        "title": "Describe index stats"
+      },
+      "describe_index_stats.read": {
+        "title": "Read"
+      },
+      "embed": {
+        "title": "Embed"
+      },
+      "embed.generate": {
+        "title": "Generate"
+      },
+      "indexes": {
+        "title": "Indexes"
+      },
+      "indexes.backup_schedules": {
+        "title": "Backup schedules"
+      },
+      "indexes.backup_schedules.read": {
+        "title": "Read"
+      },
+      "indexes.backup_schedules.write": {
+        "title": "Create and edit"
+      },
+      "indexes.backups": {
+        "title": "Backups"
+      },
+      "indexes.backups.read": {
+        "title": "Read"
+      },
+      "indexes.backups.write": {
+        "title": "Create and edit"
+      },
+      "indexes.convert": {
+        "title": "Convert"
+      },
+      "indexes.convert.write": {
+        "title": "Create and edit"
+      },
+      "indexes.delete": {
+        "title": "Delete"
+      },
+      "indexes.for_model": {
+        "title": "For model"
+      },
+      "indexes.for_model.write": {
+        "title": "Create and edit"
+      },
+      "indexes.read": {
+        "title": "Read"
+      },
+      "indexes.write": {
+        "title": "Create and edit"
+      },
+      "models": {
+        "title": "Models"
+      },
+      "models.read": {
+        "title": "Read"
+      },
+      "namespace_aliases": {
+        "title": "Namespace aliases"
+      },
+      "namespace_aliases.delete": {
+        "title": "Delete"
+      },
+      "namespace_aliases.read": {
+        "title": "Read"
+      },
+      "namespace_aliases.write": {
+        "title": "Create and edit"
+      },
+      "namespaces": {
+        "title": "Namespaces"
+      },
+      "namespaces.delete": {
+        "title": "Delete"
+      },
+      "namespaces.documents": {
+        "title": "Documents"
+      },
+      "namespaces.documents.delete": {
+        "title": "Delete"
+      },
+      "namespaces.documents.fetch": {
+        "title": "Fetch"
+      },
+      "namespaces.documents.fetch.read": {
+        "title": "Read"
+      },
+      "namespaces.documents.read": {
+        "title": "Read"
+      },
+      "namespaces.documents.upsert": {
+        "title": "Upsert"
+      },
+      "namespaces.documents.upsert.write": {
+        "title": "Create and edit"
+      },
+      "namespaces.documents.write": {
+        "title": "Create and edit"
+      },
+      "namespaces.read": {
+        "title": "Read"
+      },
+      "namespaces.write": {
+        "title": "Create and edit"
+      },
+      "query": {
+        "title": "Query"
+      },
+      "query.read": {
+        "title": "Read"
+      },
+      "records": {
+        "title": "Records"
+      },
+      "records.namespaces": {
+        "title": "Namespaces"
+      },
+      "records.namespaces.read": {
+        "title": "Read"
+      },
+      "records.namespaces.upsert": {
+        "title": "Upsert"
+      },
+      "records.namespaces.upsert.write": {
+        "title": "Create and edit"
+      },
+      "rerank": {
+        "title": "Rerank"
+      },
+      "rerank.generate": {
+        "title": "Generate"
+      },
+      "restore_jobs": {
+        "title": "Restore jobs"
+      },
+      "restore_jobs.read": {
+        "title": "Read"
+      },
+      "vectors": {
+        "title": "Vectors"
+      },
+      "vectors.delete": {
+        "title": "Delete"
+      },
+      "vectors.fetch": {
+        "title": "Fetch"
+      },
+      "vectors.fetch.read": {
+        "title": "Read"
+      },
+      "vectors.fetch_by_metadata": {
+        "title": "Fetch by metadata"
+      },
+      "vectors.fetch_by_metadata.read": {
+        "title": "Read"
+      },
+      "vectors.read": {
+        "title": "Read"
+      },
+      "vectors.upsert": {
+        "title": "Upsert"
+      },
+      "vectors.upsert.write": {
+        "title": "Create and edit"
+      },
+      "vectors.write": {
+        "title": "Create and edit"
+      },
+      "workspaces": {
+        "title": "Workspaces"
+      },
+      "workspaces.delete": {
+        "title": "Delete"
+      },
+      "workspaces.read": {
+        "title": "Read"
+      },
+      "workspaces.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Api-Key",
+            "origin": "https://api.pinecone.io",
+            "path": "/",
+            "value": "api_key"
+          },
+          {
+            "header": "Api-Key",
+            "origin": "https://example.com",
+            "path": "/",
+            "value": "api_key"
+          },
+          {
+            "header": "Api-Key",
+            "origin": "https://*.pinecone.io",
+            "path": "/",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Your Pinecone Vector Store origin (https://host)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            1,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Pinecone Vector Store",
   "http": {
+    "origins": {"assistant":["https://prod-1-data.ke.pinecone.io","https://prod-eu-data.ke.pinecone.io"],"origin":["https://{index}.svc.{environment}.pinecone.io","https://{index}.svc.private.{environment}.pinecone.io"]},
     "operations": {
-      "cancelBulkImport": {"action":"delete.imports","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/bulk/imports/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "configure_index": {"action":"write.indexes","effects":["write"],"method":"PATCH","origin":"https://api.pinecone.io","path":"/indexes/{index_name}","body":"json","scope":{"index_name":{"from":"path","at":"index_name"}}},
-      "createNamespace": {"action":"generate.namespaces","effects":["generate"],"method":"POST","origin":"{origin}","path":"/namespaces","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "createNamespaceAlias": {"action":"generate.namespace_aliases","effects":["generate"],"method":"POST","origin":"{origin}","path":"/namespace-aliases","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "create_backup": {"action":"generate.backups","effects":["generate"],"method":"POST","origin":"https://api.pinecone.io","path":"/indexes/{index_name}/backups","body":"json","scope":{"index_name":{"from":"path","at":"index_name"}}},
-      "create_backup_schedule": {"action":"generate.backup_schedules","effects":["generate"],"method":"POST","origin":"https://api.pinecone.io","path":"/indexes/{index_name}/backup-schedules","body":"json","scope":{"index_name":{"from":"path","at":"index_name"},"name":{"from":"body","at":"/name"}}},
-      "create_collection": {"action":"generate.collections","effects":["generate"],"method":"POST","origin":"https://api.pinecone.io","path":"/collections","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "create_index": {"action":"generate.indexes","effects":["generate"],"method":"POST","origin":"https://api.pinecone.io","path":"/indexes","body":"json","scope":{}},
-      "create_index_for_model": {"action":"generate.create_for_model","effects":["generate"],"method":"POST","origin":"https://api.pinecone.io","path":"/indexes/create-for-model","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "create_index_from_backup_operation": {"action":"generate.create_index","effects":["generate"],"method":"POST","origin":"https://api.pinecone.io","path":"/backups/{backup_id}/create-index","body":"json","scope":{"backup_id":{"from":"path","at":"backup_id"},"name":{"from":"body","at":"/name"}}},
-      "deleteDocuments": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/namespaces/{namespace}/documents/delete","body":"json","scope":{"namespace":{"from":"path","at":"namespace"}}},
-      "deleteNamespace": {"action":"delete.namespaces","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/namespaces/{namespace}","scope":{"namespace":{"from":"path","at":"namespace"}}},
-      "deleteNamespaceAlias": {"action":"delete.namespace_aliases","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/namespace-aliases/{alias_name}","scope":{"alias_name":{"from":"path","at":"alias_name"}}},
-      "deleteVectors": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/vectors/delete","body":"json","scope":{}},
-      "delete_backup": {"action":"delete.backups","effects":["delete"],"method":"DELETE","origin":"https://api.pinecone.io","path":"/backups/{backup_id}","scope":{"backup_id":{"from":"path","at":"backup_id"}}},
-      "delete_backup_schedule": {"action":"delete.backup_schedules","effects":["delete"],"method":"DELETE","origin":"https://api.pinecone.io","path":"/backup-schedules/{schedule_id}","scope":{"schedule_id":{"from":"path","at":"schedule_id"}}},
-      "delete_collection": {"action":"delete.collections","effects":["delete"],"method":"DELETE","origin":"https://api.pinecone.io","path":"/collections/{collection_name}","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "delete_index": {"action":"delete.indexes","effects":["delete"],"method":"DELETE","origin":"https://api.pinecone.io","path":"/indexes/{index_name}","scope":{"index_name":{"from":"path","at":"index_name"}}},
-      "describeBulkImport": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/bulk/imports/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "describeIndexStats": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/describe_index_stats","body":"json","scope":{}},
-      "describeNamespace": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/namespaces/{namespace}","scope":{"namespace":{"from":"path","at":"namespace"}}},
-      "describeNamespaceAlias": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/namespace-aliases/{alias_name}","scope":{"alias_name":{"from":"path","at":"alias_name"}}},
-      "describe_backup": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/backups/{backup_id}","scope":{"backup_id":{"from":"path","at":"backup_id"}}},
-      "describe_backup_schedule": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/backup-schedules/{schedule_id}","scope":{"schedule_id":{"from":"path","at":"schedule_id"}}},
-      "describe_collection": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/collections/{collection_name}","scope":{"collection_name":{"from":"path","at":"collection_name"}}},
-      "describe_index": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/indexes/{index_name}","scope":{"index_name":{"from":"path","at":"index_name"}}},
-      "describe_restore_job": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/restore-jobs/{job_id}","scope":{"job_id":{"from":"path","at":"job_id"}}},
-      "fetchDocuments": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/namespaces/{namespace}/documents/fetch","body":"json","scope":{"namespace":{"from":"path","at":"namespace"}}},
-      "fetchVectors": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/vectors/fetch","params":["ids","namespace"],"scope":{"ids":{"from":"query","at":"ids"}}},
-      "fetch_vectors_by_metadata": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/vectors/fetch_by_metadata","body":"json","scope":{}},
-      "listBulkImports": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/bulk/imports","params":["limit","paginationToken"],"scope":{}},
-      "listDocuments": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/namespaces/{namespace}/documents/list","body":"json","scope":{"namespace":{"from":"path","at":"namespace"}}},
-      "listNamespaceAliases": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/namespace-aliases","params":["limit","paginationToken","prefix","target_namespace"],"scope":{}},
-      "listNamespacesOperation": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/namespaces","params":["limit","paginationToken","prefix"],"scope":{}},
-      "listVectors": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/vectors/list","params":["prefix","limit","paginationToken","namespace"],"scope":{}},
-      "list_backup_schedule_history": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/backup-schedules/{schedule_id}/history","params":["limit","paginationToken"],"scope":{"schedule_id":{"from":"path","at":"schedule_id"}}},
-      "list_backup_schedules": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/indexes/{index_name}/backup-schedules","params":["limit","paginationToken"],"scope":{"index_name":{"from":"path","at":"index_name"}}},
-      "list_collections": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/collections","scope":{}},
-      "list_index_backups": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/indexes/{index_name}/backups","params":["include_deleted","limit","paginationToken"],"scope":{"index_name":{"from":"path","at":"index_name"}}},
-      "list_indexes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/indexes","scope":{}},
-      "list_project_backups": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/backups","params":["limit","paginationToken"],"scope":{}},
-      "list_restore_jobs": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/restore-jobs","params":["limit","paginationToken"],"scope":{}},
-      "queryVectors": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/query","body":"json","scope":{}},
-      "repointNamespaceAlias": {"action":"write.namespace_aliases","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/namespace-aliases/{alias_name}","body":"json","scope":{"alias_name":{"from":"path","at":"alias_name"}}},
-      "searchDocuments": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/namespaces/{namespace}/documents/search","body":"json","scope":{"namespace":{"from":"path","at":"namespace"}}},
-      "searchRecordsNamespace": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/records/namespaces/{namespace}/search","body":"json","scope":{"namespace":{"from":"path","at":"namespace"}}},
-      "startBulkImport": {"action":"generate.imports","effects":["generate"],"method":"POST","origin":"{origin}","path":"/bulk/imports","body":"json","scope":{}},
-      "updateDocuments": {"action":"generate.update","effects":["generate"],"method":"POST","origin":"{origin}","path":"/namespaces/{namespace}/documents/update","body":"json","scope":{"namespace":{"from":"path","at":"namespace"}}},
-      "updateVector": {"action":"generate.update","effects":["generate"],"method":"POST","origin":"{origin}","path":"/vectors/update","body":"json","scope":{}},
-      "update_backup_schedule": {"action":"write.backup_schedules","effects":["write"],"method":"PATCH","origin":"https://api.pinecone.io","path":"/backup-schedules/{schedule_id}","body":"json","scope":{"schedule_id":{"from":"path","at":"schedule_id"}}},
-      "upsertDocuments": {"action":"generate.upsert","effects":["generate"],"method":"POST","origin":"{origin}","path":"/namespaces/{namespace}/documents/upsert","body":"json","scope":{"namespace":{"from":"path","at":"namespace"}}},
-      "upsertRecordsNamespace": {"action":"generate.upsert","effects":["generate"],"method":"POST","origin":"{origin}","path":"/records/namespaces/{namespace}/upsert","body":"any","scope":{"namespace":{"from":"path","at":"namespace"}}},
-      "upsertVectors": {"action":"generate.upsert","effects":["generate"],"method":"POST","origin":"{origin}","path":"/vectors/upsert","body":"json","scope":{}}
+      "cancelBulkImport": {"action":"bulk.imports.write","effects":["write"],"method":"DELETE","origin":"{origin}","path":"/bulk/imports/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "cancel_conversion_job": {"action":"conversion_jobs.write","effects":["write"],"method":"POST","origin":"https://api.pinecone.io","path":"/conversion-jobs/{job_id}/cancel","scope":{"job_id":{"at":"job_id","from":"path"}}},
+      "chat_assistant": {"action":"assistant.chat.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{assistant}","path":"/assistant/chat/{assistant_name}","scope":{"assistant_name":{"at":"assistant_name","from":"path"}}},
+      "chat_completion_assistant": {"action":"assistant.chat.chat.completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{assistant}","path":"/assistant/chat/{assistant_name}/chat/completions","scope":{"assistant_name":{"at":"assistant_name","from":"path"}}},
+      "configure_index": {"action":"indexes.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.pinecone.io","path":"/indexes/{index_name}","scope":{"index_name":{"at":"index_name","from":"path"}}},
+      "context_assistant": {"action":"assistant.chat.context.read","body":"json","effects":["read"],"method":"POST","origin":"{assistant}","path":"/assistant/chat/{assistant_name}/context","scope":{"assistant_name":{"at":"assistant_name","from":"path"}}},
+      "convert_index": {"action":"indexes.convert.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.pinecone.io","path":"/indexes/{index_name}/convert","scope":{"index_name":{"at":"index_name","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createNamespace": {"action":"namespaces.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/namespaces","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createNamespaceAlias": {"action":"namespace_aliases.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/namespace-aliases","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create_assistant": {"action":"assistant.assistants.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.pinecone.io","path":"/assistant/assistants","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create_backup": {"action":"indexes.backups.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.pinecone.io","path":"/indexes/{index_name}/backups","scope":{"index_name":{"at":"index_name","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "create_backup_schedule": {"action":"indexes.backup_schedules.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.pinecone.io","path":"/indexes/{index_name}/backup-schedules","scope":{"index_name":{"at":"index_name","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create_collection": {"action":"collections.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.pinecone.io","path":"/collections","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create_index": {"action":"indexes.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.pinecone.io","path":"/indexes","scope":{"cmek_id":{"at":"/cmek_id","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "create_index_for_model": {"action":"indexes.for_model.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.pinecone.io","path":"/indexes/create-for-model","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create_index_from_backup_operation": {"action":"backups.index.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.pinecone.io","path":"/backups/{backup_id}/create-index","scope":{"backup_id":{"at":"backup_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create_workspace": {"action":"workspaces.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.pinecone.io","path":"/workspaces","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "deleteDocuments": {"action":"namespaces.documents.delete","body":"json","effects":["delete"],"method":"POST","origin":"{origin}","path":"/namespaces/{namespace}/documents/delete","scope":{"namespace":{"at":"namespace","from":"path"}}},
+      "deleteNamespace": {"action":"namespaces.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/namespaces/{namespace}","scope":{"namespace":{"at":"namespace","from":"path"}}},
+      "deleteNamespaceAlias": {"action":"namespace_aliases.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/namespace-aliases/{alias_name}","scope":{"alias_name":{"at":"alias_name","from":"path"}}},
+      "deleteVectors": {"action":"vectors.delete","body":"json","effects":["delete"],"method":"POST","origin":"{origin}","path":"/vectors/delete","scope":{}},
+      "delete_assistant": {"action":"assistant.assistants.delete","effects":["delete"],"method":"DELETE","origin":"https://api.pinecone.io","path":"/assistant/assistants/{assistant_name}","scope":{"assistant_name":{"at":"assistant_name","from":"path"}}},
+      "delete_backup": {"action":"backups.delete","effects":["delete"],"method":"DELETE","origin":"https://api.pinecone.io","path":"/backups/{backup_id}","scope":{"backup_id":{"at":"backup_id","from":"path"}}},
+      "delete_backup_schedule": {"action":"backup_schedules.delete","effects":["delete"],"method":"DELETE","origin":"https://api.pinecone.io","path":"/backup-schedules/{schedule_id}","scope":{"schedule_id":{"at":"schedule_id","from":"path"}}},
+      "delete_collection": {"action":"collections.delete","effects":["delete"],"method":"DELETE","origin":"https://api.pinecone.io","path":"/collections/{collection_name}","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "delete_file": {"action":"assistant.files.delete","effects":["delete"],"method":"DELETE","origin":"{assistant}","path":"/assistant/files/{assistant_name}/{assistant_file_id}","scope":{"assistant_file_id":{"at":"assistant_file_id","from":"path"},"assistant_name":{"at":"assistant_name","from":"path"}}},
+      "delete_index": {"action":"indexes.delete","effects":["delete"],"method":"DELETE","origin":"https://api.pinecone.io","path":"/indexes/{index_name}","scope":{"index_name":{"at":"index_name","from":"path"}}},
+      "delete_workspace": {"action":"workspaces.delete","effects":["delete"],"method":"DELETE","origin":"https://api.pinecone.io","path":"/workspaces/{workspace_name}","scope":{"workspace_name":{"at":"workspace_name","from":"path"}}},
+      "describeBulkImport": {"action":"bulk.imports.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/bulk/imports/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "describeIndexStats": {"action":"describe_index_stats.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/describe_index_stats","scope":{}},
+      "describeNamespace": {"action":"namespaces.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/namespaces/{namespace}","scope":{"namespace":{"at":"namespace","from":"path"}}},
+      "describeNamespaceAlias": {"action":"namespace_aliases.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/namespace-aliases/{alias_name}","scope":{"alias_name":{"at":"alias_name","from":"path"}}},
+      "describe_backup": {"action":"backups.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/backups/{backup_id}","scope":{"backup_id":{"at":"backup_id","from":"path"}}},
+      "describe_backup_schedule": {"action":"backup_schedules.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/backup-schedules/{schedule_id}","scope":{"schedule_id":{"at":"schedule_id","from":"path"}}},
+      "describe_collection": {"action":"collections.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/collections/{collection_name}","scope":{"collection_name":{"at":"collection_name","from":"path"}}},
+      "describe_conversion_job": {"action":"conversion_jobs.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/conversion-jobs/{job_id}","scope":{"job_id":{"at":"job_id","from":"path"}}},
+      "describe_file": {"action":"assistant.files.read","effects":["read"],"method":"GET","origin":"{assistant}","params":["include_url"],"path":"/assistant/files/{assistant_name}/{assistant_file_id}","scope":{"assistant_file_id":{"at":"assistant_file_id","from":"path"},"assistant_name":{"at":"assistant_name","from":"path"}}},
+      "describe_index": {"action":"indexes.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/indexes/{index_name}","scope":{"index_name":{"at":"index_name","from":"path"}}},
+      "describe_operation": {"action":"assistant.operations.read","effects":["read"],"method":"GET","origin":"{assistant}","path":"/assistant/operations/{assistant_name}/{operation_id}","scope":{"assistant_name":{"at":"assistant_name","from":"path"},"operation_id":{"at":"operation_id","from":"path"}}},
+      "describe_restore_job": {"action":"restore_jobs.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/restore-jobs/{job_id}","scope":{"job_id":{"at":"job_id","from":"path"}}},
+      "describe_workspace": {"action":"workspaces.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/workspaces/{workspace_name}","scope":{"workspace_name":{"at":"workspace_name","from":"path"}}},
+      "embed": {"action":"embed.generate","effects":["generate","pay","send"],"method":"POST","origin":"https://api.pinecone.io","path":"/embed","scope":{}},
+      "embed.json.025cf2d03df5": {"action":"embed.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.pinecone.io","path":"/embed","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "fetchDocuments": {"action":"namespaces.documents.fetch.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/namespaces/{namespace}/documents/fetch","scope":{"namespace":{"at":"namespace","from":"path"}}},
+      "fetchVectors": {"action":"vectors.fetch.read","effects":["read"],"method":"GET","origin":"{origin}","params":["ids","namespace"],"path":"/vectors/fetch","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "fetch_vectors_by_metadata": {"action":"vectors.fetch_by_metadata.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/vectors/fetch_by_metadata","scope":{}},
+      "get_assistant": {"action":"assistant.assistants.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/assistant/assistants/{assistant_name}","scope":{"assistant_name":{"at":"assistant_name","from":"path"}}},
+      "get_model": {"action":"models.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/models/{model_name}","scope":{"model_name":{"at":"model_name","from":"path"}}},
+      "listBulkImports": {"action":"bulk.imports.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","paginationToken"],"path":"/bulk/imports","scope":{}},
+      "listDocuments": {"action":"namespaces.documents.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/namespaces/{namespace}/documents/list","scope":{"namespace":{"at":"namespace","from":"path"}}},
+      "listNamespaceAliases": {"action":"namespace_aliases.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","paginationToken","prefix","target_namespace"],"path":"/namespace-aliases","scope":{}},
+      "listNamespacesOperation": {"action":"namespaces.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","paginationToken","prefix"],"path":"/namespaces","scope":{}},
+      "listVectors": {"action":"vectors.read","effects":["read"],"method":"GET","origin":"{origin}","params":["prefix","limit","paginationToken","namespace"],"path":"/vectors/list","scope":{}},
+      "list_assistants": {"action":"assistant.assistants.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","params":["limit","pagination_token"],"path":"/assistant/assistants","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "list_backup_schedule_history": {"action":"backup_schedules.history.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","params":["limit","paginationToken"],"path":"/backup-schedules/{schedule_id}/history","scope":{"schedule_id":{"at":"schedule_id","from":"path"}}},
+      "list_backup_schedules": {"action":"indexes.backup_schedules.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","params":["limit","paginationToken"],"path":"/indexes/{index_name}/backup-schedules","scope":{"index_name":{"at":"index_name","from":"path"}}},
+      "list_collections": {"action":"collections.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/collections","scope":{}},
+      "list_conversion_jobs": {"action":"conversion_jobs.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","params":["limit","paginationToken"],"path":"/conversion-jobs","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "list_files": {"action":"assistant.files.read","effects":["read"],"method":"GET","origin":"{assistant}","params":["filter","limit","pagination_token"],"path":"/assistant/files/{assistant_name}","scope":{"assistant_name":{"at":"assistant_name","from":"path"}}},
+      "list_index_backups": {"action":"indexes.backups.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","params":["include_deleted","limit","paginationToken"],"path":"/indexes/{index_name}/backups","scope":{"index_name":{"at":"index_name","from":"path"}}},
+      "list_indexes": {"action":"indexes.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","path":"/indexes","scope":{}},
+      "list_models": {"action":"models.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","params":["type","vector_type"],"path":"/models","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "list_operations": {"action":"assistant.operations.read","effects":["read"],"method":"GET","origin":"{assistant}","params":["operation_type","status","limit","pagination_token"],"path":"/assistant/operations/{assistant_name}","scope":{"assistant_name":{"at":"assistant_name","from":"path"}}},
+      "list_project_backups": {"action":"backups.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","params":["limit","paginationToken"],"path":"/backups","scope":{}},
+      "list_restore_jobs": {"action":"restore_jobs.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","params":["limit","paginationToken"],"path":"/restore-jobs","scope":{}},
+      "list_workspaces": {"action":"workspaces.read","effects":["read"],"method":"GET","origin":"https://api.pinecone.io","params":["limit","paginationToken"],"path":"/workspaces","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "metrics_alignment": {"action":"assistant.evaluation.metrics.alignment.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"{assistant}","path":"/assistant/evaluation/metrics/alignment","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "queryVectors": {"action":"query.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/query","scope":{}},
+      "repointNamespaceAlias": {"action":"namespace_aliases.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/namespace-aliases/{alias_name}","scope":{"alias_name":{"at":"alias_name","from":"path"}}},
+      "rerank": {"action":"rerank.generate","effects":["generate","pay","send"],"method":"POST","origin":"https://api.pinecone.io","path":"/rerank","scope":{}},
+      "rerank.json.3a6af76fd313": {"action":"rerank.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.pinecone.io","path":"/rerank","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "searchDocuments": {"action":"namespaces.documents.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/namespaces/{namespace}/documents/search","scope":{"namespace":{"at":"namespace","from":"path"}}},
+      "searchRecordsNamespace": {"action":"records.namespaces.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/records/namespaces/{namespace}/search","scope":{"namespace":{"at":"namespace","from":"path"}}},
+      "startBulkImport": {"action":"bulk.imports.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/bulk/imports","scope":{"integrationId":{"at":"/integrationId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateDocuments": {"action":"namespaces.documents.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/namespaces/{namespace}/documents/update","scope":{"namespace":{"at":"namespace","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateVector": {"action":"vectors.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/vectors/update","scope":{"id":{"at":"/id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "update_assistant": {"action":"assistant.assistants.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.pinecone.io","path":"/assistant/assistants/{assistant_name}","scope":{"assistant_name":{"at":"assistant_name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "update_backup_schedule": {"action":"backup_schedules.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.pinecone.io","path":"/backup-schedules/{schedule_id}","scope":{"schedule_id":{"at":"schedule_id","from":"path"}}},
+      "upload_file": {"action":"assistant.files.write","body":"any","effects":["write"],"method":"POST","origin":"{assistant}","params":["metadata","multimodal"],"path":"/assistant/files/{assistant_name}","scope":{"assistant_name":{"at":"assistant_name","from":"path"}}},
+      "upsertDocuments": {"action":"namespaces.documents.upsert.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/namespaces/{namespace}/documents/upsert","scope":{"namespace":{"at":"namespace","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "upsertRecordsNamespace": {"action":"records.namespaces.upsert.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/records/namespaces/{namespace}/upsert","scope":{"namespace":{"at":"namespace","from":"path"}}},
+      "upsertVectors": {"action":"vectors.upsert.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/vectors/upsert","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "upsert_file": {"action":"assistant.files.write","body":"any","effects":["write"],"method":"PUT","origin":"{assistant}","params":["metadata","multimodal"],"path":"/assistant/files/{assistant_name}/{assistant_file_id}","scope":{"assistant_file_id":{"at":"assistant_file_id","from":"path"},"assistant_name":{"at":"assistant_name","from":"path"}}}
     }
   }
 }

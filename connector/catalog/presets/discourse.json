@@ -1,149 +1,608 @@
 {
-  "title": "Discourse",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your Discourse origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://example.com", "path": "/", "header": "Api-Key"}]}},
     "actions": {
-      "admin.groups": {"title": "Admin: groups"},
-      "admin.members": {"title": "Admin: members"},
-      "admin.users": {"title": "Admin: users"},
-      "delete.badges": {"title": "Delete: badges"},
-      "delete.groups": {"title": "Delete: groups"},
-      "delete.members": {"title": "Delete: members"},
-      "delete.posts": {"title": "Delete: posts"},
-      "delete.t": {"title": "Delete: t"},
-      "delete.users": {"title": "Delete: users"},
-      "generate.complete_external_upload": {"title": "Generate: complete external upload"},
-      "generate.complete_multipart": {"title": "Generate: complete multipart"},
-      "generate.generate_presigned_put": {"title": "Generate: generate presigned put"},
-      "read": {"title": "Read everything the account can see"},
-      "send.backups": {"title": "Send: backups"},
-      "send.forgot_password": {"title": "Send: forgot password"},
-      "send.notifications": {"title": "Send: notifications"},
-      "send.posts": {"title": "Send: posts"},
-      "share.invites": {"title": "Share: invites"},
-      "share.t": {"title": "Share: t"},
-      "share.user_badges": {"title": "Share: user badges"},
-      "write": {"title": "Write"},
-      "write.abort_multipart": {"title": "Write: abort multipart"},
-      "write.anonymize": {"title": "Write: anonymize"},
-      "write.backups": {"title": "Write: backups"},
-      "write.badges": {"title": "Write: badges"},
-      "write.batch_presign_multipart_parts": {"title": "Write: batch presign multipart parts"},
-      "write.categories": {"title": "Write: categories"},
-      "write.create_multipart": {"title": "Write: create multipart"},
-      "write.create_multiple": {"title": "Write: create multiple"},
-      "write.email": {"title": "Write: email"},
-      "write.log_out": {"title": "Write: log out"},
-      "write.mark_read": {"title": "Write: mark read"},
-      "write.password_reset": {"title": "Write: password reset"},
-      "write.pick": {"title": "Write: pick"},
-      "write.post_actions": {"title": "Write: post actions"},
-      "write.posts": {"title": "Write: posts"},
-      "write.silence": {"title": "Write: silence"},
-      "write.suspend": {"title": "Write: suspend"},
-      "write.tag_groups": {"title": "Write: tag groups"},
-      "write.timer": {"title": "Write: timer"},
-      "write.u": {"title": "Write: u"},
-      "write.uploads": {"title": "Write: uploads"},
-      "write.user_avatar": {"title": "Write: user avatar"},
-      "write.username": {"title": "Write: username"}
-    }
+      "actions": {
+        "title": "Actions"
+      },
+      "actions.write": {
+        "title": "Create and edit"
+      },
+      "admin": {
+        "title": "Manage"
+      },
+      "admin.backups": {
+        "title": "Backups"
+      },
+      "admin.backups.admin": {
+        "title": "Manage"
+      },
+      "admin.backups.read": {
+        "title": "Read"
+      },
+      "admin.backups.send": {
+        "title": "Send"
+      },
+      "admin.badges": {
+        "title": "Badges"
+      },
+      "admin.badges.admin": {
+        "title": "Manage"
+      },
+      "admin.badges.delete": {
+        "title": "Delete"
+      },
+      "admin.badges.read": {
+        "title": "Read"
+      },
+      "admin.groups": {
+        "title": "Groups"
+      },
+      "admin.groups.admin": {
+        "title": "Manage"
+      },
+      "admin.users": {
+        "title": "Users"
+      },
+      "admin.users.activate": {
+        "title": "Activate"
+      },
+      "admin.users.activate.admin": {
+        "title": "Manage"
+      },
+      "admin.users.admin": {
+        "title": "Manage"
+      },
+      "admin.users.anonymize": {
+        "title": "Anonymize"
+      },
+      "admin.users.anonymize.admin": {
+        "title": "Manage"
+      },
+      "admin.users.deactivate": {
+        "title": "Deactivate"
+      },
+      "admin.users.deactivate.admin": {
+        "title": "Manage"
+      },
+      "admin.users.list": {
+        "title": "List"
+      },
+      "admin.users.list.read": {
+        "title": "Read"
+      },
+      "admin.users.log_out": {
+        "title": "Log out"
+      },
+      "admin.users.log_out.admin": {
+        "title": "Manage"
+      },
+      "admin.users.read": {
+        "title": "Read"
+      },
+      "admin.users.silence": {
+        "title": "Silence"
+      },
+      "admin.users.silence.admin": {
+        "title": "Manage"
+      },
+      "admin.users.suspend": {
+        "title": "Suspend"
+      },
+      "admin.users.suspend.admin": {
+        "title": "Manage"
+      },
+      "c": {
+        "title": "C"
+      },
+      "c.read": {
+        "title": "Read"
+      },
+      "c.show": {
+        "title": "Show"
+      },
+      "c.show.read": {
+        "title": "Read"
+      },
+      "categories": {
+        "title": "Categories"
+      },
+      "categories.admin": {
+        "title": "Manage"
+      },
+      "categories.read": {
+        "title": "Read"
+      },
+      "directory_items": {
+        "title": "Directory items"
+      },
+      "directory_items.read": {
+        "title": "Read"
+      },
+      "discourse_post_event": {
+        "title": "Discourse post event"
+      },
+      "discourse_post_event.events": {
+        "title": "Events"
+      },
+      "discourse_post_event.events.ics": {
+        "title": "Ics"
+      },
+      "discourse_post_event.events.ics.read": {
+        "title": "Read"
+      },
+      "discourse_post_event.events.read": {
+        "title": "Read"
+      },
+      "groups": {
+        "title": "Groups"
+      },
+      "groups.admin": {
+        "title": "Manage"
+      },
+      "groups.by_id": {
+        "title": "By id"
+      },
+      "groups.by_id.read": {
+        "title": "Read"
+      },
+      "groups.members": {
+        "title": "Members"
+      },
+      "groups.members.admin": {
+        "title": "Manage"
+      },
+      "groups.members.read": {
+        "title": "Read"
+      },
+      "groups.read": {
+        "title": "Read"
+      },
+      "invites": {
+        "title": "Invites"
+      },
+      "invites.multiple": {
+        "title": "Multiple"
+      },
+      "invites.multiple.send": {
+        "title": "Send"
+      },
+      "invites.send": {
+        "title": "Send"
+      },
+      "latest": {
+        "title": "Latest"
+      },
+      "latest.read": {
+        "title": "Read"
+      },
+      "notifications": {
+        "title": "Notifications"
+      },
+      "notifications.mark_read": {
+        "title": "Mark read"
+      },
+      "notifications.mark_read.write": {
+        "title": "Create and edit"
+      },
+      "notifications.read": {
+        "title": "Read"
+      },
+      "posts": {
+        "title": "Posts"
+      },
+      "posts.delete": {
+        "title": "Delete"
+      },
+      "posts.locked": {
+        "title": "Locked"
+      },
+      "posts.locked.write": {
+        "title": "Create and edit"
+      },
+      "posts.publish": {
+        "title": "Publish"
+      },
+      "posts.read": {
+        "title": "Read"
+      },
+      "posts.replies": {
+        "title": "Replies"
+      },
+      "posts.replies.read": {
+        "title": "Read"
+      },
+      "posts.write": {
+        "title": "Create and edit"
+      },
+      "search": {
+        "title": "Search"
+      },
+      "search.read": {
+        "title": "Read"
+      },
+      "session": {
+        "title": "Session"
+      },
+      "session.forgot_password": {
+        "title": "Forgot password"
+      },
+      "session.forgot_password.send": {
+        "title": "Send"
+      },
+      "site": {
+        "title": "Site"
+      },
+      "site.basic_info": {
+        "title": "Basic info"
+      },
+      "site.basic_info.read": {
+        "title": "Read"
+      },
+      "site.read": {
+        "title": "Read"
+      },
+      "t": {
+        "title": "T"
+      },
+      "t.bookmark": {
+        "title": "Bookmark"
+      },
+      "t.bookmark.write": {
+        "title": "Create and edit"
+      },
+      "t.change_timestamp": {
+        "title": "Change timestamp"
+      },
+      "t.change_timestamp.write": {
+        "title": "Create and edit"
+      },
+      "t.delete": {
+        "title": "Delete"
+      },
+      "t.external_id": {
+        "title": "External id"
+      },
+      "t.external_id.read": {
+        "title": "Read"
+      },
+      "t.group": {
+        "title": "Group"
+      },
+      "t.group.share": {
+        "title": "Share"
+      },
+      "t.notifications": {
+        "title": "Notifications"
+      },
+      "t.notifications.write": {
+        "title": "Create and edit"
+      },
+      "t.posts": {
+        "title": "Posts"
+      },
+      "t.posts.read": {
+        "title": "Read"
+      },
+      "t.read": {
+        "title": "Read"
+      },
+      "t.share": {
+        "title": "Share"
+      },
+      "t.status": {
+        "title": "Status"
+      },
+      "t.status.write": {
+        "title": "Create and edit"
+      },
+      "t.timer": {
+        "title": "Timer"
+      },
+      "t.timer.write": {
+        "title": "Create and edit"
+      },
+      "t.write": {
+        "title": "Create and edit"
+      },
+      "tag": {
+        "title": "Tag"
+      },
+      "tag.read": {
+        "title": "Read"
+      },
+      "tag_groups": {
+        "title": "Tag groups"
+      },
+      "tag_groups.admin": {
+        "title": "Manage"
+      },
+      "tag_groups.read": {
+        "title": "Read"
+      },
+      "tags": {
+        "title": "Tags"
+      },
+      "tags.read": {
+        "title": "Read"
+      },
+      "top": {
+        "title": "Top"
+      },
+      "top.read": {
+        "title": "Read"
+      },
+      "topics": {
+        "title": "Topics"
+      },
+      "topics.private_messages": {
+        "title": "Private messages"
+      },
+      "topics.private_messages.read": {
+        "title": "Read"
+      },
+      "topics.private_messages_sent": {
+        "title": "Private messages sent"
+      },
+      "topics.private_messages_sent.read": {
+        "title": "Read"
+      },
+      "u": {
+        "title": "U"
+      },
+      "u.by_external": {
+        "title": "By external"
+      },
+      "u.by_external.read": {
+        "title": "Read"
+      },
+      "u.emails": {
+        "title": "Emails"
+      },
+      "u.emails.read": {
+        "title": "Read"
+      },
+      "u.preferences": {
+        "title": "Preferences"
+      },
+      "u.preferences.avatar": {
+        "title": "Avatar"
+      },
+      "u.preferences.avatar.pick": {
+        "title": "Pick"
+      },
+      "u.preferences.avatar.pick.write": {
+        "title": "Create and edit"
+      },
+      "u.preferences.email": {
+        "title": "Email"
+      },
+      "u.preferences.email.admin": {
+        "title": "Manage"
+      },
+      "u.preferences.username": {
+        "title": "Username"
+      },
+      "u.preferences.username.write": {
+        "title": "Create and edit"
+      },
+      "u.read": {
+        "title": "Read"
+      },
+      "u.write": {
+        "title": "Create and edit"
+      },
+      "uploads": {
+        "title": "Uploads"
+      },
+      "uploads.complete_external_upload": {
+        "title": "Complete external upload"
+      },
+      "uploads.complete_external_upload.write": {
+        "title": "Create and edit"
+      },
+      "uploads.complete_multipart": {
+        "title": "Complete multipart"
+      },
+      "uploads.complete_multipart.write": {
+        "title": "Create and edit"
+      },
+      "uploads.generate_presigned_put": {
+        "title": "Generate presigned put"
+      },
+      "uploads.generate_presigned_put.write": {
+        "title": "Create and edit"
+      },
+      "uploads.multipart": {
+        "title": "Multipart"
+      },
+      "uploads.multipart.write": {
+        "title": "Create and edit"
+      },
+      "uploads.presign_multipart_parts": {
+        "title": "Presign multipart parts"
+      },
+      "uploads.presign_multipart_parts.write": {
+        "title": "Create and edit"
+      },
+      "uploads.write": {
+        "title": "Create and edit"
+      },
+      "user_actions": {
+        "title": "User actions"
+      },
+      "user_actions.read": {
+        "title": "Read"
+      },
+      "user_avatar": {
+        "title": "User avatar"
+      },
+      "user_avatar.refresh_gravatar": {
+        "title": "Refresh gravatar"
+      },
+      "user_avatar.refresh_gravatar.write": {
+        "title": "Create and edit"
+      },
+      "user_badges": {
+        "title": "User badges"
+      },
+      "user_badges.read": {
+        "title": "Read"
+      },
+      "user_badges.write": {
+        "title": "Create and edit"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.admin": {
+        "title": "Manage"
+      },
+      "users.password_reset": {
+        "title": "Password reset"
+      },
+      "users.password_reset.admin": {
+        "title": "Manage"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Api-Key",
+            "origin": "https://example.com",
+            "path": "/",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Your Discourse origin (https://host)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Discourse",
   "http": {
     "operations": {
-      "abortMultipart": {"action":"write.abort_multipart","effects":["write"],"method":"POST","origin":"{origin}","path":"/uploads/abort-multipart.json","body":"any","scope":{}},
-      "activateUser": {"action":"admin.users","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/admin/users/{id}/activate.json","scope":{"id":{"from":"path","at":"id"}}},
-      "addGroupMembers": {"action":"admin.members","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/groups/{id}/members.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "adminGetUser": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/admin/users/{id}.json","scope":{"id":{"from":"path","at":"id"}}},
-      "adminListBadges": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/admin/badges.json","scope":{}},
-      "adminListUsers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/admin/users.json","params":["order","asc","page","show_emails","stats","email","ip"],"scope":{}},
-      "adminListUsersFlag": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/admin/users/list/{flag}.json","params":["order","asc","page","show_emails","stats","email","ip"],"scope":{"flag":{"from":"path","at":"flag"}}},
-      "anonymizeUser": {"action":"write.anonymize","effects":["write"],"method":"PUT","origin":"{origin}","path":"/admin/users/{id}/anonymize.json","scope":{"id":{"from":"path","at":"id"}}},
-      "batchPresignMultipartParts": {"action":"write.batch_presign_multipart_parts","effects":["write"],"method":"POST","origin":"{origin}","path":"/uploads/batch-presign-multipart-parts.json","body":"any","scope":{}},
-      "changePassword": {"action":"write.password_reset","effects":["write"],"method":"PUT","origin":"{origin}","path":"/users/password-reset/{token}.json","body":"any","scope":{"token":{"from":"path","at":"token"}}},
-      "completeExternalUpload": {"action":"generate.complete_external_upload","effects":["generate"],"method":"POST","origin":"{origin}","path":"/uploads/complete-external-upload.json","body":"any","scope":{}},
-      "completeMultipart": {"action":"generate.complete_multipart","effects":["generate"],"method":"POST","origin":"{origin}","path":"/uploads/complete-multipart.json","body":"any","scope":{}},
-      "createBackup": {"action":"write.backups","effects":["write"],"method":"POST","origin":"{origin}","path":"/admin/backups.json","body":"any","scope":{}},
-      "createBadge": {"action":"write.badges","effects":["write"],"method":"POST","origin":"{origin}","path":"/admin/badges.json","body":"any","scope":{}},
-      "createCategory": {"action":"write.categories","effects":["write"],"method":"POST","origin":"{origin}","path":"/categories.json","body":"any","scope":{}},
-      "createGroup": {"action":"admin.groups","effects":["admin"],"method":"POST","origin":"{origin}","path":"/admin/groups.json","body":"any","scope":{}},
-      "createInvite": {"action":"share.invites","effects":["share"],"method":"POST","origin":"{origin}","path":"/invites.json","body":"any","scope":{}},
-      "createMultipartUpload": {"action":"write.create_multipart","effects":["write"],"method":"POST","origin":"{origin}","path":"/uploads/create-multipart.json","body":"any","scope":{}},
-      "createMultipleInvites": {"action":"write.create_multiple","effects":["write"],"method":"POST","origin":"{origin}","path":"/invites/create-multiple.json","body":"any","scope":{}},
-      "createTagGroup": {"action":"write.tag_groups","effects":["write"],"method":"POST","origin":"{origin}","path":"/tag_groups.json","body":"any","scope":{}},
-      "createTopicPostPM": {"action":"send.posts","effects":["send"],"method":"POST","origin":"{origin}","path":"/posts.json","body":"any","scope":{}},
-      "createTopicTimer": {"action":"write.timer","effects":["write"],"method":"POST","origin":"{origin}","path":"/t/{id}/timer.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "createUpload": {"action":"write.uploads","effects":["write"],"method":"POST","origin":"{origin}","path":"/uploads.json","body":"any","scope":{}},
-      "createUser": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"{origin}","path":"/users.json","body":"any","scope":{}},
-      "deactivateUser": {"action":"admin.users","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/admin/users/{id}/deactivate.json","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteBadge": {"action":"delete.badges","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/admin/badges/{id}.json","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteGroup": {"action":"delete.groups","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/admin/groups/{id}.json","scope":{"id":{"from":"path","at":"id"}}},
-      "deletePost": {"action":"delete.posts","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/posts/{id}.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteUser": {"action":"delete.users","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/admin/users/{id}.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "downloadBackup": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/admin/backups/{filename}","params":["token"],"scope":{"filename":{"from":"path","at":"filename"}}},
-      "exportEventsICS": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/discourse-post-event/events.ics","params":["category_id","include_subcategories","attending_user","before","after","order","limit"],"scope":{}},
-      "generatePresignedPut": {"action":"generate.generate_presigned_put","effects":["generate"],"method":"POST","origin":"{origin}","path":"/uploads/generate-presigned-put.json","body":"any","scope":{}},
-      "getBackups": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/admin/backups.json","scope":{}},
-      "getGroup": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/groups/{name}.json","scope":{"name":{"from":"path","at":"name"}}},
-      "getGroupById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/groups/by-id/{id}.json","scope":{"id":{"from":"path","at":"id"}}},
-      "getNotifications": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/notifications.json","scope":{}},
-      "getPost": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/posts/{id}.json","scope":{"id":{"from":"path","at":"id"}}},
-      "getSite": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/site.json","scope":{}},
-      "getSiteBasicInfo": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/site/basic-info.json","scope":{}},
-      "getTag": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tag/{name}.json","scope":{"name":{"from":"path","at":"name"}}},
-      "getTagGroup": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tag_groups/{id}.json","scope":{"id":{"from":"path","at":"id"}}},
-      "getTopic": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/t/{id}.json","scope":{"id":{"from":"path","at":"id"}}},
-      "getTopicByExternalId": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/t/external_id/{external_id}.json","scope":{"external_id":{"from":"path","at":"external_id"}}},
-      "getUser": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/u/{username}.json","scope":{"username":{"from":"path","at":"username"}}},
-      "getUserExternalId": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/u/by-external/{external_id}.json","scope":{"external_id":{"from":"path","at":"external_id"}}},
-      "getUserIdentiyProviderExternalId": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/u/by-external/{provider}/{external_id}.json","scope":{"provider":{"from":"path","at":"provider"},"external_id":{"from":"path","at":"external_id"}}},
-      "getUserSentPrivateMessages": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/topics/private-messages-sent/{username}.json","scope":{"username":{"from":"path","at":"username"}}},
-      "grantUserBadge": {"action":"share.user_badges","effects":["share"],"method":"POST","origin":"{origin}","path":"/user_badges.json","body":"any","scope":{}},
-      "inviteGroupToTopic": {"action":"share.t","effects":["share"],"method":"POST","origin":"{origin}","path":"/t/{id}/invite-group.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "inviteToTopic": {"action":"share.t","effects":["share"],"method":"POST","origin":"{origin}","path":"/t/{id}/invite.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "listCategories": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/categories.json","params":["include_subcategories"],"scope":{}},
-      "listCategoryTopics": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/c/{slug}/{id}.json","scope":{"slug":{"from":"path","at":"slug"},"id":{"from":"path","at":"id"}}},
-      "listEvents": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/discourse-post-event/events.json","params":["include_details","include_card","category_id","include_subcategories","post_id","attending_user","before","after","order","limit","tags","search","status"],"scope":{}},
-      "listGroups": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/groups.json","scope":{}},
-      "listLatestTopics": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/latest.json","params":["order","ascending","per_page"],"scope":{}},
-      "listPosts": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/posts.json","params":["before"],"scope":{}},
-      "listTagGroups": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tag_groups.json","scope":{}},
-      "listTags": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tags.json","scope":{}},
-      "listTopTopics": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/top.json","params":["period","per_page"],"scope":{}},
-      "listUserActions": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/user_actions.json","params":["offset","username","filter"],"scope":{"username":{"from":"query","at":"username"}}},
-      "listUserBadges": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/user-badges/{username}.json","scope":{"username":{"from":"path","at":"username"}}},
-      "listUserPrivateMessages": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/topics/private-messages/{username}.json","scope":{"username":{"from":"path","at":"username"}}},
-      "listUsersPublic": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/directory_items.json","params":["period","order","asc","page"],"scope":{}},
-      "lockPost": {"action":"write.posts","effects":["write"],"method":"PUT","origin":"{origin}","path":"/posts/{id}/locked.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "logOutUser": {"action":"write.log_out","effects":["write"],"method":"POST","origin":"{origin}","path":"/admin/users/{id}/log_out.json","scope":{"id":{"from":"path","at":"id"}}},
-      "markNotificationsAsRead": {"action":"write.mark_read","effects":["write"],"method":"PUT","origin":"{origin}","path":"/notifications/mark-read.json","body":"any","scope":{}},
-      "mergeUser": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"{origin}","path":"/admin/users/{id}/merge.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "performPostAction": {"action":"write.post_actions","effects":["write"],"method":"POST","origin":"{origin}","path":"/post_actions.json","body":"any","scope":{}},
-      "postReplies": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/posts/{id}/replies.json","scope":{"id":{"from":"path","at":"id"}}},
-      "refreshGravatar": {"action":"write.user_avatar","effects":["write"],"method":"POST","origin":"{origin}","path":"/user_avatar/{username}/refresh_gravatar.json","scope":{"username":{"from":"path","at":"username"}}},
-      "removeGroupMembers": {"action":"delete.members","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/groups/{id}/members.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "removeTopic": {"action":"delete.t","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/t/{id}.json","scope":{"id":{"from":"path","at":"id"}}},
-      "search": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/search.json","params":["q","page"],"scope":{}},
-      "sendDownloadBackupEmail": {"action":"send.backups","effects":["send"],"method":"PUT","origin":"{origin}","path":"/admin/backups/{filename}","scope":{"filename":{"from":"path","at":"filename"}}},
-      "sendPasswordResetEmail": {"action":"send.forgot_password","effects":["send"],"method":"POST","origin":"{origin}","path":"/session/forgot_password.json","body":"any","scope":{}},
-      "setNotificationLevel": {"action":"send.notifications","effects":["send"],"method":"POST","origin":"{origin}","path":"/t/{id}/notifications.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "silenceUser": {"action":"write.silence","effects":["write"],"method":"PUT","origin":"{origin}","path":"/admin/users/{id}/silence.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "suspendUser": {"action":"write.suspend","effects":["write"],"method":"PUT","origin":"{origin}","path":"/admin/users/{id}/suspend.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "updateAvatar": {"action":"write.pick","effects":["write"],"method":"PUT","origin":"{origin}","path":"/u/{username}/preferences/avatar/pick.json","body":"any","scope":{"username":{"from":"path","at":"username"}}},
-      "updateBadge": {"action":"write.badges","effects":["write"],"method":"PUT","origin":"{origin}","path":"/admin/badges/{id}.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "updateCategory": {"action":"write.categories","effects":["write"],"method":"PUT","origin":"{origin}","path":"/categories/{id}.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "updateEmail": {"action":"write.email","effects":["write"],"method":"PUT","origin":"{origin}","path":"/u/{username}/preferences/email.json","body":"any","scope":{"username":{"from":"path","at":"username"}}},
-      "updateGroup": {"action":"admin.groups","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/groups/{id}.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "updatePost": {"action":"write.posts","effects":["write"],"method":"PUT","origin":"{origin}","path":"/posts/{id}.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "updateTagGroup": {"action":"write.tag_groups","effects":["write"],"method":"PUT","origin":"{origin}","path":"/tag_groups/{id}.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "updateTopic": {"action":"write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/t/-/{id}.json","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "updateUser": {"action":"write.u","effects":["write"],"method":"PUT","origin":"{origin}","path":"/u/{username}.json","body":"any","scope":{"username":{"from":"path","at":"username"}}},
-      "updateUsername": {"action":"write.username","effects":["write"],"method":"PUT","origin":"{origin}","path":"/u/{username}/preferences/username.json","body":"any","scope":{"username":{"from":"path","at":"username"}}}
+      "abortMultipart": {"action":"uploads.multipart.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/uploads/abort-multipart.json","scope":{}},
+      "activateUser": {"action":"admin.users.activate.admin","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/admin/users/{id}/activate.json","scope":{"id":{"at":"id","from":"path"}}},
+      "addGroupMembers": {"action":"groups.members.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/groups/{id}/members.json","scope":{"id":{"at":"id","from":"path"}}},
+      "adminGetUser": {"action":"admin.users.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/admin/users/{id}.json","scope":{"id":{"at":"id","from":"path"}}},
+      "adminListBadges": {"action":"admin.badges.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/admin/badges.json","scope":{}},
+      "adminListUsers": {"action":"admin.users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["order","asc","page","show_emails","stats","email","ip"],"path":"/admin/users.json","scope":{}},
+      "adminListUsersFlag": {"action":"admin.users.list.read","effects":["read"],"method":"GET","origin":"{origin}","params":["order","asc","page","show_emails","stats","email","ip"],"path":"/admin/users/list/{flag}.json","scope":{"flag":{"at":"flag","from":"path"}}},
+      "anonymizeUser": {"action":"admin.users.anonymize.admin","effects":["admin","delete"],"method":"PUT","origin":"{origin}","path":"/admin/users/{id}/anonymize.json","scope":{"id":{"at":"id","from":"path"}}},
+      "batchPresignMultipartParts": {"action":"uploads.presign_multipart_parts.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/uploads/batch-presign-multipart-parts.json","scope":{}},
+      "bookmarkTopic": {"action":"t.bookmark.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/t/{id}/bookmark.json","path_patterns":{"id":"[^\\-].*|-.+"},"scope":{"id":{"at":"id","from":"path"}}},
+      "changePassword": {"action":"users.password_reset.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/users/password-reset/{token}.json","scope":{"token":{"at":"token","from":"path"}}},
+      "completeExternalUpload": {"action":"uploads.complete_external_upload.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/uploads/complete-external-upload.json","scope":{}},
+      "completeMultipart": {"action":"uploads.complete_multipart.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/uploads/complete-multipart.json","scope":{}},
+      "createBackup": {"action":"admin.backups.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/admin/backups.json","scope":{}},
+      "createBadge": {"action":"admin.badges.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/admin/badges.json","scope":{}},
+      "createCategory": {"action":"categories.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/categories.json","scope":{}},
+      "createGroup": {"action":"admin.groups.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/admin/groups.json","scope":{}},
+      "createInvite": {"action":"invites.send","body":"any","effects":["send","share"],"method":"POST","origin":"{origin}","path":"/invites.json","scope":{}},
+      "createMultipartUpload": {"action":"uploads.multipart.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/uploads/create-multipart.json","scope":{}},
+      "createMultipleInvites": {"action":"invites.multiple.send","body":"any","effects":["send","share"],"method":"POST","origin":"{origin}","path":"/invites/create-multiple.json","scope":{}},
+      "createTagGroup": {"action":"tag_groups.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/tag_groups.json","scope":{}},
+      "createTopicPostPM": {"action":"posts.publish","body":"any","effects":["publish","send"],"method":"POST","origin":"{origin}","path":"/posts.json","scope":{}},
+      "createTopicTimer": {"action":"t.timer.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/t/{id}/timer.json","scope":{"id":{"at":"id","from":"path"}}},
+      "createUpload": {"action":"uploads.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/uploads.json","scope":{}},
+      "createUser": {"action":"users.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/users.json","scope":{}},
+      "deactivateUser": {"action":"admin.users.deactivate.admin","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/admin/users/{id}/deactivate.json","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteBadge": {"action":"admin.badges.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/admin/badges/{id}.json","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteGroup": {"action":"admin.groups.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/admin/groups/{id}.json","scope":{"id":{"at":"id","from":"path"}}},
+      "deletePost": {"action":"posts.delete","body":"any","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/posts/{id}.json","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteUser": {"action":"admin.users.admin","body":"any","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/admin/users/{id}.json","scope":{"id":{"at":"id","from":"path"}}},
+      "downloadBackup": {"action":"admin.backups.read","effects":["read"],"method":"GET","origin":"{origin}","params":["token"],"path":"/admin/backups/{filename}","scope":{"filename":{"at":"filename","from":"path"}}},
+      "exportEventsICS": {"action":"discourse_post_event.events.ics.read","effects":["read"],"method":"GET","origin":"{origin}","params":["category_id","include_subcategories","attending_user","before","after","order","limit"],"path":"/discourse-post-event/events.ics","scope":{}},
+      "generatePresignedPut": {"action":"uploads.generate_presigned_put.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/uploads/generate-presigned-put.json","scope":{}},
+      "getBackups": {"action":"admin.backups.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/admin/backups.json","scope":{}},
+      "getCategory": {"action":"c.show.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/c/{id}/show.json","scope":{"id":{"at":"id","from":"path"}}},
+      "getGroup": {"action":"groups.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/groups/{name}.json","scope":{"name":{"at":"name","from":"path"}}},
+      "getGroupById": {"action":"groups.by_id.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/groups/by-id/{id}.json","scope":{"id":{"at":"id","from":"path"}}},
+      "getNotifications": {"action":"notifications.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/notifications.json","scope":{}},
+      "getPost": {"action":"posts.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/posts/{id}.json","scope":{"id":{"at":"id","from":"path"}}},
+      "getSite": {"action":"site.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/site.json","scope":{}},
+      "getSiteBasicInfo": {"action":"site.basic_info.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/site/basic-info.json","scope":{}},
+      "getSpecificPostsFromTopic": {"action":"t.posts.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/t/{id}/posts.json","path_patterns":{"id":"[^e].*|e(?:|[^x].*|x(?:|[^t].*|t(?:|[^e].*|e(?:|[^r].*|r(?:|[^n].*|n(?:|[^a].*|a(?:|[^l].*|l(?:|[^_].*|_(?:|[^i].*|i(?:|[^d].*|d.+))))))))))"},"scope":{"id":{"at":"id","from":"path"}}},
+      "getSpecificPostsFromTopic.json.0fbd0ccdefbd": {"action":"t.posts.read","body":"json","effects":["read"],"method":"GET","origin":"{origin}","path":"/t/{id}/posts.json","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "getTag": {"action":"tag.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page"],"path":"/tag/{name}.json","scope":{"name":{"at":"name","from":"path"}}},
+      "getTagGroup": {"action":"tag_groups.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tag_groups/{id}.json","scope":{"id":{"at":"id","from":"path"}}},
+      "getTopic": {"action":"t.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/t/{id}.json","scope":{"id":{"at":"id","from":"path"}}},
+      "getTopicByExternalId": {"action":"t.external_id.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/t/external_id/{external_id}.json","scope":{"external_id":{"at":"external_id","from":"path"}}},
+      "getUser": {"action":"u.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/u/{username}.json","scope":{"username":{"at":"username","from":"path"}}},
+      "getUserEmails": {"action":"u.emails.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/u/{username}/emails.json","path_patterns":{"username":"[^b].*|b(?:|[^y].*|y(?:|[^\\-].*|-(?:|[^e].*|e(?:|[^x].*|x(?:|[^t].*|t(?:|[^e].*|e(?:|[^r].*|r(?:|[^n].*|n(?:|[^a].*|a(?:|[^l].*|l.+))))))))))"},"scope":{"username":{"at":"username","from":"path"}}},
+      "getUserExternalId": {"action":"u.by_external.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/u/by-external/{external_id}.json","scope":{"external_id":{"at":"external_id","from":"path"}}},
+      "getUserIdentiyProviderExternalId": {"action":"u.by_external.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/u/by-external/{provider}/{external_id}.json","scope":{"external_id":{"at":"external_id","from":"path"},"provider":{"at":"provider","from":"path"}}},
+      "getUserSentPrivateMessages": {"action":"topics.private_messages_sent.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page"],"path":"/topics/private-messages-sent/{username}.json","scope":{"username":{"at":"username","from":"path"}}},
+      "grantUserBadge": {"action":"user_badges.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/user_badges.json","scope":{}},
+      "inviteGroupToTopic": {"action":"t.group.share","body":"any","effects":["share"],"method":"POST","origin":"{origin}","path":"/t/{id}/invite-group.json","scope":{"id":{"at":"id","from":"path"}}},
+      "inviteToTopic": {"action":"t.share","body":"any","effects":["share"],"method":"POST","origin":"{origin}","path":"/t/{id}/invite.json","scope":{"id":{"at":"id","from":"path"}}},
+      "listCategories": {"action":"categories.read","effects":["read"],"method":"GET","origin":"{origin}","params":["include_subcategories"],"path":"/categories.json","scope":{}},
+      "listCategoryTopics": {"action":"c.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page"],"path":"/c/{slug}/{id}.json","path_patterns":{"id":"[0-9]+"},"scope":{"id":{"at":"id","from":"path"},"slug":{"at":"slug","from":"path"}}},
+      "listEvents": {"action":"discourse_post_event.events.read","effects":["read"],"method":"GET","origin":"{origin}","params":["include_details","include_card","category_id","include_subcategories","post_id","attending_user","before","after","order","limit","tags","search","status"],"path":"/discourse-post-event/events.json","scope":{}},
+      "listGroupMembers": {"action":"groups.members.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/groups/{name}/members.json","path_patterns":{"name":"[^b].*|b(?:|[^y].*|y(?:|[^\\-].*|-(?:|[^i].*|i(?:|[^d].*|d.+))))"},"scope":{"name":{"at":"name","from":"path"}}},
+      "listGroups": {"action":"groups.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/groups.json","scope":{}},
+      "listLatestTopics": {"action":"latest.read","effects":["read"],"method":"GET","origin":"{origin}","params":["order","ascending","per_page","page"],"path":"/latest.json","scope":{}},
+      "listPosts": {"action":"posts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["before"],"path":"/posts.json","scope":{}},
+      "listTagGroups": {"action":"tag_groups.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tag_groups.json","scope":{}},
+      "listTags": {"action":"tags.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tags.json","scope":{}},
+      "listTopTopics": {"action":"top.read","effects":["read"],"method":"GET","origin":"{origin}","params":["period","per_page","page"],"path":"/top.json","scope":{}},
+      "listUserActions": {"action":"user_actions.read","effects":["read"],"method":"GET","origin":"{origin}","params":["offset","username","filter"],"path":"/user_actions.json","scope":{"username":{"at":"username","from":"query"}}},
+      "listUserBadges": {"action":"user_badges.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/user-badges/{username}.json","scope":{"username":{"at":"username","from":"path"}}},
+      "listUserPrivateMessages": {"action":"topics.private_messages.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page"],"path":"/topics/private-messages/{username}.json","scope":{"username":{"at":"username","from":"path"}}},
+      "listUsersPublic": {"action":"directory_items.read","effects":["read"],"method":"GET","origin":"{origin}","params":["period","order","asc","page"],"path":"/directory_items.json","scope":{}},
+      "lockPost": {"action":"posts.locked.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/posts/{id}/locked.json","scope":{"id":{"at":"id","from":"path"}}},
+      "logOutUser": {"action":"admin.users.log_out.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/admin/users/{id}/log_out.json","scope":{"id":{"at":"id","from":"path"}}},
+      "markNotificationsAsRead": {"action":"notifications.mark_read.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/notifications/mark-read.json","scope":{}},
+      "mergeUser": {"action":"admin.users.admin","body":"any","effects":["admin","delete"],"method":"POST","origin":"{origin}","path":"/admin/users/{id}/merge.json","scope":{"id":{"at":"id","from":"path"}}},
+      "performPostAction": {"action":"actions.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/post_actions.json","scope":{}},
+      "postReplies": {"action":"posts.replies.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/posts/{id}/replies.json","scope":{"id":{"at":"id","from":"path"}}},
+      "refreshGravatar": {"action":"user_avatar.refresh_gravatar.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/user_avatar/{username}/refresh_gravatar.json","scope":{"username":{"at":"username","from":"path"}}},
+      "removeGroupMembers": {"action":"groups.members.admin","body":"any","effects":["admin"],"method":"DELETE","origin":"{origin}","path":"/groups/{id}/members.json","scope":{"id":{"at":"id","from":"path"}}},
+      "removeTopic": {"action":"t.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/t/{id}.json","scope":{"id":{"at":"id","from":"path"}}},
+      "search": {"action":"search.read","effects":["read"],"method":"GET","origin":"{origin}","params":["q","page"],"path":"/search.json","scope":{}},
+      "sendDownloadBackupEmail": {"action":"admin.backups.send","effects":["send"],"method":"PUT","origin":"{origin}","path":"/admin/backups/{filename}","scope":{"filename":{"at":"filename","from":"path"}}},
+      "sendPasswordResetEmail": {"action":"session.forgot_password.send","body":"any","effects":["send"],"method":"POST","origin":"{origin}","path":"/session/forgot_password.json","scope":{}},
+      "setNotificationLevel": {"action":"t.notifications.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/t/{id}/notifications.json","scope":{"id":{"at":"id","from":"path"}}},
+      "silenceUser": {"action":"admin.users.silence.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/admin/users/{id}/silence.json","scope":{"id":{"at":"id","from":"path"}}},
+      "suspendUser": {"action":"admin.users.suspend.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/admin/users/{id}/suspend.json","scope":{"id":{"at":"id","from":"path"}}},
+      "updateAvatar": {"action":"u.preferences.avatar.pick.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/u/{username}/preferences/avatar/pick.json","scope":{"username":{"at":"username","from":"path"}}},
+      "updateBadge": {"action":"admin.badges.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/admin/badges/{id}.json","scope":{"id":{"at":"id","from":"path"}}},
+      "updateCategory": {"action":"categories.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/categories/{id}.json","scope":{"id":{"at":"id","from":"path"}}},
+      "updateEmail": {"action":"u.preferences.email.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/u/{username}/preferences/email.json","scope":{"username":{"at":"username","from":"path"}}},
+      "updateGroup": {"action":"groups.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/groups/{id}.json","scope":{"id":{"at":"id","from":"path"}}},
+      "updatePost": {"action":"posts.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/posts/{id}.json","scope":{"id":{"at":"id","from":"path"}}},
+      "updateTagGroup": {"action":"tag_groups.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/tag_groups/{id}.json","scope":{"id":{"at":"id","from":"path"}}},
+      "updateTopic": {"action":"t.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/t/-/{id}.json","scope":{"id":{"at":"id","from":"path"}}},
+      "updateTopicStatus": {"action":"t.status.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/t/{id}/status.json","path_patterns":{"id":"[^\\-].*|-.+"},"scope":{"id":{"at":"id","from":"path"}}},
+      "updateTopicStatus.json.506cd8906c24": {"action":"t.status.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/t/{id}/status.json","path_patterns":{"id":"[^\\-].*|-.+"},"scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateTopicTimestamp": {"action":"t.change_timestamp.write","effects":["write"],"method":"PUT","origin":"{origin}","path":"/t/{id}/change-timestamp.json","path_patterns":{"id":"[^\\-].*|-.+"},"scope":{"id":{"at":"id","from":"path"}}},
+      "updateTopicTimestamp.json.506bb8d5c4c2": {"action":"t.change_timestamp.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/t/{id}/change-timestamp.json","path_patterns":{"id":"[^\\-].*|-.+"},"scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateUser": {"action":"u.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/u/{username}.json","scope":{"username":{"at":"username","from":"path"}}},
+      "updateUsername": {"action":"u.preferences.username.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/u/{username}/preferences/username.json","scope":{"username":{"at":"username","from":"path"}}}
     }
   }
 }

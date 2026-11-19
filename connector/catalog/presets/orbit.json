@@ -1,54 +1,174 @@
 {
-  "title": "Orbit",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "access_token", "label": "API Token", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_token", "origin": "https://app.orbit.love", "path": "/api", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "admin.members": {"title": "Admin: members"},
-      "admin.organizations": {"title": "Admin: organizations"},
-      "admin.webhooks": {"title": "Admin: webhooks"},
-      "delete.activities": {"title": "Delete: activities"},
-      "delete.identities": {"title": "Delete: identities"},
-      "delete.members": {"title": "Delete: members"},
-      "delete.webhooks": {"title": "Delete: webhooks"},
-      "read": {"title": "Read everything the account can see"},
-      "send.notes": {"title": "Send: notes"},
-      "write.activities": {"title": "Write: activities"},
-      "write.identities": {"title": "Write: identities"},
-      "write.notes": {"title": "Write: notes"}
-    }
+      "activities": {
+        "title": "Activities"
+      },
+      "activities.read": {
+        "title": "Read"
+      },
+      "activities.write": {
+        "title": "Create and edit"
+      },
+      "activity_types": {
+        "title": "Activity types"
+      },
+      "activity_types.read": {
+        "title": "Read"
+      },
+      "members": {
+        "title": "Members"
+      },
+      "members.activities": {
+        "title": "Activities"
+      },
+      "members.activities.delete": {
+        "title": "Delete"
+      },
+      "members.activities.read": {
+        "title": "Read"
+      },
+      "members.activities.write": {
+        "title": "Create and edit"
+      },
+      "members.delete": {
+        "title": "Delete"
+      },
+      "members.identities": {
+        "title": "Identities"
+      },
+      "members.identities.delete": {
+        "title": "Delete"
+      },
+      "members.identities.write": {
+        "title": "Create and edit"
+      },
+      "members.notes": {
+        "title": "Notes"
+      },
+      "members.notes.read": {
+        "title": "Read"
+      },
+      "members.notes.write": {
+        "title": "Create and edit"
+      },
+      "members.read": {
+        "title": "Read"
+      },
+      "members.write": {
+        "title": "Create and edit"
+      },
+      "organizations": {
+        "title": "Organizations"
+      },
+      "organizations.activities": {
+        "title": "Activities"
+      },
+      "organizations.activities.read": {
+        "title": "Read"
+      },
+      "organizations.members": {
+        "title": "Members"
+      },
+      "organizations.members.read": {
+        "title": "Read"
+      },
+      "organizations.read": {
+        "title": "Read"
+      },
+      "organizations.write": {
+        "title": "Create and edit"
+      },
+      "reports": {
+        "title": "Reports"
+      },
+      "reports.read": {
+        "title": "Read"
+      },
+      "user": {
+        "title": "Account"
+      },
+      "user.read": {
+        "title": "Read"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.delete": {
+        "title": "Delete"
+      },
+      "webhooks.read": {
+        "title": "Read"
+      },
+      "workspaces": {
+        "title": "Workspaces"
+      },
+      "workspaces.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://app.orbit.love",
+            "path": "/api",
+            "prefix": "Bearer ",
+            "value": "access_token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "access_token",
+        "label": "API Token",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Orbit",
   "http": {
     "operations": {
-      "DELETE /api/v1/{workspace_slug}/members/{member_slug}": {"action":"delete.members","effects":["delete"],"method":"DELETE","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"member_slug":{"from":"path","at":"member_slug"}}},
-      "DELETE /api/v1/{workspace_slug}/members/{member_slug}/activities/{id}": {"action":"delete.activities","effects":["delete"],"method":"DELETE","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}/activities/{id}","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"member_slug":{"from":"path","at":"member_slug"},"id":{"from":"path","at":"id"}}},
-      "DELETE /api/v1/{workspace_slug}/members/{member_slug}/identities": {"action":"delete.identities","effects":["delete"],"method":"DELETE","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}/identities","body":"any","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"member_slug":{"from":"path","at":"member_slug"}}},
-      "DELETE /api/v1/{workspace_slug}/webhooks/{id}": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/webhooks/{id}","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"id":{"from":"path","at":"id"}}},
-      "GET /api/v1/user": {"action":"read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/user","scope":{}},
-      "GET /api/v1/workspaces": {"action":"read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/workspaces","scope":{}},
-      "GET /api/v1/workspaces/{workspace_slug}": {"action":"read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/workspaces/{workspace_slug}","params":["include_orbit_level_counts","affiliation","member_tags","orbit","activity_type","identity","company[]","title[]","regions[]","countries[]","cities[]","start_date","end_date","relative","page","direction","items","sort","type","query","activities_count_min","activities_count_max","properties"],"scope":{"workspace_slug":{"from":"path","at":"workspace_slug"}}},
-      "GET /api/v1/{workspace_slug}/activities/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/activities/{id}","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"id":{"from":"path","at":"id"}}},
-      "GET /api/v1/{workspace_slug}/members/{member_slug}": {"action":"read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}","params":["source","source_host","uid","username","email","github"],"scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"member_slug":{"from":"path","at":"member_slug"}}},
-      "GET /api/v1/{workspace_slug}/members/{member_slug}/activities": {"action":"read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}/activities","params":["page","direction","items","sort","activity_type","type"],"scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"member_slug":{"from":"path","at":"member_slug"}}},
-      "GET /api/v1/{workspace_slug}/members/{member_slug}/notes": {"action":"read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}/notes","params":["page"],"scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"member_slug":{"from":"path","at":"member_slug"}}},
-      "GET /api/v1/{workspace_slug}/organizations/{organization_id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/organizations/{organization_id}","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"organization_id":{"from":"path","at":"organization_id"}}},
-      "GET /api/v1/{workspace_slug}/organizations/{organization_id}/activities": {"action":"read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/organizations/{organization_id}/activities","params":["page","direction","items","sort","activity_type"],"scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"organization_id":{"from":"path","at":"organization_id"}}},
-      "GET /api/v1/{workspace_slug}/organizations/{organization_id}/members": {"action":"read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/organizations/{organization_id}/members","params":["page","items"],"scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"organization_id":{"from":"path","at":"organization_id"}}},
-      "GET /api/v1/{workspace_slug}/webhooks/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/webhooks/{id}","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"id":{"from":"path","at":"id"}}},
-      "POST /api/v1/{workspace_slug}/activities": {"action":"write.activities","effects":["write"],"method":"POST","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/activities","body":"any","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"}}},
-      "POST /api/v1/{workspace_slug}/members": {"action":"admin.members","effects":["admin"],"method":"POST","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members","body":"any","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"}}},
-      "POST /api/v1/{workspace_slug}/members/{member_slug}/activities": {"action":"write.activities","effects":["write"],"method":"POST","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}/activities","body":"any","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"member_slug":{"from":"path","at":"member_slug"}}},
-      "POST /api/v1/{workspace_slug}/members/{member_slug}/identities": {"action":"write.identities","effects":["write"],"method":"POST","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}/identities","body":"any","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"member_slug":{"from":"path","at":"member_slug"}}},
-      "POST /api/v1/{workspace_slug}/members/{member_slug}/notes": {"action":"send.notes","effects":["send"],"method":"POST","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}/notes","body":"any","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"member_slug":{"from":"path","at":"member_slug"}}},
-      "POST /api/v1/{workspace_slug}/webhooks": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/webhooks","body":"any","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"}}},
-      "PUT /api/v1/{workspace_slug}/members/{member_slug}": {"action":"admin.members","effects":["admin"],"method":"PUT","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}","body":"any","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"member_slug":{"from":"path","at":"member_slug"}}},
-      "PUT /api/v1/{workspace_slug}/members/{member_slug}/activities/{id}": {"action":"write.activities","effects":["write"],"method":"PUT","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}/activities/{id}","body":"any","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"member_slug":{"from":"path","at":"member_slug"},"id":{"from":"path","at":"id"}}},
-      "PUT /api/v1/{workspace_slug}/members/{member_slug}/notes/{id}": {"action":"write.notes","effects":["write"],"method":"PUT","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}/notes/{id}","body":"any","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"member_slug":{"from":"path","at":"member_slug"},"id":{"from":"path","at":"id"}}},
-      "PUT /api/v1/{workspace_slug}/organizations/{organization_id}": {"action":"admin.organizations","effects":["admin"],"method":"PUT","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/organizations/{organization_id}","body":"any","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"organization_id":{"from":"path","at":"organization_id"}}},
-      "PUT /api/v1/{workspace_slug}/webhooks/{id}": {"action":"admin.webhooks","effects":["admin"],"method":"PUT","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/webhooks/{id}","body":"any","scope":{"workspace_slug":{"from":"path","at":"workspace_slug"},"id":{"from":"path","at":"id"}}}
+      "DELETE /api/v1/{workspace_slug}/members/{member_slug}": {"action":"members.delete","effects":["delete"],"method":"DELETE","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}","scope":{"member_slug":{"at":"member_slug","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "DELETE /api/v1/{workspace_slug}/members/{member_slug}/activities/{id}": {"action":"members.activities.delete","effects":["delete"],"method":"DELETE","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}/activities/{id}","scope":{"id":{"at":"id","from":"path"},"member_slug":{"at":"member_slug","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "DELETE /api/v1/{workspace_slug}/members/{member_slug}/identities": {"action":"members.identities.delete","body":"any","effects":["delete"],"method":"DELETE","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}/identities","scope":{"member_slug":{"at":"member_slug","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "DELETE /api/v1/{workspace_slug}/webhooks/{id}": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/webhooks/{id}","scope":{"id":{"at":"id","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "GET /api/v1/user": {"action":"user.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/user","scope":{}},
+      "GET /api/v1/workspaces": {"action":"workspaces.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/workspaces","scope":{}},
+      "GET /api/v1/workspaces/{workspace_slug}": {"action":"workspaces.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","params":["include_orbit_level_counts","affiliation","member_tags","orbit","activity_type","identity","company[]","title[]","regions[]","countries[]","cities[]","start_date","end_date","relative","page","direction","items","sort","type","query","activities_count_min","activities_count_max","properties"],"path":"/api/v1/workspaces/{workspace_slug}","scope":{"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "GET /api/v1/{workspace_slug}/activities": {"action":"activities.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","params":["affiliation","member_tags","orbit","activity_type","identity","company[]","title[]","regions[]","countries[]","cities[]","start_date","end_date","relative","page","direction","items","sort","type"],"path":"/api/v1/{workspace_slug}/activities","path_patterns":{"workspace_slug":"[^w].*|w(?:|[^o].*|o(?:|[^r].*|r(?:|[^k].*|k(?:|[^s].*|s(?:|[^p].*|p(?:|[^a].*|a(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+)))))))))"},"scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "GET /api/v1/{workspace_slug}/activities/{id}": {"action":"activities.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/activities/{id}","scope":{"id":{"at":"id","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "GET /api/v1/{workspace_slug}/activity_types": {"action":"activity_types.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/activity_types","path_patterns":{"workspace_slug":"[^w].*|w(?:|[^o].*|o(?:|[^r].*|r(?:|[^k].*|k(?:|[^s].*|s(?:|[^p].*|p(?:|[^a].*|a(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+)))))))))"},"scope":{"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "GET /api/v1/{workspace_slug}/members": {"action":"members.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","params":["affiliation","member_tags","orbit","activity_type","identity","company[]","title[]","regions[]","countries[]","cities[]","start_date","end_date","relative","query","page","direction","items","activities_count_min","activities_count_max","sort","type"],"path":"/api/v1/{workspace_slug}/members","path_patterns":{"workspace_slug":"[^w].*|w(?:|[^o].*|o(?:|[^r].*|r(?:|[^k].*|k(?:|[^s].*|s(?:|[^p].*|p(?:|[^a].*|a(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+)))))))))"},"scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "GET /api/v1/{workspace_slug}/members/find": {"action":"members.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","params":["source","source_host","uid","username","email","github"],"path":"/api/v1/{workspace_slug}/members/find","scope":{"email":{"at":"email","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"uid":{"at":"uid","from":"query","optional":true},"username":{"at":"username","from":"query","optional":true},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "GET /api/v1/{workspace_slug}/members/{member_slug}": {"action":"members.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","params":["source","source_host","uid","username","email","github"],"path":"/api/v1/{workspace_slug}/members/{member_slug}","path_patterns":{"member_slug":"[^f].*|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^d].*|d.+)))"},"scope":{"member_slug":{"at":"member_slug","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "GET /api/v1/{workspace_slug}/members/{member_slug}/activities": {"action":"members.activities.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","params":["page","direction","items","sort","activity_type","type"],"path":"/api/v1/{workspace_slug}/members/{member_slug}/activities","scope":{"member_slug":{"at":"member_slug","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "GET /api/v1/{workspace_slug}/members/{member_slug}/notes": {"action":"members.notes.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","params":["page"],"path":"/api/v1/{workspace_slug}/members/{member_slug}/notes","scope":{"member_slug":{"at":"member_slug","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "GET /api/v1/{workspace_slug}/organizations": {"action":"organizations.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","params":["query","page","direction","items","sort"],"path":"/api/v1/{workspace_slug}/organizations","path_patterns":{"workspace_slug":"[^w].*|w(?:|[^o].*|o(?:|[^r].*|r(?:|[^k].*|k(?:|[^s].*|s(?:|[^p].*|p(?:|[^a].*|a(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+)))))))))"},"scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "GET /api/v1/{workspace_slug}/organizations/{organization_id}": {"action":"organizations.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/organizations/{organization_id}","scope":{"organization_id":{"at":"organization_id","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "GET /api/v1/{workspace_slug}/organizations/{organization_id}/activities": {"action":"organizations.activities.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","params":["page","direction","items","sort","activity_type"],"path":"/api/v1/{workspace_slug}/organizations/{organization_id}/activities","scope":{"organization_id":{"at":"organization_id","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "GET /api/v1/{workspace_slug}/organizations/{organization_id}/members": {"action":"organizations.members.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","params":["page","items"],"path":"/api/v1/{workspace_slug}/organizations/{organization_id}/members","scope":{"organization_id":{"at":"organization_id","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "GET /api/v1/{workspace_slug}/reports": {"action":"reports.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","params":["start_date","end_date","relative","properties","activity_type","type"],"path":"/api/v1/{workspace_slug}/reports","path_patterns":{"workspace_slug":"[^w].*|w(?:|[^o].*|o(?:|[^r].*|r(?:|[^k].*|k(?:|[^s].*|s(?:|[^p].*|p(?:|[^a].*|a(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+)))))))))"},"scope":{"query":{"at":"","from":"query","type":"object"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "GET /api/v1/{workspace_slug}/webhooks": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/webhooks","path_patterns":{"workspace_slug":"[^w].*|w(?:|[^o].*|o(?:|[^r].*|r(?:|[^k].*|k(?:|[^s].*|s(?:|[^p].*|p(?:|[^a].*|a(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+)))))))))"},"scope":{"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "GET /api/v1/{workspace_slug}/webhooks/{id}": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/webhooks/{id}","scope":{"id":{"at":"id","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "POST /api/v1/{workspace_slug}/activities": {"action":"activities.write","body":"any","effects":["write"],"method":"POST","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/activities","scope":{"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "POST /api/v1/{workspace_slug}/members": {"action":"members.write","body":"any","effects":["write"],"method":"POST","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members","scope":{"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "POST /api/v1/{workspace_slug}/members/{member_slug}/activities": {"action":"members.activities.write","body":"any","effects":["write"],"method":"POST","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}/activities","scope":{"member_slug":{"at":"member_slug","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "POST /api/v1/{workspace_slug}/members/{member_slug}/identities": {"action":"members.identities.write","body":"any","effects":["write"],"method":"POST","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}/identities","scope":{"member_slug":{"at":"member_slug","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "POST /api/v1/{workspace_slug}/members/{member_slug}/notes": {"action":"members.notes.write","body":"any","effects":["write"],"method":"POST","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}/notes","scope":{"member_slug":{"at":"member_slug","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "POST /api/v1/{workspace_slug}/webhooks": {"action":"webhooks.admin","body":"any","effects":["admin"],"method":"POST","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/webhooks","scope":{"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "PUT /api/v1/{workspace_slug}/members/{member_slug}": {"action":"members.write","body":"any","effects":["write"],"method":"PUT","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}","scope":{"member_slug":{"at":"member_slug","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "PUT /api/v1/{workspace_slug}/members/{member_slug}/activities/{id}": {"action":"members.activities.write","body":"any","effects":["write"],"method":"PUT","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}/activities/{id}","scope":{"id":{"at":"id","from":"path"},"member_slug":{"at":"member_slug","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "PUT /api/v1/{workspace_slug}/members/{member_slug}/notes/{id}": {"action":"members.notes.write","body":"any","effects":["write"],"method":"PUT","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/members/{member_slug}/notes/{id}","scope":{"id":{"at":"id","from":"path"},"member_slug":{"at":"member_slug","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "PUT /api/v1/{workspace_slug}/organizations/{organization_id}": {"action":"organizations.write","body":"any","effects":["write"],"method":"PUT","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/organizations/{organization_id}","scope":{"organization_id":{"at":"organization_id","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}},
+      "PUT /api/v1/{workspace_slug}/webhooks/{id}": {"action":"webhooks.admin","body":"any","effects":["admin"],"method":"PUT","origin":"https://app.orbit.love","path":"/api/v1/{workspace_slug}/webhooks/{id}","scope":{"id":{"at":"id","from":"path"},"workspace_slug":{"at":"workspace_slug","from":"path"}}}
     }
   }
 }

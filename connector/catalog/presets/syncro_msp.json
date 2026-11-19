@@ -1,278 +1,925 @@
 {
-  "title": "SyncroMSP",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your SyncroMSP origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://example.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "delete.appointment_types": {"title": "Delete: appointment types"},
-      "delete.appointments": {"title": "Delete: appointments"},
-      "delete.canned_responses": {"title": "Delete: canned responses"},
-      "delete.contacts": {"title": "Delete: contacts"},
-      "delete.contracts": {"title": "Delete: contracts"},
-      "delete.customers": {"title": "Delete: customers"},
-      "delete.delete_attachment": {"title": "Delete: delete attachment"},
-      "delete.delete_image": {"title": "Delete: delete image"},
-      "delete.delete_timer_entry": {"title": "Delete: delete timer entry"},
-      "delete.estimates": {"title": "Delete: estimates"},
-      "delete.invoices": {"title": "Delete: invoices"},
-      "delete.line_items": {"title": "Delete: line items"},
-      "delete.payment_profiles": {"title": "Delete: payment profiles"},
-      "delete.phones": {"title": "Delete: phones"},
-      "delete.policy_folders": {"title": "Delete: policy folders"},
-      "delete.portal_users": {"title": "Delete: portal users"},
-      "delete.product_skus": {"title": "Delete: product skus"},
-      "delete.remove_line_item": {"title": "Delete: remove line item"},
-      "delete.rmm_alerts": {"title": "Delete: rmm alerts"},
-      "delete.schedules": {"title": "Delete: schedules"},
-      "delete.tickets": {"title": "Delete: tickets"},
-      "delete.wiki_pages": {"title": "Delete: wiki pages"},
-      "delete.worksheet_results": {"title": "Delete: worksheet results"},
-      "pay.charge_timer_entry": {"title": "Pay: charge timer entry"},
-      "pay.payments": {"title": "Pay: payments"},
-      "pay.purchase_orders": {"title": "Pay: purchase orders"},
-      "publish.invoices": {"title": "Publish: invoices"},
-      "read": {"title": "Read everything the account can see"},
-      "send.comment": {"title": "Send: comment"},
-      "send.email": {"title": "Send: email"},
-      "write.add_images": {"title": "Write: add images"},
-      "write.add_line_item": {"title": "Write: add line item"},
-      "write.apply": {"title": "Write: apply"},
-      "write.appointment_types": {"title": "Write: appointment types"},
-      "write.appointments": {"title": "Write: appointments"},
-      "write.attach_file_url": {"title": "Write: attach file url"},
-      "write.attach_to_line_item": {"title": "Write: attach to line item"},
-      "write.attachments": {"title": "Write: attachments"},
-      "write.canned_responses": {"title": "Write: canned responses"},
-      "write.contacts": {"title": "Write: contacts"},
-      "write.contracts": {"title": "Write: contracts"},
-      "write.convert_to_draft": {"title": "Write: convert to draft"},
-      "write.convert_to_invoice": {"title": "Write: convert to invoice"},
-      "write.create_invitation": {"title": "Write: create invitation"},
-      "write.create_po_line_item": {"title": "Write: create po line item"},
-      "write.customer_assets": {"title": "Write: customer assets"},
-      "write.customers": {"title": "Write: customers"},
-      "write.estimates": {"title": "Write: estimates"},
-      "write.invoices": {"title": "Write: invoices"},
-      "write.leads": {"title": "Write: leads"},
-      "write.line_items": {"title": "Write: line items"},
-      "write.location_quantities": {"title": "Write: location quantities"},
-      "write.otp_login": {"title": "Write: otp login"},
-      "write.payment_profiles": {"title": "Write: payment profiles"},
-      "write.phones": {"title": "Write: phones"},
-      "write.policy_folders": {"title": "Write: policy folders"},
-      "write.portal_users": {"title": "Write: portal users"},
-      "write.print": {"title": "Write: print"},
-      "write.process_form": {"title": "Write: process form"},
-      "write.product_serials": {"title": "Write: product serials"},
-      "write.product_skus": {"title": "Write: product skus"},
-      "write.products": {"title": "Write: products"},
-      "write.purchase_orders": {"title": "Write: purchase orders"},
-      "write.receive": {"title": "Write: receive"},
-      "write.rmm_alerts": {"title": "Write: rmm alerts"},
-      "write.schedule": {"title": "Write: schedule"},
-      "write.schedules": {"title": "Write: schedules"},
-      "write.ticket_timers": {"title": "Write: ticket timers"},
-      "write.tickets": {"title": "Write: tickets"},
-      "write.timelogs": {"title": "Write: timelogs"},
-      "write.timer_entry": {"title": "Write: timer entry"},
-      "write.update_line_item": {"title": "Write: update line item"},
-      "write.update_timer_entry": {"title": "Write: update timer entry"},
-      "write.user_devices": {"title": "Write: user devices"},
-      "write.vendors": {"title": "Write: vendors"},
-      "write.wiki_pages": {"title": "Write: wiki pages"},
-      "write.worksheet_results": {"title": "Write: worksheet results"}
-    }
+      "appointment_types": {
+        "title": "Appointment types"
+      },
+      "appointment_types.delete": {
+        "title": "Delete"
+      },
+      "appointment_types.read": {
+        "title": "Read"
+      },
+      "appointment_types.write": {
+        "title": "Create and edit"
+      },
+      "appointments": {
+        "title": "Appointments"
+      },
+      "appointments.delete": {
+        "title": "Delete"
+      },
+      "appointments.read": {
+        "title": "Read"
+      },
+      "appointments.write": {
+        "title": "Create and edit"
+      },
+      "callerid": {
+        "title": "Callerid"
+      },
+      "callerid.read": {
+        "title": "Read"
+      },
+      "canned_responses": {
+        "title": "Canned responses"
+      },
+      "canned_responses.delete": {
+        "title": "Delete"
+      },
+      "canned_responses.read": {
+        "title": "Read"
+      },
+      "canned_responses.settings": {
+        "title": "Settings"
+      },
+      "canned_responses.settings.read": {
+        "title": "Read"
+      },
+      "canned_responses.write": {
+        "title": "Create and edit"
+      },
+      "contacts": {
+        "title": "Contacts"
+      },
+      "contacts.delete": {
+        "title": "Delete"
+      },
+      "contacts.read": {
+        "title": "Read"
+      },
+      "contacts.write": {
+        "title": "Create and edit"
+      },
+      "contracts": {
+        "title": "Contracts"
+      },
+      "contracts.delete": {
+        "title": "Delete"
+      },
+      "contracts.read": {
+        "title": "Read"
+      },
+      "contracts.write": {
+        "title": "Create and edit"
+      },
+      "customer_assets": {
+        "title": "Customer assets"
+      },
+      "customer_assets.assets_by_contact": {
+        "title": "Assets by contact"
+      },
+      "customer_assets.assets_by_contact.read": {
+        "title": "Read"
+      },
+      "customer_assets.bitlocker": {
+        "title": "Bitlocker"
+      },
+      "customer_assets.bitlocker.read": {
+        "title": "Read"
+      },
+      "customer_assets.bitlocker_recovery_keys": {
+        "title": "Bitlocker recovery keys"
+      },
+      "customer_assets.bitlocker_recovery_keys.read": {
+        "title": "Read"
+      },
+      "customer_assets.chat_information_by_ids": {
+        "title": "Chat information by ids"
+      },
+      "customer_assets.chat_information_by_ids.read": {
+        "title": "Read"
+      },
+      "customer_assets.installed_applications": {
+        "title": "Installed applications"
+      },
+      "customer_assets.installed_applications.read": {
+        "title": "Read"
+      },
+      "customer_assets.local_administrators": {
+        "title": "Local administrators"
+      },
+      "customer_assets.local_administrators.read": {
+        "title": "Read"
+      },
+      "customer_assets.patches": {
+        "title": "Patches"
+      },
+      "customer_assets.patches.read": {
+        "title": "Read"
+      },
+      "customer_assets.read": {
+        "title": "Read"
+      },
+      "customer_assets.write": {
+        "title": "Create and edit"
+      },
+      "customers": {
+        "title": "Customers"
+      },
+      "customers.autocomplete": {
+        "title": "Autocomplete"
+      },
+      "customers.autocomplete.read": {
+        "title": "Read"
+      },
+      "customers.delete": {
+        "title": "Delete"
+      },
+      "customers.latest": {
+        "title": "Latest"
+      },
+      "customers.latest.read": {
+        "title": "Read"
+      },
+      "customers.payment_profiles": {
+        "title": "Payment profiles"
+      },
+      "customers.payment_profiles.delete": {
+        "title": "Delete"
+      },
+      "customers.payment_profiles.read": {
+        "title": "Read"
+      },
+      "customers.payment_profiles.write": {
+        "title": "Create and edit"
+      },
+      "customers.phones": {
+        "title": "Phones"
+      },
+      "customers.phones.delete": {
+        "title": "Delete"
+      },
+      "customers.phones.read": {
+        "title": "Read"
+      },
+      "customers.phones.write": {
+        "title": "Create and edit"
+      },
+      "customers.read": {
+        "title": "Read"
+      },
+      "customers.write": {
+        "title": "Create and edit"
+      },
+      "estimates": {
+        "title": "Estimates"
+      },
+      "estimates.convert_to_invoice": {
+        "title": "Convert to invoice"
+      },
+      "estimates.convert_to_invoice.write": {
+        "title": "Create and edit"
+      },
+      "estimates.delete": {
+        "title": "Delete"
+      },
+      "estimates.email": {
+        "title": "Email"
+      },
+      "estimates.email.send": {
+        "title": "Send"
+      },
+      "estimates.line_items": {
+        "title": "Line items"
+      },
+      "estimates.line_items.delete": {
+        "title": "Delete"
+      },
+      "estimates.line_items.write": {
+        "title": "Create and edit"
+      },
+      "estimates.print": {
+        "title": "Print"
+      },
+      "estimates.print.write": {
+        "title": "Create and edit"
+      },
+      "estimates.read": {
+        "title": "Read"
+      },
+      "estimates.write": {
+        "title": "Create and edit"
+      },
+      "invoices": {
+        "title": "Invoices"
+      },
+      "invoices.convert_to_draft": {
+        "title": "Convert to draft"
+      },
+      "invoices.convert_to_draft.write": {
+        "title": "Create and edit"
+      },
+      "invoices.delete": {
+        "title": "Delete"
+      },
+      "invoices.email": {
+        "title": "Email"
+      },
+      "invoices.email.send": {
+        "title": "Send"
+      },
+      "invoices.line_items": {
+        "title": "Line items"
+      },
+      "invoices.line_items.delete": {
+        "title": "Delete"
+      },
+      "invoices.line_items.write": {
+        "title": "Create and edit"
+      },
+      "invoices.print": {
+        "title": "Print"
+      },
+      "invoices.print.write": {
+        "title": "Create and edit"
+      },
+      "invoices.publish": {
+        "title": "Publish"
+      },
+      "invoices.read": {
+        "title": "Read"
+      },
+      "invoices.ticket": {
+        "title": "Ticket"
+      },
+      "invoices.ticket.read": {
+        "title": "Read"
+      },
+      "invoices.write": {
+        "title": "Create and edit"
+      },
+      "items": {
+        "title": "Items"
+      },
+      "items.read": {
+        "title": "Read"
+      },
+      "leads": {
+        "title": "Leads"
+      },
+      "leads.read": {
+        "title": "Read"
+      },
+      "leads.write": {
+        "title": "Create and edit"
+      },
+      "line_items": {
+        "title": "Line items"
+      },
+      "line_items.read": {
+        "title": "Read"
+      },
+      "me": {
+        "title": "Me"
+      },
+      "me.read": {
+        "title": "Read"
+      },
+      "new_ticket_forms": {
+        "title": "New ticket forms"
+      },
+      "new_ticket_forms.process_form": {
+        "title": "Process form"
+      },
+      "new_ticket_forms.process_form.write": {
+        "title": "Create and edit"
+      },
+      "new_ticket_forms.read": {
+        "title": "Read"
+      },
+      "otp_login": {
+        "title": "Otp login"
+      },
+      "otp_login.admin": {
+        "title": "Manage"
+      },
+      "payment_methods": {
+        "title": "Payment methods"
+      },
+      "payment_methods.read": {
+        "title": "Read"
+      },
+      "payments": {
+        "title": "Payments"
+      },
+      "payments.pay": {
+        "title": "Make payments"
+      },
+      "payments.read": {
+        "title": "Read"
+      },
+      "policy_folders": {
+        "title": "Policy folders"
+      },
+      "policy_folders.delete": {
+        "title": "Delete"
+      },
+      "policy_folders.read": {
+        "title": "Read"
+      },
+      "policy_folders.write": {
+        "title": "Create and edit"
+      },
+      "portal_users": {
+        "title": "Portal users"
+      },
+      "portal_users.delete": {
+        "title": "Delete"
+      },
+      "portal_users.invitation": {
+        "title": "Invitation"
+      },
+      "portal_users.invitation.share": {
+        "title": "Share"
+      },
+      "portal_users.read": {
+        "title": "Read"
+      },
+      "portal_users.write": {
+        "title": "Create and edit"
+      },
+      "products": {
+        "title": "Products"
+      },
+      "products.barcode": {
+        "title": "Barcode"
+      },
+      "products.barcode.read": {
+        "title": "Read"
+      },
+      "products.categories": {
+        "title": "Categories"
+      },
+      "products.categories.read": {
+        "title": "Read"
+      },
+      "products.image": {
+        "title": "Image"
+      },
+      "products.image.delete": {
+        "title": "Delete"
+      },
+      "products.images": {
+        "title": "Images"
+      },
+      "products.images.write": {
+        "title": "Create and edit"
+      },
+      "products.location_quantities": {
+        "title": "Location quantities"
+      },
+      "products.location_quantities.write": {
+        "title": "Create and edit"
+      },
+      "products.product_serials": {
+        "title": "Product serials"
+      },
+      "products.product_serials.read": {
+        "title": "Read"
+      },
+      "products.product_serials.to_line_item": {
+        "title": "To line item"
+      },
+      "products.product_serials.to_line_item.write": {
+        "title": "Create and edit"
+      },
+      "products.product_serials.write": {
+        "title": "Create and edit"
+      },
+      "products.product_skus": {
+        "title": "Product skus"
+      },
+      "products.product_skus.delete": {
+        "title": "Delete"
+      },
+      "products.product_skus.read": {
+        "title": "Read"
+      },
+      "products.product_skus.write": {
+        "title": "Create and edit"
+      },
+      "products.read": {
+        "title": "Read"
+      },
+      "products.write": {
+        "title": "Create and edit"
+      },
+      "purchase_orders": {
+        "title": "Purchase orders"
+      },
+      "purchase_orders.attachments": {
+        "title": "Attachments"
+      },
+      "purchase_orders.attachments.write": {
+        "title": "Create and edit"
+      },
+      "purchase_orders.po_line_item": {
+        "title": "Po line item"
+      },
+      "purchase_orders.po_line_item.write": {
+        "title": "Create and edit"
+      },
+      "purchase_orders.read": {
+        "title": "Read"
+      },
+      "purchase_orders.receive": {
+        "title": "Receive"
+      },
+      "purchase_orders.receive.write": {
+        "title": "Create and edit"
+      },
+      "purchase_orders.write": {
+        "title": "Create and edit"
+      },
+      "rmm": {
+        "title": "Rmm"
+      },
+      "rmm.public_scripts": {
+        "title": "Public scripts"
+      },
+      "rmm.public_scripts.schedule": {
+        "title": "Schedule"
+      },
+      "rmm.public_scripts.schedule.execute": {
+        "title": "Run"
+      },
+      "rmm_alerts": {
+        "title": "Rmm alerts"
+      },
+      "rmm_alerts.delete": {
+        "title": "Delete"
+      },
+      "rmm_alerts.read": {
+        "title": "Read"
+      },
+      "rmm_alerts.write": {
+        "title": "Create and edit"
+      },
+      "schedules": {
+        "title": "Schedules"
+      },
+      "schedules.delete": {
+        "title": "Delete"
+      },
+      "schedules.line_item": {
+        "title": "Line item"
+      },
+      "schedules.line_item.delete": {
+        "title": "Delete"
+      },
+      "schedules.line_item.write": {
+        "title": "Create and edit"
+      },
+      "schedules.line_items": {
+        "title": "Line items"
+      },
+      "schedules.line_items.delete": {
+        "title": "Delete"
+      },
+      "schedules.line_items.write": {
+        "title": "Create and edit"
+      },
+      "schedules.read": {
+        "title": "Read"
+      },
+      "schedules.write": {
+        "title": "Create and edit"
+      },
+      "search": {
+        "title": "Search"
+      },
+      "search.read": {
+        "title": "Read"
+      },
+      "settings": {
+        "title": "Settings"
+      },
+      "settings.printing": {
+        "title": "Printing"
+      },
+      "settings.printing.read": {
+        "title": "Read"
+      },
+      "settings.read": {
+        "title": "Read"
+      },
+      "settings.tabs": {
+        "title": "Tabs"
+      },
+      "settings.tabs.read": {
+        "title": "Read"
+      },
+      "ticket_blueprints": {
+        "title": "Ticket blueprints"
+      },
+      "ticket_blueprints.apply": {
+        "title": "Apply"
+      },
+      "ticket_blueprints.apply.write": {
+        "title": "Create and edit"
+      },
+      "ticket_blueprints.read": {
+        "title": "Read"
+      },
+      "ticket_comments": {
+        "title": "Ticket comments"
+      },
+      "ticket_comments.read": {
+        "title": "Read"
+      },
+      "ticket_timers": {
+        "title": "Ticket timers"
+      },
+      "ticket_timers.read": {
+        "title": "Read"
+      },
+      "ticket_timers.write": {
+        "title": "Create and edit"
+      },
+      "tickets": {
+        "title": "Tickets"
+      },
+      "tickets.attachment": {
+        "title": "Attachment"
+      },
+      "tickets.attachment.delete": {
+        "title": "Delete"
+      },
+      "tickets.charge_timer_entry": {
+        "title": "Charge timer entry"
+      },
+      "tickets.charge_timer_entry.write": {
+        "title": "Create and edit"
+      },
+      "tickets.comment": {
+        "title": "Comment"
+      },
+      "tickets.comment.send": {
+        "title": "Send"
+      },
+      "tickets.comments": {
+        "title": "Comments"
+      },
+      "tickets.comments.read": {
+        "title": "Read"
+      },
+      "tickets.delete": {
+        "title": "Delete"
+      },
+      "tickets.file_url": {
+        "title": "File url"
+      },
+      "tickets.file_url.write": {
+        "title": "Create and edit"
+      },
+      "tickets.line_item": {
+        "title": "Line item"
+      },
+      "tickets.line_item.delete": {
+        "title": "Delete"
+      },
+      "tickets.line_item.write": {
+        "title": "Create and edit"
+      },
+      "tickets.print": {
+        "title": "Print"
+      },
+      "tickets.print.write": {
+        "title": "Create and edit"
+      },
+      "tickets.read": {
+        "title": "Read"
+      },
+      "tickets.settings": {
+        "title": "Settings"
+      },
+      "tickets.settings.read": {
+        "title": "Read"
+      },
+      "tickets.timer_entry": {
+        "title": "Timer entry"
+      },
+      "tickets.timer_entry.delete": {
+        "title": "Delete"
+      },
+      "tickets.timer_entry.write": {
+        "title": "Create and edit"
+      },
+      "tickets.worksheet_results": {
+        "title": "Worksheet results"
+      },
+      "tickets.worksheet_results.delete": {
+        "title": "Delete"
+      },
+      "tickets.worksheet_results.read": {
+        "title": "Read"
+      },
+      "tickets.worksheet_results.write": {
+        "title": "Create and edit"
+      },
+      "tickets.write": {
+        "title": "Create and edit"
+      },
+      "timelogs": {
+        "title": "Timelogs"
+      },
+      "timelogs.last": {
+        "title": "Last"
+      },
+      "timelogs.last.read": {
+        "title": "Read"
+      },
+      "timelogs.read": {
+        "title": "Read"
+      },
+      "timelogs.write": {
+        "title": "Create and edit"
+      },
+      "user_devices": {
+        "title": "User devices"
+      },
+      "user_devices.read": {
+        "title": "Read"
+      },
+      "user_devices.write": {
+        "title": "Create and edit"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.read": {
+        "title": "Read"
+      },
+      "vendors": {
+        "title": "Vendors"
+      },
+      "vendors.read": {
+        "title": "Read"
+      },
+      "vendors.write": {
+        "title": "Create and edit"
+      },
+      "wiki_pages": {
+        "title": "Wiki pages"
+      },
+      "wiki_pages.delete": {
+        "title": "Delete"
+      },
+      "wiki_pages.read": {
+        "title": "Read"
+      },
+      "wiki_pages.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://example.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Your SyncroMSP origin (https://host)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "SyncroMSP",
   "http": {
     "operations": {
-      "DELETE /appointment_types/{id}": {"action":"delete.appointment_types","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/appointment_types/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /appointments/{id}": {"action":"delete.appointments","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/appointments/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /canned_responses/{id}": {"action":"delete.canned_responses","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/canned_responses/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /contacts/{id}": {"action":"delete.contacts","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/contacts/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /contracts/{id}": {"action":"delete.contracts","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/contracts/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /customers/{customer_id}/payment_profiles/{id}": {"action":"delete.payment_profiles","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/customers/{customer_id}/payment_profiles/{id}","scope":{"customer_id":{"from":"path","at":"customer_id"},"id":{"from":"path","at":"id"}}},
-      "DELETE /customers/{customer_id}/phones/{id}": {"action":"delete.phones","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/customers/{customer_id}/phones/{id}","scope":{"customer_id":{"from":"path","at":"customer_id"},"id":{"from":"path","at":"id"}}},
-      "DELETE /customers/{id}": {"action":"delete.customers","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/customers/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /estimates/{id}": {"action":"delete.estimates","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/estimates/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /estimates/{id}/line_items/{line_item_id}": {"action":"delete.line_items","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/estimates/{id}/line_items/{line_item_id}","scope":{"id":{"from":"path","at":"id"},"line_item_id":{"from":"path","at":"line_item_id"}}},
-      "DELETE /invoices/{id}": {"action":"delete.invoices","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/invoices/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /invoices/{id}/line_items/{line_item_id}": {"action":"delete.line_items","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/invoices/{id}/line_items/{line_item_id}","scope":{"id":{"from":"path","at":"id"},"line_item_id":{"from":"path","at":"line_item_id"}}},
-      "DELETE /policy_folders/{id}": {"action":"delete.policy_folders","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/policy_folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /portal_users/{id}": {"action":"delete.portal_users","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/portal_users/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /products/{id}/delete_image": {"action":"delete.delete_image","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/products/{id}/delete_image","params":["photo_id"],"scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /products/{product_id}/product_skus/{id}": {"action":"delete.product_skus","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/products/{product_id}/product_skus/{id}","scope":{"product_id":{"from":"path","at":"product_id"},"id":{"from":"path","at":"id"}}},
-      "DELETE /rmm_alerts/{id}": {"action":"delete.rmm_alerts","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/rmm_alerts/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /schedules/{id}": {"action":"delete.schedules","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/schedules/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /schedules/{id}/line_items/{schedule_line_item_id}": {"action":"delete.line_items","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/schedules/{id}/line_items/{schedule_line_item_id}","scope":{"id":{"from":"path","at":"id"},"schedule_line_item_id":{"from":"path","at":"schedule_line_item_id"}}},
-      "DELETE /tickets/{id}": {"action":"delete.tickets","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/tickets/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /tickets/{ticket_id}/worksheet_results/{id}": {"action":"delete.worksheet_results","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/tickets/{ticket_id}/worksheet_results/{id}","scope":{"ticket_id":{"from":"path","at":"ticket_id"},"id":{"from":"path","at":"id"}}},
-      "DELETE /wiki_pages/{id}": {"action":"delete.wiki_pages","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/wiki_pages/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /appointment_types": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/appointment_types","scope":{}},
-      "GET /appointment_types/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/appointment_types/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /appointments": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/appointments","params":["date_from","date_to","mine","page"],"scope":{}},
-      "GET /appointments/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/appointments/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /callerid": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/callerid","params":["did","outbound"],"scope":{"did":{"from":"query","at":"did"}}},
-      "GET /canned_responses": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/canned_responses","params":["query"],"scope":{}},
-      "GET /canned_responses/settings": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/canned_responses/settings","scope":{}},
-      "GET /contacts": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/contacts","params":["customer_id","page"],"scope":{}},
-      "GET /contacts/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/contacts/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /contracts": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/contracts","params":["page"],"scope":{}},
-      "GET /contracts/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/contracts/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /customer_assets": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/customer_assets","params":["sort","snmp_enabled","customer_id","asset_type_id","query","page"],"scope":{}},
-      "GET /customer_assets/assets_by_contact/{contact_id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/customer_assets/assets_by_contact/{contact_id}","params":["page","per_page"],"scope":{"contact_id":{"from":"path","at":"contact_id"}}},
-      "GET /customer_assets/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/customer_assets/{id}","params":["ids"],"scope":{"id":{"from":"path","at":"id"}}},
-      "GET /customers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/customers","params":["sort","query","firstname","lastname","business_name","id","id_not","email","include_disabled","page"],"scope":{}},
-      "GET /customers/{customer_id}/payment_profiles": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/customers/{customer_id}/payment_profiles","scope":{"customer_id":{"from":"path","at":"customer_id"}}},
-      "GET /customers/{customer_id}/payment_profiles/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/customers/{customer_id}/payment_profiles/{id}","scope":{"customer_id":{"from":"path","at":"customer_id"},"id":{"from":"path","at":"id"}}},
-      "GET /customers/{customer_id}/phones": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/customers/{customer_id}/phones","scope":{"customer_id":{"from":"path","at":"customer_id"}}},
-      "GET /customers/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/customers/{id}","params":["query"],"scope":{"id":{"from":"path","at":"id"}}},
-      "GET /estimates": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/estimates","params":["mine","status","page","customer_id","created_after","updated_after"],"scope":{}},
-      "GET /estimates/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/estimates/{id}","params":["number"],"scope":{"id":{"from":"path","at":"id"}}},
-      "GET /invoices": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/invoices","params":["paid","unpaid","ticket_id","since_updated_at","page","per_page"],"scope":{}},
-      "GET /invoices/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/invoices/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /invoices/{id}/ticket": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/invoices/{id}/ticket","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /items": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/items","params":["completed","query","page"],"scope":{}},
-      "GET /leads": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/leads","params":["statuses[]","status_list","users[]","mailbox_ids[]","has_ticket","query","page"],"scope":{}},
-      "GET /leads/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/leads/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /line_items": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/line_items","params":["invoice_id","estimate_id","invoice_id_not_null","estimate_id_not_null"],"scope":{}},
-      "GET /me": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/me","scope":{}},
-      "GET /new_ticket_forms": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/new_ticket_forms","scope":{}},
-      "GET /new_ticket_forms/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/new_ticket_forms/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /payment_methods": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/payment_methods","scope":{}},
-      "GET /payments": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/payments","params":["query","page"],"scope":{}},
-      "GET /payments/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/payments/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /policy_folders": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/policy_folders","params":["customer_id","page","per_page"],"scope":{"customer_id":{"from":"query","at":"customer_id"}}},
-      "GET /policy_folders/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/policy_folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /portal_users": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/portal_users","params":["customer_id","email","page"],"scope":{}},
-      "GET /products": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/products","params":["sort","sku","name","upc_code","category_id","id","id_not","query","page"],"scope":{}},
-      "GET /products/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/products/{id}","params":["barcode"],"scope":{"id":{"from":"path","at":"id"}}},
-      "GET /products/{product_id}/product_serials": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/products/{product_id}/product_serials","params":["status","page"],"scope":{"product_id":{"from":"path","at":"product_id"}}},
-      "GET /products/{product_id}/product_skus": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/products/{product_id}/product_skus","scope":{"product_id":{"from":"path","at":"product_id"}}},
-      "GET /purchase_orders": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/purchase_orders","params":["page"],"scope":{}},
-      "GET /purchase_orders/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/purchase_orders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /rmm_alerts": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/rmm_alerts","params":["status","page","created_after"],"scope":{}},
-      "GET /rmm_alerts/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/rmm_alerts/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /schedules": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/schedules","params":["customer_id","page"],"scope":{}},
-      "GET /schedules/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/schedules/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /search": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/search","params":["query"],"scope":{}},
-      "GET /settings": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/settings","scope":{}},
-      "GET /settings/printing": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/settings/printing","scope":{}},
-      "GET /settings/tabs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/settings/tabs","scope":{}},
-      "GET /ticket_blueprints": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ticket_blueprints","params":["page","per_page"],"scope":{}},
-      "GET /ticket_comments": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ticket_comments","params":["ticket_search_id","ticket_id","customer_id","contact_id","user_id","status","resolved_after","created_after","since_updated_at","mine","comment_created_after","comment_created_before","page","per_page","comment_format"],"scope":{}},
-      "GET /ticket_timers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/ticket_timers","params":["created_at_lt","created_at_gt","customer_id","ticket_id","user_id","status","billing_status","page"],"scope":{}},
-      "GET /tickets": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tickets","params":["customer_id","contact_id","number","resolved_after","created_after","since_updated_at","status","query","user_id","mine","ticket_search_id","page","comment_format","all_comments","asset_name","asset_serial","parent_id"],"scope":{}},
-      "GET /tickets/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tickets/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /tickets/{id}/comments": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tickets/{id}/comments","params":["sort_by","sort_direction","created_after","created_before","updated_after","updated_before","page","per_page","comment_format"],"scope":{"id":{"from":"path","at":"id"}}},
-      "GET /tickets/{ticket_id}/worksheet_results": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tickets/{ticket_id}/worksheet_results","params":["page"],"scope":{"ticket_id":{"from":"path","at":"ticket_id"}}},
-      "GET /tickets/{ticket_id}/worksheet_results/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/tickets/{ticket_id}/worksheet_results/{id}","scope":{"ticket_id":{"from":"path","at":"ticket_id"},"id":{"from":"path","at":"id"}}},
-      "GET /timelogs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/timelogs","params":["user_id"],"scope":{}},
-      "GET /timelogs/last": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/timelogs/last","params":["user_id"],"scope":{}},
-      "GET /user_devices/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/user_devices/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /users": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/users","scope":{}},
-      "GET /users/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/users/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /vendors": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/vendors","params":["page"],"scope":{}},
-      "GET /vendors/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/vendors/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /wiki_pages": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki_pages","params":["page"],"scope":{}},
-      "GET /wiki_pages/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wiki_pages/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "PATCH /canned_responses/{id}": {"action":"write.canned_responses","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/canned_responses/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PATCH /ticket_timers/{id}": {"action":"write.ticket_timers","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/ticket_timers/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /appointment_types": {"action":"write.appointment_types","effects":["write"],"method":"POST","origin":"{origin}","path":"/appointment_types","body":"any","scope":{}},
-      "POST /appointments": {"action":"write.appointments","effects":["write"],"method":"POST","origin":"{origin}","path":"/appointments","body":"any","scope":{}},
-      "POST /canned_responses": {"action":"write.canned_responses","effects":["write"],"method":"POST","origin":"{origin}","path":"/canned_responses","body":"any","scope":{}},
-      "POST /contacts": {"action":"write.contacts","effects":["write"],"method":"POST","origin":"{origin}","path":"/contacts","body":"any","scope":{}},
-      "POST /contracts": {"action":"write.contracts","effects":["write"],"method":"POST","origin":"{origin}","path":"/contracts","body":"any","scope":{}},
-      "POST /customer_assets": {"action":"write.customer_assets","effects":["write"],"method":"POST","origin":"{origin}","path":"/customer_assets","body":"any","scope":{}},
-      "POST /customers": {"action":"write.customers","effects":["write"],"method":"POST","origin":"{origin}","path":"/customers","body":"any","scope":{}},
-      "POST /customers/{customer_id}/payment_profiles": {"action":"write.payment_profiles","effects":["write"],"method":"POST","origin":"{origin}","path":"/customers/{customer_id}/payment_profiles","body":"any","scope":{"customer_id":{"from":"path","at":"customer_id"}}},
-      "POST /customers/{customer_id}/phones": {"action":"write.phones","effects":["write"],"method":"POST","origin":"{origin}","path":"/customers/{customer_id}/phones","body":"any","scope":{"customer_id":{"from":"path","at":"customer_id"}}},
-      "POST /estimates": {"action":"write.estimates","effects":["write"],"method":"POST","origin":"{origin}","path":"/estimates","body":"any","scope":{}},
-      "POST /estimates/{id}/convert_to_invoice": {"action":"write.convert_to_invoice","effects":["write"],"method":"POST","origin":"{origin}","path":"/estimates/{id}/convert_to_invoice","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /estimates/{id}/email": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/estimates/{id}/email","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /estimates/{id}/line_items": {"action":"write.line_items","effects":["write"],"method":"POST","origin":"{origin}","path":"/estimates/{id}/line_items","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /estimates/{id}/print": {"action":"write.print","effects":["write"],"method":"POST","origin":"{origin}","path":"/estimates/{id}/print","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /invoices": {"action":"write.invoices","effects":["write"],"method":"POST","origin":"{origin}","path":"/invoices","body":"any","scope":{}},
-      "POST /invoices/{id}/convert_to_draft": {"action":"write.convert_to_draft","effects":["write"],"method":"POST","origin":"{origin}","path":"/invoices/{id}/convert_to_draft","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /invoices/{id}/email": {"action":"send.email","effects":["send"],"method":"POST","origin":"{origin}","path":"/invoices/{id}/email","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /invoices/{id}/line_items": {"action":"write.line_items","effects":["write"],"method":"POST","origin":"{origin}","path":"/invoices/{id}/line_items","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /invoices/{id}/print": {"action":"write.print","effects":["write"],"method":"POST","origin":"{origin}","path":"/invoices/{id}/print","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /invoices/{id}/publish": {"action":"publish.invoices","effects":["publish"],"method":"POST","origin":"{origin}","path":"/invoices/{id}/publish","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /leads": {"action":"write.leads","effects":["write"],"method":"POST","origin":"{origin}","path":"/leads","body":"any","scope":{}},
-      "POST /new_ticket_forms/{id}/process_form": {"action":"write.process_form","effects":["write"],"method":"POST","origin":"{origin}","path":"/new_ticket_forms/{id}/process_form","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /otp_login": {"action":"write.otp_login","effects":["write"],"method":"POST","origin":"{origin}","path":"/otp_login","body":"any","scope":{}},
-      "POST /payments": {"action":"pay.payments","effects":["pay"],"method":"POST","origin":"{origin}","path":"/payments","body":"any","scope":{}},
-      "POST /policy_folders": {"action":"write.policy_folders","effects":["write"],"method":"POST","origin":"{origin}","path":"/policy_folders","body":"any","scope":{}},
-      "POST /portal_users": {"action":"write.portal_users","effects":["write"],"method":"POST","origin":"{origin}","path":"/portal_users","body":"any","scope":{}},
-      "POST /portal_users/create_invitation": {"action":"write.create_invitation","effects":["write"],"method":"POST","origin":"{origin}","path":"/portal_users/create_invitation","body":"any","scope":{}},
-      "POST /products": {"action":"write.products","effects":["write"],"method":"POST","origin":"{origin}","path":"/products","body":"any","scope":{}},
-      "POST /products/{id}/add_images": {"action":"write.add_images","effects":["write"],"method":"POST","origin":"{origin}","path":"/products/{id}/add_images","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /products/{product_id}/product_serials": {"action":"write.product_serials","effects":["write"],"method":"POST","origin":"{origin}","path":"/products/{product_id}/product_serials","body":"any","scope":{"product_id":{"from":"path","at":"product_id"}}},
-      "POST /products/{product_id}/product_serials/attach_to_line_item": {"action":"write.attach_to_line_item","effects":["write"],"method":"POST","origin":"{origin}","path":"/products/{product_id}/product_serials/attach_to_line_item","body":"any","scope":{"product_id":{"from":"path","at":"product_id"}}},
-      "POST /products/{product_id}/product_skus": {"action":"write.product_skus","effects":["write"],"method":"POST","origin":"{origin}","path":"/products/{product_id}/product_skus","body":"any","scope":{"product_id":{"from":"path","at":"product_id"}}},
-      "POST /purchase_orders": {"action":"pay.purchase_orders","effects":["pay"],"method":"POST","origin":"{origin}","path":"/purchase_orders","body":"any","scope":{}},
-      "POST /purchase_orders/{id}/attachments": {"action":"write.attachments","effects":["write"],"method":"POST","origin":"{origin}","path":"/purchase_orders/{id}/attachments","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /purchase_orders/{id}/create_po_line_item": {"action":"write.create_po_line_item","effects":["write"],"method":"POST","origin":"{origin}","path":"/purchase_orders/{id}/create_po_line_item","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /purchase_orders/{id}/receive": {"action":"write.receive","effects":["write"],"method":"POST","origin":"{origin}","path":"/purchase_orders/{id}/receive","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /rmm/public_scripts/{asset_id}/schedule": {"action":"write.schedule","effects":["write"],"method":"POST","origin":"{origin}","path":"/rmm/public_scripts/{asset_id}/schedule","body":"any","scope":{"asset_id":{"from":"path","at":"asset_id"}}},
-      "POST /rmm_alerts": {"action":"write.rmm_alerts","effects":["write"],"method":"POST","origin":"{origin}","path":"/rmm_alerts","body":"any","scope":{}},
-      "POST /rmm_alerts/{id}/mute": {"action":"write.rmm_alerts","effects":["write"],"method":"POST","origin":"{origin}","path":"/rmm_alerts/{id}/mute","params":["mute_for"],"scope":{"id":{"from":"path","at":"id"}}},
-      "POST /schedules": {"action":"write.schedules","effects":["write"],"method":"POST","origin":"{origin}","path":"/schedules","body":"any","scope":{}},
-      "POST /schedules/{id}/add_line_item": {"action":"write.add_line_item","effects":["write"],"method":"POST","origin":"{origin}","path":"/schedules/{id}/add_line_item","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /schedules/{id}/line_items": {"action":"write.line_items","effects":["write"],"method":"POST","origin":"{origin}","path":"/schedules/{id}/line_items","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /schedules/{id}/remove_line_item": {"action":"delete.remove_line_item","effects":["delete"],"method":"POST","origin":"{origin}","path":"/schedules/{id}/remove_line_item","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /ticket_blueprints/{id}/apply": {"action":"write.apply","effects":["write"],"method":"POST","origin":"{origin}","path":"/ticket_blueprints/{id}/apply","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /ticket_timers": {"action":"write.ticket_timers","effects":["write"],"method":"POST","origin":"{origin}","path":"/ticket_timers","body":"any","scope":{}},
-      "POST /ticket_timers/{id}/pause": {"action":"write.ticket_timers","effects":["write"],"method":"POST","origin":"{origin}","path":"/ticket_timers/{id}/pause","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /ticket_timers/{id}/start": {"action":"write.ticket_timers","effects":["write"],"method":"POST","origin":"{origin}","path":"/ticket_timers/{id}/start","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /ticket_timers/{id}/stop": {"action":"write.ticket_timers","effects":["write"],"method":"POST","origin":"{origin}","path":"/ticket_timers/{id}/stop","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /tickets": {"action":"write.tickets","effects":["write"],"method":"POST","origin":"{origin}","path":"/tickets","body":"any","scope":{}},
-      "POST /tickets/{id}/add_line_item": {"action":"write.add_line_item","effects":["write"],"method":"POST","origin":"{origin}","path":"/tickets/{id}/add_line_item","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /tickets/{id}/attach_file_url": {"action":"write.attach_file_url","effects":["write"],"method":"POST","origin":"{origin}","path":"/tickets/{id}/attach_file_url","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /tickets/{id}/charge_timer_entry": {"action":"pay.charge_timer_entry","effects":["pay"],"method":"POST","origin":"{origin}","path":"/tickets/{id}/charge_timer_entry","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /tickets/{id}/comment": {"action":"send.comment","effects":["send"],"method":"POST","origin":"{origin}","path":"/tickets/{id}/comment","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /tickets/{id}/delete_attachment": {"action":"delete.delete_attachment","effects":["delete"],"method":"POST","origin":"{origin}","path":"/tickets/{id}/delete_attachment","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /tickets/{id}/delete_timer_entry": {"action":"delete.delete_timer_entry","effects":["delete"],"method":"POST","origin":"{origin}","path":"/tickets/{id}/delete_timer_entry","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /tickets/{id}/print": {"action":"write.print","effects":["write"],"method":"POST","origin":"{origin}","path":"/tickets/{id}/print","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /tickets/{id}/remove_line_item": {"action":"delete.remove_line_item","effects":["delete"],"method":"POST","origin":"{origin}","path":"/tickets/{id}/remove_line_item","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /tickets/{id}/timer_entry": {"action":"write.timer_entry","effects":["write"],"method":"POST","origin":"{origin}","path":"/tickets/{id}/timer_entry","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /tickets/{ticket_id}/worksheet_results": {"action":"write.worksheet_results","effects":["write"],"method":"POST","origin":"{origin}","path":"/tickets/{ticket_id}/worksheet_results","body":"any","scope":{"ticket_id":{"from":"path","at":"ticket_id"}}},
-      "POST /user_devices": {"action":"write.user_devices","effects":["write"],"method":"POST","origin":"{origin}","path":"/user_devices","body":"any","scope":{}},
-      "POST /vendors": {"action":"write.vendors","effects":["write"],"method":"POST","origin":"{origin}","path":"/vendors","body":"any","scope":{}},
-      "POST /wiki_pages": {"action":"write.wiki_pages","effects":["write"],"method":"POST","origin":"{origin}","path":"/wiki_pages","body":"any","scope":{}},
-      "PUT /appointment_types/{id}": {"action":"write.appointment_types","effects":["write"],"method":"PUT","origin":"{origin}","path":"/appointment_types/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /appointments/{id}": {"action":"write.appointments","effects":["write"],"method":"PUT","origin":"{origin}","path":"/appointments/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /contacts/{id}": {"action":"write.contacts","effects":["write"],"method":"PUT","origin":"{origin}","path":"/contacts/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /contracts/{id}": {"action":"write.contracts","effects":["write"],"method":"PUT","origin":"{origin}","path":"/contracts/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /customer_assets/{id}": {"action":"write.customer_assets","effects":["write"],"method":"PUT","origin":"{origin}","path":"/customer_assets/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /customers/{customer_id}/payment_profiles/{id}": {"action":"write.payment_profiles","effects":["write"],"method":"PUT","origin":"{origin}","path":"/customers/{customer_id}/payment_profiles/{id}","body":"any","scope":{"customer_id":{"from":"path","at":"customer_id"},"id":{"from":"path","at":"id"}}},
-      "PUT /customers/{customer_id}/phones/{id}": {"action":"write.phones","effects":["write"],"method":"PUT","origin":"{origin}","path":"/customers/{customer_id}/phones/{id}","body":"any","scope":{"customer_id":{"from":"path","at":"customer_id"},"id":{"from":"path","at":"id"}}},
-      "PUT /customers/{id}": {"action":"write.customers","effects":["write"],"method":"PUT","origin":"{origin}","path":"/customers/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /estimates/{id}": {"action":"write.estimates","effects":["write"],"method":"PUT","origin":"{origin}","path":"/estimates/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /estimates/{id}/line_items/{line_item_id}": {"action":"write.line_items","effects":["write"],"method":"PUT","origin":"{origin}","path":"/estimates/{id}/line_items/{line_item_id}","body":"any","scope":{"id":{"from":"path","at":"id"},"line_item_id":{"from":"path","at":"line_item_id"}}},
-      "PUT /invoices/{id}": {"action":"write.invoices","effects":["write"],"method":"PUT","origin":"{origin}","path":"/invoices/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /invoices/{id}/line_items/{line_item_id}": {"action":"write.line_items","effects":["write"],"method":"PUT","origin":"{origin}","path":"/invoices/{id}/line_items/{line_item_id}","body":"any","scope":{"id":{"from":"path","at":"id"},"line_item_id":{"from":"path","at":"line_item_id"}}},
-      "PUT /leads/{id}": {"action":"write.leads","effects":["write"],"method":"PUT","origin":"{origin}","path":"/leads/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /policy_folders/{id}": {"action":"write.policy_folders","effects":["write"],"method":"PUT","origin":"{origin}","path":"/policy_folders/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /portal_users/{id}": {"action":"write.portal_users","effects":["write"],"method":"PUT","origin":"{origin}","path":"/portal_users/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /products/{id}": {"action":"write.products","effects":["write"],"method":"PUT","origin":"{origin}","path":"/products/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /products/{id}/location_quantities": {"action":"write.location_quantities","effects":["write"],"method":"PUT","origin":"{origin}","path":"/products/{id}/location_quantities","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /products/{product_id}/product_serials/{id}": {"action":"write.product_serials","effects":["write"],"method":"PUT","origin":"{origin}","path":"/products/{product_id}/product_serials/{id}","body":"any","scope":{"product_id":{"from":"path","at":"product_id"},"id":{"from":"path","at":"id"}}},
-      "PUT /products/{product_id}/product_skus/{id}": {"action":"write.product_skus","effects":["write"],"method":"PUT","origin":"{origin}","path":"/products/{product_id}/product_skus/{id}","body":"any","scope":{"product_id":{"from":"path","at":"product_id"},"id":{"from":"path","at":"id"}}},
-      "PUT /purchase_orders/{id}": {"action":"write.purchase_orders","effects":["write"],"method":"PUT","origin":"{origin}","path":"/purchase_orders/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /schedules/{id}": {"action":"write.schedules","effects":["write"],"method":"PUT","origin":"{origin}","path":"/schedules/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /schedules/{id}/line_items/{schedule_line_item_id}": {"action":"write.line_items","effects":["write"],"method":"PUT","origin":"{origin}","path":"/schedules/{id}/line_items/{schedule_line_item_id}","body":"any","scope":{"id":{"from":"path","at":"id"},"schedule_line_item_id":{"from":"path","at":"schedule_line_item_id"}}},
-      "PUT /tickets/{id}": {"action":"write.tickets","effects":["write"],"method":"PUT","origin":"{origin}","path":"/tickets/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /tickets/{id}/update_line_item": {"action":"write.update_line_item","effects":["write"],"method":"PUT","origin":"{origin}","path":"/tickets/{id}/update_line_item","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /tickets/{id}/update_timer_entry": {"action":"write.update_timer_entry","effects":["write"],"method":"PUT","origin":"{origin}","path":"/tickets/{id}/update_timer_entry","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /tickets/{ticket_id}/worksheet_results/{id}": {"action":"write.worksheet_results","effects":["write"],"method":"PUT","origin":"{origin}","path":"/tickets/{ticket_id}/worksheet_results/{id}","body":"any","scope":{"ticket_id":{"from":"path","at":"ticket_id"},"id":{"from":"path","at":"id"}}},
-      "PUT /timelogs": {"action":"write.timelogs","effects":["write"],"method":"PUT","origin":"{origin}","path":"/timelogs","body":"any","scope":{}},
-      "PUT /user_devices/{id}": {"action":"write.user_devices","effects":["write"],"method":"PUT","origin":"{origin}","path":"/user_devices/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /vendors/{id}": {"action":"write.vendors","effects":["write"],"method":"PUT","origin":"{origin}","path":"/vendors/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /wiki_pages/{id}": {"action":"write.wiki_pages","effects":["write"],"method":"PUT","origin":"{origin}","path":"/wiki_pages/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}}
+      "DELETE /api/v1/appointment_types/{id}": {"action":"appointment_types.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/appointment_types/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /api/v1/appointments/{id}": {"action":"appointments.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/appointments/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /api/v1/canned_responses/{id}": {"action":"canned_responses.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/canned_responses/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /api/v1/contacts/{id}": {"action":"contacts.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/contacts/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /api/v1/contracts/{id}": {"action":"contracts.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/contracts/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /api/v1/customers/{customer_id}/payment_profiles/{id}": {"action":"customers.payment_profiles.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/customers/{customer_id}/payment_profiles/{id}","scope":{"customer_id":{"at":"customer_id","from":"path"},"id":{"at":"id","from":"path"}}},
+      "DELETE /api/v1/customers/{customer_id}/phones/{id}": {"action":"customers.phones.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/customers/{customer_id}/phones/{id}","scope":{"customer_id":{"at":"customer_id","from":"path"},"id":{"at":"id","from":"path"}}},
+      "DELETE /api/v1/customers/{id}": {"action":"customers.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/customers/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /api/v1/estimates/{id}": {"action":"estimates.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/estimates/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /api/v1/estimates/{id}/line_items/{line_item_id}": {"action":"estimates.line_items.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/estimates/{id}/line_items/{line_item_id}","scope":{"id":{"at":"id","from":"path"},"line_item_id":{"at":"line_item_id","from":"path"}}},
+      "DELETE /api/v1/invoices/{id}": {"action":"invoices.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/invoices/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /api/v1/invoices/{id}/line_items/{line_item_id}": {"action":"invoices.line_items.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/invoices/{id}/line_items/{line_item_id}","scope":{"id":{"at":"id","from":"path"},"line_item_id":{"at":"line_item_id","from":"path"}}},
+      "DELETE /api/v1/policy_folders/{id}": {"action":"policy_folders.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/policy_folders/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /api/v1/portal_users/{id}": {"action":"portal_users.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/portal_users/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /api/v1/products/{id}/delete_image": {"action":"products.image.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["photo_id"],"path":"/api/v1/products/{id}/delete_image","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /api/v1/products/{product_id}/product_skus/{id}": {"action":"products.product_skus.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/products/{product_id}/product_skus/{id}","scope":{"id":{"at":"id","from":"path"},"product_id":{"at":"product_id","from":"path"}}},
+      "DELETE /api/v1/rmm_alerts/{id}": {"action":"rmm_alerts.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/rmm_alerts/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /api/v1/schedules/{id}": {"action":"schedules.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/schedules/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /api/v1/schedules/{id}/line_items/{schedule_line_item_id}": {"action":"schedules.line_items.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/schedules/{id}/line_items/{schedule_line_item_id}","scope":{"id":{"at":"id","from":"path"},"schedule_line_item_id":{"at":"schedule_line_item_id","from":"path"}}},
+      "DELETE /api/v1/tickets/{id}": {"action":"tickets.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/tickets/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /api/v1/tickets/{ticket_id}/worksheet_results/{id}": {"action":"tickets.worksheet_results.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/tickets/{ticket_id}/worksheet_results/{id}","scope":{"id":{"at":"id","from":"path"},"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "DELETE /api/v1/wiki_pages/{id}": {"action":"wiki_pages.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/v1/wiki_pages/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/appointment_types": {"action":"appointment_types.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/appointment_types","scope":{}},
+      "GET /api/v1/appointment_types/{id}": {"action":"appointment_types.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/appointment_types/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/appointments": {"action":"appointments.read","effects":["read"],"method":"GET","origin":"{origin}","params":["date_from","date_to","mine","page"],"path":"/api/v1/appointments","scope":{}},
+      "GET /api/v1/appointments/{id}": {"action":"appointments.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/appointments/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/callerid": {"action":"callerid.read","effects":["read"],"method":"GET","origin":"{origin}","params":["did","outbound"],"path":"/api/v1/callerid","scope":{"did":{"at":"did","from":"query"}}},
+      "GET /api/v1/canned_responses": {"action":"canned_responses.read","effects":["read"],"method":"GET","origin":"{origin}","params":["query"],"path":"/api/v1/canned_responses","scope":{}},
+      "GET /api/v1/canned_responses/settings": {"action":"canned_responses.settings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/canned_responses/settings","scope":{}},
+      "GET /api/v1/contacts": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["customer_id","page"],"path":"/api/v1/contacts","scope":{}},
+      "GET /api/v1/contacts/{id}": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/contacts/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/contracts": {"action":"contracts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page"],"path":"/api/v1/contracts","scope":{}},
+      "GET /api/v1/contracts/{id}": {"action":"contracts.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/contracts/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/customer_assets": {"action":"customer_assets.read","effects":["read"],"method":"GET","origin":"{origin}","params":["sort","snmp_enabled","customer_id","asset_type_id","query","page"],"path":"/api/v1/customer_assets","scope":{}},
+      "GET /api/v1/customer_assets/assets_by_contact/{contact_id}": {"action":"customer_assets.assets_by_contact.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","per_page"],"path":"/api/v1/customer_assets/assets_by_contact/{contact_id}","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+      "GET /api/v1/customer_assets/chat_information_by_ids": {"action":"customer_assets.chat_information_by_ids.read","effects":["read"],"method":"GET","origin":"{origin}","params":["ids"],"path":"/api/v1/customer_assets/chat_information_by_ids","scope":{"ids":{"at":"ids","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/v1/customer_assets/{id}": {"action":"customer_assets.read","effects":["read"],"method":"GET","origin":"{origin}","params":["ids"],"path":"/api/v1/customer_assets/{id}","path_patterns":{"id":"[0-9]+"},"scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/customer_assets/{id}/bitlocker": {"action":"customer_assets.bitlocker.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/customer_assets/{id}/bitlocker","path_patterns":{"id":"[0-9]+"},"scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/customer_assets/{id}/bitlocker_recovery_keys/{recovery_key_id}": {"action":"customer_assets.bitlocker_recovery_keys.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/customer_assets/{id}/bitlocker_recovery_keys/{recovery_key_id}","scope":{"id":{"at":"id","from":"path"},"recovery_key_id":{"at":"recovery_key_id","from":"path"}}},
+      "GET /api/v1/customer_assets/{id}/installed_applications": {"action":"customer_assets.installed_applications.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","per_page"],"path":"/api/v1/customer_assets/{id}/installed_applications","path_patterns":{"id":"[0-9]+"},"scope":{"id":{"at":"id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/v1/customer_assets/{id}/local_administrators": {"action":"customer_assets.local_administrators.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/customer_assets/{id}/local_administrators","path_patterns":{"id":"[0-9]+"},"scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/customer_assets/{id}/patches": {"action":"customer_assets.patches.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/customer_assets/{id}/patches","path_patterns":{"id":"[0-9]+"},"scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/customers": {"action":"customers.read","effects":["read"],"method":"GET","origin":"{origin}","params":["sort","query","firstname","lastname","business_name","id","id_not","email","include_disabled","page"],"path":"/api/v1/customers","scope":{}},
+      "GET /api/v1/customers/autocomplete": {"action":"customers.autocomplete.read","effects":["read"],"method":"GET","origin":"{origin}","params":["query"],"path":"/api/v1/customers/autocomplete","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/v1/customers/latest": {"action":"customers.latest.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/customers/latest","scope":{}},
+      "GET /api/v1/customers/{customer_id}/payment_profiles": {"action":"customers.payment_profiles.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/customers/{customer_id}/payment_profiles","scope":{"customer_id":{"at":"customer_id","from":"path"}}},
+      "GET /api/v1/customers/{customer_id}/payment_profiles/{id}": {"action":"customers.payment_profiles.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/customers/{customer_id}/payment_profiles/{id}","scope":{"customer_id":{"at":"customer_id","from":"path"},"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/customers/{customer_id}/phones": {"action":"customers.phones.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/customers/{customer_id}/phones","scope":{"customer_id":{"at":"customer_id","from":"path"}}},
+      "GET /api/v1/customers/{id}": {"action":"customers.read","effects":["read"],"method":"GET","origin":"{origin}","params":["query"],"path":"/api/v1/customers/{id}","path_patterns":{"id":"[0-9]+"},"scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/estimates": {"action":"estimates.read","effects":["read"],"method":"GET","origin":"{origin}","params":["mine","status","page","customer_id","created_after","updated_after"],"path":"/api/v1/estimates","scope":{}},
+      "GET /api/v1/estimates/{id}": {"action":"estimates.read","effects":["read"],"method":"GET","origin":"{origin}","params":["number"],"path":"/api/v1/estimates/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/invoices": {"action":"invoices.read","effects":["read"],"method":"GET","origin":"{origin}","params":["paid","unpaid","ticket_id","since_updated_at","page","per_page"],"path":"/api/v1/invoices","scope":{}},
+      "GET /api/v1/invoices/{id}": {"action":"invoices.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/invoices/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/invoices/{id}/ticket": {"action":"invoices.ticket.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/invoices/{id}/ticket","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/items": {"action":"items.read","effects":["read"],"method":"GET","origin":"{origin}","params":["completed","query","page"],"path":"/api/v1/items","scope":{}},
+      "GET /api/v1/leads": {"action":"leads.read","effects":["read"],"method":"GET","origin":"{origin}","params":["statuses[]","status_list","users[]","mailbox_ids[]","has_ticket","query","page"],"path":"/api/v1/leads","scope":{}},
+      "GET /api/v1/leads/{id}": {"action":"leads.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/leads/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/line_items": {"action":"line_items.read","effects":["read"],"method":"GET","origin":"{origin}","params":["invoice_id","estimate_id","invoice_id_not_null","estimate_id_not_null"],"path":"/api/v1/line_items","scope":{}},
+      "GET /api/v1/me": {"action":"me.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/me","scope":{}},
+      "GET /api/v1/new_ticket_forms": {"action":"new_ticket_forms.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/new_ticket_forms","scope":{}},
+      "GET /api/v1/new_ticket_forms/{id}": {"action":"new_ticket_forms.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/new_ticket_forms/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/payment_methods": {"action":"payment_methods.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/payment_methods","scope":{}},
+      "GET /api/v1/payments": {"action":"payments.read","effects":["read"],"method":"GET","origin":"{origin}","params":["query","page"],"path":"/api/v1/payments","scope":{}},
+      "GET /api/v1/payments/{id}": {"action":"payments.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/payments/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/policy_folders": {"action":"policy_folders.read","effects":["read"],"method":"GET","origin":"{origin}","params":["customer_id","page","per_page"],"path":"/api/v1/policy_folders","scope":{"customer_id":{"at":"customer_id","from":"query"}}},
+      "GET /api/v1/policy_folders/{id}": {"action":"policy_folders.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/policy_folders/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/portal_users": {"action":"portal_users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["customer_id","email","page"],"path":"/api/v1/portal_users","scope":{}},
+      "GET /api/v1/products": {"action":"products.read","effects":["read"],"method":"GET","origin":"{origin}","params":["sort","sku","name","upc_code","category_id","id","id_not","query","page"],"path":"/api/v1/products","scope":{}},
+      "GET /api/v1/products/barcode": {"action":"products.barcode.read","effects":["read"],"method":"GET","origin":"{origin}","params":["barcode"],"path":"/api/v1/products/barcode","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/v1/products/categories": {"action":"products.categories.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/products/categories","scope":{}},
+      "GET /api/v1/products/{id}": {"action":"products.read","effects":["read"],"method":"GET","origin":"{origin}","params":["barcode"],"path":"/api/v1/products/{id}","path_patterns":{"id":"[0-9]+"},"scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/products/{product_id}/product_serials": {"action":"products.product_serials.read","effects":["read"],"method":"GET","origin":"{origin}","params":["status","page"],"path":"/api/v1/products/{product_id}/product_serials","scope":{"product_id":{"at":"product_id","from":"path"}}},
+      "GET /api/v1/products/{product_id}/product_skus": {"action":"products.product_skus.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/products/{product_id}/product_skus","scope":{"product_id":{"at":"product_id","from":"path"}}},
+      "GET /api/v1/purchase_orders": {"action":"purchase_orders.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page"],"path":"/api/v1/purchase_orders","scope":{}},
+      "GET /api/v1/purchase_orders/{id}": {"action":"purchase_orders.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/purchase_orders/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/rmm_alerts": {"action":"rmm_alerts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["status","page","created_after"],"path":"/api/v1/rmm_alerts","scope":{}},
+      "GET /api/v1/rmm_alerts/{id}": {"action":"rmm_alerts.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/rmm_alerts/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/schedules": {"action":"schedules.read","effects":["read"],"method":"GET","origin":"{origin}","params":["customer_id","page"],"path":"/api/v1/schedules","scope":{}},
+      "GET /api/v1/schedules/{id}": {"action":"schedules.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/schedules/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/search": {"action":"search.read","effects":["read"],"method":"GET","origin":"{origin}","params":["query"],"path":"/api/v1/search","scope":{}},
+      "GET /api/v1/settings": {"action":"settings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/settings","scope":{}},
+      "GET /api/v1/settings/printing": {"action":"settings.printing.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/settings/printing","scope":{}},
+      "GET /api/v1/settings/tabs": {"action":"settings.tabs.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/settings/tabs","scope":{}},
+      "GET /api/v1/ticket_blueprints": {"action":"ticket_blueprints.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","per_page"],"path":"/api/v1/ticket_blueprints","scope":{}},
+      "GET /api/v1/ticket_comments": {"action":"ticket_comments.read","effects":["read"],"method":"GET","origin":"{origin}","params":["ticket_search_id","ticket_id","customer_id","contact_id","user_id","status","resolved_after","created_after","since_updated_at","mine","comment_created_after","comment_created_before","page","per_page","comment_format"],"path":"/api/v1/ticket_comments","scope":{}},
+      "GET /api/v1/ticket_timers": {"action":"ticket_timers.read","effects":["read"],"method":"GET","origin":"{origin}","params":["created_at_lt","created_at_gt","customer_id","ticket_id","user_id","status","billing_status","page"],"path":"/api/v1/ticket_timers","scope":{}},
+      "GET /api/v1/tickets": {"action":"tickets.read","effects":["read"],"method":"GET","origin":"{origin}","params":["customer_id","contact_id","number","resolved_after","created_after","since_updated_at","status","query","user_id","mine","ticket_search_id","page","comment_format","all_comments","asset_name","asset_serial","parent_id"],"path":"/api/v1/tickets","scope":{}},
+      "GET /api/v1/tickets/settings": {"action":"tickets.settings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/tickets/settings","scope":{}},
+      "GET /api/v1/tickets/{id}": {"action":"tickets.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/tickets/{id}","path_patterns":{"id":"[0-9]+"},"scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/tickets/{id}/comments": {"action":"tickets.comments.read","effects":["read"],"method":"GET","origin":"{origin}","params":["sort_by","sort_direction","created_after","created_before","updated_after","updated_before","page","per_page","comment_format"],"path":"/api/v1/tickets/{id}/comments","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/tickets/{ticket_id}/worksheet_results": {"action":"tickets.worksheet_results.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page"],"path":"/api/v1/tickets/{ticket_id}/worksheet_results","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "GET /api/v1/tickets/{ticket_id}/worksheet_results/{id}": {"action":"tickets.worksheet_results.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/tickets/{ticket_id}/worksheet_results/{id}","scope":{"id":{"at":"id","from":"path"},"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "GET /api/v1/timelogs": {"action":"timelogs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["user_id"],"path":"/api/v1/timelogs","scope":{}},
+      "GET /api/v1/timelogs/last": {"action":"timelogs.last.read","effects":["read"],"method":"GET","origin":"{origin}","params":["user_id"],"path":"/api/v1/timelogs/last","scope":{}},
+      "GET /api/v1/user_devices/{id}": {"action":"user_devices.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/user_devices/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/users": {"action":"users.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/users","scope":{}},
+      "GET /api/v1/users/{id}": {"action":"users.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/users/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/vendors": {"action":"vendors.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page"],"path":"/api/v1/vendors","scope":{}},
+      "GET /api/v1/vendors/{id}": {"action":"vendors.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/vendors/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v1/wiki_pages": {"action":"wiki_pages.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page"],"path":"/api/v1/wiki_pages","scope":{}},
+      "GET /api/v1/wiki_pages/{id}": {"action":"wiki_pages.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/v1/wiki_pages/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PATCH /api/v1/canned_responses/{id}": {"action":"canned_responses.write","body":"any","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/canned_responses/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PATCH /api/v1/ticket_timers/{id}": {"action":"ticket_timers.write","body":"any","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/v1/ticket_timers/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/appointment_types": {"action":"appointment_types.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/appointment_types","scope":{}},
+      "POST /api/v1/appointments": {"action":"appointments.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/appointments","scope":{}},
+      "POST /api/v1/canned_responses": {"action":"canned_responses.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/canned_responses","scope":{}},
+      "POST /api/v1/contacts": {"action":"contacts.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/contacts","scope":{}},
+      "POST /api/v1/contracts": {"action":"contracts.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/contracts","scope":{}},
+      "POST /api/v1/customer_assets": {"action":"customer_assets.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/customer_assets","scope":{}},
+      "POST /api/v1/customers": {"action":"customers.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/customers","scope":{}},
+      "POST /api/v1/customers/{customer_id}/payment_profiles": {"action":"customers.payment_profiles.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/customers/{customer_id}/payment_profiles","scope":{"customer_id":{"at":"customer_id","from":"path"}}},
+      "POST /api/v1/customers/{customer_id}/phones": {"action":"customers.phones.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/customers/{customer_id}/phones","scope":{"customer_id":{"at":"customer_id","from":"path"}}},
+      "POST /api/v1/estimates": {"action":"estimates.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/estimates","scope":{}},
+      "POST /api/v1/estimates/{id}/convert_to_invoice": {"action":"estimates.convert_to_invoice.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/estimates/{id}/convert_to_invoice","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/estimates/{id}/email": {"action":"estimates.email.send","effects":["send"],"method":"POST","origin":"{origin}","path":"/api/v1/estimates/{id}/email","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/estimates/{id}/line_items": {"action":"estimates.line_items.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/estimates/{id}/line_items","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/estimates/{id}/print": {"action":"estimates.print.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/estimates/{id}/print","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/invoices": {"action":"invoices.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/invoices","scope":{}},
+      "POST /api/v1/invoices/{id}/convert_to_draft": {"action":"invoices.convert_to_draft.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/invoices/{id}/convert_to_draft","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/invoices/{id}/email": {"action":"invoices.email.send","effects":["send"],"method":"POST","origin":"{origin}","path":"/api/v1/invoices/{id}/email","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/invoices/{id}/line_items": {"action":"invoices.line_items.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/invoices/{id}/line_items","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/invoices/{id}/print": {"action":"invoices.print.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/invoices/{id}/print","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/invoices/{id}/publish": {"action":"invoices.publish","effects":["publish"],"method":"POST","origin":"{origin}","path":"/api/v1/invoices/{id}/publish","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/leads": {"action":"leads.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/leads","scope":{}},
+      "POST /api/v1/new_ticket_forms/{id}/process_form": {"action":"new_ticket_forms.process_form.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/new_ticket_forms/{id}/process_form","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/otp_login": {"action":"otp_login.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/v1/otp_login","scope":{}},
+      "POST /api/v1/payments": {"action":"payments.pay","body":"any","effects":["pay"],"method":"POST","origin":"{origin}","path":"/api/v1/payments","scope":{}},
+      "POST /api/v1/policy_folders": {"action":"policy_folders.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/policy_folders","scope":{}},
+      "POST /api/v1/portal_users": {"action":"portal_users.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/portal_users","scope":{}},
+      "POST /api/v1/portal_users/create_invitation": {"action":"portal_users.invitation.share","body":"any","effects":["share","send"],"method":"POST","origin":"{origin}","path":"/api/v1/portal_users/create_invitation","scope":{}},
+      "POST /api/v1/products": {"action":"products.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/products","scope":{}},
+      "POST /api/v1/products/{id}/add_images": {"action":"products.images.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/products/{id}/add_images","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/products/{product_id}/product_serials": {"action":"products.product_serials.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/products/{product_id}/product_serials","scope":{"product_id":{"at":"product_id","from":"path"}}},
+      "POST /api/v1/products/{product_id}/product_serials/attach_to_line_item": {"action":"products.product_serials.to_line_item.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/products/{product_id}/product_serials/attach_to_line_item","scope":{"product_id":{"at":"product_id","from":"path"}}},
+      "POST /api/v1/products/{product_id}/product_skus": {"action":"products.product_skus.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/products/{product_id}/product_skus","scope":{"product_id":{"at":"product_id","from":"path"}}},
+      "POST /api/v1/purchase_orders": {"action":"purchase_orders.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/purchase_orders","scope":{}},
+      "POST /api/v1/purchase_orders/{id}/attachments": {"action":"purchase_orders.attachments.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/purchase_orders/{id}/attachments","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/purchase_orders/{id}/create_po_line_item": {"action":"purchase_orders.po_line_item.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/purchase_orders/{id}/create_po_line_item","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/purchase_orders/{id}/receive": {"action":"purchase_orders.receive.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/purchase_orders/{id}/receive","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/rmm/public_scripts/{asset_id}/schedule": {"action":"rmm.public_scripts.schedule.execute","body":"any","effects":["execute"],"method":"POST","origin":"{origin}","path":"/api/v1/rmm/public_scripts/{asset_id}/schedule","scope":{"asset_id":{"at":"asset_id","from":"path"}}},
+      "POST /api/v1/rmm_alerts": {"action":"rmm_alerts.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/rmm_alerts","scope":{}},
+      "POST /api/v1/rmm_alerts/{id}/mute": {"action":"rmm_alerts.write","effects":["write"],"method":"POST","origin":"{origin}","params":["mute_for"],"path":"/api/v1/rmm_alerts/{id}/mute","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/schedules": {"action":"schedules.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/schedules","scope":{}},
+      "POST /api/v1/schedules/{id}/add_line_item": {"action":"schedules.line_item.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/schedules/{id}/add_line_item","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/schedules/{id}/line_items": {"action":"schedules.line_items.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/schedules/{id}/line_items","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/schedules/{id}/remove_line_item": {"action":"schedules.line_item.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/v1/schedules/{id}/remove_line_item","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/ticket_blueprints/{id}/apply": {"action":"ticket_blueprints.apply.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/ticket_blueprints/{id}/apply","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/ticket_timers": {"action":"ticket_timers.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/ticket_timers","scope":{}},
+      "POST /api/v1/ticket_timers/{id}/pause": {"action":"ticket_timers.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/ticket_timers/{id}/pause","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/ticket_timers/{id}/start": {"action":"ticket_timers.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/ticket_timers/{id}/start","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/ticket_timers/{id}/stop": {"action":"ticket_timers.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/ticket_timers/{id}/stop","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/tickets": {"action":"tickets.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/tickets","scope":{}},
+      "POST /api/v1/tickets/{id}/add_line_item": {"action":"tickets.line_item.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/tickets/{id}/add_line_item","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/tickets/{id}/attach_file_url": {"action":"tickets.file_url.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/tickets/{id}/attach_file_url","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/tickets/{id}/charge_timer_entry": {"action":"tickets.charge_timer_entry.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/tickets/{id}/charge_timer_entry","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/tickets/{id}/comment": {"action":"tickets.comment.send","body":"any","effects":["send"],"method":"POST","origin":"{origin}","path":"/api/v1/tickets/{id}/comment","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/tickets/{id}/delete_attachment": {"action":"tickets.attachment.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/v1/tickets/{id}/delete_attachment","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/tickets/{id}/delete_timer_entry": {"action":"tickets.timer_entry.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/v1/tickets/{id}/delete_timer_entry","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/tickets/{id}/print": {"action":"tickets.print.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/tickets/{id}/print","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/tickets/{id}/remove_line_item": {"action":"tickets.line_item.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/v1/tickets/{id}/remove_line_item","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/tickets/{id}/timer_entry": {"action":"tickets.timer_entry.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/tickets/{id}/timer_entry","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /api/v1/tickets/{ticket_id}/worksheet_results": {"action":"tickets.worksheet_results.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/tickets/{ticket_id}/worksheet_results","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "POST /api/v1/user_devices": {"action":"user_devices.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/user_devices","scope":{}},
+      "POST /api/v1/vendors": {"action":"vendors.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/vendors","scope":{}},
+      "POST /api/v1/wiki_pages": {"action":"wiki_pages.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/v1/wiki_pages","scope":{}},
+      "PUT /api/v1/appointment_types/{id}": {"action":"appointment_types.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/appointment_types/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/appointments/{id}": {"action":"appointments.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/appointments/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/contacts/{id}": {"action":"contacts.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/contacts/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/contracts/{id}": {"action":"contracts.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/contracts/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/customer_assets/{id}": {"action":"customer_assets.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/customer_assets/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/customers/{customer_id}/payment_profiles/{id}": {"action":"customers.payment_profiles.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/customers/{customer_id}/payment_profiles/{id}","scope":{"customer_id":{"at":"customer_id","from":"path"},"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/customers/{customer_id}/phones/{id}": {"action":"customers.phones.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/customers/{customer_id}/phones/{id}","scope":{"customer_id":{"at":"customer_id","from":"path"},"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/customers/{id}": {"action":"customers.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/customers/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/estimates/{id}": {"action":"estimates.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/estimates/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/estimates/{id}/line_items/{line_item_id}": {"action":"estimates.line_items.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/estimates/{id}/line_items/{line_item_id}","scope":{"id":{"at":"id","from":"path"},"line_item_id":{"at":"line_item_id","from":"path"}}},
+      "PUT /api/v1/invoices/{id}": {"action":"invoices.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/invoices/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/invoices/{id}/line_items/{line_item_id}": {"action":"invoices.line_items.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/invoices/{id}/line_items/{line_item_id}","scope":{"id":{"at":"id","from":"path"},"line_item_id":{"at":"line_item_id","from":"path"}}},
+      "PUT /api/v1/leads/{id}": {"action":"leads.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/leads/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/policy_folders/{id}": {"action":"policy_folders.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/policy_folders/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/portal_users/{id}": {"action":"portal_users.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/portal_users/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/products/{id}": {"action":"products.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/products/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/products/{id}/location_quantities": {"action":"products.location_quantities.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/products/{id}/location_quantities","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/products/{product_id}/product_serials/{id}": {"action":"products.product_serials.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/products/{product_id}/product_serials/{id}","scope":{"id":{"at":"id","from":"path"},"product_id":{"at":"product_id","from":"path"}}},
+      "PUT /api/v1/products/{product_id}/product_skus/{id}": {"action":"products.product_skus.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/products/{product_id}/product_skus/{id}","scope":{"id":{"at":"id","from":"path"},"product_id":{"at":"product_id","from":"path"}}},
+      "PUT /api/v1/purchase_orders/{id}": {"action":"purchase_orders.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/purchase_orders/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/schedules/{id}": {"action":"schedules.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/schedules/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/schedules/{id}/line_items/{schedule_line_item_id}": {"action":"schedules.line_items.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/schedules/{id}/line_items/{schedule_line_item_id}","scope":{"id":{"at":"id","from":"path"},"schedule_line_item_id":{"at":"schedule_line_item_id","from":"path"}}},
+      "PUT /api/v1/tickets/{id}": {"action":"tickets.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/tickets/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/tickets/{id}/update_line_item": {"action":"tickets.line_item.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/tickets/{id}/update_line_item","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/tickets/{id}/update_timer_entry": {"action":"tickets.timer_entry.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/tickets/{id}/update_timer_entry","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/tickets/{ticket_id}/worksheet_results/{id}": {"action":"tickets.worksheet_results.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/tickets/{ticket_id}/worksheet_results/{id}","scope":{"id":{"at":"id","from":"path"},"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "PUT /api/v1/timelogs": {"action":"timelogs.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/timelogs","scope":{}},
+      "PUT /api/v1/user_devices/{id}": {"action":"user_devices.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/user_devices/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/vendors/{id}": {"action":"vendors.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/vendors/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /api/v1/wiki_pages/{id}": {"action":"wiki_pages.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/api/v1/wiki_pages/{id}","scope":{"id":{"at":"id","from":"path"}}}
     }
   }
 }

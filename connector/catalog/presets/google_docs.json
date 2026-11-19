@@ -39,6 +39,7 @@
         "secret": true
       },
       {
+        "credential": true,
         "key": "token",
         "label": "Google account",
         "oauth": {
@@ -54,7 +55,6 @@
           "scope": "https://www.googleapis.com/auth/documents",
           "token_url": "https://oauth2.googleapis.com/token"
         },
-        "credential": true,
         "secret": true
       }
     ],
@@ -63,9 +63,9 @@
   "title": "Google Docs",
   "http": {
     "operations": {
-      "documents.batchUpdate": {"action":"documents.write","body":"json","effects":["write","send"],"method":"POST","origin":"https://docs.googleapis.com","path":"/v1/documents/{document}:batchUpdate","scope":{"document":{"at":"document","from":"path"},"requests":{"at":"","from":"body","type":"object"}}},
-      "documents.create": {"action":"documents.write","body":"json","effects":["write"],"method":"POST","origin":"https://docs.googleapis.com","path":"/v1/documents","scope":{}},
-      "documents.get": {"action":"documents.read","effects":["read"],"method":"GET","origin":"https://docs.googleapis.com","params":["includeTabsContent","suggestionsViewMode"],"path":"/v1/documents/{document}","scope":{"document":{"at":"document","from":"path"}}}
+      "documents.batchUpdate": {"action":"documents.write","body":"json","effects":["write","send"],"method":"POST","origin":"https://docs.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/documents/{document}:batchUpdate","scope":{"document":{"at":"document","from":"path"},"query":{"at":"","from":"query","type":"object"},"requests":{"at":"","from":"body","type":"object"}}},
+      "documents.create": {"action":"documents.write","body":"json","effects":["write"],"method":"POST","origin":"https://docs.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/documents","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "documents.get": {"action":"documents.read","effects":["read"],"method":"GET","origin":"https://docs.googleapis.com","params":["includeTabsContent","suggestionsViewMode","$.xgafv","alt","callback","commentsViewMode","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1/documents/{document}","scope":{"document":{"at":"document","from":"path"},"query":{"at":"","from":"query","type":"object"}}}
     }
   }
 }

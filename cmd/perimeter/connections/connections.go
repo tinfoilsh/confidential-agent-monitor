@@ -89,6 +89,7 @@ type dialFunc = func(ctx context.Context, network, address string) (net.Conn, er
 const (
 	protocolIdentity = "perimeter"
 	mcpVersion       = "0.1.0"
+	userAgent        = protocolIdentity + "/" + mcpVersion
 )
 
 type RequestContext struct {
@@ -322,10 +323,17 @@ func parseTinfoilMCP(spec config.ConnectionSpec, p *Setup) error {
 func mcpSetup(p *Setup, setup *mcp.Setup, repo string) error {
 	var sends string
 	var observes *format.Label
+	var place *mcp.Placement
 	if pr := setup.Preset; pr != nil {
 		if len(pr.Sends) != 0 && facts.DecodeNumbers(pr.Sends, &sends) != nil || len(pr.Observes) != 0 && facts.DecodeNumbers(pr.Observes, &observes) != nil ||
 			!validSends(sends) || observes != nil && !config.ValidLabel(*observes) {
 			return errors.New("invalid MCP data-flow settings")
+		}
+		if place = pr.Token; place != nil {
+			u, _ := url.Parse(setup.URL)
+			if _, err := slots.New([]slots.Slot{{Value: "token", Origin: u.Scheme + "://" + u.Host, Header: place.Header, Prefix: place.Prefix, Query: place.Query, Basic: place.Basic}}, slots.Options{}); err != nil {
+				return err
+			}
 		}
 	}
 	p.Hosts, p.SecretNames = setup.Hosts(), []string{"token"}
@@ -348,10 +356,13 @@ func mcpSetup(p *Setup, setup *mcp.Setup, repo string) error {
 			}
 			base, closeTransport = attested, func() { attested.CloseIdleConnections(); transport.CloseIdleConnections() }
 		}
-		client := mcp.Client{HTTP: &http.Client{Transport: base, CheckRedirect: netx.RefuseRedirects}, Timeout: upstreamTimeout, TLS: h.TLS,
+		client := mcp.Client{HTTP: &http.Client{Transport: Identified{base}, CheckRedirect: netx.RefuseRedirects}, Timeout: upstreamTimeout, TLS: h.TLS,
 			Name: protocolIdentity, Version: mcpVersion, Expose: setup.Pin.Expose}
 		if h.Configured("token") {
 			client.Token = func(ctx context.Context) (string, error) { return h.Secret(ctx, "token") }
+			if !h.OAuth("token") {
+				client.Place = place
+			}
 		}
 		mcpSession, err := mcp.Open(ctx, setup, client)
 		if err != nil {
@@ -365,6 +376,16 @@ func mcpSetup(p *Setup, setup *mcp.Setup, repo string) error {
 		}}, nil
 	}
 	return nil
+}
+
+type Identified struct{ http.RoundTripper }
+
+func (t Identified) RoundTrip(r *http.Request) (*http.Response, error) {
+	if r.Header.Get("User-Agent") == "" {
+		r = r.Clone(r.Context())
+		r.Header.Set("User-Agent", userAgent)
+	}
+	return t.RoundTripper.RoundTrip(r)
 }
 
 func parseSSH(spec config.ConnectionSpec, p *Setup) error {

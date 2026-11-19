@@ -4,7 +4,23 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.create-psp": {"title": "Create psp", "effects": ["publish"]},
+      "use.create-psp-announcement": {"title": "Create psp announcement", "effects": ["publish", "send"]},
+      "use.delete-alert-contact": {"title": "Delete alert contact", "effects": ["delete"]},
+      "use.delete-incident-comment": {"title": "Delete incident comment", "effects": ["delete"]},
+      "use.delete-integration": {"title": "Delete integration", "effects": ["delete"]},
+      "use.delete-maintenance-window": {"title": "Delete maintenance window", "effects": ["delete"]},
+      "use.delete-monitor": {"title": "Delete monitor", "effects": ["delete"]},
+      "use.delete-monitor-group": {"title": "Delete monitor group", "effects": ["delete"]},
+      "use.delete-psp": {"title": "Delete psp", "effects": ["delete"]},
+      "use.delete-psp-announcement": {"title": "Delete psp announcement", "effects": ["delete"]},
+      "use.delete-tag": {"title": "Delete tag", "effects": ["delete"]},
+      "use.delete-third-party-service": {"title": "Delete third party service", "effects": ["delete"]},
+      "use.pin-psp-announcement": {"title": "Pin psp announcement", "effects": ["publish", "send"]},
+      "use.update-psp": {"title": "Update psp", "effects": ["publish"]},
+      "use.update-psp-announcement": {"title": "Update psp announcement", "effects": ["publish", "send"]},
+      "use.update-storm-protection-settings": {"title": "Update storm protection settings", "effects": ["admin"]}
     },
     "connection": {"mcp": {"url": "https://mcp.uptimerobot.com/mcp"}},
     "fields": [

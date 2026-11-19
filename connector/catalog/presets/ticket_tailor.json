@@ -4,7 +4,20 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.bundle_delete": {"title": "Bundle delete", "effects": ["delete"]},
+      "use.discount_delete": {"title": "Discount delete", "effects": ["delete"]},
+      "use.event_occurrence_delete": {"title": "Event occurrence delete", "effects": ["delete"]},
+      "use.event_series_delete": {"title": "Event series delete", "effects": ["delete"]},
+      "use.event_series_status_change": {"title": "Event series status change", "effects": ["publish"]},
+      "use.hold_delete": {"title": "Hold delete", "effects": ["delete"]},
+      "use.issued_ticket_void": {"title": "Issued ticket void", "effects": ["delete"]},
+      "use.product_delete": {"title": "Product delete", "effects": ["delete"]},
+      "use.store_update": {"title": "Store update", "effects": ["admin"]},
+      "use.ticket_type_delete": {"title": "Ticket type delete", "effects": ["delete"]},
+      "use.voucher_code_void": {"title": "Voucher code void", "effects": ["delete"]},
+      "use.voucher_delete": {"title": "Voucher delete", "effects": ["delete"]},
+      "use.waitlist_signup_delete": {"title": "Waitlist signup delete", "effects": ["delete"]}
     },
     "connection": {"mcp": {"url": "https://mcp.tickettailor.ai/mcp"}},
     "fields": [

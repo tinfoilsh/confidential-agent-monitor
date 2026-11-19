@@ -1,112 +1,553 @@
 {
-  "title": "Phantombuster",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.phantombuster.com", "path": "/api/v2", "header": "X-Phantombuster-Key"}]}},
     "actions": {
-      "delete.delete": {"title": "Delete: delete"},
-      "delete.delete_many": {"title": "Delete: delete many"},
-      "generate.completions": {"title": "Generate: completions"},
-      "generate.generate_token": {"title": "Generate: generate token"},
-      "publish.release": {"title": "Publish: release"},
-      "read": {"title": "Read everything the account can see"},
-      "write.access_list": {"title": "Write: access list"},
-      "write.advice": {"title": "Write: advice"},
-      "write.by_list": {"title": "Write: by list"},
-      "write.create": {"title": "Write: create"},
-      "write.hcaptcha": {"title": "Write: hcaptcha"},
-      "write.launch": {"title": "Write: launch"},
-      "write.launch_soon": {"title": "Write: launch soon"},
-      "write.launch_sync": {"title": "Write: launch sync"},
-      "write.recaptcha": {"title": "Write: recaptcha"},
-      "write.save": {"title": "Write: save"},
-      "write.save_agent_groups": {"title": "Write: save agent groups"},
-      "write.save_crm_contact": {"title": "Write: save crm contact"},
-      "write.save_many": {"title": "Write: save many"},
-      "write.save_with_token": {"title": "Write: save with token"},
-      "write.search": {"title": "Write: search"},
-      "write.stop": {"title": "Write: stop"},
-      "write.unschedule_all": {"title": "Write: unschedule all"},
-      "write.update_me": {"title": "Write: update me"},
-      "write.visibility": {"title": "Write: visibility"}
-    }
+      "agents": {
+        "title": "Agents"
+      },
+      "agents.delete": {
+        "title": "Delete"
+      },
+      "agents.fetch": {
+        "title": "Fetch"
+      },
+      "agents.fetch.read": {
+        "title": "Read"
+      },
+      "agents.fetch_all": {
+        "title": "Fetch all"
+      },
+      "agents.fetch_all.read": {
+        "title": "Read"
+      },
+      "agents.fetch_deleted": {
+        "title": "Fetch deleted"
+      },
+      "agents.fetch_deleted.read": {
+        "title": "Read"
+      },
+      "agents.fetch_output": {
+        "title": "Fetch output"
+      },
+      "agents.fetch_output.read": {
+        "title": "Read"
+      },
+      "agents.launch": {
+        "title": "Launch"
+      },
+      "agents.launch.execute": {
+        "title": "Run"
+      },
+      "agents.launch_soon": {
+        "title": "Launch soon"
+      },
+      "agents.launch_soon.execute": {
+        "title": "Run"
+      },
+      "agents.launch_sync": {
+        "title": "Launch sync"
+      },
+      "agents.launch_sync.execute": {
+        "title": "Run"
+      },
+      "agents.save": {
+        "title": "Save"
+      },
+      "agents.save.write": {
+        "title": "Create and edit"
+      },
+      "agents.unschedule_all": {
+        "title": "Unschedule all"
+      },
+      "agents.unschedule_all.write": {
+        "title": "Create and edit"
+      },
+      "agents.write": {
+        "title": "Create and edit"
+      },
+      "ai": {
+        "title": "Ai"
+      },
+      "ai.advice": {
+        "title": "Advice"
+      },
+      "ai.advice.generate": {
+        "title": "Generate"
+      },
+      "ai.completions": {
+        "title": "Completions"
+      },
+      "ai.completions.generate": {
+        "title": "Generate"
+      },
+      "branches": {
+        "title": "Branches"
+      },
+      "branches.delete": {
+        "title": "Delete"
+      },
+      "branches.diff": {
+        "title": "Diff"
+      },
+      "branches.diff.read": {
+        "title": "Read"
+      },
+      "branches.fetch_all": {
+        "title": "Fetch all"
+      },
+      "branches.fetch_all.read": {
+        "title": "Read"
+      },
+      "branches.release": {
+        "title": "Release"
+      },
+      "branches.release.publish": {
+        "title": "Publish"
+      },
+      "branches.write": {
+        "title": "Create and edit"
+      },
+      "brightdata": {
+        "title": "Brightdata"
+      },
+      "brightdata.serp": {
+        "title": "Serp"
+      },
+      "brightdata.serp.read": {
+        "title": "Read"
+      },
+      "buyers_personas": {
+        "title": "Buyers personas"
+      },
+      "buyers_personas.fetch_all": {
+        "title": "Fetch all"
+      },
+      "buyers_personas.fetch_all.read": {
+        "title": "Read"
+      },
+      "containers": {
+        "title": "Containers"
+      },
+      "containers.fetch": {
+        "title": "Fetch"
+      },
+      "containers.fetch.read": {
+        "title": "Read"
+      },
+      "containers.fetch_all": {
+        "title": "Fetch all"
+      },
+      "containers.fetch_all.read": {
+        "title": "Read"
+      },
+      "containers.fetch_output": {
+        "title": "Fetch output"
+      },
+      "containers.fetch_output.read": {
+        "title": "Read"
+      },
+      "containers.fetch_result_object": {
+        "title": "Fetch result object"
+      },
+      "containers.fetch_result_object.read": {
+        "title": "Read"
+      },
+      "containers.read": {
+        "title": "Read"
+      },
+      "hcaptcha": {
+        "title": "Hcaptcha"
+      },
+      "hcaptcha.execute": {
+        "title": "Run"
+      },
+      "icps": {
+        "title": "Icps"
+      },
+      "icps.fetch_all": {
+        "title": "Fetch all"
+      },
+      "icps.fetch_all.read": {
+        "title": "Read"
+      },
+      "identities": {
+        "title": "Identities"
+      },
+      "identities.events": {
+        "title": "Events"
+      },
+      "identities.events.save": {
+        "title": "Save"
+      },
+      "identities.events.save.write": {
+        "title": "Create and edit"
+      },
+      "identities.generate_token": {
+        "title": "Generate token"
+      },
+      "identities.generate_token.admin": {
+        "title": "Manage"
+      },
+      "identities.read": {
+        "title": "Read"
+      },
+      "identities.save": {
+        "title": "Save"
+      },
+      "identities.save.write": {
+        "title": "Create and edit"
+      },
+      "identities.save_with_token": {
+        "title": "Save with token"
+      },
+      "identities.save_with_token.write": {
+        "title": "Create and edit"
+      },
+      "location": {
+        "title": "Location"
+      },
+      "location.ip": {
+        "title": "Ip"
+      },
+      "location.ip.read": {
+        "title": "Read"
+      },
+      "org_storage": {
+        "title": "Org storage"
+      },
+      "org_storage.companies_objects": {
+        "title": "Companies objects"
+      },
+      "org_storage.companies_objects.read": {
+        "title": "Read"
+      },
+      "org_storage.companies_objects.save": {
+        "title": "Save"
+      },
+      "org_storage.companies_objects.save.write": {
+        "title": "Create and edit"
+      },
+      "org_storage.companies_objects.save_many": {
+        "title": "Save many"
+      },
+      "org_storage.companies_objects.save_many.write": {
+        "title": "Create and edit"
+      },
+      "org_storage.leads": {
+        "title": "Leads"
+      },
+      "org_storage.leads.by_list": {
+        "title": "By list"
+      },
+      "org_storage.leads.by_list.read": {
+        "title": "Read"
+      },
+      "org_storage.leads.many": {
+        "title": "Many"
+      },
+      "org_storage.leads.many.delete": {
+        "title": "Delete"
+      },
+      "org_storage.leads.save": {
+        "title": "Save"
+      },
+      "org_storage.leads.save.write": {
+        "title": "Create and edit"
+      },
+      "org_storage.leads.save_many": {
+        "title": "Save many"
+      },
+      "org_storage.leads.save_many.write": {
+        "title": "Create and edit"
+      },
+      "org_storage.leads_objects": {
+        "title": "Leads objects"
+      },
+      "org_storage.leads_objects.delete": {
+        "title": "Delete"
+      },
+      "org_storage.leads_objects.read": {
+        "title": "Read"
+      },
+      "org_storage.leads_objects.save": {
+        "title": "Save"
+      },
+      "org_storage.leads_objects.save.write": {
+        "title": "Create and edit"
+      },
+      "org_storage.leads_objects.save_many": {
+        "title": "Save many"
+      },
+      "org_storage.leads_objects.save_many.write": {
+        "title": "Create and edit"
+      },
+      "org_storage.lists": {
+        "title": "Lists"
+      },
+      "org_storage.lists.delete": {
+        "title": "Delete"
+      },
+      "org_storage.lists.fetch": {
+        "title": "Fetch"
+      },
+      "org_storage.lists.fetch.read": {
+        "title": "Read"
+      },
+      "org_storage.lists.fetch_all": {
+        "title": "Fetch all"
+      },
+      "org_storage.lists.fetch_all.read": {
+        "title": "Read"
+      },
+      "org_storage.lists.save": {
+        "title": "Save"
+      },
+      "org_storage.lists.save.write": {
+        "title": "Create and edit"
+      },
+      "orgs": {
+        "title": "Organizations"
+      },
+      "orgs.export_agent_usage": {
+        "title": "Export agent usage"
+      },
+      "orgs.export_agent_usage.read": {
+        "title": "Read"
+      },
+      "orgs.export_container_usage": {
+        "title": "Export container usage"
+      },
+      "orgs.export_container_usage.read": {
+        "title": "Read"
+      },
+      "orgs.fetch": {
+        "title": "Fetch"
+      },
+      "orgs.fetch.read": {
+        "title": "Read"
+      },
+      "orgs.fetch_agent_groups": {
+        "title": "Fetch agent groups"
+      },
+      "orgs.fetch_agent_groups.read": {
+        "title": "Read"
+      },
+      "orgs.fetch_crm_access": {
+        "title": "Fetch crm access"
+      },
+      "orgs.fetch_crm_access.read": {
+        "title": "Read"
+      },
+      "orgs.fetch_crm_resources": {
+        "title": "Fetch crm resources"
+      },
+      "orgs.fetch_crm_resources.read": {
+        "title": "Read"
+      },
+      "orgs.fetch_resources": {
+        "title": "Fetch resources"
+      },
+      "orgs.fetch_resources.read": {
+        "title": "Read"
+      },
+      "orgs.fetch_running_containers": {
+        "title": "Fetch running containers"
+      },
+      "orgs.fetch_running_containers.read": {
+        "title": "Read"
+      },
+      "orgs.save": {
+        "title": "Save"
+      },
+      "orgs.save.admin": {
+        "title": "Manage"
+      },
+      "orgs.save_agent_groups": {
+        "title": "Save agent groups"
+      },
+      "orgs.save_agent_groups.write": {
+        "title": "Create and edit"
+      },
+      "orgs.save_crm_contact": {
+        "title": "Save crm contact"
+      },
+      "orgs.save_crm_contact.send": {
+        "title": "Send"
+      },
+      "recaptcha": {
+        "title": "Recaptcha"
+      },
+      "recaptcha.execute": {
+        "title": "Run"
+      },
+      "scoring": {
+        "title": "Scoring"
+      },
+      "scoring.fetch": {
+        "title": "Fetch"
+      },
+      "scoring.fetch.read": {
+        "title": "Read"
+      },
+      "scoring.fetch_all": {
+        "title": "Fetch all"
+      },
+      "scoring.fetch_all.read": {
+        "title": "Read"
+      },
+      "scripts": {
+        "title": "Scripts"
+      },
+      "scripts.access_list": {
+        "title": "Access list"
+      },
+      "scripts.access_list.share": {
+        "title": "Share"
+      },
+      "scripts.code": {
+        "title": "Code"
+      },
+      "scripts.code.read": {
+        "title": "Read"
+      },
+      "scripts.delete": {
+        "title": "Delete"
+      },
+      "scripts.fetch": {
+        "title": "Fetch"
+      },
+      "scripts.fetch.read": {
+        "title": "Read"
+      },
+      "scripts.fetch_all": {
+        "title": "Fetch all"
+      },
+      "scripts.fetch_all.read": {
+        "title": "Read"
+      },
+      "scripts.save": {
+        "title": "Save"
+      },
+      "scripts.save.write": {
+        "title": "Create and edit"
+      },
+      "scripts.visibility": {
+        "title": "Visibility"
+      },
+      "scripts.visibility.share": {
+        "title": "Share"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.fetch_me": {
+        "title": "Fetch me"
+      },
+      "users.fetch_me.read": {
+        "title": "Read"
+      },
+      "users.me": {
+        "title": "Me"
+      },
+      "users.me.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "X-Phantombuster-Key",
+            "origin": "https://api.phantombuster.com",
+            "path": "/api/v2",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Phantombuster",
   "http": {
     "operations": {
-      "GET /api/v2/agents/fetch": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/agents/fetch","params":["id","withManifest","withAgentObject","withCode","withSlaves","withSubSlaves"],"scope":{"id":{"from":"query","at":"id"}}},
-      "GET /api/v2/agents/fetch-all": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/agents/fetch-all","params":["inputTypes","outputTypes","agentIds","withAgentSlotsFactor","withArgument"],"scope":{}},
-      "GET /api/v2/agents/fetch-deleted": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/agents/fetch-deleted","scope":{}},
-      "GET /api/v2/agents/fetch-output": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/agents/fetch-output","params":["id","fromOutputPos","prevContainerId","prevStatus","prevRuntimeEventIndex"],"scope":{"id":{"from":"query","at":"id"}}},
-      "GET /api/v2/branches/diff": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/branches/diff","params":["name"],"scope":{}},
-      "GET /api/v2/branches/fetch-all": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/branches/fetch-all","scope":{}},
-      "GET /api/v2/brightdata/serp": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/brightdata/serp","body":"any","scope":{}},
-      "GET /api/v2/buyers-personas/fetch-all": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/buyers-personas/fetch-all","scope":{}},
-      "GET /api/v2/containers/attach": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/containers/attach","params":["id"],"scope":{"id":{"from":"query","at":"id"}}},
-      "GET /api/v2/containers/fetch": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/containers/fetch","params":["id","withResultObject","withOutput","withRuntimeEvents","withNewerAndOlderContainerId"],"scope":{"id":{"from":"query","at":"id"}}},
-      "GET /api/v2/containers/fetch-all": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/containers/fetch-all","params":["agentId","beforeEndedAt","limit","mode","withRuntimeEvents"],"scope":{"agentId":{"from":"query","at":"agentId"}}},
-      "GET /api/v2/containers/fetch-output": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/containers/fetch-output","params":["id","mode"],"scope":{"id":{"from":"query","at":"id"}}},
-      "GET /api/v2/containers/fetch-result-object": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/containers/fetch-result-object","params":["id"],"scope":{"id":{"from":"query","at":"id"}}},
-      "GET /api/v2/icps/fetch-all": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/icps/fetch-all","scope":{}},
-      "GET /api/v2/location/ip": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/location/ip","params":["ip"],"scope":{}},
-      "GET /api/v2/org-storage/lists/fetch": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/lists/fetch","params":["id"],"scope":{"id":{"from":"query","at":"id"}}},
-      "GET /api/v2/org-storage/lists/fetch-all": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/lists/fetch-all","scope":{}},
-      "GET /api/v2/orgs/export-agent-usage": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/export-agent-usage","params":["days"],"scope":{}},
-      "GET /api/v2/orgs/export-container-usage": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/export-container-usage","params":["days","agentId"],"scope":{}},
-      "GET /api/v2/orgs/fetch": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/fetch","params":["withGlobalObject","withProxies","withCrmIntegrations","withCustomPrompts"],"scope":{}},
-      "GET /api/v2/orgs/fetch-agent-groups": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/fetch-agent-groups","scope":{}},
-      "GET /api/v2/orgs/fetch-crm-access": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/fetch-crm-access","scope":{}},
-      "GET /api/v2/orgs/fetch-crm-resources": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/fetch-crm-resources","params":["resourceType"],"scope":{}},
-      "GET /api/v2/orgs/fetch-resources": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/fetch-resources","scope":{}},
-      "GET /api/v2/orgs/fetch-running-containers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/fetch-running-containers","scope":{}},
-      "GET /api/v2/scoring/fetch-all": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/scoring/fetch-all","scope":{}},
-      "GET /api/v2/scoring/fetch/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/scoring/fetch/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /api/v2/scripts/code": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/scripts/code","params":["script","org","branch","environment"],"scope":{}},
-      "GET /api/v2/scripts/fetch": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/scripts/fetch","params":["id","branch","environment","withCode"],"scope":{"id":{"from":"query","at":"id"}}},
-      "GET /api/v2/scripts/fetch-all": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/scripts/fetch-all","params":["org","branch","exclude","scriptIds"],"scope":{}},
-      "GET /api/v2/users/fetch-me": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/users/fetch-me","params":["detailedOrgId","withCustomPrompts"],"scope":{}},
-      "POST /api/v2/agents/delete": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/agents/delete","body":"any","scope":{}},
-      "POST /api/v2/agents/launch": {"action":"write.launch","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/agents/launch","body":"any","scope":{}},
-      "POST /api/v2/agents/launch-soon": {"action":"write.launch_soon","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/agents/launch-soon","body":"any","scope":{}},
-      "POST /api/v2/agents/launch-sync": {"action":"write.launch_sync","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/agents/launch-sync","body":"any","scope":{}},
-      "POST /api/v2/agents/save": {"action":"write.save","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/agents/save","body":"any","scope":{}},
-      "POST /api/v2/agents/stop": {"action":"write.stop","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/agents/stop","body":"any","scope":{}},
-      "POST /api/v2/agents/unschedule-all": {"action":"write.unschedule_all","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/agents/unschedule-all","scope":{}},
-      "POST /api/v2/ai/advice": {"action":"write.advice","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/ai/advice","body":"any","scope":{}},
-      "POST /api/v2/ai/completions": {"action":"generate.completions","effects":["generate"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/ai/completions","body":"any","scope":{}},
-      "POST /api/v2/branches/create": {"action":"write.create","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/branches/create","body":"any","scope":{}},
-      "POST /api/v2/branches/delete": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/branches/delete","body":"any","scope":{}},
-      "POST /api/v2/branches/release": {"action":"publish.release","effects":["publish"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/branches/release","body":"any","scope":{}},
-      "POST /api/v2/hcaptcha": {"action":"write.hcaptcha","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/hcaptcha","body":"any","scope":{}},
-      "POST /api/v2/identities/events/save": {"action":"write.save","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/identities/events/save","body":"any","scope":{}},
-      "POST /api/v2/identities/generate-token": {"action":"generate.generate_token","effects":["generate"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/identities/generate-token","scope":{}},
-      "POST /api/v2/identities/save": {"action":"write.save","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/identities/save","body":"any","scope":{}},
-      "POST /api/v2/identities/save-with-token": {"action":"write.save_with_token","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/identities/save-with-token","body":"any","scope":{}},
-      "POST /api/v2/identities/search": {"action":"write.search","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/identities/search","body":"any","scope":{}},
-      "POST /api/v2/org-storage/companies-objects/save": {"action":"write.save","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/companies-objects/save","body":"any","scope":{}},
-      "POST /api/v2/org-storage/companies-objects/save-many": {"action":"write.save_many","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/companies-objects/save-many","body":"any","scope":{}},
-      "POST /api/v2/org-storage/companies-objects/search": {"action":"write.search","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/companies-objects/search","scope":{}},
-      "POST /api/v2/org-storage/leads-objects/delete": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/leads-objects/delete","body":"any","scope":{}},
-      "POST /api/v2/org-storage/leads-objects/save": {"action":"write.save","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/leads-objects/save","body":"any","scope":{}},
-      "POST /api/v2/org-storage/leads-objects/save-many": {"action":"write.save_many","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/leads-objects/save-many","body":"any","scope":{}},
-      "POST /api/v2/org-storage/leads-objects/search": {"action":"write.search","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/leads-objects/search","scope":{}},
-      "POST /api/v2/org-storage/leads/by-list/{listId}": {"action":"write.by_list","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/leads/by-list/{listId}","body":"any","scope":{"listId":{"from":"path","at":"listId"}}},
-      "POST /api/v2/org-storage/leads/delete-many": {"action":"delete.delete_many","effects":["delete"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/leads/delete-many","body":"any","scope":{}},
-      "POST /api/v2/org-storage/leads/save": {"action":"write.save","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/leads/save","body":"any","scope":{}},
-      "POST /api/v2/org-storage/leads/save-many": {"action":"write.save_many","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/leads/save-many","body":"any","scope":{}},
-      "POST /api/v2/org-storage/lists/delete": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/lists/delete","body":"any","scope":{}},
-      "POST /api/v2/org-storage/lists/save": {"action":"write.save","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/lists/save","scope":{}},
-      "POST /api/v2/orgs/save": {"action":"write.save","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/save","body":"any","scope":{}},
-      "POST /api/v2/orgs/save-agent-groups": {"action":"write.save_agent_groups","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/save-agent-groups","body":"any","scope":{}},
-      "POST /api/v2/orgs/save-crm-contact": {"action":"write.save_crm_contact","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/save-crm-contact","body":"any","scope":{}},
-      "POST /api/v2/recaptcha": {"action":"write.recaptcha","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/recaptcha","body":"any","scope":{}},
-      "POST /api/v2/scripts/access-list": {"action":"write.access_list","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/scripts/access-list","body":"any","scope":{}},
-      "POST /api/v2/scripts/delete": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/scripts/delete","body":"any","scope":{}},
-      "POST /api/v2/scripts/save": {"action":"write.save","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/scripts/save","body":"any","scope":{}},
-      "POST /api/v2/scripts/visibility": {"action":"write.visibility","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/scripts/visibility","body":"any","scope":{}},
-      "POST /api/v2/users/update-me": {"action":"write.update_me","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/users/update-me","body":"any","scope":{}}
+      "GET /api/v2/agents/fetch": {"action":"agents.fetch.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["id","withManifest","withAgentObject","withCode","withSlaves","withSubSlaves"],"path":"/api/v2/agents/fetch","scope":{"id":{"at":"id","from":"query"}}},
+      "GET /api/v2/agents/fetch-all": {"action":"agents.fetch_all.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["inputTypes","outputTypes","agentIds","withAgentSlotsFactor","withArgument"],"path":"/api/v2/agents/fetch-all","scope":{}},
+      "GET /api/v2/agents/fetch-deleted": {"action":"agents.fetch_deleted.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/agents/fetch-deleted","scope":{}},
+      "GET /api/v2/agents/fetch-output": {"action":"agents.fetch_output.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["id","fromOutputPos","prevContainerId","prevStatus","prevRuntimeEventIndex"],"path":"/api/v2/agents/fetch-output","scope":{"id":{"at":"id","from":"query"}}},
+      "GET /api/v2/branches/diff": {"action":"branches.diff.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["name"],"path":"/api/v2/branches/diff","scope":{}},
+      "GET /api/v2/branches/fetch-all": {"action":"branches.fetch_all.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/branches/fetch-all","scope":{}},
+      "GET /api/v2/brightdata/serp": {"action":"brightdata.serp.read","body":"any","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/brightdata/serp","scope":{}},
+      "GET /api/v2/buyers-personas/fetch-all": {"action":"buyers_personas.fetch_all.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/buyers-personas/fetch-all","scope":{}},
+      "GET /api/v2/containers/attach": {"action":"containers.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["id"],"path":"/api/v2/containers/attach","scope":{"id":{"at":"id","from":"query"}}},
+      "GET /api/v2/containers/fetch": {"action":"containers.fetch.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["id","withResultObject","withOutput","withRuntimeEvents","withNewerAndOlderContainerId"],"path":"/api/v2/containers/fetch","scope":{"id":{"at":"id","from":"query"}}},
+      "GET /api/v2/containers/fetch-all": {"action":"containers.fetch_all.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["agentId","beforeEndedAt","limit","mode","withRuntimeEvents"],"path":"/api/v2/containers/fetch-all","scope":{"agentId":{"at":"agentId","from":"query"}}},
+      "GET /api/v2/containers/fetch-output": {"action":"containers.fetch_output.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["id","mode"],"path":"/api/v2/containers/fetch-output","scope":{"id":{"at":"id","from":"query"}}},
+      "GET /api/v2/containers/fetch-result-object": {"action":"containers.fetch_result_object.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["id"],"path":"/api/v2/containers/fetch-result-object","scope":{"id":{"at":"id","from":"query"}}},
+      "GET /api/v2/icps/fetch-all": {"action":"icps.fetch_all.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/icps/fetch-all","scope":{}},
+      "GET /api/v2/location/ip": {"action":"location.ip.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["ip"],"path":"/api/v2/location/ip","scope":{}},
+      "GET /api/v2/org-storage/lists/fetch": {"action":"org_storage.lists.fetch.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["id"],"path":"/api/v2/org-storage/lists/fetch","scope":{"id":{"at":"id","from":"query"}}},
+      "GET /api/v2/org-storage/lists/fetch-all": {"action":"org_storage.lists.fetch_all.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/lists/fetch-all","scope":{}},
+      "GET /api/v2/orgs/export-agent-usage": {"action":"orgs.export_agent_usage.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["days"],"path":"/api/v2/orgs/export-agent-usage","scope":{}},
+      "GET /api/v2/orgs/export-container-usage": {"action":"orgs.export_container_usage.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["days","agentId"],"path":"/api/v2/orgs/export-container-usage","scope":{}},
+      "GET /api/v2/orgs/fetch": {"action":"orgs.fetch.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["withGlobalObject","withProxies","withCrmIntegrations","withCustomPrompts"],"path":"/api/v2/orgs/fetch","scope":{}},
+      "GET /api/v2/orgs/fetch-agent-groups": {"action":"orgs.fetch_agent_groups.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/fetch-agent-groups","scope":{}},
+      "GET /api/v2/orgs/fetch-crm-access": {"action":"orgs.fetch_crm_access.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/fetch-crm-access","scope":{}},
+      "GET /api/v2/orgs/fetch-crm-resources": {"action":"orgs.fetch_crm_resources.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["resourceType"],"path":"/api/v2/orgs/fetch-crm-resources","scope":{}},
+      "GET /api/v2/orgs/fetch-resources": {"action":"orgs.fetch_resources.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/fetch-resources","scope":{}},
+      "GET /api/v2/orgs/fetch-running-containers": {"action":"orgs.fetch_running_containers.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/fetch-running-containers","scope":{}},
+      "GET /api/v2/scoring/fetch-all": {"action":"scoring.fetch_all.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/scoring/fetch-all","scope":{}},
+      "GET /api/v2/scoring/fetch/{id}": {"action":"scoring.fetch.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","path":"/api/v2/scoring/fetch/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/v2/scripts/code": {"action":"scripts.code.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["script","org","branch","environment"],"path":"/api/v2/scripts/code","scope":{}},
+      "GET /api/v2/scripts/fetch": {"action":"scripts.fetch.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["id","branch","environment","withCode"],"path":"/api/v2/scripts/fetch","scope":{"id":{"at":"id","from":"query"}}},
+      "GET /api/v2/scripts/fetch-all": {"action":"scripts.fetch_all.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["org","branch","exclude","scriptIds"],"path":"/api/v2/scripts/fetch-all","scope":{}},
+      "GET /api/v2/users/fetch-me": {"action":"users.fetch_me.read","effects":["read"],"method":"GET","origin":"https://api.phantombuster.com","params":["detailedOrgId","withCustomPrompts"],"path":"/api/v2/users/fetch-me","scope":{}},
+      "POST /api/v2/agents/delete": {"action":"agents.delete","body":"any","effects":["delete"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/agents/delete","scope":{}},
+      "POST /api/v2/agents/launch": {"action":"agents.launch.execute","body":"any","effects":["execute"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/agents/launch","scope":{}},
+      "POST /api/v2/agents/launch-soon": {"action":"agents.launch_soon.execute","body":"any","effects":["execute"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/agents/launch-soon","scope":{}},
+      "POST /api/v2/agents/launch-sync": {"action":"agents.launch_sync.execute","body":"any","effects":["execute"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/agents/launch-sync","scope":{}},
+      "POST /api/v2/agents/save": {"action":"agents.save.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/agents/save","scope":{}},
+      "POST /api/v2/agents/stop": {"action":"agents.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/agents/stop","scope":{}},
+      "POST /api/v2/agents/unschedule-all": {"action":"agents.unschedule_all.write","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/agents/unschedule-all","scope":{}},
+      "POST /api/v2/ai/advice": {"action":"ai.advice.generate","body":"any","effects":["generate"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/ai/advice","scope":{}},
+      "POST /api/v2/ai/completions": {"action":"ai.completions.generate","body":"any","effects":["generate"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/ai/completions","scope":{}},
+      "POST /api/v2/branches/create": {"action":"branches.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/branches/create","scope":{}},
+      "POST /api/v2/branches/delete": {"action":"branches.delete","body":"any","effects":["delete"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/branches/delete","scope":{}},
+      "POST /api/v2/branches/release": {"action":"branches.release.publish","body":"any","effects":["publish"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/branches/release","scope":{}},
+      "POST /api/v2/hcaptcha": {"action":"hcaptcha.execute","body":"any","effects":["execute"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/hcaptcha","scope":{}},
+      "POST /api/v2/identities/events/save": {"action":"identities.events.save.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/identities/events/save","scope":{}},
+      "POST /api/v2/identities/generate-token": {"action":"identities.generate_token.admin","effects":["admin"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/identities/generate-token","scope":{}},
+      "POST /api/v2/identities/save": {"action":"identities.save.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/identities/save","scope":{}},
+      "POST /api/v2/identities/save-with-token": {"action":"identities.save_with_token.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/identities/save-with-token","scope":{}},
+      "POST /api/v2/identities/search": {"action":"identities.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/identities/search","scope":{}},
+      "POST /api/v2/org-storage/companies-objects/save": {"action":"org_storage.companies_objects.save.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/companies-objects/save","scope":{}},
+      "POST /api/v2/org-storage/companies-objects/save-many": {"action":"org_storage.companies_objects.save_many.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/companies-objects/save-many","scope":{}},
+      "POST /api/v2/org-storage/companies-objects/search": {"action":"org_storage.companies_objects.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/companies-objects/search","scope":{}},
+      "POST /api/v2/org-storage/leads-objects/delete": {"action":"org_storage.leads_objects.delete","body":"any","effects":["delete"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/leads-objects/delete","scope":{}},
+      "POST /api/v2/org-storage/leads-objects/save": {"action":"org_storage.leads_objects.save.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/leads-objects/save","scope":{}},
+      "POST /api/v2/org-storage/leads-objects/save-many": {"action":"org_storage.leads_objects.save_many.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/leads-objects/save-many","scope":{}},
+      "POST /api/v2/org-storage/leads-objects/search": {"action":"org_storage.leads_objects.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/leads-objects/search","scope":{}},
+      "POST /api/v2/org-storage/leads/by-list/{listId}": {"action":"org_storage.leads.by_list.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/leads/by-list/{listId}","scope":{"listId":{"at":"listId","from":"path"}}},
+      "POST /api/v2/org-storage/leads/delete-many": {"action":"org_storage.leads.many.delete","body":"any","effects":["delete"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/leads/delete-many","scope":{}},
+      "POST /api/v2/org-storage/leads/save": {"action":"org_storage.leads.save.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/leads/save","scope":{}},
+      "POST /api/v2/org-storage/leads/save-many": {"action":"org_storage.leads.save_many.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/leads/save-many","scope":{}},
+      "POST /api/v2/org-storage/lists/delete": {"action":"org_storage.lists.delete","body":"any","effects":["delete"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/lists/delete","scope":{}},
+      "POST /api/v2/org-storage/lists/save": {"action":"org_storage.lists.save.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/org-storage/lists/save","scope":{}},
+      "POST /api/v2/orgs/save": {"action":"orgs.save.admin","body":"any","effects":["admin"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/save","scope":{}},
+      "POST /api/v2/orgs/save-agent-groups": {"action":"orgs.save_agent_groups.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/save-agent-groups","scope":{}},
+      "POST /api/v2/orgs/save-crm-contact": {"action":"orgs.save_crm_contact.send","body":"any","effects":["send","write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/orgs/save-crm-contact","scope":{}},
+      "POST /api/v2/recaptcha": {"action":"recaptcha.execute","body":"any","effects":["execute"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/recaptcha","scope":{}},
+      "POST /api/v2/scripts/access-list": {"action":"scripts.access_list.share","body":"any","effects":["share"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/scripts/access-list","scope":{}},
+      "POST /api/v2/scripts/delete": {"action":"scripts.delete","body":"any","effects":["delete"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/scripts/delete","scope":{}},
+      "POST /api/v2/scripts/save": {"action":"scripts.save.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/scripts/save","scope":{}},
+      "POST /api/v2/scripts/visibility": {"action":"scripts.visibility.share","body":"any","effects":["share"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/scripts/visibility","scope":{}},
+      "POST /api/v2/users/update-me": {"action":"users.me.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.phantombuster.com","path":"/api/v2/users/update-me","scope":{}}
     }
   }
 }

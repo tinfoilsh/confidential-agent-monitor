@@ -4,13 +4,15 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.dispatch": {"title": "Dispatch", "effects": ["execute"]}
     },
-    "connection": {"mcp": {"url": "https://api.salesforce.com/platform/mcp/v1/platform/headless-360"}},
+    "connection": {"mcp": {"url": "{url}"}},
     "fields": [
+      {"key": "url", "label": "Server URL", "default": "https://api.salesforce.com/platform/mcp/v1/platform/headless-360", "hint": "Use https://api.salesforce.com/platform/mcp/v1/sandbox/platform/headless-360 for sandbox and scratch orgs.", "path": ["mcp", "url"]},
       {"key": "client_id", "label": "OAuth client ID", "paths": []},
       {"key": "client_secret", "label": "OAuth client secret", "paths": [], "secret": true},
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://api.salesforce.com/platform/mcp/v1/platform/headless-360", "client_id": "{client_id}", "client_secret": "{client_secret}"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}", "client_id": "{client_id}", "client_secret": "{client_secret}"}}
     ]
   }
 }

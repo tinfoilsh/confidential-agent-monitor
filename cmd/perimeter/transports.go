@@ -235,11 +235,15 @@ func (s *state) open(ctx context.Context, fingerprint, network, host string, por
 	return nil
 }
 
-func selectTarget(target connector.Target, candidates []core.Candidate) (name string, explicit, ok bool) {
+func selectTarget(target connector.Target, candidates []core.Candidate) (name string, explicit bool, err error) {
 	if named, found := strings.CutSuffix(target.Host, connections.Domain); found {
-		return named, true, slices.ContainsFunc(candidates, func(c core.Candidate) bool { return c.Name == named })
+		return named, true, nil
 	}
-	return core.BestClaim(target, candidates)
+	name, explicit, err = core.BestClaim(target, candidates)
+	if errors.Is(err, core.ErrAmbiguous) {
+		err = fmt.Errorf("%w as <connection>%s", err, connections.Domain)
+	}
+	return name, explicit, err
 }
 
 func (s *state) reaches(_ context.Context, p facts.Principal, connection string) bool {

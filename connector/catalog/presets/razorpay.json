@@ -4,11 +4,21 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.capture_payment": {"title": "Capture payment", "effects": ["pay"]},
+      "use.create_instant_settlement": {"title": "Create instant settlement", "effects": ["pay"]},
+      "use.create_refund": {"title": "Create refund", "effects": ["pay"]},
+      "use.fetch_tokens": {"title": "Fetch tokens", "effects": ["read"]},
+      "use.initiate_payment": {"title": "Initiate payment", "effects": ["pay"]},
+      "use.payment_link_notify": {"title": "Payment link notify", "effects": ["send"]},
+      "use.resend_otp": {"title": "Resend otp", "effects": ["send"]},
+      "use.revoke_token": {"title": "Revoke token", "effects": ["delete"]},
+      "use.submit_otp": {"title": "Submit otp", "effects": ["pay"]}
     },
     "connection": {"mcp": {"url": "https://mcp.razorpay.com/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.razorpay.com/mcp"}}
     ]
-  }
+  },
+  "mcp": {"token": {"header": "Authorization", "prefix": "Basic "}}
 }

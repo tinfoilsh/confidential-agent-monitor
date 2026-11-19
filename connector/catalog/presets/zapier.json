@@ -4,11 +4,25 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.auto_provision_mcp": {"title": "Auto provision mcp", "effects": ["admin"]},
+      "use.delete_workflow": {"title": "Delete workflow", "effects": ["delete"]},
+      "use.delete_zapier_skill": {"title": "Delete zapier skill", "effects": ["delete"]},
+      "use.disable_zapier_action": {"title": "Disable zapier action", "effects": ["admin"]},
+      "use.discard_workflow_draft": {"title": "Discard workflow draft", "effects": ["delete"]},
+      "use.enable_workflow": {"title": "Enable workflow", "effects": ["execute"]},
+      "use.enable_zapier_action": {"title": "Enable zapier action", "effects": ["admin"]},
+      "use.execute_zapier_write_action": {"title": "Execute zapier write action", "effects": ["delete", "execute", "pay", "publish", "send"]},
+      "use.manage_zapier_connections": {"title": "Manage zapier connections", "effects": ["admin"]},
+      "use.publish_workflow_draft": {"title": "Publish workflow draft", "effects": ["execute"]},
+      "use.run_workflow": {"title": "Run workflow", "effects": ["execute"]},
+      "use.run_workflow_draft": {"title": "Run workflow draft", "effects": ["execute"]},
+      "use.send_feedback": {"title": "Send feedback", "effects": ["send"]},
+      "use.write_code_action": {"title": "Write code action", "effects": ["execute"]}
     },
-    "connection": {"mcp": {"url": "https://mcp.zapier.com/api/mcp/mcp"}},
+    "connection": {"mcp": {"url": "https://mcp.zapier.com/api/v1/connect"}},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.zapier.com/api/mcp/mcp"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.zapier.com/api/v1/connect"}}
     ]
   }
 }

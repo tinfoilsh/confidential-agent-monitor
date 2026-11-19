@@ -1,60 +1,318 @@
 {
-  "title": "Typeform",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "access_token", "label": "Typeform account", "secret": true, "credential": true, "oauth": {"issuer": "https://api.typeform.com", "scope": "offline_access accounts:read forms:read forms:write responses:read responses:write workspaces:read workspaces:write themes:read themes:write images:read images:write webhooks:read webhooks:write"}}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_token", "origin": "https://api.typeform.com", "path": "/", "header": "Authorization", "prefix": "bearer "}]}},
     "actions": {
-      "admin.webhooks": {"title": "Admin: webhooks"},
-      "admin.workspaces": {"title": "Admin: workspaces"},
-      "delete.forms": {"title": "Delete: forms"},
-      "delete.images": {"title": "Delete: images"},
-      "delete.responses": {"title": "Delete: responses"},
-      "delete.themes": {"title": "Delete: themes"},
-      "delete.webhooks": {"title": "Delete: webhooks"},
-      "delete.workspaces": {"title": "Delete: workspaces"},
-      "read": {"title": "Read everything the account can see"},
-      "write.forms": {"title": "Write: forms"},
-      "write.messages": {"title": "Write: messages"},
-      "write.themes": {"title": "Write: themes"}
-    }
+      "accounts": {
+        "title": "Accounts"
+      },
+      "accounts.workspaces": {
+        "title": "Workspaces"
+      },
+      "accounts.workspaces.read": {
+        "title": "Read"
+      },
+      "accounts.workspaces.write": {
+        "title": "Create and edit"
+      },
+      "forms": {
+        "title": "Forms"
+      },
+      "forms.delete": {
+        "title": "Delete"
+      },
+      "forms.messages": {
+        "title": "Messages"
+      },
+      "forms.messages.read": {
+        "title": "Read"
+      },
+      "forms.messages.write": {
+        "title": "Create and edit"
+      },
+      "forms.read": {
+        "title": "Read"
+      },
+      "forms.responses": {
+        "title": "Responses"
+      },
+      "forms.responses.delete": {
+        "title": "Delete"
+      },
+      "forms.responses.fields": {
+        "title": "Fields"
+      },
+      "forms.responses.fields.files": {
+        "title": "Files"
+      },
+      "forms.responses.fields.files.read": {
+        "title": "Read"
+      },
+      "forms.responses.files": {
+        "title": "Files"
+      },
+      "forms.responses.files.read": {
+        "title": "Read"
+      },
+      "forms.responses.read": {
+        "title": "Read"
+      },
+      "forms.translations": {
+        "title": "Translations"
+      },
+      "forms.translations.auto": {
+        "title": "Auto"
+      },
+      "forms.translations.auto.generate": {
+        "title": "Generate"
+      },
+      "forms.translations.delete": {
+        "title": "Delete"
+      },
+      "forms.translations.main": {
+        "title": "Main"
+      },
+      "forms.translations.main.read": {
+        "title": "Read"
+      },
+      "forms.translations.read": {
+        "title": "Read"
+      },
+      "forms.translations.status": {
+        "title": "Status"
+      },
+      "forms.translations.status.read": {
+        "title": "Read"
+      },
+      "forms.translations.write": {
+        "title": "Create and edit"
+      },
+      "forms.webhooks": {
+        "title": "Webhooks"
+      },
+      "forms.webhooks.admin": {
+        "title": "Manage"
+      },
+      "forms.webhooks.delete": {
+        "title": "Delete"
+      },
+      "forms.webhooks.read": {
+        "title": "Read"
+      },
+      "forms.write": {
+        "title": "Create and edit"
+      },
+      "images": {
+        "title": "Images"
+      },
+      "images.background": {
+        "title": "Background"
+      },
+      "images.background.read": {
+        "title": "Read"
+      },
+      "images.choice": {
+        "title": "Choice"
+      },
+      "images.choice.read": {
+        "title": "Read"
+      },
+      "images.delete": {
+        "title": "Delete"
+      },
+      "images.image": {
+        "title": "Image"
+      },
+      "images.image.read": {
+        "title": "Read"
+      },
+      "images.read": {
+        "title": "Read"
+      },
+      "images.write": {
+        "title": "Create and edit"
+      },
+      "insights": {
+        "title": "Insights"
+      },
+      "insights.summary": {
+        "title": "Summary"
+      },
+      "insights.summary.read": {
+        "title": "Read"
+      },
+      "me": {
+        "title": "Me"
+      },
+      "me.read": {
+        "title": "Read"
+      },
+      "media": {
+        "title": "Media"
+      },
+      "media.audios": {
+        "title": "Audios"
+      },
+      "media.audios.master": {
+        "title": "Master"
+      },
+      "media.audios.master.read": {
+        "title": "Read"
+      },
+      "media.audios.master.write": {
+        "title": "Create and edit"
+      },
+      "media.videos": {
+        "title": "Videos"
+      },
+      "media.videos.master": {
+        "title": "Master"
+      },
+      "media.videos.master.read": {
+        "title": "Read"
+      },
+      "media.videos.master.write": {
+        "title": "Create and edit"
+      },
+      "media.videos.read": {
+        "title": "Read"
+      },
+      "media.videos.write": {
+        "title": "Create and edit"
+      },
+      "rtbf": {
+        "title": "Rtbf"
+      },
+      "rtbf.responses": {
+        "title": "Responses"
+      },
+      "rtbf.responses.delete": {
+        "title": "Delete"
+      },
+      "themes": {
+        "title": "Themes"
+      },
+      "themes.delete": {
+        "title": "Delete"
+      },
+      "themes.read": {
+        "title": "Read"
+      },
+      "themes.write": {
+        "title": "Create and edit"
+      },
+      "workspaces": {
+        "title": "Workspaces"
+      },
+      "workspaces.admin": {
+        "title": "Manage"
+      },
+      "workspaces.delete": {
+        "title": "Delete"
+      },
+      "workspaces.read": {
+        "title": "Read"
+      },
+      "workspaces.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.typeform.com",
+            "path": "/",
+            "prefix": "bearer ",
+            "value": "access_token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api.eu.typeform.com",
+            "path": "/",
+            "prefix": "bearer ",
+            "value": "access_token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api.typeform.eu",
+            "path": "/",
+            "prefix": "bearer ",
+            "value": "access_token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "access_token",
+        "label": "Typeform account",
+        "oauth": {
+          "issuer": "https://api.typeform.com",
+          "scope": "offline_access accounts:read forms:read forms:write responses:read responses:write workspaces:read workspaces:write themes:read themes:write images:read images:write webhooks:read webhooks:write"
+        },
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Typeform",
   "http": {
+    "origins": {"api":["https://api.typeform.com","https://api.eu.typeform.com","https://api.typeform.eu"]},
     "operations": {
-      "DELETE /forms/{form_id}": {"action":"delete.forms","effects":["delete"],"method":"DELETE","origin":"https://api.typeform.com","path":"/forms/{form_id}","scope":{"form_id":{"from":"path","at":"form_id"}}},
-      "DELETE /forms/{form_id}/responses": {"action":"delete.responses","effects":["delete"],"method":"DELETE","origin":"https://api.typeform.com","path":"/forms/{form_id}/responses","params":["included_response_ids"],"scope":{"form_id":{"from":"path","at":"form_id"}}},
-      "DELETE /forms/{form_id}/webhooks/{tag}": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.typeform.com","path":"/forms/{form_id}/webhooks/{tag}","scope":{"form_id":{"from":"path","at":"form_id"},"tag":{"from":"path","at":"tag"}}},
-      "DELETE /images/{image_id}": {"action":"delete.images","effects":["delete"],"method":"DELETE","origin":"https://api.typeform.com","path":"/images/{image_id}","scope":{"image_id":{"from":"path","at":"image_id"}}},
-      "DELETE /rtbf/{account_id}/responses": {"action":"delete.responses","effects":["delete"],"method":"DELETE","origin":"https://api.typeform.com","path":"/rtbf/{account_id}/responses","scope":{"account_id":{"from":"path","at":"account_id"}}},
-      "DELETE /themes/{theme_id}": {"action":"delete.themes","effects":["delete"],"method":"DELETE","origin":"https://api.typeform.com","path":"/themes/{theme_id}","scope":{"theme_id":{"from":"path","at":"theme_id"}}},
-      "DELETE /workspaces/{workspace_id}": {"action":"delete.workspaces","effects":["delete"],"method":"DELETE","origin":"https://api.typeform.com","path":"/workspaces/{workspace_id}","scope":{"workspace_id":{"from":"path","at":"workspace_id"}}},
-      "GET /": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/","scope":{}},
-      "GET /accounts/{account_id}/workspaces": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/accounts/{account_id}/workspaces","params":["search","page","page_size"],"scope":{"account_id":{"from":"path","at":"account_id"}}},
-      "GET /forms": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/forms","params":["search","page","page_size","workspace_id"],"scope":{}},
-      "GET /forms/{form_id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/forms/{form_id}","scope":{"form_id":{"from":"path","at":"form_id"}}},
-      "GET /forms/{form_id}/messages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/forms/{form_id}/messages","scope":{"form_id":{"from":"path","at":"form_id"}}},
-      "GET /forms/{form_id}/responses": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/forms/{form_id}/responses","params":["page_size","since","until","after","before","included_response_ids","excluded_response_ids","completed","sort","query","fields","answered_fields"],"scope":{"form_id":{"from":"path","at":"form_id"}}},
-      "GET /forms/{form_id}/responses/{response_id}/fields/{field_id}/files/{filename}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/forms/{form_id}/responses/{response_id}/fields/{field_id}/files/{filename}","params":["inline"],"scope":{"form_id":{"from":"path","at":"form_id"},"response_id":{"from":"path","at":"response_id"},"field_id":{"from":"path","at":"field_id"},"filename":{"from":"path","at":"filename"}}},
-      "GET /forms/{form_id}/webhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/forms/{form_id}/webhooks","scope":{"form_id":{"from":"path","at":"form_id"}}},
-      "GET /forms/{form_id}/webhooks/{tag}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/forms/{form_id}/webhooks/{tag}","scope":{"form_id":{"from":"path","at":"form_id"},"tag":{"from":"path","at":"tag"}}},
-      "GET /images/{image_id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/images/{image_id}","scope":{"image_id":{"from":"path","at":"image_id"}}},
-      "GET /images/{image_id}/background/{size}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/images/{image_id}/background/{size}","scope":{"image_id":{"from":"path","at":"image_id"},"size":{"from":"path","at":"size"}}},
-      "GET /images/{image_id}/choice/{size}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/images/{image_id}/choice/{size}","scope":{"image_id":{"from":"path","at":"image_id"},"size":{"from":"path","at":"size"}}},
-      "GET /images/{image_id}/image/{size}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/images/{image_id}/image/{size}","scope":{"image_id":{"from":"path","at":"image_id"},"size":{"from":"path","at":"size"}}},
-      "GET /insights/{form_id}/summary": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/insights/{form_id}/summary","scope":{"form_id":{"from":"path","at":"form_id"}}},
-      "GET /themes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/themes","params":["page","page_size"],"scope":{}},
-      "GET /themes/{theme_id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/themes/{theme_id}","scope":{"theme_id":{"from":"path","at":"theme_id"}}},
-      "GET /workspaces": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/workspaces","params":["search","page","page_size"],"scope":{}},
-      "GET /workspaces/{workspace_id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.typeform.com","path":"/workspaces/{workspace_id}","scope":{"workspace_id":{"from":"path","at":"workspace_id"}}},
-      "PATCH /forms/{form_id}": {"action":"write.forms","effects":["write"],"method":"PATCH","origin":"https://api.typeform.com","path":"/forms/{form_id}","scope":{"form_id":{"from":"path","at":"form_id"}}},
-      "PATCH /workspaces/{workspace_id}": {"action":"admin.workspaces","effects":["admin"],"method":"PATCH","origin":"https://api.typeform.com","path":"/workspaces/{workspace_id}","scope":{"workspace_id":{"from":"path","at":"workspace_id"}}},
-      "POST /": {"action":"admin.workspaces","effects":["admin"],"method":"POST","origin":"https://api.typeform.com","path":"/","scope":{}},
-      "PUT /forms/{form_id}": {"action":"write.forms","effects":["write"],"method":"PUT","origin":"https://api.typeform.com","path":"/forms/{form_id}","scope":{"form_id":{"from":"path","at":"form_id"}}},
-      "PUT /forms/{form_id}/messages": {"action":"write.messages","effects":["write"],"method":"PUT","origin":"https://api.typeform.com","path":"/forms/{form_id}/messages","scope":{"form_id":{"from":"path","at":"form_id"}}},
-      "PUT /forms/{form_id}/webhooks/{tag}": {"action":"admin.webhooks","effects":["admin"],"method":"PUT","origin":"https://api.typeform.com","path":"/forms/{form_id}/webhooks/{tag}","scope":{"form_id":{"from":"path","at":"form_id"},"tag":{"from":"path","at":"tag"}}},
-      "PUT /themes/{theme_id}": {"action":"write.themes","effects":["write"],"method":"PUT","origin":"https://api.typeform.com","path":"/themes/{theme_id}","scope":{"theme_id":{"from":"path","at":"theme_id"}}}
+      "DELETE /forms/{form_id}": {"action":"forms.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/forms/{form_id}","scope":{"form_id":{"at":"form_id","from":"path"}}},
+      "DELETE /forms/{form_id}/responses": {"action":"forms.responses.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["included_response_ids"],"path":"/forms/{form_id}/responses","scope":{"form_id":{"at":"form_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "DELETE /forms/{form_id}/responses.json": {"action":"forms.responses.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/forms/{form_id}/responses","scope":{"form_id":{"at":"form_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "DELETE /forms/{form_id}/translations/{language}": {"action":"forms.translations.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/forms/{form_id}/translations/{language}","scope":{"form_id":{"at":"form_id","from":"path"},"language":{"at":"language","from":"path"}}},
+      "DELETE /forms/{form_id}/webhooks/{tag}": {"action":"forms.webhooks.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/forms/{form_id}/webhooks/{tag}","scope":{"form_id":{"at":"form_id","from":"path"},"tag":{"at":"tag","from":"path"}}},
+      "DELETE /images/{image_id}": {"action":"images.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/images/{image_id}","scope":{"image_id":{"at":"image_id","from":"path"}}},
+      "DELETE /rtbf/{account_id}/responses": {"action":"rtbf.responses.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/rtbf/{account_id}/responses","scope":{"account_id":{"at":"account_id","from":"path"}}},
+      "DELETE /themes/{theme_id}": {"action":"themes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/themes/{theme_id}","scope":{"theme_id":{"at":"theme_id","from":"path"}}},
+      "DELETE /workspaces/{workspace_id}": {"action":"workspaces.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/workspaces/{workspace_id}","scope":{"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "GET /accounts/{account_id}/workspaces": {"action":"accounts.workspaces.read","effects":["read"],"method":"GET","origin":"{api}","params":["search","page","page_size"],"path":"/accounts/{account_id}/workspaces","scope":{"account_id":{"at":"account_id","from":"path"}}},
+      "GET /forms": {"action":"forms.read","effects":["read"],"method":"GET","origin":"{api}","params":["search","page","page_size","workspace_id","sort_by","order_by","is_public"],"path":"/forms","scope":{}},
+      "GET /forms/{form_id}": {"action":"forms.read","effects":["read"],"method":"GET","origin":"{api}","path":"/forms/{form_id}","scope":{"form_id":{"at":"form_id","from":"path"}}},
+      "GET /forms/{form_id}/messages": {"action":"forms.messages.read","effects":["read"],"method":"GET","origin":"{api}","path":"/forms/{form_id}/messages","scope":{"form_id":{"at":"form_id","from":"path"}}},
+      "GET /forms/{form_id}/responses": {"action":"forms.responses.read","effects":["read"],"method":"GET","origin":"{api}","params":["page_size","since","until","after","before","included_response_ids","excluded_response_ids","completed","sort","query","fields","answered_fields","response_type"],"path":"/forms/{form_id}/responses","scope":{"form_id":{"at":"form_id","from":"path"}}},
+      "GET /forms/{form_id}/responses/files": {"action":"forms.responses.files.read","effects":["read"],"method":"GET","origin":"{api}","path":"/forms/{form_id}/responses/files","scope":{"form_id":{"at":"form_id","from":"path"}}},
+      "GET /forms/{form_id}/responses/{response_id}/fields/{field_id}/files/{filename}": {"action":"forms.responses.fields.files.read","effects":["read"],"method":"GET","origin":"{api}","params":["inline"],"path":"/forms/{form_id}/responses/{response_id}/fields/{field_id}/files/{filename}","scope":{"field_id":{"at":"field_id","from":"path"},"filename":{"at":"filename","from":"path"},"form_id":{"at":"form_id","from":"path"},"response_id":{"at":"response_id","from":"path"}}},
+      "GET /forms/{form_id}/translations/main": {"action":"forms.translations.main.read","effects":["read"],"method":"GET","origin":"{api}","path":"/forms/{form_id}/translations/main","scope":{"form_id":{"at":"form_id","from":"path"}}},
+      "GET /forms/{form_id}/translations/status": {"action":"forms.translations.status.read","effects":["read"],"method":"GET","origin":"{api}","path":"/forms/{form_id}/translations/status","scope":{"form_id":{"at":"form_id","from":"path"}}},
+      "GET /forms/{form_id}/translations/{language}": {"action":"forms.translations.read","effects":["read"],"method":"GET","origin":"{api}","path":"/forms/{form_id}/translations/{language}","path_patterns":{"language":"[a-z]{2}([-_][A-Za-z]{2,4})?"},"scope":{"form_id":{"at":"form_id","from":"path"},"language":{"at":"language","from":"path"}}},
+      "GET /forms/{form_id}/webhooks": {"action":"forms.webhooks.read","effects":["read"],"method":"GET","origin":"{api}","path":"/forms/{form_id}/webhooks","scope":{"form_id":{"at":"form_id","from":"path"}}},
+      "GET /forms/{form_id}/webhooks/{tag}": {"action":"forms.webhooks.read","effects":["read"],"method":"GET","origin":"{api}","path":"/forms/{form_id}/webhooks/{tag}","scope":{"form_id":{"at":"form_id","from":"path"},"tag":{"at":"tag","from":"path"}}},
+      "GET /images": {"action":"images.read","effects":["read"],"method":"GET","origin":"{api}","path":"/images","scope":{}},
+      "GET /images/{image_id}": {"action":"images.read","effects":["read"],"method":"GET","origin":"{api}","path":"/images/{image_id}","scope":{"image_id":{"at":"image_id","from":"path"}}},
+      "GET /images/{image_id}/background/{size}": {"action":"images.background.read","effects":["read"],"method":"GET","origin":"{api}","path":"/images/{image_id}/background/{size}","scope":{"image_id":{"at":"image_id","from":"path"},"size":{"at":"size","from":"path"}}},
+      "GET /images/{image_id}/choice/{size}": {"action":"images.choice.read","effects":["read"],"method":"GET","origin":"{api}","path":"/images/{image_id}/choice/{size}","scope":{"image_id":{"at":"image_id","from":"path"},"size":{"at":"size","from":"path"}}},
+      "GET /images/{image_id}/image/{size}": {"action":"images.image.read","effects":["read"],"method":"GET","origin":"{api}","path":"/images/{image_id}/image/{size}","scope":{"image_id":{"at":"image_id","from":"path"},"size":{"at":"size","from":"path"}}},
+      "GET /insights/{form_id}/summary": {"action":"insights.summary.read","effects":["read"],"method":"GET","origin":"{api}","path":"/insights/{form_id}/summary","scope":{"form_id":{"at":"form_id","from":"path"}}},
+      "GET /me": {"action":"me.read","effects":["read"],"method":"GET","origin":"{api}","path":"/me","scope":{}},
+      "GET /media/audios/{id}/master": {"action":"media.audios.master.read","effects":["read"],"method":"GET","origin":"{api}","path":"/media/audios/{id}/master","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /media/videos/{id}/master": {"action":"media.videos.master.read","effects":["read"],"method":"GET","origin":"{api}","path":"/media/videos/{id}/master","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /themes": {"action":"themes.read","effects":["read"],"method":"GET","origin":"{api}","params":["page","page_size"],"path":"/themes","scope":{}},
+      "GET /themes/{theme_id}": {"action":"themes.read","effects":["read"],"method":"GET","origin":"{api}","path":"/themes/{theme_id}","scope":{"theme_id":{"at":"theme_id","from":"path"}}},
+      "GET /workspaces": {"action":"workspaces.read","effects":["read"],"method":"GET","origin":"{api}","params":["search","page","page_size"],"path":"/workspaces","scope":{}},
+      "GET /workspaces/{workspace_id}": {"action":"workspaces.read","effects":["read"],"method":"GET","origin":"{api}","path":"/workspaces/{workspace_id}","scope":{"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "PATCH /forms/{form_id}": {"action":"forms.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/forms/{form_id}","scope":{"form_id":{"at":"form_id","from":"path"}}},
+      "PATCH /themes/{theme_id}": {"action":"themes.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","path":"/themes/{theme_id}","scope":{"theme_id":{"at":"theme_id","from":"path"}}},
+      "PATCH /workspaces/{workspace_id}": {"action":"workspaces.admin","body":"any","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/workspaces/{workspace_id}","scope":{"workspace_id":{"at":"workspace_id","from":"path"}}},
+      "POST /accounts/{account_id}/workspaces": {"action":"accounts.workspaces.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/accounts/{account_id}/workspaces","scope":{"account_id":{"at":"account_id","from":"path"}}},
+      "POST /forms": {"action":"forms.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/forms","scope":{}},
+      "POST /forms/{form_id}/responses/search": {"action":"forms.responses.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/forms/{form_id}/responses/search","scope":{"form_id":{"at":"form_id","from":"path"}}},
+      "POST /forms/{form_id}/translations/{language}/auto": {"action":"forms.translations.auto.generate","effects":["generate","write"],"method":"POST","origin":"{api}","path":"/forms/{form_id}/translations/{language}/auto","scope":{"form_id":{"at":"form_id","from":"path"},"language":{"at":"language","from":"path"}}},
+      "POST /images": {"action":"images.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/images","scope":{}},
+      "POST /media/audios/{id}/master": {"action":"media.audios.master.write","effects":["write"],"method":"POST","origin":"{api}","path":"/media/audios/{id}/master","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /media/videos": {"action":"media.videos.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/media/videos","scope":{"field_id":{"at":"/field_id","from":"body"},"form_id":{"at":"/form_id","from":"body"}}},
+      "POST /media/videos/list": {"action":"media.videos.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/media/videos/list","scope":{}},
+      "POST /media/videos/{id}/master": {"action":"media.videos.master.write","effects":["write"],"method":"POST","origin":"{api}","path":"/media/videos/{id}/master","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /themes": {"action":"themes.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/themes","scope":{}},
+      "POST /workspaces": {"action":"workspaces.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/workspaces","scope":{}},
+      "PUT /forms/{form_id}": {"action":"forms.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/forms/{form_id}","scope":{"form_id":{"at":"form_id","from":"path"}}},
+      "PUT /forms/{form_id}/messages": {"action":"forms.messages.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/forms/{form_id}/messages","scope":{"form_id":{"at":"form_id","from":"path"}}},
+      "PUT /forms/{form_id}/translations/{language}": {"action":"forms.translations.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/forms/{form_id}/translations/{language}","scope":{"form_id":{"at":"form_id","from":"path"},"language":{"at":"language","from":"path"}}},
+      "PUT /forms/{form_id}/webhooks/{tag}": {"action":"forms.webhooks.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{api}","path":"/forms/{form_id}/webhooks/{tag}","scope":{"form_id":{"at":"form_id","from":"path"},"tag":{"at":"tag","from":"path"}}},
+      "PUT /themes/{theme_id}": {"action":"themes.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/themes/{theme_id}","scope":{"theme_id":{"at":"theme_id","from":"path"}}}
     }
   }
 }

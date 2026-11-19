@@ -1,18 +1,316 @@
 {
-  "title": "Vonage",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://rest.nexmo.com", "path": "/", "basic": "password"}]}},
     "actions": {
-      "send.sms": {"title": "Send: sms"}
-    }
+      "account": {
+        "title": "Account"
+      },
+      "account.balance": {
+        "title": "Balance"
+      },
+      "account.balance.read": {
+        "title": "Read"
+      },
+      "account.get_full_pricing": {
+        "title": "Get full pricing"
+      },
+      "account.get_full_pricing.outbound": {
+        "title": "Outbound"
+      },
+      "account.get_full_pricing.outbound.read": {
+        "title": "Read"
+      },
+      "account.get_prefix_pricing": {
+        "title": "Get prefix pricing"
+      },
+      "account.get_prefix_pricing.outbound": {
+        "title": "Outbound"
+      },
+      "account.get_prefix_pricing.outbound.read": {
+        "title": "Read"
+      },
+      "account.get_pricing": {
+        "title": "Get pricing"
+      },
+      "account.get_pricing.outbound": {
+        "title": "Outbound"
+      },
+      "account.get_pricing.outbound.read": {
+        "title": "Read"
+      },
+      "account.numbers": {
+        "title": "Numbers"
+      },
+      "account.numbers.read": {
+        "title": "Read"
+      },
+      "account.settings": {
+        "title": "Settings"
+      },
+      "account.settings.admin": {
+        "title": "Manage"
+      },
+      "account.top_up": {
+        "title": "Top up"
+      },
+      "account.top_up.pay": {
+        "title": "Make payments"
+      },
+      "accounts": {
+        "title": "Accounts"
+      },
+      "accounts.secrets": {
+        "title": "Secrets"
+      },
+      "accounts.secrets.admin": {
+        "title": "Manage"
+      },
+      "accounts.secrets.delete": {
+        "title": "Delete"
+      },
+      "accounts.secrets.read": {
+        "title": "Read"
+      },
+      "messages": {
+        "title": "Messages"
+      },
+      "messages.pay": {
+        "title": "Make payments"
+      },
+      "messages.write": {
+        "title": "Create and edit"
+      },
+      "ni": {
+        "title": "Ni"
+      },
+      "ni.advanced": {
+        "title": "Advanced"
+      },
+      "ni.advanced.async": {
+        "title": "Async"
+      },
+      "ni.advanced.async.pay": {
+        "title": "Make payments"
+      },
+      "ni.advanced.pay": {
+        "title": "Make payments"
+      },
+      "ni.basic": {
+        "title": "Basic"
+      },
+      "ni.basic.read": {
+        "title": "Read"
+      },
+      "ni.standard": {
+        "title": "Standard"
+      },
+      "ni.standard.pay": {
+        "title": "Make payments"
+      },
+      "number": {
+        "title": "Number"
+      },
+      "number.buy": {
+        "title": "Buy"
+      },
+      "number.buy.pay": {
+        "title": "Make payments"
+      },
+      "number.delete": {
+        "title": "Delete"
+      },
+      "number.read": {
+        "title": "Read"
+      },
+      "number.write": {
+        "title": "Create and edit"
+      },
+      "sms": {
+        "title": "Sms"
+      },
+      "sms.pay": {
+        "title": "Make payments"
+      },
+      "verify": {
+        "title": "Verify"
+      },
+      "verify.delete": {
+        "title": "Delete"
+      },
+      "verify.next_workflow": {
+        "title": "Next workflow"
+      },
+      "verify.next_workflow.pay": {
+        "title": "Make payments"
+      },
+      "verify.pay": {
+        "title": "Make payments"
+      },
+      "verify.silent_auth": {
+        "title": "Silent auth"
+      },
+      "verify.silent_auth.redirect": {
+        "title": "Redirect"
+      },
+      "verify.silent_auth.redirect.read": {
+        "title": "Read"
+      },
+      "verify.templates": {
+        "title": "Templates"
+      },
+      "verify.templates.delete": {
+        "title": "Delete"
+      },
+      "verify.templates.read": {
+        "title": "Read"
+      },
+      "verify.templates.template_fragments": {
+        "title": "Template fragments"
+      },
+      "verify.templates.template_fragments.delete": {
+        "title": "Delete"
+      },
+      "verify.templates.template_fragments.read": {
+        "title": "Read"
+      },
+      "verify.templates.template_fragments.write": {
+        "title": "Create and edit"
+      },
+      "verify.templates.write": {
+        "title": "Create and edit"
+      },
+      "verify.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "basic": "user",
+            "origin": "https://rest.nexmo.com",
+            "path": "/",
+            "value": "api_key"
+          },
+          {
+            "basic": "password",
+            "origin": "https://rest.nexmo.com",
+            "path": "/",
+            "value": "api_secret"
+          },
+          {
+            "basic": "user",
+            "origin": "https://api.nexmo.com",
+            "path": "/",
+            "value": "api_key"
+          },
+          {
+            "basic": "password",
+            "origin": "https://api.nexmo.com",
+            "path": "/",
+            "value": "api_secret"
+          },
+          {
+            "basic": "user",
+            "origin": "https://api-eu.nexmo.com",
+            "path": "/v1/messages",
+            "value": "api_key"
+          },
+          {
+            "basic": "password",
+            "origin": "https://api-eu.nexmo.com",
+            "path": "/v1/messages",
+            "value": "api_secret"
+          },
+          {
+            "basic": "user",
+            "origin": "https://api-us.nexmo.com",
+            "path": "/v1/messages",
+            "value": "api_key"
+          },
+          {
+            "basic": "password",
+            "origin": "https://api-us.nexmo.com",
+            "path": "/v1/messages",
+            "value": "api_secret"
+          },
+          {
+            "basic": "user",
+            "origin": "https://api-ap.nexmo.com",
+            "path": "/v1/messages",
+            "value": "api_key"
+          },
+          {
+            "basic": "password",
+            "origin": "https://api-ap.nexmo.com",
+            "path": "/v1/messages",
+            "value": "api_secret"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "api_secret",
+        "label": "API Secret",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Vonage",
   "http": {
+    "origins": {"messages":["https://api.nexmo.com","https://api-eu.nexmo.com","https://api-us.nexmo.com","https://api-ap.nexmo.com"]},
     "operations": {
-      "send-an-sms": {"action":"send.sms","effects":["send"],"method":"POST","origin":"https://rest.nexmo.com","path":"/sms/{format}","body":"form","scope":{"format":{"from":"path","at":"format"}}}
+      "SendMessage": {"action":"messages.pay","body":"json","effects":["pay","send"],"method":"POST","origin":"{messages}","path":"/v1/messages","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "UpdateMessage": {"action":"messages.write","body":"json","effects":["write"],"method":"PATCH","origin":"{messages}","path":"/v1/messages/{message_uuid}","scope":{"message_uuid":{"at":"message_uuid","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "addTemplateFragmentToTemplate": {"action":"verify.templates.template_fragments.write","effects":["write"],"method":"POST","origin":"https://api.nexmo.com","path":"/v2/verify/templates/{template_id}/template_fragments","scope":{"template_id":{"at":"template_id","from":"path"}}},
+      "addTemplateFragmentToTemplate.json.00741e79da5d": {"action":"verify.templates.template_fragments.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.nexmo.com","path":"/v2/verify/templates/{template_id}/template_fragments","scope":{"channel":{"at":"/channel","from":"body"},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"template_id","from":"path"}}},
+      "buyANumber": {"action":"number.buy.pay","body":"form","effects":["pay"],"method":"POST","origin":"https://rest.nexmo.com","path":"/number/buy","scope":{"request":{"at":"","from":"form","type":"object"},"target_api_key":{"at":"target_api_key","from":"form","optional":true}}},
+      "cancelANumber": {"action":"number.delete","body":"form","effects":["delete"],"method":"POST","origin":"https://rest.nexmo.com","path":"/number/cancel","scope":{"request":{"at":"","from":"form","type":"object"},"target_api_key":{"at":"target_api_key","from":"form","optional":true}}},
+      "cancelRequest": {"action":"verify.delete","effects":["delete"],"method":"DELETE","origin":"https://api.nexmo.com","path":"/v2/verify/{request_id}","scope":{"request_id":{"at":"request_id","from":"path"}}},
+      "changeAccountSettings": {"action":"account.settings.admin","effects":["admin"],"method":"POST","origin":"https://rest.nexmo.com","path":"/account/settings","scope":{}},
+      "changeAccountSettings.form.d479c798456b": {"action":"account.settings.admin","body":"form","effects":["admin"],"method":"POST","origin":"https://rest.nexmo.com","path":"/account/settings","scope":{"drCallBackUrl":{"at":"drCallBackUrl","from":"form","optional":true},"moCallBackUrl":{"at":"moCallBackUrl","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"}}},
+      "checkCode": {"action":"verify.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.nexmo.com","path":"/v2/verify/{request_id}","path_patterns":{"request_id":"[^t].*|t(?:|[^e].*|e(?:|[^m].*|m(?:|[^p].*|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+))))))))"},"scope":{"request":{"at":"","from":"body","type":"object"},"request_id":{"at":"request_id","from":"path"}}},
+      "createAPISecret": {"action":"accounts.secrets.admin","effects":["admin"],"method":"POST","origin":"https://rest.nexmo.com","path":"/accounts/{api_key}/secrets","scope":{"api_key":{"at":"api_key","from":"path"}}},
+      "createAPISecret.json.67a332030ea7": {"action":"accounts.secrets.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://rest.nexmo.com","path":"/accounts/{api_key}/secrets","scope":{"api_key":{"at":"api_key","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createTemplate": {"action":"verify.templates.write","effects":["write"],"method":"POST","origin":"https://api.nexmo.com","path":"/v2/verify/templates","scope":{}},
+      "createTemplate.json.f30e6b117bd4": {"action":"verify.templates.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.nexmo.com","path":"/v2/verify/templates","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "deleteTemplate": {"action":"verify.templates.delete","effects":["delete"],"method":"DELETE","origin":"https://api.nexmo.com","path":"/v2/verify/templates/{template_id}","scope":{"template_id":{"at":"template_id","from":"path"}}},
+      "deleteTemplateFragment": {"action":"verify.templates.template_fragments.delete","effects":["delete"],"method":"DELETE","origin":"https://api.nexmo.com","path":"/v2/verify/templates/{template_id}/template_fragments/{template_fragment_id}","scope":{"template_fragment_id":{"at":"template_fragment_id","from":"path"},"template_id":{"at":"template_id","from":"path"}}},
+      "getAccountBalance": {"action":"account.balance.read","effects":["read"],"method":"GET","origin":"https://rest.nexmo.com","path":"/account/get-balance","scope":{}},
+      "getAvailableNumbers": {"action":"number.read","effects":["read"],"method":"GET","origin":"https://rest.nexmo.com","params":["country","type","pattern","search_pattern","features","size","index"],"path":"/number/search","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getNumberInsightAdvanced": {"action":"ni.advanced.pay","effects":["pay"],"method":"GET","origin":"https://api.nexmo.com","params":["real_time_data","number","country","cnam","ip"],"path":"/ni/advanced/{format}","scope":{"format":{"at":"format","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getNumberInsightAsync": {"action":"ni.advanced.async.pay","effects":["pay"],"method":"GET","origin":"https://api.nexmo.com","params":["callback","number","country","cnam","ip"],"path":"/ni/advanced/async/{format}","scope":{"format":{"at":"format","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getNumberInsightBasic": {"action":"ni.basic.read","effects":["read"],"method":"GET","origin":"https://api.nexmo.com","params":["number","country"],"path":"/ni/basic/{format}","scope":{"format":{"at":"format","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getNumberInsightStandard": {"action":"ni.standard.pay","effects":["pay"],"method":"GET","origin":"https://api.nexmo.com","params":["number","country","cnam"],"path":"/ni/standard/{format}","scope":{"format":{"at":"format","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getOwnedNumbers": {"action":"account.numbers.read","effects":["read"],"method":"GET","origin":"https://rest.nexmo.com","params":["application_id","has_application","country","pattern","search_pattern","size","index"],"path":"/account/numbers","scope":{"application_id":{"at":"application_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getTemplate": {"action":"verify.templates.read","effects":["read"],"method":"GET","origin":"https://api.nexmo.com","path":"/v2/verify/templates/{template_id}","scope":{"template_id":{"at":"template_id","from":"path"}}},
+      "getTemplateFragment": {"action":"verify.templates.template_fragments.read","effects":["read"],"method":"GET","origin":"https://api.nexmo.com","path":"/v2/verify/templates/{template_id}/template_fragments/{template_fragment_id}","scope":{"template_fragment_id":{"at":"template_fragment_id","from":"path"},"template_id":{"at":"template_id","from":"path"}}},
+      "listTemplateFragments": {"action":"verify.templates.template_fragments.read","effects":["read"],"method":"GET","origin":"https://api.nexmo.com","params":["page_size","page"],"path":"/v2/verify/templates/{template_id}/template_fragments","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"template_id":{"at":"template_id","from":"path"}}},
+      "listTemplates": {"action":"verify.templates.read","effects":["read"],"method":"GET","origin":"https://api.nexmo.com","params":["page_size","page"],"path":"/v2/verify/templates","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "newRequest": {"action":"verify.pay","body":"json","effects":["pay","send"],"method":"POST","origin":"https://api.nexmo.com","path":"/v2/verify","scope":{"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"/template_id","from":"body","optional":true}}},
+      "nextWorkflow": {"action":"verify.next_workflow.pay","effects":["pay","send"],"method":"POST","origin":"https://api.nexmo.com","path":"/v2/verify/{request_id}/next_workflow","scope":{"request_id":{"at":"request_id","from":"path"}}},
+      "retrieveAPISecret": {"action":"accounts.secrets.read","effects":["read"],"method":"GET","origin":"https://rest.nexmo.com","path":"/accounts/{api_key}/secrets/{secret_id}","scope":{"api_key":{"at":"api_key","from":"path"},"secret_id":{"at":"secret_id","from":"path"}}},
+      "retrieveAPISecrets": {"action":"accounts.secrets.read","effects":["read"],"method":"GET","origin":"https://rest.nexmo.com","path":"/accounts/{api_key}/secrets","scope":{"api_key":{"at":"api_key","from":"path"}}},
+      "retrievePrefixPricing": {"action":"account.get_prefix_pricing.outbound.read","effects":["read"],"method":"GET","origin":"https://rest.nexmo.com","params":["prefix"],"path":"/account/get-prefix-pricing/outbound/{type}","scope":{"query":{"at":"","from":"query","type":"object"},"type":{"at":"type","from":"path"}}},
+      "retrievePricingAllCountries": {"action":"account.get_full_pricing.outbound.read","effects":["read"],"method":"GET","origin":"https://rest.nexmo.com","path":"/account/get-full-pricing/outbound/{type}","scope":{"type":{"at":"type","from":"path"}}},
+      "retrievePricingCountry": {"action":"account.get_pricing.outbound.read","effects":["read"],"method":"GET","origin":"https://rest.nexmo.com","params":["country"],"path":"/account/get-pricing/outbound/{type}","scope":{"query":{"at":"","from":"query","type":"object"},"type":{"at":"type","from":"path"}}},
+      "revokeAPISecret": {"action":"accounts.secrets.delete","effects":["delete"],"method":"DELETE","origin":"https://rest.nexmo.com","path":"/accounts/{api_key}/secrets/{secret_id}","scope":{"api_key":{"at":"api_key","from":"path"},"secret_id":{"at":"secret_id","from":"path"}}},
+      "send-an-sms": {"action":"sms.pay","body":"form","effects":["pay","send"],"method":"POST","origin":"https://rest.nexmo.com","path":"/sms/{format}","scope":{"api_key":{"at":"api_key","from":"form","optional":true},"format":{"at":"format","from":"path"},"request":{"at":"","from":"form","type":"object"}}},
+      "send-an-sms.json_body": {"action":"sms.pay","body":"json","effects":["pay","send"],"method":"POST","origin":"https://rest.nexmo.com","path":"/sms/{format}","scope":{"format":{"at":"format","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "silentAuthCheck": {"action":"verify.silent_auth.redirect.read","effects":["read"],"method":"GET","origin":"https://api.nexmo.com","path":"/v2/verify/{request_id}/silent-auth/redirect","scope":{"request_id":{"at":"request_id","from":"path"}}},
+      "topUpAccountBalance": {"action":"account.top_up.pay","effects":["pay"],"method":"POST","origin":"https://rest.nexmo.com","path":"/account/top-up","scope":{}},
+      "topUpAccountBalance.form.94367083f4eb": {"action":"account.top_up.pay","body":"form","effects":["pay"],"method":"POST","origin":"https://rest.nexmo.com","path":"/account/top-up","scope":{"request":{"at":"","from":"form","type":"object"}}},
+      "updateANumber": {"action":"number.write","body":"form","effects":["write"],"method":"POST","origin":"https://rest.nexmo.com","path":"/number/update","scope":{"app_id":{"at":"app_id","from":"form","optional":true},"moHttpUrl":{"at":"moHttpUrl","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"}}},
+      "updateTemplate": {"action":"verify.templates.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.nexmo.com","path":"/v2/verify/templates/{template_id}","scope":{"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"template_id","from":"path"}}},
+      "updateTemplateFragment": {"action":"verify.templates.template_fragments.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.nexmo.com","path":"/v2/verify/templates/{template_id}/template_fragments/{template_fragment_id}","scope":{"request":{"at":"","from":"body","type":"object"},"template_fragment_id":{"at":"template_fragment_id","from":"path"},"template_id":{"at":"template_id","from":"path"}}}
     }
   }
 }

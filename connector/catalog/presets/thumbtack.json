@@ -4,7 +4,8 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.create_preset_job": {"title": "Create preset job", "effects": ["pay", "send"]}
     },
     "connection": {"mcp": {"url": "https://mcp.thumbtack.com/mcp"}},
     "fields": [

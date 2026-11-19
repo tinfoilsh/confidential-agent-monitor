@@ -1,190 +1,925 @@
 {
-  "title": "Bitly",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "access_token", "label": "Access Token", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_token", "origin": "https://api-ssl.bitly.com", "path": "/v4", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "admin.groups": {"title": "Admin: groups"},
-      "admin.user": {"title": "Admin: user"},
-      "admin.webhooks": {"title": "Admin: webhooks"},
-      "delete.bitlinks": {"title": "Delete: bitlinks"},
-      "delete.blocks": {"title": "Delete: blocks"},
-      "delete.draft": {"title": "Delete: draft"},
-      "delete.qr_codes": {"title": "Delete: qr codes"},
-      "delete.redirects": {"title": "Delete: redirects"},
-      "delete.sites": {"title": "Delete: sites"},
-      "delete.webhooks": {"title": "Delete: webhooks"},
-      "generate.images": {"title": "Generate: images"},
-      "pay.domains": {"title": "Pay: domains"},
-      "publish.sites": {"title": "Publish: sites"},
-      "read": {"title": "Read everything the account can see"},
-      "write.appearance": {"title": "Write: appearance"},
-      "write.bitlinks": {"title": "Write: bitlinks"},
-      "write.blocks": {"title": "Write: blocks"},
-      "write.campaigns": {"title": "Write: campaigns"},
-      "write.channels": {"title": "Write: channels"},
-      "write.containers": {"title": "Write: containers"},
-      "write.custom_bitlinks": {"title": "Write: custom bitlinks"},
-      "write.custom_domains": {"title": "Write: custom domains"},
-      "write.expand": {"title": "Write: expand"},
-      "write.preferences": {"title": "Write: preferences"},
-      "write.prevalidate": {"title": "Write: prevalidate"},
-      "write.qr_codes": {"title": "Write: qr codes"},
-      "write.redirect": {"title": "Write: redirect"},
-      "write.shorten": {"title": "Write: shorten"},
-      "write.sites": {"title": "Write: sites"},
-      "write.static": {"title": "Write: static"},
-      "write.template": {"title": "Write: template"},
-      "write.to_bitlink": {"title": "Write: to bitlink"}
-    }
+      "aggregate": {
+        "title": "Aggregate"
+      },
+      "aggregate.sites": {
+        "title": "Sites"
+      },
+      "aggregate.sites.clicks": {
+        "title": "Clicks"
+      },
+      "aggregate.sites.clicks.cities": {
+        "title": "Cities"
+      },
+      "aggregate.sites.clicks.cities.read": {
+        "title": "Read"
+      },
+      "aggregate.sites.clicks.countries": {
+        "title": "Countries"
+      },
+      "aggregate.sites.clicks.countries.read": {
+        "title": "Read"
+      },
+      "aggregate.sites.clicks.devices": {
+        "title": "Devices"
+      },
+      "aggregate.sites.clicks.devices.read": {
+        "title": "Read"
+      },
+      "aggregate.sites.clicks.over_time": {
+        "title": "Over time"
+      },
+      "aggregate.sites.clicks.over_time.read": {
+        "title": "Read"
+      },
+      "aggregate.sites.clicks.top": {
+        "title": "Top"
+      },
+      "aggregate.sites.clicks.top.read": {
+        "title": "Read"
+      },
+      "aggregate.sites.digital_business_card_downloads": {
+        "title": "Digital business card downloads"
+      },
+      "aggregate.sites.digital_business_card_downloads.over_time": {
+        "title": "Over time"
+      },
+      "aggregate.sites.digital_business_card_downloads.over_time.read": {
+        "title": "Read"
+      },
+      "aggregate.sites.overview": {
+        "title": "Overview"
+      },
+      "aggregate.sites.overview.read": {
+        "title": "Read"
+      },
+      "aggregate.sites.views": {
+        "title": "Views"
+      },
+      "aggregate.sites.views.cities": {
+        "title": "Cities"
+      },
+      "aggregate.sites.views.cities.read": {
+        "title": "Read"
+      },
+      "aggregate.sites.views.countries": {
+        "title": "Countries"
+      },
+      "aggregate.sites.views.countries.read": {
+        "title": "Read"
+      },
+      "aggregate.sites.views.devices": {
+        "title": "Devices"
+      },
+      "aggregate.sites.views.devices.read": {
+        "title": "Read"
+      },
+      "aggregate.sites.views.over_time": {
+        "title": "Over time"
+      },
+      "aggregate.sites.views.over_time.read": {
+        "title": "Read"
+      },
+      "aggregate.sites.views.referrers": {
+        "title": "Referrers"
+      },
+      "aggregate.sites.views.referrers.read": {
+        "title": "Read"
+      },
+      "apps": {
+        "title": "Apps"
+      },
+      "apps.read": {
+        "title": "Read"
+      },
+      "bitlinks": {
+        "title": "Bitlinks"
+      },
+      "bitlinks.agentic_traffic": {
+        "title": "Agentic traffic"
+      },
+      "bitlinks.agentic_traffic.read": {
+        "title": "Read"
+      },
+      "bitlinks.cities": {
+        "title": "Cities"
+      },
+      "bitlinks.cities.read": {
+        "title": "Read"
+      },
+      "bitlinks.clicks": {
+        "title": "Clicks"
+      },
+      "bitlinks.clicks.read": {
+        "title": "Read"
+      },
+      "bitlinks.clicks.summary": {
+        "title": "Summary"
+      },
+      "bitlinks.clicks.summary.read": {
+        "title": "Read"
+      },
+      "bitlinks.countries": {
+        "title": "Countries"
+      },
+      "bitlinks.countries.read": {
+        "title": "Read"
+      },
+      "bitlinks.delete": {
+        "title": "Delete"
+      },
+      "bitlinks.devices": {
+        "title": "Devices"
+      },
+      "bitlinks.devices.read": {
+        "title": "Read"
+      },
+      "bitlinks.engagements": {
+        "title": "Engagements"
+      },
+      "bitlinks.engagements.read": {
+        "title": "Read"
+      },
+      "bitlinks.engagements.summary": {
+        "title": "Summary"
+      },
+      "bitlinks.engagements.summary.read": {
+        "title": "Read"
+      },
+      "bitlinks.read": {
+        "title": "Read"
+      },
+      "bitlinks.referrer_name": {
+        "title": "Referrer name"
+      },
+      "bitlinks.referrer_name.read": {
+        "title": "Read"
+      },
+      "bitlinks.referrers": {
+        "title": "Referrers"
+      },
+      "bitlinks.referrers.read": {
+        "title": "Read"
+      },
+      "bitlinks.referrers_by_domains": {
+        "title": "Referrers by domains"
+      },
+      "bitlinks.referrers_by_domains.read": {
+        "title": "Read"
+      },
+      "bitlinks.referring_domains": {
+        "title": "Referring domains"
+      },
+      "bitlinks.referring_domains.read": {
+        "title": "Read"
+      },
+      "bitlinks.write": {
+        "title": "Create and edit"
+      },
+      "bsds": {
+        "title": "Bsds"
+      },
+      "bsds.read": {
+        "title": "Read"
+      },
+      "campaigns": {
+        "title": "Campaigns"
+      },
+      "campaigns.read": {
+        "title": "Read"
+      },
+      "campaigns.write": {
+        "title": "Create and edit"
+      },
+      "channels": {
+        "title": "Channels"
+      },
+      "channels.bitlinks": {
+        "title": "Bitlinks"
+      },
+      "channels.bitlinks.write": {
+        "title": "Create and edit"
+      },
+      "channels.read": {
+        "title": "Read"
+      },
+      "channels.write": {
+        "title": "Create and edit"
+      },
+      "custom_bitlinks": {
+        "title": "Custom bitlinks"
+      },
+      "custom_bitlinks.clicks": {
+        "title": "Clicks"
+      },
+      "custom_bitlinks.clicks.read": {
+        "title": "Read"
+      },
+      "custom_bitlinks.clicks_by_destination": {
+        "title": "Clicks by destination"
+      },
+      "custom_bitlinks.clicks_by_destination.read": {
+        "title": "Read"
+      },
+      "custom_bitlinks.read": {
+        "title": "Read"
+      },
+      "custom_bitlinks.write": {
+        "title": "Create and edit"
+      },
+      "custom_domains": {
+        "title": "Custom domains"
+      },
+      "custom_domains.admin": {
+        "title": "Manage"
+      },
+      "custom_domains.dns": {
+        "title": "Dns"
+      },
+      "custom_domains.dns.read": {
+        "title": "Read"
+      },
+      "custom_domains.read": {
+        "title": "Read"
+      },
+      "custom_domains.write": {
+        "title": "Create and edit"
+      },
+      "domains": {
+        "title": "Domains"
+      },
+      "domains.agreements": {
+        "title": "Agreements"
+      },
+      "domains.agreements.read": {
+        "title": "Read"
+      },
+      "domains.pay": {
+        "title": "Make payments"
+      },
+      "domains.read": {
+        "title": "Read"
+      },
+      "expand": {
+        "title": "Expand"
+      },
+      "expand.read": {
+        "title": "Read"
+      },
+      "groups": {
+        "title": "Groups"
+      },
+      "groups.admin": {
+        "title": "Manage"
+      },
+      "groups.agentic_traffic": {
+        "title": "Agentic traffic"
+      },
+      "groups.agentic_traffic.rollup": {
+        "title": "Rollup"
+      },
+      "groups.agentic_traffic.rollup.read": {
+        "title": "Read"
+      },
+      "groups.bitlinks": {
+        "title": "Bitlinks"
+      },
+      "groups.bitlinks.read": {
+        "title": "Read"
+      },
+      "groups.bitlinks.write": {
+        "title": "Create and edit"
+      },
+      "groups.cities": {
+        "title": "Cities"
+      },
+      "groups.cities.read": {
+        "title": "Read"
+      },
+      "groups.clicks": {
+        "title": "Clicks"
+      },
+      "groups.clicks.read": {
+        "title": "Read"
+      },
+      "groups.codes": {
+        "title": "Codes"
+      },
+      "groups.codes.scans": {
+        "title": "Scans"
+      },
+      "groups.codes.scans.cities": {
+        "title": "Cities"
+      },
+      "groups.codes.scans.cities.read": {
+        "title": "Read"
+      },
+      "groups.codes.scans.countries": {
+        "title": "Countries"
+      },
+      "groups.codes.scans.countries.read": {
+        "title": "Read"
+      },
+      "groups.codes.scans.over_time": {
+        "title": "Over time"
+      },
+      "groups.codes.scans.over_time.read": {
+        "title": "Read"
+      },
+      "groups.codes.scans.top": {
+        "title": "Top"
+      },
+      "groups.codes.scans.top.read": {
+        "title": "Read"
+      },
+      "groups.countries": {
+        "title": "Countries"
+      },
+      "groups.countries.read": {
+        "title": "Read"
+      },
+      "groups.devices": {
+        "title": "Devices"
+      },
+      "groups.devices.read": {
+        "title": "Read"
+      },
+      "groups.engagements": {
+        "title": "Engagements"
+      },
+      "groups.engagements.over_time": {
+        "title": "Over time"
+      },
+      "groups.engagements.over_time.read": {
+        "title": "Read"
+      },
+      "groups.engagements.sorted": {
+        "title": "Sorted"
+      },
+      "groups.engagements.sorted.top": {
+        "title": "Top"
+      },
+      "groups.engagements.sorted.top.read": {
+        "title": "Read"
+      },
+      "groups.engagements.top": {
+        "title": "Top"
+      },
+      "groups.engagements.top.read": {
+        "title": "Read"
+      },
+      "groups.exports": {
+        "title": "Exports"
+      },
+      "groups.exports.read": {
+        "title": "Read"
+      },
+      "groups.feature_usage": {
+        "title": "Feature usage"
+      },
+      "groups.feature_usage.read": {
+        "title": "Read"
+      },
+      "groups.historical_usage": {
+        "title": "Historical usage"
+      },
+      "groups.historical_usage.read": {
+        "title": "Read"
+      },
+      "groups.links": {
+        "title": "Links"
+      },
+      "groups.links.clicks": {
+        "title": "Clicks"
+      },
+      "groups.links.clicks.cities": {
+        "title": "Cities"
+      },
+      "groups.links.clicks.cities.read": {
+        "title": "Read"
+      },
+      "groups.links.clicks.countries": {
+        "title": "Countries"
+      },
+      "groups.links.clicks.countries.read": {
+        "title": "Read"
+      },
+      "groups.links.clicks.devices": {
+        "title": "Devices"
+      },
+      "groups.links.clicks.devices.read": {
+        "title": "Read"
+      },
+      "groups.links.clicks.over_time": {
+        "title": "Over time"
+      },
+      "groups.links.clicks.over_time.read": {
+        "title": "Read"
+      },
+      "groups.links.clicks.referrers": {
+        "title": "Referrers"
+      },
+      "groups.links.clicks.referrers.read": {
+        "title": "Read"
+      },
+      "groups.links.clicks.top": {
+        "title": "Top"
+      },
+      "groups.links.clicks.top.read": {
+        "title": "Read"
+      },
+      "groups.preferences": {
+        "title": "Preferences"
+      },
+      "groups.preferences.read": {
+        "title": "Read"
+      },
+      "groups.preferences.write": {
+        "title": "Create and edit"
+      },
+      "groups.qr_codes": {
+        "title": "Qr codes"
+      },
+      "groups.qr_codes.read": {
+        "title": "Read"
+      },
+      "groups.qr_codes.write": {
+        "title": "Create and edit"
+      },
+      "groups.read": {
+        "title": "Read"
+      },
+      "groups.referrers": {
+        "title": "Referrers"
+      },
+      "groups.referrers.read": {
+        "title": "Read"
+      },
+      "groups.referring_networks": {
+        "title": "Referring networks"
+      },
+      "groups.referring_networks.read": {
+        "title": "Read"
+      },
+      "groups.shorten_counts": {
+        "title": "Shorten counts"
+      },
+      "groups.shorten_counts.read": {
+        "title": "Read"
+      },
+      "groups.sites": {
+        "title": "Sites"
+      },
+      "groups.sites.read": {
+        "title": "Read"
+      },
+      "groups.tags": {
+        "title": "Tags"
+      },
+      "groups.tags.read": {
+        "title": "Read"
+      },
+      "organizations": {
+        "title": "Organizations"
+      },
+      "organizations.bulk_uploads": {
+        "title": "Bulk uploads"
+      },
+      "organizations.bulk_uploads.read": {
+        "title": "Read"
+      },
+      "organizations.bulk_uploads.write": {
+        "title": "Create and edit"
+      },
+      "organizations.plan_limits": {
+        "title": "Plan limits"
+      },
+      "organizations.plan_limits.read": {
+        "title": "Read"
+      },
+      "organizations.read": {
+        "title": "Read"
+      },
+      "organizations.shorten_counts": {
+        "title": "Shorten counts"
+      },
+      "organizations.shorten_counts.read": {
+        "title": "Read"
+      },
+      "organizations.shorten_counts_by_group": {
+        "title": "Shorten counts by group"
+      },
+      "organizations.shorten_counts_by_group.read": {
+        "title": "Read"
+      },
+      "organizations.webhooks": {
+        "title": "Webhooks"
+      },
+      "organizations.webhooks.read": {
+        "title": "Read"
+      },
+      "qr_codes": {
+        "title": "Qr codes"
+      },
+      "qr_codes.delete": {
+        "title": "Delete"
+      },
+      "qr_codes.image": {
+        "title": "Image"
+      },
+      "qr_codes.image.read": {
+        "title": "Read"
+      },
+      "qr_codes.read": {
+        "title": "Read"
+      },
+      "qr_codes.redirect": {
+        "title": "Redirect"
+      },
+      "qr_codes.redirect.write": {
+        "title": "Create and edit"
+      },
+      "qr_codes.scans": {
+        "title": "Scans"
+      },
+      "qr_codes.scans.browsers": {
+        "title": "Browsers"
+      },
+      "qr_codes.scans.browsers.read": {
+        "title": "Read"
+      },
+      "qr_codes.scans.cities": {
+        "title": "Cities"
+      },
+      "qr_codes.scans.cities.read": {
+        "title": "Read"
+      },
+      "qr_codes.scans.countries": {
+        "title": "Countries"
+      },
+      "qr_codes.scans.countries.read": {
+        "title": "Read"
+      },
+      "qr_codes.scans.device_os": {
+        "title": "Device os"
+      },
+      "qr_codes.scans.device_os.read": {
+        "title": "Read"
+      },
+      "qr_codes.scans.read": {
+        "title": "Read"
+      },
+      "qr_codes.scans.summary": {
+        "title": "Summary"
+      },
+      "qr_codes.scans.summary.read": {
+        "title": "Read"
+      },
+      "qr_codes.static": {
+        "title": "Static"
+      },
+      "qr_codes.static.write": {
+        "title": "Create and edit"
+      },
+      "qr_codes.to_bitlink": {
+        "title": "To bitlink"
+      },
+      "qr_codes.to_bitlink.write": {
+        "title": "Create and edit"
+      },
+      "qr_codes.write": {
+        "title": "Create and edit"
+      },
+      "shorten": {
+        "title": "Shorten"
+      },
+      "shorten.write": {
+        "title": "Create and edit"
+      },
+      "site_templates": {
+        "title": "Site templates"
+      },
+      "site_templates.read": {
+        "title": "Read"
+      },
+      "sites": {
+        "title": "Sites"
+      },
+      "sites.appearance": {
+        "title": "Appearance"
+      },
+      "sites.appearance.write": {
+        "title": "Create and edit"
+      },
+      "sites.blocks": {
+        "title": "Blocks"
+      },
+      "sites.blocks.delete": {
+        "title": "Delete"
+      },
+      "sites.blocks.write": {
+        "title": "Create and edit"
+      },
+      "sites.buttons": {
+        "title": "Buttons"
+      },
+      "sites.buttons.youtube_video": {
+        "title": "Youtube video"
+      },
+      "sites.buttons.youtube_video.prevalidate": {
+        "title": "Prevalidate"
+      },
+      "sites.buttons.youtube_video.prevalidate.read": {
+        "title": "Read"
+      },
+      "sites.cities": {
+        "title": "Cities"
+      },
+      "sites.cities.read": {
+        "title": "Read"
+      },
+      "sites.containers": {
+        "title": "Containers"
+      },
+      "sites.containers.write": {
+        "title": "Create and edit"
+      },
+      "sites.countries": {
+        "title": "Countries"
+      },
+      "sites.countries.read": {
+        "title": "Read"
+      },
+      "sites.delete": {
+        "title": "Delete"
+      },
+      "sites.devices": {
+        "title": "Devices"
+      },
+      "sites.devices.read": {
+        "title": "Read"
+      },
+      "sites.draft": {
+        "title": "Draft"
+      },
+      "sites.draft.delete": {
+        "title": "Delete"
+      },
+      "sites.images": {
+        "title": "Images"
+      },
+      "sites.images.write": {
+        "title": "Create and edit"
+      },
+      "sites.link_performance": {
+        "title": "Link performance"
+      },
+      "sites.link_performance.read": {
+        "title": "Read"
+      },
+      "sites.publish": {
+        "title": "Publish"
+      },
+      "sites.read": {
+        "title": "Read"
+      },
+      "sites.redirects": {
+        "title": "Redirects"
+      },
+      "sites.redirects.delete": {
+        "title": "Delete"
+      },
+      "sites.referrers": {
+        "title": "Referrers"
+      },
+      "sites.referrers.read": {
+        "title": "Read"
+      },
+      "sites.template": {
+        "title": "Template"
+      },
+      "sites.template.write": {
+        "title": "Create and edit"
+      },
+      "sites.views": {
+        "title": "Views"
+      },
+      "sites.views.read": {
+        "title": "Read"
+      },
+      "sites.views.summary": {
+        "title": "Summary"
+      },
+      "sites.views.summary.read": {
+        "title": "Read"
+      },
+      "sites.write": {
+        "title": "Create and edit"
+      },
+      "user": {
+        "title": "Account"
+      },
+      "user.admin": {
+        "title": "Manage"
+      },
+      "user.platform_limits": {
+        "title": "Platform limits"
+      },
+      "user.platform_limits.read": {
+        "title": "Read"
+      },
+      "user.read": {
+        "title": "Read"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.delete": {
+        "title": "Delete"
+      },
+      "webhooks.read": {
+        "title": "Read"
+      },
+      "webhooks.send": {
+        "title": "Send"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api-ssl.bitly.com",
+            "path": "/v4",
+            "prefix": "Bearer ",
+            "value": "access_token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "access_token",
+        "label": "Access Token",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Bitly",
   "http": {
     "operations": {
-      "GetGroupMetricsByReferrer": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/referrers","params":["unit","units","size","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "GetGroupMetricsByReferringNetworks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/referring_networks","params":["unit","units","size","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "addChannelBitlinks": {"action":"write.bitlinks","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/channels/{channel_guid}/bitlinks","body":"json","scope":{"channel_guid":{"from":"path","at":"channel_guid"},"campaign_guid":{"from":"body","at":"/campaign_guid"}}},
-      "addCustomBitlink": {"action":"write.custom_bitlinks","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/custom_bitlinks","body":"json","scope":{}},
-      "applyTemplate": {"action":"write.template","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/template","body":"any","scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "cloneSite": {"action":"write.sites","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/clone","body":"json","scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "createBitlink": {"action":"write.shorten","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/shorten","body":"json","scope":{"long_url":{"from":"body","at":"/long_url"}}},
-      "createCampaign": {"action":"write.campaigns","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/campaigns","body":"json","scope":{}},
-      "createChannel": {"action":"write.channels","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/channels","body":"json","scope":{}},
-      "createContainer": {"action":"write.containers","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/containers","body":"json","scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "createFullBitlink": {"action":"write.bitlinks","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks","body":"json","scope":{}},
-      "createQRCodePublic": {"action":"write.qr_codes","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes","body":"json","scope":{"group_guid":{"from":"body","at":"/group_guid"}}},
-      "createSite": {"action":"write.sites","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/sites","body":"json","scope":{"group_guid":{"from":"body","at":"/group_guid"}}},
-      "createSiteBlock": {"action":"write.sites","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/blocks","body":"json","scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "createSiteImage": {"action":"generate.images","effects":["generate"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/images","body":"json","scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "createStaticQRCodePublic": {"action":"write.static","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/static","params":["format"],"body":"json","scope":{"group_guid":{"from":"body","at":"/group_guid"}}},
-      "createWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/webhooks","body":"json","scope":{"organization_guid":{"from":"body","at":"/organization_guid"},"name":{"from":"body","at":"/name"},"url":{"from":"body","at":"/url"}}},
-      "deleteBitlink": {"action":"delete.bitlinks","effects":["delete"],"method":"DELETE","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}","scope":{"bitlink":{"from":"path","at":"bitlink"}}},
-      "deleteQRCode": {"action":"delete.qr_codes","effects":["delete"],"method":"DELETE","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/{qrcode_id}","scope":{"qrcode_id":{"from":"path","at":"qrcode_id"}}},
-      "deleteSite": {"action":"delete.sites","effects":["delete"],"method":"DELETE","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}","scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "deleteSiteBlock": {"action":"delete.blocks","effects":["delete"],"method":"DELETE","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/blocks/{block_id}","scope":{"site_id":{"from":"path","at":"site_id"},"block_id":{"from":"path","at":"block_id"}}},
-      "deleteSiteRedirect": {"action":"delete.redirects","effects":["delete"],"method":"DELETE","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/redirects/{domain}/{keyword}","scope":{"site_id":{"from":"path","at":"site_id"},"domain":{"from":"path","at":"domain"},"keyword":{"from":"path","at":"keyword"}}},
-      "deleteWebhook": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api-ssl.bitly.com","path":"/v4/webhooks/{webhook_guid}","scope":{"webhook_guid":{"from":"path","at":"webhook_guid"}}},
-      "discardSiteDraft": {"action":"delete.draft","effects":["delete"],"method":"DELETE","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/draft","scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "editCustomDomain": {"action":"write.custom_domains","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/custom_domains/{custom_domain}","body":"json","scope":{"custom_domain":{"from":"path","at":"custom_domain"}}},
-      "expandBitlink": {"action":"write.expand","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/expand","body":"json","scope":{}},
-      "fetchDomainAgreements": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/domains/{domain}/agreements","params":["organization_guid"],"scope":{"domain":{"from":"path","at":"domain"}}},
-      "getAgenticTrafficForBitlink": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}/agentic_traffic","params":["unit","units","unit_reference"],"scope":{"bitlink":{"from":"path","at":"bitlink"}}},
-      "getAggregateSiteViewsByCity": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/aggregate/sites/views/cities","params":["site","unit","units","unit_reference","report_guid"],"scope":{}},
-      "getAggregateSiteViewsByCountry": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/aggregate/sites/views/countries","params":["site","unit","units","unit_reference","report_guid"],"scope":{}},
-      "getAggregateSiteViewsByDevice": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/aggregate/sites/views/devices","params":["site","unit","units","unit_reference","report_guid"],"scope":{}},
-      "getAggregateSiteViewsByReferrer": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/aggregate/sites/views/referrers","params":["site","unit","units","unit_reference","report_guid"],"scope":{}},
-      "getAggregateSiteViewsOverTime": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/aggregate/sites/views/over_time","params":["site","unit","units","unit_reference","report_guid"],"scope":{}},
-      "getAggregateSitesOverview": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/aggregate/sites/overview","params":["site","unit","units","unit_reference","report_guid"],"scope":{}},
-      "getBSDs": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/bsds","scope":{}},
-      "getBitlink": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}","scope":{"bitlink":{"from":"path","at":"bitlink"}}},
-      "getBitlinksByGroup": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/bitlinks","params":["size","search_after","query","hostname_path_query","created_before","created_after","archived","deeplinks","domain_deeplinks","campaign_guid","channel_guid","custom_bitlink","has_qr_codes","is_expired","has_expiration","has_dynamic_routing","tags","launchpad_ids","encoding_login"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getCampaign": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/campaigns/{campaign_guid}","scope":{"campaign_guid":{"from":"path","at":"campaign_guid"}}},
-      "getCampaigns": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/campaigns","params":["group_guid"],"scope":{}},
-      "getChannel": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/channels/{channel_guid}","scope":{"channel_guid":{"from":"path","at":"channel_guid"}}},
-      "getChannels": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/channels","params":["group_guid","campaign_guid"],"scope":{}},
-      "getClicksForBitlink": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}/clicks","params":["unit","units","unit_reference"],"scope":{"bitlink":{"from":"path","at":"bitlink"}}},
-      "getClicksForCustomBitlink": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/custom_bitlinks/{custom_bitlink}/clicks","params":["unit","units","unit_reference"],"scope":{"custom_bitlink":{"from":"path","at":"custom_bitlink"}}},
-      "getClicksSummaryForBitlink": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}/clicks/summary","params":["unit","units","unit_reference"],"scope":{"bitlink":{"from":"path","at":"bitlink"}}},
-      "getCustomBitlink": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/custom_bitlinks/{custom_bitlink}","scope":{"custom_bitlink":{"from":"path","at":"custom_bitlink"}}},
-      "getCustomBitlinkMetricsByDestination": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/custom_bitlinks/{custom_bitlink}/clicks_by_destination","params":["unit","units","unit_reference"],"scope":{"custom_bitlink":{"from":"path","at":"custom_bitlink"}}},
-      "getCustomDomain": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/custom_domains/{custom_domain}","scope":{"custom_domain":{"from":"path","at":"custom_domain"}}},
-      "getCustomDomainDNS": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/custom_domains/{custom_domain}/dns","params":["organization_guid"],"scope":{"custom_domain":{"from":"path","at":"custom_domain"},"organization_guid":{"from":"query","at":"organization_guid"}}},
-      "getCustomDomains": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/custom_domains","params":["organization_guid"],"scope":{}},
-      "getEngagements": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}/engagements","params":["unit","units","unit_reference"],"scope":{"bitlink":{"from":"path","at":"bitlink"}}},
-      "getEngagementsSummary": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}/engagements/summary","params":["unit","units","unit_reference"],"scope":{"bitlink":{"from":"path","at":"bitlink"}}},
-      "getGroup": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}","scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupAgenticTrafficRollup": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/agentic_traffic/rollup","scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupClicks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/clicks","params":["unit","units","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupCodeScansByCity": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/codes/scans/cities","params":["unit","units","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupCodeScansByCountry": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/codes/scans/countries","params":["unit","units","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupCodeScansOverTime": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/codes/scans/over_time","params":["unit","units","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupFeatureUsage": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/feature_usage","params":["name"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupHistoricalUsage": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/historical_usage","params":["name","start_date","end_date","unit"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupLinkClicksByCity": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/links/clicks/cities","params":["unit","units","size","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupLinkClicksByCountry": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/links/clicks/countries","params":["unit","units","size","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupLinkClicksByDevice": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/links/clicks/devices","params":["unit","units","size","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupLinkClicksByReferrer": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/links/clicks/referrers","params":["unit","units","size","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupLinkClicksOverTime": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/links/clicks/over_time","params":["unit","units","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupMetricsByCities": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/cities","params":["unit","units","size","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupMetricsByCountries": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/countries","params":["unit","units","size","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupMetricsByDevices": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/devices","params":["unit","units","size","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupMetricsOverTime": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/engagements/over_time","params":["unit","units","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupPreferences": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/preferences","scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupShortenCounts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/shorten_counts","params":["unit","units","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupTags": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/tags","params":["type"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupTopCodeScans": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/codes/scans/top","params":["unit","units","unit_reference","decoupled"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupTopLinkClicks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/links/clicks/top","params":["unit","units","size","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroupTopMetrics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/engagements/top","params":["unit","units","size","unit_reference"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getGroups": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups","params":["organization_guid"],"scope":{}},
-      "getLaunchpadDigitalBusinessCardDownloadsOverTime": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/aggregate/sites/digital_business_card_downloads/over_time","params":["site","unit","units","unit_reference","report_guid"],"scope":{}},
-      "getLinkPerformanceForSite": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/link_performance","params":["unit","units","size","unit_reference","page"],"scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "getMetricsForBitlinkByCities": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}/cities","params":["unit","units","size","unit_reference"],"scope":{"bitlink":{"from":"path","at":"bitlink"}}},
-      "getMetricsForBitlinkByCountries": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}/countries","params":["unit","units","size","unit_reference"],"scope":{"bitlink":{"from":"path","at":"bitlink"}}},
-      "getMetricsForBitlinkByDevices": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}/devices","params":["unit","units","size","unit_reference"],"scope":{"bitlink":{"from":"path","at":"bitlink"}}},
-      "getMetricsForBitlinkByReferrerName": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}/referrer_name","params":["unit","units","size","unit_reference"],"scope":{"bitlink":{"from":"path","at":"bitlink"}}},
-      "getMetricsForBitlinkByReferrers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}/referrers","params":["unit","units","size","unit_reference"],"scope":{"bitlink":{"from":"path","at":"bitlink"}}},
-      "getMetricsForBitlinkByReferrersByDomains": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}/referrers_by_domains","params":["unit","units","size","unit_reference"],"scope":{"bitlink":{"from":"path","at":"bitlink"}}},
-      "getMetricsForBitlinkByReferringDomains": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}/referring_domains","params":["unit","units","size","unit_reference"],"scope":{"bitlink":{"from":"path","at":"bitlink"}}},
-      "getMetricsForSiteByCities": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/cities","params":["unit","units","size","unit_reference"],"scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "getMetricsForSiteByDevices": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/devices","params":["unit","units","size","unit_reference"],"scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "getMetricsForSiteByReferrers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/referrers","params":["unit","units","size","unit_reference"],"scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "getMetricsForSitesByCountries": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/countries","params":["unit","units","size","unit_reference"],"scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "getOAuthApp": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/apps/{client_id}","scope":{"client_id":{"from":"path","at":"client_id"}}},
-      "getOrganization": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/organizations/{organization_guid}","scope":{"organization_guid":{"from":"path","at":"organization_guid"}}},
-      "getOrganizationShortenCounts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/organizations/{organization_guid}/shorten_counts","params":["unit","units","unit_reference"],"scope":{"organization_guid":{"from":"path","at":"organization_guid"}}},
-      "getOrganizationShortenCountsByGroup": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/organizations/{organization_guid}/shorten_counts_by_group","scope":{"organization_guid":{"from":"path","at":"organization_guid"}}},
-      "getOrganizations": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/organizations","params":["include_all"],"scope":{}},
-      "getPlanLimits": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/organizations/{organization_guid}/plan_limits","scope":{"organization_guid":{"from":"path","at":"organization_guid"}}},
-      "getPlatformLimits": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/user/platform_limits","params":["path"],"scope":{}},
-      "getQRCodeByIdPublic": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/{qrcode_id}","scope":{"qrcode_id":{"from":"path","at":"qrcode_id"}}},
-      "getQRCodeImagePublic": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/{qrcode_id}/image","params":["format"],"scope":{"qrcode_id":{"from":"path","at":"qrcode_id"}}},
-      "getScanMetricsForQRCode": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/{qrcode_id}/scans","params":["unit","units","unit_reference"],"scope":{"qrcode_id":{"from":"path","at":"qrcode_id"}}},
-      "getScanMetricsForQRCodeByBrowser": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/{qrcode_id}/scans/browsers","params":["unit","units","size","unit_reference"],"scope":{"qrcode_id":{"from":"path","at":"qrcode_id"}}},
-      "getScanMetricsForQRCodeByCities": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/{qrcode_id}/scans/cities","params":["unit","units","size","unit_reference"],"scope":{"qrcode_id":{"from":"path","at":"qrcode_id"}}},
-      "getScanMetricsForQRCodeByCountries": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/{qrcode_id}/scans/countries","params":["unit","units","size","unit_reference"],"scope":{"qrcode_id":{"from":"path","at":"qrcode_id"}}},
-      "getScanMetricsForQRCodeByDevicesOS": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/{qrcode_id}/scans/device_os","params":["unit","units","size","unit_reference"],"scope":{"qrcode_id":{"from":"path","at":"qrcode_id"}}},
-      "getScanMetricsSummaryForQRCode": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/{qrcode_id}/scans/summary","params":["unit","units","unit_reference"],"scope":{"qrcode_id":{"from":"path","at":"qrcode_id"}}},
-      "getSite": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}","params":["include_blocks"],"scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "getSiteClicksByCities": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/aggregate/sites/clicks/cities","params":["site","unit","units","unit_reference","report_guid"],"scope":{}},
-      "getSiteClicksByCountries": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/aggregate/sites/clicks/countries","params":["site","unit","units","unit_reference","report_guid"],"scope":{}},
-      "getSiteClicksByDevices": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/aggregate/sites/clicks/devices","params":["site","unit","units","unit_reference","report_guid"],"scope":{}},
-      "getSiteClicksOverTime": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/aggregate/sites/clicks/over_time","params":["site","unit","units","unit_reference","report_guid"],"scope":{}},
-      "getSiteFilteredTopPageButtons": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/aggregate/sites/clicks/top","params":["site","unit","units","unit_reference","brand_guid","report_guid"],"scope":{}},
-      "getSitesForGroup": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/sites","params":["search_after","size","sites_url_param"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getSortedBitlinks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/bitlinks/{sort}","params":["unit","units","unit_reference","size"],"scope":{"group_guid":{"from":"path","at":"group_guid"},"sort":{"from":"path","at":"sort"}}},
-      "getTemplates": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/site_templates","params":["category"],"scope":{}},
-      "getTopLinksAndQRCodesByEngagements": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/engagements/sorted/top","params":["unit","units","unit_reference","size"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "getUser": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/user","scope":{}},
-      "getViewsForSite": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/views","params":["unit","units","size","unit_reference"],"scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "getViewsSummaryForSite": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/views/summary","params":["unit","units","size","unit_reference"],"scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "getWebhook": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/webhooks/{webhook_guid}","scope":{"webhook_guid":{"from":"path","at":"webhook_guid"}}},
-      "getWebhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/organizations/{organization_guid}/webhooks","scope":{"organization_guid":{"from":"path","at":"organization_guid"}}},
-      "listQRMinimal": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/qr-codes","params":["has_render_customizations","size","search_after","query","hostname_path_query","created_before","created_after","archived","creating_login","qrc_type","is_gs1","is_expired","has_expiration","has_dynamic_routing","tags"],"scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "postCreateGroupExport": {"action":"admin.groups","effects":["admin"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/exports","body":"json","scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "prevalidateYouTubeVideoButton": {"action":"write.prevalidate","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{launchpad_id}/buttons/youtubeVideo/prevalidate","body":"json","scope":{"launchpad_id":{"from":"path","at":"launchpad_id"}}},
-      "publishSite": {"action":"publish.sites","effects":["publish"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/publish","scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "purchaseBsd": {"action":"pay.domains","effects":["pay"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/domains","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "redirectQRCodeDestination": {"action":"write.redirect","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/{qrcode_id}/redirect","body":"json","scope":{"qrcode_id":{"from":"path","at":"qrcode_id"},"long_url":{"from":"body","at":"/long_url"}}},
-      "searchAvailableDomains": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/domains","params":["query","limit","organization_guid"],"scope":{}},
-      "updateBitlink": {"action":"write.bitlinks","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}","body":"json","scope":{"bitlink":{"from":"path","at":"bitlink"}}},
-      "updateBitlinksByGroup": {"action":"write.bitlinks","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/bitlinks","body":"json","scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "updateCampaign": {"action":"write.campaigns","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/campaigns/{campaign_guid}","body":"json","scope":{"campaign_guid":{"from":"path","at":"campaign_guid"}}},
-      "updateChannel": {"action":"write.channels","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/channels/{channel_guid}","body":"json","scope":{"channel_guid":{"from":"path","at":"channel_guid"}}},
-      "updateCustomBitlink": {"action":"write.custom_bitlinks","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/custom_bitlinks/{custom_bitlink}","body":"json","scope":{"custom_bitlink":{"from":"path","at":"custom_bitlink"}}},
-      "updateGroup": {"action":"admin.groups","effects":["admin"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}","body":"json","scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "updateGroupPreferences": {"action":"write.preferences","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/preferences","body":"json","scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "updateQRCodePublic": {"action":"write.qr_codes","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/{qrcode_id}","body":"any","scope":{"qrcode_id":{"from":"path","at":"qrcode_id"}}},
-      "updateQRCodesByGroup": {"action":"write.qr_codes","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/qr-codes","body":"json","scope":{"group_guid":{"from":"path","at":"group_guid"}}},
-      "updateSite": {"action":"write.sites","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}","body":"json","scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "updateSiteAppearance": {"action":"write.appearance","effects":["write"],"method":"PUT","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/appearance","body":"json","scope":{"site_id":{"from":"path","at":"site_id"}}},
-      "updateSiteBlock": {"action":"write.blocks","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/blocks/{block_id}","body":"json","scope":{"site_id":{"from":"path","at":"site_id"},"block_id":{"from":"path","at":"block_id"}}},
-      "updateUser": {"action":"admin.user","effects":["admin"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/user","body":"json","scope":{}},
-      "updateWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/webhooks/{webhook_guid}","body":"json","scope":{"webhook_guid":{"from":"path","at":"webhook_guid"},"guid":{"from":"body","at":"/guid"}}},
-      "upgradeQRCodeToBitlink": {"action":"write.to_bitlink","effects":["write"],"method":"PUT","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/{qrcode_id}/to-bitlink","scope":{"qrcode_id":{"from":"path","at":"qrcode_id"}}},
-      "validateCustomDomain": {"action":"read","effects":["read"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/custom_domains","body":"json","scope":{"organization_guid":{"from":"body","at":"/organization_guid"}}},
-      "verifyWebhook": {"action":"read","effects":["read"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/webhooks/{webhook_guid}/verify","scope":{"webhook_guid":{"from":"path","at":"webhook_guid"}}}
+      "GetGroupMetricsByReferrer": {"action":"groups.referrers.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/groups/{group_guid}/referrers","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "GetGroupMetricsByReferringNetworks": {"action":"groups.referring_networks.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/groups/{group_guid}/referring_networks","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "addChannelBitlinks": {"action":"channels.bitlinks.write","body":"json","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/channels/{channel_guid}/bitlinks","scope":{"campaign_guid":{"at":"/campaign_guid","from":"body"},"channel_guid":{"at":"channel_guid","from":"path"}}},
+      "addCustomBitlink": {"action":"custom_bitlinks.write","body":"json","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/custom_bitlinks","scope":{}},
+      "applyTemplate": {"action":"sites.template.write","body":"any","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/template","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "cloneSite": {"action":"sites.write","body":"json","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/clone","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "createBitlink": {"action":"shorten.write","body":"json","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/shorten","scope":{"long_url":{"at":"/long_url","from":"body"}}},
+      "createCampaign": {"action":"campaigns.write","body":"json","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/campaigns","scope":{}},
+      "createChannel": {"action":"channels.write","body":"json","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/channels","scope":{}},
+      "createContainer": {"action":"sites.containers.write","body":"json","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/containers","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "createFullBitlink": {"action":"bitlinks.write","body":"json","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks","scope":{}},
+      "createOrganizationBulkUpload": {"action":"organizations.bulk_uploads.write","body":"json","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/organizations/{organization_guid}/bulk_uploads","scope":{"filename":{"at":"/filename","from":"body"},"group_guid":{"at":"/group_guid","from":"body"},"organization_guid":{"at":"organization_guid","from":"path"},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"/template_id","from":"body","optional":true}}},
+      "createQRCodePublic": {"action":"qr_codes.write","body":"json","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes","scope":{"group_guid":{"at":"/group_guid","from":"body"}}},
+      "createSite": {"action":"sites.write","body":"json","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/sites","scope":{"group_guid":{"at":"/group_guid","from":"body"}}},
+      "createSiteBlock": {"action":"sites.blocks.write","body":"json","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/blocks","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "createSiteImage": {"action":"sites.images.write","body":"json","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/images","scope":{"image_guid":{"at":"/image_guid","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"},"url":{"at":"/url","from":"body","optional":true}}},
+      "createStaticQRCodePublic": {"action":"qr_codes.static.write","body":"json","effects":["write"],"method":"POST","origin":"https://api-ssl.bitly.com","params":["format"],"path":"/v4/qr-codes/static","scope":{"group_guid":{"at":"/group_guid","from":"body"}}},
+      "createWebhook": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/webhooks","scope":{"name":{"at":"/name","from":"body"},"organization_guid":{"at":"/organization_guid","from":"body"},"url":{"at":"/url","from":"body"}}},
+      "deleteBitlink": {"action":"bitlinks.delete","effects":["delete"],"method":"DELETE","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}","scope":{"bitlink":{"at":"bitlink","from":"path"}}},
+      "deleteQRCode": {"action":"qr_codes.delete","effects":["delete"],"method":"DELETE","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/{qrcode_id}","scope":{"qrcode_id":{"at":"qrcode_id","from":"path"}}},
+      "deleteSite": {"action":"sites.delete","effects":["delete"],"method":"DELETE","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "deleteSiteBlock": {"action":"sites.blocks.delete","effects":["delete"],"method":"DELETE","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/blocks/{block_id}","scope":{"block_id":{"at":"block_id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "deleteSiteRedirect": {"action":"sites.redirects.delete","effects":["delete"],"method":"DELETE","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/redirects/{domain}/{keyword}","scope":{"domain":{"at":"domain","from":"path"},"keyword":{"at":"keyword","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "deleteWebhook": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"https://api-ssl.bitly.com","path":"/v4/webhooks/{webhook_guid}","scope":{"webhook_guid":{"at":"webhook_guid","from":"path"}}},
+      "discardSiteDraft": {"action":"sites.draft.delete","effects":["delete"],"method":"DELETE","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/draft","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "editCustomDomain": {"action":"custom_domains.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/custom_domains/{custom_domain}","scope":{"custom_domain":{"at":"custom_domain","from":"path"}}},
+      "expandBitlink": {"action":"expand.read","body":"json","effects":["read"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/expand","scope":{"bitlink_id":{"at":"/bitlink_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "fetchDomainAgreements": {"action":"domains.agreements.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["organization_guid"],"path":"/v4/domains/{domain}/agreements","scope":{"domain":{"at":"domain","from":"path"}}},
+      "getAgenticTrafficForBitlink": {"action":"bitlinks.agentic_traffic.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference"],"path":"/v4/bitlinks/{bitlink}/agentic_traffic","scope":{"bitlink":{"at":"bitlink","from":"path"}}},
+      "getAggregateSiteViewsByCity": {"action":"aggregate.sites.views.cities.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["site","unit","units","unit_reference","report_guid"],"path":"/v4/aggregate/sites/views/cities","scope":{}},
+      "getAggregateSiteViewsByCountry": {"action":"aggregate.sites.views.countries.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["site","unit","units","unit_reference","report_guid"],"path":"/v4/aggregate/sites/views/countries","scope":{}},
+      "getAggregateSiteViewsByDevice": {"action":"aggregate.sites.views.devices.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["site","unit","units","unit_reference","report_guid"],"path":"/v4/aggregate/sites/views/devices","scope":{}},
+      "getAggregateSiteViewsByReferrer": {"action":"aggregate.sites.views.referrers.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["site","unit","units","unit_reference","report_guid"],"path":"/v4/aggregate/sites/views/referrers","scope":{}},
+      "getAggregateSiteViewsOverTime": {"action":"aggregate.sites.views.over_time.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["site","unit","units","unit_reference","report_guid"],"path":"/v4/aggregate/sites/views/over_time","scope":{}},
+      "getAggregateSitesOverview": {"action":"aggregate.sites.overview.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["site","unit","units","unit_reference","report_guid"],"path":"/v4/aggregate/sites/overview","scope":{}},
+      "getBSDs": {"action":"bsds.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/bsds","scope":{}},
+      "getBitlink": {"action":"bitlinks.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}","scope":{"bitlink":{"at":"bitlink","from":"path"}}},
+      "getBitlinksByGroup": {"action":"groups.bitlinks.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["size","search_after","query","hostname_path_query","created_before","created_after","archived","deeplinks","domain_deeplinks","campaign_guid","channel_guid","custom_bitlink","has_qr_codes","is_expired","has_expiration","has_dynamic_routing","tags","launchpad_ids","encoding_login"],"path":"/v4/groups/{group_guid}/bitlinks","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getCampaign": {"action":"campaigns.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/campaigns/{campaign_guid}","scope":{"campaign_guid":{"at":"campaign_guid","from":"path"}}},
+      "getCampaigns": {"action":"campaigns.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["group_guid"],"path":"/v4/campaigns","scope":{}},
+      "getChannel": {"action":"channels.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/channels/{channel_guid}","scope":{"channel_guid":{"at":"channel_guid","from":"path"}}},
+      "getChannels": {"action":"channels.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["group_guid","campaign_guid"],"path":"/v4/channels","scope":{}},
+      "getClicksForBitlink": {"action":"bitlinks.clicks.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference"],"path":"/v4/bitlinks/{bitlink}/clicks","scope":{"bitlink":{"at":"bitlink","from":"path"}}},
+      "getClicksForCustomBitlink": {"action":"custom_bitlinks.clicks.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference"],"path":"/v4/custom_bitlinks/{custom_bitlink}/clicks","scope":{"custom_bitlink":{"at":"custom_bitlink","from":"path"}}},
+      "getClicksSummaryForBitlink": {"action":"bitlinks.clicks.summary.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference"],"path":"/v4/bitlinks/{bitlink}/clicks/summary","scope":{"bitlink":{"at":"bitlink","from":"path"}}},
+      "getCustomBitlink": {"action":"custom_bitlinks.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/custom_bitlinks/{custom_bitlink}","scope":{"custom_bitlink":{"at":"custom_bitlink","from":"path"}}},
+      "getCustomBitlinkMetricsByDestination": {"action":"custom_bitlinks.clicks_by_destination.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference"],"path":"/v4/custom_bitlinks/{custom_bitlink}/clicks_by_destination","scope":{"custom_bitlink":{"at":"custom_bitlink","from":"path"}}},
+      "getCustomDomain": {"action":"custom_domains.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/custom_domains/{custom_domain}","scope":{"custom_domain":{"at":"custom_domain","from":"path"}}},
+      "getCustomDomainDNS": {"action":"custom_domains.dns.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["organization_guid"],"path":"/v4/custom_domains/{custom_domain}/dns","scope":{"custom_domain":{"at":"custom_domain","from":"path"},"organization_guid":{"at":"organization_guid","from":"query"}}},
+      "getCustomDomains": {"action":"custom_domains.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["organization_guid"],"path":"/v4/custom_domains","scope":{}},
+      "getEngagements": {"action":"bitlinks.engagements.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference"],"path":"/v4/bitlinks/{bitlink}/engagements","scope":{"bitlink":{"at":"bitlink","from":"path"}}},
+      "getEngagementsSummary": {"action":"bitlinks.engagements.summary.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference"],"path":"/v4/bitlinks/{bitlink}/engagements/summary","scope":{"bitlink":{"at":"bitlink","from":"path"}}},
+      "getGroup": {"action":"groups.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupAgenticTrafficRollup": {"action":"groups.agentic_traffic.rollup.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/agentic_traffic/rollup","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupClicks": {"action":"groups.clicks.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference"],"path":"/v4/groups/{group_guid}/clicks","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupCodeScansByCity": {"action":"groups.codes.scans.cities.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference"],"path":"/v4/groups/{group_guid}/codes/scans/cities","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupCodeScansByCountry": {"action":"groups.codes.scans.countries.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference"],"path":"/v4/groups/{group_guid}/codes/scans/countries","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupCodeScansOverTime": {"action":"groups.codes.scans.over_time.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference"],"path":"/v4/groups/{group_guid}/codes/scans/over_time","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupFeatureUsage": {"action":"groups.feature_usage.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["name"],"path":"/v4/groups/{group_guid}/feature_usage","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupHistoricalUsage": {"action":"groups.historical_usage.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["name","start_date","end_date","unit"],"path":"/v4/groups/{group_guid}/historical_usage","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupLinkClicksByCity": {"action":"groups.links.clicks.cities.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/groups/{group_guid}/links/clicks/cities","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupLinkClicksByCountry": {"action":"groups.links.clicks.countries.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/groups/{group_guid}/links/clicks/countries","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupLinkClicksByDevice": {"action":"groups.links.clicks.devices.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/groups/{group_guid}/links/clicks/devices","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupLinkClicksByReferrer": {"action":"groups.links.clicks.referrers.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/groups/{group_guid}/links/clicks/referrers","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupLinkClicksOverTime": {"action":"groups.links.clicks.over_time.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference"],"path":"/v4/groups/{group_guid}/links/clicks/over_time","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupMetricsByCities": {"action":"groups.cities.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/groups/{group_guid}/cities","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupMetricsByCountries": {"action":"groups.countries.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/groups/{group_guid}/countries","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupMetricsByDevices": {"action":"groups.devices.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/groups/{group_guid}/devices","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupMetricsOverTime": {"action":"groups.engagements.over_time.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference"],"path":"/v4/groups/{group_guid}/engagements/over_time","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupPreferences": {"action":"groups.preferences.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/preferences","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupShortenCounts": {"action":"groups.shorten_counts.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference"],"path":"/v4/groups/{group_guid}/shorten_counts","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupTags": {"action":"groups.tags.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["type"],"path":"/v4/groups/{group_guid}/tags","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupTopCodeScans": {"action":"groups.codes.scans.top.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference","decoupled"],"path":"/v4/groups/{group_guid}/codes/scans/top","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupTopLinkClicks": {"action":"groups.links.clicks.top.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/groups/{group_guid}/links/clicks/top","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroupTopMetrics": {"action":"groups.engagements.top.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/groups/{group_guid}/engagements/top","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getGroups": {"action":"groups.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["organization_guid"],"path":"/v4/groups","scope":{}},
+      "getLaunchpadDigitalBusinessCardDownloadsOverTime": {"action":"aggregate.sites.digital_business_card_downloads.over_time.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["site","unit","units","unit_reference","report_guid"],"path":"/v4/aggregate/sites/digital_business_card_downloads/over_time","scope":{}},
+      "getLinkPerformanceForSite": {"action":"sites.link_performance.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference","page"],"path":"/v4/sites/{site_id}/link_performance","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "getMetricsForBitlinkByCities": {"action":"bitlinks.cities.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/bitlinks/{bitlink}/cities","scope":{"bitlink":{"at":"bitlink","from":"path"}}},
+      "getMetricsForBitlinkByCountries": {"action":"bitlinks.countries.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/bitlinks/{bitlink}/countries","scope":{"bitlink":{"at":"bitlink","from":"path"}}},
+      "getMetricsForBitlinkByDevices": {"action":"bitlinks.devices.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/bitlinks/{bitlink}/devices","scope":{"bitlink":{"at":"bitlink","from":"path"}}},
+      "getMetricsForBitlinkByReferrerName": {"action":"bitlinks.referrer_name.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/bitlinks/{bitlink}/referrer_name","scope":{"bitlink":{"at":"bitlink","from":"path"}}},
+      "getMetricsForBitlinkByReferrers": {"action":"bitlinks.referrers.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/bitlinks/{bitlink}/referrers","scope":{"bitlink":{"at":"bitlink","from":"path"}}},
+      "getMetricsForBitlinkByReferrersByDomains": {"action":"bitlinks.referrers_by_domains.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/bitlinks/{bitlink}/referrers_by_domains","scope":{"bitlink":{"at":"bitlink","from":"path"}}},
+      "getMetricsForBitlinkByReferringDomains": {"action":"bitlinks.referring_domains.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/bitlinks/{bitlink}/referring_domains","scope":{"bitlink":{"at":"bitlink","from":"path"}}},
+      "getMetricsForSiteByCities": {"action":"sites.cities.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/sites/{site_id}/cities","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "getMetricsForSiteByDevices": {"action":"sites.devices.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/sites/{site_id}/devices","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "getMetricsForSiteByReferrers": {"action":"sites.referrers.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/sites/{site_id}/referrers","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "getMetricsForSitesByCountries": {"action":"sites.countries.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/sites/{site_id}/countries","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "getOAuthApp": {"action":"apps.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/apps/{client_id}","scope":{"client_id":{"at":"client_id","from":"path"}}},
+      "getOrganization": {"action":"organizations.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/organizations/{organization_guid}","scope":{"organization_guid":{"at":"organization_guid","from":"path"}}},
+      "getOrganizationBulkUpload": {"action":"organizations.bulk_uploads.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/organizations/{organization_guid}/bulk_uploads/{bulk_upload_id}","scope":{"bulk_upload_id":{"at":"bulk_upload_id","from":"path"},"organization_guid":{"at":"organization_guid","from":"path"}}},
+      "getOrganizationBulkUploads": {"action":"organizations.bulk_uploads.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["upload_type","size","search_after"],"path":"/v4/organizations/{organization_guid}/bulk_uploads","scope":{"organization_guid":{"at":"organization_guid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getOrganizationShortenCounts": {"action":"organizations.shorten_counts.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference"],"path":"/v4/organizations/{organization_guid}/shorten_counts","scope":{"organization_guid":{"at":"organization_guid","from":"path"}}},
+      "getOrganizationShortenCountsByGroup": {"action":"organizations.shorten_counts_by_group.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/organizations/{organization_guid}/shorten_counts_by_group","scope":{"organization_guid":{"at":"organization_guid","from":"path"}}},
+      "getOrganizations": {"action":"organizations.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["include_all"],"path":"/v4/organizations","scope":{}},
+      "getPlanLimits": {"action":"organizations.plan_limits.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/organizations/{organization_guid}/plan_limits","scope":{"organization_guid":{"at":"organization_guid","from":"path"}}},
+      "getPlatformLimits": {"action":"user.platform_limits.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["path"],"path":"/v4/user/platform_limits","scope":{}},
+      "getQRCodeByIdPublic": {"action":"qr_codes.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/{qrcode_id}","scope":{"qrcode_id":{"at":"qrcode_id","from":"path"}}},
+      "getQRCodeImagePublic": {"action":"qr_codes.image.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["format"],"path":"/v4/qr-codes/{qrcode_id}/image","scope":{"qrcode_id":{"at":"qrcode_id","from":"path"}}},
+      "getScanMetricsForQRCode": {"action":"qr_codes.scans.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference"],"path":"/v4/qr-codes/{qrcode_id}/scans","scope":{"qrcode_id":{"at":"qrcode_id","from":"path"}}},
+      "getScanMetricsForQRCodeByBrowser": {"action":"qr_codes.scans.browsers.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/qr-codes/{qrcode_id}/scans/browsers","scope":{"qrcode_id":{"at":"qrcode_id","from":"path"}}},
+      "getScanMetricsForQRCodeByCities": {"action":"qr_codes.scans.cities.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/qr-codes/{qrcode_id}/scans/cities","scope":{"qrcode_id":{"at":"qrcode_id","from":"path"}}},
+      "getScanMetricsForQRCodeByCountries": {"action":"qr_codes.scans.countries.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/qr-codes/{qrcode_id}/scans/countries","scope":{"qrcode_id":{"at":"qrcode_id","from":"path"}}},
+      "getScanMetricsForQRCodeByDevicesOS": {"action":"qr_codes.scans.device_os.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/qr-codes/{qrcode_id}/scans/device_os","scope":{"qrcode_id":{"at":"qrcode_id","from":"path"}}},
+      "getScanMetricsSummaryForQRCode": {"action":"qr_codes.scans.summary.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference"],"path":"/v4/qr-codes/{qrcode_id}/scans/summary","scope":{"qrcode_id":{"at":"qrcode_id","from":"path"}}},
+      "getSite": {"action":"sites.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["include_blocks"],"path":"/v4/sites/{site_id}","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "getSiteClicksByCities": {"action":"aggregate.sites.clicks.cities.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["site","unit","units","unit_reference","report_guid"],"path":"/v4/aggregate/sites/clicks/cities","scope":{}},
+      "getSiteClicksByCountries": {"action":"aggregate.sites.clicks.countries.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["site","unit","units","unit_reference","report_guid"],"path":"/v4/aggregate/sites/clicks/countries","scope":{}},
+      "getSiteClicksByDevices": {"action":"aggregate.sites.clicks.devices.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["site","unit","units","unit_reference","report_guid"],"path":"/v4/aggregate/sites/clicks/devices","scope":{}},
+      "getSiteClicksOverTime": {"action":"aggregate.sites.clicks.over_time.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["site","unit","units","unit_reference","report_guid"],"path":"/v4/aggregate/sites/clicks/over_time","scope":{}},
+      "getSiteFilteredTopPageButtons": {"action":"aggregate.sites.clicks.top.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["site","unit","units","unit_reference","brand_guid","report_guid"],"path":"/v4/aggregate/sites/clicks/top","scope":{}},
+      "getSitesForGroup": {"action":"groups.sites.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["search_after","size","sites_url_param"],"path":"/v4/groups/{group_guid}/sites","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getSortedBitlinks": {"action":"groups.bitlinks.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference","size"],"path":"/v4/groups/{group_guid}/bitlinks/{sort}","scope":{"group_guid":{"at":"group_guid","from":"path"},"sort":{"at":"sort","from":"path"}}},
+      "getTemplates": {"action":"site_templates.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["category"],"path":"/v4/site_templates","scope":{}},
+      "getTopLinksAndQRCodesByEngagements": {"action":"groups.engagements.sorted.top.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","unit_reference","size"],"path":"/v4/groups/{group_guid}/engagements/sorted/top","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "getUser": {"action":"user.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/user","scope":{}},
+      "getViewsForSite": {"action":"sites.views.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/sites/{site_id}/views","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "getViewsSummaryForSite": {"action":"sites.views.summary.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["unit","units","size","unit_reference"],"path":"/v4/sites/{site_id}/views/summary","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "getWebhook": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/webhooks/{webhook_guid}","scope":{"webhook_guid":{"at":"webhook_guid","from":"path"}}},
+      "getWebhooks": {"action":"organizations.webhooks.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","path":"/v4/organizations/{organization_guid}/webhooks","scope":{"organization_guid":{"at":"organization_guid","from":"path"}}},
+      "listQRMinimal": {"action":"groups.qr_codes.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["has_render_customizations","size","search_after","query","hostname_path_query","created_before","created_after","archived","creating_login","qrc_type","is_gs1","is_expired","has_expiration","has_dynamic_routing","tags"],"path":"/v4/groups/{group_guid}/qr-codes","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "postCreateGroupExport": {"action":"groups.exports.read","body":"json","effects":["read"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/exports","scope":{"group_guid":{"at":"group_guid","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "prevalidateYouTubeVideoButton": {"action":"sites.buttons.youtube_video.prevalidate.read","body":"json","effects":["read"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{launchpad_id}/buttons/youtubeVideo/prevalidate","scope":{"launchpad_id":{"at":"launchpad_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"video_id":{"at":"/video_id","from":"body","optional":true}}},
+      "publishSite": {"action":"sites.publish","effects":["publish"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/publish","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "purchaseBsd": {"action":"domains.pay","body":"json","effects":["pay"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/domains","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "redirectQRCodeDestination": {"action":"qr_codes.redirect.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/{qrcode_id}/redirect","scope":{"long_url":{"at":"/long_url","from":"body"},"qrcode_id":{"at":"qrcode_id","from":"path"}}},
+      "searchAvailableDomains": {"action":"domains.read","effects":["read"],"method":"GET","origin":"https://api-ssl.bitly.com","params":["query","limit","organization_guid"],"path":"/v4/domains","scope":{}},
+      "updateBitlink": {"action":"bitlinks.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/bitlinks/{bitlink}","scope":{"bitlink":{"at":"bitlink","from":"path"}}},
+      "updateBitlinksByGroup": {"action":"groups.bitlinks.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/bitlinks","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "updateCampaign": {"action":"campaigns.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/campaigns/{campaign_guid}","scope":{"campaign_guid":{"at":"campaign_guid","from":"path"}}},
+      "updateChannel": {"action":"channels.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/channels/{channel_guid}","scope":{"channel_guid":{"at":"channel_guid","from":"path"}}},
+      "updateCustomBitlink": {"action":"custom_bitlinks.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/custom_bitlinks/{custom_bitlink}","scope":{"custom_bitlink":{"at":"custom_bitlink","from":"path"}}},
+      "updateGroup": {"action":"groups.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "updateGroupPreferences": {"action":"groups.preferences.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/preferences","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "updateQRCodePublic": {"action":"qr_codes.write","body":"any","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/{qrcode_id}","scope":{"qrcode_id":{"at":"qrcode_id","from":"path"}}},
+      "updateQRCodesByGroup": {"action":"groups.qr_codes.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/groups/{group_guid}/qr-codes","scope":{"group_guid":{"at":"group_guid","from":"path"}}},
+      "updateSite": {"action":"sites.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "updateSiteAppearance": {"action":"sites.appearance.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/appearance","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "updateSiteBlock": {"action":"sites.blocks.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/sites/{site_id}/blocks/{block_id}","scope":{"block_id":{"at":"block_id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "updateUser": {"action":"user.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/user","scope":{}},
+      "updateWebhook": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api-ssl.bitly.com","path":"/v4/webhooks/{webhook_guid}","scope":{"guid":{"at":"/guid","from":"body"},"webhook_guid":{"at":"webhook_guid","from":"path"}}},
+      "upgradeQRCodeToBitlink": {"action":"qr_codes.to_bitlink.write","effects":["write"],"method":"PUT","origin":"https://api-ssl.bitly.com","path":"/v4/qr-codes/{qrcode_id}/to-bitlink","scope":{"qrcode_id":{"at":"qrcode_id","from":"path"}}},
+      "validateCustomDomain": {"action":"custom_domains.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/custom_domains","scope":{"group_guids":{"at":"/group_guids","from":"body","optional":true,"type":"array"},"organization_guid":{"at":"/organization_guid","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "verifyWebhook": {"action":"webhooks.send","effects":["send"],"method":"POST","origin":"https://api-ssl.bitly.com","path":"/v4/webhooks/{webhook_guid}/verify","scope":{"webhook_guid":{"at":"webhook_guid","from":"path"}}}
     }
   }
 }

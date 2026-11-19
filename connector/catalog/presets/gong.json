@@ -1,119 +1,556 @@
 {
-  "title": "Gong",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your Gong origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"], ["http", "slots", 1, "origin"]]},
-      {"key": "access_key", "label": "Access Key", "secret": true, "credential": true},
-      {"key": "access_key_secret", "label": "Access Key Secret", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/v2", "basic": "user"}, {"value": "access_key_secret", "origin": "https://example.com", "path": "/v2", "basic": "password"}]}},
     "actions": {
-      "admin.integrations": {"title": "Admin: integrations"},
-      "delete.erase_data_for_email_address": {"title": "Delete: erase data for email address"},
-      "delete.erase_data_for_phone_number": {"title": "Delete: erase data for phone number"},
-      "delete.integrations": {"title": "Delete: integrations"},
-      "delete.meetings": {"title": "Delete: meetings"},
-      "delete.users_access": {"title": "Delete: users access"},
-      "read": {"title": "Read everything the account can see"},
-      "send.calls": {"title": "Send: calls"},
-      "send.media": {"title": "Send: media"},
-      "write.action": {"title": "Write: action"},
-      "write.assign": {"title": "Write: assign"},
-      "write.bulk_assignments": {"title": "Write: bulk assignments"},
-      "write.cool_off_override": {"title": "Write: cool off override"},
-      "write.digital_interaction": {"title": "Write: digital interaction"},
-      "write.enrich": {"title": "Write: enrich"},
-      "write.entities": {"title": "Write: entities"},
-      "write.entity_schema": {"title": "Write: entity schema"},
-      "write.integration_settings": {"title": "Write: integration settings"},
-      "write.meetings": {"title": "Write: meetings"},
-      "write.permission_profile": {"title": "Write: permission profile"},
-      "write.shared": {"title": "Write: shared"},
-      "write.status": {"title": "Write: status"},
-      "write.targets": {"title": "Write: targets"},
-      "write.tasks": {"title": "Write: tasks"},
-      "write.unassign_flows_by_crm_id": {"title": "Write: unassign flows by crm id"},
-      "write.unassign_flows_by_instance_id": {"title": "Write: unassign flows by instance id"},
-      "write.users_access": {"title": "Write: users access"},
-      "write.viewed": {"title": "Write: viewed"}
-    }
+      "accounts": {
+        "title": "Accounts"
+      },
+      "accounts.enrich": {
+        "title": "Enrich"
+      },
+      "accounts.enrich.results": {
+        "title": "Results"
+      },
+      "accounts.enrich.results.read": {
+        "title": "Read"
+      },
+      "accounts.enrich.write": {
+        "title": "Create and edit"
+      },
+      "all_permission_profiles": {
+        "title": "All permission profiles"
+      },
+      "all_permission_profiles.read": {
+        "title": "Read"
+      },
+      "call_outcomes": {
+        "title": "Call outcomes"
+      },
+      "call_outcomes.read": {
+        "title": "Read"
+      },
+      "calls": {
+        "title": "Calls"
+      },
+      "calls.extensive": {
+        "title": "Extensive"
+      },
+      "calls.extensive.read": {
+        "title": "Read"
+      },
+      "calls.media": {
+        "title": "Media"
+      },
+      "calls.media.write": {
+        "title": "Create and edit"
+      },
+      "calls.read": {
+        "title": "Read"
+      },
+      "calls.transcript": {
+        "title": "Transcript"
+      },
+      "calls.transcript.read": {
+        "title": "Read"
+      },
+      "calls.users_access": {
+        "title": "Users access"
+      },
+      "calls.users_access.admin": {
+        "title": "Manage"
+      },
+      "calls.users_access.read": {
+        "title": "Read"
+      },
+      "calls.users_access.share": {
+        "title": "Share"
+      },
+      "calls.write": {
+        "title": "Create and edit"
+      },
+      "coaching": {
+        "title": "Coaching"
+      },
+      "coaching.read": {
+        "title": "Read"
+      },
+      "contacts": {
+        "title": "Contacts"
+      },
+      "contacts.enrich": {
+        "title": "Enrich"
+      },
+      "contacts.enrich.results": {
+        "title": "Results"
+      },
+      "contacts.enrich.results.read": {
+        "title": "Read"
+      },
+      "contacts.enrich.write": {
+        "title": "Create and edit"
+      },
+      "crm": {
+        "title": "Crm"
+      },
+      "crm.entities": {
+        "title": "Entities"
+      },
+      "crm.entities.read": {
+        "title": "Read"
+      },
+      "crm.entities.write": {
+        "title": "Create and edit"
+      },
+      "crm.entity_schema": {
+        "title": "Entity schema"
+      },
+      "crm.entity_schema.read": {
+        "title": "Read"
+      },
+      "crm.entity_schema.write": {
+        "title": "Create and edit"
+      },
+      "crm.integrations": {
+        "title": "Integrations"
+      },
+      "crm.integrations.admin": {
+        "title": "Manage"
+      },
+      "crm.integrations.read": {
+        "title": "Read"
+      },
+      "crm.request_status": {
+        "title": "Request status"
+      },
+      "crm.request_status.read": {
+        "title": "Read"
+      },
+      "customer_engagement": {
+        "title": "Customer engagement"
+      },
+      "customer_engagement.action": {
+        "title": "Action"
+      },
+      "customer_engagement.action.write": {
+        "title": "Create and edit"
+      },
+      "customer_engagement.content": {
+        "title": "Content"
+      },
+      "customer_engagement.content.shared": {
+        "title": "Shared"
+      },
+      "customer_engagement.content.shared.write": {
+        "title": "Create and edit"
+      },
+      "customer_engagement.content.viewed": {
+        "title": "Viewed"
+      },
+      "customer_engagement.content.viewed.write": {
+        "title": "Create and edit"
+      },
+      "data_privacy": {
+        "title": "Data privacy"
+      },
+      "data_privacy.data_for_email_address": {
+        "title": "Data for email address"
+      },
+      "data_privacy.data_for_email_address.read": {
+        "title": "Read"
+      },
+      "data_privacy.data_for_phone_number": {
+        "title": "Data for phone number"
+      },
+      "data_privacy.data_for_phone_number.read": {
+        "title": "Read"
+      },
+      "data_privacy.erase_data_for_email_address": {
+        "title": "Erase data for email address"
+      },
+      "data_privacy.erase_data_for_email_address.delete": {
+        "title": "Delete"
+      },
+      "data_privacy.erase_data_for_phone_number": {
+        "title": "Erase data for phone number"
+      },
+      "data_privacy.erase_data_for_phone_number.delete": {
+        "title": "Delete"
+      },
+      "digital_interaction": {
+        "title": "Digital interaction"
+      },
+      "digital_interaction.write": {
+        "title": "Create and edit"
+      },
+      "entities": {
+        "title": "Entities"
+      },
+      "entities.ask_entity": {
+        "title": "Ask entity"
+      },
+      "entities.ask_entity.generate": {
+        "title": "Generate"
+      },
+      "entities.brief": {
+        "title": "Brief"
+      },
+      "entities.brief.generate": {
+        "title": "Generate"
+      },
+      "flows": {
+        "title": "Flows"
+      },
+      "flows.folders": {
+        "title": "Folders"
+      },
+      "flows.folders.read": {
+        "title": "Read"
+      },
+      "flows.prospects": {
+        "title": "Prospects"
+      },
+      "flows.prospects.assign": {
+        "title": "Assign"
+      },
+      "flows.prospects.assign.cool_off_override": {
+        "title": "Cool off override"
+      },
+      "flows.prospects.assign.cool_off_override.write": {
+        "title": "Create and edit"
+      },
+      "flows.prospects.assign.send": {
+        "title": "Send"
+      },
+      "flows.prospects.bulk_assignments": {
+        "title": "Bulk assignments"
+      },
+      "flows.prospects.bulk_assignments.read": {
+        "title": "Read"
+      },
+      "flows.prospects.bulk_assignments.send": {
+        "title": "Send"
+      },
+      "flows.prospects.read": {
+        "title": "Read"
+      },
+      "flows.prospects.unassign_flows_by_crm_id": {
+        "title": "Unassign flows by crm id"
+      },
+      "flows.prospects.unassign_flows_by_crm_id.write": {
+        "title": "Create and edit"
+      },
+      "flows.prospects.unassign_flows_by_instance_id": {
+        "title": "Unassign flows by instance id"
+      },
+      "flows.prospects.unassign_flows_by_instance_id.write": {
+        "title": "Create and edit"
+      },
+      "flows.read": {
+        "title": "Read"
+      },
+      "flows.steps": {
+        "title": "Steps"
+      },
+      "flows.steps.read": {
+        "title": "Read"
+      },
+      "integration_settings": {
+        "title": "Integration settings"
+      },
+      "integration_settings.admin": {
+        "title": "Manage"
+      },
+      "library": {
+        "title": "Library"
+      },
+      "library.folder_content": {
+        "title": "Folder content"
+      },
+      "library.folder_content.read": {
+        "title": "Read"
+      },
+      "library.folders": {
+        "title": "Folders"
+      },
+      "library.folders.read": {
+        "title": "Read"
+      },
+      "logs": {
+        "title": "Logs"
+      },
+      "logs.read": {
+        "title": "Read"
+      },
+      "meetings": {
+        "title": "Meetings"
+      },
+      "meetings.delete": {
+        "title": "Delete"
+      },
+      "meetings.integration": {
+        "title": "Integration"
+      },
+      "meetings.integration.status": {
+        "title": "Status"
+      },
+      "meetings.integration.status.read": {
+        "title": "Read"
+      },
+      "meetings.write": {
+        "title": "Create and edit"
+      },
+      "permission_profile": {
+        "title": "Permission profile"
+      },
+      "permission_profile.admin": {
+        "title": "Manage"
+      },
+      "permission_profile.read": {
+        "title": "Read"
+      },
+      "permission_profile.users": {
+        "title": "Users"
+      },
+      "permission_profile.users.read": {
+        "title": "Read"
+      },
+      "settings": {
+        "title": "Settings"
+      },
+      "settings.briefs": {
+        "title": "Briefs"
+      },
+      "settings.briefs.read": {
+        "title": "Read"
+      },
+      "settings.scorecards": {
+        "title": "Scorecards"
+      },
+      "settings.scorecards.read": {
+        "title": "Read"
+      },
+      "settings.trackers": {
+        "title": "Trackers"
+      },
+      "settings.trackers.read": {
+        "title": "Read"
+      },
+      "stats": {
+        "title": "Stats"
+      },
+      "stats.activity": {
+        "title": "Activity"
+      },
+      "stats.activity.aggregate": {
+        "title": "Aggregate"
+      },
+      "stats.activity.aggregate.read": {
+        "title": "Read"
+      },
+      "stats.activity.aggregate_by_period": {
+        "title": "Aggregate by period"
+      },
+      "stats.activity.aggregate_by_period.read": {
+        "title": "Read"
+      },
+      "stats.activity.day_by_day": {
+        "title": "Day by day"
+      },
+      "stats.activity.day_by_day.read": {
+        "title": "Read"
+      },
+      "stats.activity.scorecards": {
+        "title": "Scorecards"
+      },
+      "stats.activity.scorecards.read": {
+        "title": "Read"
+      },
+      "stats.interaction": {
+        "title": "Interaction"
+      },
+      "stats.interaction.read": {
+        "title": "Read"
+      },
+      "targets": {
+        "title": "Targets"
+      },
+      "targets.assignments": {
+        "title": "Assignments"
+      },
+      "targets.assignments.write": {
+        "title": "Create and edit"
+      },
+      "targets.read": {
+        "title": "Read"
+      },
+      "tasks": {
+        "title": "Tasks"
+      },
+      "tasks.read": {
+        "title": "Read"
+      },
+      "tasks.write": {
+        "title": "Create and edit"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.extensive": {
+        "title": "Extensive"
+      },
+      "users.extensive.read": {
+        "title": "Read"
+      },
+      "users.read": {
+        "title": "Read"
+      },
+      "users.settings_history": {
+        "title": "Settings history"
+      },
+      "users.settings_history.read": {
+        "title": "Read"
+      },
+      "workspaces": {
+        "title": "Workspaces"
+      },
+      "workspaces.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "basic": "user",
+            "origin": "https://example.com",
+            "path": "/v2",
+            "value": "access_key"
+          },
+          {
+            "basic": "password",
+            "origin": "https://example.com",
+            "path": "/v2",
+            "value": "access_key_secret"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "default": "https://api.gong.io",
+        "hint": "Use the customer-specific API base URL, such as https://us-12345.api.gong.io, if Gong assigned one.",
+        "key": "origin",
+        "label": "Your Gong origin (https://host)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            1,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "access_key",
+        "label": "Access Key",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "access_key_secret",
+        "label": "Access Key Secret",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Gong",
   "http": {
     "operations": {
-      "accountsEnrich": {"action":"write.enrich","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/accounts/enrich","params":["dataCategories"],"body":"json","scope":{}},
-      "addCall": {"action":"send.calls","effects":["send"],"method":"POST","origin":"{origin}","path":"/v2/calls","body":"json","scope":{"clientUniqueId":{"from":"body","at":"/clientUniqueId"},"request":{"from":"body","at":"","type":"object"}},"grant":["clientUniqueId"]},
-      "addCallRecording": {"action":"send.media","effects":["send"],"method":"PUT","origin":"{origin}","path":"/v2/calls/{id}/media","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "addDigitalInteraction": {"action":"write.digital_interaction","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/digital-interaction","body":"json","scope":{"eventId":{"from":"body","at":"/eventId"}}},
-      "addMeeting": {"action":"write.meetings","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/meetings","body":"json","scope":{}},
-      "addUsersAccessToCalls": {"action":"write.users_access","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/calls/users-access","body":"json","scope":{}},
-      "askEntity": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/entities/ask-entity","params":["workspaceId","crmEntityType","crmEntityId","timePeriod","fromDateTime","toDateTime","question"],"scope":{"workspaceId":{"from":"query","at":"workspaceId"},"crmEntityId":{"from":"query","at":"crmEntityId"}}},
-      "assignProspects": {"action":"write.assign","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/flows/prospects/assign","body":"json","scope":{"flowId":{"from":"body","at":"/flowId"}}},
-      "assignProspectsCoolOffOverrides": {"action":"write.cool_off_override","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/flows/prospects/assign/cool-off-override","body":"json","scope":{"flowId":{"from":"body","at":"/flowId"}}},
-      "contactsEnrich": {"action":"write.enrich","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/contacts/enrich","params":["dataCategories"],"body":"json","scope":{}},
-      "contentShared": {"action":"write.shared","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/customer-engagement/content/shared","body":"json","scope":{"contentId":{"from":"body","at":"/contentId"},"contentUrl":{"from":"body","at":"/contentUrl"}}},
-      "contentViewed": {"action":"write.viewed","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/customer-engagement/content/viewed","body":"json","scope":{"contentId":{"from":"body","at":"/contentId"},"contentUrl":{"from":"body","at":"/contentUrl"}}},
-      "createPermissionProfile": {"action":"write.permission_profile","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/permission-profile","params":["workspaceId"],"body":"json","scope":{"workspaceId":{"from":"query","at":"workspaceId"}}},
-      "customAction": {"action":"write.action","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/customer-engagement/action","body":"json","scope":{}},
-      "deleteGenericCrmIntegration": {"action":"delete.integrations","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/crm/integrations","params":["integrationId","clientRequestId"],"scope":{"integrationId":{"from":"query","at":"integrationId"},"clientRequestId":{"from":"query","at":"clientRequestId"}}},
-      "deleteMeeting": {"action":"delete.meetings","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/meetings/{meetingId}","body":"json","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "deleteUsersAccessToCalls": {"action":"delete.users_access","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/calls/users-access","body":"json","scope":{}},
-      "findAllReferencesToEmailAddress": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/data-privacy/data-for-email-address","params":["emailAddress"],"scope":{}},
-      "findAllReferencesToPhoneNumber": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/data-privacy/data-for-phone-number","params":["phoneNumber"],"scope":{}},
-      "generateBrief": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/entities/get-brief","params":["workspaceId","briefName","crmEntityType","crmEntityId","timePeriod","fromDateTime","toDateTime"],"scope":{"workspaceId":{"from":"query","at":"workspaceId"},"briefName":{"from":"query","at":"briefName"},"crmEntityId":{"from":"query","at":"crmEntityId"}}},
-      "getAccountsEnrichResults": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/accounts/enrich/{jobId}/results","scope":{"jobId":{"from":"path","at":"jobId"}}},
-      "getCall": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/calls/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getCallTranscripts": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/calls/transcript","body":"json","scope":{}},
-      "getCallsInSpecificFolder": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/library/folder-content","params":["folderId"],"scope":{}},
-      "getContactsEnrichResults": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/contacts/enrich/{jobId}/results","scope":{"jobId":{"from":"path","at":"jobId"}}},
-      "getCrmObjects": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/crm/entities","params":["integrationId","objectType","objectsCrmIds"],"scope":{"integrationId":{"from":"query","at":"integrationId"},"objectsCrmIds":{"from":"query","at":"objectsCrmIds"}}},
-      "getFlowProspectsBulkAssignment": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/flows/prospects/bulk-assignments/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getFlowSteps": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/flows/steps","body":"json","scope":{}},
-      "getLibraryStructure": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/library/folders","params":["workspaceId"],"scope":{}},
-      "getPermissionProfile": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/permission-profile","params":["profileId"],"scope":{"profileId":{"from":"query","at":"profileId"}}},
-      "getProspectsAssignedFlows": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/flows/prospects","body":"json","scope":{}},
-      "getRequestStatus": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/crm/request-status","params":["integrationId","clientRequestId"],"scope":{"integrationId":{"from":"query","at":"integrationId"},"clientRequestId":{"from":"query","at":"clientRequestId"}}},
-      "getUser": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/users/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getUserHistory": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/users/{id}/settings-history","scope":{"id":{"from":"path","at":"id"}}},
-      "getUsersAccessToCalls": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/calls/users-access","body":"json","scope":{}},
-      "integrationSettings": {"action":"write.integration_settings","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/integration-settings","body":"json","scope":{}},
-      "integrationStatus": {"action":"write.status","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/meetings/integration/status","body":"json","scope":{}},
-      "listAnsweredScorecards": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/stats/activity/scorecards","body":"json","scope":{}},
-      "listBriefs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/settings/briefs","params":["workspaceId"],"scope":{}},
-      "listCallOutcomes": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/call-outcomes","scope":{}},
-      "listCalls": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/calls","params":["cursor","fromDateTime","toDateTime","workspaceId"],"scope":{}},
-      "listCallsExtensive": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/calls/extensive","body":"json","scope":{}},
-      "listCrmSchemaFields": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/crm/entity-schema","params":["integrationId","objectType"],"scope":{"integrationId":{"from":"query","at":"integrationId"}}},
-      "listFlows": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/flows","params":["flowOwnerEmail","cursor","workspaceId","folderId","mostRecentlyAssigned"],"scope":{}},
-      "listFlowsFolders": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/flows/folders","params":["flowFolderOwnerEmail","cursor","parentId","workspaceId"],"scope":{}},
-      "listGenericCrmIntegration": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/crm/integrations","scope":{}},
-      "listInteractionStats": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/stats/interaction","body":"json","scope":{}},
-      "listLogs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/logs","params":["logType","fromDateTime","toDateTime","cursor"],"scope":{}},
-      "listMultipleUsers": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/users/extensive","body":"json","scope":{}},
-      "listMultipleUsersAggregateActivity": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/stats/activity/aggregate","body":"json","scope":{}},
-      "listMultipleUsersAggregateByPeriod": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/stats/activity/aggregate-by-period","body":"json","scope":{}},
-      "listMultipleUsersDayByDayActivity": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/stats/activity/day-by-day","body":"json","scope":{}},
-      "listPermissionProfile": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/all-permission-profiles","params":["workspaceId"],"scope":{"workspaceId":{"from":"query","at":"workspaceId"}}},
-      "listPermissionProfileUsers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/permission-profile/users","params":["profileId"],"scope":{"profileId":{"from":"query","at":"profileId"}}},
-      "listScorecards": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/settings/scorecards","scope":{}},
-      "listTargetDefinitions": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/targets","params":["workspaceId"],"scope":{"workspaceId":{"from":"query","at":"workspaceId"}}},
-      "listTasks": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/tasks","body":"json","scope":{}},
-      "listTrackers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/settings/trackers","params":["workspaceId"],"scope":{}},
-      "listUsers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/users","params":["cursor","includeAvatars"],"scope":{}},
-      "listUsers_1": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/coaching","params":["workspace-id","manager-id","from","to"],"scope":{}},
-      "listWorkspaces": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/workspaces","scope":{}},
-      "purgeEmailAddress": {"action":"delete.erase_data_for_email_address","effects":["delete"],"method":"POST","origin":"{origin}","path":"/v2/data-privacy/erase-data-for-email-address","params":["emailAddress"],"scope":{}},
-      "purgePhoneNumber": {"action":"delete.erase_data_for_phone_number","effects":["delete"],"method":"POST","origin":"{origin}","path":"/v2/data-privacy/erase-data-for-phone-number","params":["phoneNumber"],"scope":{}},
-      "registerGenericCrmIntegration": {"action":"admin.integrations","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/v2/crm/integrations","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "submitFlowProspectsBulkAssignment": {"action":"write.bulk_assignments","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/flows/prospects/bulk-assignments","body":"json","scope":{"flowId":{"from":"body","at":"/flowId"}}},
-      "unassignFlows": {"action":"write.unassign_flows_by_instance_id","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/flows/prospects/unassign-flows-by-instance-id","body":"json","scope":{}},
-      "unassignProspectFlows": {"action":"write.unassign_flows_by_crm_id","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/flows/prospects/unassign-flows-by-crm-id","body":"json","scope":{"crmProspectId":{"from":"body","at":"/crmProspectId"}}},
-      "updateMeeting": {"action":"write.meetings","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/meetings/{meetingId}","body":"json","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "updatePermissionProfile": {"action":"write.permission_profile","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/permission-profile","params":["profileId"],"body":"json","scope":{"profileId":{"from":"query","at":"profileId"}}},
-      "updateReminder": {"action":"write.tasks","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/v2/tasks/{taskId}","body":"json","scope":{"taskId":{"from":"path","at":"taskId"},"userId":{"from":"body","at":"/userId"}}},
-      "uploadAssignments": {"action":"write.targets","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/targets/{targetId}/assignments","params":["workspaceId","validateOnly"],"body":"any","scope":{"targetId":{"from":"path","at":"targetId"},"workspaceId":{"from":"query","at":"workspaceId"}}},
-      "uploadCrmData": {"action":"write.entities","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/crm/entities","body":"any","scope":{}},
-      "uploadCrmSchemaField": {"action":"write.entity_schema","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/crm/entity-schema","params":["integrationId","objectType"],"body":"json","scope":{"integrationId":{"from":"query","at":"integrationId"}}}
+      "accountsEnrich": {"action":"accounts.enrich.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["dataCategories"],"path":"/v2/accounts/enrich","scope":{}},
+      "addCall": {"action":"calls.write","body":"json","effects":["write"],"grant":["clientUniqueId"],"method":"POST","origin":"{origin}","path":"/v2/calls","scope":{"clientUniqueId":{"at":"/clientUniqueId","from":"body"},"downloadMediaUrl":{"at":"/downloadMediaUrl","from":"body","optional":true},"meetingUrl":{"at":"/meetingUrl","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"workspaceId":{"at":"/workspaceId","from":"body","optional":true}}},
+      "addCallRecording": {"action":"calls.media.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/calls/{id}/media","scope":{"id":{"at":"id","from":"path"}}},
+      "addDigitalInteraction": {"action":"digital_interaction.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/digital-interaction","scope":{"eventId":{"at":"/eventId","from":"body"}}},
+      "addMeeting": {"action":"meetings.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/meetings","scope":{}},
+      "addUsersAccessToCalls": {"action":"calls.users_access.share","body":"json","effects":["share"],"method":"PUT","origin":"{origin}","path":"/v2/calls/users-access","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "askEntity": {"action":"entities.ask_entity.generate","effects":["generate","pay"],"method":"GET","origin":"{origin}","params":["workspaceId","crmEntityType","crmEntityId","timePeriod","fromDateTime","toDateTime","question"],"path":"/v2/entities/ask-entity","scope":{"crmEntityId":{"at":"crmEntityId","from":"query"},"query":{"at":"","from":"query","type":"object"},"workspaceId":{"at":"workspaceId","from":"query"}}},
+      "assignProspects": {"action":"flows.prospects.assign.send","body":"json","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/v2/flows/prospects/assign","scope":{"crmProspectsIds":{"at":"/crmProspectsIds","from":"body","type":"array"},"flowId":{"at":"/flowId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "assignProspectsCoolOffOverrides": {"action":"flows.prospects.assign.cool_off_override.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/flows/prospects/assign/cool-off-override","scope":{"flowId":{"at":"/flowId","from":"body"}}},
+      "contactsEnrich": {"action":"contacts.enrich.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["dataCategories"],"path":"/v2/contacts/enrich","scope":{}},
+      "contentShared": {"action":"customer_engagement.content.shared.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/customer-engagement/content/shared","scope":{"contentId":{"at":"/contentId","from":"body"},"contentUrl":{"at":"/contentUrl","from":"body"}}},
+      "contentViewed": {"action":"customer_engagement.content.viewed.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/customer-engagement/content/viewed","scope":{"contentId":{"at":"/contentId","from":"body"},"contentUrl":{"at":"/contentUrl","from":"body"}}},
+      "createPermissionProfile": {"action":"permission_profile.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","params":["workspaceId"],"path":"/v2/permission-profile","scope":{"id":{"at":"/id","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"workspaceId":{"at":"workspaceId","from":"query"}}},
+      "customAction": {"action":"customer_engagement.action.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/customer-engagement/action","scope":{}},
+      "deleteGenericCrmIntegration": {"action":"crm.integrations.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["integrationId","clientRequestId"],"path":"/v2/crm/integrations","scope":{"clientRequestId":{"at":"clientRequestId","from":"query"},"integrationId":{"at":"integrationId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteMeeting": {"action":"meetings.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/meetings/{meetingId}","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "deleteUsersAccessToCalls": {"action":"calls.users_access.admin","body":"json","effects":["admin"],"method":"DELETE","origin":"{origin}","path":"/v2/calls/users-access","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "findAllReferencesToEmailAddress": {"action":"data_privacy.data_for_email_address.read","effects":["read"],"method":"GET","origin":"{origin}","params":["emailAddress"],"path":"/v2/data-privacy/data-for-email-address","scope":{}},
+      "findAllReferencesToPhoneNumber": {"action":"data_privacy.data_for_phone_number.read","effects":["read"],"method":"GET","origin":"{origin}","params":["phoneNumber"],"path":"/v2/data-privacy/data-for-phone-number","scope":{}},
+      "generateBrief": {"action":"entities.brief.generate","effects":["generate","pay"],"method":"GET","origin":"{origin}","params":["workspaceId","briefName","crmEntityType","crmEntityId","timePeriod","fromDateTime","toDateTime"],"path":"/v2/entities/get-brief","scope":{"briefName":{"at":"briefName","from":"query"},"crmEntityId":{"at":"crmEntityId","from":"query"},"query":{"at":"","from":"query","type":"object"},"workspaceId":{"at":"workspaceId","from":"query"}}},
+      "getAccountsEnrichResults": {"action":"accounts.enrich.results.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/accounts/enrich/{jobId}/results","scope":{"jobId":{"at":"jobId","from":"path"}}},
+      "getCall": {"action":"calls.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/calls/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getCallTranscripts": {"action":"calls.transcript.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/calls/transcript","scope":{}},
+      "getCallsInSpecificFolder": {"action":"library.folder_content.read","effects":["read"],"method":"GET","origin":"{origin}","params":["folderId"],"path":"/v2/library/folder-content","scope":{}},
+      "getContactsEnrichResults": {"action":"contacts.enrich.results.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/contacts/enrich/{jobId}/results","scope":{"jobId":{"at":"jobId","from":"path"}}},
+      "getCrmObjects": {"action":"crm.entities.read","effects":["read"],"method":"GET","origin":"{origin}","params":["integrationId","objectType","objectsCrmIds"],"path":"/v2/crm/entities","scope":{"integrationId":{"at":"integrationId","from":"query"},"objectsCrmIds":{"at":"objectsCrmIds","from":"query"}}},
+      "getFlowProspectsBulkAssignment": {"action":"flows.prospects.bulk_assignments.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/flows/prospects/bulk-assignments/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getFlowSteps": {"action":"flows.steps.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/flows/steps","scope":{}},
+      "getLibraryStructure": {"action":"library.folders.read","effects":["read"],"method":"GET","origin":"{origin}","params":["workspaceId"],"path":"/v2/library/folders","scope":{}},
+      "getPermissionProfile": {"action":"permission_profile.read","effects":["read"],"method":"GET","origin":"{origin}","params":["profileId"],"path":"/v2/permission-profile","scope":{"profileId":{"at":"profileId","from":"query"}}},
+      "getProspectsAssignedFlows": {"action":"flows.prospects.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/flows/prospects","scope":{}},
+      "getRequestStatus": {"action":"crm.request_status.read","effects":["read"],"method":"GET","origin":"{origin}","params":["integrationId","clientRequestId"],"path":"/v2/crm/request-status","scope":{"clientRequestId":{"at":"clientRequestId","from":"query"},"integrationId":{"at":"integrationId","from":"query"}}},
+      "getUser": {"action":"users.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/users/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getUserHistory": {"action":"users.settings_history.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/users/{id}/settings-history","scope":{"id":{"at":"id","from":"path"}}},
+      "getUsersAccessToCalls": {"action":"calls.users_access.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/calls/users-access","scope":{}},
+      "integrationSettings": {"action":"integration_settings.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v2/integration-settings","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "integrationStatus": {"action":"meetings.integration.status.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/meetings/integration/status","scope":{"emails":{"at":"/emails","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "listAnsweredScorecards": {"action":"stats.activity.scorecards.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/stats/activity/scorecards","scope":{}},
+      "listBriefs": {"action":"settings.briefs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["workspaceId"],"path":"/v2/settings/briefs","scope":{}},
+      "listCallOutcomes": {"action":"call_outcomes.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/call-outcomes","scope":{}},
+      "listCalls": {"action":"calls.read","effects":["read"],"method":"GET","origin":"{origin}","params":["cursor","fromDateTime","toDateTime","workspaceId"],"path":"/v2/calls","scope":{}},
+      "listCallsExtensive": {"action":"calls.extensive.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/calls/extensive","scope":{}},
+      "listCrmSchemaFields": {"action":"crm.entity_schema.read","effects":["read"],"method":"GET","origin":"{origin}","params":["integrationId","objectType"],"path":"/v2/crm/entity-schema","scope":{"integrationId":{"at":"integrationId","from":"query"}}},
+      "listFlows": {"action":"flows.read","effects":["read"],"method":"GET","origin":"{origin}","params":["flowOwnerEmail","cursor","workspaceId","folderId","mostRecentlyAssigned"],"path":"/v2/flows","scope":{}},
+      "listFlowsFolders": {"action":"flows.folders.read","effects":["read"],"method":"GET","origin":"{origin}","params":["flowFolderOwnerEmail","cursor","parentId","workspaceId"],"path":"/v2/flows/folders","scope":{}},
+      "listGenericCrmIntegration": {"action":"crm.integrations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/crm/integrations","scope":{}},
+      "listInteractionStats": {"action":"stats.interaction.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/stats/interaction","scope":{}},
+      "listLogs": {"action":"logs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["logType","fromDateTime","toDateTime","cursor"],"path":"/v2/logs","scope":{}},
+      "listMultipleUsers": {"action":"users.extensive.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/users/extensive","scope":{}},
+      "listMultipleUsersAggregateActivity": {"action":"stats.activity.aggregate.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/stats/activity/aggregate","scope":{}},
+      "listMultipleUsersAggregateByPeriod": {"action":"stats.activity.aggregate_by_period.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/stats/activity/aggregate-by-period","scope":{}},
+      "listMultipleUsersDayByDayActivity": {"action":"stats.activity.day_by_day.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/stats/activity/day-by-day","scope":{}},
+      "listPermissionProfile": {"action":"all_permission_profiles.read","effects":["read"],"method":"GET","origin":"{origin}","params":["workspaceId"],"path":"/v2/all-permission-profiles","scope":{"workspaceId":{"at":"workspaceId","from":"query"}}},
+      "listPermissionProfileUsers": {"action":"permission_profile.users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["profileId"],"path":"/v2/permission-profile/users","scope":{"profileId":{"at":"profileId","from":"query"}}},
+      "listScorecards": {"action":"settings.scorecards.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/settings/scorecards","scope":{}},
+      "listTargetDefinitions": {"action":"targets.read","effects":["read"],"method":"GET","origin":"{origin}","params":["workspaceId"],"path":"/v2/targets","scope":{"workspaceId":{"at":"workspaceId","from":"query"}}},
+      "listTasks": {"action":"tasks.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/v2/tasks","scope":{}},
+      "listTrackers": {"action":"settings.trackers.read","effects":["read"],"method":"GET","origin":"{origin}","params":["workspaceId"],"path":"/v2/settings/trackers","scope":{}},
+      "listUsers": {"action":"users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["cursor","includeAvatars"],"path":"/v2/users","scope":{}},
+      "listUsers_1": {"action":"coaching.read","effects":["read"],"method":"GET","origin":"{origin}","params":["workspace-id","manager-id","from","to"],"path":"/v2/coaching","scope":{}},
+      "listWorkspaces": {"action":"workspaces.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/workspaces","scope":{}},
+      "purgeEmailAddress": {"action":"data_privacy.erase_data_for_email_address.delete","effects":["delete"],"method":"POST","origin":"{origin}","params":["emailAddress"],"path":"/v2/data-privacy/erase-data-for-email-address","scope":{}},
+      "purgePhoneNumber": {"action":"data_privacy.erase_data_for_phone_number.delete","effects":["delete"],"method":"POST","origin":"{origin}","params":["phoneNumber"],"path":"/v2/data-privacy/erase-data-for-phone-number","scope":{}},
+      "registerGenericCrmIntegration": {"action":"crm.integrations.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/v2/crm/integrations","scope":{"name":{"at":"/name","from":"body"}}},
+      "searchFlows": {"action":"flows.read","effects":["read"],"method":"GET","origin":"{origin}","params":["flowOwnerEmail","query","workspaceId","limit"],"path":"/v2/flows/search","scope":{"query":{"at":"","from":"query","type":"object"},"workspaceId":{"at":"workspaceId","from":"query","optional":true}}},
+      "submitFlowProspectsBulkAssignment": {"action":"flows.prospects.bulk_assignments.send","body":"json","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/v2/flows/prospects/bulk-assignments","scope":{"flowId":{"at":"/flowId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "unassignFlows": {"action":"flows.prospects.unassign_flows_by_instance_id.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/flows/prospects/unassign-flows-by-instance-id","scope":{}},
+      "unassignProspectFlows": {"action":"flows.prospects.unassign_flows_by_crm_id.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/flows/prospects/unassign-flows-by-crm-id","scope":{"crmProspectId":{"at":"/crmProspectId","from":"body"}}},
+      "updateMeeting": {"action":"meetings.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/meetings/{meetingId}","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "updatePermissionProfile": {"action":"permission_profile.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","params":["profileId"],"path":"/v2/permission-profile","scope":{"id":{"at":"/id","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"profileId":{"at":"profileId","from":"query"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateReminder": {"action":"tasks.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/v2/tasks/{taskId}","scope":{"taskId":{"at":"taskId","from":"path"},"userId":{"at":"/userId","from":"body"}}},
+      "uploadAssignments": {"action":"targets.assignments.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","params":["workspaceId","validateOnly"],"path":"/v2/targets/{targetId}/assignments","scope":{"targetId":{"at":"targetId","from":"path"},"workspaceId":{"at":"workspaceId","from":"query"}}},
+      "uploadCrmData": {"action":"crm.entities.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/crm/entities","scope":{}},
+      "uploadCrmSchemaField": {"action":"crm.entity_schema.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["integrationId","objectType"],"path":"/v2/crm/entity-schema","scope":{"integrationId":{"at":"integrationId","from":"query"}}}
     }
   }
 }

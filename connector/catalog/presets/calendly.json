@@ -1,116 +1,519 @@
 {
-  "title": "Calendly",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "client_id", "label": "OAuth client ID", "paths": []},
-      {"key": "client_secret", "label": "OAuth client secret", "secret": true, "paths": []},
-      {"key": "token", "label": "Calendly account", "secret": true, "credential": true, "oauth": {"auth_url": "https://auth.calendly.com/oauth/authorize", "token_url": "https://auth.calendly.com/oauth/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "users:read webhooks:read webhooks:write scheduled_events:read"}}
-    ],
-    "connection": {"http": {"slots": [{"value": "token", "origin": "https://api.calendly.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "delete.contacts": {"title": "Delete: contacts"},
-      "delete.invitations": {"title": "Delete: invitations"},
-      "delete.invitee_no_shows": {"title": "Delete: invitee no shows"},
-      "delete.meeting_recaps": {"title": "Delete: meeting recaps"},
-      "delete.organization_memberships": {"title": "Delete: organization memberships"},
-      "delete.webhook_subscriptions": {"title": "Delete: webhook subscriptions"},
-      "read": {"title": "Read everything the account can see"},
-      "share.invitations": {"title": "Share: invitations"},
-      "share.shares": {"title": "Share: shares"},
-      "write.contacts": {"title": "Write: contacts"},
-      "write.deletion": {"title": "Write: deletion"},
-      "write.event_type_availability_schedules": {"title": "Write: event type availability schedules"},
-      "write.event_types": {"title": "Write: event types"},
-      "write.events": {"title": "Write: events"},
-      "write.invitee_no_shows": {"title": "Write: invitee no shows"},
-      "write.invitees": {"title": "Write: invitees"},
-      "write.meeting_recaps": {"title": "Write: meeting recaps"},
-      "write.one_off_event_types": {"title": "Write: one off event types"},
-      "write.polls": {"title": "Write: polls"},
-      "write.scheduled_events": {"title": "Write: scheduled events"},
-      "write.scheduling_links": {"title": "Write: scheduling links"},
-      "write.user_holiday_sets": {"title": "Write: user holiday sets"},
-      "write.webhook_subscriptions": {"title": "Write: webhook subscriptions"}
-    }
+      "activity_log_entries": {
+        "title": "Activity log entries"
+      },
+      "activity_log_entries.read": {
+        "title": "Read"
+      },
+      "calendar_events": {
+        "title": "Calendar events"
+      },
+      "calendar_events.read": {
+        "title": "Read"
+      },
+      "contact_lists": {
+        "title": "Contact lists"
+      },
+      "contact_lists.memberships": {
+        "title": "Memberships"
+      },
+      "contact_lists.memberships.removal": {
+        "title": "Removal"
+      },
+      "contact_lists.memberships.removal.write": {
+        "title": "Create and edit"
+      },
+      "contact_lists.memberships.write": {
+        "title": "Create and edit"
+      },
+      "contact_lists.read": {
+        "title": "Read"
+      },
+      "contact_lists.write": {
+        "title": "Create and edit"
+      },
+      "contacts": {
+        "title": "Contacts"
+      },
+      "contacts.custom_field_definitions": {
+        "title": "Custom field definitions"
+      },
+      "contacts.custom_field_definitions.read": {
+        "title": "Read"
+      },
+      "contacts.custom_field_definitions.write": {
+        "title": "Create and edit"
+      },
+      "contacts.delete": {
+        "title": "Delete"
+      },
+      "contacts.read": {
+        "title": "Read"
+      },
+      "contacts.write": {
+        "title": "Create and edit"
+      },
+      "data_compliance": {
+        "title": "Data compliance"
+      },
+      "data_compliance.deletion": {
+        "title": "Deletion"
+      },
+      "data_compliance.deletion.events": {
+        "title": "Events"
+      },
+      "data_compliance.deletion.events.admin": {
+        "title": "Manage"
+      },
+      "data_compliance.deletion.invitees": {
+        "title": "Invitees"
+      },
+      "data_compliance.deletion.invitees.admin": {
+        "title": "Manage"
+      },
+      "event_type_availability_schedules": {
+        "title": "Event type availability schedules"
+      },
+      "event_type_availability_schedules.read": {
+        "title": "Read"
+      },
+      "event_type_availability_schedules.write": {
+        "title": "Create and edit"
+      },
+      "event_type_available_times": {
+        "title": "Event type available times"
+      },
+      "event_type_available_times.read": {
+        "title": "Read"
+      },
+      "event_type_memberships": {
+        "title": "Event type memberships"
+      },
+      "event_type_memberships.read": {
+        "title": "Read"
+      },
+      "event_types": {
+        "title": "Event types"
+      },
+      "event_types.read": {
+        "title": "Read"
+      },
+      "event_types.write": {
+        "title": "Create and edit"
+      },
+      "group_relationships": {
+        "title": "Group relationships"
+      },
+      "group_relationships.read": {
+        "title": "Read"
+      },
+      "groups": {
+        "title": "Groups"
+      },
+      "groups.read": {
+        "title": "Read"
+      },
+      "holidays": {
+        "title": "Holidays"
+      },
+      "holidays.read": {
+        "title": "Read"
+      },
+      "invitee_no_shows": {
+        "title": "Invitee no shows"
+      },
+      "invitee_no_shows.delete": {
+        "title": "Delete"
+      },
+      "invitee_no_shows.read": {
+        "title": "Read"
+      },
+      "invitee_no_shows.write": {
+        "title": "Create and edit"
+      },
+      "invitees": {
+        "title": "Invitees"
+      },
+      "invitees.send": {
+        "title": "Send"
+      },
+      "locations": {
+        "title": "Locations"
+      },
+      "locations.read": {
+        "title": "Read"
+      },
+      "meeting_recaps": {
+        "title": "Meeting recaps"
+      },
+      "meeting_recaps.delete": {
+        "title": "Delete"
+      },
+      "meeting_recaps.read": {
+        "title": "Read"
+      },
+      "meeting_recaps.transcript": {
+        "title": "Transcript"
+      },
+      "meeting_recaps.transcript.read": {
+        "title": "Read"
+      },
+      "meeting_recaps.write": {
+        "title": "Create and edit"
+      },
+      "notes": {
+        "title": "Notes"
+      },
+      "notes.read": {
+        "title": "Read"
+      },
+      "notes.write": {
+        "title": "Create and edit"
+      },
+      "one_off_event_types": {
+        "title": "One off event types"
+      },
+      "one_off_event_types.write": {
+        "title": "Create and edit"
+      },
+      "organization_memberships": {
+        "title": "Organization memberships"
+      },
+      "organization_memberships.admin": {
+        "title": "Manage"
+      },
+      "organization_memberships.read": {
+        "title": "Read"
+      },
+      "organizations": {
+        "title": "Organizations"
+      },
+      "organizations.invitations": {
+        "title": "Invitations"
+      },
+      "organizations.invitations.admin": {
+        "title": "Manage"
+      },
+      "organizations.invitations.read": {
+        "title": "Read"
+      },
+      "organizations.read": {
+        "title": "Read"
+      },
+      "outgoing_communications": {
+        "title": "Outgoing communications"
+      },
+      "outgoing_communications.read": {
+        "title": "Read"
+      },
+      "poll_invitees": {
+        "title": "Poll invitees"
+      },
+      "poll_invitees.read": {
+        "title": "Read"
+      },
+      "polls": {
+        "title": "Polls"
+      },
+      "polls.write": {
+        "title": "Create and edit"
+      },
+      "recent_invitees": {
+        "title": "Recent invitees"
+      },
+      "recent_invitees.read": {
+        "title": "Read"
+      },
+      "reserved_events": {
+        "title": "Reserved events"
+      },
+      "reserved_events.read": {
+        "title": "Read"
+      },
+      "routing_form_submissions": {
+        "title": "Routing form submissions"
+      },
+      "routing_form_submissions.read": {
+        "title": "Read"
+      },
+      "routing_forms": {
+        "title": "Routing forms"
+      },
+      "routing_forms.read": {
+        "title": "Read"
+      },
+      "sample_webhook_data": {
+        "title": "Sample webhook data"
+      },
+      "sample_webhook_data.read": {
+        "title": "Read"
+      },
+      "scheduled_events": {
+        "title": "Scheduled events"
+      },
+      "scheduled_events.cancellation": {
+        "title": "Cancellation"
+      },
+      "scheduled_events.cancellation.send": {
+        "title": "Send"
+      },
+      "scheduled_events.invitees": {
+        "title": "Invitees"
+      },
+      "scheduled_events.invitees.read": {
+        "title": "Read"
+      },
+      "scheduled_events.read": {
+        "title": "Read"
+      },
+      "scheduling_links": {
+        "title": "Scheduling links"
+      },
+      "scheduling_links.write": {
+        "title": "Create and edit"
+      },
+      "shares": {
+        "title": "Shares"
+      },
+      "shares.delete": {
+        "title": "Delete"
+      },
+      "shares.read": {
+        "title": "Read"
+      },
+      "shares.share": {
+        "title": "Share"
+      },
+      "subscriptions": {
+        "title": "Subscriptions"
+      },
+      "subscriptions.read": {
+        "title": "Read"
+      },
+      "super_admin_roles": {
+        "title": "Super admin roles"
+      },
+      "super_admin_roles.read": {
+        "title": "Read"
+      },
+      "teams": {
+        "title": "Teams"
+      },
+      "teams.read": {
+        "title": "Read"
+      },
+      "trials": {
+        "title": "Trials"
+      },
+      "trials.read": {
+        "title": "Read"
+      },
+      "user_availability_schedules": {
+        "title": "User availability schedules"
+      },
+      "user_availability_schedules.read": {
+        "title": "Read"
+      },
+      "user_availability_schedules.write": {
+        "title": "Create and edit"
+      },
+      "user_busy_times": {
+        "title": "User busy times"
+      },
+      "user_busy_times.read": {
+        "title": "Read"
+      },
+      "user_holiday_sets": {
+        "title": "User holiday sets"
+      },
+      "user_holiday_sets.read": {
+        "title": "Read"
+      },
+      "user_holiday_sets.write": {
+        "title": "Create and edit"
+      },
+      "user_meeting_limits": {
+        "title": "User meeting limits"
+      },
+      "user_meeting_limits.read": {
+        "title": "Read"
+      },
+      "user_meeting_limits.write": {
+        "title": "Create and edit"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.me": {
+        "title": "Me"
+      },
+      "users.me.deletion": {
+        "title": "Deletion"
+      },
+      "users.me.deletion.admin": {
+        "title": "Manage"
+      },
+      "users.me.read": {
+        "title": "Read"
+      },
+      "users.read": {
+        "title": "Read"
+      },
+      "webhook_subscriptions": {
+        "title": "Webhook subscriptions"
+      },
+      "webhook_subscriptions.admin": {
+        "title": "Manage"
+      },
+      "webhook_subscriptions.delete": {
+        "title": "Delete"
+      },
+      "webhook_subscriptions.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.calendly.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "client_id",
+        "label": "OAuth client ID",
+        "paths": []
+      },
+      {
+        "key": "client_secret",
+        "label": "OAuth client secret",
+        "paths": [],
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "token",
+        "label": "Calendly account",
+        "oauth": {
+          "auth_url": "https://auth.calendly.com/oauth/authorize",
+          "client_id": "{client_id}",
+          "client_secret": "{client_secret}",
+          "scope": "availability:write event_types:write locations:read routing_forms:read shares:write scheduled_events:write scheduling_links:write groups:read organizations:write users:read webhooks:write activity_log:read data_compliance:write outgoing_communications:read contacts:write meeting_recaps:write",
+          "token_url": "https://auth.calendly.com/oauth/token"
+        },
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Calendly",
   "http": {
     "operations": {
-      "create-contact": {"action":"write.contacts","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/contacts","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "create-event-type": {"action":"write.event_types","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/event_types","body":"json","scope":{"owner":{"from":"body","at":"/owner"},"name":{"from":"body","at":"/name"}}},
-      "create-holiday-set": {"action":"write.user_holiday_sets","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/user_holiday_sets","body":"json","scope":{}},
-      "create-invitee-no-show": {"action":"write.invitee_no_shows","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/invitee_no_shows","body":"json","scope":{}},
-      "create-one-off-event-type": {"action":"write.one_off_event_types","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/one_off_event_types","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "create-organization-invitation": {"action":"share.invitations","effects":["share"],"method":"POST","origin":"https://api.calendly.com","path":"/organizations/{uuid}/invitations","body":"json","scope":{"uuid":{"from":"path","at":"uuid"},"email":{"from":"body","at":"/email"},"request":{"from":"body","at":"","type":"object"}},"grant":["uuid","email"]},
-      "create-scheduled-event-cancellation": {"action":"write.scheduled_events","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/scheduled_events/{uuid}/cancellation","body":"any","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "create-scheduling-link": {"action":"write.scheduling_links","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/scheduling_links","body":"json","scope":{"owner":{"from":"body","at":"/owner"}}},
-      "create-share": {"action":"share.shares","effects":["share"],"method":"POST","origin":"https://api.calendly.com","path":"/shares","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "createwebhooks": {"action":"write.webhook_subscriptions","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/webhook_subscriptions","body":"json","scope":{"url":{"from":"body","at":"/url"}}},
-      "delete-contacts-uuid": {"action":"delete.contacts","effects":["delete"],"method":"DELETE","origin":"https://api.calendly.com","path":"/contacts/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "delete-current-user": {"action":"write.deletion","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/users/me/deletion","body":"any","scope":{}},
-      "delete-invitee-data": {"action":"write.invitees","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/data_compliance/deletion/invitees","body":"json","scope":{}},
-      "delete-invitee-no-show": {"action":"delete.invitee_no_shows","effects":["delete"],"method":"DELETE","origin":"https://api.calendly.com","path":"/invitee_no_shows/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "delete-meeting-recaps-uuid": {"action":"delete.meeting_recaps","effects":["delete"],"method":"DELETE","origin":"https://api.calendly.com","path":"/meeting_recaps/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "delete-organization-membership": {"action":"delete.organization_memberships","effects":["delete"],"method":"DELETE","origin":"https://api.calendly.com","path":"/organization_memberships/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "delete-scheduled-event-data": {"action":"write.events","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/data_compliance/deletion/events","body":"json","scope":{}},
-      "delete-webhook-subscription": {"action":"delete.webhook_subscriptions","effects":["delete"],"method":"DELETE","origin":"https://api.calendly.com","path":"/webhook_subscriptions/{webhook_uuid}","scope":{"webhook_uuid":{"from":"path","at":"webhook_uuid"}}},
-      "get-contact": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/contacts/{uuid}","params":["exclude"],"scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "get-contact-custom-field-definition": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/contacts/custom_field_definitions/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "get-event-type": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/event_types/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "get-event-type-availability": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/event_type_availability_schedules","params":["event_type"],"scope":{}},
-      "get-group": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/groups/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "get-group-relationship": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/group_relationships/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "get-groups": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/groups","params":["organization","page_token","count"],"scope":{}},
-      "get-invitee-no-show": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/invitee_no_shows/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "get-meeting-recaps-uuid-recap": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/meeting_recaps/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "get-organization": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/organizations/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "get-organization-invitation": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/organizations/{org_uuid}/invitations/{uuid}","scope":{"org_uuid":{"from":"path","at":"org_uuid"},"uuid":{"from":"path","at":"uuid"}}},
-      "get-organization-membership": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/organization_memberships/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "get-outgoing-communications": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/outgoing_communications","params":["organization","count","min_created_at","max_created_at","page_token"],"scope":{}},
-      "get-poll-invitee": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/poll_invitees/{invitee_uuid}","scope":{"invitee_uuid":{"from":"path","at":"invitee_uuid"}}},
-      "get-routing-form": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/routing_forms/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "get-routing-form-submission": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/routing_form_submissions/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "get-sample-webhook-data": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/sample_webhook_data","params":["event","organization","user","scope","group"],"scope":{}},
-      "get-scheduled-event": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/scheduled_events/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "get-scheduled-event-invitees": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/scheduled_events/{event_uuid}/invitees/{invitee_uuid}","scope":{"event_uuid":{"from":"path","at":"event_uuid"},"invitee_uuid":{"from":"path","at":"invitee_uuid"}}},
-      "get-share": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/shares/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "get-transcript-meeting-recaps": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/meeting_recaps/{uuid}/transcript","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "get-user": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/users/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "get-user-availability-schedule": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/user_availability_schedules/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "get-webhook-subscription": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/webhook_subscriptions/{webhook_uuid}","scope":{"webhook_uuid":{"from":"path","at":"webhook_uuid"}}},
-      "list-activity-log-entries": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/activity_log_entries","params":["organization","search_term","actor","sort","min_occurred_at","max_occurred_at","page_token","count","namespace","action"],"scope":{}},
-      "list-calendar-events": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/calendar_events","params":["user","start_time","end_time","calendar_account_kind","page_token","count"],"scope":{"user":{"from":"query","at":"user"}}},
-      "list-contacts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/contacts","params":["sort","email","phone_number","timezone","name","job_title","company","country","state","city","count","page_token","exclude"],"scope":{}},
-      "list-event-invitees": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/scheduled_events/{uuid}/invitees","params":["status","sort","email","page_token","count"],"scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "list-event-type-available-times": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/event_type_available_times","params":["event_type","start_time","end_time"],"scope":{}},
-      "list-event-type-memberships": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/event_type_memberships","params":["event_type","count","page_token"],"scope":{}},
-      "list-event-types": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/event_types","params":["active","organization","user","user_availability_schedule","sort","admin_managed","page_token","count"],"scope":{}},
-      "list-group-relationships": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/group_relationships","params":["count","page_token","organization","owner","group"],"scope":{}},
-      "list-holiday-sets": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/user_holiday_sets","scope":{}},
-      "list-meeting-recaps": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/meeting_recaps","params":["event","start_time","end_time","status","attendee","count","page_token"],"scope":{}},
-      "list-organization-invitations": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/organizations/{uuid}/invitations","params":["count","page_token","sort","email","status"],"scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "list-organization-memberships": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/organization_memberships","params":["page_token","count","email","organization","user","role"],"scope":{}},
-      "list-recent-invitees": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/recent_invitees","params":["user","page_token","count"],"scope":{"user":{"from":"query","at":"user"}}},
-      "list-reserved-events": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/reserved_events","params":["user","start_time","end_time","page_token","count"],"scope":{"user":{"from":"query","at":"user"}}},
-      "list-routing-form-submissions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/routing_form_submissions","params":["form","count","page_token","sort"],"scope":{}},
-      "list-routing-forms": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/routing_forms","params":["organization","count","page_token","sort"],"scope":{}},
-      "list-scheduled-events": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/scheduled_events","params":["user","organization","invitee_email","status","sort","min_start_time","max_start_time","page_token","count","group"],"scope":{}},
-      "list-subscriptions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/subscriptions","params":["organization","sort","count","page_token"],"scope":{}},
-      "list-super-admin-roles": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/super_admin_roles","params":["user"],"scope":{"user":{"from":"query","at":"user"}}},
-      "list-supported-holidays": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/holidays","params":["country_code"],"scope":{}},
-      "list-trials": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/trials","params":["organization","sort","count","page_token"],"scope":{}},
-      "list-user-availability-schedules": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/user_availability_schedules","params":["user"],"scope":{"user":{"from":"query","at":"user"}}},
-      "list-user-busy-times": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/user_busy_times","params":["user","start_time","end_time"],"scope":{"user":{"from":"query","at":"user"}}},
-      "list-user-locations": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/locations","params":["user"],"scope":{"user":{"from":"query","at":"user"}}},
-      "list-webhook-subscriptions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/webhook_subscriptions","params":["organization","user","group","page_token","count","sort","scope"],"scope":{}},
-      "patch-contacts-uuid": {"action":"write.contacts","effects":["write"],"method":"PATCH","origin":"https://api.calendly.com","path":"/contacts/{uuid}","body":"json","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "post-invitee": {"action":"write.invitees","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/invitees","body":"json","scope":{}},
-      "revoke-organization-invitation": {"action":"delete.invitations","effects":["delete"],"method":"DELETE","origin":"https://api.calendly.com","path":"/organizations/{org_uuid}/invitations/{uuid}","scope":{"org_uuid":{"from":"path","at":"org_uuid"},"uuid":{"from":"path","at":"uuid"}}},
-      "update-event-type": {"action":"write.event_types","effects":["write"],"method":"PATCH","origin":"https://api.calendly.com","path":"/event_types/{uuid}","body":"json","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "update-event-type-availability": {"action":"write.event_type_availability_schedules","effects":["write"],"method":"PATCH","origin":"https://api.calendly.com","path":"/event_type_availability_schedules","params":["event_type"],"body":"json","scope":{}},
-      "update-holiday-set": {"action":"write.user_holiday_sets","effects":["write"],"method":"PATCH","origin":"https://api.calendly.com","path":"/user_holiday_sets/{uuid}","body":"json","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "update-meeting-recaps-uuid": {"action":"write.meeting_recaps","effects":["write"],"method":"PATCH","origin":"https://api.calendly.com","path":"/meeting_recaps/{uuid}","body":"any","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "update-poll": {"action":"write.polls","effects":["write"],"method":"PATCH","origin":"https://api.calendly.com","path":"/polls/{uuid}","body":"json","scope":{"uuid":{"from":"path","at":"uuid"}}}
+      "add-contacts-to-static-list": {"action":"contact_lists.memberships.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/contact_lists/{uuid}/memberships","scope":{"request":{"at":"","from":"body","type":"object"},"uuid":{"at":"uuid","from":"path"}}},
+      "create-contact": {"action":"contacts.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/contacts","scope":{"name":{"at":"/name","from":"body"}}},
+      "create-contact-custom-field-definition": {"action":"contacts.custom_field_definitions.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/contacts/custom_field_definitions","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "create-contact-list": {"action":"contact_lists.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/contact_lists","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "create-event-type": {"action":"event_types.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/event_types","scope":{"name":{"at":"/name","from":"body"},"owner":{"at":"/owner","from":"body"}}},
+      "create-holiday-set": {"action":"user_holiday_sets.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/user_holiday_sets","scope":{}},
+      "create-invitee-no-show": {"action":"invitee_no_shows.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/invitee_no_shows","scope":{}},
+      "create-note": {"action":"notes.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/notes","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "create-one-off-event-type": {"action":"one_off_event_types.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/one_off_event_types","scope":{"name":{"at":"/name","from":"body"}}},
+      "create-organization-invitation": {"action":"organizations.invitations.admin","body":"json","effects":["admin","send"],"grant":["uuid","email"],"method":"POST","origin":"https://api.calendly.com","path":"/organizations/{uuid}/invitations","scope":{"email":{"at":"/email","from":"body"},"request":{"at":"","from":"body","type":"object"},"uuid":{"at":"uuid","from":"path"}}},
+      "create-scheduled-event-cancellation": {"action":"scheduled_events.cancellation.send","body":"any","effects":["send","write"],"method":"POST","origin":"https://api.calendly.com","path":"/scheduled_events/{uuid}/cancellation","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "create-scheduling-link": {"action":"scheduling_links.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/scheduling_links","scope":{"owner":{"at":"/owner","from":"body"}}},
+      "create-share": {"action":"shares.share","body":"json","effects":["share"],"method":"POST","origin":"https://api.calendly.com","path":"/shares","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "create-user-availability-schedule": {"action":"user_availability_schedules.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/user_availability_schedules","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createwebhooks": {"action":"webhook_subscriptions.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.calendly.com","path":"/webhook_subscriptions","scope":{"group":{"at":"/group","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"signing_key":{"at":"/signing_key","from":"body","optional":true},"url":{"at":"/url","from":"body"},"user":{"at":"/user","from":"body","optional":true}}},
+      "delete-contacts-uuid": {"action":"contacts.delete","effects":["delete"],"method":"DELETE","origin":"https://api.calendly.com","path":"/contacts/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "delete-current-user": {"action":"users.me.deletion.admin","body":"any","effects":["admin","delete"],"method":"POST","origin":"https://api.calendly.com","path":"/users/me/deletion","scope":{}},
+      "delete-invitee-data": {"action":"data_compliance.deletion.invitees.admin","body":"json","effects":["admin","delete"],"method":"POST","origin":"https://api.calendly.com","path":"/data_compliance/deletion/invitees","scope":{"emails":{"at":"/emails","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "delete-invitee-no-show": {"action":"invitee_no_shows.delete","effects":["delete"],"method":"DELETE","origin":"https://api.calendly.com","path":"/invitee_no_shows/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "delete-meeting-recaps-uuid": {"action":"meeting_recaps.delete","effects":["delete"],"method":"DELETE","origin":"https://api.calendly.com","path":"/meeting_recaps/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "delete-organization-membership": {"action":"organization_memberships.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://api.calendly.com","path":"/organization_memberships/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "delete-scheduled-event-data": {"action":"data_compliance.deletion.events.admin","body":"json","effects":["admin","delete"],"method":"POST","origin":"https://api.calendly.com","path":"/data_compliance/deletion/events","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "delete-share": {"action":"shares.delete","effects":["delete"],"method":"DELETE","origin":"https://api.calendly.com","path":"/shares/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "delete-webhook-subscription": {"action":"webhook_subscriptions.delete","effects":["delete"],"method":"DELETE","origin":"https://api.calendly.com","path":"/webhook_subscriptions/{webhook_uuid}","scope":{"webhook_uuid":{"at":"webhook_uuid","from":"path"}}},
+      "get-contact": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["exclude"],"path":"/contacts/{uuid}","path_patterns":{"uuid":"[^c].*|c(?:|[^u].*|u(?:|[^s].*|s(?:|[^t].*|t(?:|[^o].*|o(?:|[^m].*|m(?:|[^_].*|_(?:|[^f].*|f(?:|[^i].*|i(?:|[^e].*|e(?:|[^l].*|l(?:|[^d].*|d(?:|[^_].*|_(?:|[^d].*|d(?:|[^e].*|e(?:|[^f].*|f(?:|[^i].*|i(?:|[^n].*|n(?:|[^i].*|i(?:|[^t].*|t(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s.+)))))))))))))))))))))))"},"scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-contact-custom-field-definition": {"action":"contacts.custom_field_definitions.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/contacts/custom_field_definitions/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-contact-list": {"action":"contact_lists.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/contact_lists/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-current-user": {"action":"users.me.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/users/me","scope":{}},
+      "get-event-type": {"action":"event_types.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/event_types/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-event-type-availability": {"action":"event_type_availability_schedules.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["event_type"],"path":"/event_type_availability_schedules","scope":{}},
+      "get-group": {"action":"groups.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/groups/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-group-relationship": {"action":"group_relationships.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/group_relationships/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-groups": {"action":"groups.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["organization","page_token","count"],"path":"/groups","scope":{}},
+      "get-invitee-no-show": {"action":"invitee_no_shows.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/invitee_no_shows/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-meeting-recaps-uuid-recap": {"action":"meeting_recaps.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/meeting_recaps/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-note": {"action":"notes.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/notes/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-organization": {"action":"organizations.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/organizations/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-organization-invitation": {"action":"organizations.invitations.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/organizations/{org_uuid}/invitations/{uuid}","scope":{"org_uuid":{"at":"org_uuid","from":"path"},"uuid":{"at":"uuid","from":"path"}}},
+      "get-organization-membership": {"action":"organization_memberships.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/organization_memberships/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-outgoing-communications": {"action":"outgoing_communications.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["organization","count","min_created_at","max_created_at","page_token"],"path":"/outgoing_communications","scope":{}},
+      "get-poll-invitee": {"action":"poll_invitees.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/poll_invitees/{invitee_uuid}","scope":{"invitee_uuid":{"at":"invitee_uuid","from":"path"}}},
+      "get-routing-form": {"action":"routing_forms.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/routing_forms/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-routing-form-submission": {"action":"routing_form_submissions.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/routing_form_submissions/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-sample-webhook-data": {"action":"sample_webhook_data.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["event","organization","user","scope","group"],"path":"/sample_webhook_data","scope":{}},
+      "get-scheduled-event": {"action":"scheduled_events.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/scheduled_events/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-scheduled-event-invitees": {"action":"scheduled_events.invitees.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/scheduled_events/{event_uuid}/invitees/{invitee_uuid}","scope":{"event_uuid":{"at":"event_uuid","from":"path"},"invitee_uuid":{"at":"invitee_uuid","from":"path"}}},
+      "get-share": {"action":"shares.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/shares/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-team": {"action":"teams.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/teams/{team_uuid}","scope":{"team_uuid":{"at":"team_uuid","from":"path"}}},
+      "get-transcript-meeting-recaps": {"action":"meeting_recaps.transcript.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/meeting_recaps/{uuid}/transcript","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-user": {"action":"users.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/users/{uuid}","path_patterns":{"uuid":"[^m].*|m(?:|[^e].*|e.+)"},"scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-user-availability-schedule": {"action":"user_availability_schedules.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/user_availability_schedules/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "get-webhook-subscription": {"action":"webhook_subscriptions.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/webhook_subscriptions/{webhook_uuid}","scope":{"webhook_uuid":{"at":"webhook_uuid","from":"path"}}},
+      "list-activity-log-entries": {"action":"activity_log_entries.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["organization","search_term","actor","sort","min_occurred_at","max_occurred_at","page_token","count","namespace","action"],"path":"/activity_log_entries","scope":{}},
+      "list-calendar-events": {"action":"calendar_events.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["user","start_time","end_time","calendar_account_kind","page_token","count"],"path":"/calendar_events","scope":{"user":{"at":"user","from":"query"}}},
+      "list-contact-custom-field-definitions": {"action":"contacts.custom_field_definitions.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/contacts/custom_field_definitions","scope":{}},
+      "list-contact-lists": {"action":"contact_lists.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["type"],"path":"/contact_lists","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "list-contacts": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["sort","email","phone_number","timezone","name","job_title","company","country","state","city","count","page_token","exclude","contact_list","max_last_meeting_date","max_next_meeting_date","min_last_meeting_date","min_next_meeting_date"],"path":"/contacts","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "list-event-invitees": {"action":"scheduled_events.invitees.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["status","sort","email","page_token","count"],"path":"/scheduled_events/{uuid}/invitees","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "list-event-type-available-times": {"action":"event_type_available_times.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["event_type","start_time","end_time"],"path":"/event_type_available_times","scope":{}},
+      "list-event-type-memberships": {"action":"event_type_memberships.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["event_type","count","page_token"],"path":"/event_type_memberships","scope":{}},
+      "list-event-types": {"action":"event_types.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["active","organization","user","user_availability_schedule","sort","admin_managed","page_token","count"],"path":"/event_types","scope":{}},
+      "list-group-relationships": {"action":"group_relationships.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["count","page_token","organization","owner","group"],"path":"/group_relationships","scope":{}},
+      "list-holiday-sets": {"action":"user_holiday_sets.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","path":"/user_holiday_sets","scope":{}},
+      "list-meeting-recaps": {"action":"meeting_recaps.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["event","start_time","end_time","status","attendee","count","page_token"],"path":"/meeting_recaps","scope":{}},
+      "list-notes": {"action":"notes.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["contact","count","page_token"],"path":"/notes","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "list-organization-invitations": {"action":"organizations.invitations.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["count","page_token","sort","email","status"],"path":"/organizations/{uuid}/invitations","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "list-organization-memberships": {"action":"organization_memberships.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["page_token","count","email","organization","user","role"],"path":"/organization_memberships","scope":{}},
+      "list-recent-invitees": {"action":"recent_invitees.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["user","page_token","count"],"path":"/recent_invitees","scope":{"user":{"at":"user","from":"query"}}},
+      "list-reserved-events": {"action":"reserved_events.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["user","start_time","end_time","page_token","count"],"path":"/reserved_events","scope":{"user":{"at":"user","from":"query"}}},
+      "list-routing-form-submissions": {"action":"routing_form_submissions.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["form","count","page_token","sort"],"path":"/routing_form_submissions","scope":{}},
+      "list-routing-forms": {"action":"routing_forms.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["organization","count","page_token","sort"],"path":"/routing_forms","scope":{}},
+      "list-scheduled-events": {"action":"scheduled_events.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["user","organization","invitee_email","status","sort","min_start_time","max_start_time","page_token","count","group"],"path":"/scheduled_events","scope":{}},
+      "list-shares": {"action":"shares.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["user","min_created_at","max_created_at","event_type","sort","count","page_token"],"path":"/shares","scope":{"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"query"}}},
+      "list-subscriptions": {"action":"subscriptions.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["organization","sort","count","page_token"],"path":"/subscriptions","scope":{}},
+      "list-super-admin-roles": {"action":"super_admin_roles.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["user"],"path":"/super_admin_roles","scope":{"user":{"at":"user","from":"query"}}},
+      "list-supported-holidays": {"action":"holidays.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["country_code"],"path":"/holidays","scope":{}},
+      "list-teams": {"action":"teams.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["user","page_token","count"],"path":"/teams","scope":{"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"query","optional":true}}},
+      "list-trials": {"action":"trials.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["organization","sort","count","page_token"],"path":"/trials","scope":{}},
+      "list-user-availability-schedules": {"action":"user_availability_schedules.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["user"],"path":"/user_availability_schedules","scope":{"user":{"at":"user","from":"query"}}},
+      "list-user-busy-times": {"action":"user_busy_times.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["user","start_time","end_time"],"path":"/user_busy_times","scope":{"user":{"at":"user","from":"query"}}},
+      "list-user-locations": {"action":"locations.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["user"],"path":"/locations","scope":{"user":{"at":"user","from":"query"}}},
+      "list-user-meeting-limits": {"action":"user_meeting_limits.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["user"],"path":"/user_meeting_limits","scope":{"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"query"}}},
+      "list-webhook-subscriptions": {"action":"webhook_subscriptions.read","effects":["read"],"method":"GET","origin":"https://api.calendly.com","params":["organization","user","group","page_token","count","sort","scope"],"path":"/webhook_subscriptions","scope":{}},
+      "patch-contacts-uuid": {"action":"contacts.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.calendly.com","path":"/contacts/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "post-invitee": {"action":"invitees.send","body":"json","effects":["send","write"],"method":"POST","origin":"https://api.calendly.com","path":"/invitees","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "remove-contacts-from-static-list": {"action":"contact_lists.memberships.removal.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.calendly.com","path":"/contact_lists/{uuid}/memberships/removal","scope":{"request":{"at":"","from":"body","type":"object"},"uuid":{"at":"uuid","from":"path"}}},
+      "revoke-organization-invitation": {"action":"organizations.invitations.admin","effects":["admin"],"method":"DELETE","origin":"https://api.calendly.com","path":"/organizations/{org_uuid}/invitations/{uuid}","scope":{"org_uuid":{"at":"org_uuid","from":"path"},"uuid":{"at":"uuid","from":"path"}}},
+      "update-contact-list": {"action":"contact_lists.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.calendly.com","path":"/contact_lists/{uuid}","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"uuid":{"at":"uuid","from":"path"}}},
+      "update-event-type": {"action":"event_types.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.calendly.com","path":"/event_types/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "update-event-type-availability": {"action":"event_type_availability_schedules.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.calendly.com","params":["event_type"],"path":"/event_type_availability_schedules","scope":{}},
+      "update-holiday-set": {"action":"user_holiday_sets.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.calendly.com","path":"/user_holiday_sets/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "update-meeting-recaps-uuid": {"action":"meeting_recaps.write","body":"any","effects":["write"],"method":"PATCH","origin":"https://api.calendly.com","path":"/meeting_recaps/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "update-poll": {"action":"polls.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.calendly.com","path":"/polls/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "update-share": {"action":"shares.share","body":"json","effects":["share"],"method":"PATCH","origin":"https://api.calendly.com","path":"/shares/{uuid}","scope":{"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"uuid":{"at":"uuid","from":"path"}}},
+      "update-user-availability-schedule": {"action":"user_availability_schedules.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.calendly.com","path":"/user_availability_schedules/{uuid}","scope":{"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"uuid":{"at":"uuid","from":"path"}}},
+      "update-user-meeting-limits": {"action":"user_meeting_limits.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.calendly.com","params":["user"],"path":"/user_meeting_limits","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"user":{"at":"user","from":"query"}}}
     }
   }
 }

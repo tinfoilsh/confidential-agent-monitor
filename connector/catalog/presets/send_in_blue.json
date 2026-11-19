@@ -1,417 +1,1565 @@
 {
-  "title": "Brevo",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.brevo.com", "path": "/v3", "header": "api-key"}]}},
     "actions": {
-      "admin.domains": {"title": "Admin: domains"},
-      "admin.group": {"title": "Admin: group"},
-      "admin.key": {"title": "Admin: key"},
-      "admin.plan": {"title": "Admin: plan"},
-      "admin.subscriptions": {"title": "Admin: subscriptions"},
-      "admin.webhooks": {"title": "Admin: webhooks"},
-      "delete.attributes": {"title": "Delete: attributes"},
-      "delete.balance_definitions": {"title": "Delete: balance definitions"},
-      "delete.blocked_contacts": {"title": "Delete: blocked contacts"},
-      "delete.blocked_domains": {"title": "Delete: blocked domains"},
-      "delete.companies": {"title": "Delete: companies"},
-      "delete.consent_groups": {"title": "Delete: consent groups"},
-      "delete.contact": {"title": "Delete: contact"},
-      "delete.contacts": {"title": "Delete: contacts"},
-      "delete.deals": {"title": "Delete: deals"},
-      "delete.delete": {"title": "Delete: delete"},
-      "delete.delete_hardbounces": {"title": "Delete: delete hardbounces"},
-      "delete.domains": {"title": "Delete: domains"},
-      "delete.email": {"title": "Delete: email"},
-      "delete.email_campaigns": {"title": "Delete: email campaigns"},
-      "delete.feeds": {"title": "Delete: feeds"},
-      "delete.files": {"title": "Delete: files"},
-      "delete.folders": {"title": "Delete: folders"},
-      "delete.group": {"title": "Delete: group"},
-      "delete.limits": {"title": "Delete: limits"},
-      "delete.lists": {"title": "Delete: lists"},
-      "delete.log": {"title": "Delete: log"},
-      "delete.messages": {"title": "Delete: messages"},
-      "delete.notes": {"title": "Delete: notes"},
-      "delete.programs": {"title": "Delete: programs"},
-      "delete.pushed_messages": {"title": "Delete: pushed messages"},
-      "delete.remove": {"title": "Delete: remove"},
-      "delete.requests": {"title": "Delete: requests"},
-      "delete.revoke": {"title": "Delete: revoke"},
-      "delete.rewards": {"title": "Delete: rewards"},
-      "delete.senders": {"title": "Delete: senders"},
-      "delete.sms_campaigns": {"title": "Delete: sms campaigns"},
-      "delete.sub_account": {"title": "Delete: sub account"},
-      "delete.subscription_members": {"title": "Delete: subscription members"},
-      "delete.tasks": {"title": "Delete: tasks"},
-      "delete.templates": {"title": "Delete: templates"},
-      "delete.tier_groups": {"title": "Delete: tier groups"},
-      "delete.tiers": {"title": "Delete: tiers"},
-      "delete.webhooks": {"title": "Delete: webhooks"},
-      "delete.whatsapp_campaigns": {"title": "Delete: whatsapp campaigns"},
-      "generate.complete": {"title": "Generate: complete"},
-      "generate.images": {"title": "Generate: images"},
-      "publish.programs": {"title": "Publish: programs"},
-      "read": {"title": "Read everything the account can see"},
-      "send.agent_online_ping": {"title": "Send: agent online ping"},
-      "send.approval": {"title": "Send: approval"},
-      "send.email": {"title": "Send: email"},
-      "send.email_campaigns": {"title": "Send: email campaigns"},
-      "send.messages": {"title": "Send: messages"},
-      "send.notes": {"title": "Send: notes"},
-      "send.send": {"title": "Send: send"},
-      "send.send_message": {"title": "Send: send message"},
-      "send.sms": {"title": "Send: sms"},
-      "send.sms_campaigns": {"title": "Send: sms campaigns"},
-      "send.templates": {"title": "Send: templates"},
-      "share.invitation": {"title": "Share: invitation"},
-      "share.permissions": {"title": "Share: permissions"},
-      "share.send": {"title": "Share: send"},
-      "write.activate": {"title": "Write: activate"},
-      "write.add": {"title": "Write: add"},
-      "write.alerts": {"title": "Write: alerts"},
-      "write.associate": {"title": "Write: associate"},
-      "write.attribute": {"title": "Write: attribute"},
-      "write.attributes": {"title": "Write: attributes"},
-      "write.authenticate": {"title": "Write: authenticate"},
-      "write.balance_definitions": {"title": "Write: balance definitions"},
-      "write.balances": {"title": "Write: balances"},
-      "write.batch": {"title": "Write: batch"},
-      "write.blocked_domains": {"title": "Write: blocked domains"},
-      "write.categories": {"title": "Write: categories"},
-      "write.companies": {"title": "Write: companies"},
-      "write.consent_groups": {"title": "Write: consent groups"},
-      "write.contacts": {"title": "Write: contacts"},
-      "write.coupon_collections": {"title": "Write: coupon collections"},
-      "write.coupons": {"title": "Write: coupons"},
-      "write.create_order": {"title": "Write: create order"},
-      "write.deals": {"title": "Write: deals"},
-      "write.display_currency": {"title": "Write: display currency"},
-      "write.dissociate": {"title": "Write: dissociate"},
-      "write.double_optin_confirmation": {"title": "Write: double optin confirmation"},
-      "write.email_campaigns": {"title": "Write: email campaigns"},
-      "write.events": {"title": "Write: events"},
-      "write.export": {"title": "Write: export"},
-      "write.feeds": {"title": "Write: feeds"},
-      "write.files": {"title": "Write: files"},
-      "write.folders": {"title": "Write: folders"},
-      "write.import": {"title": "Write: import"},
-      "write.limits": {"title": "Write: limits"},
-      "write.link_unlink": {"title": "Write: link unlink"},
-      "write.lists": {"title": "Write: lists"},
-      "write.messages": {"title": "Write: messages"},
-      "write.notes": {"title": "Write: notes"},
-      "write.offers": {"title": "Write: offers"},
-      "write.preview": {"title": "Write: preview"},
-      "write.products": {"title": "Write: products"},
-      "write.programs": {"title": "Write: programs"},
-      "write.pushed_messages": {"title": "Write: pushed messages"},
-      "write.redeem": {"title": "Write: redeem"},
-      "write.requests": {"title": "Write: requests"},
-      "write.senders": {"title": "Write: senders"},
-      "write.sms_campaigns": {"title": "Write: sms campaigns"},
-      "write.sso_token": {"title": "Write: sso token"},
-      "write.status": {"title": "Write: status"},
-      "write.sub_account": {"title": "Write: sub account"},
-      "write.sub_accounts": {"title": "Write: sub accounts"},
-      "write.subscription_members": {"title": "Write: subscription members"},
-      "write.tasks": {"title": "Write: tasks"},
-      "write.template": {"title": "Write: template"},
-      "write.templates": {"title": "Write: templates"},
-      "write.tier_groups": {"title": "Write: tier groups"},
-      "write.tiers": {"title": "Write: tiers"},
-      "write.toggle": {"title": "Write: toggle"},
-      "write.transactions": {"title": "Write: transactions"},
-      "write.upsert": {"title": "Write: upsert"},
-      "write.visitor_group": {"title": "Write: visitor group"},
-      "write.whatsapp_campaigns": {"title": "Write: whatsapp campaigns"}
-    }
+      "account": {
+        "title": "Account"
+      },
+      "account.read": {
+        "title": "Read"
+      },
+      "categories": {
+        "title": "Categories"
+      },
+      "categories.read": {
+        "title": "Read"
+      },
+      "categories.write": {
+        "title": "Create and edit"
+      },
+      "companies": {
+        "title": "Companies"
+      },
+      "companies.delete": {
+        "title": "Delete"
+      },
+      "companies.link_unlink": {
+        "title": "Link unlink"
+      },
+      "companies.link_unlink.write": {
+        "title": "Create and edit"
+      },
+      "companies.read": {
+        "title": "Read"
+      },
+      "companies.write": {
+        "title": "Create and edit"
+      },
+      "contacts": {
+        "title": "Contacts"
+      },
+      "contacts.attributes": {
+        "title": "Attributes"
+      },
+      "contacts.attributes.delete": {
+        "title": "Delete"
+      },
+      "contacts.attributes.read": {
+        "title": "Read"
+      },
+      "contacts.attributes.write": {
+        "title": "Create and edit"
+      },
+      "contacts.campaign_stats": {
+        "title": "Campaign stats"
+      },
+      "contacts.campaign_stats.read": {
+        "title": "Read"
+      },
+      "contacts.consent_groups": {
+        "title": "Consent groups"
+      },
+      "contacts.consent_groups.delete": {
+        "title": "Delete"
+      },
+      "contacts.consent_groups.read": {
+        "title": "Read"
+      },
+      "contacts.consent_groups.write": {
+        "title": "Create and edit"
+      },
+      "contacts.delete": {
+        "title": "Delete"
+      },
+      "contacts.double_optin_confirmation": {
+        "title": "Double optin confirmation"
+      },
+      "contacts.double_optin_confirmation.write": {
+        "title": "Create and edit"
+      },
+      "contacts.folders": {
+        "title": "Folders"
+      },
+      "contacts.folders.delete": {
+        "title": "Delete"
+      },
+      "contacts.folders.lists": {
+        "title": "Lists"
+      },
+      "contacts.folders.lists.read": {
+        "title": "Read"
+      },
+      "contacts.folders.read": {
+        "title": "Read"
+      },
+      "contacts.folders.write": {
+        "title": "Create and edit"
+      },
+      "contacts.lists": {
+        "title": "Lists"
+      },
+      "contacts.lists.contacts": {
+        "title": "Contacts"
+      },
+      "contacts.lists.contacts.delete": {
+        "title": "Delete"
+      },
+      "contacts.lists.contacts.read": {
+        "title": "Read"
+      },
+      "contacts.lists.contacts.write": {
+        "title": "Create and edit"
+      },
+      "contacts.lists.delete": {
+        "title": "Delete"
+      },
+      "contacts.lists.read": {
+        "title": "Read"
+      },
+      "contacts.lists.write": {
+        "title": "Create and edit"
+      },
+      "contacts.read": {
+        "title": "Read"
+      },
+      "contacts.segments": {
+        "title": "Segments"
+      },
+      "contacts.segments.read": {
+        "title": "Read"
+      },
+      "contacts.write": {
+        "title": "Create and edit"
+      },
+      "conversations": {
+        "title": "Conversations"
+      },
+      "conversations.agent_online_ping": {
+        "title": "Agent online ping"
+      },
+      "conversations.agent_online_ping.write": {
+        "title": "Create and edit"
+      },
+      "conversations.messages": {
+        "title": "Messages"
+      },
+      "conversations.messages.delete": {
+        "title": "Delete"
+      },
+      "conversations.messages.read": {
+        "title": "Read"
+      },
+      "conversations.messages.send": {
+        "title": "Send"
+      },
+      "conversations.messages.write": {
+        "title": "Create and edit"
+      },
+      "conversations.pushed_messages": {
+        "title": "Pushed messages"
+      },
+      "conversations.pushed_messages.delete": {
+        "title": "Delete"
+      },
+      "conversations.pushed_messages.read": {
+        "title": "Read"
+      },
+      "conversations.pushed_messages.send": {
+        "title": "Send"
+      },
+      "conversations.pushed_messages.write": {
+        "title": "Create and edit"
+      },
+      "conversations.visitor_group": {
+        "title": "Visitor group"
+      },
+      "conversations.visitor_group.write": {
+        "title": "Create and edit"
+      },
+      "corporate": {
+        "title": "Corporate"
+      },
+      "corporate.group": {
+        "title": "Group"
+      },
+      "corporate.group.admin": {
+        "title": "Manage"
+      },
+      "corporate.group.delete": {
+        "title": "Delete"
+      },
+      "corporate.group.read": {
+        "title": "Read"
+      },
+      "corporate.group.unlink": {
+        "title": "Unlink"
+      },
+      "corporate.group.unlink.sub_accounts": {
+        "title": "Sub accounts"
+      },
+      "corporate.group.unlink.sub_accounts.write": {
+        "title": "Create and edit"
+      },
+      "corporate.groups": {
+        "title": "Groups"
+      },
+      "corporate.groups.read": {
+        "title": "Read"
+      },
+      "corporate.invited": {
+        "title": "Invited"
+      },
+      "corporate.invited.users": {
+        "title": "Users"
+      },
+      "corporate.invited.users.read": {
+        "title": "Read"
+      },
+      "corporate.ip": {
+        "title": "Ip"
+      },
+      "corporate.ip.read": {
+        "title": "Read"
+      },
+      "corporate.master_account": {
+        "title": "Master account"
+      },
+      "corporate.master_account.read": {
+        "title": "Read"
+      },
+      "corporate.sso_token": {
+        "title": "Sso token"
+      },
+      "corporate.sso_token.write": {
+        "title": "Create and edit"
+      },
+      "corporate.sub_account": {
+        "title": "Sub account"
+      },
+      "corporate.sub_account.applications": {
+        "title": "Applications"
+      },
+      "corporate.sub_account.applications.toggle": {
+        "title": "Toggle"
+      },
+      "corporate.sub_account.applications.toggle.write": {
+        "title": "Create and edit"
+      },
+      "corporate.sub_account.delete": {
+        "title": "Delete"
+      },
+      "corporate.sub_account.ip": {
+        "title": "Ip"
+      },
+      "corporate.sub_account.ip.associate": {
+        "title": "Associate"
+      },
+      "corporate.sub_account.ip.associate.write": {
+        "title": "Create and edit"
+      },
+      "corporate.sub_account.ip.dissociate": {
+        "title": "Dissociate"
+      },
+      "corporate.sub_account.ip.dissociate.write": {
+        "title": "Create and edit"
+      },
+      "corporate.sub_account.key": {
+        "title": "Key"
+      },
+      "corporate.sub_account.key.admin": {
+        "title": "Manage"
+      },
+      "corporate.sub_account.plan": {
+        "title": "Plan"
+      },
+      "corporate.sub_account.plan.admin": {
+        "title": "Manage"
+      },
+      "corporate.sub_account.read": {
+        "title": "Read"
+      },
+      "corporate.sub_account.sso_token": {
+        "title": "Sso token"
+      },
+      "corporate.sub_account.sso_token.write": {
+        "title": "Create and edit"
+      },
+      "corporate.sub_account.write": {
+        "title": "Create and edit"
+      },
+      "corporate.sub_accounts": {
+        "title": "Sub accounts"
+      },
+      "corporate.sub_accounts.plan": {
+        "title": "Plan"
+      },
+      "corporate.sub_accounts.plan.admin": {
+        "title": "Manage"
+      },
+      "corporate.user": {
+        "title": "Account"
+      },
+      "corporate.user.invitation": {
+        "title": "Invitation"
+      },
+      "corporate.user.invitation.send": {
+        "title": "Send"
+      },
+      "corporate.user.permissions": {
+        "title": "Permissions"
+      },
+      "corporate.user.permissions.read": {
+        "title": "Read"
+      },
+      "corporate.user.permissions.share": {
+        "title": "Share"
+      },
+      "corporate.user.revoke": {
+        "title": "Revoke"
+      },
+      "corporate.user.revoke.delete": {
+        "title": "Delete"
+      },
+      "coupon_collections": {
+        "title": "Coupon collections"
+      },
+      "coupon_collections.read": {
+        "title": "Read"
+      },
+      "coupon_collections.write": {
+        "title": "Create and edit"
+      },
+      "coupons": {
+        "title": "Coupons"
+      },
+      "coupons.write": {
+        "title": "Create and edit"
+      },
+      "crm": {
+        "title": "Crm"
+      },
+      "crm.attributes": {
+        "title": "Attributes"
+      },
+      "crm.attributes.companies": {
+        "title": "Companies"
+      },
+      "crm.attributes.companies.read": {
+        "title": "Read"
+      },
+      "crm.attributes.deals": {
+        "title": "Deals"
+      },
+      "crm.attributes.deals.read": {
+        "title": "Read"
+      },
+      "crm.attributes.delete": {
+        "title": "Delete"
+      },
+      "crm.attributes.write": {
+        "title": "Create and edit"
+      },
+      "crm.deals": {
+        "title": "Deals"
+      },
+      "crm.deals.delete": {
+        "title": "Delete"
+      },
+      "crm.deals.link_unlink": {
+        "title": "Link unlink"
+      },
+      "crm.deals.link_unlink.write": {
+        "title": "Create and edit"
+      },
+      "crm.deals.read": {
+        "title": "Read"
+      },
+      "crm.deals.write": {
+        "title": "Create and edit"
+      },
+      "crm.files": {
+        "title": "Files"
+      },
+      "crm.files.data": {
+        "title": "Data"
+      },
+      "crm.files.data.read": {
+        "title": "Read"
+      },
+      "crm.files.delete": {
+        "title": "Delete"
+      },
+      "crm.files.read": {
+        "title": "Read"
+      },
+      "crm.files.write": {
+        "title": "Create and edit"
+      },
+      "crm.notes": {
+        "title": "Notes"
+      },
+      "crm.notes.delete": {
+        "title": "Delete"
+      },
+      "crm.notes.read": {
+        "title": "Read"
+      },
+      "crm.notes.send": {
+        "title": "Send"
+      },
+      "crm.notes.write": {
+        "title": "Create and edit"
+      },
+      "crm.pipeline": {
+        "title": "Pipeline"
+      },
+      "crm.pipeline.details": {
+        "title": "Details"
+      },
+      "crm.pipeline.details.all": {
+        "title": "All"
+      },
+      "crm.pipeline.details.all.read": {
+        "title": "Read"
+      },
+      "crm.pipeline.details.read": {
+        "title": "Read"
+      },
+      "crm.tasks": {
+        "title": "Tasks"
+      },
+      "crm.tasks.delete": {
+        "title": "Delete"
+      },
+      "crm.tasks.read": {
+        "title": "Read"
+      },
+      "crm.tasks.write": {
+        "title": "Create and edit"
+      },
+      "crm.tasktypes": {
+        "title": "Tasktypes"
+      },
+      "crm.tasktypes.read": {
+        "title": "Read"
+      },
+      "ecommerce": {
+        "title": "Ecommerce"
+      },
+      "ecommerce.activate": {
+        "title": "Activate"
+      },
+      "ecommerce.activate.write": {
+        "title": "Create and edit"
+      },
+      "ecommerce.attribution": {
+        "title": "Attribution"
+      },
+      "ecommerce.attribution.metrics": {
+        "title": "Metrics"
+      },
+      "ecommerce.attribution.metrics.read": {
+        "title": "Read"
+      },
+      "ecommerce.attribution.products": {
+        "title": "Products"
+      },
+      "ecommerce.attribution.products.read": {
+        "title": "Read"
+      },
+      "ecommerce.config": {
+        "title": "Config"
+      },
+      "ecommerce.config.display_currency": {
+        "title": "Display currency"
+      },
+      "ecommerce.config.display_currency.read": {
+        "title": "Read"
+      },
+      "ecommerce.config.display_currency.write": {
+        "title": "Create and edit"
+      },
+      "email_campaigns": {
+        "title": "Email campaigns"
+      },
+      "email_campaigns.ab_test_campaign_result": {
+        "title": "Ab test campaign result"
+      },
+      "email_campaigns.ab_test_campaign_result.read": {
+        "title": "Read"
+      },
+      "email_campaigns.delete": {
+        "title": "Delete"
+      },
+      "email_campaigns.images": {
+        "title": "Images"
+      },
+      "email_campaigns.images.write": {
+        "title": "Create and edit"
+      },
+      "email_campaigns.now": {
+        "title": "Now"
+      },
+      "email_campaigns.now.send": {
+        "title": "Send"
+      },
+      "email_campaigns.read": {
+        "title": "Read"
+      },
+      "email_campaigns.recipients": {
+        "title": "Recipients"
+      },
+      "email_campaigns.recipients.write": {
+        "title": "Create and edit"
+      },
+      "email_campaigns.report": {
+        "title": "Report"
+      },
+      "email_campaigns.report.send": {
+        "title": "Send"
+      },
+      "email_campaigns.send": {
+        "title": "Send"
+      },
+      "email_campaigns.shared_url": {
+        "title": "Shared url"
+      },
+      "email_campaigns.shared_url.read": {
+        "title": "Read"
+      },
+      "email_campaigns.status": {
+        "title": "Status"
+      },
+      "email_campaigns.status.write": {
+        "title": "Create and edit"
+      },
+      "email_campaigns.test": {
+        "title": "Test"
+      },
+      "email_campaigns.test.send": {
+        "title": "Send"
+      },
+      "events": {
+        "title": "Events"
+      },
+      "events.read": {
+        "title": "Read"
+      },
+      "events.write": {
+        "title": "Create and edit"
+      },
+      "feeds": {
+        "title": "Feeds"
+      },
+      "feeds.delete": {
+        "title": "Delete"
+      },
+      "feeds.read": {
+        "title": "Read"
+      },
+      "feeds.write": {
+        "title": "Create and edit"
+      },
+      "inbound": {
+        "title": "Inbound"
+      },
+      "inbound.attachments": {
+        "title": "Attachments"
+      },
+      "inbound.attachments.read": {
+        "title": "Read"
+      },
+      "inbound.events": {
+        "title": "Events"
+      },
+      "inbound.events.read": {
+        "title": "Read"
+      },
+      "loyalty": {
+        "title": "Loyalty"
+      },
+      "loyalty.balance": {
+        "title": "Balance"
+      },
+      "loyalty.balance.programs": {
+        "title": "Programs"
+      },
+      "loyalty.balance.programs.active_balance": {
+        "title": "Active balance"
+      },
+      "loyalty.balance.programs.active_balance.read": {
+        "title": "Read"
+      },
+      "loyalty.balance.programs.balance_definitions": {
+        "title": "Balance definitions"
+      },
+      "loyalty.balance.programs.balance_definitions.delete": {
+        "title": "Delete"
+      },
+      "loyalty.balance.programs.balance_definitions.limits": {
+        "title": "Limits"
+      },
+      "loyalty.balance.programs.balance_definitions.limits.delete": {
+        "title": "Delete"
+      },
+      "loyalty.balance.programs.balance_definitions.limits.read": {
+        "title": "Read"
+      },
+      "loyalty.balance.programs.balance_definitions.limits.write": {
+        "title": "Create and edit"
+      },
+      "loyalty.balance.programs.balance_definitions.read": {
+        "title": "Read"
+      },
+      "loyalty.balance.programs.balance_definitions.write": {
+        "title": "Create and edit"
+      },
+      "loyalty.balance.programs.contact_balances": {
+        "title": "Contact balances"
+      },
+      "loyalty.balance.programs.contact_balances.read": {
+        "title": "Read"
+      },
+      "loyalty.balance.programs.order": {
+        "title": "Order"
+      },
+      "loyalty.balance.programs.order.write": {
+        "title": "Create and edit"
+      },
+      "loyalty.balance.programs.subscriptions": {
+        "title": "Subscriptions"
+      },
+      "loyalty.balance.programs.subscriptions.balances": {
+        "title": "Balances"
+      },
+      "loyalty.balance.programs.subscriptions.balances.read": {
+        "title": "Read"
+      },
+      "loyalty.balance.programs.subscriptions.balances.write": {
+        "title": "Create and edit"
+      },
+      "loyalty.balance.programs.transaction_history": {
+        "title": "Transaction history"
+      },
+      "loyalty.balance.programs.transaction_history.read": {
+        "title": "Read"
+      },
+      "loyalty.balance.programs.transactions": {
+        "title": "Transactions"
+      },
+      "loyalty.balance.programs.transactions.complete": {
+        "title": "Complete"
+      },
+      "loyalty.balance.programs.transactions.complete.write": {
+        "title": "Create and edit"
+      },
+      "loyalty.balance.programs.transactions.write": {
+        "title": "Create and edit"
+      },
+      "loyalty.config": {
+        "title": "Config"
+      },
+      "loyalty.config.programs": {
+        "title": "Programs"
+      },
+      "loyalty.config.programs.account_info": {
+        "title": "Account info"
+      },
+      "loyalty.config.programs.account_info.read": {
+        "title": "Read"
+      },
+      "loyalty.config.programs.contact": {
+        "title": "Contact"
+      },
+      "loyalty.config.programs.contact.delete": {
+        "title": "Delete"
+      },
+      "loyalty.config.programs.delete": {
+        "title": "Delete"
+      },
+      "loyalty.config.programs.publish": {
+        "title": "Publish"
+      },
+      "loyalty.config.programs.read": {
+        "title": "Read"
+      },
+      "loyalty.config.programs.subscription_members": {
+        "title": "Subscription members"
+      },
+      "loyalty.config.programs.subscription_members.delete": {
+        "title": "Delete"
+      },
+      "loyalty.config.programs.subscription_members.write": {
+        "title": "Create and edit"
+      },
+      "loyalty.config.programs.subscriptions": {
+        "title": "Subscriptions"
+      },
+      "loyalty.config.programs.subscriptions.write": {
+        "title": "Create and edit"
+      },
+      "loyalty.config.programs.write": {
+        "title": "Create and edit"
+      },
+      "loyalty.offer": {
+        "title": "Offer"
+      },
+      "loyalty.offer.programs": {
+        "title": "Programs"
+      },
+      "loyalty.offer.programs.code_pools": {
+        "title": "Code pools"
+      },
+      "loyalty.offer.programs.code_pools.codes_count": {
+        "title": "Codes count"
+      },
+      "loyalty.offer.programs.code_pools.codes_count.read": {
+        "title": "Read"
+      },
+      "loyalty.offer.programs.offers": {
+        "title": "Offers"
+      },
+      "loyalty.offer.programs.offers.read": {
+        "title": "Read"
+      },
+      "loyalty.offer.programs.offers.write": {
+        "title": "Create and edit"
+      },
+      "loyalty.offer.programs.rewards": {
+        "title": "Rewards"
+      },
+      "loyalty.offer.programs.rewards.attribute": {
+        "title": "Attribute"
+      },
+      "loyalty.offer.programs.rewards.attribute.write": {
+        "title": "Create and edit"
+      },
+      "loyalty.offer.programs.rewards.delete": {
+        "title": "Delete"
+      },
+      "loyalty.offer.programs.rewards.read": {
+        "title": "Read"
+      },
+      "loyalty.offer.programs.rewards.redeem": {
+        "title": "Redeem"
+      },
+      "loyalty.offer.programs.rewards.redeem.complete": {
+        "title": "Complete"
+      },
+      "loyalty.offer.programs.rewards.redeem.complete.write": {
+        "title": "Create and edit"
+      },
+      "loyalty.offer.programs.rewards.redeem.write": {
+        "title": "Create and edit"
+      },
+      "loyalty.offer.programs.vouchers": {
+        "title": "Vouchers"
+      },
+      "loyalty.offer.programs.vouchers.read": {
+        "title": "Read"
+      },
+      "loyalty.tier": {
+        "title": "Tier"
+      },
+      "loyalty.tier.programs": {
+        "title": "Programs"
+      },
+      "loyalty.tier.programs.contacts": {
+        "title": "Contacts"
+      },
+      "loyalty.tier.programs.contacts.tiers": {
+        "title": "Tiers"
+      },
+      "loyalty.tier.programs.contacts.tiers.write": {
+        "title": "Create and edit"
+      },
+      "loyalty.tier.programs.tier_groups": {
+        "title": "Tier groups"
+      },
+      "loyalty.tier.programs.tier_groups.delete": {
+        "title": "Delete"
+      },
+      "loyalty.tier.programs.tier_groups.read": {
+        "title": "Read"
+      },
+      "loyalty.tier.programs.tier_groups.tiers": {
+        "title": "Tiers"
+      },
+      "loyalty.tier.programs.tier_groups.tiers.write": {
+        "title": "Create and edit"
+      },
+      "loyalty.tier.programs.tier_groups.write": {
+        "title": "Create and edit"
+      },
+      "loyalty.tier.programs.tiers": {
+        "title": "Tiers"
+      },
+      "loyalty.tier.programs.tiers.delete": {
+        "title": "Delete"
+      },
+      "loyalty.tier.programs.tiers.read": {
+        "title": "Read"
+      },
+      "loyalty.tier.programs.tiers.write": {
+        "title": "Create and edit"
+      },
+      "objects": {
+        "title": "Objects"
+      },
+      "objects.associated_records": {
+        "title": "Associated records"
+      },
+      "objects.associated_records.read": {
+        "title": "Read"
+      },
+      "objects.batch": {
+        "title": "Batch"
+      },
+      "objects.batch.delete": {
+        "title": "Delete"
+      },
+      "objects.batch.upsert": {
+        "title": "Upsert"
+      },
+      "objects.batch.upsert.write": {
+        "title": "Create and edit"
+      },
+      "objects.records": {
+        "title": "Records"
+      },
+      "objects.records.read": {
+        "title": "Read"
+      },
+      "orders": {
+        "title": "Orders"
+      },
+      "orders.read": {
+        "title": "Read"
+      },
+      "orders.status": {
+        "title": "Status"
+      },
+      "orders.status.write": {
+        "title": "Create and edit"
+      },
+      "organization": {
+        "title": "Organization"
+      },
+      "organization.activities": {
+        "title": "Activities"
+      },
+      "organization.activities.read": {
+        "title": "Read"
+      },
+      "organization.invited": {
+        "title": "Invited"
+      },
+      "organization.invited.users": {
+        "title": "Users"
+      },
+      "organization.invited.users.read": {
+        "title": "Read"
+      },
+      "organization.user": {
+        "title": "Account"
+      },
+      "organization.user.invitation": {
+        "title": "Invitation"
+      },
+      "organization.user.invitation.revoke": {
+        "title": "Revoke"
+      },
+      "organization.user.invitation.revoke.share": {
+        "title": "Share"
+      },
+      "organization.user.invitation.send": {
+        "title": "Send"
+      },
+      "organization.user.permissions": {
+        "title": "Permissions"
+      },
+      "organization.user.permissions.read": {
+        "title": "Read"
+      },
+      "organization.user.update": {
+        "title": "Update"
+      },
+      "organization.user.update.permissions": {
+        "title": "Permissions"
+      },
+      "organization.user.update.permissions.share": {
+        "title": "Share"
+      },
+      "payments": {
+        "title": "Payments"
+      },
+      "payments.requests": {
+        "title": "Requests"
+      },
+      "payments.requests.delete": {
+        "title": "Delete"
+      },
+      "payments.requests.read": {
+        "title": "Read"
+      },
+      "payments.requests.write": {
+        "title": "Create and edit"
+      },
+      "processes": {
+        "title": "Processes"
+      },
+      "processes.read": {
+        "title": "Read"
+      },
+      "products": {
+        "title": "Products"
+      },
+      "products.alerts": {
+        "title": "Alerts"
+      },
+      "products.alerts.write": {
+        "title": "Create and edit"
+      },
+      "products.read": {
+        "title": "Read"
+      },
+      "products.write": {
+        "title": "Create and edit"
+      },
+      "senders": {
+        "title": "Senders"
+      },
+      "senders.delete": {
+        "title": "Delete"
+      },
+      "senders.domains": {
+        "title": "Domains"
+      },
+      "senders.domains.admin": {
+        "title": "Manage"
+      },
+      "senders.domains.authenticate": {
+        "title": "Authenticate"
+      },
+      "senders.domains.authenticate.write": {
+        "title": "Create and edit"
+      },
+      "senders.domains.delete": {
+        "title": "Delete"
+      },
+      "senders.domains.read": {
+        "title": "Read"
+      },
+      "senders.ips": {
+        "title": "Ips"
+      },
+      "senders.ips.read": {
+        "title": "Read"
+      },
+      "senders.read": {
+        "title": "Read"
+      },
+      "senders.write": {
+        "title": "Create and edit"
+      },
+      "sms_campaigns": {
+        "title": "Sms campaigns"
+      },
+      "sms_campaigns.delete": {
+        "title": "Delete"
+      },
+      "sms_campaigns.now": {
+        "title": "Now"
+      },
+      "sms_campaigns.now.send": {
+        "title": "Send"
+      },
+      "sms_campaigns.read": {
+        "title": "Read"
+      },
+      "sms_campaigns.recipients": {
+        "title": "Recipients"
+      },
+      "sms_campaigns.recipients.write": {
+        "title": "Create and edit"
+      },
+      "sms_campaigns.report": {
+        "title": "Report"
+      },
+      "sms_campaigns.report.send": {
+        "title": "Send"
+      },
+      "sms_campaigns.send": {
+        "title": "Send"
+      },
+      "sms_campaigns.status": {
+        "title": "Status"
+      },
+      "sms_campaigns.status.write": {
+        "title": "Create and edit"
+      },
+      "sms_campaigns.test": {
+        "title": "Test"
+      },
+      "sms_campaigns.test.send": {
+        "title": "Send"
+      },
+      "smtp": {
+        "title": "Smtp"
+      },
+      "smtp.blocked_contacts": {
+        "title": "Blocked contacts"
+      },
+      "smtp.blocked_contacts.delete": {
+        "title": "Delete"
+      },
+      "smtp.blocked_contacts.read": {
+        "title": "Read"
+      },
+      "smtp.blocked_domains": {
+        "title": "Blocked domains"
+      },
+      "smtp.blocked_domains.delete": {
+        "title": "Delete"
+      },
+      "smtp.blocked_domains.read": {
+        "title": "Read"
+      },
+      "smtp.blocked_domains.write": {
+        "title": "Create and edit"
+      },
+      "smtp.email": {
+        "title": "Email"
+      },
+      "smtp.email.delete": {
+        "title": "Delete"
+      },
+      "smtp.email.send": {
+        "title": "Send"
+      },
+      "smtp.email_status": {
+        "title": "Email status"
+      },
+      "smtp.email_status.read": {
+        "title": "Read"
+      },
+      "smtp.emails": {
+        "title": "Emails"
+      },
+      "smtp.emails.read": {
+        "title": "Read"
+      },
+      "smtp.hardbounces": {
+        "title": "Hardbounces"
+      },
+      "smtp.hardbounces.delete": {
+        "title": "Delete"
+      },
+      "smtp.log": {
+        "title": "Log"
+      },
+      "smtp.log.delete": {
+        "title": "Delete"
+      },
+      "smtp.statistics": {
+        "title": "Statistics"
+      },
+      "smtp.statistics.aggregated_report": {
+        "title": "Aggregated report"
+      },
+      "smtp.statistics.aggregated_report.read": {
+        "title": "Read"
+      },
+      "smtp.statistics.events": {
+        "title": "Events"
+      },
+      "smtp.statistics.events.read": {
+        "title": "Read"
+      },
+      "smtp.statistics.reports": {
+        "title": "Reports"
+      },
+      "smtp.statistics.reports.read": {
+        "title": "Read"
+      },
+      "smtp.template": {
+        "title": "Template"
+      },
+      "smtp.template.preview": {
+        "title": "Preview"
+      },
+      "smtp.template.preview.read": {
+        "title": "Read"
+      },
+      "smtp.templates": {
+        "title": "Templates"
+      },
+      "smtp.templates.delete": {
+        "title": "Delete"
+      },
+      "smtp.templates.read": {
+        "title": "Read"
+      },
+      "smtp.templates.test": {
+        "title": "Test"
+      },
+      "smtp.templates.test.send": {
+        "title": "Send"
+      },
+      "smtp.templates.write": {
+        "title": "Create and edit"
+      },
+      "transactional_sms": {
+        "title": "Transactional sms"
+      },
+      "transactional_sms.send": {
+        "title": "Send"
+      },
+      "transactional_sms.sms": {
+        "title": "Sms"
+      },
+      "transactional_sms.sms.send": {
+        "title": "Send"
+      },
+      "transactional_sms.statistics": {
+        "title": "Statistics"
+      },
+      "transactional_sms.statistics.aggregated_report": {
+        "title": "Aggregated report"
+      },
+      "transactional_sms.statistics.aggregated_report.read": {
+        "title": "Read"
+      },
+      "transactional_sms.statistics.events": {
+        "title": "Events"
+      },
+      "transactional_sms.statistics.events.read": {
+        "title": "Read"
+      },
+      "transactional_sms.statistics.reports": {
+        "title": "Reports"
+      },
+      "transactional_sms.statistics.reports.read": {
+        "title": "Read"
+      },
+      "transactional_sms.templates": {
+        "title": "Templates"
+      },
+      "transactional_sms.templates.read": {
+        "title": "Read"
+      },
+      "wallet": {
+        "title": "Wallet"
+      },
+      "wallet.passes": {
+        "title": "Passes"
+      },
+      "wallet.passes.install_url": {
+        "title": "Install url"
+      },
+      "wallet.passes.install_url.read": {
+        "title": "Read"
+      },
+      "wallet.passes.redeem": {
+        "title": "Redeem"
+      },
+      "wallet.passes.redeem.write": {
+        "title": "Create and edit"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.delete": {
+        "title": "Delete"
+      },
+      "webhooks.read": {
+        "title": "Read"
+      },
+      "webhooks.write": {
+        "title": "Create and edit"
+      },
+      "whatsapp": {
+        "title": "Whatsapp"
+      },
+      "whatsapp.message": {
+        "title": "Message"
+      },
+      "whatsapp.message.send": {
+        "title": "Send"
+      },
+      "whatsapp.statistics": {
+        "title": "Statistics"
+      },
+      "whatsapp.statistics.events": {
+        "title": "Events"
+      },
+      "whatsapp.statistics.events.read": {
+        "title": "Read"
+      },
+      "whatsapp_campaigns": {
+        "title": "Whatsapp campaigns"
+      },
+      "whatsapp_campaigns.config": {
+        "title": "Config"
+      },
+      "whatsapp_campaigns.config.read": {
+        "title": "Read"
+      },
+      "whatsapp_campaigns.delete": {
+        "title": "Delete"
+      },
+      "whatsapp_campaigns.read": {
+        "title": "Read"
+      },
+      "whatsapp_campaigns.send": {
+        "title": "Send"
+      },
+      "whatsapp_campaigns.template": {
+        "title": "Template"
+      },
+      "whatsapp_campaigns.template.approval": {
+        "title": "Approval"
+      },
+      "whatsapp_campaigns.template.approval.send": {
+        "title": "Send"
+      },
+      "whatsapp_campaigns.template.write": {
+        "title": "Create and edit"
+      },
+      "whatsapp_campaigns.template_list": {
+        "title": "Template list"
+      },
+      "whatsapp_campaigns.template_list.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "api-key",
+            "origin": "https://api.brevo.com",
+            "path": "/v3",
+            "value": "api_key"
+          },
+          {
+            "header": "api-key",
+            "origin": "https://api.sendinblue.com",
+            "path": "/v3",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Brevo",
   "http": {
+    "origins": {"api":["https://api.brevo.com","https://api.sendinblue.com"]},
     "operations": {
-      "DELETE /v3/companies/{id}": {"action":"delete.companies","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/companies/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /v3/conversations/messages/{id}": {"action":"delete.messages","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/conversations/messages/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /v3/conversations/pushedMessages/{id}": {"action":"delete.pushed_messages","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/conversations/pushedMessages/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /v3/corporate/group/{id}": {"action":"delete.group","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/corporate/group/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /v3/corporate/subAccount/{id}": {"action":"delete.sub_account","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/corporate/subAccount/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /v3/corporate/user/revoke/{email}": {"action":"delete.revoke","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/corporate/user/revoke/{email}","scope":{"email":{"from":"path","at":"email"}}},
-      "DELETE /v3/crm/attributes/{id}": {"action":"delete.attributes","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/crm/attributes/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /v3/crm/deals/{id}": {"action":"delete.deals","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/crm/deals/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /v3/crm/files/{id}": {"action":"delete.files","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/crm/files/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /v3/crm/notes/{id}": {"action":"delete.notes","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/crm/notes/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /v3/crm/tasks/{id}": {"action":"delete.tasks","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/crm/tasks/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "DELETE /v3/smtp/blockedContacts/{email}": {"action":"delete.blocked_contacts","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/smtp/blockedContacts/{email}","scope":{"email":{"from":"path","at":"email"}}},
-      "DELETE /v3/smtp/log/{identifier}": {"action":"delete.log","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/smtp/log/{identifier}","params":["from_date","to_date"],"scope":{"identifier":{"from":"path","at":"identifier"}}},
-      "EditUserPermission": {"action":"share.permissions","effects":["share"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/organization/user/update/permissions","body":"json","scope":{"email":{"from":"body","at":"/email"},"request":{"from":"body","at":"","type":"object"}},"grant":["email"]},
-      "GET /v3/companies": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/companies","params":["filters[attributes.name]","linkedContactsIds","linkedDealsIds","modifiedSince","createdSince","page","limit","sort","sortBy"],"scope":{}},
-      "GET /v3/companies/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/companies/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v3/conversations/messages/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/conversations/messages/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v3/conversations/pushedMessages/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/conversations/pushedMessages/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v3/corporate/group/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/corporate/group/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v3/corporate/ip": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/corporate/ip","scope":{}},
-      "GET /v3/corporate/masterAccount": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/corporate/masterAccount","scope":{}},
-      "GET /v3/corporate/subAccount": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/corporate/subAccount","params":["offset","limit"],"scope":{}},
-      "GET /v3/corporate/subAccount/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/corporate/subAccount/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v3/crm/attributes/companies": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/crm/attributes/companies","scope":{}},
-      "GET /v3/crm/attributes/deals": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/crm/attributes/deals","scope":{}},
-      "GET /v3/crm/deals": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/crm/deals","params":["filters[attributes.deal_name]","filters[attributes.deal_owner]","filters[attributes.deal_stage]","filters[attributes.pipeline]","filters[linkedCompaniesIds]","filters[linkedContactsIds]","modifiedSince","createdSince","offset","limit","sort","sortBy"],"scope":{}},
-      "GET /v3/crm/deals/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/crm/deals/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v3/crm/files": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/crm/files","params":["entity","entityIds","dateFrom","dateTo","offset","limit","sort"],"scope":{}},
-      "GET /v3/crm/files/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/crm/files/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v3/crm/files/{id}/data": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/crm/files/{id}/data","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v3/crm/notes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/crm/notes","params":["entity","entityIds","dateFrom","dateTo","offset","limit","sort"],"scope":{}},
-      "GET /v3/crm/notes/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/crm/notes/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v3/crm/pipeline/details": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/crm/pipeline/details","scope":{}},
-      "GET /v3/crm/pipeline/details/{pipelineID}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/crm/pipeline/details/{pipelineID}","scope":{"pipelineID":{"from":"path","at":"pipelineID"}}},
-      "GET /v3/crm/tasks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/crm/tasks","params":["filter[type]","filter[status]","filter[date]","filter[assignTo]","filter[contacts]","filter[deals]","filter[companies]","dateFrom","dateTo","offset","limit","sort","sortBy"],"scope":{}},
-      "GET /v3/crm/tasks/{id}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/crm/tasks/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "GET /v3/crm/tasktypes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/crm/tasktypes","scope":{}},
-      "GET /v3/ecommerce/attribution/metrics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/ecommerce/attribution/metrics","params":["periodFrom","periodTo","emailCampaignId[]","smsCampaignId[]","automationWorkflowEmailId[]","automationWorkflowSmsId[]"],"scope":{}},
-      "GET /v3/ecommerce/attribution/metrics/{conversionSource}/{conversionSourceId}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/ecommerce/attribution/metrics/{conversionSource}/{conversionSourceId}","scope":{"conversionSource":{"from":"path","at":"conversionSource"},"conversionSourceId":{"from":"path","at":"conversionSourceId"}}},
-      "GET /v3/ecommerce/attribution/products/{conversionSource}/{conversionSourceId}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/ecommerce/attribution/products/{conversionSource}/{conversionSourceId}","scope":{"conversionSource":{"from":"path","at":"conversionSource"},"conversionSourceId":{"from":"path","at":"conversionSourceId"}}},
-      "GET /v3/ecommerce/config/displayCurrency": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/ecommerce/config/displayCurrency","scope":{}},
-      "GET /v3/loyalty/balance/programs/{pid}/active-balance": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/active-balance","params":["limit","offset","sortField","sort","contactId","balanceDefinitionId","includeInternal"],"scope":{"pid":{"from":"path","at":"pid"},"contactId":{"from":"query","at":"contactId"},"balanceDefinitionId":{"from":"query","at":"balanceDefinitionId"}}},
-      "GET /v3/loyalty/balance/programs/{pid}/transaction-history": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/transaction-history","params":["limit","offset","sortField","sort","contactId","balanceDefinitionId","status","transactionType","loyaltySubscriptionId"],"scope":{"pid":{"from":"path","at":"pid"},"contactId":{"from":"query","at":"contactId"},"balanceDefinitionId":{"from":"query","at":"balanceDefinitionId"}}},
-      "GET /v3/loyalty/offer/programs/{pid}/offers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/loyalty/offer/programs/{pid}/offers","params":["limit","offset","state","version"],"scope":{"pid":{"from":"path","at":"pid"}}},
-      "GET /v3/loyalty/offer/programs/{pid}/rewards/{rid}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/loyalty/offer/programs/{pid}/rewards/{rid}","params":["version"],"scope":{"pid":{"from":"path","at":"pid"},"rid":{"from":"path","at":"rid"}}},
-      "GET /v3/loyalty/offer/programs/{pid}/vouchers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/loyalty/offer/programs/{pid}/vouchers","params":["limit","offset","sort","sortField","contactId","metadata_key_value","rewardId"],"scope":{"pid":{"from":"path","at":"pid"},"contactId":{"from":"query","at":"contactId"}}},
-      "PATCH /v3/companies/link-unlink/{id}": {"action":"write.link_unlink","effects":["write"],"method":"PATCH","origin":"https://api.brevo.com","path":"/v3/companies/link-unlink/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "PATCH /v3/companies/{id}": {"action":"write.companies","effects":["write"],"method":"PATCH","origin":"https://api.brevo.com","path":"/v3/companies/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "PATCH /v3/crm/attributes/{id}": {"action":"write.attributes","effects":["write"],"method":"PATCH","origin":"https://api.brevo.com","path":"/v3/crm/attributes/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "PATCH /v3/crm/deals/link-unlink/{id}": {"action":"write.link_unlink","effects":["write"],"method":"PATCH","origin":"https://api.brevo.com","path":"/v3/crm/deals/link-unlink/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "PATCH /v3/crm/deals/{id}": {"action":"write.deals","effects":["write"],"method":"PATCH","origin":"https://api.brevo.com","path":"/v3/crm/deals/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "PATCH /v3/crm/notes/{id}": {"action":"write.notes","effects":["write"],"method":"PATCH","origin":"https://api.brevo.com","path":"/v3/crm/notes/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "PATCH /v3/crm/tasks/{id}": {"action":"write.tasks","effects":["write"],"method":"PATCH","origin":"https://api.brevo.com","path":"/v3/crm/tasks/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "POST /v3/companies": {"action":"write.companies","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/companies","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "POST /v3/companies/import": {"action":"write.import","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/companies/import","body":"any","scope":{}},
-      "POST /v3/conversations/agentOnlinePing": {"action":"send.agent_online_ping","effects":["send"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/conversations/agentOnlinePing","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "POST /v3/conversations/messages": {"action":"send.messages","effects":["send"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/conversations/messages","body":"json","scope":{"visitorId":{"from":"body","at":"/visitorId"},"request":{"from":"body","at":"","type":"object"}},"grant":["visitorId"]},
-      "POST /v3/conversations/pushedMessages": {"action":"write.pushed_messages","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/conversations/pushedMessages","body":"json","scope":{"visitorId":{"from":"body","at":"/visitorId"}}},
-      "POST /v3/corporate/group": {"action":"admin.group","effects":["admin"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/corporate/group","body":"any","scope":{}},
-      "POST /v3/corporate/ssoToken": {"action":"write.sso_token","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/corporate/ssoToken","body":"any","scope":{}},
-      "POST /v3/corporate/subAccount": {"action":"write.sub_account","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/corporate/subAccount","body":"json","scope":{"companyName":{"from":"body","at":"/companyName"},"email":{"from":"body","at":"/email"}}},
-      "POST /v3/corporate/subAccount/ip/associate": {"action":"write.associate","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/corporate/subAccount/ip/associate","body":"any","scope":{}},
-      "POST /v3/corporate/subAccount/key": {"action":"admin.key","effects":["admin"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/corporate/subAccount/key","body":"any","scope":{}},
-      "POST /v3/corporate/subAccount/ssoToken": {"action":"write.sso_token","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/corporate/subAccount/ssoToken","body":"any","scope":{}},
-      "POST /v3/crm/attributes": {"action":"write.attributes","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/crm/attributes","body":"json","scope":{}},
-      "POST /v3/crm/deals": {"action":"write.deals","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/crm/deals","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "POST /v3/crm/deals/import": {"action":"write.import","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/crm/deals/import","body":"any","scope":{}},
-      "POST /v3/crm/files": {"action":"write.files","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/crm/files","body":"any","scope":{}},
-      "POST /v3/crm/notes": {"action":"send.notes","effects":["send"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/crm/notes","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "POST /v3/crm/tasks": {"action":"write.tasks","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/crm/tasks","body":"json","scope":{"name":{"from":"body","at":"/name"},"taskTypeId":{"from":"body","at":"/taskTypeId"}}},
-      "POST /v3/ecommerce/activate": {"action":"write.activate","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/ecommerce/activate","scope":{}},
-      "POST /v3/loyalty/balance/programs/{pid}/balance-definitions": {"action":"write.balance_definitions","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/balance-definitions","body":"json","scope":{"pid":{"from":"path","at":"pid"},"name":{"from":"body","at":"/name"}}},
-      "POST /v3/loyalty/balance/programs/{pid}/subscriptions/{cid}/balances": {"action":"write.balances","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/subscriptions/{cid}/balances","body":"json","scope":{"pid":{"from":"path","at":"pid"},"cid":{"from":"path","at":"cid"},"balanceDefinitionId":{"from":"body","at":"/balanceDefinitionId"}}},
-      "PUT /v3/conversations/messages/{id}": {"action":"write.messages","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/conversations/messages/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /v3/conversations/pushedMessages/{id}": {"action":"write.pushed_messages","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/conversations/pushedMessages/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /v3/conversations/visitorGroup": {"action":"write.visitor_group","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/conversations/visitorGroup","body":"json","scope":{}},
-      "PUT /v3/corporate/group/unlink/{groupId}/subAccounts": {"action":"write.sub_accounts","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/corporate/group/unlink/{groupId}/subAccounts","body":"json","scope":{"groupId":{"from":"path","at":"groupId"}}},
-      "PUT /v3/corporate/group/{id}": {"action":"admin.group","effects":["admin"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/corporate/group/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /v3/corporate/subAccount/ip/dissociate": {"action":"write.dissociate","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/corporate/subAccount/ip/dissociate","body":"any","scope":{}},
-      "PUT /v3/corporate/subAccount/{id}/applications/toggle": {"action":"write.toggle","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/corporate/subAccount/{id}/applications/toggle","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /v3/corporate/subAccount/{id}/plan": {"action":"admin.plan","effects":["admin"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/corporate/subAccount/{id}/plan","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "PUT /v3/corporate/subAccounts/plan": {"action":"admin.plan","effects":["admin"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/corporate/subAccounts/plan","body":"json","scope":{}},
-      "PUT /v3/corporate/user/invitation/{action}/{email}": {"action":"share.invitation","effects":["share"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/corporate/user/invitation/{action}/{email}","scope":{"action":{"from":"path","at":"action"},"email":{"from":"path","at":"email"}}},
-      "PUT /v3/corporate/user/{email}/permissions": {"action":"share.permissions","effects":["share"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/corporate/user/{email}/permissions","body":"json","scope":{"email":{"from":"path","at":"email"},"request":{"from":"body","at":"","type":"object"}},"grant":["email"]},
-      "addContactToList": {"action":"write.add","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/contacts/lists/{listId}/contacts/add","body":"json","scope":{"listId":{"from":"path","at":"listId"}}},
-      "addSubscriptionToTier": {"action":"write.tiers","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/tier/programs/{pid}/contacts/{cid}/tiers/{tid}","scope":{"pid":{"from":"path","at":"pid"},"cid":{"from":"path","at":"cid"},"tid":{"from":"path","at":"tid"}}},
-      "authenticateDomain": {"action":"write.authenticate","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/senders/domains/{domainName}/authenticate","scope":{"domainName":{"from":"path","at":"domainName"}}},
-      "batchDeleteObjectRecords": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/objects/{object_type}/batch/delete","body":"json","scope":{"object_type":{"from":"path","at":"object_type"}}},
-      "beginTransaction": {"action":"write.transactions","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/transactions","body":"json","scope":{"pid":{"from":"path","at":"pid"},"balanceDefinitionId":{"from":"body","at":"/balanceDefinitionId"}}},
-      "blockNewDomain": {"action":"write.blocked_domains","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/smtp/blockedDomains","body":"json","scope":{}},
-      "cancelTransaction": {"action":"write.transactions","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/transactions/{tid}/cancel","scope":{"pid":{"from":"path","at":"pid"},"tid":{"from":"path","at":"tid"}}},
-      "completeRedeemTransaction": {"action":"generate.complete","effects":["generate"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/offer/programs/{pid}/rewards/redeem/{tid}/complete","scope":{"pid":{"from":"path","at":"pid"},"tid":{"from":"path","at":"tid"}}},
-      "completeTransaction": {"action":"generate.complete","effects":["generate"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/transactions/{tid}/complete","scope":{"pid":{"from":"path","at":"pid"},"tid":{"from":"path","at":"tid"}}},
-      "createAttribute": {"action":"write.attributes","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/contacts/attributes/{attributeCategory}/{attributeName}","body":"json","scope":{"attributeCategory":{"from":"path","at":"attributeCategory"},"attributeName":{"from":"path","at":"attributeName"}}},
-      "createBalanceLimit": {"action":"write.limits","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/balance-definitions/{bdid}/limits","body":"json","scope":{"pid":{"from":"path","at":"pid"},"bdid":{"from":"path","at":"bdid"}}},
-      "createBalanceOrder": {"action":"write.create_order","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/create-order","body":"json","scope":{"pid":{"from":"path","at":"pid"},"balanceDefinitionId":{"from":"body","at":"/balanceDefinitionId"},"contactId":{"from":"body","at":"/contactId","type":"number"}}},
-      "createBatchEvents": {"action":"write.batch","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/events/batch","body":"json","scope":{}},
-      "createBatchOrder": {"action":"write.batch","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/orders/status/batch","body":"json","scope":{}},
-      "createConsentGroup": {"action":"write.consent_groups","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/contacts/consent-groups","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "createContact": {"action":"write.contacts","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/contacts","body":"json","scope":{}},
-      "createCouponCollection": {"action":"write.coupon_collections","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/couponCollections","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "createCoupons": {"action":"write.coupons","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/coupons","body":"json","scope":{"collectionId":{"from":"body","at":"/collectionId"}}},
-      "createDoiContact": {"action":"write.double_optin_confirmation","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/contacts/doubleOptinConfirmation","body":"json","scope":{"email":{"from":"body","at":"/email"},"redirectionUrl":{"from":"body","at":"/redirectionUrl"},"templateId":{"from":"body","at":"/templateId","type":"number"}}},
-      "createDomain": {"action":"admin.domains","effects":["admin"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/senders/domains","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "createEmailCampaign": {"action":"write.email_campaigns","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/emailCampaigns","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "createEvent": {"action":"write.events","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/events","body":"json","scope":{"event_name":{"from":"body","at":"/event_name"}}},
-      "createExternalFeed": {"action":"write.feeds","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/feeds","body":"json","scope":{"name":{"from":"body","at":"/name"},"url":{"from":"body","at":"/url"}}},
-      "createFolder": {"action":"write.folders","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/contacts/folders","body":"json","scope":{}},
-      "createList": {"action":"write.lists","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/contacts/lists","body":"json","scope":{"folderId":{"from":"body","at":"/folderId","type":"number"},"name":{"from":"body","at":"/name"}}},
-      "createNewLP": {"action":"write.programs","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/config/programs","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "createOrder": {"action":"write.status","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/orders/status","body":"json","scope":{"id":{"from":"body","at":"/id"}}},
-      "createPaymentRequest": {"action":"write.requests","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/payments/requests","body":"json","scope":{"contactId":{"from":"body","at":"/contactId","type":"number"}}},
-      "createProductAlert": {"action":"write.alerts","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/products/{id}/alerts/{type}","body":"json","scope":{"id":{"from":"path","at":"id"},"type":{"from":"path","at":"type"}}},
-      "createReward": {"action":"write.offers","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/offer/programs/{pid}/offers","body":"json","scope":{"pid":{"from":"path","at":"pid"},"name":{"from":"body","at":"/name"}}},
-      "createSender": {"action":"write.senders","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/senders","body":"json","scope":{"email":{"from":"body","at":"/email"},"name":{"from":"body","at":"/name"}}},
-      "createSmsCampaign": {"action":"write.sms_campaigns","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/smsCampaigns","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "createSmtpTemplate": {"action":"write.templates","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/smtp/templates","body":"json","scope":{"templateName":{"from":"body","at":"/templateName"}}},
-      "createTierForTierGroup": {"action":"write.tiers","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/tier/programs/{pid}/tier-groups/{gid}/tiers","body":"json","scope":{"pid":{"from":"path","at":"pid"},"gid":{"from":"path","at":"gid"},"name":{"from":"body","at":"/name"}}},
-      "createTierGroup": {"action":"write.tier_groups","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/tier/programs/{pid}/tier-groups","body":"json","scope":{"pid":{"from":"path","at":"pid"},"name":{"from":"body","at":"/name"}}},
-      "createUpdateBatchCategory": {"action":"write.batch","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/categories/batch","body":"json","scope":{}},
-      "createUpdateBatchProducts": {"action":"write.batch","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/products/batch","body":"json","scope":{}},
-      "createUpdateCategory": {"action":"write.categories","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/categories","body":"json","scope":{"id":{"from":"body","at":"/id"}}},
-      "createUpdateProduct": {"action":"write.products","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/products","body":"json","scope":{"id":{"from":"body","at":"/id"},"name":{"from":"body","at":"/name"}}},
-      "createVoucher": {"action":"write.attribute","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/offer/programs/{pid}/rewards/attribute","body":"json","scope":{"pid":{"from":"path","at":"pid"},"rewardId":{"from":"body","at":"/rewardId"}}},
-      "createWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/webhooks","body":"json","scope":{"url":{"from":"body","at":"/url"}}},
-      "createWhatsAppCampaign": {"action":"write.whatsapp_campaigns","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/whatsappCampaigns","body":"json","scope":{"name":{"from":"body","at":"/name"},"templateId":{"from":"body","at":"/templateId","type":"number"}}},
-      "createWhatsAppTemplate": {"action":"write.template","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/whatsappCampaigns/template","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "deleteAttribute": {"action":"delete.attributes","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/contacts/attributes/{attributeCategory}/{attributeName}","scope":{"attributeCategory":{"from":"path","at":"attributeCategory"},"attributeName":{"from":"path","at":"attributeName"}}},
-      "deleteBalanceDefinition": {"action":"delete.balance_definitions","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/balance-definitions/{bdid}","scope":{"pid":{"from":"path","at":"pid"},"bdid":{"from":"path","at":"bdid"}}},
-      "deleteBalanceLimit": {"action":"delete.limits","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/balance-definitions/{bdid}/limits/{blid}","scope":{"pid":{"from":"path","at":"pid"},"bdid":{"from":"path","at":"bdid"},"blid":{"from":"path","at":"blid"}}},
-      "deleteBlockedDomain": {"action":"delete.blocked_domains","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/smtp/blockedDomains/{domain}","scope":{"domain":{"from":"path","at":"domain"}}},
-      "deleteConsentGroup": {"action":"delete.consent_groups","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/contacts/consent-groups/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteContact": {"action":"delete.contacts","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/contacts/{identifier}","params":["identifierType"],"scope":{"identifier":{"from":"path","at":"identifier"}}},
-      "deleteContactMembers": {"action":"delete.subscription_members","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/loyalty/config/programs/{pid}/subscription-members","params":["memberContactIds"],"scope":{"pid":{"from":"path","at":"pid"},"memberContactIds":{"from":"query","at":"memberContactIds"}}},
-      "deleteContactSubscription": {"action":"delete.contact","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/loyalty/config/programs/{pid}/contact/{cid}","scope":{"pid":{"from":"path","at":"pid"},"cid":{"from":"path","at":"cid"}}},
-      "deleteDomain": {"action":"delete.domains","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/senders/domains/{domainName}","scope":{"domainName":{"from":"path","at":"domainName"}}},
-      "deleteEmailCampaign": {"action":"delete.email_campaigns","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/emailCampaigns/{campaignId}","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "deleteExternalFeed": {"action":"delete.feeds","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/feeds/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "deleteFolder": {"action":"delete.folders","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/contacts/folders/{folderId}","scope":{"folderId":{"from":"path","at":"folderId"}}},
-      "deleteHardbounces": {"action":"delete.delete_hardbounces","effects":["delete"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/smtp/deleteHardbounces","body":"any","scope":{}},
-      "deleteList": {"action":"delete.lists","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/contacts/lists/{listId}","scope":{"listId":{"from":"path","at":"listId"}}},
-      "deleteLoyaltyProgram": {"action":"delete.programs","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/loyalty/config/programs/{pid}","scope":{"pid":{"from":"path","at":"pid"}}},
-      "deleteMultiAttributeOptions": {"action":"delete.attributes","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/contacts/attributes/{attributeType}/{multipleChoiceAttribute}/{multipleChoiceAttributeOption}","scope":{"attributeType":{"from":"path","at":"attributeType"},"multipleChoiceAttribute":{"from":"path","at":"multipleChoiceAttribute"},"multipleChoiceAttributeOption":{"from":"path","at":"multipleChoiceAttributeOption"}}},
-      "deletePaymentRequest": {"action":"delete.requests","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/payments/requests/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteScheduledEmailById": {"action":"delete.email","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/smtp/email/{identifier}","scope":{"identifier":{"from":"path","at":"identifier"}}},
-      "deleteSender": {"action":"delete.senders","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/senders/{senderId}","scope":{"senderId":{"from":"path","at":"senderId"}}},
-      "deleteSmsCampaign": {"action":"delete.sms_campaigns","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/smsCampaigns/{campaignId}","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "deleteSmtpTemplate": {"action":"delete.templates","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/smtp/templates/{templateId}","scope":{"templateId":{"from":"path","at":"templateId"}}},
-      "deleteTier": {"action":"delete.tiers","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/loyalty/tier/programs/{pid}/tiers/{tid}","scope":{"pid":{"from":"path","at":"pid"},"tid":{"from":"path","at":"tid"}}},
-      "deleteTierGroup": {"action":"delete.tier_groups","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/loyalty/tier/programs/{pid}/tier-groups/{gid}","scope":{"pid":{"from":"path","at":"pid"},"gid":{"from":"path","at":"gid"}}},
-      "deleteWebhook": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/webhooks/{webhookId}","scope":{"webhookId":{"from":"path","at":"webhookId"}}},
-      "deleteWhatsAppCampaign": {"action":"delete.whatsapp_campaigns","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/whatsappCampaigns/{campaignId}","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "emailExportRecipients": {"action":"write.email_campaigns","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/emailCampaigns/{campaignId}/exportRecipients","body":"any","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "exportWebhooksHistory": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/webhooks/export","body":"json","scope":{}},
-      "getAbTestCampaignResult": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/emailCampaigns/{campaignId}/abTestCampaignResult","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "getAccount": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/account","scope":{}},
-      "getAccountActivity": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/organization/activities","params":["startDate","endDate","email","limit","offset"],"scope":{}},
-      "getAggregatedSmtpReport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/smtp/statistics/aggregatedReport","params":["startDate","endDate","days","tag"],"scope":{}},
-      "getAllExternalFeeds": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/feeds","params":["search","startDate","endDate","sort","authType","limit","offset"],"scope":{}},
-      "getAssociatedRecords": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/objects/{object_type}/associated-records","params":["id","ext_id","email","sms","type","offset"],"scope":{"object_type":{"from":"path","at":"object_type"}}},
-      "getBalanceDefinition": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/balance-definitions/{bdid}","params":["version"],"scope":{"pid":{"from":"path","at":"pid"},"bdid":{"from":"path","at":"bdid"}}},
-      "getBalanceDefinitionList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/balance-definitions","params":["limit","offset","sortField","sort","version"],"scope":{"pid":{"from":"path","at":"pid"}}},
-      "getBalanceLimit": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/balance-definitions/{bdid}/limits/{blid}","params":["version"],"scope":{"pid":{"from":"path","at":"pid"},"bdid":{"from":"path","at":"bdid"},"blid":{"from":"path","at":"blid"}}},
-      "getBlockedDomains": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/smtp/blockedDomains","scope":{}},
-      "getCategories": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/categories","params":["limit","offset","sort","ids","name","modifiedSince","createdSince","isDeleted"],"scope":{}},
-      "getCategoryInfo": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/categories/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getCodeCount": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/loyalty/offer/programs/{pid}/code-pools/{cpid}/codes-count","scope":{"pid":{"from":"path","at":"pid"},"cpid":{"from":"path","at":"cpid"}}},
-      "getConsentGroup": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/contacts/consent-groups/{id}","params":["startDate","endDate"],"scope":{"id":{"from":"path","at":"id"}}},
-      "getContactBalances": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/contact-balances","params":["includeInternal","limit","offset","sort","sortField","balanceDefinitionId"],"scope":{"pid":{"from":"path","at":"pid"},"balanceDefinitionId":{"from":"query","at":"balanceDefinitionId"}}},
-      "getContactInfo": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/contacts/{identifier}","params":["identifierType","startDate","endDate","limit","offset","id","name","signupMode","sort"],"scope":{"identifier":{"from":"path","at":"identifier"}}},
-      "getContacts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/contacts","params":["limit","offset","modifiedSince","createdSince","sort","ids","segmentId","listIds","filter"],"scope":{}},
-      "getContactsFromList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/contacts/lists/{listId}/contacts","params":["modifiedSince","limit","offset","sort"],"scope":{"listId":{"from":"path","at":"listId"}}},
-      "getCorporateInvitedUsersList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/corporate/invited/users","params":["type","offset","limit"],"scope":{}},
-      "getCorporateUserPermission": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/corporate/user/{email}/permissions","scope":{"email":{"from":"path","at":"email"}}},
-      "getCouponCollection": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/couponCollections/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getCouponCollections": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/couponCollections","params":["limit","offset","sort","sortBy"],"scope":{}},
-      "getDomainConfiguration": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/senders/domains/{domainName}","scope":{"domainName":{"from":"path","at":"domainName"}}},
-      "getDomains": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/senders/domains","scope":{}},
-      "getEmailCampaign": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/emailCampaigns/{campaignId}","params":["statistics","excludeHtmlContent"],"scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "getEmailCampaigns": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/emailCampaigns","params":["type","status","statistics","startDate","endDate","limit","offset","sort","excludeHtmlContent","excludePdfAttachment"],"scope":{}},
-      "getEmailEventReport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/smtp/statistics/events","params":["limit","offset","startDate","endDate","days","email","event","tags","messageId","templateId","sort"],"scope":{}},
-      "getEvents": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/events","params":["contact_id","event_name","object_type","startDate","endDate","limit","offset"],"scope":{}},
-      "getExternalFeedByUUID": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/feeds/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "getFolder": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/contacts/folders/{folderId}","scope":{"folderId":{"from":"path","at":"folderId"}}},
-      "getFolderLists": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/contacts/folders/{folderId}/lists","params":["limit","offset","sort"],"scope":{"folderId":{"from":"path","at":"folderId"}}},
-      "getInboundEmailAttachment": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/inbound/attachments/{downloadToken}","scope":{"downloadToken":{"from":"path","at":"downloadToken"}}},
-      "getInboundEmailEvents": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/inbound/events","params":["sender","startDate","endDate","limit","offset","sort"],"scope":{}},
-      "getInboundEmailEventsByUuid": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/inbound/events/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "getInvitedUsersList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/organization/invited/users","scope":{}},
-      "getIps": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/senders/ips","scope":{}},
-      "getLPList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/loyalty/config/programs","params":["limit","offset","sort_field","sort"],"scope":{}},
-      "getList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/contacts/lists/{listId}","params":["startDate","endDate"],"scope":{"listId":{"from":"path","at":"listId"}}},
-      "getListOfTierGroups": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/loyalty/tier/programs/{pid}/tier-groups","params":["version"],"scope":{"pid":{"from":"path","at":"pid"}}},
-      "getLoyaltyProgramInfo": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/loyalty/config/programs/{pid}","scope":{"pid":{"from":"path","at":"pid"}}},
-      "getLoyaltyProgramTier": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/loyalty/tier/programs/{pid}/tiers","params":["version"],"scope":{"pid":{"from":"path","at":"pid"}}},
-      "getOrders": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/orders","params":["limit","offset","sort","modifiedSince","createdSince"],"scope":{}},
-      "getParameterSubscriptionInfo": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/loyalty/config/programs/{pid}/account-info","params":["contactId","params","loyaltySubscriptionId","includeInternal"],"scope":{"pid":{"from":"path","at":"pid"}}},
-      "getPaymentRequest": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/payments/requests/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getProcess": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/processes/{processId}","scope":{"processId":{"from":"path","at":"processId"}}},
-      "getProcesses": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/processes","params":["limit","offset","sort"],"scope":{}},
-      "getProductInfo": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/products/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getProducts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/products","params":["limit","offset","sort","ids","search","name","price[lte]","price[gte]","price[lt]","price[gt]","price[eq]","price[ne]","alternativePrice[lte]","alternativePrice[gte]","alternativePrice[lt]","alternativePrice[gt]","alternativePrice[eq]","alternativePrice[ne]","categories","modifiedSince","createdSince","sortByField","isDeleted"],"scope":{}},
-      "getSMSTemplates": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/transactionalSMS/templates","params":["limit","offset","sort"],"scope":{}},
-      "getScheduledEmailById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/smtp/emailStatus/{identifier}","params":["startDate","endDate","sort","status","limit","offset"],"scope":{"identifier":{"from":"path","at":"identifier"}}},
-      "getSenders": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/senders","params":["ip","domain"],"scope":{}},
-      "getSharedTemplateUrl": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/emailCampaigns/{campaignId}/sharedUrl","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "getSmsCampaign": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/smsCampaigns/{campaignId}","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "getSmsCampaigns": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/smsCampaigns","params":["status","startDate","endDate","limit","offset","sort"],"scope":{}},
-      "getSmsEvents": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/transactionalSMS/statistics/events","params":["limit","startDate","endDate","offset","days","phoneNumber","event","tags","sort"],"scope":{}},
-      "getSmtpReport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/smtp/statistics/reports","params":["limit","offset","startDate","endDate","days","tag","sort"],"scope":{}},
-      "getSmtpTemplate": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/smtp/templates/{templateId}","scope":{"templateId":{"from":"path","at":"templateId"}}},
-      "getSmtpTemplates": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/smtp/templates","params":["templateStatus","limit","offset","sort","editorType"],"scope":{}},
-      "getSubAccountGroups": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/corporate/groups","scope":{}},
-      "getSubscriptionBalances": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/subscriptions/{cid}/balances","params":["includeInternal"],"scope":{"pid":{"from":"path","at":"pid"},"cid":{"from":"path","at":"cid"}}},
-      "getTierGroup": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/loyalty/tier/programs/{pid}/tier-groups/{gid}","params":["version"],"scope":{"pid":{"from":"path","at":"pid"},"gid":{"from":"path","at":"gid"}}},
-      "getTransacAggregatedSmsReport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/transactionalSMS/statistics/aggregatedReport","params":["startDate","endDate","days","tag"],"scope":{}},
-      "getTransacBlockedContacts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/smtp/blockedContacts","params":["startDate","endDate","limit","offset","senders","sort"],"scope":{}},
-      "getTransacEmailContent": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/smtp/emails/{uuid}","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "getTransacEmailsList": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/smtp/emails","params":["email","templateId","messageId","startDate","endDate","sort","limit","offset"],"scope":{}},
-      "getTransacSmsReport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/transactionalSMS/statistics/reports","params":["startDate","endDate","days","tag","sort"],"scope":{}},
-      "getUserPermission": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/organization/user/{email}/permissions","scope":{"email":{"from":"path","at":"email"}}},
-      "getWalletPassInstallUrl": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/wallet/passes/{passId}/installUrl/{contactId}","scope":{"passId":{"from":"path","at":"passId"},"contactId":{"from":"path","at":"contactId"}}},
-      "getWebhook": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/webhooks/{webhookId}","scope":{"webhookId":{"from":"path","at":"webhookId"}}},
-      "getWebhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/webhooks","params":["type","sort"],"scope":{}},
-      "getWhatsAppCampaign": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/whatsappCampaigns/{campaignId}","params":["startDate","endDate","limit","offset","sort","source"],"scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "getWhatsAppCampaigns": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/whatsappCampaigns","params":["startDate","endDate","limit","offset","sort"],"scope":{}},
-      "getWhatsappEventReport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/whatsapp/statistics/events","params":["limit","offset","startDate","endDate","days","contactNumber","event","sort"],"scope":{}},
-      "getrecords": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.brevo.com","path":"/v3/objects/{object_type}/records","params":["limit","page_num","sort","association"],"scope":{"object_type":{"from":"path","at":"object_type"}}},
-      "importContacts": {"action":"write.import","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/contacts/import","body":"json","scope":{}},
-      "inviteAdminUser": {"action":"share.send","effects":["share"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/corporate/user/invitation/send","body":"json","scope":{"email":{"from":"body","at":"/email"},"request":{"from":"body","at":"","type":"object"}},"grant":["email"]},
-      "inviteuser": {"action":"send.send","effects":["send"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/organization/user/invitation/send","body":"json","scope":{"email":{"from":"body","at":"/email"},"request":{"from":"body","at":"","type":"object"}},"grant":["email"]},
-      "partiallyUpdateLoyaltyProgram": {"action":"write.programs","effects":["write"],"method":"PATCH","origin":"https://api.brevo.com","path":"/v3/loyalty/config/programs/{pid}","body":"json","scope":{"pid":{"from":"path","at":"pid"}}},
-      "postPreviewSmtpEmailTemplates": {"action":"write.preview","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/smtp/template/preview","body":"json","scope":{"templateId":{"from":"body","at":"/templateId","type":"number"}}},
-      "publishLoyaltyProgram": {"action":"publish.programs","effects":["publish"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/config/programs/{pid}/publish","scope":{"pid":{"from":"path","at":"pid"}}},
-      "putresendcancelinvitation": {"action":"share.invitation","effects":["share"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/organization/user/invitation/{action}/{email}","scope":{"action":{"from":"path","at":"action"},"email":{"from":"path","at":"email"}}},
-      "redeemVoucher": {"action":"write.redeem","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/offer/programs/{pid}/rewards/redeem","body":"json","scope":{"pid":{"from":"path","at":"pid"}}},
-      "removeContactFromList": {"action":"delete.remove","effects":["delete"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/contacts/lists/{listId}/contacts/remove","body":"json","scope":{"listId":{"from":"path","at":"listId"}}},
-      "requestContactExport": {"action":"write.export","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/contacts/export","body":"json","scope":{}},
-      "requestSmsRecipientExport": {"action":"write.sms_campaigns","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/smsCampaigns/{campaignId}/exportRecipients","body":"any","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "revokeVouchers": {"action":"delete.rewards","effects":["delete"],"method":"DELETE","origin":"https://api.brevo.com","path":"/v3/loyalty/offer/programs/{pid}/rewards/revoke","params":["attributedRewardIds"],"scope":{"pid":{"from":"path","at":"pid"}}},
-      "sendAsyncTransactionalSms": {"action":"send.send","effects":["send"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/transactionalSMS/send","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "sendEmailCampaignNow": {"action":"send.email_campaigns","effects":["send"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/emailCampaigns/{campaignId}/sendNow","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "sendReport": {"action":"send.email_campaigns","effects":["send"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/emailCampaigns/{campaignId}/sendReport","body":"json","scope":{"campaignId":{"from":"path","at":"campaignId"},"request":{"from":"body","at":"","type":"object"}},"grant":["campaignId"]},
-      "sendSmsCampaignNow": {"action":"send.sms_campaigns","effects":["send"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/smsCampaigns/{campaignId}/sendNow","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "sendSmsReport": {"action":"send.sms_campaigns","effects":["send"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/smsCampaigns/{campaignId}/sendReport","body":"json","scope":{"campaignId":{"from":"path","at":"campaignId"},"request":{"from":"body","at":"","type":"object"}},"grant":["campaignId"]},
-      "sendTestEmail": {"action":"send.email_campaigns","effects":["send"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/emailCampaigns/{campaignId}/sendTest","body":"json","scope":{"campaignId":{"from":"path","at":"campaignId"},"request":{"from":"body","at":"","type":"object"}},"grant":["campaignId"]},
-      "sendTestSms": {"action":"send.sms_campaigns","effects":["send"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/smsCampaigns/{campaignId}/sendTest","body":"json","scope":{"campaignId":{"from":"path","at":"campaignId"},"request":{"from":"body","at":"","type":"object"}},"grant":["campaignId"]},
-      "sendTestTemplate": {"action":"send.templates","effects":["send"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/smtp/templates/{templateId}/sendTest","body":"json","scope":{"templateId":{"from":"path","at":"templateId"},"request":{"from":"body","at":"","type":"object"}},"grant":["templateId"]},
-      "sendTransacEmail": {"action":"send.email","effects":["send"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/smtp/email","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "sendTransacSms": {"action":"send.sms","effects":["send"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/transactionalSMS/sms","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "sendWhatsAppTemplateApproval": {"action":"send.approval","effects":["send"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/whatsappCampaigns/template/approval/{templateId}","scope":{"templateId":{"from":"path","at":"templateId"}}},
-      "sendWhatsappMessage": {"action":"send.send_message","effects":["send"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/whatsapp/sendMessage","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "setConfigDisplayCurrency": {"action":"write.display_currency","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/ecommerce/config/displayCurrency","body":"any","scope":{}},
-      "subscribeMemberToASubscription": {"action":"write.subscription_members","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/config/programs/{pid}/subscription-members","body":"json","scope":{"pid":{"from":"path","at":"pid"}}},
-      "subscribeToLoyaltyProgram": {"action":"admin.subscriptions","effects":["admin"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/config/programs/{pid}/subscriptions","body":"json","scope":{"pid":{"from":"path","at":"pid"},"contactId":{"from":"body","at":"/contactId","type":"number"}}},
-      "updateAttribute": {"action":"write.attributes","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/contacts/attributes/{attributeCategory}/{attributeName}","body":"json","scope":{"attributeCategory":{"from":"path","at":"attributeCategory"},"attributeName":{"from":"path","at":"attributeName"}}},
-      "updateBalanceDefinition": {"action":"write.balance_definitions","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/balance-definitions/{bdid}","body":"json","scope":{"pid":{"from":"path","at":"pid"},"bdid":{"from":"path","at":"bdid"},"name":{"from":"body","at":"/name"}}},
-      "updateBalanceLimit": {"action":"write.limits","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/loyalty/balance/programs/{pid}/balance-definitions/{bdid}/limits/{blid}","body":"json","scope":{"pid":{"from":"path","at":"pid"},"bdid":{"from":"path","at":"bdid"},"blid":{"from":"path","at":"blid"}}},
-      "updateBatchContacts": {"action":"write.batch","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/contacts/batch","body":"json","scope":{}},
-      "updateCampaignStatus": {"action":"write.status","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/emailCampaigns/{campaignId}/status","body":"json","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "updateConsentGroup": {"action":"write.consent_groups","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/contacts/consent-groups/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "updateContact": {"action":"write.contacts","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/contacts/{identifier}","params":["identifierType"],"body":"json","scope":{"identifier":{"from":"path","at":"identifier"}}},
-      "updateCouponCollection": {"action":"write.coupon_collections","effects":["write"],"method":"PATCH","origin":"https://api.brevo.com","path":"/v3/couponCollections/{id}","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "updateEmailCampaign": {"action":"write.email_campaigns","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/emailCampaigns/{campaignId}","body":"json","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "updateExternalFeed": {"action":"write.feeds","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/feeds/{uuid}","body":"json","scope":{"uuid":{"from":"path","at":"uuid"}}},
-      "updateFolder": {"action":"write.folders","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/contacts/folders/{folderId}","body":"json","scope":{"folderId":{"from":"path","at":"folderId"}}},
-      "updateList": {"action":"write.lists","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/contacts/lists/{listId}","body":"json","scope":{"listId":{"from":"path","at":"listId"}}},
-      "updateLoyaltyProgram": {"action":"write.programs","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/loyalty/config/programs/{pid}","body":"json","scope":{"pid":{"from":"path","at":"pid"},"name":{"from":"body","at":"/name"}}},
-      "updateSender": {"action":"write.senders","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/senders/{senderId}","body":"any","scope":{"senderId":{"from":"path","at":"senderId"}}},
-      "updateSmsCampaign": {"action":"write.sms_campaigns","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/smsCampaigns/{campaignId}","body":"json","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "updateSmsCampaignStatus": {"action":"write.status","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/smsCampaigns/{campaignId}/status","body":"json","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "updateSmtpTemplate": {"action":"write.templates","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/smtp/templates/{templateId}","body":"json","scope":{"templateId":{"from":"path","at":"templateId"}}},
-      "updateTier": {"action":"write.tiers","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/loyalty/tier/programs/{pid}/tiers/{tid}","body":"json","scope":{"pid":{"from":"path","at":"pid"},"tid":{"from":"path","at":"tid"},"name":{"from":"body","at":"/name"}}},
-      "updateTierGroup": {"action":"write.tier_groups","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/loyalty/tier/programs/{pid}/tier-groups/{gid}","body":"json","scope":{"pid":{"from":"path","at":"pid"},"gid":{"from":"path","at":"gid"},"name":{"from":"body","at":"/name"}}},
-      "updateWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/webhooks/{webhookId}","body":"json","scope":{"webhookId":{"from":"path","at":"webhookId"}}},
-      "updateWhatsAppCampaign": {"action":"write.whatsapp_campaigns","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/whatsappCampaigns/{campaignId}","body":"json","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "uploadImageToGallery": {"action":"generate.images","effects":["generate"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/emailCampaigns/images","body":"json","scope":{"imageUrl":{"from":"body","at":"/imageUrl"}}},
-      "upsertrecords": {"action":"write.upsert","effects":["write"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/objects/{object_type}/batch/upsert","body":"json","scope":{"object_type":{"from":"path","at":"object_type"}}},
-      "validateReward": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.brevo.com","path":"/v3/loyalty/offer/programs/{pid}/rewards/validate","body":"json","scope":{"pid":{"from":"path","at":"pid"}}},
-      "validateSenderByOTP": {"action":"write.senders","effects":["write"],"method":"PUT","origin":"https://api.brevo.com","path":"/v3/senders/{senderId}/validate","body":"json","scope":{"senderId":{"from":"path","at":"senderId"}}}
+      "DELETE /v3/companies/{id}": {"action":"companies.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/companies/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /v3/conversations/messages/{id}": {"action":"conversations.messages.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/conversations/messages/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /v3/conversations/pushedMessages/{id}": {"action":"conversations.pushed_messages.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/conversations/pushedMessages/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /v3/corporate/group/{id}": {"action":"corporate.group.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/corporate/group/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /v3/corporate/subAccount/{id}": {"action":"corporate.sub_account.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/corporate/subAccount/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /v3/corporate/user/revoke/{email}": {"action":"corporate.user.revoke.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/corporate/user/revoke/{email}","scope":{"email":{"at":"email","from":"path"}}},
+      "DELETE /v3/crm/attributes/{id}": {"action":"crm.attributes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/crm/attributes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /v3/crm/deals/{id}": {"action":"crm.deals.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/crm/deals/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /v3/crm/files/{id}": {"action":"crm.files.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/crm/files/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /v3/crm/notes/{id}": {"action":"crm.notes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/crm/notes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /v3/crm/tasks/{id}": {"action":"crm.tasks.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/crm/tasks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "DELETE /v3/smtp/blockedContacts/{email}": {"action":"smtp.blocked_contacts.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/smtp/blockedContacts/{email}","scope":{"email":{"at":"email","from":"path"}}},
+      "DELETE /v3/smtp/log/{identifier}": {"action":"smtp.log.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["from_date","to_date"],"path":"/v3/smtp/log/{identifier}","scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "EditUserPermission": {"action":"organization.user.update.permissions.share","body":"json","effects":["share"],"grant":["email"],"method":"POST","origin":"{api}","path":"/v3/organization/user/update/permissions","scope":{"email":{"at":"/email","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "GET /v3/companies": {"action":"companies.read","effects":["read"],"method":"GET","origin":"{api}","params":["filters[attributes.name]","linkedContactsIds","linkedDealsIds","modifiedSince","createdSince","page","limit","sort","sortBy"],"path":"/v3/companies","scope":{}},
+      "GET /v3/companies/{id}": {"action":"companies.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/companies/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v3/conversations/messages/{id}": {"action":"conversations.messages.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/conversations/messages/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v3/conversations/pushedMessages/{id}": {"action":"conversations.pushed_messages.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/conversations/pushedMessages/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v3/corporate/group/{id}": {"action":"corporate.group.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/corporate/group/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v3/corporate/ip": {"action":"corporate.ip.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/corporate/ip","scope":{}},
+      "GET /v3/corporate/masterAccount": {"action":"corporate.master_account.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/corporate/masterAccount","scope":{}},
+      "GET /v3/corporate/subAccount": {"action":"corporate.sub_account.read","effects":["read"],"method":"GET","origin":"{api}","params":["offset","limit"],"path":"/v3/corporate/subAccount","scope":{}},
+      "GET /v3/corporate/subAccount/{id}": {"action":"corporate.sub_account.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/corporate/subAccount/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v3/crm/attributes/companies": {"action":"crm.attributes.companies.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/crm/attributes/companies","scope":{}},
+      "GET /v3/crm/attributes/deals": {"action":"crm.attributes.deals.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/crm/attributes/deals","scope":{}},
+      "GET /v3/crm/deals": {"action":"crm.deals.read","effects":["read"],"method":"GET","origin":"{api}","params":["filters[attributes.deal_name]","filters[attributes.deal_owner]","filters[attributes.deal_stage]","filters[attributes.pipeline]","filters[linkedCompaniesIds]","filters[linkedContactsIds]","modifiedSince","createdSince","offset","limit","sort","sortBy"],"path":"/v3/crm/deals","scope":{}},
+      "GET /v3/crm/deals/{id}": {"action":"crm.deals.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/crm/deals/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v3/crm/files": {"action":"crm.files.read","effects":["read"],"method":"GET","origin":"{api}","params":["entity","entityIds","dateFrom","dateTo","offset","limit","sort"],"path":"/v3/crm/files","scope":{}},
+      "GET /v3/crm/files/{id}": {"action":"crm.files.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/crm/files/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v3/crm/files/{id}/data": {"action":"crm.files.data.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/crm/files/{id}/data","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v3/crm/notes": {"action":"crm.notes.read","effects":["read"],"method":"GET","origin":"{api}","params":["entity","entityIds","dateFrom","dateTo","offset","limit","sort"],"path":"/v3/crm/notes","scope":{}},
+      "GET /v3/crm/notes/{id}": {"action":"crm.notes.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/crm/notes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v3/crm/pipeline/details": {"action":"crm.pipeline.details.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/crm/pipeline/details","scope":{}},
+      "GET /v3/crm/pipeline/details/all": {"action":"crm.pipeline.details.all.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/crm/pipeline/details/all","scope":{}},
+      "GET /v3/crm/pipeline/details/{pipelineID}": {"action":"crm.pipeline.details.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/crm/pipeline/details/{pipelineID}","path_patterns":{"pipelineID":"[^a].*|a(?:|[^l].*|l(?:|[^l].*|l.+))"},"scope":{"pipelineID":{"at":"pipelineID","from":"path"}}},
+      "GET /v3/crm/tasks": {"action":"crm.tasks.read","effects":["read"],"method":"GET","origin":"{api}","params":["filter[type]","filter[status]","filter[date]","filter[assignTo]","filter[contacts]","filter[deals]","filter[companies]","dateFrom","dateTo","offset","limit","sort","sortBy"],"path":"/v3/crm/tasks","scope":{}},
+      "GET /v3/crm/tasks/{id}": {"action":"crm.tasks.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/crm/tasks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v3/crm/tasktypes": {"action":"crm.tasktypes.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/crm/tasktypes","scope":{}},
+      "GET /v3/ecommerce/attribution/metrics": {"action":"ecommerce.attribution.metrics.read","effects":["read"],"method":"GET","origin":"{api}","params":["periodFrom","periodTo","emailCampaignId[]","smsCampaignId[]","automationWorkflowEmailId[]","automationWorkflowSmsId[]"],"path":"/v3/ecommerce/attribution/metrics","scope":{}},
+      "GET /v3/ecommerce/attribution/metrics/{conversionSource}/{conversionSourceId}": {"action":"ecommerce.attribution.metrics.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/ecommerce/attribution/metrics/{conversionSource}/{conversionSourceId}","scope":{"conversionSource":{"at":"conversionSource","from":"path"},"conversionSourceId":{"at":"conversionSourceId","from":"path"}}},
+      "GET /v3/ecommerce/attribution/products/{conversionSource}/{conversionSourceId}": {"action":"ecommerce.attribution.products.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/ecommerce/attribution/products/{conversionSource}/{conversionSourceId}","scope":{"conversionSource":{"at":"conversionSource","from":"path"},"conversionSourceId":{"at":"conversionSourceId","from":"path"}}},
+      "GET /v3/ecommerce/config/displayCurrency": {"action":"ecommerce.config.display_currency.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/ecommerce/config/displayCurrency","scope":{}},
+      "GET /v3/loyalty/balance/programs/{pid}/active-balance": {"action":"loyalty.balance.programs.active_balance.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","sortField","sort","contactId","balanceDefinitionId","includeInternal"],"path":"/v3/loyalty/balance/programs/{pid}/active-balance","scope":{"balanceDefinitionId":{"at":"balanceDefinitionId","from":"query"},"contactId":{"at":"contactId","from":"query"},"pid":{"at":"pid","from":"path"}}},
+      "GET /v3/loyalty/balance/programs/{pid}/transaction-history": {"action":"loyalty.balance.programs.transaction_history.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","sortField","sort","contactId","balanceDefinitionId","status","transactionType","loyaltySubscriptionId"],"path":"/v3/loyalty/balance/programs/{pid}/transaction-history","scope":{"balanceDefinitionId":{"at":"balanceDefinitionId","from":"query"},"contactId":{"at":"contactId","from":"query"},"pid":{"at":"pid","from":"path"}}},
+      "GET /v3/loyalty/offer/programs/{pid}/offers": {"action":"loyalty.offer.programs.offers.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","state","version"],"path":"/v3/loyalty/offer/programs/{pid}/offers","scope":{"pid":{"at":"pid","from":"path"}}},
+      "GET /v3/loyalty/offer/programs/{pid}/rewards/{rid}": {"action":"loyalty.offer.programs.rewards.read","effects":["read"],"method":"GET","origin":"{api}","params":["version"],"path":"/v3/loyalty/offer/programs/{pid}/rewards/{rid}","scope":{"pid":{"at":"pid","from":"path"},"rid":{"at":"rid","from":"path"}}},
+      "GET /v3/loyalty/offer/programs/{pid}/vouchers": {"action":"loyalty.offer.programs.vouchers.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","sort","sortField","contactId","metadata_key_value","rewardId"],"path":"/v3/loyalty/offer/programs/{pid}/vouchers","scope":{"contactId":{"at":"contactId","from":"query"},"pid":{"at":"pid","from":"path"}}},
+      "PATCH /v3/companies/link-unlink/{id}": {"action":"companies.link_unlink.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v3/companies/link-unlink/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PATCH /v3/companies/{id}": {"action":"companies.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v3/companies/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PATCH /v3/crm/attributes/{id}": {"action":"crm.attributes.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v3/crm/attributes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PATCH /v3/crm/deals/link-unlink/{id}": {"action":"crm.deals.link_unlink.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v3/crm/deals/link-unlink/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PATCH /v3/crm/deals/{id}": {"action":"crm.deals.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v3/crm/deals/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PATCH /v3/crm/notes/{id}": {"action":"crm.notes.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v3/crm/notes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PATCH /v3/crm/tasks/{id}": {"action":"crm.tasks.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v3/crm/tasks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /v3/companies": {"action":"companies.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/companies","scope":{"name":{"at":"/name","from":"body"}}},
+      "POST /v3/companies/import": {"action":"companies.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/companies/import","scope":{}},
+      "POST /v3/conversations/agentOnlinePing": {"action":"conversations.agent_online_ping.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/conversations/agentOnlinePing","scope":{"agentId":{"at":"/agentId","from":"body","optional":true},"agentName":{"at":"/agentName","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v3/conversations/messages": {"action":"conversations.messages.send","body":"json","effects":["send"],"grant":["visitorId"],"method":"POST","origin":"{api}","path":"/v3/conversations/messages","scope":{"request":{"at":"","from":"body","type":"object"},"visitorId":{"at":"/visitorId","from":"body"}}},
+      "POST /v3/conversations/pushedMessages": {"action":"conversations.pushed_messages.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/v3/conversations/pushedMessages","scope":{"agentId":{"at":"/agentId","from":"body","optional":true},"groupId":{"at":"/groupId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"visitorId":{"at":"/visitorId","from":"body"}}},
+      "POST /v3/corporate/group": {"action":"corporate.group.admin","body":"any","effects":["admin"],"method":"POST","origin":"{api}","path":"/v3/corporate/group","scope":{}},
+      "POST /v3/corporate/ssoToken": {"action":"corporate.sso_token.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/corporate/ssoToken","scope":{}},
+      "POST /v3/corporate/subAccount": {"action":"corporate.sub_account.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/corporate/subAccount","scope":{"companyName":{"at":"/companyName","from":"body"},"email":{"at":"/email","from":"body"}}},
+      "POST /v3/corporate/subAccount/ip/associate": {"action":"corporate.sub_account.ip.associate.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/corporate/subAccount/ip/associate","scope":{}},
+      "POST /v3/corporate/subAccount/key": {"action":"corporate.sub_account.key.admin","body":"any","effects":["admin"],"method":"POST","origin":"{api}","path":"/v3/corporate/subAccount/key","scope":{}},
+      "POST /v3/corporate/subAccount/ssoToken": {"action":"corporate.sub_account.sso_token.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/corporate/subAccount/ssoToken","scope":{}},
+      "POST /v3/crm/attributes": {"action":"crm.attributes.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/crm/attributes","scope":{}},
+      "POST /v3/crm/deals": {"action":"crm.deals.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/crm/deals","scope":{"name":{"at":"/name","from":"body"}}},
+      "POST /v3/crm/deals/import": {"action":"crm.deals.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/crm/deals/import","scope":{}},
+      "POST /v3/crm/files": {"action":"crm.files.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/crm/files","scope":{}},
+      "POST /v3/crm/notes": {"action":"crm.notes.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/v3/crm/notes","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v3/crm/tasks": {"action":"crm.tasks.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/crm/tasks","scope":{"name":{"at":"/name","from":"body"},"taskTypeId":{"at":"/taskTypeId","from":"body"}}},
+      "POST /v3/ecommerce/activate": {"action":"ecommerce.activate.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/ecommerce/activate","scope":{}},
+      "POST /v3/loyalty/balance/programs/{pid}/balance-definitions": {"action":"loyalty.balance.programs.balance_definitions.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/loyalty/balance/programs/{pid}/balance-definitions","scope":{"name":{"at":"/name","from":"body"},"pid":{"at":"pid","from":"path"}}},
+      "POST /v3/loyalty/balance/programs/{pid}/subscriptions/{cid}/balances": {"action":"loyalty.balance.programs.subscriptions.balances.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/loyalty/balance/programs/{pid}/subscriptions/{cid}/balances","scope":{"balanceDefinitionId":{"at":"/balanceDefinitionId","from":"body"},"cid":{"at":"cid","from":"path"},"pid":{"at":"pid","from":"path"}}},
+      "PUT /v3/conversations/messages/{id}": {"action":"conversations.messages.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/conversations/messages/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /v3/conversations/pushedMessages/{id}": {"action":"conversations.pushed_messages.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/conversations/pushedMessages/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /v3/conversations/visitorGroup": {"action":"conversations.visitor_group.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/conversations/visitorGroup","scope":{}},
+      "PUT /v3/corporate/group/unlink/{groupId}/subAccounts": {"action":"corporate.group.unlink.sub_accounts.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/corporate/group/unlink/{groupId}/subAccounts","scope":{"groupId":{"at":"groupId","from":"path"}}},
+      "PUT /v3/corporate/group/{id}": {"action":"corporate.group.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/v3/corporate/group/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /v3/corporate/subAccount/ip/dissociate": {"action":"corporate.sub_account.ip.dissociate.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/corporate/subAccount/ip/dissociate","scope":{}},
+      "PUT /v3/corporate/subAccount/{id}/applications/toggle": {"action":"corporate.sub_account.applications.toggle.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/corporate/subAccount/{id}/applications/toggle","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /v3/corporate/subAccount/{id}/plan": {"action":"corporate.sub_account.plan.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/v3/corporate/subAccount/{id}/plan","scope":{"id":{"at":"id","from":"path"}}},
+      "PUT /v3/corporate/subAccounts/plan": {"action":"corporate.sub_accounts.plan.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/v3/corporate/subAccounts/plan","scope":{}},
+      "PUT /v3/corporate/user/invitation/{action}/{email}": {"action":"corporate.user.invitation.send","effects":["send","share"],"method":"PUT","origin":"{api}","path":"/v3/corporate/user/invitation/{action}/{email}","scope":{"action":{"at":"action","from":"path"},"email":{"at":"email","from":"path"}}},
+      "PUT /v3/corporate/user/{email}/permissions": {"action":"corporate.user.permissions.share","body":"json","effects":["share"],"grant":["email"],"method":"PUT","origin":"{api}","path":"/v3/corporate/user/{email}/permissions","scope":{"email":{"at":"email","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "addContactToList": {"action":"contacts.lists.contacts.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/contacts/lists/{listId}/contacts/add","scope":{"listId":{"at":"listId","from":"path"}}},
+      "addSubscriptionToTier": {"action":"loyalty.tier.programs.contacts.tiers.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/loyalty/tier/programs/{pid}/contacts/{cid}/tiers/{tid}","scope":{"cid":{"at":"cid","from":"path"},"pid":{"at":"pid","from":"path"},"tid":{"at":"tid","from":"path"}}},
+      "authenticateDomain": {"action":"senders.domains.authenticate.write","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/senders/domains/{domainName}/authenticate","scope":{"domainName":{"at":"domainName","from":"path"}}},
+      "batchDeleteObjectRecords": {"action":"objects.batch.delete","body":"json","effects":["delete"],"method":"POST","origin":"{api}","path":"/v3/objects/{object_type}/batch/delete","scope":{"object_type":{"at":"object_type","from":"path"}}},
+      "beginTransaction": {"action":"loyalty.balance.programs.transactions.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/loyalty/balance/programs/{pid}/transactions","scope":{"balanceDefinitionId":{"at":"/balanceDefinitionId","from":"body"},"pid":{"at":"pid","from":"path"}}},
+      "blockNewDomain": {"action":"smtp.blocked_domains.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/smtp/blockedDomains","scope":{}},
+      "cancelTransaction": {"action":"loyalty.balance.programs.transactions.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/loyalty/balance/programs/{pid}/transactions/{tid}/cancel","scope":{"pid":{"at":"pid","from":"path"},"tid":{"at":"tid","from":"path"}}},
+      "completeRedeemTransaction": {"action":"loyalty.offer.programs.rewards.redeem.complete.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/loyalty/offer/programs/{pid}/rewards/redeem/{tid}/complete","scope":{"pid":{"at":"pid","from":"path"},"tid":{"at":"tid","from":"path"}}},
+      "completeTransaction": {"action":"loyalty.balance.programs.transactions.complete.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/loyalty/balance/programs/{pid}/transactions/{tid}/complete","scope":{"pid":{"at":"pid","from":"path"},"tid":{"at":"tid","from":"path"}}},
+      "createAttribute": {"action":"contacts.attributes.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/contacts/attributes/{attributeCategory}/{attributeName}","scope":{"attributeCategory":{"at":"attributeCategory","from":"path"},"attributeName":{"at":"attributeName","from":"path"}}},
+      "createBalanceLimit": {"action":"loyalty.balance.programs.balance_definitions.limits.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/loyalty/balance/programs/{pid}/balance-definitions/{bdid}/limits","scope":{"bdid":{"at":"bdid","from":"path"},"pid":{"at":"pid","from":"path"}}},
+      "createBalanceOrder": {"action":"loyalty.balance.programs.order.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/loyalty/balance/programs/{pid}/create-order","scope":{"balanceDefinitionId":{"at":"/balanceDefinitionId","from":"body"},"contactId":{"at":"/contactId","from":"body","type":"number"},"pid":{"at":"pid","from":"path"}}},
+      "createBatchEvents": {"action":"events.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/events/batch","scope":{}},
+      "createBatchOrder": {"action":"orders.status.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/orders/status/batch","scope":{}},
+      "createConsentGroup": {"action":"contacts.consent_groups.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/contacts/consent-groups","scope":{"name":{"at":"/name","from":"body"}}},
+      "createContact": {"action":"contacts.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/contacts","scope":{}},
+      "createCouponCollection": {"action":"coupon_collections.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/couponCollections","scope":{"name":{"at":"/name","from":"body"}}},
+      "createCoupons": {"action":"coupons.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/coupons","scope":{"collectionId":{"at":"/collectionId","from":"body"}}},
+      "createDoiContact": {"action":"contacts.double_optin_confirmation.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/contacts/doubleOptinConfirmation","scope":{"email":{"at":"/email","from":"body"},"redirectionUrl":{"at":"/redirectionUrl","from":"body"},"templateId":{"at":"/templateId","from":"body","type":"number"}}},
+      "createDomain": {"action":"senders.domains.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/v3/senders/domains","scope":{"name":{"at":"/name","from":"body"}}},
+      "createEmailCampaign": {"action":"email_campaigns.send","body":"json","effects":["send","write"],"method":"POST","origin":"{api}","path":"/v3/emailCampaigns","scope":{"attachmentUrl":{"at":"/attachmentUrl","from":"body","optional":true},"htmlUrl":{"at":"/htmlUrl","from":"body","optional":true},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"/templateId","from":"body","optional":true,"type":"number"},"unsubscriptionPageId":{"at":"/unsubscriptionPageId","from":"body","optional":true},"updateFormId":{"at":"/updateFormId","from":"body","optional":true},"utmId":{"at":"/utmId","from":"body","optional":true}}},
+      "createEvent": {"action":"events.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/events","scope":{"event_name":{"at":"/event_name","from":"body"}}},
+      "createExternalFeed": {"action":"feeds.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/feeds","scope":{"name":{"at":"/name","from":"body"},"url":{"at":"/url","from":"body"}}},
+      "createFolder": {"action":"contacts.folders.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/contacts/folders","scope":{}},
+      "createList": {"action":"contacts.lists.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/contacts/lists","scope":{"folderId":{"at":"/folderId","from":"body","type":"number"},"name":{"at":"/name","from":"body"}}},
+      "createNewLP": {"action":"loyalty.config.programs.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/loyalty/config/programs","scope":{"name":{"at":"/name","from":"body"}}},
+      "createOrder": {"action":"orders.status.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/orders/status","scope":{"id":{"at":"/id","from":"body"}}},
+      "createPaymentRequest": {"action":"payments.requests.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/payments/requests","scope":{"contactId":{"at":"/contactId","from":"body","type":"number"}}},
+      "createProductAlert": {"action":"products.alerts.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/products/{id}/alerts/{type}","scope":{"id":{"at":"id","from":"path"},"type":{"at":"type","from":"path"}}},
+      "createReward": {"action":"loyalty.offer.programs.offers.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/loyalty/offer/programs/{pid}/offers","scope":{"name":{"at":"/name","from":"body"},"pid":{"at":"pid","from":"path"}}},
+      "createSender": {"action":"senders.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/senders","scope":{"email":{"at":"/email","from":"body"},"name":{"at":"/name","from":"body"}}},
+      "createSmsCampaign": {"action":"sms_campaigns.send","body":"json","effects":["send","write"],"method":"POST","origin":"{api}","path":"/v3/smsCampaigns","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createSmtpTemplate": {"action":"smtp.templates.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/smtp/templates","scope":{"templateName":{"at":"/templateName","from":"body"}}},
+      "createTierForTierGroup": {"action":"loyalty.tier.programs.tier_groups.tiers.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/loyalty/tier/programs/{pid}/tier-groups/{gid}/tiers","scope":{"gid":{"at":"gid","from":"path"},"name":{"at":"/name","from":"body"},"pid":{"at":"pid","from":"path"}}},
+      "createTierGroup": {"action":"loyalty.tier.programs.tier_groups.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/loyalty/tier/programs/{pid}/tier-groups","scope":{"name":{"at":"/name","from":"body"},"pid":{"at":"pid","from":"path"}}},
+      "createUpdateBatchCategory": {"action":"categories.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/categories/batch","scope":{}},
+      "createUpdateBatchProducts": {"action":"products.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/products/batch","scope":{}},
+      "createUpdateCategory": {"action":"categories.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/categories","scope":{"id":{"at":"/id","from":"body"}}},
+      "createUpdateProduct": {"action":"products.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/products","scope":{"id":{"at":"/id","from":"body"},"name":{"at":"/name","from":"body"}}},
+      "createVoucher": {"action":"loyalty.offer.programs.rewards.attribute.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/loyalty/offer/programs/{pid}/rewards/attribute","scope":{"pid":{"at":"pid","from":"path"},"rewardId":{"at":"/rewardId","from":"body"}}},
+      "createWebhook": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/v3/webhooks","scope":{"url":{"at":"/url","from":"body"}}},
+      "createWhatsAppCampaign": {"action":"whatsapp_campaigns.send","body":"json","effects":["send","write"],"method":"POST","origin":"{api}","path":"/v3/whatsappCampaigns","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"/templateId","from":"body","type":"number"}}},
+      "createWhatsAppTemplate": {"action":"whatsapp_campaigns.template.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/whatsappCampaigns/template","scope":{"name":{"at":"/name","from":"body"}}},
+      "deleteAttribute": {"action":"contacts.attributes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/contacts/attributes/{attributeCategory}/{attributeName}","scope":{"attributeCategory":{"at":"attributeCategory","from":"path"},"attributeName":{"at":"attributeName","from":"path"}}},
+      "deleteBalanceDefinition": {"action":"loyalty.balance.programs.balance_definitions.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/loyalty/balance/programs/{pid}/balance-definitions/{bdid}","scope":{"bdid":{"at":"bdid","from":"path"},"pid":{"at":"pid","from":"path"}}},
+      "deleteBalanceLimit": {"action":"loyalty.balance.programs.balance_definitions.limits.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/loyalty/balance/programs/{pid}/balance-definitions/{bdid}/limits/{blid}","scope":{"bdid":{"at":"bdid","from":"path"},"blid":{"at":"blid","from":"path"},"pid":{"at":"pid","from":"path"}}},
+      "deleteBlockedDomain": {"action":"smtp.blocked_domains.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/smtp/blockedDomains/{domain}","scope":{"domain":{"at":"domain","from":"path"}}},
+      "deleteConsentGroup": {"action":"contacts.consent_groups.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/contacts/consent-groups/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteContact": {"action":"contacts.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["identifierType"],"path":"/v3/contacts/{identifier}","scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "deleteContactMembers": {"action":"loyalty.config.programs.subscription_members.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["memberContactIds"],"path":"/v3/loyalty/config/programs/{pid}/subscription-members","scope":{"memberContactIds":{"at":"memberContactIds","from":"query"},"pid":{"at":"pid","from":"path"}}},
+      "deleteContactSubscription": {"action":"loyalty.config.programs.contact.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/loyalty/config/programs/{pid}/contact/{cid}","scope":{"cid":{"at":"cid","from":"path"},"pid":{"at":"pid","from":"path"}}},
+      "deleteDomain": {"action":"senders.domains.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/senders/domains/{domainName}","scope":{"domainName":{"at":"domainName","from":"path"}}},
+      "deleteEmailCampaign": {"action":"email_campaigns.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/emailCampaigns/{campaignId}","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "deleteExternalFeed": {"action":"feeds.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/feeds/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "deleteFolder": {"action":"contacts.folders.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/contacts/folders/{folderId}","scope":{"folderId":{"at":"folderId","from":"path"}}},
+      "deleteHardbounces": {"action":"smtp.hardbounces.delete","body":"any","effects":["delete"],"method":"POST","origin":"{api}","path":"/v3/smtp/deleteHardbounces","scope":{}},
+      "deleteList": {"action":"contacts.lists.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/contacts/lists/{listId}","scope":{"listId":{"at":"listId","from":"path"}}},
+      "deleteLoyaltyProgram": {"action":"loyalty.config.programs.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/loyalty/config/programs/{pid}","scope":{"pid":{"at":"pid","from":"path"}}},
+      "deleteMultiAttributeOptions": {"action":"contacts.attributes.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/contacts/attributes/{attributeType}/{multipleChoiceAttribute}/{multipleChoiceAttributeOption}","scope":{"attributeType":{"at":"attributeType","from":"path"},"multipleChoiceAttribute":{"at":"multipleChoiceAttribute","from":"path"},"multipleChoiceAttributeOption":{"at":"multipleChoiceAttributeOption","from":"path"}}},
+      "deletePaymentRequest": {"action":"payments.requests.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/payments/requests/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteScheduledEmailById": {"action":"smtp.email.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/smtp/email/{identifier}","scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "deleteSender": {"action":"senders.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/senders/{senderId}","scope":{"senderId":{"at":"senderId","from":"path"}}},
+      "deleteSmsCampaign": {"action":"sms_campaigns.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/smsCampaigns/{campaignId}","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "deleteSmtpTemplate": {"action":"smtp.templates.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/smtp/templates/{templateId}","scope":{"templateId":{"at":"templateId","from":"path"}}},
+      "deleteTier": {"action":"loyalty.tier.programs.tiers.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/loyalty/tier/programs/{pid}/tiers/{tid}","scope":{"pid":{"at":"pid","from":"path"},"tid":{"at":"tid","from":"path"}}},
+      "deleteTierGroup": {"action":"loyalty.tier.programs.tier_groups.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/loyalty/tier/programs/{pid}/tier-groups/{gid}","scope":{"gid":{"at":"gid","from":"path"},"pid":{"at":"pid","from":"path"}}},
+      "deleteWebhook": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/webhooks/{webhookId}","scope":{"webhookId":{"at":"webhookId","from":"path"}}},
+      "deleteWhatsAppCampaign": {"action":"whatsapp_campaigns.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/v3/whatsappCampaigns/{campaignId}","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "emailExportRecipients": {"action":"email_campaigns.recipients.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/emailCampaigns/{campaignId}/exportRecipients","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "exportWebhooksHistory": {"action":"webhooks.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/webhooks/export","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "getAbTestCampaignResult": {"action":"email_campaigns.ab_test_campaign_result.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/emailCampaigns/{campaignId}/abTestCampaignResult","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "getAccount": {"action":"account.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/account","scope":{}},
+      "getAccountActivity": {"action":"organization.activities.read","effects":["read"],"method":"GET","origin":"{api}","params":["startDate","endDate","email","limit","offset"],"path":"/v3/organization/activities","scope":{}},
+      "getAggregatedSmtpReport": {"action":"smtp.statistics.aggregated_report.read","effects":["read"],"method":"GET","origin":"{api}","params":["startDate","endDate","days","tag"],"path":"/v3/smtp/statistics/aggregatedReport","scope":{}},
+      "getAllExternalFeeds": {"action":"feeds.read","effects":["read"],"method":"GET","origin":"{api}","params":["search","startDate","endDate","sort","authType","limit","offset"],"path":"/v3/feeds","scope":{}},
+      "getAssociatedRecords": {"action":"objects.associated_records.read","effects":["read"],"method":"GET","origin":"{api}","params":["id","ext_id","email","sms","type","offset"],"path":"/v3/objects/{object_type}/associated-records","scope":{"object_type":{"at":"object_type","from":"path"}}},
+      "getAttributes": {"action":"contacts.attributes.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/contacts/attributes","scope":{}},
+      "getBalanceDefinition": {"action":"loyalty.balance.programs.balance_definitions.read","effects":["read"],"method":"GET","origin":"{api}","params":["version"],"path":"/v3/loyalty/balance/programs/{pid}/balance-definitions/{bdid}","scope":{"bdid":{"at":"bdid","from":"path"},"pid":{"at":"pid","from":"path"}}},
+      "getBalanceDefinitionList": {"action":"loyalty.balance.programs.balance_definitions.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","sortField","sort","version"],"path":"/v3/loyalty/balance/programs/{pid}/balance-definitions","scope":{"pid":{"at":"pid","from":"path"}}},
+      "getBalanceLimit": {"action":"loyalty.balance.programs.balance_definitions.limits.read","effects":["read"],"method":"GET","origin":"{api}","params":["version"],"path":"/v3/loyalty/balance/programs/{pid}/balance-definitions/{bdid}/limits/{blid}","scope":{"bdid":{"at":"bdid","from":"path"},"blid":{"at":"blid","from":"path"},"pid":{"at":"pid","from":"path"}}},
+      "getBlockedDomains": {"action":"smtp.blocked_domains.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/smtp/blockedDomains","scope":{}},
+      "getCategories": {"action":"categories.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","sort","ids","name","modifiedSince","createdSince","isDeleted"],"path":"/v3/categories","scope":{}},
+      "getCategoryInfo": {"action":"categories.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/categories/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getCodeCount": {"action":"loyalty.offer.programs.code_pools.codes_count.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/loyalty/offer/programs/{pid}/code-pools/{cpid}/codes-count","scope":{"cpid":{"at":"cpid","from":"path"},"pid":{"at":"pid","from":"path"}}},
+      "getConsentGroup": {"action":"contacts.consent_groups.read","effects":["read"],"method":"GET","origin":"{api}","params":["startDate","endDate"],"path":"/v3/contacts/consent-groups/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getConsentGroups": {"action":"contacts.consent_groups.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","id","name","signupMode"],"path":"/v3/contacts/consent-groups","scope":{"id":{"at":"id","from":"query","optional":true},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getContactBalances": {"action":"loyalty.balance.programs.contact_balances.read","effects":["read"],"method":"GET","origin":"{api}","params":["includeInternal","limit","offset","sort","sortField","balanceDefinitionId"],"path":"/v3/loyalty/balance/programs/{pid}/contact-balances","scope":{"balanceDefinitionId":{"at":"balanceDefinitionId","from":"query"},"pid":{"at":"pid","from":"path"}}},
+      "getContactInfo": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"{api}","params":["identifierType","startDate","endDate","limit","offset","id","name","signupMode","sort"],"path":"/v3/contacts/{identifier}","path_patterns":{"identifier":"[^acfls].*|a(?:|[^t].*|t(?:|[^t].*|t(?:|[^r].*|r(?:|[^i].*|i(?:|[^b].*|b(?:|[^u].*|u(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))))))))|c(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^\\-].*|-(?:|[^g].*|g(?:|[^r].*|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))))))))|f(?:|[^o].*|o(?:|[^l].*|l(?:|[^d].*|d(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))|s(?:|[^e].*|e(?:|[^g].*|g(?:|[^m].*|m(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+)))))))"},"scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "getContactStats": {"action":"contacts.campaign_stats.read","effects":["read"],"method":"GET","origin":"{api}","params":["startDate","endDate"],"path":"/v3/contacts/{identifier}/campaignStats","path_patterns":{"identifier":"[^cfl].*|c(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^\\-].*|-(?:|[^g].*|g(?:|[^r].*|r(?:|[^o].*|o(?:|[^u].*|u(?:|[^p].*|p(?:|[^s].*|s.+)))))))))))))|f(?:|[^o].*|o(?:|[^l].*|l(?:|[^d].*|d(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))"},"scope":{"identifier":{"at":"identifier","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getContacts": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","modifiedSince","createdSince","sort","ids","segmentId","listIds","filter"],"path":"/v3/contacts","scope":{}},
+      "getContactsFromList": {"action":"contacts.lists.contacts.read","effects":["read"],"method":"GET","origin":"{api}","params":["modifiedSince","limit","offset","sort"],"path":"/v3/contacts/lists/{listId}/contacts","scope":{"listId":{"at":"listId","from":"path"}}},
+      "getCorporateInvitedUsersList": {"action":"corporate.invited.users.read","effects":["read"],"method":"GET","origin":"{api}","params":["type","offset","limit"],"path":"/v3/corporate/invited/users","scope":{}},
+      "getCorporateUserPermission": {"action":"corporate.user.permissions.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/corporate/user/{email}/permissions","scope":{"email":{"at":"email","from":"path"}}},
+      "getCouponCollection": {"action":"coupon_collections.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/couponCollections/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getCouponCollections": {"action":"coupon_collections.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","sort","sortBy"],"path":"/v3/couponCollections","scope":{}},
+      "getDomainConfiguration": {"action":"senders.domains.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/senders/domains/{domainName}","scope":{"domainName":{"at":"domainName","from":"path"}}},
+      "getDomains": {"action":"senders.domains.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/senders/domains","scope":{}},
+      "getEmailCampaign": {"action":"email_campaigns.read","effects":["read"],"method":"GET","origin":"{api}","params":["statistics","excludeHtmlContent"],"path":"/v3/emailCampaigns/{campaignId}","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "getEmailCampaigns": {"action":"email_campaigns.read","effects":["read"],"method":"GET","origin":"{api}","params":["type","status","statistics","startDate","endDate","limit","offset","sort","excludeHtmlContent","excludePdfAttachment"],"path":"/v3/emailCampaigns","scope":{}},
+      "getEmailEventReport": {"action":"smtp.statistics.events.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","startDate","endDate","days","email","event","tags","messageId","templateId","sort"],"path":"/v3/smtp/statistics/events","scope":{}},
+      "getEvents": {"action":"events.read","effects":["read"],"method":"GET","origin":"{api}","params":["contact_id","event_name","object_type","startDate","endDate","limit","offset"],"path":"/v3/events","scope":{}},
+      "getExternalFeedByUUID": {"action":"feeds.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/feeds/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "getFolder": {"action":"contacts.folders.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/contacts/folders/{folderId}","scope":{"folderId":{"at":"folderId","from":"path"}}},
+      "getFolderLists": {"action":"contacts.folders.lists.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","sort"],"path":"/v3/contacts/folders/{folderId}/lists","scope":{"folderId":{"at":"folderId","from":"path"}}},
+      "getFolders": {"action":"contacts.folders.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","sort"],"path":"/v3/contacts/folders","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getInboundEmailAttachment": {"action":"inbound.attachments.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/inbound/attachments/{downloadToken}","scope":{"downloadToken":{"at":"downloadToken","from":"path"}}},
+      "getInboundEmailEvents": {"action":"inbound.events.read","effects":["read"],"method":"GET","origin":"{api}","params":["sender","startDate","endDate","limit","offset","sort"],"path":"/v3/inbound/events","scope":{}},
+      "getInboundEmailEventsByUuid": {"action":"inbound.events.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/inbound/events/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "getInvitedUsersList": {"action":"organization.invited.users.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/organization/invited/users","scope":{}},
+      "getIps": {"action":"senders.ips.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/senders/ips","scope":{}},
+      "getIpsFromSender": {"action":"senders.ips.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/senders/{senderId}/ips","path_patterns":{"senderId":"[0-9]+"},"scope":{"senderId":{"at":"senderId","from":"path"}}},
+      "getLPList": {"action":"loyalty.config.programs.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","sort_field","sort"],"path":"/v3/loyalty/config/programs","scope":{}},
+      "getList": {"action":"contacts.lists.read","effects":["read"],"method":"GET","origin":"{api}","params":["startDate","endDate"],"path":"/v3/contacts/lists/{listId}","scope":{"listId":{"at":"listId","from":"path"}}},
+      "getListOfTierGroups": {"action":"loyalty.tier.programs.tier_groups.read","effects":["read"],"method":"GET","origin":"{api}","params":["version"],"path":"/v3/loyalty/tier/programs/{pid}/tier-groups","scope":{"pid":{"at":"pid","from":"path"}}},
+      "getLists": {"action":"contacts.lists.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","sort"],"path":"/v3/contacts/lists","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getLoyaltyProgramInfo": {"action":"loyalty.config.programs.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/loyalty/config/programs/{pid}","scope":{"pid":{"at":"pid","from":"path"}}},
+      "getLoyaltyProgramTier": {"action":"loyalty.tier.programs.tiers.read","effects":["read"],"method":"GET","origin":"{api}","params":["version"],"path":"/v3/loyalty/tier/programs/{pid}/tiers","scope":{"pid":{"at":"pid","from":"path"}}},
+      "getOrders": {"action":"orders.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","sort","modifiedSince","createdSince","secondarySortByModifiedAt"],"path":"/v3/orders","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getParameterSubscriptionInfo": {"action":"loyalty.config.programs.account_info.read","effects":["read"],"method":"GET","origin":"{api}","params":["contactId","params","loyaltySubscriptionId","includeInternal"],"path":"/v3/loyalty/config/programs/{pid}/account-info","scope":{"pid":{"at":"pid","from":"path"}}},
+      "getPaymentRequest": {"action":"payments.requests.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/payments/requests/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getProcess": {"action":"processes.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/processes/{processId}","scope":{"processId":{"at":"processId","from":"path"}}},
+      "getProcesses": {"action":"processes.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","sort"],"path":"/v3/processes","scope":{}},
+      "getProductInfo": {"action":"products.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/products/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getProducts": {"action":"products.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","sort","ids","search","name","price[lte]","price[gte]","price[lt]","price[gt]","price[eq]","price[ne]","alternativePrice[lte]","alternativePrice[gte]","alternativePrice[lt]","alternativePrice[gt]","alternativePrice[eq]","alternativePrice[ne]","categories","modifiedSince","createdSince","sortByField","isDeleted"],"path":"/v3/products","scope":{}},
+      "getSMSTemplates": {"action":"transactional_sms.templates.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","sort"],"path":"/v3/transactionalSMS/templates","scope":{}},
+      "getScheduledEmailById": {"action":"smtp.email_status.read","effects":["read"],"method":"GET","origin":"{api}","params":["startDate","endDate","sort","status","limit","offset"],"path":"/v3/smtp/emailStatus/{identifier}","scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "getSegments": {"action":"contacts.segments.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","sort"],"path":"/v3/contacts/segments","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getSenders": {"action":"senders.read","effects":["read"],"method":"GET","origin":"{api}","params":["ip","domain"],"path":"/v3/senders","scope":{}},
+      "getSharedTemplateUrl": {"action":"email_campaigns.shared_url.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/emailCampaigns/{campaignId}/sharedUrl","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "getSmsCampaign": {"action":"sms_campaigns.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/smsCampaigns/{campaignId}","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "getSmsCampaigns": {"action":"sms_campaigns.read","effects":["read"],"method":"GET","origin":"{api}","params":["status","startDate","endDate","limit","offset","sort"],"path":"/v3/smsCampaigns","scope":{}},
+      "getSmsEvents": {"action":"transactional_sms.statistics.events.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","startDate","endDate","offset","days","phoneNumber","event","tags","sort"],"path":"/v3/transactionalSMS/statistics/events","scope":{}},
+      "getSmtpReport": {"action":"smtp.statistics.reports.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","startDate","endDate","days","tag","sort"],"path":"/v3/smtp/statistics/reports","scope":{}},
+      "getSmtpTemplate": {"action":"smtp.templates.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/smtp/templates/{templateId}","scope":{"templateId":{"at":"templateId","from":"path"}}},
+      "getSmtpTemplates": {"action":"smtp.templates.read","effects":["read"],"method":"GET","origin":"{api}","params":["templateStatus","limit","offset","sort","editorType"],"path":"/v3/smtp/templates","scope":{}},
+      "getSubAccountGroups": {"action":"corporate.groups.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/corporate/groups","scope":{}},
+      "getSubscriptionBalances": {"action":"loyalty.balance.programs.subscriptions.balances.read","effects":["read"],"method":"GET","origin":"{api}","params":["includeInternal"],"path":"/v3/loyalty/balance/programs/{pid}/subscriptions/{cid}/balances","scope":{"cid":{"at":"cid","from":"path"},"pid":{"at":"pid","from":"path"}}},
+      "getTierGroup": {"action":"loyalty.tier.programs.tier_groups.read","effects":["read"],"method":"GET","origin":"{api}","params":["version"],"path":"/v3/loyalty/tier/programs/{pid}/tier-groups/{gid}","scope":{"gid":{"at":"gid","from":"path"},"pid":{"at":"pid","from":"path"}}},
+      "getTransacAggregatedSmsReport": {"action":"transactional_sms.statistics.aggregated_report.read","effects":["read"],"method":"GET","origin":"{api}","params":["startDate","endDate","days","tag"],"path":"/v3/transactionalSMS/statistics/aggregatedReport","scope":{}},
+      "getTransacBlockedContacts": {"action":"smtp.blocked_contacts.read","effects":["read"],"method":"GET","origin":"{api}","params":["startDate","endDate","limit","offset","senders","sort"],"path":"/v3/smtp/blockedContacts","scope":{}},
+      "getTransacEmailContent": {"action":"smtp.emails.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/smtp/emails/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "getTransacEmailsList": {"action":"smtp.emails.read","effects":["read"],"method":"GET","origin":"{api}","params":["email","templateId","messageId","startDate","endDate","sort","limit","offset"],"path":"/v3/smtp/emails","scope":{}},
+      "getTransacSmsReport": {"action":"transactional_sms.statistics.reports.read","effects":["read"],"method":"GET","origin":"{api}","params":["startDate","endDate","days","tag","sort"],"path":"/v3/transactionalSMS/statistics/reports","scope":{}},
+      "getUserPermission": {"action":"organization.user.permissions.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/organization/user/{email}/permissions","scope":{"email":{"at":"email","from":"path"}}},
+      "getWalletPassInstallUrl": {"action":"wallet.passes.install_url.read","effects":["read"],"method":"GET","origin":"{api}","params":["byExtId"],"path":"/v3/wallet/passes/{passId}/installUrl/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"},"passId":{"at":"passId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getWebhook": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/webhooks/{webhookId}","scope":{"webhookId":{"at":"webhookId","from":"path"}}},
+      "getWebhooks": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"{api}","params":["type","sort"],"path":"/v3/webhooks","scope":{}},
+      "getWhatsAppCampaign": {"action":"whatsapp_campaigns.read","effects":["read"],"method":"GET","origin":"{api}","params":["startDate","endDate","limit","offset","sort","source"],"path":"/v3/whatsappCampaigns/{campaignId}","path_patterns":{"campaignId":"[0-9]+"},"scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "getWhatsAppCampaigns": {"action":"whatsapp_campaigns.read","effects":["read"],"method":"GET","origin":"{api}","params":["startDate","endDate","limit","offset","sort"],"path":"/v3/whatsappCampaigns","scope":{}},
+      "getWhatsAppConfig": {"action":"whatsapp_campaigns.config.read","effects":["read"],"method":"GET","origin":"{api}","path":"/v3/whatsappCampaigns/config","scope":{}},
+      "getWhatsAppTemplates": {"action":"whatsapp_campaigns.template_list.read","effects":["read"],"method":"GET","origin":"{api}","params":["startDate","endDate","limit","offset","sort","source"],"path":"/v3/whatsappCampaigns/template-list","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getWhatsappEventReport": {"action":"whatsapp.statistics.events.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","offset","startDate","endDate","days","contactNumber","event","sort"],"path":"/v3/whatsapp/statistics/events","scope":{}},
+      "getrecords": {"action":"objects.records.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","page_num","sort","association"],"path":"/v3/objects/{object_type}/records","scope":{"object_type":{"at":"object_type","from":"path"}}},
+      "importContacts": {"action":"contacts.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/contacts/import","scope":{}},
+      "inviteAdminUser": {"action":"corporate.user.invitation.send","body":"json","effects":["send","share"],"grant":["email"],"method":"POST","origin":"{api}","path":"/v3/corporate/user/invitation/send","scope":{"email":{"at":"/email","from":"body"},"groupIds":{"at":"/groupIds","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "inviteuser": {"action":"organization.user.invitation.send","body":"json","effects":["send","share"],"grant":["email"],"method":"POST","origin":"{api}","path":"/v3/organization/user/invitation/send","scope":{"email":{"at":"/email","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "partiallyUpdateLoyaltyProgram": {"action":"loyalty.config.programs.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v3/loyalty/config/programs/{pid}","scope":{"pid":{"at":"pid","from":"path"}}},
+      "postPreviewSmtpEmailTemplates": {"action":"smtp.template.preview.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/v3/smtp/template/preview","scope":{"email":{"at":"/email","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"/templateId","from":"body","type":"number"}}},
+      "publishLoyaltyProgram": {"action":"loyalty.config.programs.publish","effects":["publish"],"method":"POST","origin":"{api}","path":"/v3/loyalty/config/programs/{pid}/publish","scope":{"pid":{"at":"pid","from":"path"}}},
+      "putRevokeUserPermission": {"action":"organization.user.invitation.revoke.share","effects":["share"],"method":"PUT","origin":"{api}","path":"/v3/organization/user/invitation/revoke/{email}","scope":{"email":{"at":"email","from":"path"}}},
+      "putresendcancelinvitation": {"action":"organization.user.invitation.send","effects":["send","share"],"method":"PUT","origin":"{api}","path":"/v3/organization/user/invitation/{action}/{email}","path_patterns":{"action":"cancel|resend"},"scope":{"action":{"at":"action","from":"path"},"email":{"at":"email","from":"path"}}},
+      "redeemVoucher": {"action":"loyalty.offer.programs.rewards.redeem.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/loyalty/offer/programs/{pid}/rewards/redeem","scope":{"pid":{"at":"pid","from":"path"}}},
+      "redeemWalletPass": {"action":"wallet.passes.redeem.write","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/wallet/passes/{installationId}/redeem","scope":{"installationId":{"at":"installationId","from":"path"}}},
+      "redeemWalletPass.json.9cf037ccf95c": {"action":"wallet.passes.redeem.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/wallet/passes/{installationId}/redeem","scope":{"installationId":{"at":"installationId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "removeContactFromList": {"action":"contacts.lists.contacts.delete","body":"json","effects":["delete"],"method":"POST","origin":"{api}","path":"/v3/contacts/lists/{listId}/contacts/remove","scope":{"listId":{"at":"listId","from":"path"}}},
+      "requestContactExport": {"action":"contacts.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/contacts/export","scope":{}},
+      "requestSmsRecipientExport": {"action":"sms_campaigns.recipients.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/smsCampaigns/{campaignId}/exportRecipients","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "revokeVouchers": {"action":"loyalty.offer.programs.rewards.delete","effects":["delete"],"method":"DELETE","origin":"{api}","params":["attributedRewardIds"],"path":"/v3/loyalty/offer/programs/{pid}/rewards/revoke","scope":{"pid":{"at":"pid","from":"path"}}},
+      "sendAsyncTransactionalSms": {"action":"transactional_sms.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/v3/transactionalSMS/send","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "sendEmailCampaignNow": {"action":"email_campaigns.now.send","effects":["send"],"method":"POST","origin":"{api}","path":"/v3/emailCampaigns/{campaignId}/sendNow","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "sendReport": {"action":"email_campaigns.report.send","body":"json","effects":["send"],"grant":["campaignId"],"method":"POST","origin":"{api}","path":"/v3/emailCampaigns/{campaignId}/sendReport","scope":{"campaignId":{"at":"campaignId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "sendSmsCampaignNow": {"action":"sms_campaigns.now.send","effects":["send"],"method":"POST","origin":"{api}","path":"/v3/smsCampaigns/{campaignId}/sendNow","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "sendSmsReport": {"action":"sms_campaigns.report.send","body":"json","effects":["send"],"grant":["campaignId"],"method":"POST","origin":"{api}","path":"/v3/smsCampaigns/{campaignId}/sendReport","scope":{"campaignId":{"at":"campaignId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "sendTestEmail": {"action":"email_campaigns.test.send","body":"json","effects":["send"],"grant":["campaignId"],"method":"POST","origin":"{api}","path":"/v3/emailCampaigns/{campaignId}/sendTest","scope":{"campaignId":{"at":"campaignId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "sendTestSms": {"action":"sms_campaigns.test.send","body":"json","effects":["send"],"grant":["campaignId"],"method":"POST","origin":"{api}","path":"/v3/smsCampaigns/{campaignId}/sendTest","scope":{"campaignId":{"at":"campaignId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "sendTestTemplate": {"action":"smtp.templates.test.send","body":"json","effects":["send"],"grant":["templateId"],"method":"POST","origin":"{api}","path":"/v3/smtp/templates/{templateId}/sendTest","scope":{"request":{"at":"","from":"body","type":"object"},"templateId":{"at":"templateId","from":"path"}}},
+      "sendTransacEmail": {"action":"smtp.email.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/v3/smtp/email","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "sendTransacSms": {"action":"transactional_sms.sms.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/v3/transactionalSMS/sms","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "sendWhatsAppTemplateApproval": {"action":"whatsapp_campaigns.template.approval.send","effects":["send"],"method":"POST","origin":"{api}","path":"/v3/whatsappCampaigns/template/approval/{templateId}","scope":{"templateId":{"at":"templateId","from":"path"}}},
+      "sendWhatsappMessage": {"action":"whatsapp.message.send","body":"json","effects":["send"],"method":"POST","origin":"{api}","path":"/v3/whatsapp/sendMessage","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "setConfigDisplayCurrency": {"action":"ecommerce.config.display_currency.write","body":"any","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/ecommerce/config/displayCurrency","scope":{}},
+      "subscribeMemberToASubscription": {"action":"loyalty.config.programs.subscription_members.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/loyalty/config/programs/{pid}/subscription-members","scope":{"pid":{"at":"pid","from":"path"}}},
+      "subscribeToLoyaltyProgram": {"action":"loyalty.config.programs.subscriptions.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/loyalty/config/programs/{pid}/subscriptions","scope":{"contactId":{"at":"/contactId","from":"body","type":"number"},"loyaltySubscriptionId":{"at":"/loyaltySubscriptionId","from":"body","optional":true},"pid":{"at":"pid","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateAttribute": {"action":"contacts.attributes.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/contacts/attributes/{attributeCategory}/{attributeName}","scope":{"attributeCategory":{"at":"attributeCategory","from":"path"},"attributeName":{"at":"attributeName","from":"path"}}},
+      "updateBalanceDefinition": {"action":"loyalty.balance.programs.balance_definitions.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/loyalty/balance/programs/{pid}/balance-definitions/{bdid}","scope":{"bdid":{"at":"bdid","from":"path"},"name":{"at":"/name","from":"body"},"pid":{"at":"pid","from":"path"}}},
+      "updateBalanceLimit": {"action":"loyalty.balance.programs.balance_definitions.limits.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/loyalty/balance/programs/{pid}/balance-definitions/{bdid}/limits/{blid}","scope":{"bdid":{"at":"bdid","from":"path"},"blid":{"at":"blid","from":"path"},"pid":{"at":"pid","from":"path"}}},
+      "updateBatchContacts": {"action":"contacts.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/contacts/batch","scope":{}},
+      "updateCampaignStatus": {"action":"email_campaigns.status.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/emailCampaigns/{campaignId}/status","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "updateConsentGroup": {"action":"contacts.consent_groups.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/contacts/consent-groups/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateContact": {"action":"contacts.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","params":["identifierType"],"path":"/v3/contacts/{identifier}","scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "updateCouponCollection": {"action":"coupon_collections.write","body":"any","effects":["write"],"method":"PATCH","origin":"{api}","path":"/v3/couponCollections/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateEmailCampaign": {"action":"email_campaigns.send","body":"json","effects":["send","write"],"method":"PUT","origin":"{api}","path":"/v3/emailCampaigns/{campaignId}","scope":{"attachmentUrl":{"at":"/attachmentUrl","from":"body","optional":true},"campaignId":{"at":"campaignId","from":"path"},"htmlUrl":{"at":"/htmlUrl","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"unsubscriptionPageId":{"at":"/unsubscriptionPageId","from":"body","optional":true},"updateFormId":{"at":"/updateFormId","from":"body","optional":true},"utmId":{"at":"/utmId","from":"body","optional":true}}},
+      "updateExternalFeed": {"action":"feeds.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/feeds/{uuid}","scope":{"uuid":{"at":"uuid","from":"path"}}},
+      "updateFolder": {"action":"contacts.folders.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/contacts/folders/{folderId}","scope":{"folderId":{"at":"folderId","from":"path"}}},
+      "updateList": {"action":"contacts.lists.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/contacts/lists/{listId}","scope":{"listId":{"at":"listId","from":"path"}}},
+      "updateLoyaltyProgram": {"action":"loyalty.config.programs.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/loyalty/config/programs/{pid}","scope":{"name":{"at":"/name","from":"body"},"pid":{"at":"pid","from":"path"}}},
+      "updateSender": {"action":"senders.write","body":"any","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/senders/{senderId}","scope":{"senderId":{"at":"senderId","from":"path"}}},
+      "updateSmsCampaign": {"action":"sms_campaigns.send","body":"json","effects":["send","write"],"method":"PUT","origin":"{api}","path":"/v3/smsCampaigns/{campaignId}","scope":{"campaignId":{"at":"campaignId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateSmsCampaignStatus": {"action":"sms_campaigns.status.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/smsCampaigns/{campaignId}/status","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "updateSmtpTemplate": {"action":"smtp.templates.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/smtp/templates/{templateId}","scope":{"templateId":{"at":"templateId","from":"path"}}},
+      "updateTier": {"action":"loyalty.tier.programs.tiers.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/loyalty/tier/programs/{pid}/tiers/{tid}","scope":{"name":{"at":"/name","from":"body"},"pid":{"at":"pid","from":"path"},"tid":{"at":"tid","from":"path"}}},
+      "updateTierGroup": {"action":"loyalty.tier.programs.tier_groups.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/loyalty/tier/programs/{pid}/tier-groups/{gid}","scope":{"gid":{"at":"gid","from":"path"},"name":{"at":"/name","from":"body"},"pid":{"at":"pid","from":"path"}}},
+      "updateWebhook": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/v3/webhooks/{webhookId}","scope":{"webhookId":{"at":"webhookId","from":"path"}}},
+      "updateWhatsAppCampaign": {"action":"whatsapp_campaigns.send","body":"json","effects":["send","write"],"method":"PUT","origin":"{api}","path":"/v3/whatsappCampaigns/{campaignId}","scope":{"campaignId":{"at":"campaignId","from":"path"},"campaignName":{"at":"/campaignName","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "uploadImageToGallery": {"action":"email_campaigns.images.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/emailCampaigns/images","scope":{"imageUrl":{"at":"/imageUrl","from":"body"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "upsertrecords": {"action":"objects.batch.upsert.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/v3/objects/{object_type}/batch/upsert","scope":{"object_type":{"at":"object_type","from":"path"}}},
+      "validateReward": {"action":"loyalty.offer.programs.rewards.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/v3/loyalty/offer/programs/{pid}/rewards/validate","scope":{"pid":{"at":"pid","from":"path"}}},
+      "validateSenderByOTP": {"action":"senders.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/v3/senders/{senderId}/validate","scope":{"senderId":{"at":"senderId","from":"path"}}}
     }
   }
 }

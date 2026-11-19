@@ -17,13 +17,13 @@ import (
 
 var (
 	errNotConfigured = errors.New("credential is not configured")
-	errShape         = errors.New("credential must be a string, an oauth grant or a file under -secrets")
+	errShape         = errors.New("credential must be a string, an oauth grant, aws keys, a google credentials file or a file under -secrets")
 )
 
 type Value struct {
 	configured bool
 	text       string
-	resolve    func() (string, error)
+	resolve    func(context.Context) (string, error)
 	grant      *Grant
 	token      *oauth2.Token
 	gate       chan struct{}
@@ -35,7 +35,7 @@ type Value struct {
 func Static(text string) *Value { return &Value{configured: true, text: text} }
 
 func File(root *os.Root, name string) *Value {
-	return &Value{configured: true, resolve: func() (string, error) {
+	return &Value{configured: true, resolve: func(context.Context) (string, error) {
 		secret, err := root.ReadFile(name)
 		return strings.TrimRight(string(secret), "\r\n"), err
 	}}
@@ -57,9 +57,11 @@ func OAuth(grant json.RawMessage, o OAuthOptions) (*Value, error) {
 }
 
 type stored struct {
-	text  *string
-	file  string
-	oauth json.RawMessage
+	text   *string
+	file   string
+	oauth  json.RawMessage
+	aws    *awsKeys
+	google string
 }
 
 func decode(raw json.RawMessage) (stored, error) {
@@ -73,8 +75,10 @@ func decode(raw json.RawMessage) (stored, error) {
 		return c, nil
 	}
 	var record struct {
-		OAuth json.RawMessage `json:"oauth"`
-		File  string          `json:"file"`
+		OAuth  json.RawMessage `json:"oauth"`
+		File   string          `json:"file"`
+		AWS    *awsKeys        `json:"aws"`
+		Google string          `json:"google"`
 	}
 	if err := jsonv2.Unmarshal(raw, &record, jsonv2.RejectUnknownMembers(true)); err != nil {
 		return c, err
@@ -82,10 +86,16 @@ func decode(raw json.RawMessage) (stored, error) {
 	if bytes.Equal(record.OAuth, []byte("null")) {
 		record.OAuth = nil
 	}
-	if (record.OAuth == nil) == (record.File == "") {
+	shapes := 0
+	for _, set := range []bool{record.OAuth != nil, record.File != "", record.AWS != nil, record.Google != ""} {
+		if set {
+			shapes++
+		}
+	}
+	if shapes != 1 {
 		return c, errShape
 	}
-	c.file, c.oauth = record.File, record.OAuth
+	c.file, c.oauth, c.aws, c.google = record.File, record.OAuth, record.AWS, record.Google
 	return c, nil
 }
 
@@ -101,7 +111,7 @@ type Options struct {
 	Save    func(ctx context.Context, before, after json.RawMessage) error
 }
 
-// Parse binds a stored credential: a string, a file under Files, or an OAuth grant whose refreshed form Save stores in place of the one before it.
+// Parse binds a stored credential: a string, a file under Files, AWS keys, a Google credentials file, or an OAuth grant whose refreshed form Save stores in place of the one before it.
 func Parse(raw json.RawMessage, o Options) (*Value, error) {
 	if raw == nil {
 		return new(Value), nil
@@ -126,6 +136,10 @@ func Parse(raw json.RawMessage, o Options) (*Value, error) {
 			return nil, errShape
 		}
 		return File(o.Files, c.file), nil
+	case c.aws != nil:
+		return parseAWS(*c.aws, o)
+	case c.google != "":
+		return parseGoogle(c.google, o)
 	case c.text != nil:
 		return Static(*c.text), nil
 	}
@@ -145,12 +159,14 @@ func DecodeGrant(raw json.RawMessage) (*Grant, error) {
 
 func (v *Value) Configured() bool { return v != nil && v.configured }
 
+func (v *Value) OAuth() bool { return v != nil && v.grant != nil }
+
 func (v *Value) Value(ctx context.Context) (string, error) {
 	if v == nil {
 		return "", errNotConfigured
 	}
 	if v.resolve != nil {
-		return v.resolve()
+		return v.resolve(ctx)
 	}
 	if v.grant == nil {
 		return v.text, nil
@@ -193,10 +209,17 @@ func (v *Value) Value(ctx context.Context) (string, error) {
 
 func Describe(raw json.RawMessage) (kind, account string) {
 	c, err := decode(raw)
-	if err != nil || c.text == nil && c.file == "" && c.oauth == nil {
+	if err != nil || c.text == nil && c.file == "" && c.oauth == nil && c.aws == nil && c.google == "" {
 		return "unset", ""
 	}
-	if c.oauth == nil {
+	switch {
+	case c.aws != nil:
+		return "static", c.aws.RoleARN
+	case c.google != "":
+		var f googleFile
+		json.Unmarshal([]byte(c.google), &f)
+		return "static", f.ClientEmail
+	case c.oauth == nil:
 		return "static", ""
 	}
 	g, err := DecodeGrant(c.oauth)

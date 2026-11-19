@@ -1,23 +1,108 @@
 {
-  "title": "Stackby",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://stackby.com", "path": "/", "header": "api-key"}]}},
     "actions": {
-      "delete": {"title": "Delete"},
-      "read": {"title": "Read everything the account can see"},
-      "write": {"title": "Write"}
-    }
+      "columns": {
+        "title": "Columns"
+      },
+      "columns.delete": {
+        "title": "Delete"
+      },
+      "columns.read": {
+        "title": "Read"
+      },
+      "columns.write": {
+        "title": "Create and edit"
+      },
+      "rows": {
+        "title": "Rows"
+      },
+      "rows.delete": {
+        "title": "Delete"
+      },
+      "rows.read": {
+        "title": "Read"
+      },
+      "rows.write": {
+        "title": "Create and edit"
+      },
+      "stacks": {
+        "title": "Stacks"
+      },
+      "stacks.delete": {
+        "title": "Delete"
+      },
+      "stacks.read": {
+        "title": "Read"
+      },
+      "stacks.write": {
+        "title": "Create and edit"
+      },
+      "tables": {
+        "title": "Tables"
+      },
+      "tables.delete": {
+        "title": "Delete"
+      },
+      "tables.read": {
+        "title": "Read"
+      },
+      "tables.write": {
+        "title": "Create and edit"
+      },
+      "uploads": {
+        "title": "Uploads"
+      },
+      "uploads.write": {
+        "title": "Create and edit"
+      },
+      "views": {
+        "title": "Views"
+      },
+      "views.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "api-key",
+            "origin": "https://stackby.com",
+            "path": "/api",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Stackby",
   "http": {
     "operations": {
-      "DELETE /": {"action":"delete","effects":["delete"],"method":"DELETE","origin":"https://stackby.com","path":"/","body":"any","scope":{}},
-      "GET /": {"action":"read","effects":["read"],"method":"GET","origin":"https://stackby.com","path":"/","scope":{}},
-      "PATCH /": {"action":"write","effects":["write"],"method":"PATCH","origin":"https://stackby.com","path":"/","body":"any","scope":{}},
-      "POST /": {"action":"write","effects":["write"],"method":"POST","origin":"https://stackby.com","path":"/","body":"any","scope":{}}
+      "columns.create": {"action":"columns.write","body":"json","effects":["write"],"method":"POST","origin":"https://stackby.com","path":"/api/v1/columnCreate/{type}","scope":{"column":{"at":"","from":"body","type":"object"},"type":{"at":"type","from":"path"}}},
+      "columns.delete": {"action":"columns.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"https://stackby.com","path":"/api/v1/columnDelete/{stackId}","scope":{"column":{"at":"","from":"body","type":"object"},"stackId":{"at":"stackId","from":"path"}}},
+      "columns.list": {"action":"columns.read","effects":["read"],"method":"GET","origin":"https://stackby.com","path":"/api/v1/columnList/{stackId}/{tableId}","scope":{"stackId":{"at":"stackId","from":"path"},"tableId":{"at":"tableId","from":"path"}}},
+      "rows.create": {"action":"rows.write","body":"json","effects":["write"],"method":"POST","origin":"https://stackby.com","path":"/api/v1/rowcreate/{stackId}/{table}","scope":{"records":{"at":"","from":"body","type":"object"},"stackId":{"at":"stackId","from":"path"},"table":{"at":"table","from":"path"}}},
+      "rows.delete": {"action":"rows.delete","body":"any","effects":["delete"],"method":"DELETE","origin":"https://stackby.com","params":["rowIds[]"],"path":"/api/v1/rowdelete/{stackId}/{table}","scope":{"query":{"at":"","from":"query","type":"object"},"stackId":{"at":"stackId","from":"path"},"table":{"at":"table","from":"path"}}},
+      "rows.list": {"action":"rows.read","effects":["read"],"method":"GET","open_params":true,"origin":"https://stackby.com","path":"/api/v1/rowlist/{stackId}/{table}","scope":{"stackId":{"at":"stackId","from":"path"},"table":{"at":"table","from":"path"}}},
+      "rows.new": {"action":"rows.read","effects":["read"],"method":"GET","origin":"https://stackby.com","params":["maxRecord"],"path":"/api/v1/newrows/{stackId}/{tableId}/{viewId}","scope":{"stackId":{"at":"stackId","from":"path"},"tableId":{"at":"tableId","from":"path"},"viewId":{"at":"viewId","from":"path"}}},
+      "rows.update": {"action":"rows.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://stackby.com","path":"/api/v1/rowupdate/{stackId}/{table}","scope":{"records":{"at":"","from":"body","type":"object"},"stackId":{"at":"stackId","from":"path"},"table":{"at":"table","from":"path"}}},
+      "stacks.create": {"action":"stacks.write","body":"json","effects":["write"],"method":"POST","origin":"https://stackby.com","path":"/api/v1/stack/create","scope":{"stack":{"at":"","from":"body","type":"object"}}},
+      "stacks.delete": {"action":"stacks.delete","effects":["delete"],"method":"DELETE","origin":"https://stackby.com","path":"/api/v1/stackDelete/{stackId}","scope":{"stackId":{"at":"stackId","from":"path"}}},
+      "stacks.list": {"action":"stacks.read","body":"json","effects":["read"],"method":"POST","origin":"https://stackby.com","path":"/api/v1/stackList","scope":{"workspaceId":{"at":"/workspaceId","from":"body","optional":true}}},
+      "tables.create": {"action":"tables.write","body":"json","effects":["write"],"method":"POST","origin":"https://stackby.com","path":"/api/v1/tableCreate/{stackId}","scope":{"stackId":{"at":"stackId","from":"path"},"table":{"at":"","from":"body","type":"object"}}},
+      "tables.delete": {"action":"tables.delete","effects":["delete"],"method":"DELETE","origin":"https://stackby.com","path":"/api/v1/tableDelete/{stackId}/{tableId}","scope":{"stackId":{"at":"stackId","from":"path"},"tableId":{"at":"tableId","from":"path"}}},
+      "tables.list": {"action":"tables.read","effects":["read"],"method":"GET","origin":"https://stackby.com","path":"/api/v1/tableList/{stackId}","scope":{"stackId":{"at":"stackId","from":"path"}}},
+      "uploads.create": {"action":"uploads.write","body":"any","effects":["write"],"method":"POST","origin":"https://stackby.com","path":"/api/v1/uploads","scope":{}},
+      "views.list": {"action":"views.read","effects":["read"],"method":"GET","origin":"https://stackby.com","path":"/api/v1/viewlist/{stackId}/{tableId}","scope":{"stackId":{"at":"stackId","from":"path"},"tableId":{"at":"tableId","from":"path"}}}
     }
   }
 }

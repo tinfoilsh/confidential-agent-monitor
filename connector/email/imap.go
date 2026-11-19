@@ -27,6 +27,9 @@ const (
 
 var imapLiteral = regexp.MustCompile(`\{(\d+)(\+?)\}$`)
 
+// Fetching a body without .PEEK sets the \Seen flag.
+var imapSeen = regexp.MustCompile(`(?i)(^|[\s(])(body\[|binary\[|rfc822(\.text)?([\s)]|$))`)
+
 type Endpoint struct {
 	RawURL string `json:"url"`
 	User   string `json:"user"`
@@ -153,6 +156,9 @@ func (r *IMAP) Preauthenticated(dial func(ctx context.Context, network, address 
 			case "LOGIN", "AUTHENTICATE":
 				fmt.Fprintf(s, "%s OK already authenticated\r\n", tag)
 				continue
+			case "COMPRESS", "STARTTLS":
+				fmt.Fprintf(s, "%s NO %s is not supported\r\n", tag, command)
+				continue
 			case "SELECT", "EXAMINE":
 				mailbox = strings.Trim(args, `"`)
 			}
@@ -191,11 +197,14 @@ func forwardIMAP(dst io.Writer, src *bufio.Reader, line string) error {
 func (v *IMAPFacts) Describe() facts.Observation {
 	details := Details{IMAP: v}
 	action := ""
-	if slices.Contains(strings.Fields("CAPABILITY CHECK ENABLE EXAMINE FETCH ID IDLE LIST LOGOUT LSUB NAMESPACE NOOP SEARCH SELECT STATUS UNSELECT"), v.Command) {
+	if slices.Contains(strings.Fields("CAPABILITY CHECK ENABLE ESEARCH EXAMINE FETCH GETACL GETMETADATA GETQUOTA GETQUOTAROOT ID IDLE LIST LISTRIGHTS LOGOUT LSUB MYRIGHTS NAMESPACE NOOP NOTIFY SEARCH SELECT SORT STATUS THREAD UNSELECT XLIST"), v.Command) {
 		action = "read"
 	}
-	if slices.Contains(strings.Fields("APPEND CLOSE COPY CREATE DELETE EXPUNGE MOVE RENAME STORE SUBSCRIBE UNSUBSCRIBE"), v.Command) {
+	if slices.Contains(strings.Fields("APPEND CLOSE COPY CREATE DELETE EXPUNGE MOVE RENAME REPLACE SETMETADATA STORE SUBSCRIBE UNSUBSCRIBE"), v.Command) || action == "read" && imapSeen.MatchString(v.Args) {
 		action = "organize"
+	}
+	if v.Command == "SETACL" || v.Command == "DELETEACL" {
+		action = "share"
 	}
 	op := &facts.Operation{Action: action}
 	return facts.Observation{Operation: op, Title: v.Command + " " + v.Mailbox, Parameters: map[string]any{"mailbox": v.Mailbox, "args": v.Args}, Details: details}

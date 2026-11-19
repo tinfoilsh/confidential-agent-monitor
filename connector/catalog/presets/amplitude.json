@@ -8,7 +8,8 @@
     },
     "connection": {"mcp": {"url": "https://mcp.amplitude.com/mcp"}},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.amplitude.com/mcp"}}
+      {"key": "url", "label": "Server URL", "default": "https://mcp.amplitude.com/mcp", "help": "Use https://mcp.eu.amplitude.com/mcp for data in the EU region.", "path": ["mcp", "url"]},
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}"}}
     ]
   }
 }

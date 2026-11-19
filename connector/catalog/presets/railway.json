@@ -4,7 +4,17 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.accept-deploy": {"title": "Accept deploy", "effects": ["publish"]},
+      "use.delete-automation": {"title": "Delete automation", "effects": ["delete"]},
+      "use.delete-automation-trigger": {"title": "Delete automation trigger", "effects": ["delete"]},
+      "use.delete-feature-flag": {"title": "Delete feature flag", "effects": ["delete"]},
+      "use.railway-agent": {"title": "Railway agent", "effects": ["execute"]},
+      "use.redeploy": {"title": "Redeploy", "effects": ["publish"]},
+      "use.respond-cloud-agent-task": {"title": "Respond cloud agent task", "effects": ["execute"]},
+      "use.run-automation": {"title": "Run automation", "effects": ["execute"]},
+      "use.run-cloud-agent-task": {"title": "Run cloud agent task", "effects": ["execute", "generate", "pay"]},
+      "use.set-feature-flag": {"title": "Set feature flag", "effects": ["admin"]}
     },
     "connection": {"mcp": {"url": "https://mcp.railway.com"}},
     "fields": [

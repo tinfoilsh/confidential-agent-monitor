@@ -10,5 +10,6 @@
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.exa.ai/mcp"}}
     ]
-  }
+  },
+  "mcp": {"token": {"header": "x-api-key"}}
 }

@@ -3,8 +3,9 @@
   "catalog": {
     "group": "protocol",
     "actions": {
-      "organize": {"title": "Move, flag and delete mail", "effects": ["write"]},
-      "read": {"title": "Read mail", "effects": ["read"]}
+      "organize": {"title": "Move, flag and delete mail", "effects": ["write", "delete"]},
+      "read": {"title": "Read mail", "effects": ["read"]},
+      "share": {"title": "Share mailboxes and change access rights", "effects": ["share", "admin"]}
     },
     "connection": {"imap": {"url": "{imap_url}", "user": "{address}"}},
     "fields": [

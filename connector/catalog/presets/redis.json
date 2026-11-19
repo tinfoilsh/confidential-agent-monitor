@@ -3,8 +3,9 @@
   "catalog": {
     "group": "protocol",
     "actions": {
+      "publish": {"title": "Publish messages", "effects": ["send"]},
       "read": {"title": "Read keys", "effects": ["read"]},
-      "write": {"title": "Change keys and the server", "effects": ["write"]}
+      "write": {"title": "Change keys and the server", "effects": ["write", "delete", "admin", "execute"]}
     },
     "connection": {"redis": {"url": "{url}"}},
     "fields": [

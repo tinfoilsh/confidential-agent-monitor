@@ -6,8 +6,9 @@
       "read": {"title": "Use read-only tools", "effects": ["read"]},
       "use": {"title": "Use tools that change things", "effects": ["write"]}
     },
-    "connection": {"mcp": {"url": "https://cloud.umami.is/mcp"}},
+    "connection": {"mcp": {"url": "{url}"}},
     "fields": [
+      {"key": "url", "label": "Server URL", "default": "https://cloud.umami.is/mcp", "hint": "Use https://<your-umami-host>/mcp for a self-hosted instance.", "path": ["mcp", "url"]},
       {"key": "token", "label": "API key", "credential": true, "secret": true}
     ]
   }

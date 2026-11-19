@@ -1,122 +1,457 @@
 {
-  "title": "Bannerbear",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "Project API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.bannerbear.com", "path": "/v5", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "admin.webhooks": {"title": "Admin: webhooks"},
-      "delete.animation_templates": {"title": "Delete: animation templates"},
-      "delete.image_templates": {"title": "Delete: image templates"},
-      "delete.instant_urls": {"title": "Delete: instant urls"},
-      "delete.remove_bg": {"title": "Delete: remove bg"},
-      "delete.webhooks": {"title": "Delete: webhooks"},
-      "delete.workflows": {"title": "Delete: workflows"},
-      "execute.workflows": {"title": "Execute: workflows"},
-      "generate.generate_ai_image": {"title": "Generate: generate ai image"},
-      "generate.generate_ai_video": {"title": "Generate: generate ai video"},
-      "generate.generate_voiceover": {"title": "Generate: generate voiceover"},
-      "generate.images": {"title": "Generate: images"},
-      "read": {"title": "Read everything the account can see"},
-      "write.add_audio": {"title": "Write: add audio"},
-      "write.add_cover_art": {"title": "Write: add cover art"},
-      "write.animate": {"title": "Write: animate"},
-      "write.animation_templates": {"title": "Write: animation templates"},
-      "write.animations": {"title": "Write: animations"},
-      "write.apply_color_filter": {"title": "Write: apply color filter"},
-      "write.assets": {"title": "Write: assets"},
-      "write.batches": {"title": "Write: batches"},
-      "write.check": {"title": "Write: check"},
-      "write.concat_videos": {"title": "Write: concat videos"},
-      "write.create_gif_preview": {"title": "Write: create gif preview"},
-      "write.create_pdf": {"title": "Write: create pdf"},
-      "write.create_video_slideshow": {"title": "Write: create video slideshow"},
-      "write.crop_video": {"title": "Write: crop video"},
-      "write.image_templates": {"title": "Write: image templates"},
-      "write.install": {"title": "Write: install"},
-      "write.instant_urls": {"title": "Write: instant urls"},
-      "write.overlay_image": {"title": "Write: overlay image"},
-      "write.overlay_video": {"title": "Write: overlay video"},
-      "write.resize_video": {"title": "Write: resize video"},
-      "write.soften_video": {"title": "Write: soften video"},
-      "write.subtitle_video": {"title": "Write: subtitle video"},
-      "write.trim_video": {"title": "Write: trim video"},
-      "write.video_thumbnails": {"title": "Write: video thumbnails"},
-      "write.workflow_runs": {"title": "Write: workflow runs"},
-      "write.workflows": {"title": "Write: workflows"}
-    }
+      "account": {
+        "title": "Account"
+      },
+      "account.read": {
+        "title": "Read"
+      },
+      "animation_templates": {
+        "title": "Animation templates"
+      },
+      "animation_templates.animate": {
+        "title": "Animate"
+      },
+      "animation_templates.animate.write": {
+        "title": "Create and edit"
+      },
+      "animation_templates.delete": {
+        "title": "Delete"
+      },
+      "animation_templates.read": {
+        "title": "Read"
+      },
+      "animation_templates.write": {
+        "title": "Create and edit"
+      },
+      "animations": {
+        "title": "Animations"
+      },
+      "animations.generate": {
+        "title": "Generate"
+      },
+      "animations.read": {
+        "title": "Read"
+      },
+      "assets": {
+        "title": "Assets"
+      },
+      "assets.read": {
+        "title": "Read"
+      },
+      "assets.write": {
+        "title": "Create and edit"
+      },
+      "batches": {
+        "title": "Batches"
+      },
+      "batches.generate": {
+        "title": "Generate"
+      },
+      "batches.read": {
+        "title": "Read"
+      },
+      "image_templates": {
+        "title": "Image templates"
+      },
+      "image_templates.delete": {
+        "title": "Delete"
+      },
+      "image_templates.read": {
+        "title": "Read"
+      },
+      "image_templates.write": {
+        "title": "Create and edit"
+      },
+      "images": {
+        "title": "Images"
+      },
+      "images.generate": {
+        "title": "Generate"
+      },
+      "images.read": {
+        "title": "Read"
+      },
+      "instant_urls": {
+        "title": "Instant urls"
+      },
+      "instant_urls.delete": {
+        "title": "Delete"
+      },
+      "instant_urls.read": {
+        "title": "Read"
+      },
+      "instant_urls.write": {
+        "title": "Create and edit"
+      },
+      "publications": {
+        "title": "Publications"
+      },
+      "publications.install": {
+        "title": "Install"
+      },
+      "publications.install.write": {
+        "title": "Create and edit"
+      },
+      "publications.read": {
+        "title": "Read"
+      },
+      "recipes": {
+        "title": "Recipes"
+      },
+      "recipes.install": {
+        "title": "Install"
+      },
+      "recipes.install.write": {
+        "title": "Create and edit"
+      },
+      "recipes.read": {
+        "title": "Read"
+      },
+      "tool_jobs": {
+        "title": "Tool jobs"
+      },
+      "tool_jobs.read": {
+        "title": "Read"
+      },
+      "tools": {
+        "title": "Tools"
+      },
+      "tools.apply_color_filter": {
+        "title": "Apply color filter"
+      },
+      "tools.apply_color_filter.write": {
+        "title": "Create and edit"
+      },
+      "tools.audio": {
+        "title": "Audio"
+      },
+      "tools.audio.write": {
+        "title": "Create and edit"
+      },
+      "tools.bg": {
+        "title": "Bg"
+      },
+      "tools.bg.write": {
+        "title": "Create and edit"
+      },
+      "tools.concat_videos": {
+        "title": "Concat videos"
+      },
+      "tools.concat_videos.write": {
+        "title": "Create and edit"
+      },
+      "tools.cover_art": {
+        "title": "Cover art"
+      },
+      "tools.cover_art.write": {
+        "title": "Create and edit"
+      },
+      "tools.crop_video": {
+        "title": "Crop video"
+      },
+      "tools.crop_video.write": {
+        "title": "Create and edit"
+      },
+      "tools.extract_article": {
+        "title": "Extract article"
+      },
+      "tools.extract_article.write": {
+        "title": "Create and edit"
+      },
+      "tools.flatten_pdf": {
+        "title": "Flatten pdf"
+      },
+      "tools.flatten_pdf.write": {
+        "title": "Create and edit"
+      },
+      "tools.generate_ai_image": {
+        "title": "Generate ai image"
+      },
+      "tools.generate_ai_image.generate": {
+        "title": "Generate"
+      },
+      "tools.generate_ai_video": {
+        "title": "Generate ai video"
+      },
+      "tools.generate_ai_video.generate": {
+        "title": "Generate"
+      },
+      "tools.generate_music": {
+        "title": "Generate music"
+      },
+      "tools.generate_music.generate": {
+        "title": "Generate"
+      },
+      "tools.generate_text": {
+        "title": "Generate text"
+      },
+      "tools.generate_text.generate": {
+        "title": "Generate"
+      },
+      "tools.generate_voiceover": {
+        "title": "Generate voiceover"
+      },
+      "tools.generate_voiceover.generate": {
+        "title": "Generate"
+      },
+      "tools.gif_preview": {
+        "title": "Gif preview"
+      },
+      "tools.gif_preview.write": {
+        "title": "Create and edit"
+      },
+      "tools.lay_out_print_sheet": {
+        "title": "Lay out print sheet"
+      },
+      "tools.lay_out_print_sheet.write": {
+        "title": "Create and edit"
+      },
+      "tools.moments": {
+        "title": "Moments"
+      },
+      "tools.moments.generate": {
+        "title": "Generate"
+      },
+      "tools.narrated_slideshow": {
+        "title": "Narrated slideshow"
+      },
+      "tools.narrated_slideshow.write": {
+        "title": "Create and edit"
+      },
+      "tools.overlay_image": {
+        "title": "Overlay image"
+      },
+      "tools.overlay_image.write": {
+        "title": "Create and edit"
+      },
+      "tools.overlay_video": {
+        "title": "Overlay video"
+      },
+      "tools.overlay_video.write": {
+        "title": "Create and edit"
+      },
+      "tools.pdf": {
+        "title": "Pdf"
+      },
+      "tools.pdf.write": {
+        "title": "Create and edit"
+      },
+      "tools.pdf_to_image": {
+        "title": "Pdf to image"
+      },
+      "tools.pdf_to_image.write": {
+        "title": "Create and edit"
+      },
+      "tools.read": {
+        "title": "Read"
+      },
+      "tools.render_spreadsheet": {
+        "title": "Render spreadsheet"
+      },
+      "tools.render_spreadsheet.write": {
+        "title": "Create and edit"
+      },
+      "tools.resize_video": {
+        "title": "Resize video"
+      },
+      "tools.resize_video.write": {
+        "title": "Create and edit"
+      },
+      "tools.soften_video": {
+        "title": "Soften video"
+      },
+      "tools.soften_video.write": {
+        "title": "Create and edit"
+      },
+      "tools.subtitle_video": {
+        "title": "Subtitle video"
+      },
+      "tools.subtitle_video.write": {
+        "title": "Create and edit"
+      },
+      "tools.timed_overlays": {
+        "title": "Timed overlays"
+      },
+      "tools.timed_overlays.write": {
+        "title": "Create and edit"
+      },
+      "tools.trim_audio": {
+        "title": "Trim audio"
+      },
+      "tools.trim_audio.write": {
+        "title": "Create and edit"
+      },
+      "tools.trim_video": {
+        "title": "Trim video"
+      },
+      "tools.trim_video.write": {
+        "title": "Create and edit"
+      },
+      "tools.video_slideshow": {
+        "title": "Video slideshow"
+      },
+      "tools.video_slideshow.write": {
+        "title": "Create and edit"
+      },
+      "tools.video_thumbnails": {
+        "title": "Video thumbnails"
+      },
+      "tools.video_thumbnails.write": {
+        "title": "Create and edit"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.delete": {
+        "title": "Delete"
+      },
+      "webhooks.read": {
+        "title": "Read"
+      },
+      "workflow_runs": {
+        "title": "Workflow runs"
+      },
+      "workflow_runs.execute": {
+        "title": "Run"
+      },
+      "workflow_runs.read": {
+        "title": "Read"
+      },
+      "workflows": {
+        "title": "Workflows"
+      },
+      "workflows.delete": {
+        "title": "Delete"
+      },
+      "workflows.read": {
+        "title": "Read"
+      },
+      "workflows.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.bannerbear.com",
+            "path": "/v5",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://sync.api.bannerbear.com",
+            "path": "/v5",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API key (v5)",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Bannerbear",
   "http": {
     "operations": {
-      "DELETE /v5/animation_templates/{uid}": {"action":"delete.animation_templates","effects":["delete"],"method":"DELETE","origin":"https://api.bannerbear.com","path":"/v5/animation_templates/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "DELETE /v5/image_templates/{uid}": {"action":"delete.image_templates","effects":["delete"],"method":"DELETE","origin":"https://api.bannerbear.com","path":"/v5/image_templates/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "DELETE /v5/instant_urls/{uid}": {"action":"delete.instant_urls","effects":["delete"],"method":"DELETE","origin":"https://api.bannerbear.com","path":"/v5/instant_urls/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "DELETE /v5/webhooks/{uid}": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.bannerbear.com","path":"/v5/webhooks/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "DELETE /v5/workflows/{uid}": {"action":"delete.workflows","effects":["delete"],"method":"DELETE","origin":"https://api.bannerbear.com","path":"/v5/workflows/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "GET /v5/account": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/account","scope":{}},
-      "GET /v5/animation_templates": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/animation_templates","params":["page"],"scope":{}},
-      "GET /v5/animation_templates/{uid}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/animation_templates/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "GET /v5/animations": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/animations","params":["page"],"scope":{}},
-      "GET /v5/animations/{uid}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/animations/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "GET /v5/assets": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/assets","params":["page"],"scope":{}},
-      "GET /v5/assets/{uid}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/assets/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "GET /v5/batches": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/batches","params":["page"],"scope":{}},
-      "GET /v5/batches/{uid}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/batches/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "GET /v5/image_templates": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/image_templates","params":["page"],"scope":{}},
-      "GET /v5/image_templates/{uid}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/image_templates/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "GET /v5/images": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/images","params":["page"],"scope":{}},
-      "GET /v5/images/{uid}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/images/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "GET /v5/instant_urls": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/instant_urls","params":["page"],"scope":{}},
-      "GET /v5/instant_urls/{uid}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/instant_urls/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "GET /v5/publications": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/publications","params":["page","kind","category","q"],"scope":{}},
-      "GET /v5/publications/{uid}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/publications/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "GET /v5/tool_jobs": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/tool_jobs","params":["page"],"scope":{}},
-      "GET /v5/tool_jobs/{uid}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/tool_jobs/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "GET /v5/webhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/webhooks","params":["page"],"scope":{}},
-      "GET /v5/webhooks/{uid}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/webhooks/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "GET /v5/workflow_runs": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/workflow_runs","params":["page"],"scope":{}},
-      "GET /v5/workflow_runs/{uid}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/workflow_runs/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "GET /v5/workflows": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/workflows","params":["page"],"scope":{}},
-      "GET /v5/workflows/{uid}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/workflows/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "PATCH /v5/animation_templates/{uid}": {"action":"write.animation_templates","effects":["write"],"method":"PATCH","origin":"https://api.bannerbear.com","path":"/v5/animation_templates/{uid}","body":"json","scope":{"uid":{"from":"path","at":"uid"}}},
-      "PATCH /v5/image_templates/{uid}": {"action":"write.image_templates","effects":["write"],"method":"PATCH","origin":"https://api.bannerbear.com","path":"/v5/image_templates/{uid}","body":"json","scope":{"uid":{"from":"path","at":"uid"}}},
-      "PATCH /v5/instant_urls/{uid}": {"action":"write.instant_urls","effects":["write"],"method":"PATCH","origin":"https://api.bannerbear.com","path":"/v5/instant_urls/{uid}","body":"json","scope":{"uid":{"from":"path","at":"uid"},"name":{"from":"body","at":"/name"}}},
-      "PATCH /v5/webhooks/{uid}": {"action":"admin.webhooks","effects":["admin"],"method":"PATCH","origin":"https://api.bannerbear.com","path":"/v5/webhooks/{uid}","body":"json","scope":{"uid":{"from":"path","at":"uid"},"name":{"from":"body","at":"/name"},"url":{"from":"body","at":"/url"}}},
-      "PATCH /v5/workflows/{uid}": {"action":"write.workflows","effects":["write"],"method":"PATCH","origin":"https://api.bannerbear.com","path":"/v5/workflows/{uid}","body":"json","scope":{"uid":{"from":"path","at":"uid"}}},
-      "POST /v5/animation_templates": {"action":"write.animation_templates","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/animation_templates","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "POST /v5/animation_templates/{uid}/animate": {"action":"write.animate","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/animation_templates/{uid}/animate","body":"json","scope":{"uid":{"from":"path","at":"uid"}}},
-      "POST /v5/animations": {"action":"write.animations","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/animations","body":"json","scope":{}},
-      "POST /v5/assets": {"action":"write.assets","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/assets","body":"any","scope":{}},
-      "POST /v5/assets/check": {"action":"write.check","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/assets/check","body":"json","scope":{}},
-      "POST /v5/batches": {"action":"write.batches","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/batches","body":"json","scope":{}},
-      "POST /v5/image_templates": {"action":"write.image_templates","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/image_templates","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "POST /v5/images": {"action":"generate.images","effects":["generate"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/images","body":"json","scope":{}},
-      "POST /v5/instant_urls": {"action":"write.instant_urls","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/instant_urls","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "POST /v5/publications/{uid}/install": {"action":"write.install","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/publications/{uid}/install","scope":{"uid":{"from":"path","at":"uid"}}},
-      "POST /v5/tools/add_audio": {"action":"write.add_audio","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/add_audio","body":"json","scope":{"video_url":{"from":"body","at":"/video_url"},"audio_url":{"from":"body","at":"/audio_url"}}},
-      "POST /v5/tools/add_cover_art": {"action":"write.add_cover_art","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/add_cover_art","body":"json","scope":{"video_url":{"from":"body","at":"/video_url"},"image_url":{"from":"body","at":"/image_url"}}},
-      "POST /v5/tools/apply_color_filter": {"action":"write.apply_color_filter","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/apply_color_filter","body":"json","scope":{"video_url":{"from":"body","at":"/video_url"}}},
-      "POST /v5/tools/concat_videos": {"action":"write.concat_videos","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/concat_videos","body":"json","scope":{}},
-      "POST /v5/tools/create_gif_preview": {"action":"write.create_gif_preview","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/create_gif_preview","body":"json","scope":{"video_url":{"from":"body","at":"/video_url"}}},
-      "POST /v5/tools/create_pdf": {"action":"write.create_pdf","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/create_pdf","body":"json","scope":{}},
-      "POST /v5/tools/create_video_slideshow": {"action":"write.create_video_slideshow","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/create_video_slideshow","body":"json","scope":{}},
-      "POST /v5/tools/crop_video": {"action":"write.crop_video","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/crop_video","body":"json","scope":{"video_url":{"from":"body","at":"/video_url"}}},
-      "POST /v5/tools/generate_ai_image": {"action":"generate.generate_ai_image","effects":["generate"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/generate_ai_image","body":"json","scope":{}},
-      "POST /v5/tools/generate_ai_video": {"action":"generate.generate_ai_video","effects":["generate"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/generate_ai_video","body":"json","scope":{}},
-      "POST /v5/tools/generate_voiceover": {"action":"generate.generate_voiceover","effects":["generate"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/generate_voiceover","body":"json","scope":{}},
-      "POST /v5/tools/overlay_image": {"action":"write.overlay_image","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/overlay_image","body":"json","scope":{"video_url":{"from":"body","at":"/video_url"},"image_url":{"from":"body","at":"/image_url"}}},
-      "POST /v5/tools/overlay_video": {"action":"write.overlay_video","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/overlay_video","body":"json","scope":{"base_video_url":{"from":"body","at":"/base_video_url"},"overlay_video_url":{"from":"body","at":"/overlay_video_url"}}},
-      "POST /v5/tools/remove_bg": {"action":"delete.remove_bg","effects":["delete"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/remove_bg","body":"json","scope":{"image_url":{"from":"body","at":"/image_url"}}},
-      "POST /v5/tools/resize_video": {"action":"write.resize_video","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/resize_video","body":"json","scope":{"video_url":{"from":"body","at":"/video_url"}}},
-      "POST /v5/tools/soften_video": {"action":"write.soften_video","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/soften_video","body":"json","scope":{"video_url":{"from":"body","at":"/video_url"}}},
-      "POST /v5/tools/subtitle_video": {"action":"write.subtitle_video","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/subtitle_video","body":"json","scope":{"video_url":{"from":"body","at":"/video_url"}}},
-      "POST /v5/tools/trim_video": {"action":"write.trim_video","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/trim_video","body":"json","scope":{"video_url":{"from":"body","at":"/video_url"}}},
-      "POST /v5/tools/video_thumbnails": {"action":"write.video_thumbnails","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/video_thumbnails","body":"json","scope":{"video_url":{"from":"body","at":"/video_url"}}},
-      "POST /v5/webhooks": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/webhooks","body":"json","scope":{"name":{"from":"body","at":"/name"},"url":{"from":"body","at":"/url"}}},
-      "POST /v5/workflow_runs": {"action":"write.workflow_runs","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/workflow_runs","body":"json","scope":{}},
-      "POST /v5/workflows": {"action":"execute.workflows","effects":["execute"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/workflows","body":"json","scope":{"name":{"from":"body","at":"/name"}}}
+      "DELETE /v5/animation_templates/{uid}": {"action":"animation_templates.delete","effects":["delete"],"method":"DELETE","origin":"https://api.bannerbear.com","path":"/v5/animation_templates/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "DELETE /v5/image_templates/{uid}": {"action":"image_templates.delete","effects":["delete"],"method":"DELETE","origin":"https://api.bannerbear.com","path":"/v5/image_templates/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "DELETE /v5/instant_urls/{uid}": {"action":"instant_urls.delete","effects":["delete"],"method":"DELETE","origin":"https://api.bannerbear.com","path":"/v5/instant_urls/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "DELETE /v5/webhooks/{uid}": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"https://api.bannerbear.com","path":"/v5/webhooks/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "DELETE /v5/workflows/{uid}": {"action":"workflows.delete","effects":["delete"],"method":"DELETE","origin":"https://api.bannerbear.com","path":"/v5/workflows/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "GET /v5/account": {"action":"account.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/account","scope":{}},
+      "GET /v5/animation_templates": {"action":"animation_templates.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","params":["page"],"path":"/v5/animation_templates","scope":{}},
+      "GET /v5/animation_templates/{uid}": {"action":"animation_templates.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/animation_templates/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "GET /v5/animations": {"action":"animations.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","params":["page"],"path":"/v5/animations","scope":{}},
+      "GET /v5/animations/{uid}": {"action":"animations.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/animations/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "GET /v5/assets": {"action":"assets.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","params":["page"],"path":"/v5/assets","scope":{}},
+      "GET /v5/assets/{uid}": {"action":"assets.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/assets/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "GET /v5/batches": {"action":"batches.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","params":["page"],"path":"/v5/batches","scope":{}},
+      "GET /v5/batches/{uid}": {"action":"batches.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/batches/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "GET /v5/image_templates": {"action":"image_templates.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","params":["page"],"path":"/v5/image_templates","scope":{}},
+      "GET /v5/image_templates/{uid}": {"action":"image_templates.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/image_templates/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "GET /v5/images": {"action":"images.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","params":["page","limit"],"path":"/v5/images","scope":{}},
+      "GET /v5/images/{uid}": {"action":"images.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/images/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "GET /v5/instant_urls": {"action":"instant_urls.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","params":["page"],"path":"/v5/instant_urls","scope":{}},
+      "GET /v5/instant_urls/{uid}": {"action":"instant_urls.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/instant_urls/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "GET /v5/publications": {"action":"publications.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","params":["page","kind","category","q"],"path":"/v5/publications","scope":{}},
+      "GET /v5/publications/{uid}": {"action":"publications.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/publications/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "GET /v5/recipes": {"action":"recipes.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","params":["page","q","audience"],"path":"/v5/recipes","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /v5/recipes/{id}": {"action":"recipes.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/recipes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /v5/tool_jobs": {"action":"tool_jobs.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","params":["page"],"path":"/v5/tool_jobs","scope":{}},
+      "GET /v5/tool_jobs/{uid}": {"action":"tool_jobs.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/tool_jobs/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "GET /v5/tools": {"action":"tools.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","params":["q","filter"],"path":"/v5/tools","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GET /v5/tools/{tool_type}": {"action":"tools.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/tools/{tool_type}","scope":{"tool_type":{"at":"tool_type","from":"path"}}},
+      "GET /v5/webhooks": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","params":["page"],"path":"/v5/webhooks","scope":{}},
+      "GET /v5/webhooks/{uid}": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/webhooks/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "GET /v5/workflow_runs": {"action":"workflow_runs.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","params":["page"],"path":"/v5/workflow_runs","scope":{}},
+      "GET /v5/workflow_runs/{uid}": {"action":"workflow_runs.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/workflow_runs/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "GET /v5/workflows": {"action":"workflows.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","params":["page"],"path":"/v5/workflows","scope":{}},
+      "GET /v5/workflows/{uid}": {"action":"workflows.read","effects":["read"],"method":"GET","origin":"https://api.bannerbear.com","path":"/v5/workflows/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "PATCH /v5/animation_templates/{uid}": {"action":"animation_templates.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.bannerbear.com","path":"/v5/animation_templates/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "PATCH /v5/image_templates/{uid}": {"action":"image_templates.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.bannerbear.com","path":"/v5/image_templates/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "PATCH /v5/instant_urls/{uid}": {"action":"instant_urls.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.bannerbear.com","path":"/v5/instant_urls/{uid}","scope":{"name":{"at":"/name","from":"body"},"uid":{"at":"uid","from":"path"}}},
+      "PATCH /v5/webhooks/{uid}": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api.bannerbear.com","path":"/v5/webhooks/{uid}","scope":{"name":{"at":"/name","from":"body"},"uid":{"at":"uid","from":"path"},"url":{"at":"/url","from":"body"}}},
+      "PATCH /v5/workflows/{uid}": {"action":"workflows.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.bannerbear.com","path":"/v5/workflows/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "POST /v5/animation_templates": {"action":"animation_templates.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/animation_templates","scope":{"name":{"at":"/name","from":"body"}}},
+      "POST /v5/animation_templates/{uid}/animate": {"action":"animation_templates.animate.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/animation_templates/{uid}/animate","scope":{"uid":{"at":"uid","from":"path"}}},
+      "POST /v5/animations": {"action":"animations.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/animations","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v5/assets": {"action":"assets.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/assets","scope":{}},
+      "POST /v5/assets/check": {"action":"assets.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/assets/check","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v5/batches": {"action":"batches.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/batches","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v5/image_templates": {"action":"image_templates.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/image_templates","scope":{"name":{"at":"/name","from":"body"}}},
+      "POST /v5/images": {"action":"images.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/images","scope":{}},
+      "POST /v5/instant_urls": {"action":"instant_urls.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/instant_urls","scope":{"name":{"at":"/name","from":"body"}}},
+      "POST /v5/publications/{uid}/install": {"action":"publications.install.write","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/publications/{uid}/install","scope":{"uid":{"at":"uid","from":"path"}}},
+      "POST /v5/recipes/{id}/install": {"action":"recipes.install.write","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/recipes/{id}/install","scope":{"id":{"at":"id","from":"path"}}},
+      "POST /v5/tools/add_audio": {"action":"tools.audio.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/add_audio","scope":{"audio_url":{"at":"/audio_url","from":"body"},"video_url":{"at":"/video_url","from":"body"}}},
+      "POST /v5/tools/add_cover_art": {"action":"tools.cover_art.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/add_cover_art","scope":{"image_url":{"at":"/image_url","from":"body"},"video_url":{"at":"/video_url","from":"body"}}},
+      "POST /v5/tools/add_timed_overlays": {"action":"tools.timed_overlays.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/add_timed_overlays","scope":{"base_video_url":{"at":"/base_video_url","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v5/tools/apply_color_filter": {"action":"tools.apply_color_filter.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/apply_color_filter","scope":{"video_url":{"at":"/video_url","from":"body"}}},
+      "POST /v5/tools/concat_videos": {"action":"tools.concat_videos.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/concat_videos","scope":{}},
+      "POST /v5/tools/create_gif_preview": {"action":"tools.gif_preview.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/create_gif_preview","scope":{"video_url":{"at":"/video_url","from":"body"}}},
+      "POST /v5/tools/create_narrated_slideshow": {"action":"tools.narrated_slideshow.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/create_narrated_slideshow","scope":{"audio_url":{"at":"/audio_url","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v5/tools/create_pdf": {"action":"tools.pdf.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/create_pdf","scope":{}},
+      "POST /v5/tools/create_video_slideshow": {"action":"tools.video_slideshow.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/create_video_slideshow","scope":{}},
+      "POST /v5/tools/crop_video": {"action":"tools.crop_video.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/crop_video","scope":{"video_url":{"at":"/video_url","from":"body"}}},
+      "POST /v5/tools/extract_article": {"action":"tools.extract_article.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/extract_article","scope":{"request":{"at":"","from":"body","type":"object"},"url":{"at":"/url","from":"body"}}},
+      "POST /v5/tools/find_moments": {"action":"tools.moments.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/find_moments","scope":{"request":{"at":"","from":"body","type":"object"},"video_url":{"at":"/video_url","from":"body"}}},
+      "POST /v5/tools/flatten_pdf": {"action":"tools.flatten_pdf.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/flatten_pdf","scope":{"pdf_url":{"at":"/pdf_url","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v5/tools/generate_ai_image": {"action":"tools.generate_ai_image.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/generate_ai_image","scope":{}},
+      "POST /v5/tools/generate_ai_video": {"action":"tools.generate_ai_video.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/generate_ai_video","scope":{}},
+      "POST /v5/tools/generate_music": {"action":"tools.generate_music.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/generate_music","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v5/tools/generate_text": {"action":"tools.generate_text.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/generate_text","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v5/tools/generate_voiceover": {"action":"tools.generate_voiceover.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/generate_voiceover","scope":{}},
+      "POST /v5/tools/lay_out_print_sheet": {"action":"tools.lay_out_print_sheet.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/lay_out_print_sheet","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v5/tools/overlay_image": {"action":"tools.overlay_image.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/overlay_image","scope":{"image_url":{"at":"/image_url","from":"body"},"video_url":{"at":"/video_url","from":"body"}}},
+      "POST /v5/tools/overlay_video": {"action":"tools.overlay_video.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/overlay_video","scope":{"base_video_url":{"at":"/base_video_url","from":"body"},"overlay_video_url":{"at":"/overlay_video_url","from":"body"}}},
+      "POST /v5/tools/pdf_to_image": {"action":"tools.pdf_to_image.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/pdf_to_image","scope":{"pages":{"at":"/pages","from":"body","optional":true},"pdf_url":{"at":"/pdf_url","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v5/tools/remove_bg": {"action":"tools.bg.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/remove_bg","scope":{"image_url":{"at":"/image_url","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v5/tools/render_spreadsheet": {"action":"tools.render_spreadsheet.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/render_spreadsheet","scope":{"request":{"at":"","from":"body","type":"object"},"spreadsheet_url":{"at":"/spreadsheet_url","from":"body"}}},
+      "POST /v5/tools/resize_video": {"action":"tools.resize_video.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/resize_video","scope":{"video_url":{"at":"/video_url","from":"body"}}},
+      "POST /v5/tools/soften_video": {"action":"tools.soften_video.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/soften_video","scope":{"video_url":{"at":"/video_url","from":"body"}}},
+      "POST /v5/tools/subtitle_video": {"action":"tools.subtitle_video.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/subtitle_video","scope":{"video_url":{"at":"/video_url","from":"body"}}},
+      "POST /v5/tools/trim_audio": {"action":"tools.trim_audio.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/trim_audio","scope":{"audio_url":{"at":"/audio_url","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v5/tools/trim_video": {"action":"tools.trim_video.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/trim_video","scope":{"video_url":{"at":"/video_url","from":"body"}}},
+      "POST /v5/tools/video_thumbnails": {"action":"tools.video_thumbnails.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/tools/video_thumbnails","scope":{"video_url":{"at":"/video_url","from":"body"}}},
+      "POST /v5/webhooks": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/webhooks","scope":{"name":{"at":"/name","from":"body"},"url":{"at":"/url","from":"body"}}},
+      "POST /v5/workflow_runs": {"action":"workflow_runs.execute","body":"json","effects":["execute"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/workflow_runs","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "POST /v5/workflows": {"action":"workflows.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.bannerbear.com","path":"/v5/workflows","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST https://sync.api.bannerbear.com/v5/images": {"action":"images.generate","body":"json","effects":["generate"],"method":"POST","origin":"https://sync.api.bannerbear.com","path":"/v5/images","scope":{}}
     }
   }
 }

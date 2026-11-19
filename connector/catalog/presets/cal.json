@@ -1,166 +1,646 @@
 {
-  "title": "Cal.com",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.cal.com", "path": "/v2", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "admin.token": {"title": "Admin: token"},
-      "admin.users": {"title": "Admin: users"},
-      "admin.webhooks": {"title": "Admin: webhooks"},
-      "delete.attendees": {"title": "Delete: attendees"},
-      "delete.conferencing": {"title": "Delete: conferencing"},
-      "delete.event_types": {"title": "Delete: event types"},
-      "delete.events": {"title": "Delete: events"},
-      "delete.oauth_clients": {"title": "Delete: oauth clients"},
-      "delete.private_links": {"title": "Delete: private links"},
-      "delete.reservations": {"title": "Delete: reservations"},
-      "delete.schedules": {"title": "Delete: schedules"},
-      "delete.selected_calendars": {"title": "Delete: selected calendars"},
-      "delete.users": {"title": "Delete: users"},
-      "delete.webhooks": {"title": "Delete: webhooks"},
-      "read": {"title": "Read everything the account can see"},
-      "write.attendees": {"title": "Write: attendees"},
-      "write.bookings": {"title": "Write: bookings"},
-      "write.calendars": {"title": "Write: calendars"},
-      "write.conferencing": {"title": "Write: conferencing"},
-      "write.credentials": {"title": "Write: credentials"},
-      "write.default": {"title": "Write: default"},
-      "write.destination_calendars": {"title": "Write: destination calendars"},
-      "write.event": {"title": "Write: event"},
-      "write.event_types": {"title": "Write: event types"},
-      "write.events": {"title": "Write: events"},
-      "write.guests": {"title": "Write: guests"},
-      "write.location": {"title": "Write: location"},
-      "write.me": {"title": "Write: me"},
-      "write.oauth": {"title": "Write: oauth"},
-      "write.oauth_clients": {"title": "Write: oauth clients"},
-      "write.private_links": {"title": "Write: private links"},
-      "write.reassign": {"title": "Write: reassign"},
-      "write.refresh": {"title": "Write: refresh"},
-      "write.request": {"title": "Write: request"},
-      "write.reservations": {"title": "Write: reservations"},
-      "write.save": {"title": "Write: save"},
-      "write.schedules": {"title": "Write: schedules"},
-      "write.selected_calendars": {"title": "Write: selected calendars"},
-      "write.verify": {"title": "Write: verify"}
-    }
+      "api_keys": {
+        "title": "Api keys"
+      },
+      "api_keys.refresh": {
+        "title": "Refresh"
+      },
+      "api_keys.refresh.admin": {
+        "title": "Manage"
+      },
+      "auth": {
+        "title": "Auth"
+      },
+      "auth.oauth2": {
+        "title": "Oauth2"
+      },
+      "auth.oauth2.clients": {
+        "title": "Clients"
+      },
+      "auth.oauth2.clients.read": {
+        "title": "Read"
+      },
+      "auth.oauth2.token": {
+        "title": "Token"
+      },
+      "auth.oauth2.token.admin": {
+        "title": "Manage"
+      },
+      "bookings": {
+        "title": "Bookings"
+      },
+      "bookings.attendees": {
+        "title": "Attendees"
+      },
+      "bookings.attendees.delete": {
+        "title": "Delete"
+      },
+      "bookings.attendees.read": {
+        "title": "Read"
+      },
+      "bookings.attendees.send": {
+        "title": "Send"
+      },
+      "bookings.by_seat": {
+        "title": "By seat"
+      },
+      "bookings.by_seat.read": {
+        "title": "Read"
+      },
+      "bookings.calendar_links": {
+        "title": "Calendar links"
+      },
+      "bookings.calendar_links.read": {
+        "title": "Read"
+      },
+      "bookings.conferencing_sessions": {
+        "title": "Conferencing sessions"
+      },
+      "bookings.conferencing_sessions.read": {
+        "title": "Read"
+      },
+      "bookings.decline": {
+        "title": "Decline"
+      },
+      "bookings.decline.send": {
+        "title": "Send"
+      },
+      "bookings.guests": {
+        "title": "Guests"
+      },
+      "bookings.guests.send": {
+        "title": "Send"
+      },
+      "bookings.location": {
+        "title": "Location"
+      },
+      "bookings.location.write": {
+        "title": "Create and edit"
+      },
+      "bookings.mark_absent": {
+        "title": "Mark absent"
+      },
+      "bookings.mark_absent.write": {
+        "title": "Create and edit"
+      },
+      "bookings.read": {
+        "title": "Read"
+      },
+      "bookings.reassign": {
+        "title": "Reassign"
+      },
+      "bookings.reassign.send": {
+        "title": "Send"
+      },
+      "bookings.recordings": {
+        "title": "Recordings"
+      },
+      "bookings.recordings.read": {
+        "title": "Read"
+      },
+      "bookings.references": {
+        "title": "References"
+      },
+      "bookings.references.read": {
+        "title": "Read"
+      },
+      "bookings.reschedule": {
+        "title": "Reschedule"
+      },
+      "bookings.reschedule.send": {
+        "title": "Send"
+      },
+      "bookings.send": {
+        "title": "Send"
+      },
+      "bookings.transcripts": {
+        "title": "Transcripts"
+      },
+      "bookings.transcripts.read": {
+        "title": "Read"
+      },
+      "calendars": {
+        "title": "Calendars"
+      },
+      "calendars.busy_times": {
+        "title": "Busy times"
+      },
+      "calendars.busy_times.read": {
+        "title": "Read"
+      },
+      "calendars.connect": {
+        "title": "Connect"
+      },
+      "calendars.connect.read": {
+        "title": "Read"
+      },
+      "calendars.connections": {
+        "title": "Connections"
+      },
+      "calendars.connections.events": {
+        "title": "Events"
+      },
+      "calendars.connections.events.delete": {
+        "title": "Delete"
+      },
+      "calendars.connections.events.read": {
+        "title": "Read"
+      },
+      "calendars.connections.events.write": {
+        "title": "Create and edit"
+      },
+      "calendars.connections.freebusy": {
+        "title": "Freebusy"
+      },
+      "calendars.connections.freebusy.read": {
+        "title": "Read"
+      },
+      "calendars.connections.read": {
+        "title": "Read"
+      },
+      "calendars.credentials": {
+        "title": "Credentials"
+      },
+      "calendars.credentials.admin": {
+        "title": "Manage"
+      },
+      "calendars.disconnect": {
+        "title": "Disconnect"
+      },
+      "calendars.disconnect.admin": {
+        "title": "Manage"
+      },
+      "calendars.event": {
+        "title": "Event"
+      },
+      "calendars.event.read": {
+        "title": "Read"
+      },
+      "calendars.event.write": {
+        "title": "Create and edit"
+      },
+      "calendars.events": {
+        "title": "Events"
+      },
+      "calendars.events.delete": {
+        "title": "Delete"
+      },
+      "calendars.events.read": {
+        "title": "Read"
+      },
+      "calendars.events.write": {
+        "title": "Create and edit"
+      },
+      "calendars.freebusy": {
+        "title": "Freebusy"
+      },
+      "calendars.freebusy.read": {
+        "title": "Read"
+      },
+      "calendars.ics_feed": {
+        "title": "Ics feed"
+      },
+      "calendars.ics_feed.read": {
+        "title": "Read"
+      },
+      "calendars.ics_feed.save": {
+        "title": "Save"
+      },
+      "calendars.ics_feed.save.write": {
+        "title": "Create and edit"
+      },
+      "calendars.read": {
+        "title": "Read"
+      },
+      "calendars.save": {
+        "title": "Save"
+      },
+      "calendars.save.admin": {
+        "title": "Manage"
+      },
+      "conferencing": {
+        "title": "Conferencing"
+      },
+      "conferencing.connect": {
+        "title": "Connect"
+      },
+      "conferencing.connect.write": {
+        "title": "Create and edit"
+      },
+      "conferencing.default": {
+        "title": "Default"
+      },
+      "conferencing.default.read": {
+        "title": "Read"
+      },
+      "conferencing.default.write": {
+        "title": "Create and edit"
+      },
+      "conferencing.disconnect": {
+        "title": "Disconnect"
+      },
+      "conferencing.disconnect.delete": {
+        "title": "Delete"
+      },
+      "conferencing.oauth": {
+        "title": "Oauth"
+      },
+      "conferencing.oauth.auth_url": {
+        "title": "Auth url"
+      },
+      "conferencing.oauth.auth_url.read": {
+        "title": "Read"
+      },
+      "conferencing.oauth.callback": {
+        "title": "Callback"
+      },
+      "conferencing.oauth.callback.admin": {
+        "title": "Manage"
+      },
+      "conferencing.read": {
+        "title": "Read"
+      },
+      "destination_calendars": {
+        "title": "Destination calendars"
+      },
+      "destination_calendars.write": {
+        "title": "Create and edit"
+      },
+      "event_types": {
+        "title": "Event types"
+      },
+      "event_types.delete": {
+        "title": "Delete"
+      },
+      "event_types.private_links": {
+        "title": "Private links"
+      },
+      "event_types.private_links.delete": {
+        "title": "Delete"
+      },
+      "event_types.private_links.read": {
+        "title": "Read"
+      },
+      "event_types.private_links.share": {
+        "title": "Share"
+      },
+      "event_types.private_links.write": {
+        "title": "Create and edit"
+      },
+      "event_types.read": {
+        "title": "Read"
+      },
+      "event_types.webhooks": {
+        "title": "Webhooks"
+      },
+      "event_types.webhooks.admin": {
+        "title": "Manage"
+      },
+      "event_types.webhooks.delete": {
+        "title": "Delete"
+      },
+      "event_types.webhooks.read": {
+        "title": "Read"
+      },
+      "event_types.write": {
+        "title": "Create and edit"
+      },
+      "me": {
+        "title": "Me"
+      },
+      "me.read": {
+        "title": "Read"
+      },
+      "me.write": {
+        "title": "Create and edit"
+      },
+      "oauth": {
+        "title": "Oauth"
+      },
+      "oauth.refresh": {
+        "title": "Refresh"
+      },
+      "oauth.refresh.admin": {
+        "title": "Manage"
+      },
+      "oauth_clients": {
+        "title": "Oauth clients"
+      },
+      "oauth_clients.admin": {
+        "title": "Manage"
+      },
+      "oauth_clients.read": {
+        "title": "Read"
+      },
+      "oauth_clients.users": {
+        "title": "Users"
+      },
+      "oauth_clients.users.admin": {
+        "title": "Manage"
+      },
+      "oauth_clients.users.force_refresh": {
+        "title": "Force refresh"
+      },
+      "oauth_clients.users.force_refresh.admin": {
+        "title": "Manage"
+      },
+      "oauth_clients.users.read": {
+        "title": "Read"
+      },
+      "oauth_clients.webhooks": {
+        "title": "Webhooks"
+      },
+      "oauth_clients.webhooks.admin": {
+        "title": "Manage"
+      },
+      "oauth_clients.webhooks.delete": {
+        "title": "Delete"
+      },
+      "oauth_clients.webhooks.read": {
+        "title": "Read"
+      },
+      "schedules": {
+        "title": "Schedules"
+      },
+      "schedules.default": {
+        "title": "Default"
+      },
+      "schedules.default.read": {
+        "title": "Read"
+      },
+      "schedules.delete": {
+        "title": "Delete"
+      },
+      "schedules.read": {
+        "title": "Read"
+      },
+      "schedules.write": {
+        "title": "Create and edit"
+      },
+      "selected_calendars": {
+        "title": "Selected calendars"
+      },
+      "selected_calendars.delete": {
+        "title": "Delete"
+      },
+      "selected_calendars.write": {
+        "title": "Create and edit"
+      },
+      "slots": {
+        "title": "Slots"
+      },
+      "slots.read": {
+        "title": "Read"
+      },
+      "slots.reservations": {
+        "title": "Reservations"
+      },
+      "slots.reservations.delete": {
+        "title": "Delete"
+      },
+      "slots.reservations.read": {
+        "title": "Read"
+      },
+      "slots.reservations.write": {
+        "title": "Create and edit"
+      },
+      "stripe": {
+        "title": "Stripe"
+      },
+      "stripe.connect": {
+        "title": "Connect"
+      },
+      "stripe.connect.read": {
+        "title": "Read"
+      },
+      "stripe.read": {
+        "title": "Read"
+      },
+      "stripe.save": {
+        "title": "Save"
+      },
+      "stripe.save.admin": {
+        "title": "Manage"
+      },
+      "verified_resources": {
+        "title": "Verified resources"
+      },
+      "verified_resources.emails": {
+        "title": "Emails"
+      },
+      "verified_resources.emails.read": {
+        "title": "Read"
+      },
+      "verified_resources.emails.verification_code": {
+        "title": "Verification code"
+      },
+      "verified_resources.emails.verification_code.request": {
+        "title": "Request"
+      },
+      "verified_resources.emails.verification_code.request.send": {
+        "title": "Send"
+      },
+      "verified_resources.emails.verification_code.write": {
+        "title": "Create and edit"
+      },
+      "verified_resources.phones": {
+        "title": "Phones"
+      },
+      "verified_resources.phones.read": {
+        "title": "Read"
+      },
+      "verified_resources.phones.verification_code": {
+        "title": "Verification code"
+      },
+      "verified_resources.phones.verification_code.request": {
+        "title": "Request"
+      },
+      "verified_resources.phones.verification_code.request.send": {
+        "title": "Send"
+      },
+      "verified_resources.phones.verification_code.write": {
+        "title": "Create and edit"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.delete": {
+        "title": "Delete"
+      },
+      "webhooks.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.cal.com",
+            "path": "/v2",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "default": "https://api.cal.com",
+        "hint": "Use your instance's API address when self-hosted.",
+        "key": "origin",
+        "label": "Your Cal.com API origin (https://host)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Cal.com",
   "http": {
     "operations": {
-      "ApiKeysController_refresh": {"action":"write.refresh","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/api-keys/refresh","body":"json","scope":{}},
-      "BookingAttendeesController_2024_08_13_addAttendee": {"action":"write.attendees","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/bookings/{bookingUid}/attendees","body":"json","scope":{"bookingUid":{"from":"path","at":"bookingUid"},"name":{"from":"body","at":"/name"},"email":{"from":"body","at":"/email"}}},
-      "BookingAttendeesController_2024_08_13_getBookingAttendee": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/bookings/{bookingUid}/attendees/{attendeeId}","scope":{"bookingUid":{"from":"path","at":"bookingUid"},"attendeeId":{"from":"path","at":"attendeeId"}}},
-      "BookingAttendeesController_2024_08_13_removeAttendee": {"action":"delete.attendees","effects":["delete"],"method":"DELETE","origin":"https://api.cal.com","path":"/v2/bookings/{bookingUid}/attendees/{attendeeId}","scope":{"bookingUid":{"from":"path","at":"bookingUid"},"attendeeId":{"from":"path","at":"attendeeId"}}},
-      "BookingGuestsController_2024_08_13_addGuests": {"action":"write.guests","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/bookings/{bookingUid}/guests","body":"json","scope":{"bookingUid":{"from":"path","at":"bookingUid"}}},
-      "BookingLocationController_2024_08_13_updateBookingLocation": {"action":"write.location","effects":["write"],"method":"PATCH","origin":"https://api.cal.com","path":"/v2/bookings/{bookingUid}/location","body":"json","scope":{"bookingUid":{"from":"path","at":"bookingUid"}}},
-      "BookingsController_2024_08_13_cancelBooking": {"action":"write.bookings","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/bookings/{bookingUid}/cancel","body":"json","scope":{"bookingUid":{"from":"path","at":"bookingUid"}}},
-      "BookingsController_2024_08_13_confirmBooking": {"action":"write.bookings","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/bookings/{bookingUid}/confirm","scope":{"bookingUid":{"from":"path","at":"bookingUid"}}},
-      "BookingsController_2024_08_13_createBooking": {"action":"write.bookings","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/bookings","body":"json","scope":{}},
-      "BookingsController_2024_08_13_declineBooking": {"action":"write.bookings","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/bookings/{bookingUid}/decline","body":"json","scope":{"bookingUid":{"from":"path","at":"bookingUid"}}},
-      "BookingsController_2024_08_13_getBooking": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/bookings/{bookingUid}","scope":{"bookingUid":{"from":"path","at":"bookingUid"}}},
-      "BookingsController_2024_08_13_getBookingBySeatUid": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/bookings/by-seat/{seatUid}","params":["type"],"scope":{"seatUid":{"from":"path","at":"seatUid"}}},
-      "BookingsController_2024_08_13_getBookings": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/bookings","params":["status","attendeeEmail","attendeeName","bookingUid","eventTypeIds","eventTypeId","teamsIds","teamId","afterStart","beforeEnd","afterCreatedAt","beforeCreatedAt","afterUpdatedAt","beforeUpdatedAt","sortStart","sortEnd","sortCreated","sortUpdatedAt","take","skip"],"scope":{}},
-      "BookingsController_2024_08_13_markNoShow": {"action":"write.bookings","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/bookings/{bookingUid}/mark-absent","body":"json","scope":{"bookingUid":{"from":"path","at":"bookingUid"}}},
-      "BookingsController_2024_08_13_reassignBooking": {"action":"write.bookings","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/bookings/{bookingUid}/reassign","scope":{"bookingUid":{"from":"path","at":"bookingUid"}}},
-      "BookingsController_2024_08_13_reassignBookingToUser": {"action":"write.reassign","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/bookings/{bookingUid}/reassign/{userId}","body":"json","scope":{"bookingUid":{"from":"path","at":"bookingUid"},"userId":{"from":"path","at":"userId"}}},
-      "BookingsController_2024_08_13_rescheduleBooking": {"action":"write.bookings","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/bookings/{bookingUid}/reschedule","body":"json","scope":{"bookingUid":{"from":"path","at":"bookingUid"}}},
-      "CalUnifiedCalendarsController_createCalendarEvent": {"action":"write.events","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/calendars/{calendar}/events","body":"json","scope":{"calendar":{"from":"path","at":"calendar"}}},
-      "CalUnifiedCalendarsController_createConnectionEvent": {"action":"write.events","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/calendars/connections/{connectionId}/events","params":["calendarId"],"body":"json","scope":{"connectionId":{"from":"path","at":"connectionId"}}},
-      "CalUnifiedCalendarsController_deleteCalendarEvent": {"action":"delete.events","effects":["delete"],"method":"DELETE","origin":"https://api.cal.com","path":"/v2/calendars/{calendar}/events/{eventUid}","scope":{"calendar":{"from":"path","at":"calendar"},"eventUid":{"from":"path","at":"eventUid"}}},
-      "CalUnifiedCalendarsController_deleteConnectionEvent": {"action":"delete.events","effects":["delete"],"method":"DELETE","origin":"https://api.cal.com","path":"/v2/calendars/connections/{connectionId}/events/{eventId}","params":["calendarId"],"scope":{"connectionId":{"from":"path","at":"connectionId"},"eventId":{"from":"path","at":"eventId"}}},
-      "CalUnifiedCalendarsController_getCalendarEventDetails": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/calendars/{calendar}/event/{eventUid}","params":["from","to","timeZone","calendarId"],"scope":{"calendar":{"from":"path","at":"calendar"},"eventUid":{"from":"path","at":"eventUid"}}},
-      "CalUnifiedCalendarsController_getCalendarEventDetails.2": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/calendars/{calendar}/events/{eventUid}","scope":{"calendar":{"from":"path","at":"calendar"},"eventUid":{"from":"path","at":"eventUid"}}},
-      "CalUnifiedCalendarsController_getConnectionEvent": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/calendars/connections/{connectionId}/events/{eventId}","params":["calendarId"],"scope":{"connectionId":{"from":"path","at":"connectionId"},"eventId":{"from":"path","at":"eventId"}}},
-      "CalUnifiedCalendarsController_getFreeBusy": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/calendars/{calendar}/freebusy","params":["from","to","timeZone"],"scope":{"calendar":{"from":"path","at":"calendar"}}},
-      "CalUnifiedCalendarsController_listCalendarEvents": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/calendars/{calendar}/events","params":["from","to","timeZone","calendarId"],"scope":{"calendar":{"from":"path","at":"calendar"}}},
-      "CalUnifiedCalendarsController_listConnections": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/calendars/connections","scope":{}},
-      "CalUnifiedCalendarsController_updateCalendarEvent": {"action":"write.event","effects":["write"],"method":"PATCH","origin":"https://api.cal.com","path":"/v2/calendars/{calendar}/event/{eventUid}","body":"json","scope":{"calendar":{"from":"path","at":"calendar"},"eventUid":{"from":"path","at":"eventUid"}}},
-      "CalUnifiedCalendarsController_updateCalendarEvent.2": {"action":"write.events","effects":["write"],"method":"PATCH","origin":"https://api.cal.com","path":"/v2/calendars/{calendar}/events/{eventUid}","body":"json","scope":{"calendar":{"from":"path","at":"calendar"},"eventUid":{"from":"path","at":"eventUid"}}},
-      "CalUnifiedCalendarsController_updateConnectionEvent": {"action":"write.events","effects":["write"],"method":"PATCH","origin":"https://api.cal.com","path":"/v2/calendars/connections/{connectionId}/events/{eventId}","params":["calendarId"],"body":"json","scope":{"connectionId":{"from":"path","at":"connectionId"},"eventId":{"from":"path","at":"eventId"}}},
-      "CalendarsController_check": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/calendars/{calendar}/check","scope":{"calendar":{"from":"path","at":"calendar"}}},
-      "CalendarsController_createIcsFeed": {"action":"write.save","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/calendars/ics-feed/save","body":"json","scope":{}},
-      "CalendarsController_deleteCalendarCredentials": {"action":"write.calendars","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/calendars/{calendar}/disconnect","body":"json","scope":{"calendar":{"from":"path","at":"calendar"},"id":{"from":"body","at":"/id","type":"number"}}},
-      "CalendarsController_getBusyTimes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/calendars/busy-times","params":["loggedInUsersTz","timeZone","dateFrom","dateTo","credentialId","externalId"],"scope":{"credentialId":{"from":"query","at":"credentialId"},"externalId":{"from":"query","at":"externalId"}}},
-      "CalendarsController_getCalendars": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/calendars","scope":{}},
-      "CalendarsController_redirect": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/calendars/{calendar}/connect","params":["isDryRun","redir"],"scope":{"calendar":{"from":"path","at":"calendar"}}},
-      "CalendarsController_save": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/calendars/{calendar}/save","params":["state","code"],"scope":{"calendar":{"from":"path","at":"calendar"}}},
-      "CalendarsController_syncCredentials": {"action":"write.credentials","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/calendars/{calendar}/credentials","body":"json","scope":{"calendar":{"from":"path","at":"calendar"},"username":{"from":"body","at":"/username"}}},
-      "ConferencingController_connect": {"action":"write.conferencing","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/conferencing/{app}/connect","scope":{"app":{"from":"path","at":"app"}}},
-      "ConferencingController_default": {"action":"write.default","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/conferencing/{app}/default","scope":{"app":{"from":"path","at":"app"}}},
-      "ConferencingController_disconnect": {"action":"delete.conferencing","effects":["delete"],"method":"DELETE","origin":"https://api.cal.com","path":"/v2/conferencing/{app}/disconnect","scope":{"app":{"from":"path","at":"app"}}},
-      "ConferencingController_getDefault": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/conferencing/default","scope":{}},
-      "ConferencingController_listInstalledConferencingApps": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/conferencing","scope":{}},
-      "ConferencingController_redirect": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/conferencing/{app}/oauth/auth-url","params":["returnTo","onErrorReturnTo"],"scope":{"app":{"from":"path","at":"app"}}},
-      "ConferencingController_save": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/conferencing/{app}/oauth/callback","params":["state","code"],"scope":{"app":{"from":"path","at":"app"}}},
-      "DestinationCalendarsController_updateDestinationCalendars": {"action":"write.destination_calendars","effects":["write"],"method":"PUT","origin":"https://api.cal.com","path":"/v2/destination-calendars","body":"json","scope":{"externalId":{"from":"body","at":"/externalId"}}},
-      "EventTypeWebhooksController_createEventTypeWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.cal.com","path":"/v2/event-types/{eventTypeId}/webhooks","body":"json","scope":{"eventTypeId":{"from":"path","at":"eventTypeId"},"subscriberUrl":{"from":"body","at":"/subscriberUrl"}}},
-      "EventTypeWebhooksController_deleteAllEventTypeWebhooks": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.cal.com","path":"/v2/event-types/{eventTypeId}/webhooks","scope":{"eventTypeId":{"from":"path","at":"eventTypeId"}}},
-      "EventTypeWebhooksController_deleteEventTypeWebhook": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.cal.com","path":"/v2/event-types/{eventTypeId}/webhooks/{webhookId}","scope":{"eventTypeId":{"from":"path","at":"eventTypeId"},"webhookId":{"from":"path","at":"webhookId"}}},
-      "EventTypeWebhooksController_getEventTypeWebhook": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/event-types/{eventTypeId}/webhooks/{webhookId}","scope":{"eventTypeId":{"from":"path","at":"eventTypeId"},"webhookId":{"from":"path","at":"webhookId"}}},
-      "EventTypeWebhooksController_getEventTypeWebhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/event-types/{eventTypeId}/webhooks","params":["take","skip"],"scope":{"eventTypeId":{"from":"path","at":"eventTypeId"}}},
-      "EventTypeWebhooksController_updateEventTypeWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"PATCH","origin":"https://api.cal.com","path":"/v2/event-types/{eventTypeId}/webhooks/{webhookId}","body":"json","scope":{"eventTypeId":{"from":"path","at":"eventTypeId"},"webhookId":{"from":"path","at":"webhookId"}}},
-      "EventTypesController_2024_06_14_createEventType": {"action":"write.event_types","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/event-types","body":"json","scope":{"slug":{"from":"body","at":"/slug"}}},
-      "EventTypesController_2024_06_14_deleteEventType": {"action":"delete.event_types","effects":["delete"],"method":"DELETE","origin":"https://api.cal.com","path":"/v2/event-types/{eventTypeId}","scope":{"eventTypeId":{"from":"path","at":"eventTypeId"}}},
-      "EventTypesController_2024_06_14_getEventTypeById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/event-types/{eventTypeId}","scope":{"eventTypeId":{"from":"path","at":"eventTypeId"}}},
-      "EventTypesController_2024_06_14_getEventTypes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/event-types","params":["username","eventSlug","usernames","orgSlug","orgId","sortCreatedAt"],"scope":{}},
-      "EventTypesController_2024_06_14_updateEventType": {"action":"write.event_types","effects":["write"],"method":"PATCH","origin":"https://api.cal.com","path":"/v2/event-types/{eventTypeId}","body":"json","scope":{"eventTypeId":{"from":"path","at":"eventTypeId"}}},
-      "EventTypesPrivateLinksController_createPrivateLink": {"action":"write.private_links","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/event-types/{eventTypeId}/private-links","body":"json","scope":{"eventTypeId":{"from":"path","at":"eventTypeId"}}},
-      "EventTypesPrivateLinksController_deletePrivateLink": {"action":"delete.private_links","effects":["delete"],"method":"DELETE","origin":"https://api.cal.com","path":"/v2/event-types/{eventTypeId}/private-links/{linkId}","scope":{"eventTypeId":{"from":"path","at":"eventTypeId"},"linkId":{"from":"path","at":"linkId"}}},
-      "EventTypesPrivateLinksController_getPrivateLinks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/event-types/{eventTypeId}/private-links","scope":{"eventTypeId":{"from":"path","at":"eventTypeId"}}},
-      "EventTypesPrivateLinksController_updatePrivateLink": {"action":"write.private_links","effects":["write"],"method":"PATCH","origin":"https://api.cal.com","path":"/v2/event-types/{eventTypeId}/private-links/{linkId}","body":"json","scope":{"eventTypeId":{"from":"path","at":"eventTypeId"},"linkId":{"from":"path","at":"linkId"}}},
-      "MeController_getMe": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/me","scope":{}},
-      "MeController_updateMe": {"action":"write.me","effects":["write"],"method":"PATCH","origin":"https://api.cal.com","path":"/v2/me","body":"json","scope":{}},
-      "OAuth2Controller_getClient": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/auth/oauth2/clients/{clientId}","scope":{"clientId":{"from":"path","at":"clientId"}}},
-      "OAuth2Controller_token": {"action":"admin.token","effects":["admin"],"method":"POST","origin":"https://api.cal.com","path":"/v2/auth/oauth2/token","body":"json","scope":{}},
-      "OAuthClientUsersController_createUser": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"https://api.cal.com","path":"/v2/oauth-clients/{clientId}/users","body":"json","scope":{"clientId":{"from":"path","at":"clientId"},"email":{"from":"body","at":"/email"},"name":{"from":"body","at":"/name"}}},
-      "OAuthClientUsersController_deleteUser": {"action":"delete.users","effects":["delete"],"method":"DELETE","origin":"https://api.cal.com","path":"/v2/oauth-clients/{clientId}/users/{userId}","scope":{"clientId":{"from":"path","at":"clientId"},"userId":{"from":"path","at":"userId"}}},
-      "OAuthClientUsersController_forceRefresh": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"https://api.cal.com","path":"/v2/oauth-clients/{clientId}/users/{userId}/force-refresh","scope":{"clientId":{"from":"path","at":"clientId"},"userId":{"from":"path","at":"userId"}}},
-      "OAuthClientUsersController_getManagedUsers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/oauth-clients/{clientId}/users","params":["limit","offset","emails"],"scope":{"clientId":{"from":"path","at":"clientId"}}},
-      "OAuthClientUsersController_getUserById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/oauth-clients/{clientId}/users/{userId}","scope":{"clientId":{"from":"path","at":"clientId"},"userId":{"from":"path","at":"userId"}}},
-      "OAuthClientUsersController_updateUser": {"action":"admin.users","effects":["admin"],"method":"PATCH","origin":"https://api.cal.com","path":"/v2/oauth-clients/{clientId}/users/{userId}","body":"json","scope":{"clientId":{"from":"path","at":"clientId"},"userId":{"from":"path","at":"userId"}}},
-      "OAuthClientWebhooksController_createOAuthClientWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.cal.com","path":"/v2/oauth-clients/{clientId}/webhooks","body":"json","scope":{"clientId":{"from":"path","at":"clientId"},"subscriberUrl":{"from":"body","at":"/subscriberUrl"}}},
-      "OAuthClientWebhooksController_deleteAllOAuthClientWebhooks": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.cal.com","path":"/v2/oauth-clients/{clientId}/webhooks","scope":{"clientId":{"from":"path","at":"clientId"}}},
-      "OAuthClientWebhooksController_deleteOAuthClientWebhook": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.cal.com","path":"/v2/oauth-clients/{clientId}/webhooks/{webhookId}","scope":{"clientId":{"from":"path","at":"clientId"},"webhookId":{"from":"path","at":"webhookId"}}},
-      "OAuthClientWebhooksController_getOAuthClientWebhook": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/oauth-clients/{clientId}/webhooks/{webhookId}","scope":{"clientId":{"from":"path","at":"clientId"},"webhookId":{"from":"path","at":"webhookId"}}},
-      "OAuthClientWebhooksController_getOAuthClientWebhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/oauth-clients/{clientId}/webhooks","params":["take","skip"],"scope":{"clientId":{"from":"path","at":"clientId"}}},
-      "OAuthClientWebhooksController_updateOAuthClientWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"PATCH","origin":"https://api.cal.com","path":"/v2/oauth-clients/{clientId}/webhooks/{webhookId}","body":"json","scope":{"clientId":{"from":"path","at":"clientId"},"webhookId":{"from":"path","at":"webhookId"}}},
-      "OAuthClientsController_createOAuthClient": {"action":"write.oauth_clients","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/oauth-clients","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "OAuthClientsController_deleteOAuthClient": {"action":"delete.oauth_clients","effects":["delete"],"method":"DELETE","origin":"https://api.cal.com","path":"/v2/oauth-clients/{clientId}","scope":{"clientId":{"from":"path","at":"clientId"}}},
-      "OAuthClientsController_getOAuthClientById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/oauth-clients/{clientId}","scope":{"clientId":{"from":"path","at":"clientId"}}},
-      "OAuthClientsController_getOAuthClients": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/oauth-clients","scope":{}},
-      "OAuthClientsController_updateOAuthClient": {"action":"write.oauth_clients","effects":["write"],"method":"PATCH","origin":"https://api.cal.com","path":"/v2/oauth-clients/{clientId}","body":"json","scope":{"clientId":{"from":"path","at":"clientId"}}},
-      "OAuthFlowController_refreshTokens": {"action":"write.oauth","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/oauth/{clientId}/refresh","body":"json","scope":{"clientId":{"from":"path","at":"clientId"}}},
-      "SchedulesController_2024_06_11_createSchedule": {"action":"write.schedules","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/schedules","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "SchedulesController_2024_06_11_deleteSchedule": {"action":"delete.schedules","effects":["delete"],"method":"DELETE","origin":"https://api.cal.com","path":"/v2/schedules/{scheduleId}","scope":{"scheduleId":{"from":"path","at":"scheduleId"}}},
-      "SchedulesController_2024_06_11_getSchedule": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/schedules/{scheduleId}","scope":{"scheduleId":{"from":"path","at":"scheduleId"}}},
-      "SchedulesController_2024_06_11_getSchedules": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/schedules","scope":{}},
-      "SchedulesController_2024_06_11_updateSchedule": {"action":"write.schedules","effects":["write"],"method":"PATCH","origin":"https://api.cal.com","path":"/v2/schedules/{scheduleId}","body":"json","scope":{"scheduleId":{"from":"path","at":"scheduleId"}}},
-      "SelectedCalendarsController_addSelectedCalendar": {"action":"write.selected_calendars","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/selected-calendars","body":"json","scope":{"externalId":{"from":"body","at":"/externalId"},"credentialId":{"from":"body","at":"/credentialId","type":"number"}}},
-      "SelectedCalendarsController_deleteSelectedCalendar": {"action":"delete.selected_calendars","effects":["delete"],"method":"DELETE","origin":"https://api.cal.com","path":"/v2/selected-calendars","params":["integration","externalId","credentialId","delegationCredentialId"],"scope":{"externalId":{"from":"query","at":"externalId"},"credentialId":{"from":"query","at":"credentialId"}}},
-      "SlotsController_2024_09_04_deleteReservedSlot": {"action":"delete.reservations","effects":["delete"],"method":"DELETE","origin":"https://api.cal.com","path":"/v2/slots/reservations/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "SlotsController_2024_09_04_getAvailableSlots": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/slots","params":["bookingUidToReschedule","start","end","organizationSlug","teamSlug","username","eventTypeSlug","eventTypeId","usernames","format","duration","timeZone"],"scope":{}},
-      "SlotsController_2024_09_04_getReservedSlot": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/slots/reservations/{uid}","scope":{"uid":{"from":"path","at":"uid"}}},
-      "SlotsController_2024_09_04_reserveSlot": {"action":"write.reservations","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/slots/reservations","body":"json","scope":{"eventTypeId":{"from":"body","at":"/eventTypeId","type":"number"}}},
-      "SlotsController_2024_09_04_updateReservedSlot": {"action":"write.reservations","effects":["write"],"method":"PATCH","origin":"https://api.cal.com","path":"/v2/slots/reservations/{uid}","body":"json","scope":{"uid":{"from":"path","at":"uid"},"eventTypeId":{"from":"body","at":"/eventTypeId","type":"number"}}},
-      "StripeController_check": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/stripe/check","scope":{}},
-      "StripeController_redirect": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/stripe/connect","scope":{}},
-      "StripeController_save": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/stripe/save","params":["state","code"],"scope":{}},
-      "UserVerifiedResourcesController_getVerifiedEmailById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/verified-resources/emails/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "UserVerifiedResourcesController_getVerifiedEmails": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/verified-resources/emails","params":["take","skip"],"scope":{}},
-      "UserVerifiedResourcesController_getVerifiedPhoneById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/verified-resources/phones/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "UserVerifiedResourcesController_getVerifiedPhoneNumbers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/verified-resources/phones","params":["take","skip"],"scope":{}},
-      "UserVerifiedResourcesController_requestEmailVerificationCode": {"action":"write.request","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/verified-resources/emails/verification-code/request","body":"json","scope":{"email":{"from":"body","at":"/email"}}},
-      "UserVerifiedResourcesController_requestPhoneVerificationCode": {"action":"write.request","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/verified-resources/phones/verification-code/request","body":"json","scope":{}},
-      "UserVerifiedResourcesController_verifyEmail": {"action":"write.verify","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/verified-resources/emails/verification-code/verify","body":"json","scope":{"email":{"from":"body","at":"/email"}}},
-      "UserVerifiedResourcesController_verifyPhoneNumber": {"action":"write.verify","effects":["write"],"method":"POST","origin":"https://api.cal.com","path":"/v2/verified-resources/phones/verification-code/verify","body":"json","scope":{}},
-      "WebhooksController_createWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.cal.com","path":"/v2/webhooks","body":"json","scope":{"subscriberUrl":{"from":"body","at":"/subscriberUrl"}}},
-      "WebhooksController_deleteWebhook": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.cal.com","path":"/v2/webhooks/{webhookId}","scope":{"webhookId":{"from":"path","at":"webhookId"}}},
-      "WebhooksController_getWebhook": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/webhooks/{webhookId}","scope":{"webhookId":{"from":"path","at":"webhookId"}}},
-      "WebhooksController_getWebhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.cal.com","path":"/v2/webhooks","params":["take","skip"],"scope":{}},
-      "WebhooksController_updateWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"PATCH","origin":"https://api.cal.com","path":"/v2/webhooks/{webhookId}","body":"json","scope":{"webhookId":{"from":"path","at":"webhookId"}}}
+      "ApiKeysController_refresh": {"action":"api_keys.refresh.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v2/api-keys/refresh","scope":{"apiKeyDaysValid":{"at":"/apiKeyDaysValid","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "BookingAttendeesController_2024_08_13_addAttendee": {"action":"bookings.attendees.send","body":"json","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/v2/bookings/{bookingUid}/attendees","scope":{"bookingUid":{"at":"bookingUid","from":"path"},"email":{"at":"/email","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "BookingAttendeesController_2024_08_13_getBookingAttendee": {"action":"bookings.attendees.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/bookings/{bookingUid}/attendees/{attendeeId}","scope":{"attendeeId":{"at":"attendeeId","from":"path"},"bookingUid":{"at":"bookingUid","from":"path"}}},
+      "BookingAttendeesController_2024_08_13_getBookingAttendees": {"action":"bookings.attendees.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/bookings/{bookingUid}/attendees","path_patterns":{"bookingUid":"[^b].*|b(?:|[^y].*|y(?:|[^\\-].*|-(?:|[^s].*|s(?:|[^e].*|e(?:|[^a].*|a(?:|[^t].*|t.+))))))"},"scope":{"bookingUid":{"at":"bookingUid","from":"path"}}},
+      "BookingAttendeesController_2024_08_13_removeAttendee": {"action":"bookings.attendees.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/bookings/{bookingUid}/attendees/{attendeeId}","scope":{"attendeeId":{"at":"attendeeId","from":"path"},"bookingUid":{"at":"bookingUid","from":"path"}}},
+      "BookingGuestsController_2024_08_13_addGuests": {"action":"bookings.guests.send","body":"json","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/v2/bookings/{bookingUid}/guests","scope":{"bookingUid":{"at":"bookingUid","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "BookingLocationController_2024_08_13_updateBookingLocation": {"action":"bookings.location.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/v2/bookings/{bookingUid}/location","scope":{"bookingUid":{"at":"bookingUid","from":"path"}}},
+      "BookingsController_2024_08_13_cancelBooking": {"action":"bookings.send","body":"json","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/v2/bookings/{bookingUid}/cancel","scope":{"bookingUid":{"at":"bookingUid","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "BookingsController_2024_08_13_confirmBooking": {"action":"bookings.send","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/v2/bookings/{bookingUid}/confirm","scope":{"bookingUid":{"at":"bookingUid","from":"path"}}},
+      "BookingsController_2024_08_13_createBooking": {"action":"bookings.send","body":"json","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/v2/bookings","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "BookingsController_2024_08_13_declineBooking": {"action":"bookings.decline.send","body":"json","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/v2/bookings/{bookingUid}/decline","scope":{"bookingUid":{"at":"bookingUid","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "BookingsController_2024_08_13_getBooking": {"action":"bookings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/bookings/{bookingUid}","scope":{"bookingUid":{"at":"bookingUid","from":"path"}}},
+      "BookingsController_2024_08_13_getBookingBySeatUid": {"action":"bookings.by_seat.read","effects":["read"],"method":"GET","origin":"{origin}","params":["type"],"path":"/v2/bookings/by-seat/{seatUid}","scope":{"seatUid":{"at":"seatUid","from":"path"}}},
+      "BookingsController_2024_08_13_getBookingRecordings": {"action":"bookings.recordings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/bookings/{bookingUid}/recordings","path_patterns":{"bookingUid":"[^b].*|b(?:|[^y].*|y(?:|[^\\-].*|-(?:|[^s].*|s(?:|[^e].*|e(?:|[^a].*|a(?:|[^t].*|t.+))))))"},"scope":{"bookingUid":{"at":"bookingUid","from":"path"}}},
+      "BookingsController_2024_08_13_getBookingReferences": {"action":"bookings.references.read","effects":["read"],"method":"GET","origin":"{origin}","params":["type"],"path":"/v2/bookings/{bookingUid}/references","path_patterns":{"bookingUid":"[^b].*|b(?:|[^y].*|y(?:|[^\\-].*|-(?:|[^s].*|s(?:|[^e].*|e(?:|[^a].*|a(?:|[^t].*|t.+))))))"},"scope":{"bookingUid":{"at":"bookingUid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "BookingsController_2024_08_13_getBookingTranscripts": {"action":"bookings.transcripts.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/bookings/{bookingUid}/transcripts","path_patterns":{"bookingUid":"[^b].*|b(?:|[^y].*|y(?:|[^\\-].*|-(?:|[^s].*|s(?:|[^e].*|e(?:|[^a].*|a(?:|[^t].*|t.+))))))"},"scope":{"bookingUid":{"at":"bookingUid","from":"path"}}},
+      "BookingsController_2024_08_13_getBookings": {"action":"bookings.read","effects":["read"],"method":"GET","origin":"{origin}","params":["status","attendeeEmail","attendeeName","bookingUid","eventTypeIds","eventTypeId","teamsIds","teamId","afterStart","beforeEnd","afterCreatedAt","beforeCreatedAt","afterUpdatedAt","beforeUpdatedAt","sortStart","sortEnd","sortCreated","sortUpdatedAt","take","skip"],"path":"/v2/bookings","scope":{}},
+      "BookingsController_2024_08_13_getCalendarLinks": {"action":"bookings.calendar_links.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/bookings/{bookingUid}/calendar-links","path_patterns":{"bookingUid":"[^b].*|b(?:|[^y].*|y(?:|[^\\-].*|-(?:|[^s].*|s(?:|[^e].*|e(?:|[^a].*|a(?:|[^t].*|t.+))))))"},"scope":{"bookingUid":{"at":"bookingUid","from":"path"}}},
+      "BookingsController_2024_08_13_getVideoSessions": {"action":"bookings.conferencing_sessions.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/bookings/{bookingUid}/conferencing-sessions","path_patterns":{"bookingUid":"[^b].*|b(?:|[^y].*|y(?:|[^\\-].*|-(?:|[^s].*|s(?:|[^e].*|e(?:|[^a].*|a(?:|[^t].*|t.+))))))"},"scope":{"bookingUid":{"at":"bookingUid","from":"path"}}},
+      "BookingsController_2024_08_13_markNoShow": {"action":"bookings.mark_absent.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/bookings/{bookingUid}/mark-absent","scope":{"bookingUid":{"at":"bookingUid","from":"path"}}},
+      "BookingsController_2024_08_13_reassignBooking": {"action":"bookings.reassign.send","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/v2/bookings/{bookingUid}/reassign","scope":{"bookingUid":{"at":"bookingUid","from":"path"}}},
+      "BookingsController_2024_08_13_reassignBookingToUser": {"action":"bookings.reassign.send","body":"json","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/v2/bookings/{bookingUid}/reassign/{userId}","scope":{"bookingUid":{"at":"bookingUid","from":"path"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "BookingsController_2024_08_13_rescheduleBooking": {"action":"bookings.reschedule.send","body":"json","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/v2/bookings/{bookingUid}/reschedule","scope":{"bookingUid":{"at":"bookingUid","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "CalUnifiedCalendarsController_createCalendarEvent": {"action":"calendars.events.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/calendars/{calendar}/events","scope":{"calendar":{"at":"calendar","from":"path"}}},
+      "CalUnifiedCalendarsController_createConnectionEvent": {"action":"calendars.connections.events.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["calendarId"],"path":"/v2/calendars/connections/{connectionId}/events","scope":{"connectionId":{"at":"connectionId","from":"path"}}},
+      "CalUnifiedCalendarsController_deleteCalendarEvent": {"action":"calendars.events.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/calendars/{calendar}/events/{eventUid}","scope":{"calendar":{"at":"calendar","from":"path"},"eventUid":{"at":"eventUid","from":"path"}}},
+      "CalUnifiedCalendarsController_deleteConnectionEvent": {"action":"calendars.connections.events.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["calendarId"],"path":"/v2/calendars/connections/{connectionId}/events/{eventId}","scope":{"connectionId":{"at":"connectionId","from":"path"},"eventId":{"at":"eventId","from":"path"}}},
+      "CalUnifiedCalendarsController_getCalendarEventDetails": {"action":"calendars.event.read","effects":["read"],"method":"GET","origin":"{origin}","params":["from","to","timeZone","calendarId"],"path":"/v2/calendars/{calendar}/event/{eventUid}","scope":{"calendar":{"at":"calendar","from":"path"},"eventUid":{"at":"eventUid","from":"path"}}},
+      "CalUnifiedCalendarsController_getCalendarEventDetails.2": {"action":"calendars.events.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/calendars/{calendar}/events/{eventUid}","scope":{"calendar":{"at":"calendar","from":"path"},"eventUid":{"at":"eventUid","from":"path"}}},
+      "CalUnifiedCalendarsController_getConnectionEvent": {"action":"calendars.connections.events.read","effects":["read"],"method":"GET","origin":"{origin}","params":["calendarId"],"path":"/v2/calendars/connections/{connectionId}/events/{eventId}","scope":{"connectionId":{"at":"connectionId","from":"path"},"eventId":{"at":"eventId","from":"path"}}},
+      "CalUnifiedCalendarsController_getConnectionFreeBusy": {"action":"calendars.connections.freebusy.read","effects":["read"],"method":"GET","origin":"{origin}","params":["from","to","timeZone"],"path":"/v2/calendars/connections/{connectionId}/freebusy","path_patterns":{"connectionId":"[^e].*|e(?:|[^v].*|v(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:[^s].*|s.+)))))"},"scope":{"connectionId":{"at":"connectionId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "CalUnifiedCalendarsController_getFreeBusy": {"action":"calendars.freebusy.read","effects":["read"],"method":"GET","origin":"{origin}","params":["from","to","timeZone"],"path":"/v2/calendars/{calendar}/freebusy","scope":{"calendar":{"at":"calendar","from":"path"}}},
+      "CalUnifiedCalendarsController_listCalendarEvents": {"action":"calendars.events.read","effects":["read"],"method":"GET","origin":"{origin}","params":["from","to","timeZone","calendarId"],"path":"/v2/calendars/{calendar}/events","scope":{"calendar":{"at":"calendar","from":"path"}}},
+      "CalUnifiedCalendarsController_listConnectionEvents": {"action":"calendars.connections.events.read","effects":["read"],"method":"GET","origin":"{origin}","params":["from","to","timeZone","calendarId"],"path":"/v2/calendars/connections/{connectionId}/events","path_patterns":{"connectionId":"[^e].*|e(?:|[^v].*|v(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:[^s].*|s.+)))))"},"scope":{"calendarId":{"at":"calendarId","from":"query","optional":true},"connectionId":{"at":"connectionId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "CalUnifiedCalendarsController_listConnections": {"action":"calendars.connections.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/calendars/connections","scope":{}},
+      "CalUnifiedCalendarsController_updateCalendarEvent": {"action":"calendars.event.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/v2/calendars/{calendar}/event/{eventUid}","scope":{"calendar":{"at":"calendar","from":"path"},"eventUid":{"at":"eventUid","from":"path"}}},
+      "CalUnifiedCalendarsController_updateCalendarEvent.2": {"action":"calendars.events.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/v2/calendars/{calendar}/events/{eventUid}","scope":{"calendar":{"at":"calendar","from":"path"},"eventUid":{"at":"eventUid","from":"path"}}},
+      "CalUnifiedCalendarsController_updateConnectionEvent": {"action":"calendars.connections.events.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","params":["calendarId"],"path":"/v2/calendars/connections/{connectionId}/events/{eventId}","scope":{"connectionId":{"at":"connectionId","from":"path"},"eventId":{"at":"eventId","from":"path"}}},
+      "CalendarsController_check": {"action":"calendars.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/calendars/{calendar}/check","path_patterns":{"calendar":"apple|google|office365"},"scope":{"calendar":{"at":"calendar","from":"path"}}},
+      "CalendarsController_checkIcsFeed": {"action":"calendars.ics_feed.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/calendars/ics-feed/check","scope":{}},
+      "CalendarsController_createIcsFeed": {"action":"calendars.ics_feed.save.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/calendars/ics-feed/save","scope":{}},
+      "CalendarsController_deleteCalendarCredentials": {"action":"calendars.disconnect.admin","body":"json","effects":["admin","delete"],"method":"POST","origin":"{origin}","path":"/v2/calendars/{calendar}/disconnect","scope":{"calendar":{"at":"calendar","from":"path"},"id":{"at":"/id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "CalendarsController_getBusyTimes": {"action":"calendars.busy_times.read","effects":["read"],"method":"GET","origin":"{origin}","params":["loggedInUsersTz","timeZone","dateFrom","dateTo","credentialId","externalId"],"path":"/v2/calendars/busy-times","scope":{"credentialId":{"at":"credentialId","from":"query"},"externalId":{"at":"externalId","from":"query"}}},
+      "CalendarsController_getCalendars": {"action":"calendars.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/calendars","scope":{}},
+      "CalendarsController_redirect": {"action":"calendars.connect.read","effects":["read"],"method":"GET","origin":"{origin}","params":["isDryRun","redir"],"path":"/v2/calendars/{calendar}/connect","scope":{"calendar":{"at":"calendar","from":"path"}}},
+      "CalendarsController_save": {"action":"calendars.save.admin","effects":["admin"],"method":"GET","origin":"{origin}","params":["state","code"],"path":"/v2/calendars/{calendar}/save","scope":{"calendar":{"at":"calendar","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "CalendarsController_syncCredentials": {"action":"calendars.credentials.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v2/calendars/{calendar}/credentials","scope":{"calendar":{"at":"calendar","from":"path"},"request":{"at":"","from":"body","type":"object"},"username":{"at":"/username","from":"body"}}},
+      "ConferencingController_connect": {"action":"conferencing.connect.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/conferencing/{app}/connect","scope":{"app":{"at":"app","from":"path"}}},
+      "ConferencingController_default": {"action":"conferencing.default.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/conferencing/{app}/default","scope":{"app":{"at":"app","from":"path"}}},
+      "ConferencingController_disconnect": {"action":"conferencing.disconnect.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/conferencing/{app}/disconnect","scope":{"app":{"at":"app","from":"path"}}},
+      "ConferencingController_getDefault": {"action":"conferencing.default.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/conferencing/default","scope":{}},
+      "ConferencingController_listInstalledConferencingApps": {"action":"conferencing.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/conferencing","scope":{}},
+      "ConferencingController_redirect": {"action":"conferencing.oauth.auth_url.read","effects":["read"],"method":"GET","origin":"{origin}","params":["returnTo","onErrorReturnTo"],"path":"/v2/conferencing/{app}/oauth/auth-url","scope":{"app":{"at":"app","from":"path"}}},
+      "ConferencingController_save": {"action":"conferencing.oauth.callback.admin","effects":["admin"],"method":"GET","origin":"{origin}","params":["state","code"],"path":"/v2/conferencing/{app}/oauth/callback","scope":{"app":{"at":"app","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "DestinationCalendarsController_updateDestinationCalendars": {"action":"destination_calendars.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","path":"/v2/destination-calendars","scope":{"externalId":{"at":"/externalId","from":"body"}}},
+      "EventTypeWebhooksController_createEventTypeWebhook": {"action":"event_types.webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v2/event-types/{eventTypeId}/webhooks","scope":{"eventTypeId":{"at":"eventTypeId","from":"path"},"subscriberUrl":{"at":"/subscriberUrl","from":"body"}}},
+      "EventTypeWebhooksController_deleteAllEventTypeWebhooks": {"action":"event_types.webhooks.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/event-types/{eventTypeId}/webhooks","scope":{"eventTypeId":{"at":"eventTypeId","from":"path"}}},
+      "EventTypeWebhooksController_deleteEventTypeWebhook": {"action":"event_types.webhooks.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/event-types/{eventTypeId}/webhooks/{webhookId}","scope":{"eventTypeId":{"at":"eventTypeId","from":"path"},"webhookId":{"at":"webhookId","from":"path"}}},
+      "EventTypeWebhooksController_getEventTypeWebhook": {"action":"event_types.webhooks.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/event-types/{eventTypeId}/webhooks/{webhookId}","scope":{"eventTypeId":{"at":"eventTypeId","from":"path"},"webhookId":{"at":"webhookId","from":"path"}}},
+      "EventTypeWebhooksController_getEventTypeWebhooks": {"action":"event_types.webhooks.read","effects":["read"],"method":"GET","origin":"{origin}","params":["take","skip"],"path":"/v2/event-types/{eventTypeId}/webhooks","scope":{"eventTypeId":{"at":"eventTypeId","from":"path"}}},
+      "EventTypeWebhooksController_updateEventTypeWebhook": {"action":"event_types.webhooks.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/v2/event-types/{eventTypeId}/webhooks/{webhookId}","scope":{"eventTypeId":{"at":"eventTypeId","from":"path"},"webhookId":{"at":"webhookId","from":"path"}}},
+      "EventTypesController_2024_06_14_createEventType": {"action":"event_types.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/event-types","scope":{"slug":{"at":"/slug","from":"body"}}},
+      "EventTypesController_2024_06_14_deleteEventType": {"action":"event_types.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/event-types/{eventTypeId}","scope":{"eventTypeId":{"at":"eventTypeId","from":"path"}}},
+      "EventTypesController_2024_06_14_getEventTypeById": {"action":"event_types.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/event-types/{eventTypeId}","scope":{"eventTypeId":{"at":"eventTypeId","from":"path"}}},
+      "EventTypesController_2024_06_14_getEventTypes": {"action":"event_types.read","effects":["read"],"method":"GET","origin":"{origin}","params":["username","eventSlug","usernames","orgSlug","orgId","sortCreatedAt"],"path":"/v2/event-types","scope":{}},
+      "EventTypesController_2024_06_14_updateEventType": {"action":"event_types.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/v2/event-types/{eventTypeId}","scope":{"eventTypeId":{"at":"eventTypeId","from":"path"}}},
+      "EventTypesPrivateLinksController_createPrivateLink": {"action":"event_types.private_links.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","path":"/v2/event-types/{eventTypeId}/private-links","scope":{"eventTypeId":{"at":"eventTypeId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "EventTypesPrivateLinksController_deletePrivateLink": {"action":"event_types.private_links.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/event-types/{eventTypeId}/private-links/{linkId}","scope":{"eventTypeId":{"at":"eventTypeId","from":"path"},"linkId":{"at":"linkId","from":"path"}}},
+      "EventTypesPrivateLinksController_getPrivateLinks": {"action":"event_types.private_links.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/event-types/{eventTypeId}/private-links","scope":{"eventTypeId":{"at":"eventTypeId","from":"path"}}},
+      "EventTypesPrivateLinksController_updatePrivateLink": {"action":"event_types.private_links.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/v2/event-types/{eventTypeId}/private-links/{linkId}","scope":{"eventTypeId":{"at":"eventTypeId","from":"path"},"linkId":{"at":"linkId","from":"path"}}},
+      "MeController_getMe": {"action":"me.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/me","scope":{}},
+      "MeController_updateMe": {"action":"me.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/v2/me","scope":{}},
+      "OAuth2Controller_getClient": {"action":"auth.oauth2.clients.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/auth/oauth2/clients/{clientId}","scope":{"clientId":{"at":"clientId","from":"path"}}},
+      "OAuth2Controller_token": {"action":"auth.oauth2.token.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v2/auth/oauth2/token","scope":{}},
+      "OAuthClientUsersController_createUser": {"action":"oauth_clients.users.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v2/oauth-clients/{clientId}/users","scope":{"clientId":{"at":"clientId","from":"path"},"email":{"at":"/email","from":"body"},"name":{"at":"/name","from":"body"}}},
+      "OAuthClientUsersController_deleteUser": {"action":"oauth_clients.users.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/v2/oauth-clients/{clientId}/users/{userId}","scope":{"clientId":{"at":"clientId","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "OAuthClientUsersController_forceRefresh": {"action":"oauth_clients.users.force_refresh.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v2/oauth-clients/{clientId}/users/{userId}/force-refresh","scope":{"clientId":{"at":"clientId","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "OAuthClientUsersController_getManagedUsers": {"action":"oauth_clients.users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","offset","emails"],"path":"/v2/oauth-clients/{clientId}/users","scope":{"clientId":{"at":"clientId","from":"path"}}},
+      "OAuthClientUsersController_getUserById": {"action":"oauth_clients.users.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/oauth-clients/{clientId}/users/{userId}","scope":{"clientId":{"at":"clientId","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "OAuthClientUsersController_updateUser": {"action":"oauth_clients.users.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/v2/oauth-clients/{clientId}/users/{userId}","scope":{"clientId":{"at":"clientId","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "OAuthClientWebhooksController_createOAuthClientWebhook": {"action":"oauth_clients.webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v2/oauth-clients/{clientId}/webhooks","scope":{"clientId":{"at":"clientId","from":"path"},"subscriberUrl":{"at":"/subscriberUrl","from":"body"}}},
+      "OAuthClientWebhooksController_deleteAllOAuthClientWebhooks": {"action":"oauth_clients.webhooks.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/oauth-clients/{clientId}/webhooks","scope":{"clientId":{"at":"clientId","from":"path"}}},
+      "OAuthClientWebhooksController_deleteOAuthClientWebhook": {"action":"oauth_clients.webhooks.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/oauth-clients/{clientId}/webhooks/{webhookId}","scope":{"clientId":{"at":"clientId","from":"path"},"webhookId":{"at":"webhookId","from":"path"}}},
+      "OAuthClientWebhooksController_getOAuthClientWebhook": {"action":"oauth_clients.webhooks.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/oauth-clients/{clientId}/webhooks/{webhookId}","scope":{"clientId":{"at":"clientId","from":"path"},"webhookId":{"at":"webhookId","from":"path"}}},
+      "OAuthClientWebhooksController_getOAuthClientWebhooks": {"action":"oauth_clients.webhooks.read","effects":["read"],"method":"GET","origin":"{origin}","params":["take","skip"],"path":"/v2/oauth-clients/{clientId}/webhooks","scope":{"clientId":{"at":"clientId","from":"path"}}},
+      "OAuthClientWebhooksController_updateOAuthClientWebhook": {"action":"oauth_clients.webhooks.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/v2/oauth-clients/{clientId}/webhooks/{webhookId}","scope":{"clientId":{"at":"clientId","from":"path"},"webhookId":{"at":"webhookId","from":"path"}}},
+      "OAuthClientsController_createOAuthClient": {"action":"oauth_clients.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v2/oauth-clients","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "OAuthClientsController_deleteOAuthClient": {"action":"oauth_clients.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/v2/oauth-clients/{clientId}","scope":{"clientId":{"at":"clientId","from":"path"}}},
+      "OAuthClientsController_getOAuthClientById": {"action":"oauth_clients.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/oauth-clients/{clientId}","scope":{"clientId":{"at":"clientId","from":"path"}}},
+      "OAuthClientsController_getOAuthClients": {"action":"oauth_clients.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/oauth-clients","scope":{}},
+      "OAuthClientsController_updateOAuthClient": {"action":"oauth_clients.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/v2/oauth-clients/{clientId}","scope":{"clientId":{"at":"clientId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "OAuthFlowController_refreshTokens": {"action":"oauth.refresh.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v2/oauth/{clientId}/refresh","scope":{"clientId":{"at":"clientId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "SchedulesController_2024_06_11_createSchedule": {"action":"schedules.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/schedules","scope":{"name":{"at":"/name","from":"body"}}},
+      "SchedulesController_2024_06_11_deleteSchedule": {"action":"schedules.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/schedules/{scheduleId}","scope":{"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "SchedulesController_2024_06_11_getDefaultSchedule": {"action":"schedules.default.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/schedules/default","scope":{}},
+      "SchedulesController_2024_06_11_getSchedule": {"action":"schedules.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/schedules/{scheduleId}","path_patterns":{"scheduleId":"[^d].*|d(?:|[^e].*|e(?:|[^f].*|f(?:|[^a].*|a(?:|[^u].*|u(?:|[^l].*|l(?:|[^t].*|t.+))))))"},"scope":{"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "SchedulesController_2024_06_11_getSchedules": {"action":"schedules.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/schedules","scope":{}},
+      "SchedulesController_2024_06_11_updateSchedule": {"action":"schedules.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/v2/schedules/{scheduleId}","scope":{"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "SelectedCalendarsController_addSelectedCalendar": {"action":"selected_calendars.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/selected-calendars","scope":{"credentialId":{"at":"/credentialId","from":"body","type":"number"},"externalId":{"at":"/externalId","from":"body"}}},
+      "SelectedCalendarsController_deleteSelectedCalendar": {"action":"selected_calendars.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["integration","externalId","credentialId","delegationCredentialId"],"path":"/v2/selected-calendars","scope":{"credentialId":{"at":"credentialId","from":"query"},"externalId":{"at":"externalId","from":"query"}}},
+      "SlotsController_2024_09_04_deleteReservedSlot": {"action":"slots.reservations.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/slots/reservations/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "SlotsController_2024_09_04_getAvailableSlots": {"action":"slots.read","effects":["read"],"method":"GET","origin":"{origin}","params":["bookingUidToReschedule","start","end","organizationSlug","teamSlug","username","eventTypeSlug","eventTypeId","usernames","format","duration","timeZone"],"path":"/v2/slots","scope":{}},
+      "SlotsController_2024_09_04_getReservedSlot": {"action":"slots.reservations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/slots/reservations/{uid}","scope":{"uid":{"at":"uid","from":"path"}}},
+      "SlotsController_2024_09_04_reserveSlot": {"action":"slots.reservations.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/slots/reservations","scope":{"eventTypeId":{"at":"/eventTypeId","from":"body","type":"number"}}},
+      "SlotsController_2024_09_04_updateReservedSlot": {"action":"slots.reservations.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/v2/slots/reservations/{uid}","scope":{"eventTypeId":{"at":"/eventTypeId","from":"body","type":"number"},"uid":{"at":"uid","from":"path"}}},
+      "StripeController_check": {"action":"stripe.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/stripe/check","scope":{}},
+      "StripeController_redirect": {"action":"stripe.connect.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/stripe/connect","scope":{}},
+      "StripeController_save": {"action":"stripe.save.admin","effects":["admin"],"method":"GET","origin":"{origin}","params":["state","code"],"path":"/v2/stripe/save","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "UserVerifiedResourcesController_getVerifiedEmailById": {"action":"verified_resources.emails.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/verified-resources/emails/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "UserVerifiedResourcesController_getVerifiedEmails": {"action":"verified_resources.emails.read","effects":["read"],"method":"GET","origin":"{origin}","params":["take","skip"],"path":"/v2/verified-resources/emails","scope":{}},
+      "UserVerifiedResourcesController_getVerifiedPhoneById": {"action":"verified_resources.phones.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/verified-resources/phones/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "UserVerifiedResourcesController_getVerifiedPhoneNumbers": {"action":"verified_resources.phones.read","effects":["read"],"method":"GET","origin":"{origin}","params":["take","skip"],"path":"/v2/verified-resources/phones","scope":{}},
+      "UserVerifiedResourcesController_requestEmailVerificationCode": {"action":"verified_resources.emails.verification_code.request.send","body":"json","effects":["send"],"method":"POST","origin":"{origin}","path":"/v2/verified-resources/emails/verification-code/request","scope":{"email":{"at":"/email","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "UserVerifiedResourcesController_requestPhoneVerificationCode": {"action":"verified_resources.phones.verification_code.request.send","body":"json","effects":["send"],"method":"POST","origin":"{origin}","path":"/v2/verified-resources/phones/verification-code/request","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "UserVerifiedResourcesController_verifyEmail": {"action":"verified_resources.emails.verification_code.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/verified-resources/emails/verification-code/verify","scope":{"email":{"at":"/email","from":"body"}}},
+      "UserVerifiedResourcesController_verifyPhoneNumber": {"action":"verified_resources.phones.verification_code.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/v2/verified-resources/phones/verification-code/verify","scope":{}},
+      "WebhooksController_createWebhook": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/v2/webhooks","scope":{"subscriberUrl":{"at":"/subscriberUrl","from":"body"}}},
+      "WebhooksController_deleteWebhook": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/v2/webhooks/{webhookId}","scope":{"webhookId":{"at":"webhookId","from":"path"}}},
+      "WebhooksController_getWebhook": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/v2/webhooks/{webhookId}","scope":{"webhookId":{"at":"webhookId","from":"path"}}},
+      "WebhooksController_getWebhooks": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"{origin}","params":["take","skip"],"path":"/v2/webhooks","scope":{}},
+      "WebhooksController_updateWebhook": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/v2/webhooks/{webhookId}","scope":{"webhookId":{"at":"webhookId","from":"path"}}}
     }
   }
 }

@@ -8,9 +8,10 @@
     },
     "connection": {"mcp": {"url": "https://api.harvey.ai/hosted_mcp/mcp"}},
     "fields": [
+      {"key": "url", "label": "Server URL", "default": "https://api.harvey.ai/hosted_mcp/mcp", "help": "Use https://eu.api.harvey.ai/hosted_mcp/mcp for the EU or https://au.api.harvey.ai/hosted_mcp/mcp for Australia.", "path": ["mcp", "url"]},
       {"key": "client_id", "label": "OAuth client ID", "paths": []},
       {"key": "client_secret", "label": "OAuth client secret", "paths": [], "secret": true},
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://api.harvey.ai/hosted_mcp/mcp", "client_id": "{client_id}", "client_secret": "{client_secret}"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}", "client_id": "{client_id}", "client_secret": "{client_secret}"}}
     ]
   }
 }

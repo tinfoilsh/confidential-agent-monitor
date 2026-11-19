@@ -1,289 +1,1314 @@
 {
-  "title": "Customer.io",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "tracking_api_key", "label": "Tracking API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "tracking_api_key", "origin": "https://track.customer.io", "path": "/", "basic": "password"}, {"value": "tracking_api_key", "origin": "https://api.customer.io", "path": "/v1", "basic": "password"}]}},
     "actions": {
-      "delete.collections": {"title": "Delete: collections"},
-      "delete.components": {"title": "Delete: components"},
-      "delete.customers": {"title": "Delete: customers"},
-      "delete.devices": {"title": "Delete: devices"},
-      "delete.emails": {"title": "Delete: emails"},
-      "delete.files": {"title": "Delete: files"},
-      "delete.folders": {"title": "Delete: folders"},
-      "delete.language": {"title": "Delete: language"},
-      "delete.languages": {"title": "Delete: languages"},
-      "delete.newsletters": {"title": "Delete: newsletters"},
-      "delete.remove_customers": {"title": "Delete: remove customers"},
-      "delete.reporting_webhooks": {"title": "Delete: reporting webhooks"},
-      "delete.segments": {"title": "Delete: segments"},
-      "delete.snippets": {"title": "Delete: snippets"},
-      "delete.suppression": {"title": "Delete: suppression"},
-      "delete.versions": {"title": "Delete: versions"},
-      "publish.actions": {"title": "Publish: actions"},
-      "publish.campaigns": {"title": "Publish: campaigns"},
-      "publish.emails": {"title": "Publish: emails"},
-      "publish.language": {"title": "Publish: language"},
-      "publish.triggers": {"title": "Publish: triggers"},
-      "read": {"title": "Read everything the account can see"},
-      "send.email": {"title": "Send: email"},
-      "send.emails": {"title": "Send: emails"},
-      "send.in_app": {"title": "Send: in app"},
-      "send.inbox_message": {"title": "Send: inbox message"},
-      "send.newsletters": {"title": "Send: newsletters"},
-      "send.push": {"title": "Send: push"},
-      "send.sms": {"title": "Send: sms"},
-      "send.whatsapp": {"title": "Send: whatsapp"},
-      "share.link": {"title": "Share: link"},
-      "write.actions": {"title": "Write: actions"},
-      "write.add_customers": {"title": "Write: add customers"},
-      "write.attributes": {"title": "Write: attributes"},
-      "write.batch": {"title": "Write: batch"},
-      "write.collections": {"title": "Write: collections"},
-      "write.components": {"title": "Write: components"},
-      "write.content": {"title": "Write: content"},
-      "write.contents": {"title": "Write: contents"},
-      "write.customers": {"title": "Write: customers"},
-      "write.devices": {"title": "Write: devices"},
-      "write.emails": {"title": "Write: emails"},
-      "write.end": {"title": "Write: end"},
-      "write.entity": {"title": "Write: entity"},
-      "write.events": {"title": "Write: events"},
-      "write.files": {"title": "Write: files"},
-      "write.folders": {"title": "Write: folders"},
-      "write.imports": {"title": "Write: imports"},
-      "write.inbox_previews": {"title": "Write: inbox previews"},
-      "write.language": {"title": "Write: language"},
-      "write.languages": {"title": "Write: languages"},
-      "write.merge_customers": {"title": "Write: merge customers"},
-      "write.metrics": {"title": "Write: metrics"},
-      "write.newsletters": {"title": "Write: newsletters"},
-      "write.optouts": {"title": "Write: optouts"},
-      "write.reporting_webhooks": {"title": "Write: reporting webhooks"},
-      "write.schedule": {"title": "Write: schedule"},
-      "write.segments": {"title": "Write: segments"},
-      "write.snippets": {"title": "Write: snippets"},
-      "write.start": {"title": "Write: start"},
-      "write.submit": {"title": "Write: submit"},
-      "write.suppress": {"title": "Write: suppress"},
-      "write.suppression": {"title": "Write: suppression"},
-      "write.unsubscribe": {"title": "Write: unsubscribe"},
-      "write.unsuppress": {"title": "Write: unsuppress"},
-      "write.update": {"title": "Write: update"},
-      "write.versions": {"title": "Write: versions"}
-    }
+      "account": {
+        "title": "Account"
+      },
+      "account.audit_logs": {
+        "title": "Audit logs"
+      },
+      "account.audit_logs.read": {
+        "title": "Read"
+      },
+      "accounts": {
+        "title": "Accounts"
+      },
+      "accounts.region": {
+        "title": "Region"
+      },
+      "accounts.region.read": {
+        "title": "Read"
+      },
+      "activities": {
+        "title": "Activities"
+      },
+      "activities.read": {
+        "title": "Read"
+      },
+      "assets": {
+        "title": "Assets"
+      },
+      "assets.files": {
+        "title": "Files"
+      },
+      "assets.files.delete": {
+        "title": "Delete"
+      },
+      "assets.files.read": {
+        "title": "Read"
+      },
+      "assets.files.write": {
+        "title": "Create and edit"
+      },
+      "assets.folders": {
+        "title": "Folders"
+      },
+      "assets.folders.delete": {
+        "title": "Delete"
+      },
+      "assets.folders.read": {
+        "title": "Read"
+      },
+      "assets.folders.write": {
+        "title": "Create and edit"
+      },
+      "assets.read": {
+        "title": "Read"
+      },
+      "audit_logs": {
+        "title": "Audit logs"
+      },
+      "audit_logs.read": {
+        "title": "Read"
+      },
+      "batch": {
+        "title": "Batch"
+      },
+      "batch.write": {
+        "title": "Create and edit"
+      },
+      "broadcasts": {
+        "title": "Broadcasts"
+      },
+      "broadcasts.actions": {
+        "title": "Actions"
+      },
+      "broadcasts.actions.language": {
+        "title": "Language"
+      },
+      "broadcasts.actions.language.read": {
+        "title": "Read"
+      },
+      "broadcasts.actions.language.write": {
+        "title": "Create and edit"
+      },
+      "broadcasts.actions.metrics": {
+        "title": "Metrics"
+      },
+      "broadcasts.actions.metrics.links": {
+        "title": "Links"
+      },
+      "broadcasts.actions.metrics.links.read": {
+        "title": "Read"
+      },
+      "broadcasts.actions.metrics.read": {
+        "title": "Read"
+      },
+      "broadcasts.actions.read": {
+        "title": "Read"
+      },
+      "broadcasts.actions.write": {
+        "title": "Create and edit"
+      },
+      "broadcasts.messages": {
+        "title": "Messages"
+      },
+      "broadcasts.messages.read": {
+        "title": "Read"
+      },
+      "broadcasts.metrics": {
+        "title": "Metrics"
+      },
+      "broadcasts.metrics.links": {
+        "title": "Links"
+      },
+      "broadcasts.metrics.links.read": {
+        "title": "Read"
+      },
+      "broadcasts.metrics.read": {
+        "title": "Read"
+      },
+      "broadcasts.read": {
+        "title": "Read"
+      },
+      "broadcasts.triggers": {
+        "title": "Triggers"
+      },
+      "broadcasts.triggers.read": {
+        "title": "Read"
+      },
+      "campaigns": {
+        "title": "Campaigns"
+      },
+      "campaigns.actions": {
+        "title": "Actions"
+      },
+      "campaigns.actions.language": {
+        "title": "Language"
+      },
+      "campaigns.actions.language.read": {
+        "title": "Read"
+      },
+      "campaigns.actions.language.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.actions.metrics": {
+        "title": "Metrics"
+      },
+      "campaigns.actions.metrics.links": {
+        "title": "Links"
+      },
+      "campaigns.actions.metrics.links.read": {
+        "title": "Read"
+      },
+      "campaigns.actions.metrics.read": {
+        "title": "Read"
+      },
+      "campaigns.actions.read": {
+        "title": "Read"
+      },
+      "campaigns.actions.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.journey_metrics": {
+        "title": "Journey metrics"
+      },
+      "campaigns.journey_metrics.read": {
+        "title": "Read"
+      },
+      "campaigns.messages": {
+        "title": "Messages"
+      },
+      "campaigns.messages.read": {
+        "title": "Read"
+      },
+      "campaigns.metrics": {
+        "title": "Metrics"
+      },
+      "campaigns.metrics.links": {
+        "title": "Links"
+      },
+      "campaigns.metrics.links.read": {
+        "title": "Read"
+      },
+      "campaigns.metrics.read": {
+        "title": "Read"
+      },
+      "campaigns.read": {
+        "title": "Read"
+      },
+      "campaigns.triggers": {
+        "title": "Triggers"
+      },
+      "campaigns.triggers.errors": {
+        "title": "Errors"
+      },
+      "campaigns.triggers.errors.read": {
+        "title": "Read"
+      },
+      "campaigns.triggers.read": {
+        "title": "Read"
+      },
+      "campaigns.triggers.send": {
+        "title": "Send"
+      },
+      "campaigns.triggers.write": {
+        "title": "Create and edit"
+      },
+      "collections": {
+        "title": "Collections"
+      },
+      "collections.content": {
+        "title": "Content"
+      },
+      "collections.content.read": {
+        "title": "Read"
+      },
+      "collections.content.write": {
+        "title": "Create and edit"
+      },
+      "collections.delete": {
+        "title": "Delete"
+      },
+      "collections.read": {
+        "title": "Read"
+      },
+      "collections.sources": {
+        "title": "Sources"
+      },
+      "collections.sources.delete": {
+        "title": "Delete"
+      },
+      "collections.sources.read": {
+        "title": "Read"
+      },
+      "collections.sources.write": {
+        "title": "Create and edit"
+      },
+      "collections.sync": {
+        "title": "Sync"
+      },
+      "collections.sync.delete": {
+        "title": "Delete"
+      },
+      "collections.sync.poll": {
+        "title": "Poll"
+      },
+      "collections.sync.poll.write": {
+        "title": "Create and edit"
+      },
+      "collections.sync.read": {
+        "title": "Read"
+      },
+      "collections.sync.rejects": {
+        "title": "Rejects"
+      },
+      "collections.sync.rejects.read": {
+        "title": "Read"
+      },
+      "collections.sync.write": {
+        "title": "Create and edit"
+      },
+      "collections.write": {
+        "title": "Create and edit"
+      },
+      "collections.writes": {
+        "title": "Writes"
+      },
+      "collections.writes.read": {
+        "title": "Read"
+      },
+      "collections.writes.write": {
+        "title": "Create and edit"
+      },
+      "customers": {
+        "title": "Customers"
+      },
+      "customers.activities": {
+        "title": "Activities"
+      },
+      "customers.activities.read": {
+        "title": "Read"
+      },
+      "customers.attributes": {
+        "title": "Attributes"
+      },
+      "customers.attributes.read": {
+        "title": "Read"
+      },
+      "customers.delete": {
+        "title": "Delete"
+      },
+      "customers.devices": {
+        "title": "Devices"
+      },
+      "customers.devices.delete": {
+        "title": "Delete"
+      },
+      "customers.devices.write": {
+        "title": "Create and edit"
+      },
+      "customers.events": {
+        "title": "Events"
+      },
+      "customers.events.write": {
+        "title": "Create and edit"
+      },
+      "customers.messages": {
+        "title": "Messages"
+      },
+      "customers.messages.read": {
+        "title": "Read"
+      },
+      "customers.optouts": {
+        "title": "Optouts"
+      },
+      "customers.optouts.read": {
+        "title": "Read"
+      },
+      "customers.optouts.write": {
+        "title": "Create and edit"
+      },
+      "customers.read": {
+        "title": "Read"
+      },
+      "customers.relationships": {
+        "title": "Relationships"
+      },
+      "customers.relationships.read": {
+        "title": "Read"
+      },
+      "customers.segments": {
+        "title": "Segments"
+      },
+      "customers.segments.read": {
+        "title": "Read"
+      },
+      "customers.subscription_preferences": {
+        "title": "Subscription preferences"
+      },
+      "customers.subscription_preferences.read": {
+        "title": "Read"
+      },
+      "customers.suppress": {
+        "title": "Suppress"
+      },
+      "customers.suppress.write": {
+        "title": "Create and edit"
+      },
+      "customers.unsuppress": {
+        "title": "Unsuppress"
+      },
+      "customers.unsuppress.write": {
+        "title": "Create and edit"
+      },
+      "customers.write": {
+        "title": "Create and edit"
+      },
+      "data_index": {
+        "title": "Data index"
+      },
+      "data_index.attributes": {
+        "title": "Attributes"
+      },
+      "data_index.attributes.write": {
+        "title": "Create and edit"
+      },
+      "data_index.events": {
+        "title": "Events"
+      },
+      "data_index.events.write": {
+        "title": "Create and edit"
+      },
+      "design_studio": {
+        "title": "Design studio"
+      },
+      "design_studio.components": {
+        "title": "Components"
+      },
+      "design_studio.components.delete": {
+        "title": "Delete"
+      },
+      "design_studio.components.read": {
+        "title": "Read"
+      },
+      "design_studio.components.write": {
+        "title": "Create and edit"
+      },
+      "design_studio.emails": {
+        "title": "Emails"
+      },
+      "design_studio.emails.delete": {
+        "title": "Delete"
+      },
+      "design_studio.emails.inbox_previews": {
+        "title": "Inbox previews"
+      },
+      "design_studio.emails.inbox_previews.captures": {
+        "title": "Captures"
+      },
+      "design_studio.emails.inbox_previews.captures.read": {
+        "title": "Read"
+      },
+      "design_studio.emails.inbox_previews.read": {
+        "title": "Read"
+      },
+      "design_studio.emails.inbox_previews.send": {
+        "title": "Send"
+      },
+      "design_studio.emails.languages": {
+        "title": "Languages"
+      },
+      "design_studio.emails.languages.delete": {
+        "title": "Delete"
+      },
+      "design_studio.emails.languages.read": {
+        "title": "Read"
+      },
+      "design_studio.emails.languages.write": {
+        "title": "Create and edit"
+      },
+      "design_studio.emails.link": {
+        "title": "Link"
+      },
+      "design_studio.emails.link.write": {
+        "title": "Create and edit"
+      },
+      "design_studio.emails.preview": {
+        "title": "Preview"
+      },
+      "design_studio.emails.preview.read": {
+        "title": "Read"
+      },
+      "design_studio.emails.publish": {
+        "title": "Publish"
+      },
+      "design_studio.emails.publish_status": {
+        "title": "Publish status"
+      },
+      "design_studio.emails.publish_status.read": {
+        "title": "Read"
+      },
+      "design_studio.emails.read": {
+        "title": "Read"
+      },
+      "design_studio.emails.render": {
+        "title": "Render"
+      },
+      "design_studio.emails.render.read": {
+        "title": "Read"
+      },
+      "design_studio.emails.review": {
+        "title": "Review"
+      },
+      "design_studio.emails.review.read": {
+        "title": "Read"
+      },
+      "design_studio.emails.send": {
+        "title": "Send"
+      },
+      "design_studio.emails.send.send": {
+        "title": "Send"
+      },
+      "design_studio.emails.unpublished_changes": {
+        "title": "Unpublished changes"
+      },
+      "design_studio.emails.unpublished_changes.read": {
+        "title": "Read"
+      },
+      "design_studio.emails.versions": {
+        "title": "Versions"
+      },
+      "design_studio.emails.versions.delete": {
+        "title": "Delete"
+      },
+      "design_studio.emails.versions.read": {
+        "title": "Read"
+      },
+      "design_studio.emails.versions.write": {
+        "title": "Create and edit"
+      },
+      "design_studio.emails.write": {
+        "title": "Create and edit"
+      },
+      "design_studio.folders": {
+        "title": "Folders"
+      },
+      "design_studio.folders.delete": {
+        "title": "Delete"
+      },
+      "design_studio.folders.read": {
+        "title": "Read"
+      },
+      "design_studio.folders.write": {
+        "title": "Create and edit"
+      },
+      "design_studio.inbox_previews": {
+        "title": "Inbox previews"
+      },
+      "design_studio.inbox_previews.clients": {
+        "title": "Clients"
+      },
+      "design_studio.inbox_previews.clients.read": {
+        "title": "Read"
+      },
+      "design_studio.inbox_previews.credits": {
+        "title": "Credits"
+      },
+      "design_studio.inbox_previews.credits.read": {
+        "title": "Read"
+      },
+      "design_studio.inbox_previews.jobs": {
+        "title": "Jobs"
+      },
+      "design_studio.inbox_previews.jobs.read": {
+        "title": "Read"
+      },
+      "design_studio.sms": {
+        "title": "Sms"
+      },
+      "design_studio.sms.delete": {
+        "title": "Delete"
+      },
+      "design_studio.sms.link": {
+        "title": "Link"
+      },
+      "design_studio.sms.link.write": {
+        "title": "Create and edit"
+      },
+      "design_studio.sms.publish": {
+        "title": "Publish"
+      },
+      "design_studio.sms.read": {
+        "title": "Read"
+      },
+      "design_studio.sms.write": {
+        "title": "Create and edit"
+      },
+      "design_studio.whatsapp": {
+        "title": "Whatsapp"
+      },
+      "design_studio.whatsapp.delete": {
+        "title": "Delete"
+      },
+      "design_studio.whatsapp.link": {
+        "title": "Link"
+      },
+      "design_studio.whatsapp.link.write": {
+        "title": "Create and edit"
+      },
+      "design_studio.whatsapp.publish": {
+        "title": "Publish"
+      },
+      "design_studio.whatsapp.read": {
+        "title": "Read"
+      },
+      "design_studio.whatsapp.status": {
+        "title": "Status"
+      },
+      "design_studio.whatsapp.status.read": {
+        "title": "Read"
+      },
+      "design_studio.whatsapp.submit": {
+        "title": "Submit"
+      },
+      "design_studio.whatsapp.submit.send": {
+        "title": "Send"
+      },
+      "design_studio.whatsapp.write": {
+        "title": "Create and edit"
+      },
+      "entity": {
+        "title": "Entity"
+      },
+      "entity.write": {
+        "title": "Create and edit"
+      },
+      "esp": {
+        "title": "Esp"
+      },
+      "esp.domains": {
+        "title": "Domains"
+      },
+      "esp.domains.suppression": {
+        "title": "Suppression"
+      },
+      "esp.domains.suppression.read": {
+        "title": "Read"
+      },
+      "esp.search_suppression": {
+        "title": "Search suppression"
+      },
+      "esp.search_suppression.read": {
+        "title": "Read"
+      },
+      "esp.suppression": {
+        "title": "Suppression"
+      },
+      "esp.suppression.delete": {
+        "title": "Delete"
+      },
+      "esp.suppression.read": {
+        "title": "Read"
+      },
+      "esp.suppression.write": {
+        "title": "Create and edit"
+      },
+      "events": {
+        "title": "Events"
+      },
+      "events.write": {
+        "title": "Create and edit"
+      },
+      "exports": {
+        "title": "Exports"
+      },
+      "exports.customers": {
+        "title": "Customers"
+      },
+      "exports.customers.read": {
+        "title": "Read"
+      },
+      "exports.deliveries": {
+        "title": "Deliveries"
+      },
+      "exports.deliveries.read": {
+        "title": "Read"
+      },
+      "exports.read": {
+        "title": "Read"
+      },
+      "forms": {
+        "title": "Forms"
+      },
+      "forms.submit": {
+        "title": "Submit"
+      },
+      "forms.submit.write": {
+        "title": "Create and edit"
+      },
+      "imports": {
+        "title": "Imports"
+      },
+      "imports.read": {
+        "title": "Read"
+      },
+      "imports.write": {
+        "title": "Create and edit"
+      },
+      "info": {
+        "title": "Info"
+      },
+      "info.ip_addresses": {
+        "title": "Ip addresses"
+      },
+      "info.ip_addresses.read": {
+        "title": "Read"
+      },
+      "live_notifications": {
+        "title": "Live notifications"
+      },
+      "live_notifications.end": {
+        "title": "End"
+      },
+      "live_notifications.end.send": {
+        "title": "Send"
+      },
+      "live_notifications.read": {
+        "title": "Read"
+      },
+      "live_notifications.send": {
+        "title": "Send"
+      },
+      "messages": {
+        "title": "Messages"
+      },
+      "messages.archived_message": {
+        "title": "Archived message"
+      },
+      "messages.archived_message.read": {
+        "title": "Read"
+      },
+      "messages.read": {
+        "title": "Read"
+      },
+      "metrics": {
+        "title": "Metrics"
+      },
+      "metrics.write": {
+        "title": "Create and edit"
+      },
+      "newsletters": {
+        "title": "Newsletters"
+      },
+      "newsletters.contents": {
+        "title": "Contents"
+      },
+      "newsletters.contents.metrics": {
+        "title": "Metrics"
+      },
+      "newsletters.contents.metrics.links": {
+        "title": "Links"
+      },
+      "newsletters.contents.metrics.links.read": {
+        "title": "Read"
+      },
+      "newsletters.contents.metrics.read": {
+        "title": "Read"
+      },
+      "newsletters.contents.read": {
+        "title": "Read"
+      },
+      "newsletters.contents.write": {
+        "title": "Create and edit"
+      },
+      "newsletters.delete": {
+        "title": "Delete"
+      },
+      "newsletters.language": {
+        "title": "Language"
+      },
+      "newsletters.language.delete": {
+        "title": "Delete"
+      },
+      "newsletters.language.read": {
+        "title": "Read"
+      },
+      "newsletters.language.write": {
+        "title": "Create and edit"
+      },
+      "newsletters.messages": {
+        "title": "Messages"
+      },
+      "newsletters.messages.read": {
+        "title": "Read"
+      },
+      "newsletters.metrics": {
+        "title": "Metrics"
+      },
+      "newsletters.metrics.links": {
+        "title": "Links"
+      },
+      "newsletters.metrics.links.read": {
+        "title": "Read"
+      },
+      "newsletters.metrics.read": {
+        "title": "Read"
+      },
+      "newsletters.read": {
+        "title": "Read"
+      },
+      "newsletters.schedule": {
+        "title": "Schedule"
+      },
+      "newsletters.schedule.send": {
+        "title": "Send"
+      },
+      "newsletters.send": {
+        "title": "Send"
+      },
+      "newsletters.test_group": {
+        "title": "Test group"
+      },
+      "newsletters.test_group.language": {
+        "title": "Language"
+      },
+      "newsletters.test_group.language.delete": {
+        "title": "Delete"
+      },
+      "newsletters.test_group.language.read": {
+        "title": "Read"
+      },
+      "newsletters.test_group.language.write": {
+        "title": "Create and edit"
+      },
+      "newsletters.test_groups": {
+        "title": "Test groups"
+      },
+      "newsletters.test_groups.read": {
+        "title": "Read"
+      },
+      "newsletters.test_groups.write": {
+        "title": "Create and edit"
+      },
+      "newsletters.write": {
+        "title": "Create and edit"
+      },
+      "object_types": {
+        "title": "Object types"
+      },
+      "object_types.read": {
+        "title": "Read"
+      },
+      "objects": {
+        "title": "Objects"
+      },
+      "objects.attributes": {
+        "title": "Attributes"
+      },
+      "objects.attributes.read": {
+        "title": "Read"
+      },
+      "objects.read": {
+        "title": "Read"
+      },
+      "objects.relationships": {
+        "title": "Relationships"
+      },
+      "objects.relationships.read": {
+        "title": "Read"
+      },
+      "optouts": {
+        "title": "Optouts"
+      },
+      "optouts.read": {
+        "title": "Read"
+      },
+      "push": {
+        "title": "Push commits"
+      },
+      "push.events": {
+        "title": "Events"
+      },
+      "push.events.write": {
+        "title": "Create and edit"
+      },
+      "reporting_webhooks": {
+        "title": "Reporting webhooks"
+      },
+      "reporting_webhooks.delete": {
+        "title": "Delete"
+      },
+      "reporting_webhooks.read": {
+        "title": "Read"
+      },
+      "reporting_webhooks.write": {
+        "title": "Create and edit"
+      },
+      "segments": {
+        "title": "Segments"
+      },
+      "segments.customer_count": {
+        "title": "Customer count"
+      },
+      "segments.customer_count.read": {
+        "title": "Read"
+      },
+      "segments.customers": {
+        "title": "Customers"
+      },
+      "segments.customers.delete": {
+        "title": "Delete"
+      },
+      "segments.customers.write": {
+        "title": "Create and edit"
+      },
+      "segments.delete": {
+        "title": "Delete"
+      },
+      "segments.membership": {
+        "title": "Membership"
+      },
+      "segments.membership.read": {
+        "title": "Read"
+      },
+      "segments.read": {
+        "title": "Read"
+      },
+      "segments.used_by": {
+        "title": "Used by"
+      },
+      "segments.used_by.read": {
+        "title": "Read"
+      },
+      "segments.write": {
+        "title": "Create and edit"
+      },
+      "send": {
+        "title": "Send"
+      },
+      "send.email": {
+        "title": "Email"
+      },
+      "send.email.send": {
+        "title": "Send"
+      },
+      "send.in_app": {
+        "title": "In app"
+      },
+      "send.in_app.send": {
+        "title": "Send"
+      },
+      "send.inbox_message": {
+        "title": "Inbox message"
+      },
+      "send.inbox_message.send": {
+        "title": "Send"
+      },
+      "send.push": {
+        "title": "Push commits"
+      },
+      "send.push.send": {
+        "title": "Send"
+      },
+      "send.sms": {
+        "title": "Sms"
+      },
+      "send.sms.send": {
+        "title": "Send"
+      },
+      "send.whatsapp": {
+        "title": "Whatsapp"
+      },
+      "send.whatsapp.send": {
+        "title": "Send"
+      },
+      "sender_identities": {
+        "title": "Sender identities"
+      },
+      "sender_identities.read": {
+        "title": "Read"
+      },
+      "sender_identities.used_by": {
+        "title": "Used by"
+      },
+      "sender_identities.used_by.read": {
+        "title": "Read"
+      },
+      "snippets": {
+        "title": "Snippets"
+      },
+      "snippets.delete": {
+        "title": "Delete"
+      },
+      "snippets.read": {
+        "title": "Read"
+      },
+      "snippets.write": {
+        "title": "Create and edit"
+      },
+      "subscription_center": {
+        "title": "Subscription center"
+      },
+      "subscription_center.token": {
+        "title": "Token"
+      },
+      "subscription_center.token.read": {
+        "title": "Read"
+      },
+      "subscription_channels": {
+        "title": "Subscription channels"
+      },
+      "subscription_channels.read": {
+        "title": "Read"
+      },
+      "subscription_topics": {
+        "title": "Subscription topics"
+      },
+      "subscription_topics.read": {
+        "title": "Read"
+      },
+      "transactional": {
+        "title": "Transactional"
+      },
+      "transactional.content": {
+        "title": "Content"
+      },
+      "transactional.content.write": {
+        "title": "Create and edit"
+      },
+      "transactional.contents": {
+        "title": "Contents"
+      },
+      "transactional.contents.read": {
+        "title": "Read"
+      },
+      "transactional.language": {
+        "title": "Language"
+      },
+      "transactional.language.read": {
+        "title": "Read"
+      },
+      "transactional.language.write": {
+        "title": "Create and edit"
+      },
+      "transactional.messages": {
+        "title": "Messages"
+      },
+      "transactional.messages.read": {
+        "title": "Read"
+      },
+      "transactional.metrics": {
+        "title": "Metrics"
+      },
+      "transactional.metrics.links": {
+        "title": "Links"
+      },
+      "transactional.metrics.links.read": {
+        "title": "Read"
+      },
+      "transactional.metrics.read": {
+        "title": "Read"
+      },
+      "transactional.read": {
+        "title": "Read"
+      },
+      "unsubscribe": {
+        "title": "Unsubscribe"
+      },
+      "unsubscribe.write": {
+        "title": "Create and edit"
+      },
+      "workspaces": {
+        "title": "Workspaces"
+      },
+      "workspaces.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "basic": "password",
+            "origin": "https://track.customer.io",
+            "path": "/",
+            "value": "tracking_api_key"
+          },
+          {
+            "basic": "password",
+            "origin": "https://track-eu.customer.io",
+            "path": "/",
+            "value": "tracking_api_key"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api.customer.io",
+            "path": "/v1",
+            "prefix": "Bearer ",
+            "value": "app_api_key"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api-eu.customer.io",
+            "path": "/v1",
+            "prefix": "Bearer ",
+            "value": "app_api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "tracking_api_key",
+        "label": "Tracking API Key",
+        "secret": true
+      },
+      {
+        "credential": true,
+        "key": "app_api_key",
+        "label": "App API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Customer.io",
   "http": {
+    "origins": {"app":["https://api.customer.io","https://api-eu.customer.io"],"track":["https://track.customer.io","https://track-eu.customer.io"]},
     "operations": {
-      "addCollection": {"action":"write.collections","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/collections","body":"any","scope":{}},
-      "add_device": {"action":"write.devices","effects":["write"],"method":"PUT","origin":"https://track.customer.io","path":"/api/v1/customers/{identifier}/devices","body":"any","scope":{"identifier":{"from":"path","at":"identifier"}}},
-      "add_to_segment": {"action":"write.add_customers","effects":["write"],"method":"POST","origin":"https://track.customer.io","path":"/api/v1/segments/{segment_id}/add_customers","params":["id_type"],"body":"any","scope":{"segment_id":{"from":"path","at":"segment_id"}}},
-      "batch": {"action":"write.batch","effects":["write"],"method":"POST","origin":"https://track.customer.io","path":"/api/v2/batch","body":"any","scope":{}},
-      "broadcastActionLinks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/broadcasts/{broadcast_id}/actions/{action_id}/metrics/links","params":["period","steps","type"],"scope":{"broadcast_id":{"from":"path","at":"broadcast_id"},"action_id":{"from":"path","at":"action_id"}}},
-      "broadcastActionMetrics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/broadcasts/{broadcast_id}/actions/{action_id}/metrics","params":["period","steps","type"],"scope":{"broadcast_id":{"from":"path","at":"broadcast_id"},"action_id":{"from":"path","at":"action_id"}}},
-      "broadcastActions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/broadcasts/{broadcast_id}/actions","scope":{"broadcast_id":{"from":"path","at":"broadcast_id"}}},
-      "broadcastErrors": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/campaigns/{broadcast_id}/triggers/{trigger_id}/errors","params":["start","limit"],"scope":{"broadcast_id":{"from":"path","at":"broadcast_id"},"trigger_id":{"from":"path","at":"trigger_id"}}},
-      "broadcastLinks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/broadcasts/{broadcast_id}/metrics/links","params":["period","steps","unique"],"scope":{"broadcast_id":{"from":"path","at":"broadcast_id"}}},
-      "broadcastMessages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/broadcasts/{broadcast_id}/messages","params":["start","limit","metric","state","type","start_ts","end_ts","get_tracked_responses"],"scope":{"broadcast_id":{"from":"path","at":"broadcast_id"}}},
-      "broadcastMetrics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/broadcasts/{broadcast_id}/metrics","params":["period","steps","type"],"scope":{"broadcast_id":{"from":"path","at":"broadcast_id"}}},
-      "broadcastStatus": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/campaigns/{broadcast_id}/triggers/{trigger_id}","scope":{"broadcast_id":{"from":"path","at":"broadcast_id"},"trigger_id":{"from":"path","at":"trigger_id"}}},
-      "campaignActionLinks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/campaigns/{campaign_id}/actions/{action_id}/metrics/links","params":["period","steps","type","unique"],"scope":{"campaign_id":{"from":"path","at":"campaign_id"},"action_id":{"from":"path","at":"action_id"}}},
-      "campaignActionMetrics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/campaigns/{campaign_id}/actions/{action_id}/metrics","params":["version","res","start","end","tz","period","steps","type"],"scope":{"campaign_id":{"from":"path","at":"campaign_id"},"action_id":{"from":"path","at":"action_id"}}},
-      "campaignJourneyMetrics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/campaigns/{campaign_id}/journey_metrics","params":["start","end","resolution"],"scope":{"campaign_id":{"from":"path","at":"campaign_id"}}},
-      "campaignLinkMetrics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/campaigns/{campaign_id}/metrics/links","params":["period","steps","unique"],"scope":{"campaign_id":{"from":"path","at":"campaign_id"}}},
-      "campaignMetrics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/campaigns/{campaign_id}/metrics","params":["version","res","start","end","tz","period","steps","type"],"scope":{"campaign_id":{"from":"path","at":"campaign_id"}}},
-      "cancelBroadcastTrigger": {"action":"publish.triggers","effects":["publish"],"method":"POST","origin":"https://api.customer.io","path":"/v1/campaigns/{broadcast_id}/triggers/{trigger_id}/cancel","scope":{"broadcast_id":{"from":"path","at":"broadcast_id"},"trigger_id":{"from":"path","at":"trigger_id"}}},
-      "checkUnpublishedChanges": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/unpublished_changes","scope":{"id":{"from":"path","at":"id"}}},
-      "createAsset": {"action":"write.files","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/assets/files","body":"any","scope":{}},
-      "createAssetFolder": {"action":"write.folders","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/assets/folders","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "createComponent": {"action":"write.components","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/design_studio/components","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "createEmail": {"action":"send.emails","effects":["send"],"method":"POST","origin":"https://api.customer.io","path":"/v1/design_studio/emails","body":"json","scope":{"name":{"from":"body","at":"/name"},"request":{"from":"body","at":"","type":"object"}},"grant":["name"]},
-      "createEmailTranslation": {"action":"write.languages","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/languages","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "createFolder": {"action":"write.folders","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/design_studio/folders","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "createManSegment": {"action":"write.segments","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/segments","body":"any","scope":{}},
-      "createNewsletter": {"action":"write.newsletters","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/newsletters","body":"json","scope":{}},
-      "createNewsletterLanguageVariant": {"action":"write.language","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/language","body":"json","scope":{"newsletter_id":{"from":"path","at":"newsletter_id"}}},
-      "createNewsletterTestGroup": {"action":"write.newsletters","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/test_groups","body":"any","scope":{"newsletter_id":{"from":"path","at":"newsletter_id"}}},
-      "createNewsletterTestLanguageVariant": {"action":"write.language","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/test_group/{test_group_id}/language","body":"json","scope":{"newsletter_id":{"from":"path","at":"newsletter_id"},"test_group_id":{"from":"path","at":"test_group_id"}}},
-      "createSnippet": {"action":"write.snippets","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/snippets","body":"any","scope":{}},
-      "createWebhook": {"action":"write.reporting_webhooks","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/reporting_webhooks","body":"any","scope":{}},
-      "delete": {"action":"delete.customers","effects":["delete"],"method":"DELETE","origin":"https://track.customer.io","path":"/api/v1/customers/{identifier}","scope":{"identifier":{"from":"path","at":"identifier"}}},
-      "deleteAsset": {"action":"delete.files","effects":["delete"],"method":"DELETE","origin":"https://api.customer.io","path":"/v1/assets/files/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteAssetFolder": {"action":"delete.folders","effects":["delete"],"method":"DELETE","origin":"https://api.customer.io","path":"/v1/assets/folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteCollection": {"action":"delete.collections","effects":["delete"],"method":"DELETE","origin":"https://api.customer.io","path":"/v1/collections/{collection_id}","scope":{"collection_id":{"from":"path","at":"collection_id"}}},
-      "deleteComponent": {"action":"delete.components","effects":["delete"],"method":"DELETE","origin":"https://api.customer.io","path":"/v1/design_studio/components/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteEmail": {"action":"delete.emails","effects":["delete"],"method":"DELETE","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteEmailTranslation": {"action":"delete.languages","effects":["delete"],"method":"DELETE","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/languages/{language}","scope":{"id":{"from":"path","at":"id"},"language":{"from":"path","at":"language"}}},
-      "deleteFolder": {"action":"delete.folders","effects":["delete"],"method":"DELETE","origin":"https://api.customer.io","path":"/v1/design_studio/folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "deleteManSegment": {"action":"delete.segments","effects":["delete"],"method":"DELETE","origin":"https://api.customer.io","path":"/v1/segments/{segment_id}","scope":{"segment_id":{"from":"path","at":"segment_id"}}},
-      "deleteNewsletterLanguageVariant": {"action":"delete.language","effects":["delete"],"method":"DELETE","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/language/{language}","scope":{"newsletter_id":{"from":"path","at":"newsletter_id"},"language":{"from":"path","at":"language"}}},
-      "deleteNewsletterTestLanguageVariant": {"action":"delete.language","effects":["delete"],"method":"DELETE","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/test_group/{test_group_id}/language/{language}","scope":{"newsletter_id":{"from":"path","at":"newsletter_id"},"test_group_id":{"from":"path","at":"test_group_id"},"language":{"from":"path","at":"language"}}},
-      "deleteNewsletters": {"action":"delete.newsletters","effects":["delete"],"method":"DELETE","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}","scope":{"newsletter_id":{"from":"path","at":"newsletter_id"}}},
-      "deleteSnippet": {"action":"delete.snippets","effects":["delete"],"method":"DELETE","origin":"https://api.customer.io","path":"/v1/snippets/{snippet_name}","scope":{"snippet_name":{"from":"path","at":"snippet_name"}}},
-      "deleteSuppression": {"action":"delete.suppression","effects":["delete"],"method":"DELETE","origin":"https://api.customer.io","path":"/v1/esp/suppression/{suppression_type}/{email_address}","scope":{"suppression_type":{"from":"path","at":"suppression_type"},"email_address":{"from":"path","at":"email_address"}}},
-      "deleteVersion": {"action":"delete.versions","effects":["delete"],"method":"DELETE","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/versions/{version_id}","scope":{"id":{"from":"path","at":"id"},"version_id":{"from":"path","at":"version_id"}}},
-      "deleteWebhook": {"action":"delete.reporting_webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.customer.io","path":"/v1/reporting_webhooks/{webhook_id}","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "delete_device": {"action":"delete.devices","effects":["delete"],"method":"DELETE","origin":"https://track.customer.io","path":"/api/v1/customers/{identifier}/devices/{device_id}","scope":{"identifier":{"from":"path","at":"identifier"},"device_id":{"from":"path","at":"device_id"}}},
-      "downloadExport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/exports/{export_id}/download","scope":{"export_id":{"from":"path","at":"export_id"}}},
-      "endLiveNotification": {"action":"write.end","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/live_notifications/end","body":"any","scope":{}},
-      "entity": {"action":"write.entity","effects":["write"],"method":"POST","origin":"https://track.customer.io","path":"/api/v2/entity","body":"any","scope":{}},
-      "exportDeliveriesData": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.customer.io","path":"/v1/exports/deliveries","body":"any","scope":{}},
-      "exportPeopleData": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.customer.io","path":"/v1/exports/customers","body":"any","scope":{}},
-      "getArchivedMessage": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/messages/{message_id}/archived_message","scope":{"message_id":{"from":"path","at":"message_id"}}},
-      "getAsset": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/assets/files/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getAssetFolder": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/assets/folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getBroadcast": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/broadcasts/{broadcast_id}","scope":{"broadcast_id":{"from":"path","at":"broadcast_id"}}},
-      "getBroadcastAction": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/broadcasts/{broadcast_id}/actions/{action_id}","scope":{"broadcast_id":{"from":"path","at":"broadcast_id"},"action_id":{"from":"path","at":"action_id"}}},
-      "getBroadcastActionLanguage": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/broadcasts/{broadcast_id}/actions/{action_id}/language/{language}","scope":{"broadcast_id":{"from":"path","at":"broadcast_id"},"action_id":{"from":"path","at":"action_id"},"language":{"from":"path","at":"language"}}},
-      "getCampaignAction": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/campaigns/{campaign_id}/actions/{action_id}","scope":{"campaign_id":{"from":"path","at":"campaign_id"},"action_id":{"from":"path","at":"action_id"}}},
-      "getCampaignActionTranslation": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/campaigns/{campaign_id}/actions/{action_id}/language/{language}","scope":{"campaign_id":{"from":"path","at":"campaign_id"},"action_id":{"from":"path","at":"action_id"},"language":{"from":"path","at":"language"}}},
-      "getCampaignMessages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/campaigns/{campaign_id}/messages","params":["start","limit","type","metric","drafts","start_ts","end_ts","get_tracked_responses"],"scope":{"campaign_id":{"from":"path","at":"campaign_id"}}},
-      "getCampaigns": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/campaigns/{campaign_id}","scope":{"campaign_id":{"from":"path","at":"campaign_id"}}},
-      "getChannels": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/subscription_channels","scope":{}},
-      "getCioAllowlist": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/info/ip_addresses","scope":{}},
-      "getCollection": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/collections/{collection_id}","scope":{"collection_id":{"from":"path","at":"collection_id"}}},
-      "getCollectionContents": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/collections/{collection_id}/content","scope":{"collection_id":{"from":"path","at":"collection_id"}}},
-      "getCollections": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/collections","scope":{}},
-      "getComponent": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/components/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getDomainSuppressionsByType": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/esp/domains/{domain_name}/suppression/{suppression_type}","params":["limit","start","email"],"scope":{"domain_name":{"from":"path","at":"domain_name"},"suppression_type":{"from":"path","at":"suppression_type"}}},
-      "getEmail": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getEmailTranslation": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/languages/{language}","scope":{"id":{"from":"path","at":"id"},"language":{"from":"path","at":"language"}}},
-      "getExport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/exports/{export_id}","scope":{"export_id":{"from":"path","at":"export_id"}}},
-      "getFolder": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/folders/{id}","scope":{"id":{"from":"path","at":"id"}}},
-      "getImport": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/imports/{import_id}","scope":{"import_id":{"from":"path","at":"import_id"}}},
-      "getInboxPreviewCapture": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/inbox_previews/{run_id}/captures/{client_id}","params":["variant","key"],"scope":{"id":{"from":"path","at":"id"},"run_id":{"from":"path","at":"run_id"},"client_id":{"from":"path","at":"client_id"}}},
-      "getInboxPreviewCredits": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/inbox_previews/credits","scope":{}},
-      "getInboxPreviewJob": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/inbox_previews/{run_id}","scope":{"id":{"from":"path","at":"id"},"run_id":{"from":"path","at":"run_id"}}},
-      "getLiveNotification": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/live_notifications/{instance_id}","scope":{"instance_id":{"from":"path","at":"instance_id"}}},
-      "getMessage": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/messages/{message_id}","params":["get_tracked_responses"],"scope":{"message_id":{"from":"path","at":"message_id"}}},
-      "getNewsletterLinks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/metrics/links","params":["period","steps","unique"],"scope":{"newsletter_id":{"from":"path","at":"newsletter_id"}}},
-      "getNewsletterMetrics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/metrics","params":["period","steps","type"],"scope":{"newsletter_id":{"from":"path","at":"newsletter_id"}}},
-      "getNewsletterMsgMeta": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/messages","params":["start","limit","metric","start_ts","end_ts","get_tracked_responses"],"scope":{"newsletter_id":{"from":"path","at":"newsletter_id"}}},
-      "getNewsletterTestGroups": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/test_groups","scope":{"newsletter_id":{"from":"path","at":"newsletter_id"}}},
-      "getNewsletterVariant": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/contents/{content_id}","scope":{"newsletter_id":{"from":"path","at":"newsletter_id"},"content_id":{"from":"path","at":"content_id"}}},
-      "getNewsletterVariantTranslation": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/language/{language}","scope":{"newsletter_id":{"from":"path","at":"newsletter_id"},"language":{"from":"path","at":"language"}}},
-      "getNewsletterVariantTranslationTest": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/test_group/{test_group_id}/language/{language}","scope":{"newsletter_id":{"from":"path","at":"newsletter_id"},"test_group_id":{"from":"path","at":"test_group_id"},"language":{"from":"path","at":"language"}}},
-      "getNewsletters": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}","scope":{"newsletter_id":{"from":"path","at":"newsletter_id"}}},
-      "getObjectAttributes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/objects/{object_type_id}/{object_id}/attributes","params":["id_type"],"scope":{"object_type_id":{"from":"path","at":"object_type_id"},"object_id":{"from":"path","at":"object_id"}}},
-      "getObjectRelationships": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/objects/{object_type_id}/{object_id}/relationships","params":["start","limit","id_type"],"scope":{"object_type_id":{"from":"path","at":"object_type_id"},"object_id":{"from":"path","at":"object_id"}}},
-      "getObjectTypes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/object_types","scope":{}},
-      "getObjectsFilter": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.customer.io","path":"/v1/objects","params":["start","limit"],"body":"any","scope":{}},
-      "getOptouts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/optouts","params":["from","start","limit"],"scope":{}},
-      "getPeopleById": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.customer.io","path":"/v1/customers/attributes","params":["id_type"],"body":"any","scope":{}},
-      "getPeopleEmail": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/customers","params":["email"],"scope":{"email":{"from":"query","at":"email"}}},
-      "getPeopleFilter": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.customer.io","path":"/v1/customers","params":["start","limit"],"body":"any","scope":{}},
-      "getPersonActivities": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/customers/{customer_id}/activities","params":["id_type","start","limit","type","name"],"scope":{"customer_id":{"from":"path","at":"customer_id"}}},
-      "getPersonAttributes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/customers/{customer_id}/attributes","params":["id_type"],"scope":{"customer_id":{"from":"path","at":"customer_id"}}},
-      "getPersonMessages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/customers/{customer_id}/messages","params":["id_type","start","limit","start_ts","end_ts"],"scope":{"customer_id":{"from":"path","at":"customer_id"}}},
-      "getPersonOptouts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/customers/{customer_id}/optouts","params":["id_type"],"scope":{"customer_id":{"from":"path","at":"customer_id"}}},
-      "getPersonRelationships": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/customers/{customer_id}/relationships","params":["id_type","start","limit"],"scope":{"customer_id":{"from":"path","at":"customer_id"}}},
-      "getPersonSegments": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/customers/{customer_id}/segments","params":["id_type"],"scope":{"customer_id":{"from":"path","at":"customer_id"}}},
-      "getPersonSubscriptionPreferences": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/customers/{customer_id}/subscription_preferences","params":["id_type","language"],"scope":{"customer_id":{"from":"path","at":"customer_id"}}},
-      "getPublishStatus": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/publish_status","params":["publish_id"],"scope":{"id":{"from":"path","at":"id"},"publish_id":{"from":"query","at":"publish_id"}}},
-      "getRegion": {"action":"read","effects":["read"],"method":"GET","origin":"https://track.customer.io","path":"/api/v1/accounts/region","scope":{}},
-      "getSegment": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/segments/{segment_id}","scope":{"segment_id":{"from":"path","at":"segment_id"}}},
-      "getSegmentCount": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/segments/{segment_id}/customer_count","scope":{"segment_id":{"from":"path","at":"segment_id"}}},
-      "getSegmentDependencies": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/segments/{segment_id}/used_by","scope":{"segment_id":{"from":"path","at":"segment_id"}}},
-      "getSegmentMembership": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/segments/{segment_id}/membership","params":["start","limit"],"scope":{"segment_id":{"from":"path","at":"segment_id"}}},
-      "getSender": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/sender_identities/{sender_id}","scope":{"sender_id":{"from":"path","at":"sender_id"}}},
-      "getSenderUsage": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/sender_identities/{sender_id}/used_by","scope":{"sender_id":{"from":"path","at":"sender_id"}}},
-      "getSubscriptionCenterToken": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/subscription_center/{customer_id}/token","scope":{"customer_id":{"from":"path","at":"customer_id"}}},
-      "getSuppression": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/esp/search_suppression/{email_address}","scope":{"email_address":{"from":"path","at":"email_address"}}},
-      "getSuppressionByType": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/esp/suppression/{suppression_type}","params":["limit","offset","domain"],"scope":{"suppression_type":{"from":"path","at":"suppression_type"}}},
-      "getTopics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/subscription_topics","scope":{}},
-      "getTransactional": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/transactional/{transactional_id}","scope":{"transactional_id":{"from":"path","at":"transactional_id"}}},
-      "getTransactionalTranslationById": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/transactional/{transactional_id}/contents/{content_id}","scope":{"transactional_id":{"from":"path","at":"transactional_id"},"content_id":{"from":"path","at":"content_id"}}},
-      "getTransactionalVariant": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/transactional/{transactional_id}/language/{language}","scope":{"transactional_id":{"from":"path","at":"transactional_id"},"language":{"from":"path","at":"language"}}},
-      "getVariantLinks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/contents/{content_id}/metrics/links","params":["period","steps","type"],"scope":{"newsletter_id":{"from":"path","at":"newsletter_id"},"content_id":{"from":"path","at":"content_id"}}},
-      "getVariantMetrics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/contents/{content_id}/metrics","params":["period","steps","type"],"scope":{"newsletter_id":{"from":"path","at":"newsletter_id"},"content_id":{"from":"path","at":"content_id"}}},
-      "getVersion": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/versions/{version_id}","scope":{"id":{"from":"path","at":"id"},"version_id":{"from":"path","at":"version_id"}}},
-      "getWebhook": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/reporting_webhooks/{webhook_id}","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
-      "identify": {"action":"write.customers","effects":["write"],"method":"PUT","origin":"https://track.customer.io","path":"/api/v1/customers/{identifier}","body":"any","scope":{"identifier":{"from":"path","at":"identifier"}}},
-      "import": {"action":"write.imports","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/imports","body":"any","scope":{}},
-      "linkEmail": {"action":"share.link","effects":["share"],"method":"POST","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/link","body":"json","scope":{"id":{"from":"path","at":"id"},"request":{"from":"body","at":"","type":"object"}},"grant":["id"]},
-      "listActivities": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/activities","params":["start","type","name","deleted","customer_id","id_type","limit"],"scope":{}},
-      "listAssetFolders": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/assets/folders","params":["parent_folder_id","direct_descendants_only","page","limit"],"scope":{}},
-      "listAssets": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/assets","params":["parent_folder_id","direct_descendants_only","page","limit"],"scope":{}},
-      "listBroadcastTriggers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/broadcasts/{broadcast_id}/triggers","scope":{"broadcast_id":{"from":"path","at":"broadcast_id"}}},
-      "listBroadcasts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/broadcasts","scope":{}},
-      "listCampaignActions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/campaigns/{campaign_id}/actions","params":["start"],"scope":{"campaign_id":{"from":"path","at":"campaign_id"}}},
-      "listCampaigns": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/campaigns","scope":{}},
-      "listComponents": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/components","params":["tag","page","limit","parent_folder_id","direct_descendants_only","sort_by","sort_order","created_before","created_after","updated_before","updated_after"],"scope":{}},
-      "listEmailTranslations": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/languages","scope":{"id":{"from":"path","at":"id"}}},
-      "listEmails": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/emails","params":["page","limit","parent_folder_id","direct_descendants_only","sort_by","sort_order","created_before","created_after","updated_before","updated_after","is_template","has_translations","is_linked"],"scope":{}},
-      "listExports": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/exports","scope":{}},
-      "listFolders": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/folders","params":["page","limit","parent_folder_id","direct_descendants_only","sort_by","sort_order","created_before","created_after","updated_before","updated_after"],"scope":{}},
-      "listInboxPreviewClients": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/inbox_previews/clients","scope":{}},
-      "listInboxPreviewJobs": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/inbox_previews/jobs","params":["node_id","limit","cursor"],"scope":{}},
-      "listMessages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/messages","params":["start","limit","type","metric","drafts","campaign_id","newsletter_id","action_id","start_ts","end_ts","get_tracked_responses"],"scope":{}},
-      "listNewsletterVariants": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/contents","scope":{"newsletter_id":{"from":"path","at":"newsletter_id"}}},
-      "listNewsletters": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/newsletters","params":["limit","sort","start"],"scope":{}},
-      "listSegments": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/segments","scope":{}},
-      "listSenders": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/sender_identities","params":["start","limit","sort","hidden"],"scope":{}},
-      "listSnippets": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/snippets","scope":{}},
-      "listTransactional": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/transactional","scope":{}},
-      "listTransactionalVariants": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/transactional/{transactional_id}/contents","scope":{"transactional_id":{"from":"path","at":"transactional_id"}}},
-      "listVersions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/versions","params":["start_date","end_date"],"scope":{"id":{"from":"path","at":"id"}}},
-      "listWebhooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/reporting_webhooks","scope":{}},
-      "listWorkspaces": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/workspaces","scope":{}},
-      "merge": {"action":"write.merge_customers","effects":["write"],"method":"POST","origin":"https://track.customer.io","path":"/api/v1/merge_customers","body":"any","scope":{}},
-      "metrics": {"action":"write.metrics","effects":["write"],"method":"POST","origin":"https://track.customer.io","path":"/api/v1/metrics","body":"any","scope":{}},
-      "postSuppression": {"action":"write.suppression","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/esp/suppression/{suppression_type}/{email_address}","scope":{"suppression_type":{"from":"path","at":"suppression_type"},"email_address":{"from":"path","at":"email_address"}}},
-      "previewEmail": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/preview","body":"any","scope":{"id":{"from":"path","at":"id"}}},
-      "publishEmail": {"action":"publish.emails","effects":["publish"],"method":"POST","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/publish","scope":{"id":{"from":"path","at":"id"}}},
-      "pushMetrics": {"action":"write.events","effects":["write"],"method":"POST","origin":"https://track.customer.io","path":"/api/v1/push/events","body":"any","scope":{}},
-      "remove_from_segment": {"action":"delete.remove_customers","effects":["delete"],"method":"POST","origin":"https://track.customer.io","path":"/api/v1/segments/{segment_id}/remove_customers","params":["id_type"],"body":"any","scope":{"segment_id":{"from":"path","at":"segment_id"}}},
-      "renderEmail": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/render","scope":{"id":{"from":"path","at":"id"}}},
-      "restoreVersion": {"action":"write.versions","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/versions/{version_id}/restore","scope":{"id":{"from":"path","at":"id"},"version_id":{"from":"path","at":"version_id"}}},
-      "reviewEmail": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/review","scope":{"id":{"from":"path","at":"id"}}},
-      "saveVersion": {"action":"write.versions","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/versions","body":"json","scope":{"id":{"from":"path","at":"id"},"name":{"from":"body","at":"/name"}}},
-      "scheduleNewsletter": {"action":"write.schedule","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/schedule","body":"json","scope":{"newsletter_id":{"from":"path","at":"newsletter_id"}}},
-      "sendEmail": {"action":"send.email","effects":["send"],"method":"POST","origin":"https://api.customer.io","path":"/v1/send/email","body":"any","scope":{}},
-      "sendInApp": {"action":"send.in_app","effects":["send"],"method":"POST","origin":"https://api.customer.io","path":"/v1/send/in_app","body":"any","scope":{}},
-      "sendInboxMessage": {"action":"send.inbox_message","effects":["send"],"method":"POST","origin":"https://api.customer.io","path":"/v1/send/inbox_message","body":"any","scope":{}},
-      "sendNewsletter": {"action":"send.newsletters","effects":["send"],"method":"POST","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/send","body":"any","scope":{"newsletter_id":{"from":"path","at":"newsletter_id"}}},
-      "sendPush": {"action":"send.push","effects":["send"],"method":"POST","origin":"https://api.customer.io","path":"/v1/send/push","body":"any","scope":{}},
-      "sendSMS": {"action":"send.sms","effects":["send"],"method":"POST","origin":"https://api.customer.io","path":"/v1/send/sms","body":"any","scope":{}},
-      "sendWhatsApp": {"action":"send.whatsapp","effects":["send"],"method":"POST","origin":"https://api.customer.io","path":"/v1/send/whatsapp","body":"any","scope":{}},
-      "startLiveNotification": {"action":"write.start","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/live_notifications/start","body":"any","scope":{}},
-      "submitForm": {"action":"write.submit","effects":["write"],"method":"POST","origin":"https://track.customer.io","path":"/api/v1/forms/{form_id}/submit","body":"any","scope":{"form_id":{"from":"path","at":"form_id"}}},
-      "submitInboxPreview": {"action":"write.inbox_previews","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/inbox_previews","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "suppress": {"action":"write.suppress","effects":["write"],"method":"POST","origin":"https://track.customer.io","path":"/api/v1/customers/{identifier}/suppress","scope":{"identifier":{"from":"path","at":"identifier"}}},
-      "testSendEmail": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/test_send","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "track": {"action":"write.events","effects":["write"],"method":"POST","origin":"https://track.customer.io","path":"/api/v1/customers/{identifier}/events","body":"any","scope":{"identifier":{"from":"path","at":"identifier"}}},
-      "trackAnonymous": {"action":"write.events","effects":["write"],"method":"POST","origin":"https://track.customer.io","path":"/api/v1/events","body":"any","scope":{}},
-      "transactionalLinks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/transactional/{transactional_id}/metrics/links","params":["period","steps","unique"],"scope":{"transactional_id":{"from":"path","at":"transactional_id"}}},
-      "transactionalMessages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/transactional/{transactional_id}/messages","params":["start","limit","metric","state","start_ts","end_ts","get_tracked_responses"],"scope":{"transactional_id":{"from":"path","at":"transactional_id"}}},
-      "transactionalMetrics": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.customer.io","path":"/v1/transactional/{transactional_id}/metrics","params":["period","steps"],"scope":{"transactional_id":{"from":"path","at":"transactional_id"}}},
-      "triggerBroadcast": {"action":"publish.campaigns","effects":["publish"],"method":"POST","origin":"https://api.customer.io","path":"/v1/campaigns/{broadcast_id}/triggers","body":"any","scope":{"broadcast_id":{"from":"path","at":"broadcast_id"}}},
-      "unsubscribe": {"action":"write.unsubscribe","effects":["write"],"method":"POST","origin":"https://track.customer.io","path":"/unsubscribe/{delivery_id}","body":"any","scope":{"delivery_id":{"from":"path","at":"delivery_id"}}},
-      "unsuppress": {"action":"write.unsuppress","effects":["write"],"method":"POST","origin":"https://track.customer.io","path":"/api/v1/customers/{identifier}/unsuppress","scope":{"identifier":{"from":"path","at":"identifier"}}},
-      "updateAsset": {"action":"write.files","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/assets/files/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "updateAssetFolder": {"action":"write.folders","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/assets/folders/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "updateAttributeMetadata": {"action":"write.attributes","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/data_index/attributes","body":"json","scope":{}},
-      "updateBroadcastAction": {"action":"publish.actions","effects":["publish"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/broadcasts/{broadcast_id}/actions/{action_id}","body":"any","scope":{"broadcast_id":{"from":"path","at":"broadcast_id"},"action_id":{"from":"path","at":"action_id"}}},
-      "updateBroadcastActionLanguage": {"action":"publish.language","effects":["publish"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/broadcasts/{broadcast_id}/actions/{action_id}/language/{language}","body":"any","scope":{"broadcast_id":{"from":"path","at":"broadcast_id"},"action_id":{"from":"path","at":"action_id"},"language":{"from":"path","at":"language"}}},
-      "updateCampaignAction": {"action":"write.actions","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/campaigns/{campaign_id}/actions/{action_id}","body":"any","scope":{"campaign_id":{"from":"path","at":"campaign_id"},"action_id":{"from":"path","at":"action_id"}}},
-      "updateCampaignActionTranslation": {"action":"write.language","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/campaigns/{campaign_id}/actions/{action_id}/language/{language}","body":"any","scope":{"campaign_id":{"from":"path","at":"campaign_id"},"action_id":{"from":"path","at":"action_id"},"language":{"from":"path","at":"language"}}},
-      "updateCollection": {"action":"write.collections","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/collections/{collection_id}","body":"any","scope":{"collection_id":{"from":"path","at":"collection_id"}}},
-      "updateCollectionContents": {"action":"write.content","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/collections/{collection_id}/content","body":"any","scope":{"collection_id":{"from":"path","at":"collection_id"}}},
-      "updateComponent": {"action":"write.components","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/design_studio/components/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "updateEmail": {"action":"write.emails","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "updateEmailTranslation": {"action":"write.languages","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/design_studio/emails/{id}/languages/{language}","body":"json","scope":{"id":{"from":"path","at":"id"},"language":{"from":"path","at":"language"}}},
-      "updateEventMetadata": {"action":"write.events","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/data_index/events","body":"json","scope":{}},
-      "updateFolder": {"action":"write.folders","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/design_studio/folders/{id}","body":"json","scope":{"id":{"from":"path","at":"id"}}},
-      "updateLiveNotification": {"action":"write.update","effects":["write"],"method":"POST","origin":"https://api.customer.io","path":"/v1/live_notifications/update","body":"any","scope":{}},
-      "updateNewsletterTestTranslation": {"action":"write.language","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/test_group/{test_group_id}/language/{language}","body":"any","scope":{"newsletter_id":{"from":"path","at":"newsletter_id"},"test_group_id":{"from":"path","at":"test_group_id"},"language":{"from":"path","at":"language"}}},
-      "updateNewsletterVariant": {"action":"write.contents","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/contents/{content_id}","body":"any","scope":{"newsletter_id":{"from":"path","at":"newsletter_id"},"content_id":{"from":"path","at":"content_id"}}},
-      "updateNewsletterVariantTranslation": {"action":"write.language","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/newsletters/{newsletter_id}/language/{language}","body":"any","scope":{"newsletter_id":{"from":"path","at":"newsletter_id"},"language":{"from":"path","at":"language"}}},
-      "updatePersonOptouts": {"action":"write.optouts","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/customers/{customer_id}/optouts","params":["id_type"],"body":"any","scope":{"customer_id":{"from":"path","at":"customer_id"}}},
-      "updateSnippets": {"action":"write.snippets","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/snippets","body":"any","scope":{}},
-      "updateTransactional": {"action":"write.content","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/transactional/{transactional_id}/content/{content_id}","body":"any","scope":{"transactional_id":{"from":"path","at":"transactional_id"},"content_id":{"from":"path","at":"content_id"}}},
-      "updateTransactionalVariant": {"action":"write.language","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/transactional/{transactional_id}/language/{language}","body":"any","scope":{"transactional_id":{"from":"path","at":"transactional_id"},"language":{"from":"path","at":"language"}}},
-      "updateWebhook": {"action":"write.reporting_webhooks","effects":["write"],"method":"PUT","origin":"https://api.customer.io","path":"/v1/reporting_webhooks/{webhook_id}","body":"any","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}}
+      "addCollection": {"action":"collections.write","body":"any","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/collections","scope":{}},
+      "add_device": {"action":"customers.devices.write","body":"any","effects":["write"],"method":"PUT","origin":"{track}","path":"/api/v1/customers/{identifier}/devices","scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "add_to_segment": {"action":"segments.customers.write","body":"any","effects":["write"],"method":"POST","origin":"{track}","params":["id_type"],"path":"/api/v1/segments/{segment_id}/add_customers","scope":{"segment_id":{"at":"segment_id","from":"path"}}},
+      "batch": {"action":"batch.write","body":"any","effects":["write"],"method":"POST","origin":"{track}","path":"/api/v2/batch","scope":{}},
+      "broadcastActionLinks": {"action":"broadcasts.actions.metrics.links.read","effects":["read"],"method":"GET","origin":"{app}","params":["period","steps","type"],"path":"/v1/broadcasts/{broadcast_id}/actions/{action_id}/metrics/links","scope":{"action_id":{"at":"action_id","from":"path"},"broadcast_id":{"at":"broadcast_id","from":"path"}}},
+      "broadcastActionMetrics": {"action":"broadcasts.actions.metrics.read","effects":["read"],"method":"GET","origin":"{app}","params":["period","steps","type"],"path":"/v1/broadcasts/{broadcast_id}/actions/{action_id}/metrics","scope":{"action_id":{"at":"action_id","from":"path"},"broadcast_id":{"at":"broadcast_id","from":"path"}}},
+      "broadcastActions": {"action":"broadcasts.actions.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/broadcasts/{broadcast_id}/actions","scope":{"broadcast_id":{"at":"broadcast_id","from":"path"}}},
+      "broadcastErrors": {"action":"campaigns.triggers.errors.read","effects":["read"],"method":"GET","origin":"{app}","params":["start","limit"],"path":"/v1/campaigns/{broadcast_id}/triggers/{trigger_id}/errors","scope":{"broadcast_id":{"at":"broadcast_id","from":"path"},"trigger_id":{"at":"trigger_id","from":"path"}}},
+      "broadcastLinks": {"action":"broadcasts.metrics.links.read","effects":["read"],"method":"GET","origin":"{app}","params":["period","steps","unique"],"path":"/v1/broadcasts/{broadcast_id}/metrics/links","scope":{"broadcast_id":{"at":"broadcast_id","from":"path"}}},
+      "broadcastMessages": {"action":"broadcasts.messages.read","effects":["read"],"method":"GET","origin":"{app}","params":["start","limit","metric","state","type","start_ts","end_ts","get_tracked_responses"],"path":"/v1/broadcasts/{broadcast_id}/messages","scope":{"broadcast_id":{"at":"broadcast_id","from":"path"}}},
+      "broadcastMetrics": {"action":"broadcasts.metrics.read","effects":["read"],"method":"GET","origin":"{app}","params":["period","steps","type"],"path":"/v1/broadcasts/{broadcast_id}/metrics","scope":{"broadcast_id":{"at":"broadcast_id","from":"path"}}},
+      "broadcastStatus": {"action":"campaigns.triggers.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/campaigns/{broadcast_id}/triggers/{trigger_id}","scope":{"broadcast_id":{"at":"broadcast_id","from":"path"},"trigger_id":{"at":"trigger_id","from":"path"}}},
+      "campaignActionLinks": {"action":"campaigns.actions.metrics.links.read","effects":["read"],"method":"GET","origin":"{app}","params":["period","steps","type","unique"],"path":"/v1/campaigns/{campaign_id}/actions/{action_id}/metrics/links","scope":{"action_id":{"at":"action_id","from":"path"},"campaign_id":{"at":"campaign_id","from":"path"}}},
+      "campaignActionMetrics": {"action":"campaigns.actions.metrics.read","effects":["read"],"method":"GET","origin":"{app}","params":["version","res","start","end","tz","period","steps","type"],"path":"/v1/campaigns/{campaign_id}/actions/{action_id}/metrics","scope":{"action_id":{"at":"action_id","from":"path"},"campaign_id":{"at":"campaign_id","from":"path"}}},
+      "campaignJourneyMetrics": {"action":"campaigns.journey_metrics.read","effects":["read"],"method":"GET","origin":"{app}","params":["start","end","resolution"],"path":"/v1/campaigns/{campaign_id}/journey_metrics","scope":{"campaign_id":{"at":"campaign_id","from":"path"}}},
+      "campaignLinkMetrics": {"action":"campaigns.metrics.links.read","effects":["read"],"method":"GET","origin":"{app}","params":["period","steps","unique"],"path":"/v1/campaigns/{campaign_id}/metrics/links","scope":{"campaign_id":{"at":"campaign_id","from":"path"}}},
+      "campaignMetrics": {"action":"campaigns.metrics.read","effects":["read"],"method":"GET","origin":"{app}","params":["version","res","start","end","tz","period","steps","type"],"path":"/v1/campaigns/{campaign_id}/metrics","scope":{"campaign_id":{"at":"campaign_id","from":"path"}}},
+      "cancelBroadcastTrigger": {"action":"campaigns.triggers.write","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/campaigns/{broadcast_id}/triggers/{trigger_id}/cancel","scope":{"broadcast_id":{"at":"broadcast_id","from":"path"},"trigger_id":{"at":"trigger_id","from":"path"}}},
+      "checkCollectionSource": {"action":"collections.sources.write","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/collections/sources/{source_id}/check","scope":{"source_id":{"at":"source_id","from":"path"}}},
+      "checkUnpublishedChanges": {"action":"design_studio.emails.unpublished_changes.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/design_studio/emails/{id}/unpublished_changes","scope":{"id":{"at":"id","from":"path"}}},
+      "createAsset": {"action":"assets.files.write","body":"any","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/assets/files","scope":{}},
+      "createAssetFolder": {"action":"assets.folders.write","body":"json","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/assets/folders","scope":{"name":{"at":"/name","from":"body"}}},
+      "createCollectionSource": {"action":"collections.sources.write","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/collections/sources","scope":{}},
+      "createCollectionSource.json.5b8f77b45bf7": {"action":"collections.sources.write","body":"json","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/collections/sources","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createComponent": {"action":"design_studio.components.write","body":"json","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/design_studio/components","scope":{"name":{"at":"/name","from":"body"}}},
+      "createEmail": {"action":"design_studio.emails.write","body":"json","effects":["write"],"grant":["name"],"method":"POST","origin":"{app}","path":"/v1/design_studio/emails","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createEmailTranslation": {"action":"design_studio.emails.languages.write","body":"json","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/design_studio/emails/{id}/languages","scope":{"id":{"at":"id","from":"path"}}},
+      "createFolder": {"action":"design_studio.folders.write","body":"json","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/design_studio/folders","scope":{"name":{"at":"/name","from":"body"}}},
+      "createManSegment": {"action":"segments.write","body":"any","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/segments","scope":{}},
+      "createNewsletter": {"action":"newsletters.write","body":"json","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/newsletters","scope":{}},
+      "createNewsletterLanguageVariant": {"action":"newsletters.language.write","body":"json","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/newsletters/{newsletter_id}/language","scope":{"newsletter_id":{"at":"newsletter_id","from":"path"}}},
+      "createNewsletterTestGroup": {"action":"newsletters.test_groups.write","body":"any","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/newsletters/{newsletter_id}/test_groups","scope":{"newsletter_id":{"at":"newsletter_id","from":"path"}}},
+      "createNewsletterTestLanguageVariant": {"action":"newsletters.test_group.language.write","body":"json","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/newsletters/{newsletter_id}/test_group/{test_group_id}/language","scope":{"newsletter_id":{"at":"newsletter_id","from":"path"},"test_group_id":{"at":"test_group_id","from":"path"}}},
+      "createSms": {"action":"design_studio.sms.write","body":"json","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/design_studio/sms","scope":{"name":{"at":"/name","from":"body"},"recipient":{"at":"/recipient","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createSnippet": {"action":"snippets.write","body":"any","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/snippets","scope":{}},
+      "createWebhook": {"action":"reporting_webhooks.write","body":"any","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/reporting_webhooks","scope":{}},
+      "createWhatsApp": {"action":"design_studio.whatsapp.write","body":"json","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/design_studio/whatsapp","scope":{"name":{"at":"/name","from":"body"},"recipient":{"at":"/recipient","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "delete": {"action":"customers.delete","effects":["delete"],"method":"DELETE","origin":"{track}","path":"/api/v1/customers/{identifier}","scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "deleteAsset": {"action":"assets.files.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/assets/files/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteAssetFolder": {"action":"assets.folders.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/assets/folders/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteCollection": {"action":"collections.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/collections/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"}}},
+      "deleteCollectionSource": {"action":"collections.sources.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/collections/sources/{source_id}","scope":{"source_id":{"at":"source_id","from":"path"}}},
+      "deleteCollectionSync": {"action":"collections.sync.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/collections/{collection_id}/sync","path_patterns":{"collection_id":"[0-9]+"},"scope":{"collection_id":{"at":"collection_id","from":"path"}}},
+      "deleteComponent": {"action":"design_studio.components.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/design_studio/components/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteEmail": {"action":"design_studio.emails.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/design_studio/emails/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteEmailTranslation": {"action":"design_studio.emails.languages.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/design_studio/emails/{id}/languages/{language}","scope":{"id":{"at":"id","from":"path"},"language":{"at":"language","from":"path"}}},
+      "deleteFolder": {"action":"design_studio.folders.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/design_studio/folders/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteManSegment": {"action":"segments.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/segments/{segment_id}","scope":{"segment_id":{"at":"segment_id","from":"path"}}},
+      "deleteNewsletterLanguageVariant": {"action":"newsletters.language.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/newsletters/{newsletter_id}/language/{language}","scope":{"language":{"at":"language","from":"path"},"newsletter_id":{"at":"newsletter_id","from":"path"}}},
+      "deleteNewsletterTestLanguageVariant": {"action":"newsletters.test_group.language.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/newsletters/{newsletter_id}/test_group/{test_group_id}/language/{language}","scope":{"language":{"at":"language","from":"path"},"newsletter_id":{"at":"newsletter_id","from":"path"},"test_group_id":{"at":"test_group_id","from":"path"}}},
+      "deleteNewsletters": {"action":"newsletters.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/newsletters/{newsletter_id}","scope":{"newsletter_id":{"at":"newsletter_id","from":"path"}}},
+      "deleteSms": {"action":"design_studio.sms.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/design_studio/sms/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteSnippet": {"action":"snippets.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/snippets/{snippet_name}","scope":{"snippet_name":{"at":"snippet_name","from":"path"}}},
+      "deleteSuppression": {"action":"esp.suppression.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/esp/suppression/{suppression_type}/{email_address}","scope":{"email_address":{"at":"email_address","from":"path"},"suppression_type":{"at":"suppression_type","from":"path"}}},
+      "deleteVersion": {"action":"design_studio.emails.versions.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/design_studio/emails/{id}/versions/{version_id}","scope":{"id":{"at":"id","from":"path"},"version_id":{"at":"version_id","from":"path"}}},
+      "deleteWebhook": {"action":"reporting_webhooks.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/reporting_webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "deleteWhatsApp": {"action":"design_studio.whatsapp.delete","effects":["delete"],"method":"DELETE","origin":"{app}","path":"/v1/design_studio/whatsapp/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "delete_device": {"action":"customers.devices.delete","effects":["delete"],"method":"DELETE","origin":"{track}","path":"/api/v1/customers/{identifier}/devices/{device_id}","scope":{"device_id":{"at":"device_id","from":"path"},"identifier":{"at":"identifier","from":"path"}}},
+      "downloadExport": {"action":"exports.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/exports/{export_id}/download","scope":{"export_id":{"at":"export_id","from":"path"}}},
+      "endLiveNotification": {"action":"live_notifications.end.send","body":"any","effects":["send"],"method":"POST","origin":"{app}","path":"/v1/live_notifications/end","scope":{}},
+      "entity": {"action":"entity.write","body":"any","effects":["write"],"method":"POST","origin":"{track}","path":"/api/v2/entity","scope":{}},
+      "exportDeliveriesData": {"action":"exports.deliveries.read","body":"any","effects":["read"],"method":"POST","origin":"{app}","path":"/v1/exports/deliveries","scope":{}},
+      "exportPeopleData": {"action":"exports.customers.read","body":"any","effects":["read"],"method":"POST","origin":"{app}","path":"/v1/exports/customers","scope":{}},
+      "getAccountAuditLog": {"action":"account.audit_logs.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/account/audit_logs/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getArchivedMessage": {"action":"messages.archived_message.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/messages/{message_id}/archived_message","scope":{"message_id":{"at":"message_id","from":"path"}}},
+      "getAsset": {"action":"assets.files.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/assets/files/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getAssetFolder": {"action":"assets.folders.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/assets/folders/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getBroadcast": {"action":"broadcasts.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/broadcasts/{broadcast_id}","scope":{"broadcast_id":{"at":"broadcast_id","from":"path"}}},
+      "getBroadcastAction": {"action":"broadcasts.actions.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/broadcasts/{broadcast_id}/actions/{action_id}","scope":{"action_id":{"at":"action_id","from":"path"},"broadcast_id":{"at":"broadcast_id","from":"path"}}},
+      "getBroadcastActionLanguage": {"action":"broadcasts.actions.language.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/broadcasts/{broadcast_id}/actions/{action_id}/language/{language}","scope":{"action_id":{"at":"action_id","from":"path"},"broadcast_id":{"at":"broadcast_id","from":"path"},"language":{"at":"language","from":"path"}}},
+      "getCampaignAction": {"action":"campaigns.actions.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/campaigns/{campaign_id}/actions/{action_id}","scope":{"action_id":{"at":"action_id","from":"path"},"campaign_id":{"at":"campaign_id","from":"path"}}},
+      "getCampaignActionTranslation": {"action":"campaigns.actions.language.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/campaigns/{campaign_id}/actions/{action_id}/language/{language}","scope":{"action_id":{"at":"action_id","from":"path"},"campaign_id":{"at":"campaign_id","from":"path"},"language":{"at":"language","from":"path"}}},
+      "getCampaignMessages": {"action":"campaigns.messages.read","effects":["read"],"method":"GET","origin":"{app}","params":["start","limit","type","metric","drafts","start_ts","end_ts","get_tracked_responses"],"path":"/v1/campaigns/{campaign_id}/messages","scope":{"campaign_id":{"at":"campaign_id","from":"path"}}},
+      "getCampaigns": {"action":"campaigns.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/campaigns/{campaign_id}","scope":{"campaign_id":{"at":"campaign_id","from":"path"}}},
+      "getChannels": {"action":"subscription_channels.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/subscription_channels","scope":{}},
+      "getCioAllowlist": {"action":"info.ip_addresses.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/info/ip_addresses","scope":{}},
+      "getCollection": {"action":"collections.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/collections/{collection_id}","path_patterns":{"collection_id":"[0-9]+"},"scope":{"collection_id":{"at":"collection_id","from":"path"}}},
+      "getCollectionContents": {"action":"collections.content.read","effects":["read"],"method":"GET","origin":"{app}","params":["cursor","keys","limit"],"path":"/v1/collections/{collection_id}/content","path_patterns":{"collection_id":"[0-9]+"},"scope":{"collection_id":{"at":"collection_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getCollectionSource": {"action":"collections.sources.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/collections/sources/{source_id}","scope":{"source_id":{"at":"source_id","from":"path"}}},
+      "getCollectionSync": {"action":"collections.sync.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/collections/{collection_id}/sync","path_patterns":{"collection_id":"[0-9]+"},"scope":{"collection_id":{"at":"collection_id","from":"path"}}},
+      "getCollectionSyncRejects": {"action":"collections.sync.rejects.read","effects":["read"],"method":"GET","origin":"{app}","params":["limit","cursor"],"path":"/v1/collections/{collection_id}/sync/rejects","scope":{"collection_id":{"at":"collection_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getCollectionWrite": {"action":"collections.writes.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/collections/{collection_id}/writes/{write_id}","scope":{"collection_id":{"at":"collection_id","from":"path"},"write_id":{"at":"write_id","from":"path"}}},
+      "getCollections": {"action":"collections.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/collections","scope":{}},
+      "getComponent": {"action":"design_studio.components.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/design_studio/components/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getDomainSuppressionsByType": {"action":"esp.domains.suppression.read","effects":["read"],"method":"GET","origin":"{app}","params":["limit","start","email"],"path":"/v1/esp/domains/{domain_name}/suppression/{suppression_type}","scope":{"domain_name":{"at":"domain_name","from":"path"},"suppression_type":{"at":"suppression_type","from":"path"}}},
+      "getEmail": {"action":"design_studio.emails.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/design_studio/emails/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getEmailTranslation": {"action":"design_studio.emails.languages.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/design_studio/emails/{id}/languages/{language}","scope":{"id":{"at":"id","from":"path"},"language":{"at":"language","from":"path"}}},
+      "getExport": {"action":"exports.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/exports/{export_id}","scope":{"export_id":{"at":"export_id","from":"path"}}},
+      "getFolder": {"action":"design_studio.folders.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/design_studio/folders/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getImport": {"action":"imports.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/imports/{import_id}","scope":{"import_id":{"at":"import_id","from":"path"}}},
+      "getInboxPreviewCapture": {"action":"design_studio.emails.inbox_previews.captures.read","effects":["read"],"method":"GET","origin":"{app}","params":["variant","key"],"path":"/v1/design_studio/emails/{id}/inbox_previews/{run_id}/captures/{client_id}","scope":{"client_id":{"at":"client_id","from":"path"},"id":{"at":"id","from":"path"},"run_id":{"at":"run_id","from":"path"}}},
+      "getInboxPreviewCredits": {"action":"design_studio.inbox_previews.credits.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/design_studio/inbox_previews/credits","scope":{}},
+      "getInboxPreviewJob": {"action":"design_studio.emails.inbox_previews.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/design_studio/emails/{id}/inbox_previews/{run_id}","scope":{"id":{"at":"id","from":"path"},"run_id":{"at":"run_id","from":"path"}}},
+      "getLiveNotification": {"action":"live_notifications.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/live_notifications/{instance_id}","scope":{"instance_id":{"at":"instance_id","from":"path"}}},
+      "getMessage": {"action":"messages.read","effects":["read"],"method":"GET","origin":"{app}","params":["get_tracked_responses"],"path":"/v1/messages/{message_id}","scope":{"message_id":{"at":"message_id","from":"path"}}},
+      "getNewsletterLinks": {"action":"newsletters.metrics.links.read","effects":["read"],"method":"GET","origin":"{app}","params":["period","steps","unique"],"path":"/v1/newsletters/{newsletter_id}/metrics/links","scope":{"newsletter_id":{"at":"newsletter_id","from":"path"}}},
+      "getNewsletterMetrics": {"action":"newsletters.metrics.read","effects":["read"],"method":"GET","origin":"{app}","params":["period","steps","type"],"path":"/v1/newsletters/{newsletter_id}/metrics","scope":{"newsletter_id":{"at":"newsletter_id","from":"path"}}},
+      "getNewsletterMsgMeta": {"action":"newsletters.messages.read","effects":["read"],"method":"GET","origin":"{app}","params":["start","limit","metric","start_ts","end_ts","get_tracked_responses"],"path":"/v1/newsletters/{newsletter_id}/messages","scope":{"newsletter_id":{"at":"newsletter_id","from":"path"}}},
+      "getNewsletterTestGroups": {"action":"newsletters.test_groups.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/newsletters/{newsletter_id}/test_groups","scope":{"newsletter_id":{"at":"newsletter_id","from":"path"}}},
+      "getNewsletterVariant": {"action":"newsletters.contents.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/newsletters/{newsletter_id}/contents/{content_id}","scope":{"content_id":{"at":"content_id","from":"path"},"newsletter_id":{"at":"newsletter_id","from":"path"}}},
+      "getNewsletterVariantTranslation": {"action":"newsletters.language.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/newsletters/{newsletter_id}/language/{language}","scope":{"language":{"at":"language","from":"path"},"newsletter_id":{"at":"newsletter_id","from":"path"}}},
+      "getNewsletterVariantTranslationTest": {"action":"newsletters.test_group.language.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/newsletters/{newsletter_id}/test_group/{test_group_id}/language/{language}","scope":{"language":{"at":"language","from":"path"},"newsletter_id":{"at":"newsletter_id","from":"path"},"test_group_id":{"at":"test_group_id","from":"path"}}},
+      "getNewsletters": {"action":"newsletters.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/newsletters/{newsletter_id}","scope":{"newsletter_id":{"at":"newsletter_id","from":"path"}}},
+      "getObjectAttributes": {"action":"objects.attributes.read","effects":["read"],"method":"GET","origin":"{app}","params":["id_type"],"path":"/v1/objects/{object_type_id}/{object_id}/attributes","scope":{"object_id":{"at":"object_id","from":"path"},"object_type_id":{"at":"object_type_id","from":"path"}}},
+      "getObjectRelationships": {"action":"objects.relationships.read","effects":["read"],"method":"GET","origin":"{app}","params":["start","limit","id_type"],"path":"/v1/objects/{object_type_id}/{object_id}/relationships","scope":{"object_id":{"at":"object_id","from":"path"},"object_type_id":{"at":"object_type_id","from":"path"}}},
+      "getObjectTypes": {"action":"object_types.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/object_types","scope":{}},
+      "getObjectsFilter": {"action":"objects.read","body":"any","effects":["read"],"method":"POST","origin":"{app}","params":["start","limit"],"path":"/v1/objects","scope":{}},
+      "getOptouts": {"action":"optouts.read","effects":["read"],"method":"GET","origin":"{app}","params":["from","start","limit"],"path":"/v1/optouts","scope":{}},
+      "getPeopleById": {"action":"customers.attributes.read","body":"any","effects":["read"],"method":"POST","origin":"{app}","params":["id_type"],"path":"/v1/customers/attributes","scope":{}},
+      "getPeopleEmail": {"action":"customers.read","effects":["read"],"method":"GET","origin":"{app}","params":["email"],"path":"/v1/customers","scope":{"email":{"at":"email","from":"query"}}},
+      "getPeopleFilter": {"action":"customers.read","body":"any","effects":["read"],"method":"POST","origin":"{app}","params":["start","limit"],"path":"/v1/customers","scope":{}},
+      "getPersonActivities": {"action":"customers.activities.read","effects":["read"],"method":"GET","origin":"{app}","params":["id_type","start","limit","type","name"],"path":"/v1/customers/{customer_id}/activities","scope":{"customer_id":{"at":"customer_id","from":"path"}}},
+      "getPersonAttributes": {"action":"customers.attributes.read","effects":["read"],"method":"GET","origin":"{app}","params":["id_type"],"path":"/v1/customers/{customer_id}/attributes","scope":{"customer_id":{"at":"customer_id","from":"path"}}},
+      "getPersonMessages": {"action":"customers.messages.read","effects":["read"],"method":"GET","origin":"{app}","params":["id_type","start","limit","start_ts","end_ts"],"path":"/v1/customers/{customer_id}/messages","scope":{"customer_id":{"at":"customer_id","from":"path"}}},
+      "getPersonOptouts": {"action":"customers.optouts.read","effects":["read"],"method":"GET","origin":"{app}","params":["id_type"],"path":"/v1/customers/{customer_id}/optouts","scope":{"customer_id":{"at":"customer_id","from":"path"}}},
+      "getPersonRelationships": {"action":"customers.relationships.read","effects":["read"],"method":"GET","origin":"{app}","params":["id_type","start","limit"],"path":"/v1/customers/{customer_id}/relationships","scope":{"customer_id":{"at":"customer_id","from":"path"}}},
+      "getPersonSegments": {"action":"customers.segments.read","effects":["read"],"method":"GET","origin":"{app}","params":["id_type"],"path":"/v1/customers/{customer_id}/segments","scope":{"customer_id":{"at":"customer_id","from":"path"}}},
+      "getPersonSubscriptionPreferences": {"action":"customers.subscription_preferences.read","effects":["read"],"method":"GET","origin":"{app}","params":["id_type","language"],"path":"/v1/customers/{customer_id}/subscription_preferences","scope":{"customer_id":{"at":"customer_id","from":"path"}}},
+      "getPublishStatus": {"action":"design_studio.emails.publish_status.read","effects":["read"],"method":"GET","origin":"{app}","params":["publish_id"],"path":"/v1/design_studio/emails/{id}/publish_status","scope":{"id":{"at":"id","from":"path"},"publish_id":{"at":"publish_id","from":"query"}}},
+      "getRegion": {"action":"accounts.region.read","effects":["read"],"method":"GET","origin":"{track}","path":"/api/v1/accounts/region","scope":{}},
+      "getSegment": {"action":"segments.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/segments/{segment_id}","scope":{"segment_id":{"at":"segment_id","from":"path"}}},
+      "getSegmentCount": {"action":"segments.customer_count.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/segments/{segment_id}/customer_count","scope":{"segment_id":{"at":"segment_id","from":"path"}}},
+      "getSegmentDependencies": {"action":"segments.used_by.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/segments/{segment_id}/used_by","scope":{"segment_id":{"at":"segment_id","from":"path"}}},
+      "getSegmentMembership": {"action":"segments.membership.read","effects":["read"],"method":"GET","origin":"{app}","params":["start","limit"],"path":"/v1/segments/{segment_id}/membership","scope":{"segment_id":{"at":"segment_id","from":"path"}}},
+      "getSender": {"action":"sender_identities.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/sender_identities/{sender_id}","scope":{"sender_id":{"at":"sender_id","from":"path"}}},
+      "getSenderUsage": {"action":"sender_identities.used_by.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/sender_identities/{sender_id}/used_by","scope":{"sender_id":{"at":"sender_id","from":"path"}}},
+      "getSms": {"action":"design_studio.sms.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/design_studio/sms/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getSubscriptionCenterToken": {"action":"subscription_center.token.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/subscription_center/{customer_id}/token","scope":{"customer_id":{"at":"customer_id","from":"path"}}},
+      "getSuppression": {"action":"esp.search_suppression.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/esp/search_suppression/{email_address}","scope":{"email_address":{"at":"email_address","from":"path"}}},
+      "getSuppressionByType": {"action":"esp.suppression.read","effects":["read"],"method":"GET","origin":"{app}","params":["limit","offset","domain"],"path":"/v1/esp/suppression/{suppression_type}","scope":{"suppression_type":{"at":"suppression_type","from":"path"}}},
+      "getTopics": {"action":"subscription_topics.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/subscription_topics","scope":{}},
+      "getTransactional": {"action":"transactional.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/transactional/{transactional_id}","scope":{"transactional_id":{"at":"transactional_id","from":"path"}}},
+      "getTransactionalTranslationById": {"action":"transactional.contents.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/transactional/{transactional_id}/contents/{content_id}","scope":{"content_id":{"at":"content_id","from":"path"},"transactional_id":{"at":"transactional_id","from":"path"}}},
+      "getTransactionalVariant": {"action":"transactional.language.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/transactional/{transactional_id}/language/{language}","scope":{"language":{"at":"language","from":"path"},"transactional_id":{"at":"transactional_id","from":"path"}}},
+      "getVariantLinks": {"action":"newsletters.contents.metrics.links.read","effects":["read"],"method":"GET","origin":"{app}","params":["period","steps","type"],"path":"/v1/newsletters/{newsletter_id}/contents/{content_id}/metrics/links","scope":{"content_id":{"at":"content_id","from":"path"},"newsletter_id":{"at":"newsletter_id","from":"path"}}},
+      "getVariantMetrics": {"action":"newsletters.contents.metrics.read","effects":["read"],"method":"GET","origin":"{app}","params":["period","steps","type"],"path":"/v1/newsletters/{newsletter_id}/contents/{content_id}/metrics","scope":{"content_id":{"at":"content_id","from":"path"},"newsletter_id":{"at":"newsletter_id","from":"path"}}},
+      "getVersion": {"action":"design_studio.emails.versions.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/design_studio/emails/{id}/versions/{version_id}","scope":{"id":{"at":"id","from":"path"},"version_id":{"at":"version_id","from":"path"}}},
+      "getWebhook": {"action":"reporting_webhooks.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/reporting_webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "getWhatsApp": {"action":"design_studio.whatsapp.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/design_studio/whatsapp/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getWhatsAppStatus": {"action":"design_studio.whatsapp.status.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/design_studio/whatsapp/{id}/status","scope":{"id":{"at":"id","from":"path"}}},
+      "getWorkspaceAuditLog": {"action":"audit_logs.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/audit_logs/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "identify": {"action":"customers.write","body":"any","effects":["write"],"method":"PUT","origin":"{track}","path":"/api/v1/customers/{identifier}","scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "import": {"action":"imports.write","body":"any","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/imports","scope":{}},
+      "linkEmail": {"action":"design_studio.emails.link.write","body":"json","effects":["write"],"grant":["id"],"method":"POST","origin":"{app}","path":"/v1/design_studio/emails/{id}/link","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "linkSms": {"action":"design_studio.sms.link.write","body":"json","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/design_studio/sms/{id}/link","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "linkWhatsApp": {"action":"design_studio.whatsapp.link.write","body":"json","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/design_studio/whatsapp/{id}/link","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "listAccountAuditLogs": {"action":"account.audit_logs.read","effects":["read"],"method":"GET","origin":"{app}","params":["limit","sort_order","cursor","start_time","end_time","user_id","service_account_id","ip_addr","object_type","object_id","action","attribute_name"],"path":"/v1/account/audit_logs","scope":{"attribute_name":{"at":"attribute_name","from":"query","optional":true},"object_id":{"at":"object_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"service_account_id":{"at":"service_account_id","from":"query","optional":true},"user_id":{"at":"user_id","from":"query","optional":true}}},
+      "listActivities": {"action":"activities.read","effects":["read"],"method":"GET","origin":"{app}","params":["start","type","name","deleted","customer_id","id_type","limit"],"path":"/v1/activities","scope":{}},
+      "listAssetFolders": {"action":"assets.folders.read","effects":["read"],"method":"GET","origin":"{app}","params":["parent_folder_id","direct_descendants_only","page","limit"],"path":"/v1/assets/folders","scope":{}},
+      "listAssets": {"action":"assets.read","effects":["read"],"method":"GET","origin":"{app}","params":["parent_folder_id","direct_descendants_only","page","limit"],"path":"/v1/assets","scope":{}},
+      "listBroadcastTriggers": {"action":"broadcasts.triggers.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/broadcasts/{broadcast_id}/triggers","scope":{"broadcast_id":{"at":"broadcast_id","from":"path"}}},
+      "listBroadcasts": {"action":"broadcasts.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/broadcasts","scope":{}},
+      "listCampaignActions": {"action":"campaigns.actions.read","effects":["read"],"method":"GET","origin":"{app}","params":["start"],"path":"/v1/campaigns/{campaign_id}/actions","scope":{"campaign_id":{"at":"campaign_id","from":"path"}}},
+      "listCampaigns": {"action":"campaigns.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/campaigns","scope":{}},
+      "listCollectionSources": {"action":"collections.sources.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/collections/sources","scope":{}},
+      "listComponents": {"action":"design_studio.components.read","effects":["read"],"method":"GET","origin":"{app}","params":["tag","page","limit","parent_folder_id","direct_descendants_only","sort_by","sort_order","created_before","created_after","updated_before","updated_after"],"path":"/v1/design_studio/components","scope":{}},
+      "listEmailTranslations": {"action":"design_studio.emails.languages.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/design_studio/emails/{id}/languages","scope":{"id":{"at":"id","from":"path"}}},
+      "listEmails": {"action":"design_studio.emails.read","effects":["read"],"method":"GET","origin":"{app}","params":["page","limit","parent_folder_id","direct_descendants_only","sort_by","sort_order","created_before","created_after","updated_before","updated_after","is_template","has_translations","is_linked"],"path":"/v1/design_studio/emails","scope":{}},
+      "listExports": {"action":"exports.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/exports","scope":{}},
+      "listFolders": {"action":"design_studio.folders.read","effects":["read"],"method":"GET","origin":"{app}","params":["page","limit","parent_folder_id","direct_descendants_only","sort_by","sort_order","created_before","created_after","updated_before","updated_after"],"path":"/v1/design_studio/folders","scope":{}},
+      "listInboxPreviewClients": {"action":"design_studio.inbox_previews.clients.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/design_studio/inbox_previews/clients","scope":{}},
+      "listInboxPreviewJobs": {"action":"design_studio.inbox_previews.jobs.read","effects":["read"],"method":"GET","origin":"{app}","params":["node_id","limit","cursor"],"path":"/v1/design_studio/inbox_previews/jobs","scope":{}},
+      "listMessages": {"action":"messages.read","effects":["read"],"method":"GET","origin":"{app}","params":["start","limit","type","metric","drafts","campaign_id","newsletter_id","action_id","start_ts","end_ts","get_tracked_responses"],"path":"/v1/messages","scope":{}},
+      "listNewsletterVariants": {"action":"newsletters.contents.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/newsletters/{newsletter_id}/contents","scope":{"newsletter_id":{"at":"newsletter_id","from":"path"}}},
+      "listNewsletters": {"action":"newsletters.read","effects":["read"],"method":"GET","origin":"{app}","params":["limit","sort","start"],"path":"/v1/newsletters","scope":{}},
+      "listSegments": {"action":"segments.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/segments","scope":{}},
+      "listSenders": {"action":"sender_identities.read","effects":["read"],"method":"GET","origin":"{app}","params":["start","limit","sort","hidden"],"path":"/v1/sender_identities","scope":{}},
+      "listSms": {"action":"design_studio.sms.read","effects":["read"],"method":"GET","origin":"{app}","params":["page","limit","parent_folder_id","direct_descendants_only","sort_by","sort_order","created_before","created_after","updated_before","updated_after"],"path":"/v1/design_studio/sms","scope":{"page":{"at":"page","from":"query","optional":true},"parent_folder_id":{"at":"parent_folder_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listSnippets": {"action":"snippets.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/snippets","scope":{}},
+      "listTransactional": {"action":"transactional.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/transactional","scope":{}},
+      "listTransactionalVariants": {"action":"transactional.contents.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/transactional/{transactional_id}/contents","scope":{"transactional_id":{"at":"transactional_id","from":"path"}}},
+      "listVersions": {"action":"design_studio.emails.versions.read","effects":["read"],"method":"GET","origin":"{app}","params":["start_date","end_date"],"path":"/v1/design_studio/emails/{id}/versions","scope":{"id":{"at":"id","from":"path"}}},
+      "listWebhooks": {"action":"reporting_webhooks.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/reporting_webhooks","scope":{}},
+      "listWhatsApp": {"action":"design_studio.whatsapp.read","effects":["read"],"method":"GET","origin":"{app}","params":["page","limit","parent_folder_id","direct_descendants_only","sort_by","sort_order","created_before","created_after","updated_before","updated_after"],"path":"/v1/design_studio/whatsapp","scope":{"page":{"at":"page","from":"query","optional":true},"parent_folder_id":{"at":"parent_folder_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listWorkspaceAuditLogs": {"action":"audit_logs.read","effects":["read"],"method":"GET","origin":"{app}","params":["limit","sort_order","cursor","start_time","end_time","user_id","service_account_id","ip_addr","object_type","object_id","action","attribute_name","campaign_id","campaign_type"],"path":"/v1/audit_logs","scope":{"attribute_name":{"at":"attribute_name","from":"query","optional":true},"campaign_id":{"at":"campaign_id","from":"query","optional":true},"object_id":{"at":"object_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"service_account_id":{"at":"service_account_id","from":"query","optional":true},"user_id":{"at":"user_id","from":"query","optional":true}}},
+      "listWorkspaces": {"action":"workspaces.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/workspaces","scope":{}},
+      "merge": {"action":"customers.delete","body":"any","effects":["delete","write"],"method":"POST","origin":"{track}","path":"/api/v1/merge_customers","scope":{}},
+      "metrics": {"action":"metrics.write","body":"any","effects":["write"],"method":"POST","origin":"{track}","path":"/api/v1/metrics","scope":{}},
+      "pollCollectionSync": {"action":"collections.sync.poll.write","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/collections/{collection_id}/sync/poll","scope":{"collection_id":{"at":"collection_id","from":"path"}}},
+      "postSuppression": {"action":"esp.suppression.write","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/esp/suppression/{suppression_type}/{email_address}","scope":{"email_address":{"at":"email_address","from":"path"},"suppression_type":{"at":"suppression_type","from":"path"}}},
+      "previewEmail": {"action":"design_studio.emails.preview.read","body":"any","effects":["read"],"method":"POST","origin":"{app}","path":"/v1/design_studio/emails/{id}/preview","scope":{"id":{"at":"id","from":"path"}}},
+      "publishEmail": {"action":"design_studio.emails.publish","effects":["publish"],"method":"POST","origin":"{app}","path":"/v1/design_studio/emails/{id}/publish","scope":{"id":{"at":"id","from":"path"}}},
+      "publishSms": {"action":"design_studio.sms.publish","effects":["publish"],"method":"POST","origin":"{app}","path":"/v1/design_studio/sms/{id}/publish","scope":{"id":{"at":"id","from":"path"}}},
+      "publishWhatsApp": {"action":"design_studio.whatsapp.publish","effects":["publish"],"method":"POST","origin":"{app}","path":"/v1/design_studio/whatsapp/{id}/publish","scope":{"id":{"at":"id","from":"path"}}},
+      "pushMetrics": {"action":"push.events.write","body":"any","effects":["write"],"method":"POST","origin":"{track}","path":"/api/v1/push/events","scope":{}},
+      "putCollectionSync": {"action":"collections.sync.write","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/collections/{collection_id}/sync","scope":{"collection_id":{"at":"collection_id","from":"path"}}},
+      "putCollectionSync.json.1370335e48ea": {"action":"collections.sync.write","body":"json","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/collections/{collection_id}/sync","scope":{"collection_id":{"at":"collection_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"source_id":{"at":"/source_id","from":"body"}}},
+      "remove_from_segment": {"action":"segments.customers.delete","body":"any","effects":["delete"],"method":"POST","origin":"{track}","params":["id_type"],"path":"/api/v1/segments/{segment_id}/remove_customers","scope":{"segment_id":{"at":"segment_id","from":"path"}}},
+      "renderEmail": {"action":"design_studio.emails.render.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/design_studio/emails/{id}/render","scope":{"id":{"at":"id","from":"path"}}},
+      "restoreVersion": {"action":"design_studio.emails.versions.write","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/design_studio/emails/{id}/versions/{version_id}/restore","scope":{"id":{"at":"id","from":"path"},"version_id":{"at":"version_id","from":"path"}}},
+      "reviewEmail": {"action":"design_studio.emails.review.read","effects":["read"],"method":"GET","origin":"{app}","path":"/v1/design_studio/emails/{id}/review","scope":{"id":{"at":"id","from":"path"}}},
+      "saveVersion": {"action":"design_studio.emails.versions.write","body":"json","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/design_studio/emails/{id}/versions","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body"}}},
+      "scheduleNewsletter": {"action":"newsletters.schedule.send","body":"json","effects":["send"],"method":"POST","origin":"{app}","path":"/v1/newsletters/{newsletter_id}/schedule","scope":{"newsletter_id":{"at":"newsletter_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "sendEmail": {"action":"send.email.send","body":"any","effects":["send"],"method":"POST","origin":"{app}","path":"/v1/send/email","scope":{}},
+      "sendInApp": {"action":"send.in_app.send","body":"any","effects":["send"],"method":"POST","origin":"{app}","path":"/v1/send/in_app","scope":{}},
+      "sendInboxMessage": {"action":"send.inbox_message.send","body":"any","effects":["send"],"method":"POST","origin":"{app}","path":"/v1/send/inbox_message","scope":{}},
+      "sendNewsletter": {"action":"newsletters.send","body":"any","effects":["send"],"method":"POST","origin":"{app}","path":"/v1/newsletters/{newsletter_id}/send","scope":{"newsletter_id":{"at":"newsletter_id","from":"path"}}},
+      "sendPush": {"action":"send.push.send","body":"any","effects":["send"],"method":"POST","origin":"{app}","path":"/v1/send/push","scope":{}},
+      "sendSMS": {"action":"send.sms.send","body":"any","effects":["send"],"method":"POST","origin":"{app}","path":"/v1/send/sms","scope":{}},
+      "sendWhatsApp": {"action":"send.whatsapp.send","body":"any","effects":["send"],"method":"POST","origin":"{app}","path":"/v1/send/whatsapp","scope":{}},
+      "startLiveNotification": {"action":"live_notifications.send","body":"any","effects":["send"],"method":"POST","origin":"{app}","path":"/v1/live_notifications/start","scope":{}},
+      "submitCollectionWrite": {"action":"collections.writes.write","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/collections/{collection_id}/writes","scope":{"collection_id":{"at":"collection_id","from":"path"}}},
+      "submitCollectionWrite.json.1cee111610d4": {"action":"collections.writes.write","body":"json","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/collections/{collection_id}/writes","scope":{"collection_id":{"at":"collection_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "submitForm": {"action":"forms.submit.write","body":"any","effects":["write"],"method":"POST","origin":"{track}","path":"/api/v1/forms/{form_id}/submit","scope":{"form_id":{"at":"form_id","from":"path"}}},
+      "submitInboxPreview": {"action":"design_studio.emails.inbox_previews.send","body":"json","effects":["send","write"],"method":"POST","origin":"{app}","path":"/v1/design_studio/emails/{id}/inbox_previews","scope":{"client_ids":{"at":"/client_ids","from":"body","type":"array"},"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "submitWhatsApp": {"action":"design_studio.whatsapp.submit.send","effects":["send","write"],"method":"POST","origin":"{app}","path":"/v1/design_studio/whatsapp/{id}/submit","scope":{"id":{"at":"id","from":"path"}}},
+      "suppress": {"action":"customers.suppress.write","effects":["write"],"method":"POST","origin":"{track}","path":"/api/v1/customers/{identifier}/suppress","scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "testSendEmail": {"action":"design_studio.emails.send.send","body":"json","effects":["send"],"method":"POST","origin":"{app}","path":"/v1/design_studio/emails/{id}/test_send","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "track": {"action":"customers.events.write","body":"any","effects":["write"],"method":"POST","origin":"{track}","path":"/api/v1/customers/{identifier}/events","scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "trackAnonymous": {"action":"events.write","body":"any","effects":["write"],"method":"POST","origin":"{track}","path":"/api/v1/events","scope":{}},
+      "transactionalLinks": {"action":"transactional.metrics.links.read","effects":["read"],"method":"GET","origin":"{app}","params":["period","steps","unique"],"path":"/v1/transactional/{transactional_id}/metrics/links","scope":{"transactional_id":{"at":"transactional_id","from":"path"}}},
+      "transactionalMessages": {"action":"transactional.messages.read","effects":["read"],"method":"GET","origin":"{app}","params":["start","limit","metric","state","start_ts","end_ts","get_tracked_responses"],"path":"/v1/transactional/{transactional_id}/messages","scope":{"transactional_id":{"at":"transactional_id","from":"path"}}},
+      "transactionalMetrics": {"action":"transactional.metrics.read","effects":["read"],"method":"GET","origin":"{app}","params":["period","steps"],"path":"/v1/transactional/{transactional_id}/metrics","scope":{"transactional_id":{"at":"transactional_id","from":"path"}}},
+      "triggerBroadcast": {"action":"campaigns.triggers.send","body":"any","effects":["send"],"method":"POST","origin":"{app}","path":"/v1/campaigns/{broadcast_id}/triggers","scope":{"broadcast_id":{"at":"broadcast_id","from":"path"}}},
+      "unsubscribe": {"action":"unsubscribe.write","body":"any","effects":["write"],"method":"POST","origin":"{track}","path":"/unsubscribe/{delivery_id}","scope":{"delivery_id":{"at":"delivery_id","from":"path"}}},
+      "unsuppress": {"action":"customers.unsuppress.write","effects":["write"],"method":"POST","origin":"{track}","path":"/api/v1/customers/{identifier}/unsuppress","scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "updateAsset": {"action":"assets.files.write","body":"json","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/assets/files/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateAssetFolder": {"action":"assets.folders.write","body":"json","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/assets/folders/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateAttributeMetadata": {"action":"data_index.attributes.write","body":"json","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/data_index/attributes","scope":{}},
+      "updateBroadcastAction": {"action":"broadcasts.actions.write","body":"any","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/broadcasts/{broadcast_id}/actions/{action_id}","scope":{"action_id":{"at":"action_id","from":"path"},"broadcast_id":{"at":"broadcast_id","from":"path"}}},
+      "updateBroadcastActionLanguage": {"action":"broadcasts.actions.language.write","body":"any","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/broadcasts/{broadcast_id}/actions/{action_id}/language/{language}","scope":{"action_id":{"at":"action_id","from":"path"},"broadcast_id":{"at":"broadcast_id","from":"path"},"language":{"at":"language","from":"path"}}},
+      "updateCampaignAction": {"action":"campaigns.actions.write","body":"any","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/campaigns/{campaign_id}/actions/{action_id}","scope":{"action_id":{"at":"action_id","from":"path"},"campaign_id":{"at":"campaign_id","from":"path"}}},
+      "updateCampaignActionTranslation": {"action":"campaigns.actions.language.write","body":"any","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/campaigns/{campaign_id}/actions/{action_id}/language/{language}","scope":{"action_id":{"at":"action_id","from":"path"},"campaign_id":{"at":"campaign_id","from":"path"},"language":{"at":"language","from":"path"}}},
+      "updateCollection": {"action":"collections.write","body":"any","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/collections/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"}}},
+      "updateCollectionContents": {"action":"collections.content.write","body":"any","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/collections/{collection_id}/content","scope":{"collection_id":{"at":"collection_id","from":"path"}}},
+      "updateComponent": {"action":"design_studio.components.write","body":"json","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/design_studio/components/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateEmail": {"action":"design_studio.emails.write","body":"json","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/design_studio/emails/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateEmailTranslation": {"action":"design_studio.emails.languages.write","body":"json","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/design_studio/emails/{id}/languages/{language}","scope":{"id":{"at":"id","from":"path"},"language":{"at":"language","from":"path"}}},
+      "updateEventMetadata": {"action":"data_index.events.write","body":"json","effects":["write"],"method":"POST","origin":"{app}","path":"/v1/data_index/events","scope":{}},
+      "updateFolder": {"action":"design_studio.folders.write","body":"json","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/design_studio/folders/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "updateLiveNotification": {"action":"live_notifications.send","body":"any","effects":["send"],"method":"POST","origin":"{app}","path":"/v1/live_notifications/update","scope":{}},
+      "updateNewsletterTestTranslation": {"action":"newsletters.test_group.language.write","body":"any","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/newsletters/{newsletter_id}/test_group/{test_group_id}/language/{language}","scope":{"language":{"at":"language","from":"path"},"newsletter_id":{"at":"newsletter_id","from":"path"},"test_group_id":{"at":"test_group_id","from":"path"}}},
+      "updateNewsletterVariant": {"action":"newsletters.contents.write","body":"any","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/newsletters/{newsletter_id}/contents/{content_id}","scope":{"content_id":{"at":"content_id","from":"path"},"newsletter_id":{"at":"newsletter_id","from":"path"}}},
+      "updateNewsletterVariantTranslation": {"action":"newsletters.language.write","body":"any","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/newsletters/{newsletter_id}/language/{language}","scope":{"language":{"at":"language","from":"path"},"newsletter_id":{"at":"newsletter_id","from":"path"}}},
+      "updatePersonOptouts": {"action":"customers.optouts.write","body":"any","effects":["write"],"method":"PUT","origin":"{app}","params":["id_type"],"path":"/v1/customers/{customer_id}/optouts","scope":{"customer_id":{"at":"customer_id","from":"path"}}},
+      "updateSms": {"action":"design_studio.sms.write","body":"json","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/design_studio/sms/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"recipient":{"at":"/recipient","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateSnippets": {"action":"snippets.write","body":"any","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/snippets","scope":{}},
+      "updateTransactional": {"action":"transactional.content.write","body":"any","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/transactional/{transactional_id}/content/{content_id}","scope":{"content_id":{"at":"content_id","from":"path"},"transactional_id":{"at":"transactional_id","from":"path"}}},
+      "updateTransactionalVariant": {"action":"transactional.language.write","body":"any","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/transactional/{transactional_id}/language/{language}","scope":{"language":{"at":"language","from":"path"},"transactional_id":{"at":"transactional_id","from":"path"}}},
+      "updateWebhook": {"action":"reporting_webhooks.write","body":"any","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/reporting_webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+      "updateWhatsApp": {"action":"design_studio.whatsapp.write","body":"json","effects":["write"],"method":"PUT","origin":"{app}","path":"/v1/design_studio/whatsapp/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"recipient":{"at":"/recipient","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}}
     }
   }
 }

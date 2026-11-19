@@ -1,264 +1,1307 @@
 {
-  "title": "Lemlist",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.lemlist.com", "path": "/api", "basic": "password"}]}},
     "actions": {
-      "admin.hooks": {"title": "Admin: hooks"},
-      "admin.settings": {"title": "Admin: settings"},
-      "delete.ab_test": {"title": "Delete: ab test"},
-      "delete.alerts": {"title": "Delete: alerts"},
-      "delete.branches": {"title": "Delete: branches"},
-      "delete.companies": {"title": "Delete: companies"},
-      "delete.contacts": {"title": "Delete: contacts"},
-      "delete.drafts": {"title": "Delete: drafts"},
-      "delete.email_accounts": {"title": "Delete: email accounts"},
-      "delete.hooks": {"title": "Delete: hooks"},
-      "delete.labels": {"title": "Delete: labels"},
-      "delete.leads": {"title": "Delete: leads"},
-      "delete.personalization": {"title": "Delete: personalization"},
-      "delete.personas": {"title": "Delete: personas"},
-      "delete.providers": {"title": "Delete: providers"},
-      "delete.recording_transcript": {"title": "Delete: recording transcript"},
-      "delete.saved_searches": {"title": "Delete: saved searches"},
-      "delete.schedules": {"title": "Delete: schedules"},
-      "delete.steps": {"title": "Delete: steps"},
-      "delete.unsubscribes": {"title": "Delete: unsubscribes"},
-      "delete.variables": {"title": "Delete: variables"},
-      "delete.watch_lists": {"title": "Delete: watch lists"},
-      "delete.watchlist": {"title": "Delete: watchlist"},
-      "generate.audio": {"title": "Generate: audio"},
-      "read": {"title": "Read everything the account can see"},
-      "send.email": {"title": "Send: email"},
-      "send.notes": {"title": "Send: notes"},
-      "send.sms": {"title": "Send: sms"},
-      "write.ab_test": {"title": "Write: ab test"},
-      "write.alerts": {"title": "Write: alerts"},
-      "write.batch": {"title": "Write: batch"},
-      "write.branches": {"title": "Write: branches"},
-      "write.bulk": {"title": "Write: bulk"},
-      "write.campaigns": {"title": "Write: campaigns"},
-      "write.companies": {"title": "Write: companies"},
-      "write.contact_sourcing": {"title": "Write: contact sourcing"},
-      "write.contacts": {"title": "Write: contacts"},
-      "write.drafts": {"title": "Write: drafts"},
-      "write.email": {"title": "Write: email"},
-      "write.email_accounts": {"title": "Write: email accounts"},
-      "write.enrich": {"title": "Write: enrich"},
-      "write.entities": {"title": "Write: entities"},
-      "write.external_signals": {"title": "Write: external signals"},
-      "write.ignore": {"title": "Write: ignore"},
-      "write.interested": {"title": "Write: interested"},
-      "write.labels": {"title": "Write: labels"},
-      "write.leads": {"title": "Write: leads"},
-      "write.lemwarm": {"title": "Write: lemwarm"},
-      "write.linkedin": {"title": "Write: linkedin"},
-      "write.lists": {"title": "Write: lists"},
-      "write.merge": {"title": "Write: merge"},
-      "write.notinterested": {"title": "Write: notinterested"},
-      "write.pause": {"title": "Write: pause"},
-      "write.personalization": {"title": "Write: personalization"},
-      "write.personas": {"title": "Write: personas"},
-      "write.providers": {"title": "Write: providers"},
-      "write.review": {"title": "Write: review"},
-      "write.saved_searches": {"title": "Write: saved searches"},
-      "write.schedules": {"title": "Write: schedules"},
-      "write.signals": {"title": "Write: signals"},
-      "write.skip": {"title": "Write: skip"},
-      "write.start": {"title": "Write: start"},
-      "write.steps": {"title": "Write: steps"},
-      "write.tasks": {"title": "Write: tasks"},
-      "write.unsubscribes": {"title": "Write: unsubscribes"},
-      "write.variables": {"title": "Write: variables"},
-      "write.watch_lists": {"title": "Write: watch lists"},
-      "write.watchlist": {"title": "Write: watchlist"},
-      "write.waterfalls": {"title": "Write: waterfalls"},
-      "write.whatsapp": {"title": "Write: whatsapp"},
-      "write.winner": {"title": "Write: winner"}
-    }
+      "activities": {
+        "title": "Activities"
+      },
+      "activities.read": {
+        "title": "Read"
+      },
+      "activities.recording_transcript": {
+        "title": "Recording transcript"
+      },
+      "activities.recording_transcript.delete": {
+        "title": "Delete"
+      },
+      "call_statuses": {
+        "title": "Call statuses"
+      },
+      "call_statuses.read": {
+        "title": "Read"
+      },
+      "calls": {
+        "title": "Calls"
+      },
+      "calls.read": {
+        "title": "Read"
+      },
+      "calls.send": {
+        "title": "Send"
+      },
+      "calls.write": {
+        "title": "Create and edit"
+      },
+      "campaigns": {
+        "title": "Campaigns"
+      },
+      "campaigns.abm_leads": {
+        "title": "Abm leads"
+      },
+      "campaigns.abm_leads.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.dynamic_sender_exclusions": {
+        "title": "Dynamic sender exclusions"
+      },
+      "campaigns.dynamic_sender_exclusions.read": {
+        "title": "Read"
+      },
+      "campaigns.dynamic_sender_exclusions.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.export": {
+        "title": "Export"
+      },
+      "campaigns.export.email": {
+        "title": "Email"
+      },
+      "campaigns.export.email.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.export.leads": {
+        "title": "Leads"
+      },
+      "campaigns.export.leads.read": {
+        "title": "Read"
+      },
+      "campaigns.export.read": {
+        "title": "Read"
+      },
+      "campaigns.export.status": {
+        "title": "Status"
+      },
+      "campaigns.export.status.read": {
+        "title": "Read"
+      },
+      "campaigns.leads": {
+        "title": "Leads"
+      },
+      "campaigns.leads.delete": {
+        "title": "Delete"
+      },
+      "campaigns.leads.interested": {
+        "title": "Interested"
+      },
+      "campaigns.leads.interested.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.leads.notinterested": {
+        "title": "Notinterested"
+      },
+      "campaigns.leads.notinterested.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.leads.read": {
+        "title": "Read"
+      },
+      "campaigns.leads.steps": {
+        "title": "Steps"
+      },
+      "campaigns.leads.steps.personalization": {
+        "title": "Personalization"
+      },
+      "campaigns.leads.steps.personalization.delete": {
+        "title": "Delete"
+      },
+      "campaigns.leads.steps.personalization.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.leads.steps.skip": {
+        "title": "Skip"
+      },
+      "campaigns.leads.steps.skip.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.leads.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.read": {
+        "title": "Read"
+      },
+      "campaigns.reports": {
+        "title": "Reports"
+      },
+      "campaigns.reports.read": {
+        "title": "Read"
+      },
+      "campaigns.schedules": {
+        "title": "Schedules"
+      },
+      "campaigns.schedules.read": {
+        "title": "Read"
+      },
+      "campaigns.schedules.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.send": {
+        "title": "Send"
+      },
+      "campaigns.senders": {
+        "title": "Senders"
+      },
+      "campaigns.senders.delete": {
+        "title": "Delete"
+      },
+      "campaigns.senders.read": {
+        "title": "Read"
+      },
+      "campaigns.senders.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.sequences": {
+        "title": "Sequences"
+      },
+      "campaigns.sequences.read": {
+        "title": "Read"
+      },
+      "campaigns.settings": {
+        "title": "Settings"
+      },
+      "campaigns.settings.read": {
+        "title": "Read"
+      },
+      "campaigns.settings.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.stats": {
+        "title": "Stats"
+      },
+      "campaigns.stats.read": {
+        "title": "Read"
+      },
+      "campaigns.stats.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.statutes": {
+        "title": "Statutes"
+      },
+      "campaigns.statutes.read": {
+        "title": "Read"
+      },
+      "campaigns.steps": {
+        "title": "Steps"
+      },
+      "campaigns.steps.skip": {
+        "title": "Skip"
+      },
+      "campaigns.steps.skip.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.steps.skip_for_leads": {
+        "title": "Skip for leads"
+      },
+      "campaigns.steps.skip_for_leads.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.triggers": {
+        "title": "Triggers"
+      },
+      "campaigns.triggers.watch_lists": {
+        "title": "Watch lists"
+      },
+      "campaigns.triggers.watch_lists.delete": {
+        "title": "Delete"
+      },
+      "campaigns.triggers.watch_lists.write": {
+        "title": "Create and edit"
+      },
+      "campaigns.write": {
+        "title": "Create and edit"
+      },
+      "companies": {
+        "title": "Companies"
+      },
+      "companies.crm": {
+        "title": "Crm"
+      },
+      "companies.crm.and_connect": {
+        "title": "And connect"
+      },
+      "companies.crm.and_connect.write": {
+        "title": "Create and edit"
+      },
+      "companies.crm.write": {
+        "title": "Create and edit"
+      },
+      "companies.delete": {
+        "title": "Delete"
+      },
+      "companies.engage": {
+        "title": "Engage"
+      },
+      "companies.engage.write": {
+        "title": "Create and edit"
+      },
+      "companies.lists": {
+        "title": "Lists"
+      },
+      "companies.lists.entities": {
+        "title": "Entities"
+      },
+      "companies.lists.entities.write": {
+        "title": "Create and edit"
+      },
+      "companies.lists.read": {
+        "title": "Read"
+      },
+      "companies.lists.write": {
+        "title": "Create and edit"
+      },
+      "companies.notes": {
+        "title": "Notes"
+      },
+      "companies.notes.read": {
+        "title": "Read"
+      },
+      "companies.notes.write": {
+        "title": "Create and edit"
+      },
+      "companies.read": {
+        "title": "Read"
+      },
+      "companies.write": {
+        "title": "Create and edit"
+      },
+      "contact_sourcing": {
+        "title": "Contact sourcing"
+      },
+      "contact_sourcing.contacts": {
+        "title": "Contacts"
+      },
+      "contact_sourcing.contacts.write": {
+        "title": "Create and edit"
+      },
+      "contact_sourcing.read": {
+        "title": "Read"
+      },
+      "contact_sourcing.write": {
+        "title": "Create and edit"
+      },
+      "contacts": {
+        "title": "Contacts"
+      },
+      "contacts.crm": {
+        "title": "Crm"
+      },
+      "contacts.crm.and_connect": {
+        "title": "And connect"
+      },
+      "contacts.crm.and_connect.write": {
+        "title": "Create and edit"
+      },
+      "contacts.crm.write": {
+        "title": "Create and edit"
+      },
+      "contacts.delete": {
+        "title": "Delete"
+      },
+      "contacts.lists": {
+        "title": "Lists"
+      },
+      "contacts.lists.entities": {
+        "title": "Entities"
+      },
+      "contacts.lists.entities.write": {
+        "title": "Create and edit"
+      },
+      "contacts.lists.read": {
+        "title": "Read"
+      },
+      "contacts.lists.write": {
+        "title": "Create and edit"
+      },
+      "contacts.notes": {
+        "title": "Notes"
+      },
+      "contacts.notes.read": {
+        "title": "Read"
+      },
+      "contacts.notes.write": {
+        "title": "Create and edit"
+      },
+      "contacts.read": {
+        "title": "Read"
+      },
+      "contacts.write": {
+        "title": "Create and edit"
+      },
+      "crm": {
+        "title": "Crm"
+      },
+      "crm.filters": {
+        "title": "Filters"
+      },
+      "crm.filters.read": {
+        "title": "Read"
+      },
+      "crm.logs": {
+        "title": "Logs"
+      },
+      "crm.logs.read": {
+        "title": "Read"
+      },
+      "database": {
+        "title": "Database"
+      },
+      "database.companies": {
+        "title": "Companies"
+      },
+      "database.companies.read": {
+        "title": "Read"
+      },
+      "database.companies.write": {
+        "title": "Create and edit"
+      },
+      "database.filters": {
+        "title": "Filters"
+      },
+      "database.filters.read": {
+        "title": "Read"
+      },
+      "database.people": {
+        "title": "People"
+      },
+      "database.people.linkedin_post_engagement": {
+        "title": "Linkedin post engagement"
+      },
+      "database.people.linkedin_post_engagement.read": {
+        "title": "Read"
+      },
+      "database.people.read": {
+        "title": "Read"
+      },
+      "database.personas": {
+        "title": "Personas"
+      },
+      "database.personas.delete": {
+        "title": "Delete"
+      },
+      "database.personas.read": {
+        "title": "Read"
+      },
+      "database.personas.write": {
+        "title": "Create and edit"
+      },
+      "database.saved_searches": {
+        "title": "Saved searches"
+      },
+      "database.saved_searches.delete": {
+        "title": "Delete"
+      },
+      "database.saved_searches.read": {
+        "title": "Read"
+      },
+      "database.saved_searches.write": {
+        "title": "Create and edit"
+      },
+      "deliverability": {
+        "title": "Deliverability"
+      },
+      "deliverability.alerts": {
+        "title": "Alerts"
+      },
+      "deliverability.alerts.delete": {
+        "title": "Delete"
+      },
+      "deliverability.alerts.read": {
+        "title": "Read"
+      },
+      "deliverability.alerts.write": {
+        "title": "Create and edit"
+      },
+      "deliverability.incidents": {
+        "title": "Incidents"
+      },
+      "deliverability.incidents.read": {
+        "title": "Read"
+      },
+      "domains_core": {
+        "title": "Domains core"
+      },
+      "domains_core.mailboxes": {
+        "title": "Mailboxes"
+      },
+      "domains_core.mailboxes.pay": {
+        "title": "Make payments"
+      },
+      "domains_core.mailboxes.read": {
+        "title": "Read"
+      },
+      "domains_core.mailboxes.write": {
+        "title": "Create and edit"
+      },
+      "domains_core.purchase": {
+        "title": "Purchase"
+      },
+      "domains_core.purchase.pay": {
+        "title": "Make payments"
+      },
+      "domains_core.read": {
+        "title": "Read"
+      },
+      "domains_core.team_domains": {
+        "title": "Team domains"
+      },
+      "domains_core.team_domains.read": {
+        "title": "Read"
+      },
+      "enrich": {
+        "title": "Enrich"
+      },
+      "enrich.read": {
+        "title": "Read"
+      },
+      "enrich.write": {
+        "title": "Create and edit"
+      },
+      "enrichments": {
+        "title": "Enrichments"
+      },
+      "enrichments.bulk": {
+        "title": "Bulk"
+      },
+      "enrichments.bulk.write": {
+        "title": "Create and edit"
+      },
+      "enrichments.providers": {
+        "title": "Providers"
+      },
+      "enrichments.providers.connection": {
+        "title": "Connection"
+      },
+      "enrichments.providers.connection.delete": {
+        "title": "Delete"
+      },
+      "enrichments.providers.connection.write": {
+        "title": "Create and edit"
+      },
+      "enrichments.providers.read": {
+        "title": "Read"
+      },
+      "enrichments.waterfalls": {
+        "title": "Waterfalls"
+      },
+      "enrichments.waterfalls.read": {
+        "title": "Read"
+      },
+      "enrichments.waterfalls.write": {
+        "title": "Create and edit"
+      },
+      "fields": {
+        "title": "Fields"
+      },
+      "fields.delete": {
+        "title": "Delete"
+      },
+      "fields.read": {
+        "title": "Read"
+      },
+      "fields.write": {
+        "title": "Create and edit"
+      },
+      "hooks": {
+        "title": "Hooks"
+      },
+      "hooks.admin": {
+        "title": "Manage"
+      },
+      "hooks.delete": {
+        "title": "Delete"
+      },
+      "hooks.read": {
+        "title": "Read"
+      },
+      "inbox": {
+        "title": "Inbox"
+      },
+      "inbox.conversations": {
+        "title": "Conversations"
+      },
+      "inbox.conversations.labels": {
+        "title": "Labels"
+      },
+      "inbox.conversations.labels.delete": {
+        "title": "Delete"
+      },
+      "inbox.conversations.labels.write": {
+        "title": "Create and edit"
+      },
+      "inbox.drafts": {
+        "title": "Drafts"
+      },
+      "inbox.drafts.delete": {
+        "title": "Delete"
+      },
+      "inbox.drafts.read": {
+        "title": "Read"
+      },
+      "inbox.drafts.write": {
+        "title": "Create and edit"
+      },
+      "inbox.email": {
+        "title": "Email"
+      },
+      "inbox.email.send": {
+        "title": "Send"
+      },
+      "inbox.labels": {
+        "title": "Labels"
+      },
+      "inbox.labels.read": {
+        "title": "Read"
+      },
+      "inbox.labels.write": {
+        "title": "Create and edit"
+      },
+      "inbox.linkedin": {
+        "title": "Linkedin"
+      },
+      "inbox.linkedin.write": {
+        "title": "Create and edit"
+      },
+      "inbox.read": {
+        "title": "Read"
+      },
+      "inbox.sms": {
+        "title": "Sms"
+      },
+      "inbox.sms.send": {
+        "title": "Send"
+      },
+      "inbox.whatsapp": {
+        "title": "Whatsapp"
+      },
+      "inbox.whatsapp.write": {
+        "title": "Create and edit"
+      },
+      "leads": {
+        "title": "Leads"
+      },
+      "leads.audio": {
+        "title": "Audio"
+      },
+      "leads.audio.generate": {
+        "title": "Generate"
+      },
+      "leads.enrich": {
+        "title": "Enrich"
+      },
+      "leads.enrich.write": {
+        "title": "Create and edit"
+      },
+      "leads.interested": {
+        "title": "Interested"
+      },
+      "leads.interested.write": {
+        "title": "Create and edit"
+      },
+      "leads.notinterested": {
+        "title": "Notinterested"
+      },
+      "leads.notinterested.write": {
+        "title": "Create and edit"
+      },
+      "leads.pause": {
+        "title": "Pause"
+      },
+      "leads.pause.write": {
+        "title": "Create and edit"
+      },
+      "leads.read": {
+        "title": "Read"
+      },
+      "leads.review": {
+        "title": "Review"
+      },
+      "leads.review.write": {
+        "title": "Create and edit"
+      },
+      "leads.start": {
+        "title": "Start"
+      },
+      "leads.start.send": {
+        "title": "Send"
+      },
+      "leads.variables": {
+        "title": "Variables"
+      },
+      "leads.variables.delete": {
+        "title": "Delete"
+      },
+      "leads.variables.write": {
+        "title": "Create and edit"
+      },
+      "lemwarm": {
+        "title": "Lemwarm"
+      },
+      "lemwarm.errors": {
+        "title": "Errors"
+      },
+      "lemwarm.errors.read": {
+        "title": "Read"
+      },
+      "lemwarm.settings": {
+        "title": "Settings"
+      },
+      "lemwarm.settings.admin": {
+        "title": "Manage"
+      },
+      "lemwarm.settings.read": {
+        "title": "Read"
+      },
+      "lemwarm.write": {
+        "title": "Create and edit"
+      },
+      "message_templates": {
+        "title": "Message templates"
+      },
+      "message_templates.read": {
+        "title": "Read"
+      },
+      "message_templates.tags": {
+        "title": "Tags"
+      },
+      "message_templates.tags.read": {
+        "title": "Read"
+      },
+      "schedules": {
+        "title": "Schedules"
+      },
+      "schedules.delete": {
+        "title": "Delete"
+      },
+      "schedules.read": {
+        "title": "Read"
+      },
+      "schedules.write": {
+        "title": "Create and edit"
+      },
+      "self_recovery": {
+        "title": "Self recovery"
+      },
+      "self_recovery.config": {
+        "title": "Config"
+      },
+      "self_recovery.config.admin": {
+        "title": "Manage"
+      },
+      "self_recovery.config.read": {
+        "title": "Read"
+      },
+      "self_recovery.history": {
+        "title": "History"
+      },
+      "self_recovery.history.read": {
+        "title": "Read"
+      },
+      "sender_picture": {
+        "title": "Sender picture"
+      },
+      "sender_picture.mailboxes": {
+        "title": "Mailboxes"
+      },
+      "sender_picture.mailboxes.read": {
+        "title": "Read"
+      },
+      "sender_picture.write": {
+        "title": "Create and edit"
+      },
+      "senders": {
+        "title": "Senders"
+      },
+      "senders.read": {
+        "title": "Read"
+      },
+      "sequences": {
+        "title": "Sequences"
+      },
+      "sequences.steps": {
+        "title": "Steps"
+      },
+      "sequences.steps.ab_test": {
+        "title": "Ab test"
+      },
+      "sequences.steps.ab_test.delete": {
+        "title": "Delete"
+      },
+      "sequences.steps.ab_test.read": {
+        "title": "Read"
+      },
+      "sequences.steps.ab_test.winner": {
+        "title": "Winner"
+      },
+      "sequences.steps.ab_test.winner.write": {
+        "title": "Create and edit"
+      },
+      "sequences.steps.ab_test.write": {
+        "title": "Create and edit"
+      },
+      "sequences.steps.branches": {
+        "title": "Branches"
+      },
+      "sequences.steps.branches.delete": {
+        "title": "Delete"
+      },
+      "sequences.steps.branches.read": {
+        "title": "Read"
+      },
+      "sequences.steps.branches.write": {
+        "title": "Create and edit"
+      },
+      "sequences.steps.delete": {
+        "title": "Delete"
+      },
+      "sequences.steps.sender": {
+        "title": "Sender"
+      },
+      "sequences.steps.sender.delete": {
+        "title": "Delete"
+      },
+      "sequences.steps.sender.read": {
+        "title": "Read"
+      },
+      "sequences.steps.sender.write": {
+        "title": "Create and edit"
+      },
+      "sequences.steps.write": {
+        "title": "Create and edit"
+      },
+      "snippets": {
+        "title": "Snippets"
+      },
+      "snippets.read": {
+        "title": "Read"
+      },
+      "tasks": {
+        "title": "Tasks"
+      },
+      "tasks.filters": {
+        "title": "Filters"
+      },
+      "tasks.filters.read": {
+        "title": "Read"
+      },
+      "tasks.ignore": {
+        "title": "Ignore"
+      },
+      "tasks.ignore.write": {
+        "title": "Create and edit"
+      },
+      "tasks.read": {
+        "title": "Read"
+      },
+      "tasks.write": {
+        "title": "Create and edit"
+      },
+      "team": {
+        "title": "Team"
+      },
+      "team.credits": {
+        "title": "Credits"
+      },
+      "team.credits.read": {
+        "title": "Read"
+      },
+      "team.crm_users": {
+        "title": "Crm users"
+      },
+      "team.crm_users.read": {
+        "title": "Read"
+      },
+      "team.dynamic_sender_exclusions": {
+        "title": "Dynamic sender exclusions"
+      },
+      "team.dynamic_sender_exclusions.read": {
+        "title": "Read"
+      },
+      "team.dynamic_sender_exclusions.write": {
+        "title": "Create and edit"
+      },
+      "team.read": {
+        "title": "Read"
+      },
+      "team.senders": {
+        "title": "Senders"
+      },
+      "team.senders.read": {
+        "title": "Read"
+      },
+      "unsubs": {
+        "title": "Unsubs"
+      },
+      "unsubs.read": {
+        "title": "Read"
+      },
+      "unsubscribes": {
+        "title": "Unsubscribes"
+      },
+      "unsubscribes.contacts": {
+        "title": "Contacts"
+      },
+      "unsubscribes.contacts.delete": {
+        "title": "Delete"
+      },
+      "unsubscribes.contacts.read": {
+        "title": "Read"
+      },
+      "unsubscribes.contacts.write": {
+        "title": "Create and edit"
+      },
+      "unsubscribes.delete": {
+        "title": "Delete"
+      },
+      "unsubscribes.exports": {
+        "title": "Exports"
+      },
+      "unsubscribes.exports.contacts": {
+        "title": "Contacts"
+      },
+      "unsubscribes.exports.contacts.read": {
+        "title": "Read"
+      },
+      "unsubscribes.exports.variables": {
+        "title": "Variables"
+      },
+      "unsubscribes.exports.variables.read": {
+        "title": "Read"
+      },
+      "unsubscribes.read": {
+        "title": "Read"
+      },
+      "unsubscribes.variables": {
+        "title": "Variables"
+      },
+      "unsubscribes.variables.delete": {
+        "title": "Delete"
+      },
+      "unsubscribes.variables.read": {
+        "title": "Read"
+      },
+      "unsubscribes.variables.write": {
+        "title": "Create and edit"
+      },
+      "unsubscribes.write": {
+        "title": "Create and edit"
+      },
+      "user": {
+        "title": "Account"
+      },
+      "user.channels": {
+        "title": "Channels"
+      },
+      "user.channels.read": {
+        "title": "Read"
+      },
+      "user.email_accounts": {
+        "title": "Email accounts"
+      },
+      "user.email_accounts.delete": {
+        "title": "Delete"
+      },
+      "user.email_accounts.send": {
+        "title": "Send"
+      },
+      "user.email_accounts.write": {
+        "title": "Create and edit"
+      },
+      "user.sending_settings": {
+        "title": "Sending settings"
+      },
+      "user.sending_settings.read": {
+        "title": "Read"
+      },
+      "user.sending_settings.write": {
+        "title": "Create and edit"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.linkedin_limits": {
+        "title": "Linkedin limits"
+      },
+      "users.linkedin_limits.write": {
+        "title": "Create and edit"
+      },
+      "users.read": {
+        "title": "Read"
+      },
+      "users.signature": {
+        "title": "Signature"
+      },
+      "users.signature.read": {
+        "title": "Read"
+      },
+      "users.signature.write": {
+        "title": "Create and edit"
+      },
+      "views": {
+        "title": "Views"
+      },
+      "views.delete": {
+        "title": "Delete"
+      },
+      "views.fields": {
+        "title": "Fields"
+      },
+      "views.fields.read": {
+        "title": "Read"
+      },
+      "views.read": {
+        "title": "Read"
+      },
+      "views.tabs": {
+        "title": "Tabs"
+      },
+      "views.tabs.write": {
+        "title": "Create and edit"
+      },
+      "views.write": {
+        "title": "Create and edit"
+      },
+      "watchlist": {
+        "title": "Watchlist"
+      },
+      "watchlist.crm_lists": {
+        "title": "Crm lists"
+      },
+      "watchlist.crm_lists.write": {
+        "title": "Create and edit"
+      },
+      "watchlist.delete": {
+        "title": "Delete"
+      },
+      "watchlist.external_signals": {
+        "title": "External signals"
+      },
+      "watchlist.external_signals.write": {
+        "title": "Create and edit"
+      },
+      "watchlist.filter_values": {
+        "title": "Filter values"
+      },
+      "watchlist.filter_values.read": {
+        "title": "Read"
+      },
+      "watchlist.filters": {
+        "title": "Filters"
+      },
+      "watchlist.filters.read": {
+        "title": "Read"
+      },
+      "watchlist.history": {
+        "title": "History"
+      },
+      "watchlist.history.read": {
+        "title": "Read"
+      },
+      "watchlist.library": {
+        "title": "Library"
+      },
+      "watchlist.library.read": {
+        "title": "Read"
+      },
+      "watchlist.linkedin_profile_views": {
+        "title": "Linkedin profile views"
+      },
+      "watchlist.linkedin_profile_views.members": {
+        "title": "Members"
+      },
+      "watchlist.linkedin_profile_views.members.read": {
+        "title": "Read"
+      },
+      "watchlist.read": {
+        "title": "Read"
+      },
+      "watchlist.signals": {
+        "title": "Signals"
+      },
+      "watchlist.signals.read": {
+        "title": "Read"
+      },
+      "watchlist.signals.write": {
+        "title": "Create and edit"
+      },
+      "watchlist.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "basic": "password",
+            "origin": "https://api.lemlist.com",
+            "path": "/api",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Lemlist",
   "http": {
+    "trailing_slash": true,
     "operations": {
-      "DELETE /api/activities/{activityId}/recording-transcript": {"action":"delete.recording_transcript","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/activities/{activityId}/recording-transcript","scope":{"activityId":{"from":"path","at":"activityId"}}},
-      "DELETE /api/campaigns/{campaignId}/leads/": {"action":"delete.leads","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "DELETE /api/campaigns/{campaignId}/leads/{email}": {"action":"delete.leads","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/{email}","params":["action"],"scope":{"campaignId":{"from":"path","at":"campaignId"},"email":{"from":"path","at":"email"}}},
-      "DELETE /api/campaigns/{campaignId}/leads/{leadIdOrEmail}/steps/{stepId}/personalization": {"action":"delete.personalization","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/{leadIdOrEmail}/steps/{stepId}/personalization","scope":{"campaignId":{"from":"path","at":"campaignId"},"leadIdOrEmail":{"from":"path","at":"leadIdOrEmail"},"stepId":{"from":"path","at":"stepId"}}},
-      "DELETE /api/campaigns/{campaignId}/triggers/watch-lists/{watchListId}": {"action":"delete.watch_lists","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/triggers/watch-lists/{watchListId}","scope":{"campaignId":{"from":"path","at":"campaignId"},"watchListId":{"from":"path","at":"watchListId"}}},
-      "DELETE /api/companies/{companyId}": {"action":"delete.companies","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/companies/{companyId}","params":["force"],"scope":{"companyId":{"from":"path","at":"companyId"}}},
-      "DELETE /api/contacts/{idOrEmail}": {"action":"delete.contacts","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/contacts/{idOrEmail}","scope":{"idOrEmail":{"from":"path","at":"idOrEmail"}}},
-      "DELETE /api/deliverability/alerts/{alertId}": {"action":"delete.alerts","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/deliverability/alerts/{alertId}","scope":{"alertId":{"from":"path","at":"alertId"}}},
-      "DELETE /api/hooks/{hookId}": {"action":"delete.hooks","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/hooks/{hookId}","scope":{"hookId":{"from":"path","at":"hookId"}}},
-      "DELETE /api/inbox/conversations/labels/{contactId}": {"action":"delete.labels","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/inbox/conversations/labels/{contactId}","body":"any","scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "DELETE /api/inbox/{contactId}/drafts/{draftId}": {"action":"delete.drafts","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/inbox/{contactId}/drafts/{draftId}","params":["draftOwner"],"scope":{"contactId":{"from":"path","at":"contactId"},"draftId":{"from":"path","at":"draftId"}}},
-      "DELETE /api/leads/{leadId}/variables": {"action":"delete.variables","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/leads/{leadId}/variables","params":["customField1","customField2","customField3"],"scope":{"leadId":{"from":"path","at":"leadId"}}},
-      "DELETE /api/schedules/{scheduleId}": {"action":"delete.schedules","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/schedules/{scheduleId}","scope":{"scheduleId":{"from":"path","at":"scheduleId"}}},
-      "DELETE /api/sequences/{sequenceId}/steps/{stepId}": {"action":"delete.steps","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}","scope":{"sequenceId":{"from":"path","at":"sequenceId"},"stepId":{"from":"path","at":"stepId"}}},
-      "DELETE /api/sequences/{sequenceId}/steps/{stepId}/ab-test": {"action":"delete.ab_test","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/ab-test","params":["variant"],"scope":{"sequenceId":{"from":"path","at":"sequenceId"},"stepId":{"from":"path","at":"stepId"}}},
-      "DELETE /api/sequences/{sequenceId}/steps/{stepId}/branches/{branchSequenceId}": {"action":"delete.branches","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/branches/{branchSequenceId}","scope":{"sequenceId":{"from":"path","at":"sequenceId"},"stepId":{"from":"path","at":"stepId"},"branchSequenceId":{"from":"path","at":"branchSequenceId"}}},
-      "DELETE /api/unsubscribes/{email}": {"action":"delete.unsubscribes","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/unsubscribes/{email}","scope":{"email":{"from":"path","at":"email"}}},
-      "DELETE /api/user/email-accounts/{emailAccountId}": {"action":"delete.email_accounts","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/user/email-accounts/{emailAccountId}","scope":{"emailAccountId":{"from":"path","at":"emailAccountId"}}},
-      "DELETE /api/v2/unsubscribes/contacts/{contactId}": {"action":"delete.contacts","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/v2/unsubscribes/contacts/{contactId}","scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "DELETE /api/v2/unsubscribes/variables/{value}": {"action":"delete.variables","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/v2/unsubscribes/variables/{value}","scope":{"value":{"from":"path","at":"value"}}},
-      "DELETE /api/watchlist": {"action":"delete.watchlist","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/watchlist","params":["watchListId"],"scope":{"watchListId":{"from":"query","at":"watchListId"}}},
-      "GET /api/activities": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/activities","params":["version","type","campaignId","isFirst","offset","limit","leadId","minDate","maxDate","startDate","endDate"],"scope":{}},
-      "GET /api/campaigns": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/campaigns","params":["offset","limit","version","page","sortBy","sortOrder","status","createdBy"],"scope":{}},
-      "GET /api/campaigns/{campaignId}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}","params":["campaignIds"],"scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "GET /api/campaigns/{campaignId}/export/leads": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/export/leads","params":["state","format"],"scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "GET /api/campaigns/{campaignId}/export/start": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/export/start","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "GET /api/campaigns/{campaignId}/export/{exportId}/status": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/export/{exportId}/status","scope":{"campaignId":{"from":"path","at":"campaignId"},"exportId":{"from":"path","at":"exportId"}}},
-      "GET /api/campaigns/{campaignId}/leads/": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/","params":["state","limit"],"scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "GET /api/campaigns/{campaignId}/schedules/": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/schedules/","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "GET /api/campaigns/{campaignId}/sequences": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/sequences","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "GET /api/campaigns/{campaignId}/statutes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/statutes","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "GET /api/companies": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/companies","params":["idsOrDomains","crmIds","offset","sortBy","sortOrder","search","fields","limit","listId","crmSyncStatus","fieldRejectionReason"],"scope":{}},
-      "GET /api/companies/{companyId}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/companies/{companyId}","params":["search"],"scope":{"companyId":{"from":"path","at":"companyId"}}},
-      "GET /api/companies/{companyId}/notes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/companies/{companyId}/notes","params":["limit","page","sortBy","sortOrder"],"scope":{"companyId":{"from":"path","at":"companyId"}}},
-      "GET /api/contact-sourcing": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/contact-sourcing","params":["runId","companyId"],"scope":{}},
-      "GET /api/contacts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/contacts","params":["idsOrEmails","crmIds","search","email","listId","notInAnyCampaign","companyId","companyDomain","companyLinkedinUrl","companySalesnavUrl","withPrimaryCompany","fieldRejectionReason","limit","offset"],"scope":{}},
-      "GET /api/contacts/{idOrEmail}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/contacts/{idOrEmail}","params":["listId","entity","search"],"scope":{"idOrEmail":{"from":"path","at":"idOrEmail"}}},
-      "GET /api/contacts/{idOrEmail}/notes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/contacts/{idOrEmail}/notes","params":["limit","page","sortBy","sortOrder"],"scope":{"idOrEmail":{"from":"path","at":"idOrEmail"}}},
-      "GET /api/crm/filters": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/crm/filters","params":["type"],"scope":{}},
-      "GET /api/database/filters": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/database/filters","params":["usage","mode"],"scope":{}},
-      "GET /api/deliverability/alerts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/deliverability/alerts","scope":{}},
-      "GET /api/deliverability/alerts/{alertId}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/deliverability/alerts/{alertId}","scope":{"alertId":{"from":"path","at":"alertId"}}},
-      "GET /api/enrich/{enrichId}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/enrich/{enrichId}","scope":{"enrichId":{"from":"path","at":"enrichId"}}},
-      "GET /api/fields": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/fields","params":["entity","source"],"scope":{}},
-      "GET /api/hooks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/hooks","scope":{}},
-      "GET /api/inbox": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/inbox","params":["page","limit","userId"],"scope":{"userId":{"from":"query","at":"userId"}}},
-      "GET /api/inbox/labels/{labelId}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/inbox/labels/{labelId}","params":["draftOwner"],"scope":{"labelId":{"from":"path","at":"labelId"}}},
-      "GET /api/inbox/{contactId}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/inbox/{contactId}","params":["userId","limit","skip","markAsRead"],"scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "GET /api/inbox/{contactId}/drafts/{draftId}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/inbox/{contactId}/drafts/{draftId}","params":["draftOwner"],"scope":{"contactId":{"from":"path","at":"contactId"},"draftId":{"from":"path","at":"draftId"}}},
-      "GET /api/leads": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/leads","params":["id","email","version"],"scope":{}},
-      "GET /api/leads/{email}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/leads/{email}","params":["version"],"scope":{"email":{"from":"path","at":"email"}}},
-      "GET /api/lemwarm/{userMailboxId}/settings": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/lemwarm/{userMailboxId}/settings","scope":{"userMailboxId":{"from":"path","at":"userMailboxId"}}},
-      "GET /api/message-templates": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/message-templates","params":["search","tags","userIds","page","limit"],"scope":{}},
-      "GET /api/message-templates/{templateId}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/message-templates/{templateId}","params":["search","userIds","page","limit"],"scope":{"templateId":{"from":"path","at":"templateId"}}},
-      "GET /api/schedules": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/schedules","params":["page","offset","limit","sortBy","sortOrder"],"scope":{}},
-      "GET /api/schedules/{scheduleId}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/schedules/{scheduleId}","scope":{"scheduleId":{"from":"path","at":"scheduleId"}}},
-      "GET /api/sequences/{sequenceId}/steps/{stepId}/ab-test": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/ab-test","scope":{"sequenceId":{"from":"path","at":"sequenceId"},"stepId":{"from":"path","at":"stepId"}}},
-      "GET /api/sequences/{sequenceId}/steps/{stepId}/branches": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/branches","scope":{"sequenceId":{"from":"path","at":"sequenceId"},"stepId":{"from":"path","at":"stepId"}}},
-      "GET /api/snippets": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/snippets","params":["search","userIds","page","limit"],"scope":{}},
-      "GET /api/snippets/{snippetId}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/snippets/{snippetId}","scope":{"snippetId":{"from":"path","at":"snippetId"}}},
-      "GET /api/tasks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/tasks","params":["page","filters"],"scope":{}},
-      "GET /api/team": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/team","params":["version"],"scope":{}},
-      "GET /api/team/credits": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/team/credits","scope":{}},
-      "GET /api/team/crmUsers": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/team/crmUsers","scope":{}},
-      "GET /api/team/senders": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/team/senders","params":["state"],"scope":{}},
-      "GET /api/unsubs/export": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/unsubs/export","scope":{}},
-      "GET /api/unsubscribes": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/unsubscribes","params":["offset","limit"],"scope":{}},
-      "GET /api/unsubscribes/{email}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/unsubscribes/{email}","scope":{"email":{"from":"path","at":"email"}}},
-      "GET /api/user/channels": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/user/channels","scope":{}},
-      "GET /api/users/{userId}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/users/{userId}","scope":{"userId":{"from":"path","at":"userId"}}},
-      "GET /api/v2/campaigns/{campaignId}/export/leads": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/v2/campaigns/{campaignId}/export/leads","params":["state","format"],"scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "GET /api/v2/campaigns/{campaignId}/stats": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/v2/campaigns/{campaignId}/stats","params":["startDate","endDate","sendUser","ABSelected","channels"],"scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "GET /api/v2/tasks": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/v2/tasks","params":["taskId","contactId","contactIdNot","companyId","companyIdNot","leadId","leadIdNot","campaignId","campaignIdNot","assignedTo","assignedToNot","objectType","type","typeNot","channel","status","priority","title","contactLinkedinUrl","dueDateFrom","dueDateTo","completedAtFrom","completedAtTo","hasCampaign","hasDueDate","search","advancedFilters","include","sortBy","sortOrder","page","limit"],"scope":{}},
-      "GET /api/v2/tasks/filters": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/v2/tasks/filters","params":["scope","search"],"scope":{}},
-      "GET /api/v2/unsubscribes/contacts/{contactId}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/v2/unsubscribes/contacts/{contactId}","scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "GET /api/v2/unsubscribes/exports/contacts": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/v2/unsubscribes/exports/contacts","params":["format"],"scope":{}},
-      "GET /api/v2/unsubscribes/exports/variables": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/v2/unsubscribes/exports/variables","params":["format"],"scope":{}},
-      "GET /api/v2/unsubscribes/variables": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/v2/unsubscribes/variables","params":["offset","limit"],"scope":{}},
-      "GET /api/v2/unsubscribes/variables/{value}": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/v2/unsubscribes/variables/{value}","scope":{"value":{"from":"path","at":"value"}}},
-      "GET /api/watchlist": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/watchlist","params":["page","limit","type","status"],"scope":{}},
-      "GET /api/watchlist/filter-values": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/watchlist/filter-values","params":["filterId","query"],"scope":{"filterId":{"from":"query","at":"filterId"}}},
-      "GET /api/watchlist/filters": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/watchlist/filters","params":["type"],"scope":{}},
-      "GET /api/watchlist/history": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/watchlist/history","params":["watchListId","page","limit"],"scope":{"watchListId":{"from":"query","at":"watchListId"}}},
-      "GET /api/watchlist/library": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/watchlist/library","scope":{}},
-      "GET /api/watchlist/signals": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/watchlist/signals","params":["page","limit","sortBy","sortOrder","type","status","receivedAtFrom","receivedAtTo","watchListId"],"scope":{}},
-      "PATCH /api/campaigns/{campaignId}": {"action":"write.campaigns","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}","body":"any","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "PATCH /api/campaigns/{campaignId}/leads/{leadId}": {"action":"write.leads","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/{leadId}","params":["updateStrategy"],"body":"any","scope":{"campaignId":{"from":"path","at":"campaignId"},"leadId":{"from":"path","at":"leadId"}}},
-      "PATCH /api/deliverability/alerts/{alertId}": {"action":"write.alerts","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/deliverability/alerts/{alertId}","body":"json","scope":{"alertId":{"from":"path","at":"alertId"}}},
-      "PATCH /api/inbox/{contactId}/drafts/{draftId}": {"action":"write.drafts","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/inbox/{contactId}/drafts/{draftId}","params":["draftOwner"],"body":"any","scope":{"contactId":{"from":"path","at":"contactId"},"draftId":{"from":"path","at":"draftId"}}},
-      "PATCH /api/leads/{leadId}/variables": {"action":"write.variables","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/leads/{leadId}/variables","params":["customField1","customField2","customField3"],"scope":{"leadId":{"from":"path","at":"leadId"}}},
-      "PATCH /api/lemwarm/{userMailboxId}/settings": {"action":"admin.settings","effects":["admin"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/lemwarm/{userMailboxId}/settings","body":"any","scope":{"userMailboxId":{"from":"path","at":"userMailboxId"}}},
-      "PATCH /api/schedules/{scheduleId}": {"action":"write.schedules","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/schedules/{scheduleId}","body":"json","scope":{"scheduleId":{"from":"path","at":"scheduleId"}}},
-      "PATCH /api/sequences/{sequenceId}/steps/{stepId}": {"action":"write.steps","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}","body":"any","scope":{"sequenceId":{"from":"path","at":"sequenceId"},"stepId":{"from":"path","at":"stepId"}}},
-      "PATCH /api/sequences/{sequenceId}/steps/{stepId}/ab-test": {"action":"write.ab_test","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/ab-test","body":"any","scope":{"sequenceId":{"from":"path","at":"sequenceId"},"stepId":{"from":"path","at":"stepId"}}},
-      "PATCH /api/sequences/{sequenceId}/steps/{stepId}/branches": {"action":"write.branches","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/branches","body":"any","scope":{"sequenceId":{"from":"path","at":"sequenceId"},"stepId":{"from":"path","at":"stepId"}}},
-      "PATCH /api/sequences/{sequenceId}/steps/{stepId}/branches/{branchSequenceId}": {"action":"write.branches","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/branches/{branchSequenceId}","body":"any","scope":{"sequenceId":{"from":"path","at":"sequenceId"},"stepId":{"from":"path","at":"stepId"},"branchSequenceId":{"from":"path","at":"branchSequenceId"}}},
-      "PATCH /api/tasks": {"action":"write.tasks","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/tasks","body":"any","scope":{}},
-      "PATCH /api/watchlist": {"action":"write.watchlist","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/watchlist","body":"json","scope":{"watchListId":{"from":"body","at":"/watchListId"}}},
-      "POST /api/campaigns": {"action":"write.campaigns","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns","body":"any","scope":{}},
-      "POST /api/campaigns/{campaignId}/duplicate": {"action":"write.campaigns","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/duplicate","body":"any","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "POST /api/campaigns/{campaignId}/leads/": {"action":"write.leads","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/","params":["deduplicate","linkedinEnrichment","findEmail","verifyEmail","findPhone","updateStrategy"],"body":"any","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "POST /api/campaigns/{campaignId}/leads/import": {"action":"write.leads","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/import","body":"any","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "POST /api/campaigns/{campaignId}/leads/{leadIdOrEmail}/interested": {"action":"write.interested","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/{leadIdOrEmail}/interested","scope":{"campaignId":{"from":"path","at":"campaignId"},"leadIdOrEmail":{"from":"path","at":"leadIdOrEmail"}}},
-      "POST /api/campaigns/{campaignId}/leads/{leadIdOrEmail}/notinterested": {"action":"write.notinterested","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/{leadIdOrEmail}/notinterested","scope":{"campaignId":{"from":"path","at":"campaignId"},"leadIdOrEmail":{"from":"path","at":"leadIdOrEmail"}}},
-      "POST /api/campaigns/{campaignId}/leads/{leadIdOrEmail}/steps/{stepId}/skip": {"action":"write.skip","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/{leadIdOrEmail}/steps/{stepId}/skip","scope":{"campaignId":{"from":"path","at":"campaignId"},"leadIdOrEmail":{"from":"path","at":"leadIdOrEmail"},"stepId":{"from":"path","at":"stepId"}}},
-      "POST /api/campaigns/{campaignId}/pause": {"action":"write.campaigns","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/pause","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "POST /api/campaigns/{campaignId}/schedules/{scheduleId}": {"action":"write.schedules","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/schedules/{scheduleId}","scope":{"campaignId":{"from":"path","at":"campaignId"},"scheduleId":{"from":"path","at":"scheduleId"}}},
-      "POST /api/campaigns/{campaignId}/start": {"action":"write.campaigns","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/start","scope":{"campaignId":{"from":"path","at":"campaignId"}}},
-      "POST /api/campaigns/{campaignId}/steps/{stepId}/skip": {"action":"write.skip","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/steps/{stepId}/skip","scope":{"campaignId":{"from":"path","at":"campaignId"},"stepId":{"from":"path","at":"stepId"}}},
-      "POST /api/campaigns/{campaignId}/triggers/watch-lists": {"action":"write.watch_lists","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/triggers/watch-lists","body":"json","scope":{"campaignId":{"from":"path","at":"campaignId"},"watchListId":{"from":"body","at":"/watchListId"}}},
-      "POST /api/companies": {"action":"write.companies","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/companies","params":["updateStrategy"],"body":"json","scope":{}},
-      "POST /api/companies/lists": {"action":"write.lists","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/companies/lists","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "POST /api/companies/lists/{listId}/entities": {"action":"write.entities","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/companies/lists/{listId}/entities","params":["action"],"body":"json","scope":{"listId":{"from":"path","at":"listId"}}},
-      "POST /api/companies/merge": {"action":"write.merge","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/companies/merge","body":"json","scope":{"primaryId":{"from":"body","at":"/primaryId"}}},
-      "POST /api/companies/{companyId}/notes": {"action":"send.notes","effects":["send"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/companies/{companyId}/notes","body":"any","scope":{"companyId":{"from":"path","at":"companyId"}}},
-      "POST /api/contact-sourcing": {"action":"write.contact_sourcing","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/contact-sourcing","body":"json","scope":{}},
-      "POST /api/contact-sourcing/contacts": {"action":"write.contacts","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/contact-sourcing/contacts","body":"json","scope":{"leadId":{"from":"body","at":"/leadId"},"companyId":{"from":"body","at":"/companyId"}}},
-      "POST /api/contacts": {"action":"write.contacts","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/contacts","params":["updateStrategy"],"body":"json","scope":{}},
-      "POST /api/contacts/lists": {"action":"write.lists","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/contacts/lists","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "POST /api/contacts/lists/{listId}/entities": {"action":"write.entities","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/contacts/lists/{listId}/entities","params":["action"],"body":"json","scope":{"listId":{"from":"path","at":"listId"}}},
-      "POST /api/contacts/merge": {"action":"write.merge","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/contacts/merge","body":"json","scope":{"primaryId":{"from":"body","at":"/primaryId"}}},
-      "POST /api/contacts/{idOrEmail}/notes": {"action":"send.notes","effects":["send"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/contacts/{idOrEmail}/notes","body":"json","scope":{"idOrEmail":{"from":"path","at":"idOrEmail"},"request":{"from":"body","at":"","type":"object"}},"grant":["idOrEmail"]},
-      "POST /api/database/companies": {"action":"write.companies","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/database/companies","body":"any","scope":{}},
-      "POST /api/deliverability/alerts": {"action":"write.alerts","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/deliverability/alerts","body":"json","scope":{}},
-      "POST /api/enrich": {"action":"write.enrich","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/enrich","params":["findEmail","verifyEmail","linkedinEnrichment","email","linkedinUrl","firstName","lastName","companyDomain","companyName","jobTitle","findPhone","webhookUrl"],"scope":{}},
-      "POST /api/hooks": {"action":"admin.hooks","effects":["admin"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/hooks","params":["campaignId","isFirst","zapId"],"body":"any","scope":{}},
-      "POST /api/inbox/conversations/labels/{contactId}": {"action":"write.labels","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/inbox/conversations/labels/{contactId}","body":"any","scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "POST /api/inbox/email": {"action":"send.email","effects":["send"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/inbox/email","body":"any","scope":{}},
-      "POST /api/inbox/labels": {"action":"write.labels","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/inbox/labels","body":"any","scope":{}},
-      "POST /api/inbox/linkedin": {"action":"write.linkedin","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/inbox/linkedin","body":"any","scope":{}},
-      "POST /api/inbox/sms": {"action":"send.sms","effects":["send"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/inbox/sms","body":"any","scope":{}},
-      "POST /api/inbox/whatsapp": {"action":"write.whatsapp","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/inbox/whatsapp","body":"any","scope":{}},
-      "POST /api/inbox/{contactId}/drafts": {"action":"write.drafts","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/inbox/{contactId}/drafts","params":["draftOwner"],"body":"any","scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "POST /api/leads/audio": {"action":"generate.audio","effects":["generate"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/leads/audio","params":["leadId","stepId"],"body":"any","scope":{"leadId":{"from":"query","at":"leadId"},"stepId":{"from":"query","at":"stepId"}}},
-      "POST /api/leads/interested/{leadIdOrEmail}": {"action":"write.interested","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/leads/interested/{leadIdOrEmail}","params":["findEmail","verifyEmail","linkedinEnrichment","findPhone","webhookUrl","force","customField1","customField2","customField3"],"scope":{"leadIdOrEmail":{"from":"path","at":"leadIdOrEmail"}}},
-      "POST /api/leads/notinterested/{leadIdOrEmail}": {"action":"write.notinterested","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/leads/notinterested/{leadIdOrEmail}","scope":{"leadIdOrEmail":{"from":"path","at":"leadIdOrEmail"}}},
-      "POST /api/leads/pause/{leadId}": {"action":"write.pause","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/leads/pause/{leadId}","params":["campaignId"],"scope":{"leadId":{"from":"path","at":"leadId"}}},
-      "POST /api/leads/review/{leadId}": {"action":"write.review","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/leads/review/{leadId}","scope":{"leadId":{"from":"path","at":"leadId"}}},
-      "POST /api/leads/start/{leadId}": {"action":"write.start","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/leads/start/{leadId}","scope":{"leadId":{"from":"path","at":"leadId"}}},
-      "POST /api/lemwarm/{userMailboxId}/pause": {"action":"write.lemwarm","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/lemwarm/{userMailboxId}/pause","scope":{"userMailboxId":{"from":"path","at":"userMailboxId"}}},
-      "POST /api/lemwarm/{userMailboxId}/start": {"action":"write.lemwarm","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/lemwarm/{userMailboxId}/start","scope":{"userMailboxId":{"from":"path","at":"userMailboxId"}}},
-      "POST /api/schedules": {"action":"write.schedules","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/schedules","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "POST /api/sequences/{sequenceId}/steps": {"action":"write.steps","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps","body":"any","scope":{"sequenceId":{"from":"path","at":"sequenceId"}}},
-      "POST /api/sequences/{sequenceId}/steps/{stepId}/ab-test": {"action":"write.ab_test","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/ab-test","scope":{"sequenceId":{"from":"path","at":"sequenceId"},"stepId":{"from":"path","at":"stepId"}}},
-      "POST /api/sequences/{sequenceId}/steps/{stepId}/ab-test/winner": {"action":"write.winner","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/ab-test/winner","body":"json","scope":{"sequenceId":{"from":"path","at":"sequenceId"},"stepId":{"from":"path","at":"stepId"}}},
-      "POST /api/sequences/{sequenceId}/steps/{stepId}/branches": {"action":"write.branches","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/branches","body":"any","scope":{"sequenceId":{"from":"path","at":"sequenceId"},"stepId":{"from":"path","at":"stepId"}}},
-      "POST /api/tasks": {"action":"write.tasks","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/tasks","body":"any","scope":{}},
-      "POST /api/tasks/ignore": {"action":"write.ignore","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/tasks/ignore","body":"any","scope":{}},
-      "POST /api/unsubscribes/{email}": {"action":"write.unsubscribes","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/unsubscribes/{email}","scope":{"email":{"from":"path","at":"email"}}},
-      "POST /api/user/email-accounts": {"action":"write.email_accounts","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/user/email-accounts","body":"json","scope":{"sender_name":{"from":"body","at":"/sender_name"},"sender_email":{"from":"body","at":"/sender_email"}}},
-      "POST /api/user/email-accounts/{emailAccountId}/test": {"action":"write.email_accounts","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/user/email-accounts/{emailAccountId}/test","scope":{"emailAccountId":{"from":"path","at":"emailAccountId"}}},
-      "POST /api/v2/campaigns/stats/batch": {"action":"write.batch","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/v2/campaigns/stats/batch","body":"json","scope":{}},
-      "POST /api/v2/enrichments/bulk": {"action":"write.bulk","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/v2/enrichments/bulk","params":["webhookUrl"],"body":"json","scope":{}},
-      "POST /api/v2/unsubscribes/contacts/{contactId}": {"action":"write.contacts","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/v2/unsubscribes/contacts/{contactId}","scope":{"contactId":{"from":"path","at":"contactId"}}},
-      "POST /api/v2/unsubscribes/variables": {"action":"write.variables","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/v2/unsubscribes/variables","body":"json","scope":{}},
-      "POST /api/v2/unsubscribes/variables/{value}": {"action":"write.variables","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/v2/unsubscribes/variables/{value}","scope":{"value":{"from":"path","at":"value"}}},
-      "POST /api/watchlist": {"action":"write.watchlist","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/watchlist","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "POST /api/watchlist/{watchListId}/external-signals": {"action":"write.external_signals","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/watchlist/{watchListId}/external-signals","body":"json","scope":{"watchListId":{"from":"path","at":"watchListId"}}},
-      "PUT /api/campaigns/{campaignId}/export/{exportId}/email/{email}": {"action":"write.email","effects":["write"],"method":"PUT","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/export/{exportId}/email/{email}","scope":{"campaignId":{"from":"path","at":"campaignId"},"exportId":{"from":"path","at":"exportId"},"email":{"from":"path","at":"email"}}},
-      "PUT /api/campaigns/{campaignId}/leads/{leadIdOrEmail}/steps/{stepId}/personalization": {"action":"write.personalization","effects":["write"],"method":"PUT","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/{leadIdOrEmail}/steps/{stepId}/personalization","body":"any","scope":{"campaignId":{"from":"path","at":"campaignId"},"leadIdOrEmail":{"from":"path","at":"leadIdOrEmail"},"stepId":{"from":"path","at":"stepId"}}},
-      "PUT /api/watchlist/signals": {"action":"write.signals","effects":["write"],"method":"PUT","origin":"https://api.lemlist.com","path":"/api/watchlist/signals","body":"json","scope":{}},
-      "connectEnrichmentProvider": {"action":"write.providers","effects":["write"],"method":"PUT","origin":"https://api.lemlist.com","path":"/api/v2/enrichments/providers/{providerId}/connection","body":"json","scope":{"providerId":{"from":"path","at":"providerId"},"apiKey":{"from":"body","at":"/apiKey"}}},
-      "createPersona": {"action":"write.personas","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/database/personas","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "createSavedSearch": {"action":"write.saved_searches","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/database/saved-searches","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "deletePersona": {"action":"delete.personas","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/database/personas/{personaId}","scope":{"personaId":{"from":"path","at":"personaId"}}},
-      "deleteSavedSearch": {"action":"delete.saved_searches","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/database/saved-searches/{savedSearchId}","scope":{"savedSearchId":{"from":"path","at":"savedSearchId"}}},
-      "disconnectEnrichmentProvider": {"action":"delete.providers","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/v2/enrichments/providers/{providerId}/connection","scope":{"providerId":{"from":"path","at":"providerId"}}},
-      "getEnrichmentWaterfall": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/v2/enrichments/waterfalls/{waterfallId}","scope":{"waterfallId":{"from":"path","at":"waterfallId"}}},
-      "getSavedSearch": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/database/saved-searches/{savedSearchId}","scope":{"savedSearchId":{"from":"path","at":"savedSearchId"}}},
-      "listEnrichmentProviders": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/v2/enrichments/providers","params":["type"],"scope":{}},
-      "listEnrichmentWaterfalls": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/v2/enrichments/waterfalls","params":["type"],"scope":{}},
-      "listPersonas": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/database/personas","params":["mode"],"scope":{}},
-      "listSavedSearches": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/database/saved-searches","params":["mode"],"scope":{}},
-      "resetEnrichmentWaterfall": {"action":"write.waterfalls","effects":["write"],"method":"PUT","origin":"https://api.lemlist.com","path":"/api/v2/enrichments/waterfalls/{waterfallId}/reset","scope":{"waterfallId":{"from":"path","at":"waterfallId"}}},
-      "searchPeopleDatabase": {"action":"read","effects":["read"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/database/people","body":"any","scope":{}},
-      "updateEnrichmentWaterfall": {"action":"write.waterfalls","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/v2/enrichments/waterfalls/{waterfallId}","body":"json","scope":{"waterfallId":{"from":"path","at":"waterfallId"}}},
-      "updateSavedSearch": {"action":"write.saved_searches","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/database/saved-searches/{savedSearchId}","body":"json","scope":{"savedSearchId":{"from":"path","at":"savedSearchId"}}}
+      "DELETE /api/activities/{activityId}/recording-transcript": {"action":"activities.recording_transcript.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/activities/{activityId}/recording-transcript","scope":{"activityId":{"at":"activityId","from":"path"}}},
+      "DELETE /api/campaigns/{campaignId}/leads/": {"action":"campaigns.leads.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "DELETE /api/campaigns/{campaignId}/leads/{email}": {"action":"campaigns.leads.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","params":["action"],"path":"/api/campaigns/{campaignId}/leads/{email}","scope":{"campaignId":{"at":"campaignId","from":"path"},"email":{"at":"email","from":"path"}}},
+      "DELETE /api/campaigns/{campaignId}/leads/{leadIdOrEmail}/steps/{stepId}/personalization": {"action":"campaigns.leads.steps.personalization.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/{leadIdOrEmail}/steps/{stepId}/personalization","scope":{"campaignId":{"at":"campaignId","from":"path"},"leadIdOrEmail":{"at":"leadIdOrEmail","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "DELETE /api/campaigns/{campaignId}/senders/{userId}": {"action":"campaigns.senders.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/senders/{userId}","scope":{"campaignId":{"at":"campaignId","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "DELETE /api/campaigns/{campaignId}/triggers/watch-lists/{watchListId}": {"action":"campaigns.triggers.watch_lists.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/triggers/watch-lists/{watchListId}","scope":{"campaignId":{"at":"campaignId","from":"path"},"watchListId":{"at":"watchListId","from":"path"}}},
+      "DELETE /api/companies/{companyId}": {"action":"companies.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","params":["force"],"path":"/api/companies/{companyId}","scope":{"companyId":{"at":"companyId","from":"path"}}},
+      "DELETE /api/contacts/{idOrEmail}": {"action":"contacts.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/contacts/{idOrEmail}","scope":{"idOrEmail":{"at":"idOrEmail","from":"path"}}},
+      "DELETE /api/deliverability/alerts/{alertId}": {"action":"deliverability.alerts.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/deliverability/alerts/{alertId}","scope":{"alertId":{"at":"alertId","from":"path"}}},
+      "DELETE /api/fields/{entity}/{name}": {"action":"fields.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/fields/{entity}/{name}","scope":{"entity":{"at":"entity","from":"path"},"name":{"at":"name","from":"path"}}},
+      "DELETE /api/hooks/{hookId}": {"action":"hooks.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/hooks/{hookId}","scope":{"hookId":{"at":"hookId","from":"path"}}},
+      "DELETE /api/inbox/conversations/labels/{contactId}": {"action":"inbox.conversations.labels.delete","body":"any","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/inbox/conversations/labels/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "DELETE /api/inbox/{contactId}/drafts/{draftId}": {"action":"inbox.drafts.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","params":["draftOwner"],"path":"/api/inbox/{contactId}/drafts/{draftId}","scope":{"contactId":{"at":"contactId","from":"path"},"draftId":{"at":"draftId","from":"path"}}},
+      "DELETE /api/leads/{leadId}/variables": {"action":"leads.variables.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","params":["customField1","customField2","customField3"],"path":"/api/leads/{leadId}/variables","scope":{"leadId":{"at":"leadId","from":"path"}}},
+      "DELETE /api/schedules/{scheduleId}": {"action":"schedules.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/schedules/{scheduleId}","scope":{"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "DELETE /api/sequences/{sequenceId}/steps/{stepId}": {"action":"sequences.steps.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}","scope":{"sequenceId":{"at":"sequenceId","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "DELETE /api/sequences/{sequenceId}/steps/{stepId}/ab-test": {"action":"sequences.steps.ab_test.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","params":["variant"],"path":"/api/sequences/{sequenceId}/steps/{stepId}/ab-test","scope":{"sequenceId":{"at":"sequenceId","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "DELETE /api/sequences/{sequenceId}/steps/{stepId}/branches/{branchSequenceId}": {"action":"sequences.steps.branches.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/branches/{branchSequenceId}","scope":{"branchSequenceId":{"at":"branchSequenceId","from":"path"},"sequenceId":{"at":"sequenceId","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "DELETE /api/sequences/{sequenceId}/steps/{stepId}/sender": {"action":"sequences.steps.sender.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/sender","scope":{"sequenceId":{"at":"sequenceId","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "DELETE /api/unsubscribes/{email}": {"action":"unsubscribes.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/unsubscribes/{email}","scope":{"email":{"at":"email","from":"path"}}},
+      "DELETE /api/user/email-accounts/{emailAccountId}": {"action":"user.email_accounts.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/user/email-accounts/{emailAccountId}","scope":{"emailAccountId":{"at":"emailAccountId","from":"path"}}},
+      "DELETE /api/v2/unsubscribes/contacts/{contactId}": {"action":"unsubscribes.contacts.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/v2/unsubscribes/contacts/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "DELETE /api/v2/unsubscribes/variables/{value}": {"action":"unsubscribes.variables.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/v2/unsubscribes/variables/{value}","scope":{"value":{"at":"value","from":"path"}}},
+      "DELETE /api/watchlist": {"action":"watchlist.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","params":["watchListId"],"path":"/api/watchlist","scope":{"watchListId":{"at":"watchListId","from":"query"}}},
+      "GET /api/activities": {"action":"activities.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["version","type","campaignId","isFirst","offset","limit","leadId","minDate","maxDate","startDate","endDate"],"path":"/api/activities","scope":{}},
+      "GET /api/call-statuses": {"action":"call_statuses.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/call-statuses","scope":{}},
+      "GET /api/calls/{id}": {"action":"calls.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/calls/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "GET /api/campaigns": {"action":"campaigns.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["offset","limit","version","page","sortBy","sortOrder","status","createdBy","folderId"],"path":"/api/campaigns","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/campaigns/reports": {"action":"campaigns.reports.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["campaignIds"],"path":"/api/campaigns/reports","scope":{"campaignIds":{"at":"campaignIds","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/campaigns/{campaignId}": {"action":"campaigns.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["campaignIds"],"path":"/api/campaigns/{campaignId}","path_patterns":{"campaignId":"[^r].*|r(?:|[^e].*|e(?:|[^p].*|p(?:|[^o].*|o(?:|[^r].*|r(?:|[^t].*|t(?:|[^s].*|s.+))))))"},"scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "GET /api/campaigns/{campaignId}/dynamic-sender-exclusions": {"action":"campaigns.dynamic_sender_exclusions.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/dynamic-sender-exclusions","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "GET /api/campaigns/{campaignId}/export/leads": {"action":"campaigns.export.leads.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["state","format"],"path":"/api/campaigns/{campaignId}/export/leads","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "GET /api/campaigns/{campaignId}/export/start": {"action":"campaigns.export.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/export/start","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "GET /api/campaigns/{campaignId}/export/{exportId}/status": {"action":"campaigns.export.status.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/export/{exportId}/status","scope":{"campaignId":{"at":"campaignId","from":"path"},"exportId":{"at":"exportId","from":"path"}}},
+      "GET /api/campaigns/{campaignId}/leads/": {"action":"campaigns.leads.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["state","limit","offset"],"path":"/api/campaigns/{campaignId}/leads/","scope":{"campaignId":{"at":"campaignId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/campaigns/{campaignId}/schedules/": {"action":"campaigns.schedules.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/schedules/","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "GET /api/campaigns/{campaignId}/senders": {"action":"campaigns.senders.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/senders","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "GET /api/campaigns/{campaignId}/sequences": {"action":"campaigns.sequences.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/sequences","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "GET /api/campaigns/{campaignId}/settings": {"action":"campaigns.settings.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/settings","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "GET /api/campaigns/{campaignId}/statutes": {"action":"campaigns.statutes.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/statutes","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "GET /api/companies": {"action":"companies.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["idsOrDomains","crmIds","offset","sortBy","sortOrder","search","fields","limit","listId","crmSyncStatus","fieldRejectionReason"],"path":"/api/companies","scope":{}},
+      "GET /api/companies/lists": {"action":"companies.lists.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["search"],"path":"/api/companies/lists","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/companies/{companyId}": {"action":"companies.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["search"],"path":"/api/companies/{companyId}","path_patterns":{"companyId":"cpn_[a-zA-Z0-9]+"},"scope":{"companyId":{"at":"companyId","from":"path"}}},
+      "GET /api/companies/{companyId}/notes": {"action":"companies.notes.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["limit","page","sortBy","sortOrder"],"path":"/api/companies/{companyId}/notes","scope":{"companyId":{"at":"companyId","from":"path"}}},
+      "GET /api/contact-sourcing": {"action":"contact_sourcing.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["runId","companyId"],"path":"/api/contact-sourcing","scope":{}},
+      "GET /api/contacts": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["idsOrEmails","crmIds","search","email","listId","notInAnyCampaign","companyId","companyDomain","companyLinkedinUrl","companySalesnavUrl","withPrimaryCompany","fieldRejectionReason","limit","offset","crmSyncStatus"],"path":"/api/contacts","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/contacts/export": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["listId","entity"],"path":"/api/contacts/export","scope":{"listId":{"at":"listId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/contacts/lists": {"action":"contacts.lists.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["search"],"path":"/api/contacts/lists","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/contacts/{idOrEmail}": {"action":"contacts.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["listId","entity","search"],"path":"/api/contacts/{idOrEmail}","path_patterns":{"idOrEmail":"[^el].*|e(?:|[^x].*|x(?:|[^p].*|p(?:|[^o].*|o(?:|[^r].*|r(?:|[^t].*|t.+)))))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:|[^s].*|s.+))))"},"scope":{"idOrEmail":{"at":"idOrEmail","from":"path"}}},
+      "GET /api/contacts/{idOrEmail}/notes": {"action":"contacts.notes.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["limit","page","sortBy","sortOrder"],"path":"/api/contacts/{idOrEmail}/notes","scope":{"idOrEmail":{"at":"idOrEmail","from":"path"}}},
+      "GET /api/crm/filters": {"action":"crm.filters.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["type"],"path":"/api/crm/filters","scope":{}},
+      "GET /api/database/companies/export": {"action":"database.companies.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["filters","limit"],"path":"/api/database/companies/export","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/database/filters": {"action":"database.filters.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["usage","mode"],"path":"/api/database/filters","scope":{}},
+      "GET /api/database/people/export": {"action":"database.people.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["filters","limit"],"path":"/api/database/people/export","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/deliverability/alerts": {"action":"deliverability.alerts.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/deliverability/alerts","scope":{}},
+      "GET /api/deliverability/alerts/{alertId}": {"action":"deliverability.alerts.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/deliverability/alerts/{alertId}","scope":{"alertId":{"at":"alertId","from":"path"}}},
+      "GET /api/enrich/{enrichId}": {"action":"enrich.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/enrich/{enrichId}","scope":{"enrichId":{"at":"enrichId","from":"path"}}},
+      "GET /api/fields": {"action":"fields.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["entity","source"],"path":"/api/fields","scope":{}},
+      "GET /api/hooks": {"action":"hooks.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/hooks","scope":{}},
+      "GET /api/inbox": {"action":"inbox.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["page","limit","userId"],"path":"/api/inbox","scope":{"userId":{"at":"userId","from":"query"}}},
+      "GET /api/inbox/labels": {"action":"inbox.labels.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/inbox/labels","scope":{}},
+      "GET /api/inbox/labels/{labelId}": {"action":"inbox.labels.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["draftOwner"],"path":"/api/inbox/labels/{labelId}","scope":{"labelId":{"at":"labelId","from":"path"}}},
+      "GET /api/inbox/{contactId}": {"action":"inbox.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["userId","limit","skip","markAsRead"],"path":"/api/inbox/{contactId}","path_patterns":{"contactId":"[^l].*|l(?:|[^a].*|a(?:|[^b].*|b(?:|[^e].*|e(?:|[^l].*|l(?:|[^s].*|s.+)))))"},"scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "GET /api/inbox/{contactId}/drafts": {"action":"inbox.drafts.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["draftOwner"],"path":"/api/inbox/{contactId}/drafts","path_patterns":{"contactId":"[^l].*|l(?:|[^a].*|a(?:|[^b].*|b(?:|[^e].*|e(?:|[^l].*|l(?:|[^s].*|s.+)))))"},"scope":{"contactId":{"at":"contactId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/inbox/{contactId}/drafts/{draftId}": {"action":"inbox.drafts.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["draftOwner"],"path":"/api/inbox/{contactId}/drafts/{draftId}","scope":{"contactId":{"at":"contactId","from":"path"},"draftId":{"at":"draftId","from":"path"}}},
+      "GET /api/leads": {"action":"leads.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["id","email","version"],"path":"/api/leads","scope":{}},
+      "GET /api/leads/{email}": {"action":"leads.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["version"],"path":"/api/leads/{email}","scope":{"email":{"at":"email","from":"path"}}},
+      "GET /api/lemwarm/errors": {"action":"lemwarm.errors.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/lemwarm/errors","scope":{}},
+      "GET /api/lemwarm/{userMailboxId}/settings": {"action":"lemwarm.settings.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/lemwarm/{userMailboxId}/settings","scope":{"userMailboxId":{"at":"userMailboxId","from":"path"}}},
+      "GET /api/message-templates": {"action":"message_templates.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["search","tags","userIds","page","limit"],"path":"/api/message-templates","scope":{}},
+      "GET /api/message-templates/tags": {"action":"message_templates.tags.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["search","userIds","page","limit"],"path":"/api/message-templates/tags","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"userIds":{"at":"userIds","from":"query","optional":true}}},
+      "GET /api/message-templates/{templateId}": {"action":"message_templates.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["search","userIds","page","limit"],"path":"/api/message-templates/{templateId}","path_patterns":{"templateId":"[^t].*|t(?:|[^a].*|a(?:|[^g].*|g(?:|[^s].*|s.+)))"},"scope":{"templateId":{"at":"templateId","from":"path"}}},
+      "GET /api/schedules": {"action":"schedules.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["page","offset","limit","sortBy","sortOrder"],"path":"/api/schedules","scope":{}},
+      "GET /api/schedules/{scheduleId}": {"action":"schedules.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/schedules/{scheduleId}","scope":{"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "GET /api/self-recovery/config": {"action":"self_recovery.config.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/self-recovery/config","scope":{}},
+      "GET /api/self-recovery/history": {"action":"self_recovery.history.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["limit","skip"],"path":"/api/self-recovery/history","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/senders": {"action":"senders.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["campaignId"],"path":"/api/senders","scope":{"campaignId":{"at":"campaignId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/sequences/{sequenceId}/steps/{stepId}/ab-test": {"action":"sequences.steps.ab_test.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/ab-test","scope":{"sequenceId":{"at":"sequenceId","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "GET /api/sequences/{sequenceId}/steps/{stepId}/branches": {"action":"sequences.steps.branches.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/branches","scope":{"sequenceId":{"at":"sequenceId","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "GET /api/sequences/{sequenceId}/steps/{stepId}/sender": {"action":"sequences.steps.sender.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/sender","scope":{"sequenceId":{"at":"sequenceId","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "GET /api/snippets": {"action":"snippets.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["search","userIds","page","limit"],"path":"/api/snippets","scope":{}},
+      "GET /api/snippets/{snippetId}": {"action":"snippets.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/snippets/{snippetId}","scope":{"snippetId":{"at":"snippetId","from":"path"}}},
+      "GET /api/tasks": {"action":"tasks.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["page","filters"],"path":"/api/tasks","scope":{}},
+      "GET /api/team": {"action":"team.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["version"],"path":"/api/team","scope":{}},
+      "GET /api/team/credits": {"action":"team.credits.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/team/credits","scope":{}},
+      "GET /api/team/crmUsers": {"action":"team.crm_users.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/team/crmUsers","scope":{}},
+      "GET /api/team/dynamic-sender-exclusions": {"action":"team.dynamic_sender_exclusions.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/team/dynamic-sender-exclusions","scope":{}},
+      "GET /api/team/senders": {"action":"team.senders.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["state"],"path":"/api/team/senders","scope":{}},
+      "GET /api/unsubs/export": {"action":"unsubs.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/unsubs/export","scope":{}},
+      "GET /api/unsubscribes": {"action":"unsubscribes.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["offset","limit"],"path":"/api/unsubscribes","scope":{}},
+      "GET /api/unsubscribes/{email}": {"action":"unsubscribes.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/unsubscribes/{email}","scope":{"email":{"at":"email","from":"path"}}},
+      "GET /api/user/channels": {"action":"user.channels.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/user/channels","scope":{}},
+      "GET /api/user/sending-settings": {"action":"user.sending_settings.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["scope"],"path":"/api/user/sending-settings","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/users/{userId}": {"action":"users.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "GET /api/users/{userId}/signature": {"action":"users.signature.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/users/{userId}/signature","scope":{"userId":{"at":"userId","from":"path"}}},
+      "GET /api/v2/campaigns/{campaignId}/export/leads": {"action":"campaigns.export.leads.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["state","format"],"path":"/api/v2/campaigns/{campaignId}/export/leads","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "GET /api/v2/campaigns/{campaignId}/stats": {"action":"campaigns.stats.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["startDate","endDate","sendUser","ABSelected","channels"],"path":"/api/v2/campaigns/{campaignId}/stats","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "GET /api/v2/crm/logs": {"action":"crm.logs.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["contactId","companyId","page","limit","state","category","method","field","from","to"],"path":"/api/v2/crm/logs","scope":{"companyId":{"at":"companyId","from":"query","optional":true},"contactId":{"at":"contactId","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/v2/tasks": {"action":"tasks.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["taskId","contactId","contactIdNot","companyId","companyIdNot","leadId","leadIdNot","campaignId","campaignIdNot","assignedTo","assignedToNot","objectType","type","typeNot","channel","status","priority","title","contactLinkedinUrl","dueDateFrom","dueDateTo","completedAtFrom","completedAtTo","hasCampaign","hasDueDate","search","advancedFilters","include","sortBy","sortOrder","page","limit"],"path":"/api/v2/tasks","scope":{}},
+      "GET /api/v2/tasks/filters": {"action":"tasks.filters.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["scope","search"],"path":"/api/v2/tasks/filters","scope":{}},
+      "GET /api/v2/unsubscribes/contacts/{contactId}": {"action":"unsubscribes.contacts.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/v2/unsubscribes/contacts/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "GET /api/v2/unsubscribes/exports/contacts": {"action":"unsubscribes.exports.contacts.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["format"],"path":"/api/v2/unsubscribes/exports/contacts","scope":{}},
+      "GET /api/v2/unsubscribes/exports/variables": {"action":"unsubscribes.exports.variables.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["format"],"path":"/api/v2/unsubscribes/exports/variables","scope":{}},
+      "GET /api/v2/unsubscribes/variables": {"action":"unsubscribes.variables.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["offset","limit"],"path":"/api/v2/unsubscribes/variables","scope":{}},
+      "GET /api/v2/unsubscribes/variables/{value}": {"action":"unsubscribes.variables.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/v2/unsubscribes/variables/{value}","scope":{"value":{"at":"value","from":"path"}}},
+      "GET /api/watchlist": {"action":"watchlist.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["page","limit","type","status"],"path":"/api/watchlist","scope":{}},
+      "GET /api/watchlist/filter-values": {"action":"watchlist.filter_values.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["filterId","query","type"],"path":"/api/watchlist/filter-values","scope":{"filterId":{"at":"filterId","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /api/watchlist/filters": {"action":"watchlist.filters.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["type"],"path":"/api/watchlist/filters","scope":{}},
+      "GET /api/watchlist/history": {"action":"watchlist.history.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["watchListId","page","limit"],"path":"/api/watchlist/history","scope":{"watchListId":{"at":"watchListId","from":"query"}}},
+      "GET /api/watchlist/library": {"action":"watchlist.library.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/watchlist/library","scope":{}},
+      "GET /api/watchlist/signals": {"action":"watchlist.signals.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["page","limit","sortBy","sortOrder","type","status","receivedAtFrom","receivedAtTo","watchListId"],"path":"/api/watchlist/signals","scope":{}},
+      "PATCH /api/calls/{id}": {"action":"calls.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/calls/{id}","scope":{"id":{"at":"id","from":"path"},"recordingUrl":{"at":"/recordingUrl","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "PATCH /api/campaigns/{campaignId}": {"action":"campaigns.write","body":"any","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "PATCH /api/campaigns/{campaignId}/leads/{leadId}": {"action":"campaigns.leads.write","body":"any","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","params":["updateStrategy"],"path":"/api/campaigns/{campaignId}/leads/{leadId}","scope":{"campaignId":{"at":"campaignId","from":"path"},"leadId":{"at":"leadId","from":"path"}}},
+      "PATCH /api/campaigns/{campaignId}/senders/{userId}": {"action":"campaigns.senders.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/senders/{userId}","scope":{"campaignId":{"at":"campaignId","from":"path"},"channels":{"at":"/channels","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "PATCH /api/campaigns/{campaignId}/settings": {"action":"campaigns.settings.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/settings","scope":{"campaignId":{"at":"campaignId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "PATCH /api/deliverability/alerts/{alertId}": {"action":"deliverability.alerts.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/deliverability/alerts/{alertId}","scope":{"alertId":{"at":"alertId","from":"path"}}},
+      "PATCH /api/inbox/{contactId}/drafts/{draftId}": {"action":"inbox.drafts.write","body":"any","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","params":["draftOwner"],"path":"/api/inbox/{contactId}/drafts/{draftId}","scope":{"contactId":{"at":"contactId","from":"path"},"draftId":{"at":"draftId","from":"path"}}},
+      "PATCH /api/leads/{leadId}/variables": {"action":"leads.variables.write","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","params":["customField1","customField2","customField3"],"path":"/api/leads/{leadId}/variables","scope":{"leadId":{"at":"leadId","from":"path"}}},
+      "PATCH /api/lemwarm/{userMailboxId}/settings": {"action":"lemwarm.settings.admin","body":"any","effects":["admin"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/lemwarm/{userMailboxId}/settings","scope":{"userMailboxId":{"at":"userMailboxId","from":"path"}}},
+      "PATCH /api/schedules/{scheduleId}": {"action":"schedules.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/schedules/{scheduleId}","scope":{"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "PATCH /api/self-recovery/config": {"action":"self_recovery.config.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/self-recovery/config","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "PATCH /api/sequences/{sequenceId}/steps/{stepId}": {"action":"sequences.steps.write","body":"any","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}","scope":{"sequenceId":{"at":"sequenceId","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "PATCH /api/sequences/{sequenceId}/steps/{stepId}/ab-test": {"action":"sequences.steps.ab_test.write","body":"any","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/ab-test","scope":{"sequenceId":{"at":"sequenceId","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "PATCH /api/sequences/{sequenceId}/steps/{stepId}/branches": {"action":"sequences.steps.branches.write","body":"any","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/branches","scope":{"sequenceId":{"at":"sequenceId","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "PATCH /api/sequences/{sequenceId}/steps/{stepId}/branches/{branchSequenceId}": {"action":"sequences.steps.branches.write","body":"any","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/branches/{branchSequenceId}","scope":{"branchSequenceId":{"at":"branchSequenceId","from":"path"},"sequenceId":{"at":"sequenceId","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "PATCH /api/tasks": {"action":"tasks.write","body":"any","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/tasks","scope":{}},
+      "PATCH /api/user/sending-settings": {"action":"user.sending_settings.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/user/sending-settings","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "PATCH /api/users/{userId}/linkedin-limits": {"action":"users.linkedin_limits.write","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/users/{userId}/linkedin-limits","scope":{"userId":{"at":"userId","from":"path"}}},
+      "PATCH /api/users/{userId}/linkedin-limits.json.19016ade85c0": {"action":"users.linkedin_limits.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/users/{userId}/linkedin-limits","scope":{"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "PATCH /api/users/{userId}/signature": {"action":"users.signature.write","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/users/{userId}/signature","scope":{"userId":{"at":"userId","from":"path"}}},
+      "PATCH /api/users/{userId}/signature.json.07abe9a6ca8e": {"action":"users.signature.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/users/{userId}/signature","scope":{"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "PATCH /api/watchlist": {"action":"watchlist.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/watchlist","scope":{"watchListId":{"at":"/watchListId","from":"body"}}},
+      "POST /api/calls": {"action":"calls.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/calls","scope":{"contactId":{"at":"/contactId","from":"body","optional":true},"email":{"at":"/email","from":"body","optional":true},"externalId":{"at":"/externalId","from":"body"},"leadId":{"at":"/leadId","from":"body","optional":true},"recordingUrl":{"at":"/recordingUrl","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"taskId":{"at":"/taskId","from":"body","optional":true},"userId":{"at":"/userId","from":"body"}}},
+      "POST /api/campaigns": {"action":"campaigns.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns","scope":{}},
+      "POST /api/campaigns/{campaignId}/abm-leads": {"action":"campaigns.abm_leads.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/abm-leads","scope":{"campaignId":{"at":"campaignId","from":"path"},"leadIds":{"at":"/leadIds","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /api/campaigns/{campaignId}/archive": {"action":"campaigns.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/archive","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "POST /api/campaigns/{campaignId}/duplicate": {"action":"campaigns.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/duplicate","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "POST /api/campaigns/{campaignId}/leads/": {"action":"campaigns.leads.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","params":["deduplicate","linkedinEnrichment","findEmail","verifyEmail","findPhone","updateStrategy"],"path":"/api/campaigns/{campaignId}/leads/","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "POST /api/campaigns/{campaignId}/leads/import": {"action":"campaigns.leads.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/import","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "POST /api/campaigns/{campaignId}/leads/{email}": {"action":"campaigns.leads.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","params":["deduplicate","linkedinEnrichment","findEmail","verifyEmail","findPhone","updateStrategy"],"path":"/api/campaigns/{campaignId}/leads/{email}","path_patterns":{"email":".*@.*"},"scope":{"campaignId":{"at":"campaignId","from":"path"},"email":{"at":"email","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "POST /api/campaigns/{campaignId}/leads/{leadIdOrEmail}/interested": {"action":"campaigns.leads.interested.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/{leadIdOrEmail}/interested","scope":{"campaignId":{"at":"campaignId","from":"path"},"leadIdOrEmail":{"at":"leadIdOrEmail","from":"path"}}},
+      "POST /api/campaigns/{campaignId}/leads/{leadIdOrEmail}/notinterested": {"action":"campaigns.leads.notinterested.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/{leadIdOrEmail}/notinterested","scope":{"campaignId":{"at":"campaignId","from":"path"},"leadIdOrEmail":{"at":"leadIdOrEmail","from":"path"}}},
+      "POST /api/campaigns/{campaignId}/leads/{leadIdOrEmail}/steps/{stepId}/skip": {"action":"campaigns.leads.steps.skip.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/{leadIdOrEmail}/steps/{stepId}/skip","scope":{"campaignId":{"at":"campaignId","from":"path"},"leadIdOrEmail":{"at":"leadIdOrEmail","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "POST /api/campaigns/{campaignId}/pause": {"action":"campaigns.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/pause","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "POST /api/campaigns/{campaignId}/schedules/{scheduleId}": {"action":"campaigns.schedules.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/schedules/{scheduleId}","scope":{"campaignId":{"at":"campaignId","from":"path"},"scheduleId":{"at":"scheduleId","from":"path"}}},
+      "POST /api/campaigns/{campaignId}/senders": {"action":"campaigns.senders.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/senders","scope":{"campaignId":{"at":"campaignId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /api/campaigns/{campaignId}/start": {"action":"campaigns.send","effects":["send"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/start","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "POST /api/campaigns/{campaignId}/steps/{stepId}/skip": {"action":"campaigns.steps.skip.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/steps/{stepId}/skip","scope":{"campaignId":{"at":"campaignId","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "POST /api/campaigns/{campaignId}/steps/{stepId}/skip-for-leads": {"action":"campaigns.steps.skip_for_leads.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/steps/{stepId}/skip-for-leads","scope":{"campaignId":{"at":"campaignId","from":"path"},"request":{"at":"","from":"body","type":"object"},"stepId":{"at":"stepId","from":"path"}}},
+      "POST /api/campaigns/{campaignId}/triggers/watch-lists": {"action":"campaigns.triggers.watch_lists.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/triggers/watch-lists","scope":{"campaignId":{"at":"campaignId","from":"path"},"watchListId":{"at":"/watchListId","from":"body"}}},
+      "POST /api/campaigns/{campaignId}/unarchive": {"action":"campaigns.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/unarchive","scope":{"campaignId":{"at":"campaignId","from":"path"}}},
+      "POST /api/companies": {"action":"companies.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","params":["updateStrategy"],"path":"/api/companies","scope":{}},
+      "POST /api/companies/crm/create": {"action":"companies.crm.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/companies/crm/create","scope":{"listId":{"at":"/listId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /api/companies/crm/search-and-connect": {"action":"companies.crm.and_connect.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/companies/crm/search-and-connect","scope":{"listId":{"at":"/listId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /api/companies/lists": {"action":"companies.lists.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/companies/lists","scope":{"name":{"at":"/name","from":"body"}}},
+      "POST /api/companies/lists/{listId}/entities": {"action":"companies.lists.entities.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","params":["action"],"path":"/api/companies/lists/{listId}/entities","scope":{"listId":{"at":"listId","from":"path"}}},
+      "POST /api/companies/merge": {"action":"companies.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/companies/merge","scope":{"primaryId":{"at":"/primaryId","from":"body"}}},
+      "POST /api/companies/{companyId}/engage": {"action":"companies.engage.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/companies/{companyId}/engage","scope":{"companyId":{"at":"companyId","from":"path"}}},
+      "POST /api/companies/{companyId}/notes": {"action":"companies.notes.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/companies/{companyId}/notes","scope":{"companyId":{"at":"companyId","from":"path"}}},
+      "POST /api/contact-sourcing": {"action":"contact_sourcing.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/contact-sourcing","scope":{}},
+      "POST /api/contact-sourcing/contacts": {"action":"contact_sourcing.contacts.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/contact-sourcing/contacts","scope":{"companyId":{"at":"/companyId","from":"body"},"leadId":{"at":"/leadId","from":"body"}}},
+      "POST /api/contacts": {"action":"contacts.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","params":["updateStrategy"],"path":"/api/contacts","scope":{}},
+      "POST /api/contacts/crm/create": {"action":"contacts.crm.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/contacts/crm/create","scope":{"listId":{"at":"/listId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /api/contacts/crm/search-and-connect": {"action":"contacts.crm.and_connect.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/contacts/crm/search-and-connect","scope":{"listId":{"at":"/listId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /api/contacts/lists": {"action":"contacts.lists.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/contacts/lists","scope":{"name":{"at":"/name","from":"body"}}},
+      "POST /api/contacts/lists/{listId}/entities": {"action":"contacts.lists.entities.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","params":["action"],"path":"/api/contacts/lists/{listId}/entities","scope":{"listId":{"at":"listId","from":"path"}}},
+      "POST /api/contacts/merge": {"action":"contacts.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/contacts/merge","scope":{"primaryId":{"at":"/primaryId","from":"body"}}},
+      "POST /api/contacts/{idOrEmail}/notes": {"action":"contacts.notes.write","body":"json","effects":["write"],"grant":["idOrEmail"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/contacts/{idOrEmail}/notes","scope":{"idOrEmail":{"at":"idOrEmail","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /api/database/companies": {"action":"database.companies.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/database/companies","scope":{}},
+      "POST /api/deliverability/alerts": {"action":"deliverability.alerts.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/deliverability/alerts","scope":{}},
+      "POST /api/enrich": {"action":"enrich.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","params":["findEmail","verifyEmail","linkedinEnrichment","email","linkedinUrl","firstName","lastName","companyDomain","companyName","jobTitle","findPhone","webhookUrl"],"path":"/api/enrich","scope":{}},
+      "POST /api/fields": {"action":"fields.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/fields","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /api/hooks": {"action":"hooks.admin","body":"any","effects":["admin"],"method":"POST","origin":"https://api.lemlist.com","params":["campaignId","isFirst","zapId"],"path":"/api/hooks","scope":{}},
+      "POST /api/inbox/conversations/labels/{contactId}": {"action":"inbox.conversations.labels.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/inbox/conversations/labels/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "POST /api/inbox/email": {"action":"inbox.email.send","body":"any","effects":["send"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/inbox/email","scope":{}},
+      "POST /api/inbox/labels": {"action":"inbox.labels.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/inbox/labels","scope":{}},
+      "POST /api/inbox/linkedin": {"action":"inbox.linkedin.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/inbox/linkedin","scope":{}},
+      "POST /api/inbox/sms": {"action":"inbox.sms.send","body":"any","effects":["send"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/inbox/sms","scope":{}},
+      "POST /api/inbox/whatsapp": {"action":"inbox.whatsapp.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/inbox/whatsapp","scope":{}},
+      "POST /api/inbox/{contactId}/drafts": {"action":"inbox.drafts.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","params":["draftOwner"],"path":"/api/inbox/{contactId}/drafts","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "POST /api/leads/audio": {"action":"leads.audio.generate","body":"any","effects":["generate"],"method":"POST","origin":"https://api.lemlist.com","params":["leadId","stepId"],"path":"/api/leads/audio","scope":{"leadId":{"at":"leadId","from":"query"},"stepId":{"at":"stepId","from":"query"}}},
+      "POST /api/leads/interested/{leadIdOrEmail}": {"action":"leads.interested.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","params":["findEmail","verifyEmail","linkedinEnrichment","findPhone","webhookUrl","force","customField1","customField2","customField3"],"path":"/api/leads/interested/{leadIdOrEmail}","scope":{"leadIdOrEmail":{"at":"leadIdOrEmail","from":"path"}}},
+      "POST /api/leads/notinterested/{leadIdOrEmail}": {"action":"leads.notinterested.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/leads/notinterested/{leadIdOrEmail}","scope":{"leadIdOrEmail":{"at":"leadIdOrEmail","from":"path"}}},
+      "POST /api/leads/pause/{leadId}": {"action":"leads.pause.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","params":["campaignId"],"path":"/api/leads/pause/{leadId}","scope":{"leadId":{"at":"leadId","from":"path"}}},
+      "POST /api/leads/review/{leadId}": {"action":"leads.review.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/leads/review/{leadId}","scope":{"leadId":{"at":"leadId","from":"path"}}},
+      "POST /api/leads/start/{leadId}": {"action":"leads.start.send","effects":["send"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/leads/start/{leadId}","scope":{"leadId":{"at":"leadId","from":"path"}}},
+      "POST /api/leads/{leadId}/enrich": {"action":"leads.enrich.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","params":["findEmail","verifyEmail","linkedinEnrichment","findPhone","webhookUrl","force"],"path":"/api/leads/{leadId}/enrich","path_patterns":{"leadId":"[^inprs].*|i(?:|[^n].*|n(?:|[^t].*|t(?:|[^e].*|e(?:|[^r].*|r(?:|[^e].*|e(?:|[^s].*|s(?:|[^t].*|t(?:|[^e].*|e(?:|[^d].*|d.+)))))))))|n(?:|[^o].*|o(?:|[^t].*|t(?:|[^i].*|i(?:|[^n].*|n(?:|[^t].*|t(?:|[^e].*|e(?:|[^r].*|r(?:|[^e].*|e(?:|[^s].*|s(?:|[^t].*|t(?:|[^e].*|e(?:|[^d].*|d.+))))))))))))|p(?:|[^a].*|a(?:|[^u].*|u(?:|[^s].*|s(?:|[^e].*|e.+))))|r(?:|[^e].*|e(?:|[^v].*|v(?:|[^i].*|i(?:|[^e].*|e(?:|[^w].*|w.+)))))|s(?:|[^t].*|t(?:|[^a].*|a(?:|[^r].*|r(?:|[^t].*|t.+))))"},"scope":{"leadId":{"at":"leadId","from":"path"},"query":{"at":"","from":"query","type":"object"},"webhookUrl":{"at":"webhookUrl","from":"query","optional":true}}},
+      "POST /api/leads/{leadId}/variables": {"action":"leads.variables.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","params":["customField1","customField2","customField3"],"path":"/api/leads/{leadId}/variables","path_patterns":{"leadId":"[^inprs].*|i(?:|[^n].*|n(?:|[^t].*|t(?:|[^e].*|e(?:|[^r].*|r(?:|[^e].*|e(?:|[^s].*|s(?:|[^t].*|t(?:|[^e].*|e(?:|[^d].*|d.+)))))))))|n(?:|[^o].*|o(?:|[^t].*|t(?:|[^i].*|i(?:|[^n].*|n(?:|[^t].*|t(?:|[^e].*|e(?:|[^r].*|r(?:|[^e].*|e(?:|[^s].*|s(?:|[^t].*|t(?:|[^e].*|e(?:|[^d].*|d.+))))))))))))|p(?:|[^a].*|a(?:|[^u].*|u(?:|[^s].*|s(?:|[^e].*|e.+))))|r(?:|[^e].*|e(?:|[^v].*|v(?:|[^i].*|i(?:|[^e].*|e(?:|[^w].*|w.+)))))|s(?:|[^t].*|t(?:|[^a].*|a(?:|[^r].*|r(?:|[^t].*|t.+))))"},"scope":{"leadId":{"at":"leadId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "POST /api/lemwarm/{userMailboxId}/pause": {"action":"lemwarm.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/lemwarm/{userMailboxId}/pause","scope":{"userMailboxId":{"at":"userMailboxId","from":"path"}}},
+      "POST /api/lemwarm/{userMailboxId}/start": {"action":"lemwarm.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/lemwarm/{userMailboxId}/start","scope":{"userMailboxId":{"at":"userMailboxId","from":"path"}}},
+      "POST /api/schedules": {"action":"schedules.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/schedules","scope":{"name":{"at":"/name","from":"body"}}},
+      "POST /api/sequences/{sequenceId}/steps": {"action":"sequences.steps.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps","scope":{"sequenceId":{"at":"sequenceId","from":"path"}}},
+      "POST /api/sequences/{sequenceId}/steps/{stepId}/ab-test": {"action":"sequences.steps.ab_test.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/ab-test","scope":{"sequenceId":{"at":"sequenceId","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "POST /api/sequences/{sequenceId}/steps/{stepId}/ab-test/winner": {"action":"sequences.steps.ab_test.winner.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/ab-test/winner","scope":{"sequenceId":{"at":"sequenceId","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "POST /api/sequences/{sequenceId}/steps/{stepId}/branches": {"action":"sequences.steps.branches.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/branches","scope":{"sequenceId":{"at":"sequenceId","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "POST /api/tasks": {"action":"tasks.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/tasks","scope":{}},
+      "POST /api/tasks/ignore": {"action":"tasks.ignore.write","body":"any","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/tasks/ignore","scope":{}},
+      "POST /api/unsubscribes/{email}": {"action":"unsubscribes.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/unsubscribes/{email}","scope":{"email":{"at":"email","from":"path"}}},
+      "POST /api/user/email-accounts": {"action":"user.email_accounts.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/user/email-accounts","scope":{"sender_email":{"at":"/sender_email","from":"body"},"sender_name":{"at":"/sender_name","from":"body"}}},
+      "POST /api/user/email-accounts/{emailAccountId}/test": {"action":"user.email_accounts.send","effects":["send"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/user/email-accounts/{emailAccountId}/test","scope":{"emailAccountId":{"at":"emailAccountId","from":"path"}}},
+      "POST /api/v2/campaigns/stats/batch": {"action":"campaigns.stats.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/v2/campaigns/stats/batch","scope":{}},
+      "POST /api/v2/enrichments/bulk": {"action":"enrichments.bulk.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","params":["webhookUrl"],"path":"/api/v2/enrichments/bulk","scope":{}},
+      "POST /api/v2/unsubscribes/contacts/{contactId}": {"action":"unsubscribes.contacts.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/v2/unsubscribes/contacts/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"}}},
+      "POST /api/v2/unsubscribes/variables": {"action":"unsubscribes.variables.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/v2/unsubscribes/variables","scope":{}},
+      "POST /api/v2/unsubscribes/variables/{value}": {"action":"unsubscribes.variables.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/v2/unsubscribes/variables/{value}","scope":{"value":{"at":"value","from":"path"}}},
+      "POST /api/watchlist": {"action":"watchlist.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/watchlist","scope":{"name":{"at":"/name","from":"body"}}},
+      "POST /api/watchlist/crm-lists": {"action":"watchlist.crm_lists.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/watchlist/crm-lists","scope":{"crmListIds":{"at":"/crmListIds","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"watchListId":{"at":"/watchListId","from":"body"}}},
+      "POST /api/watchlist/{watchListId}/external-signals": {"action":"watchlist.external_signals.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/watchlist/{watchListId}/external-signals","scope":{"watchListId":{"at":"watchListId","from":"path"}}},
+      "PUT /api/campaigns/{campaignId}/dynamic-sender-exclusions": {"action":"campaigns.dynamic_sender_exclusions.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/dynamic-sender-exclusions","scope":{"campaignId":{"at":"campaignId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "PUT /api/campaigns/{campaignId}/export/{exportId}/email/{email}": {"action":"campaigns.export.email.write","effects":["write"],"method":"PUT","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/export/{exportId}/email/{email}","scope":{"campaignId":{"at":"campaignId","from":"path"},"email":{"at":"email","from":"path"},"exportId":{"at":"exportId","from":"path"}}},
+      "PUT /api/campaigns/{campaignId}/leads/{leadIdOrEmail}/steps/{stepId}/personalization": {"action":"campaigns.leads.steps.personalization.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/leads/{leadIdOrEmail}/steps/{stepId}/personalization","scope":{"campaignId":{"at":"campaignId","from":"path"},"leadIdOrEmail":{"at":"leadIdOrEmail","from":"path"},"stepId":{"at":"stepId","from":"path"}}},
+      "PUT /api/campaigns/{campaignId}/senders": {"action":"campaigns.senders.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.lemlist.com","path":"/api/campaigns/{campaignId}/senders","scope":{"campaignId":{"at":"campaignId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "PUT /api/sequences/{sequenceId}/steps/{stepId}/sender": {"action":"sequences.steps.sender.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.lemlist.com","path":"/api/sequences/{sequenceId}/steps/{stepId}/sender","scope":{"request":{"at":"","from":"body","type":"object"},"sequenceId":{"at":"sequenceId","from":"path"},"stepId":{"at":"stepId","from":"path"},"userId":{"at":"/userId","from":"body"}}},
+      "PUT /api/team/dynamic-sender-exclusions": {"action":"team.dynamic_sender_exclusions.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.lemlist.com","path":"/api/team/dynamic-sender-exclusions","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "PUT /api/watchlist/signals": {"action":"watchlist.signals.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.lemlist.com","path":"/api/watchlist/signals","scope":{}},
+      "connectEnrichmentProvider": {"action":"enrichments.providers.connection.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.lemlist.com","path":"/api/v2/enrichments/providers/{providerId}/connection","scope":{"apiKey":{"at":"/apiKey","from":"body"},"providerId":{"at":"providerId","from":"path"}}},
+      "createPersona": {"action":"database.personas.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/database/personas","scope":{"name":{"at":"/name","from":"body"}}},
+      "createSavedSearch": {"action":"database.saved_searches.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/database/saved-searches","scope":{"name":{"at":"/name","from":"body"}}},
+      "createView": {"action":"views.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/views","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "deletePersona": {"action":"database.personas.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/database/personas/{personaId}","scope":{"personaId":{"at":"personaId","from":"path"}}},
+      "deleteSavedSearch": {"action":"database.saved_searches.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/database/saved-searches/{savedSearchId}","scope":{"savedSearchId":{"at":"savedSearchId","from":"path"}}},
+      "deleteView": {"action":"views.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","params":["entity"],"path":"/api/views/{viewId}","scope":{"query":{"at":"","from":"query","type":"object"},"viewId":{"at":"viewId","from":"path"}}},
+      "disconnectEnrichmentProvider": {"action":"enrichments.providers.connection.delete","effects":["delete"],"method":"DELETE","origin":"https://api.lemlist.com","path":"/api/v2/enrichments/providers/{providerId}/connection","scope":{"providerId":{"at":"providerId","from":"path"}}},
+      "duplicateView": {"action":"views.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/views/{viewId}/duplicate","scope":{"request":{"at":"","from":"body","type":"object"},"viewId":{"at":"viewId","from":"path"}}},
+      "getEnrichmentWaterfall": {"action":"enrichments.waterfalls.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/v2/enrichments/waterfalls/{waterfallId}","scope":{"waterfallId":{"at":"waterfallId","from":"path"}}},
+      "getSavedSearch": {"action":"database.saved_searches.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/database/saved-searches/{savedSearchId}","scope":{"savedSearchId":{"at":"savedSearchId","from":"path"}}},
+      "getSenderPictureStatus": {"action":"sender_picture.mailboxes.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["userId"],"path":"/api/sender-picture/mailboxes","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"query","optional":true}}},
+      "getViewFields": {"action":"views.fields.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["entity"],"path":"/api/views/fields","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listDeliverabilityIncidents": {"action":"deliverability.incidents.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["type","state","userId","since","until","limit","skip"],"path":"/api/deliverability/incidents","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"query","optional":true}}},
+      "listDomainMailboxes": {"action":"domains_core.mailboxes.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["domainId"],"path":"/api/domains-core/mailboxes","scope":{"domainId":{"at":"domainId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listDomains": {"action":"domains_core.team_domains.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/domains-core/team-domains","scope":{}},
+      "listEnrichmentProviders": {"action":"enrichments.providers.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["type"],"path":"/api/v2/enrichments/providers","scope":{}},
+      "listEnrichmentWaterfalls": {"action":"enrichments.waterfalls.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["type"],"path":"/api/v2/enrichments/waterfalls","scope":{}},
+      "listLinkedinProfileViewsMembers": {"action":"watchlist.linkedin_profile_views.members.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","path":"/api/watchlist/linkedin-profile-views/members","scope":{}},
+      "listPersonas": {"action":"database.personas.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["mode"],"path":"/api/database/personas","scope":{}},
+      "listSavedSearches": {"action":"database.saved_searches.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["mode"],"path":"/api/database/saved-searches","scope":{}},
+      "listViews": {"action":"views.read","effects":["read"],"method":"GET","origin":"https://api.lemlist.com","params":["entity"],"path":"/api/views","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "orderDomainMailboxes": {"action":"domains_core.mailboxes.pay","body":"json","effects":["pay","write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/domains-core/{domainId}/mailboxes","scope":{"domainId":{"at":"domainId","from":"path"},"emails":{"at":"/emails","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "purchaseDomain": {"action":"domains_core.purchase.pay","body":"json","effects":["pay"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/domains-core/purchase","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "resetEnrichmentWaterfall": {"action":"enrichments.waterfalls.write","effects":["write"],"method":"PUT","origin":"https://api.lemlist.com","path":"/api/v2/enrichments/waterfalls/{waterfallId}/reset","scope":{"waterfallId":{"at":"waterfallId","from":"path"}}},
+      "searchDomains": {"action":"domains_core.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/domains-core/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "searchLinkedInPostEngagers": {"action":"database.people.linkedin_post_engagement.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/database/people/linkedin-post-engagement","scope":{"request":{"at":"","from":"body","type":"object"},"url":{"at":"/url","from":"body"}}},
+      "searchPeopleDatabase": {"action":"database.people.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/database/people","scope":{}},
+      "setViewTabs": {"action":"views.tabs.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.lemlist.com","path":"/api/views/tabs","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "syncSenderPicture": {"action":"sender_picture.write","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/sender-picture/sync","scope":{}},
+      "syncSenderPicture.json.a733d3bcf81d": {"action":"sender_picture.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.lemlist.com","path":"/api/sender-picture/sync","scope":{"email":{"at":"/email","from":"body","optional":true},"mailboxId":{"at":"/mailboxId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"/userId","from":"body","optional":true}}},
+      "updateDomainMailbox": {"action":"domains_core.mailboxes.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/domains-core/mailboxes/{mailboxId}","scope":{"assignToUserId":{"at":"/assignToUserId","from":"body"},"mailboxId":{"at":"mailboxId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateEnrichmentWaterfall": {"action":"enrichments.waterfalls.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/v2/enrichments/waterfalls/{waterfallId}","scope":{"waterfallId":{"at":"waterfallId","from":"path"}}},
+      "updateSavedSearch": {"action":"database.saved_searches.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/database/saved-searches/{savedSearchId}","scope":{"savedSearchId":{"at":"savedSearchId","from":"path"}}},
+      "updateView": {"action":"views.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.lemlist.com","path":"/api/views/{viewId}","scope":{"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"viewId":{"at":"viewId","from":"path"}}}
     }
   }
 }

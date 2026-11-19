@@ -81,6 +81,8 @@ export type PresetField = {
   paths?: string[][];
   credential?: boolean;
   oauth?: Json;
+  compose?: Json;
+  optional?: boolean;
 };
 export type PresetAction = { title: string; effects?: string[] };
 export type Preset = {
@@ -342,7 +344,58 @@ export const COMMON_PRESETS = [
   "gmail",
   "email",
 ];
-export const GENERIC_PRESETS = ["web", "ssh", "tcp", "custom_api", "mcp"];
+// Most important first within each group; presets not listed follow alphabetically.
+export const PRESET_ORDER = [
+  "web",
+  "ssh",
+  "tcp",
+  "custom_api",
+  "mcp",
+  "aws",
+  "google_cloud",
+  "google_drive",
+  "google_calendar",
+  "google_docs",
+  "google_sheets",
+  "slack",
+  "notion",
+  "linear",
+  "jira",
+  "confluence",
+  "gitlab",
+  "outlook",
+  "microsoft_teams",
+  "microsoft_onedrive",
+  "discord",
+  "telegram",
+  "stripe",
+  "hubspot",
+  "salesforce",
+  "airtable",
+  "asana",
+  "dropbox",
+  "zoom_api",
+  "zendesk",
+  "shopify",
+  "twilio",
+  "cloudflare_api",
+  "google_gemini",
+  "tinfoil_websearch",
+  "github_mcp",
+  "slack_mcp",
+  "notion_mcp",
+  "linear_mcp",
+  "atlassian",
+  "asana_mcp",
+  "sentry",
+  "stripe_mcp",
+  "supabase_mcp",
+  "cloudflare",
+  "vercel",
+  "figma",
+  "canva",
+  "context7",
+];
 const LOOPBACK = ["localhost", "127.0.0.1", "[::1]"];
 
 // Human input preserves UTF-8 bytes, including whitespace. Old canonical
@@ -1183,8 +1236,14 @@ const fieldsOf = (c?: Pick<Preset, "fields">) => c?.fields ?? [];
 // A field with no paths, such as an OAuth client ID, fills templates but is never stored on the connection.
 const plain = (c: Pick<Preset, "fields">) =>
   fieldsOf(c).filter((f) => !f.secret && paths(f).length);
-const fieldValue = (c: Connection | undefined, f: PresetField): Json =>
-  atPath(c, f.path ?? paths(f)[0]) ?? (f.list ? [] : f.json ? {} : "");
+const fieldValue = (
+  c: Connection | undefined,
+  f: PresetField,
+  preset?: Pick<Preset, "connection">,
+): Json =>
+  atPath(c, f.path ?? paths(f)[0]) ??
+  atPath(preset?.connection, f.path ?? paths(f)[0]) ??
+  (f.list ? [] : f.json ? {} : "");
 export const setupFields = (view: View, preset: string) =>
   fieldsOf(view.presets[preset]).filter((f) => !f.edit_only);
 export const clientFields = (view: View, name: string) =>
@@ -1192,7 +1251,7 @@ export const clientFields = (view: View, name: string) =>
 export const plainFields = (view: View, name: string) =>
   plain(presetOf(view, name)).map((f) => ({
     ...f,
-    value: fieldValue(connections(view)[name], f),
+    value: fieldValue(connections(view)[name], f, presetOf(view, name)),
   }));
 export const fieldText = (f: PresetField, value?: Json): string =>
   f.json
@@ -1225,6 +1284,20 @@ export function readField(f: PresetField, raw: string): Json {
   };
   return f.list ? listItems(v).map(read) : read(v);
 }
+// A composed credential is entered whole: any input enters it, and then every input not marked optional is required.
+const composed = (
+  template: Json,
+  inputs: PresetField[],
+  values: { [key: string]: Json | undefined },
+) => {
+  if (!inputs.some((c) => values[c.key])) return null;
+  const blank = inputs.find((c) => !c.optional && !values[c.key]);
+  if (blank) throw new Error(`Enter a value for ${blank.label}.`);
+  return filled(
+    template,
+    Object.fromEntries(inputs.map((c) => [c.key, values[c.key] ?? ""])),
+  );
+};
 
 // A grant template fills from the connection's plain settings and, when given, its client values; blank ones take their defaults.
 export function grantTemplate(
@@ -1328,6 +1401,14 @@ export function catalog(view: View) {
       replacement && view.presets[replacement] ? replacement : c.preset;
     counts.set(preset, (counts.get(preset) ?? 0) + 1);
   }
+  // A retired preset's name and title still find its replacement.
+  const aliases = new Map<string, string>();
+  for (const [name, preset] of Object.entries(view.presets))
+    if (preset.replaced_by)
+      aliases.set(
+        preset.replaced_by,
+        `${aliases.get(preset.replaced_by) ?? ""} ${name} ${preset.title}`,
+      );
   const groups = new Map(
     Object.keys(CATALOG_GROUPS).map((g) => [g, [] as CatalogEntry[]]),
   );
@@ -1338,9 +1419,12 @@ export function catalog(view: View) {
     if (preset.replaced_by && view.presets[preset.replaced_by]) continue;
     const group = preset.group ?? "api";
     if (!groups.has(group)) groups.set(group, []);
-    groups
-      .get(group)!
-      .push({ name, title: preset.title, connections: counts.get(name) ?? 0 });
+    groups.get(group)!.push({
+      name,
+      title: preset.title,
+      connections: counts.get(name) ?? 0,
+      aliases: aliases.get(name) ?? "",
+    });
   }
   const common: CatalogEntry[] = [];
   for (const entries of groups.values())
@@ -1351,13 +1435,14 @@ export function catalog(view: View) {
   common.sort(
     (a, b) => COMMON_PRESETS.indexOf(a.name) - COMMON_PRESETS.indexOf(b.name),
   );
-  groups.get("generic")?.sort((a, b) => {
-    const rank = (name: string) => {
-      const index = GENERIC_PRESETS.indexOf(name);
-      return index < 0 ? GENERIC_PRESETS.length : index;
-    };
-    return rank(a.name) - rank(b.name) || a.title.localeCompare(b.title);
-  });
+  const rank = (name: string) => {
+    const index = PRESET_ORDER.indexOf(name);
+    return index < 0 ? PRESET_ORDER.length : index;
+  };
+  for (const entries of groups.values())
+    entries.sort(
+      (a, b) => rank(a.name) - rank(b.name) || a.title.localeCompare(b.title),
+    );
   return [
     ...(common.length
       ? [{ group: "common", title: "Popular", presets: common }]
@@ -1372,7 +1457,12 @@ export function catalog(view: View) {
   ];
 }
 
-type CatalogEntry = { name: string; title: string; connections: number };
+type CatalogEntry = {
+  name: string;
+  title: string;
+  connections: number;
+  aliases: string;
+};
 type Slot = { value: string } & { [key: string]: string | undefined };
 
 export function apiSettings(view: View, name?: string): ApiSettings {
@@ -1885,9 +1975,15 @@ export const edits = {
                 monitor_host_id: view.host_id,
               }),
             }
-          : f.secret && values[f.key] === ""
-            ? null
-            : values[f.key];
+          : f.compose
+            ? composed(
+                f.compose,
+                fields.filter((c) => !paths(c).length),
+                values,
+              )
+            : f.secret && values[f.key] === ""
+              ? null
+              : values[f.key];
       if (!f.credential)
         for (const path of paths(f)) putPath(connection, path, value, setup);
       else if (value !== null) credentials[f.key] = value;
@@ -1941,10 +2037,12 @@ export const edits = {
     {
       api,
       values = {},
+      client = {},
       credentials = {},
     }: {
       api?: Partial<ApiSettings>;
       values?: { [key: string]: Json };
+      client?: { [key: string]: Json | undefined };
       credentials?: {
         [key: string]: { mode: "keep" | "replace"; value?: Json };
       };
@@ -1972,7 +2070,10 @@ export const edits = {
         for (const path of paths(f)) set(path, values[f.key]);
     for (const f of credentialFields(view, name)) {
       const { mode, value } = credentials[f.key] ?? {};
-      if (mode === "replace") {
+      const whole =
+        f.compose && composed(f.compose, clientFields(view, name), client);
+      if (whole) stored[f.key] = whole;
+      else if (mode === "replace") {
         if (value === "")
           throw new Error(
             `Enter a value for ${f.label}, or cancel the replacement.`,

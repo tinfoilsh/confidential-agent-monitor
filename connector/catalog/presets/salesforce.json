@@ -4,10 +4,115 @@
       "services": {
         "title": "Services"
       },
+      "services.apexrest": {
+        "title": "Apex REST"
+      },
+      "services.apexrest.execute": {
+        "title": "Run"
+      },
       "services.data": {
         "title": "Data"
       },
+      "services.data.actions": {
+        "title": "Actions"
+      },
+      "services.data.actions.execute": {
+        "title": "Run"
+      },
+      "services.data.chatter": {
+        "title": "Chatter"
+      },
+      "services.data.chatter.delete": {
+        "title": "Delete"
+      },
+      "services.data.chatter.publish": {
+        "title": "Publish"
+      },
+      "services.data.chatter.read": {
+        "title": "Read"
+      },
+      "services.data.composite": {
+        "title": "Composite"
+      },
+      "services.data.composite.sobjects": {
+        "title": "Sobjects"
+      },
+      "services.data.composite.sobjects.delete": {
+        "title": "Delete"
+      },
+      "services.data.composite.sobjects.read": {
+        "title": "Read"
+      },
+      "services.data.composite.sobjects.write": {
+        "title": "Create and edit"
+      },
+      "services.data.composite.write": {
+        "title": "Create and edit"
+      },
+      "services.data.connect": {
+        "title": "Connect"
+      },
+      "services.data.connect.read": {
+        "title": "Read"
+      },
+      "services.data.graphql": {
+        "title": "GraphQL"
+      },
+      "services.data.graphql.read": {
+        "title": "Read"
+      },
+      "services.data.graphql.write": {
+        "title": "Create and edit"
+      },
+      "services.data.jobs": {
+        "title": "Bulk jobs"
+      },
+      "services.data.jobs.ingest": {
+        "title": "Ingest"
+      },
+      "services.data.jobs.ingest.delete": {
+        "title": "Delete"
+      },
+      "services.data.jobs.ingest.read": {
+        "title": "Read"
+      },
+      "services.data.jobs.ingest.write": {
+        "title": "Create and edit"
+      },
+      "services.data.jobs.query": {
+        "title": "Query"
+      },
+      "services.data.jobs.query.delete": {
+        "title": "Delete"
+      },
+      "services.data.jobs.query.read": {
+        "title": "Read"
+      },
+      "services.data.jobs.query.write": {
+        "title": "Create and edit"
+      },
+      "services.data.process": {
+        "title": "Process"
+      },
+      "services.data.process.execute": {
+        "title": "Run"
+      },
+      "services.data.process.send": {
+        "title": "Send"
+      },
+      "services.data.quick_actions": {
+        "title": "Quick actions"
+      },
+      "services.data.quick_actions.send": {
+        "title": "Send"
+      },
       "services.data.read": {
+        "title": "Read"
+      },
+      "services.data.search": {
+        "title": "Search"
+      },
+      "services.data.search.read": {
         "title": "Read"
       },
       "services.data.sobjects": {
@@ -40,6 +145,15 @@
       "services.data.sobjects.contact.write": {
         "title": "Create and edit"
       },
+      "services.data.sobjects.delete": {
+        "title": "Delete"
+      },
+      "services.data.sobjects.files": {
+        "title": "Files"
+      },
+      "services.data.sobjects.files.write": {
+        "title": "Create and edit"
+      },
       "services.data.sobjects.lead": {
         "title": "Lead"
       },
@@ -60,6 +174,54 @@
       },
       "services.data.sobjects.read": {
         "title": "Read"
+      },
+      "services.data.sobjects.user": {
+        "title": "User"
+      },
+      "services.data.sobjects.user.password": {
+        "title": "Password"
+      },
+      "services.data.sobjects.user.password.admin": {
+        "title": "Manage"
+      },
+      "services.data.sobjects.write": {
+        "title": "Create and edit"
+      },
+      "services.data.tooling": {
+        "title": "Tooling"
+      },
+      "services.data.tooling.admin": {
+        "title": "Manage"
+      },
+      "services.data.tooling.execute": {
+        "title": "Run"
+      },
+      "services.data.tooling.read": {
+        "title": "Read"
+      },
+      "services.data.ui_api": {
+        "title": "UI API"
+      },
+      "services.data.ui_api.read": {
+        "title": "Read"
+      },
+      "services.data.ui_api.records": {
+        "title": "Records"
+      },
+      "services.data.ui_api.records.delete": {
+        "title": "Delete"
+      },
+      "services.data.ui_api.records.write": {
+        "title": "Create and edit"
+      },
+      "services.oauth2": {
+        "title": "OAuth 2.0"
+      },
+      "services.oauth2.userinfo": {
+        "title": "User info"
+      },
+      "services.oauth2.userinfo.read": {
+        "title": "Read"
       }
     },
     "connection": {
@@ -68,7 +230,7 @@
           {
             "header": "Authorization",
             "origin": "https://example.my.salesforce.com",
-            "path": "/services/data/v62.0",
+            "path": "/services",
             "prefix": "Bearer ",
             "value": "token"
           }
@@ -103,24 +265,116 @@
   },
   "title": "Salesforce",
   "http": {
+    "trailing_slash": true,
     "operations": {
-      "accounts.create": {"action":"services.data.sobjects.account.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/v62.0/sobjects/Account","scope":{"record":{"at":"","from":"body","type":"object"}}},
-      "accounts.delete": {"action":"services.data.sobjects.account.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/v62.0/sobjects/Account/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "accounts.update": {"action":"services.data.sobjects.account.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/v62.0/sobjects/Account/{id}","scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"}}},
-      "cases.create": {"action":"services.data.sobjects.case.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/v62.0/sobjects/Case","scope":{"record":{"at":"","from":"body","type":"object"}}},
-      "cases.delete": {"action":"services.data.sobjects.case.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/v62.0/sobjects/Case/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "cases.update": {"action":"services.data.sobjects.case.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/v62.0/sobjects/Case/{id}","scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"}}},
-      "contacts.create": {"action":"services.data.sobjects.contact.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/v62.0/sobjects/Contact","scope":{"record":{"at":"","from":"body","type":"object"}}},
-      "contacts.delete": {"action":"services.data.sobjects.contact.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/v62.0/sobjects/Contact/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "contacts.update": {"action":"services.data.sobjects.contact.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/v62.0/sobjects/Contact/{id}","scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"}}},
-      "leads.create": {"action":"services.data.sobjects.lead.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/v62.0/sobjects/Lead","scope":{"record":{"at":"","from":"body","type":"object"}}},
-      "leads.delete": {"action":"services.data.sobjects.lead.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/v62.0/sobjects/Lead/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "leads.update": {"action":"services.data.sobjects.lead.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/v62.0/sobjects/Lead/{id}","scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"}}},
-      "opportunities.create": {"action":"services.data.sobjects.opportunity.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/v62.0/sobjects/Opportunity","scope":{"record":{"at":"","from":"body","type":"object"}}},
-      "opportunities.delete": {"action":"services.data.sobjects.opportunity.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/v62.0/sobjects/Opportunity/{id}","scope":{"id":{"at":"id","from":"path"}}},
-      "opportunities.update": {"action":"services.data.sobjects.opportunity.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/v62.0/sobjects/Opportunity/{id}","scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"}}},
-      "query": {"action":"services.data.read","effects":["read"],"method":"GET","origin":"{origin}","params":["q"],"path":"/services/data/v62.0/query","scope":{}},
-      "sobjects.get": {"action":"services.data.sobjects.read","effects":["read"],"method":"GET","origin":"{origin}","params":["fields"],"path":"/services/data/v62.0/sobjects/{object}/{id}","scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}}
+      "accounts.create": {"action":"services.data.sobjects.account.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}","path_patterns":{"object":"(?i:account)","version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"object","from":"path"},"record":{"at":"","from":"body","type":"object"}}},
+      "accounts.delete": {"action":"services.data.sobjects.account.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{id}","path_patterns":{"object":"(?i:account)","version":"v[0-9]+\\.[0-9]+"},"scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+      "accounts.delete.external": {"action":"services.data.sobjects.account.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{field}/{value}","path_patterns":{"object":"(?i:account)","version":"v[0-9]+\\.[0-9]+"},"scope":{"field":{"at":"field","from":"path"},"object":{"at":"object","from":"path"},"value":{"at":"value","from":"path"}}},
+      "accounts.update": {"action":"services.data.sobjects.account.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{id}","path_patterns":{"object":"(?i:account)","version":"v[0-9]+\\.[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+      "accounts.upsert": {"action":"services.data.sobjects.account.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{field}/{value}","path_patterns":{"object":"(?i:account)","version":"v[0-9]+\\.[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"field":{"at":"field","from":"path"},"object":{"at":"object","from":"path"},"value":{"at":"value","from":"path"}}},
+      "actions.custom.invoke": {"action":"services.data.actions.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/actions/custom/{type}/{invocable_action}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"inputs":{"at":"","from":"body","type":"object"},"invocable_action":{"at":"invocable_action","from":"path"},"type":{"at":"type","from":"path"}}},
+      "actions.standard.invoke": {"action":"services.data.actions.execute","body":"json","effects":["execute","send","write"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/actions/standard/{invocable_action}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"inputs":{"at":"","from":"body","type":"object"},"invocable_action":{"at":"invocable_action","from":"path"}}},
+      "apexrest": {"action":"services.apexrest.execute","body":"any","effects":["execute"],"method":"*","open_params":true,"origin":"{origin}","path":"/services/apexrest/{path*}","scope":{"path":{"at":"path","from":"path"}}},
+      "cases.create": {"action":"services.data.sobjects.case.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}","path_patterns":{"object":"(?i:case)","version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"object","from":"path"},"record":{"at":"","from":"body","type":"object"}}},
+      "cases.delete": {"action":"services.data.sobjects.case.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{id}","path_patterns":{"object":"(?i:case)","version":"v[0-9]+\\.[0-9]+"},"scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+      "cases.delete.external": {"action":"services.data.sobjects.case.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{field}/{value}","path_patterns":{"object":"(?i:case)","version":"v[0-9]+\\.[0-9]+"},"scope":{"field":{"at":"field","from":"path"},"object":{"at":"object","from":"path"},"value":{"at":"value","from":"path"}}},
+      "cases.update": {"action":"services.data.sobjects.case.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{id}","path_patterns":{"object":"(?i:case)","version":"v[0-9]+\\.[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+      "cases.upsert": {"action":"services.data.sobjects.case.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{field}/{value}","path_patterns":{"object":"(?i:case)","version":"v[0-9]+\\.[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"field":{"at":"field","from":"path"},"object":{"at":"object","from":"path"},"value":{"at":"value","from":"path"}}},
+      "chatter.comments.post": {"action":"services.data.chatter.publish","body":"json","effects":["publish"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/chatter/feed-elements/{feed_element}/capabilities/comments/items","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"comment":{"at":"","from":"body","type":"object"},"feed_element":{"at":"feed_element","from":"path"}}},
+      "chatter.feed_elements.delete": {"action":"services.data.chatter.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/chatter/feed-elements/{feed_element}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"feed_element":{"at":"feed_element","from":"path"}}},
+      "chatter.feed_elements.post": {"action":"services.data.chatter.publish","body":"json","effects":["publish"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/chatter/feed-elements","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"post":{"at":"","from":"body","type":"object"}}},
+      "chatter.get": {"action":"services.data.chatter.read","effects":["read"],"method":"GET","origin":"{origin}","params":["density","elementsPerBundle","filterGroup","includeFields","page","pageSize","q","recentCommentCount","sort","sortParam","updatedSince"],"path":"/services/data/{version}/chatter/{path*}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"path":{"at":"path","from":"path"}}},
+      "composite": {"action":"services.data.composite.write","body":"json","effects":["write","delete"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/composite","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "composite.batch": {"action":"services.data.composite.write","body":"json","effects":["write","delete"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/composite/batch","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "composite.graph": {"action":"services.data.composite.write","body":"json","effects":["write","delete"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/composite/graph","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "composite.sobjects.create": {"action":"services.data.composite.sobjects.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/composite/sobjects","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "composite.sobjects.delete": {"action":"services.data.composite.sobjects.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["allOrNone","ids"],"path":"/services/data/{version}/composite/sobjects","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"ids":{"at":"ids","from":"query"}}},
+      "composite.sobjects.retrieve": {"action":"services.data.composite.sobjects.read","effects":["read"],"method":"GET","origin":"{origin}","params":["fields","ids"],"path":"/services/data/{version}/composite/sobjects/{object}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"object","from":"path"}}},
+      "composite.sobjects.retrieve.post": {"action":"services.data.composite.sobjects.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/composite/sobjects/{object}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"object","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "composite.sobjects.update": {"action":"services.data.composite.sobjects.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/composite/sobjects","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "composite.sobjects.upsert": {"action":"services.data.composite.sobjects.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/composite/sobjects/{object}/{field}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"field":{"at":"field","from":"path"},"object":{"at":"object","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "composite.tree": {"action":"services.data.composite.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/composite/tree/{object}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"object","from":"path"},"records":{"at":"","from":"body","type":"object"}}},
+      "connect.get": {"action":"services.data.connect.read","effects":["read"],"method":"GET","origin":"{origin}","params":["density","elementsPerBundle","filterGroup","includeFields","page","pageSize","q","recentCommentCount","sort","sortParam","updatedSince"],"path":"/services/data/{version}/connect/{path*}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"path":{"at":"path","from":"path"}}},
+      "contacts.create": {"action":"services.data.sobjects.contact.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}","path_patterns":{"object":"(?i:contact)","version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"object","from":"path"},"record":{"at":"","from":"body","type":"object"}}},
+      "contacts.delete": {"action":"services.data.sobjects.contact.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{id}","path_patterns":{"object":"(?i:contact)","version":"v[0-9]+\\.[0-9]+"},"scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+      "contacts.delete.external": {"action":"services.data.sobjects.contact.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{field}/{value}","path_patterns":{"object":"(?i:contact)","version":"v[0-9]+\\.[0-9]+"},"scope":{"field":{"at":"field","from":"path"},"object":{"at":"object","from":"path"},"value":{"at":"value","from":"path"}}},
+      "contacts.update": {"action":"services.data.sobjects.contact.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{id}","path_patterns":{"object":"(?i:contact)","version":"v[0-9]+\\.[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+      "contacts.upsert": {"action":"services.data.sobjects.contact.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{field}/{value}","path_patterns":{"object":"(?i:contact)","version":"v[0-9]+\\.[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"field":{"at":"field","from":"path"},"object":{"at":"object","from":"path"},"value":{"at":"value","from":"path"}}},
+      "files.create": {"action":"services.data.sobjects.files.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}","path_patterns":{"object":"(?i:attachment|contentversion|document)","version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"object","from":"path"}}},
+      "files.update": {"action":"services.data.sobjects.files.write","body":"any","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{id}","path_patterns":{"object":"(?i:attachment|contentversion|document)","version":"v[0-9]+\\.[0-9]+"},"scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+      "graphql.mutation": {"action":"services.data.graphql.write","body":"graphql","effects":["write","delete"],"graphql":{"field":"*","operation":"mutation"},"method":"POST","origin":"{origin}","path":"/services/data/{version}/graphql","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{}},
+      "graphql.query": {"action":"services.data.graphql.read","body":"graphql","effects":["read"],"graphql":{"field":"*","operation":"query"},"method":"POST","origin":"{origin}","path":"/services/data/{version}/graphql","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{}},
+      "jobs.ingest.create.delete": {"action":"services.data.jobs.ingest.delete","body":"json","effects":["delete"],"fields":{"/operation":"delete"},"method":"POST","origin":"{origin}","path":"/services/data/{version}/jobs/ingest","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"/object","from":"body"}}},
+      "jobs.ingest.create.hard_delete": {"action":"services.data.jobs.ingest.delete","body":"json","effects":["delete"],"fields":{"/operation":"hardDelete"},"method":"POST","origin":"{origin}","path":"/services/data/{version}/jobs/ingest","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"/object","from":"body"}}},
+      "jobs.ingest.create.insert": {"action":"services.data.jobs.ingest.write","body":"json","effects":["write"],"fields":{"/operation":"insert"},"method":"POST","origin":"{origin}","path":"/services/data/{version}/jobs/ingest","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"/object","from":"body"}}},
+      "jobs.ingest.create.update": {"action":"services.data.jobs.ingest.write","body":"json","effects":["write"],"fields":{"/operation":"update"},"method":"POST","origin":"{origin}","path":"/services/data/{version}/jobs/ingest","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"/object","from":"body"}}},
+      "jobs.ingest.create.upsert": {"action":"services.data.jobs.ingest.write","body":"json","effects":["write"],"fields":{"/operation":"upsert"},"method":"POST","origin":"{origin}","path":"/services/data/{version}/jobs/ingest","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"/object","from":"body"}}},
+      "jobs.ingest.delete": {"action":"services.data.jobs.ingest.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/jobs/ingest/{job}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"job":{"at":"job","from":"path"}}},
+      "jobs.ingest.get": {"action":"services.data.jobs.ingest.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/services/data/{version}/jobs/ingest/{job}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"job":{"at":"job","from":"path"}}},
+      "jobs.ingest.list": {"action":"services.data.jobs.ingest.read","effects":["read"],"method":"GET","origin":"{origin}","params":["concurrencyMode","isPkChunkingEnabled","jobType","queryLocator"],"path":"/services/data/{version}/jobs/ingest","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{}},
+      "jobs.ingest.results": {"action":"services.data.jobs.ingest.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/services/data/{version}/jobs/ingest/{job}/{result}","path_patterns":{"result":"failedResults|successfulResults|unprocessedrecords","version":"v[0-9]+\\.[0-9]+"},"scope":{"job":{"at":"job","from":"path"},"result":{"at":"result","from":"path"}}},
+      "jobs.ingest.update": {"action":"services.data.jobs.ingest.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/jobs/ingest/{job}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"job":{"at":"job","from":"path"},"state":{"at":"/state","from":"body"}}},
+      "jobs.ingest.upload": {"action":"services.data.jobs.ingest.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/services/data/{version}/jobs/ingest/{job}/batches","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"job":{"at":"job","from":"path"}}},
+      "jobs.query.create": {"action":"services.data.jobs.query.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/jobs/query","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"query":{"at":"/query","from":"body"}}},
+      "jobs.query.delete": {"action":"services.data.jobs.query.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/jobs/query/{job}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"job":{"at":"job","from":"path"}}},
+      "jobs.query.get": {"action":"services.data.jobs.query.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/services/data/{version}/jobs/query/{job}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"job":{"at":"job","from":"path"}}},
+      "jobs.query.list": {"action":"services.data.jobs.query.read","effects":["read"],"method":"GET","origin":"{origin}","params":["concurrencyMode","isPkChunkingEnabled","jobType","queryLocator"],"path":"/services/data/{version}/jobs/query","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{}},
+      "jobs.query.results": {"action":"services.data.jobs.query.read","effects":["read"],"method":"GET","origin":"{origin}","params":["locator","maxRecords"],"path":"/services/data/{version}/jobs/query/{job}/{result}","path_patterns":{"result":"results|resultPages","version":"v[0-9]+\\.[0-9]+"},"scope":{"job":{"at":"job","from":"path"},"result":{"at":"result","from":"path"}}},
+      "jobs.query.update": {"action":"services.data.jobs.query.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/jobs/query/{job}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"job":{"at":"job","from":"path"},"state":{"at":"/state","from":"body"}}},
+      "leads.create": {"action":"services.data.sobjects.lead.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}","path_patterns":{"object":"(?i:lead)","version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"object","from":"path"},"record":{"at":"","from":"body","type":"object"}}},
+      "leads.delete": {"action":"services.data.sobjects.lead.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{id}","path_patterns":{"object":"(?i:lead)","version":"v[0-9]+\\.[0-9]+"},"scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+      "leads.delete.external": {"action":"services.data.sobjects.lead.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{field}/{value}","path_patterns":{"object":"(?i:lead)","version":"v[0-9]+\\.[0-9]+"},"scope":{"field":{"at":"field","from":"path"},"object":{"at":"object","from":"path"},"value":{"at":"value","from":"path"}}},
+      "leads.update": {"action":"services.data.sobjects.lead.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{id}","path_patterns":{"object":"(?i:lead)","version":"v[0-9]+\\.[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+      "leads.upsert": {"action":"services.data.sobjects.lead.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{field}/{value}","path_patterns":{"object":"(?i:lead)","version":"v[0-9]+\\.[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"field":{"at":"field","from":"path"},"object":{"at":"object","from":"path"},"value":{"at":"value","from":"path"}}},
+      "limits": {"action":"services.data.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/services/data/{version}/limits","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{}},
+      "opportunities.create": {"action":"services.data.sobjects.opportunity.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}","path_patterns":{"object":"(?i:opportunity)","version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"object","from":"path"},"record":{"at":"","from":"body","type":"object"}}},
+      "opportunities.delete": {"action":"services.data.sobjects.opportunity.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{id}","path_patterns":{"object":"(?i:opportunity)","version":"v[0-9]+\\.[0-9]+"},"scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+      "opportunities.delete.external": {"action":"services.data.sobjects.opportunity.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{field}/{value}","path_patterns":{"object":"(?i:opportunity)","version":"v[0-9]+\\.[0-9]+"},"scope":{"field":{"at":"field","from":"path"},"object":{"at":"object","from":"path"},"value":{"at":"value","from":"path"}}},
+      "opportunities.update": {"action":"services.data.sobjects.opportunity.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{id}","path_patterns":{"object":"(?i:opportunity)","version":"v[0-9]+\\.[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+      "opportunities.upsert": {"action":"services.data.sobjects.opportunity.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{field}/{value}","path_patterns":{"object":"(?i:opportunity)","version":"v[0-9]+\\.[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"field":{"at":"field","from":"path"},"object":{"at":"object","from":"path"},"value":{"at":"value","from":"path"}}},
+      "process.approvals.submit": {"action":"services.data.process.send","body":"json","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/process/approvals","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"requests":{"at":"","from":"body","type":"object"}}},
+      "process.rules.trigger": {"action":"services.data.process.execute","body":"json","effects":["execute","write"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/process/rules","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "query": {"action":"services.data.read","effects":["read"],"method":"GET","origin":"{origin}","params":["explain","q"],"path":"/services/data/{version}/query","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{}},
+      "query.all": {"action":"services.data.read","effects":["read"],"method":"GET","origin":"{origin}","params":["explain","q"],"path":"/services/data/{version}/queryAll","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{}},
+      "query.all.more": {"action":"services.data.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/services/data/{version}/queryAll/{locator}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"locator":{"at":"locator","from":"path"}}},
+      "query.more": {"action":"services.data.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/services/data/{version}/query/{locator}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"locator":{"at":"locator","from":"path"}}},
+      "quickactions.invoke": {"action":"services.data.quick_actions.send","body":"json","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/quickActions/{quick_action}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"input":{"at":"","from":"body","type":"object"},"quick_action":{"at":"quick_action","from":"path"}}},
+      "resources": {"action":"services.data.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/services/data/{version}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{}},
+      "resources.get": {"action":"services.data.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","q"],"path":"/services/data/{version}/{resource}","path_patterns":{"resource":"appMenu|compactLayouts|quickActions|recent|scheduling|tabs|theme","version":"v[0-9]+\\.[0-9]+"},"scope":{"resource":{"at":"resource","from":"path"}}},
+      "resources.subresource.get": {"action":"services.data.read","effects":["read"],"method":"GET","origin":"{origin}","params":["actions","ids","language","limit","q","sObjectName","sObjects","topCategory"],"path":"/services/data/{version}/{resource}/{path*}","path_patterns":{"resource":"actions|appMenu|consent|knowledgeManagement|limits|named|process|quickActions|support","version":"v[0-9]+\\.[0-9]+"},"scope":{"path":{"at":"path","from":"path"},"resource":{"at":"resource","from":"path"}}},
+      "search": {"action":"services.data.search.read","effects":["read"],"method":"GET","origin":"{origin}","params":["q"],"path":"/services/data/{version}/search","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{}},
+      "search.parameterized": {"action":"services.data.search.read","effects":["read"],"method":"GET","origin":"{origin}","params":["dataCategory","defaultLimit","division","fields","in","metadata","netWorkIds","offset","overallLimit","pricebookId","q","snippet","sobject","sobjects","spellCorrection","updateTracking","updateViewStat"],"path":"/services/data/{version}/parameterizedSearch","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{}},
+      "search.parameterized.post": {"action":"services.data.search.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/parameterizedSearch","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"search":{"at":"","from":"body","type":"object"}}},
+      "search.resource": {"action":"services.data.search.read","effects":["read"],"method":"GET","origin":"{origin}","params":["articleTypes","channel","groupId","ignoreUnsupportedSObjects","language","limit","publishStatus","q","sobject","topics","type","userId","validationStatus"],"path":"/services/data/{version}/search/{resource}","path_patterns":{"resource":"layout|scopeOrder|suggestions|suggestSearchQueries|suggestTitleMatches","version":"v[0-9]+\\.[0-9]+"},"scope":{"resource":{"at":"resource","from":"path"}}},
+      "sobjects.create": {"action":"services.data.sobjects.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}","path_patterns":{"object":"(?i:[^acdlo].*|a(?:|[^ct].*|c(?:|[^c].*|c(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^t].*|t.+)))))|t(?:|[^t].*|t(?:|[^a].*|a(?:|[^c].*|c(?:|[^h].*|h(?:|[^m].*|m(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t.+)))))))))|c(?:|[^ao].*|a(?:|[^s].*|s(?:|[^e].*|e.+))|o(?:|[^n].*|n(?:|[^t].*|t(?:|[^ae].*|a(?:|[^c].*|c(?:|[^t].*|t.+))|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^v].*|v(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n.+)))))))))))))|d(?:|[^o].*|o(?:|[^c].*|c(?:|[^u].*|u(?:|[^m].*|m(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t.+)))))))|l(?:|[^e].*|e(?:|[^a].*|a(?:|[^d].*|d.+)))|o(?:|[^p].*|p(?:|[^p].*|p(?:|[^o].*|o(?:|[^r].*|r(?:|[^t].*|t(?:|[^u].*|u(?:|[^n].*|n(?:|[^i].*|i(?:|[^t].*|t(?:|[^y].*|y.+)))))))))))","version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"object","from":"path"},"record":{"at":"","from":"body","type":"object"}}},
+      "sobjects.delete": {"action":"services.data.sobjects.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{id}","path_patterns":{"object":"(?i:[^aclo].*|a(?:|[^c].*|c(?:|[^c].*|c(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^t].*|t.+))))))|c(?:|[^ao].*|a(?:|[^s].*|s(?:|[^e].*|e.+))|o(?:|[^n].*|n(?:|[^t].*|t(?:|[^a].*|a(?:|[^c].*|c(?:|[^t].*|t.+))))))|l(?:|[^e].*|e(?:|[^a].*|a(?:|[^d].*|d.+)))|o(?:|[^p].*|p(?:|[^p].*|p(?:|[^o].*|o(?:|[^r].*|r(?:|[^t].*|t(?:|[^u].*|u(?:|[^n].*|n(?:|[^i].*|i(?:|[^t].*|t(?:|[^y].*|y.+)))))))))))","version":"v[0-9]+\\.[0-9]+"},"scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+      "sobjects.delete.external": {"action":"services.data.sobjects.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{field}/{value}","path_patterns":{"object":"(?i:[^aclosu].*|a(?:|[^c].*|c(?:|[^c].*|c(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^t].*|t.+))))))|c(?:|[^ao].*|a(?:|[^s].*|s(?:|[^e].*|e.+))|o(?:|[^n].*|n(?:|[^t].*|t(?:|[^a].*|a(?:|[^c].*|c(?:|[^t].*|t.+))))))|l(?:|[^e].*|e(?:|[^a].*|a(?:|[^d].*|d.+)))|o(?:|[^p].*|p(?:|[^p].*|p(?:|[^o].*|o(?:|[^r].*|r(?:|[^t].*|t(?:|[^u].*|u(?:|[^n].*|n(?:|[^i].*|i(?:|[^t].*|t(?:|[^y].*|y.+))))))))))|s(?:|[^e].*|e(?:|[^l].*|l(?:|[^f].*|f(?:|[^s].*|s(?:|[^e].*|e(?:|[^r].*|r(?:|[^v].*|v(?:|[^i].*|i(?:|[^c].*|c(?:|[^e].*|e(?:|[^u].*|u(?:|[^s].*|s(?:|[^e].*|e(?:|[^r].*|r.+))))))))))))))|u(?:|[^s].*|s(?:|[^e].*|e(?:|[^r].*|r.+))))","version":"v[0-9]+\\.[0-9]+"},"scope":{"field":{"at":"field","from":"path"},"object":{"at":"object","from":"path"},"value":{"at":"value","from":"path"}}},
+      "sobjects.describe.basic": {"action":"services.data.sobjects.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"object","from":"path"}}},
+      "sobjects.get": {"action":"services.data.sobjects.read","effects":["read"],"method":"GET","origin":"{origin}","params":["fields"],"path":"/services/data/{version}/sobjects/{object}/{id}","path_patterns":{"id":"[a-zA-Z0-9]{15}(?:[a-zA-Z0-9]{3})?","version":"v[0-9]+\\.[0-9]+"},"scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+      "sobjects.list": {"action":"services.data.sobjects.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/services/data/{version}/sobjects","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{}},
+      "sobjects.quickactions.invoke": {"action":"services.data.quick_actions.send","body":"json","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/quickActions/{quick_action}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"input":{"at":"","from":"body","type":"object"},"object":{"at":"object","from":"path"},"quick_action":{"at":"quick_action","from":"path"}}},
+      "sobjects.resource.get": {"action":"services.data.sobjects.read","effects":["read"],"method":"GET","origin":"{origin}","params":["description","end","language","limit","start","subject"],"path":"/services/data/{version}/sobjects/{object}/{resource}","path_patterns":{"resource":"describe|deleted|updated|eventSchema|listviews|quickActions|suggestedArticles","version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"object","from":"path"},"resource":{"at":"resource","from":"path"}}},
+      "sobjects.subresource.get": {"action":"services.data.sobjects.read","effects":["read"],"method":"GET","origin":"{origin}","params":["fields","limit","offset"],"path":"/services/data/{version}/sobjects/{object}/{resource}/{path*}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"object","from":"path"},"path":{"at":"path","from":"path"},"resource":{"at":"resource","from":"path"}}},
+      "sobjects.update": {"action":"services.data.sobjects.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{id}","path_patterns":{"object":"(?i:[^acdlo].*|a(?:|[^ct].*|c(?:|[^c].*|c(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^t].*|t.+)))))|t(?:|[^t].*|t(?:|[^a].*|a(?:|[^c].*|c(?:|[^h].*|h(?:|[^m].*|m(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t.+)))))))))|c(?:|[^ao].*|a(?:|[^s].*|s(?:|[^e].*|e.+))|o(?:|[^n].*|n(?:|[^t].*|t(?:|[^ae].*|a(?:|[^c].*|c(?:|[^t].*|t.+))|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^v].*|v(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n.+)))))))))))))|d(?:|[^o].*|o(?:|[^c].*|c(?:|[^u].*|u(?:|[^m].*|m(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t.+)))))))|l(?:|[^e].*|e(?:|[^a].*|a(?:|[^d].*|d.+)))|o(?:|[^p].*|p(?:|[^p].*|p(?:|[^o].*|o(?:|[^r].*|r(?:|[^t].*|t(?:|[^u].*|u(?:|[^n].*|n(?:|[^i].*|i(?:|[^t].*|t(?:|[^y].*|y.+)))))))))))","version":"v[0-9]+\\.[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+      "sobjects.upsert": {"action":"services.data.sobjects.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{field}/{value}","path_patterns":{"object":"(?i:[^aclo].*|a(?:|[^c].*|c(?:|[^c].*|c(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^t].*|t.+))))))|c(?:|[^ao].*|a(?:|[^s].*|s(?:|[^e].*|e.+))|o(?:|[^n].*|n(?:|[^t].*|t(?:|[^a].*|a(?:|[^c].*|c(?:|[^t].*|t.+))))))|l(?:|[^e].*|e(?:|[^a].*|a(?:|[^d].*|d.+)))|o(?:|[^p].*|p(?:|[^p].*|p(?:|[^o].*|o(?:|[^r].*|r(?:|[^t].*|t(?:|[^u].*|u(?:|[^n].*|n(?:|[^i].*|i(?:|[^t].*|t(?:|[^y].*|y.+)))))))))))","version":"v[0-9]+\\.[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"field":{"at":"field","from":"path"},"object":{"at":"object","from":"path"},"value":{"at":"value","from":"path"}}},
+      "tooling.execute_anonymous": {"action":"services.data.tooling.execute","effects":["execute"],"method":"GET","origin":"{origin}","params":["anonymousBody"],"path":"/services/data/{version}/tooling/executeAnonymous","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"code":{"at":"anonymousBody","from":"query"}}},
+      "tooling.query.more": {"action":"services.data.tooling.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/services/data/{version}/tooling/query/{locator}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"locator":{"at":"locator","from":"path"}}},
+      "tooling.read": {"action":"services.data.tooling.read","effects":["read"],"method":"GET","origin":"{origin}","params":["q","type"],"path":"/services/data/{version}/tooling/{resource}","path_patterns":{"resource":"completions|query|search|sobjects","version":"v[0-9]+\\.[0-9]+"},"scope":{"resource":{"at":"resource","from":"path"}}},
+      "tooling.run_tests": {"action":"services.data.tooling.execute","body":"json","effects":["execute"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/tooling/{run}","path_patterns":{"run":"runTestsAsynchronous|runTestsSynchronous","version":"v[0-9]+\\.[0-9]+"},"scope":{"run":{"at":"run","from":"path"},"tests":{"at":"","from":"body","type":"object"}}},
+      "tooling.sobjects.create": {"action":"services.data.tooling.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/tooling/sobjects/{object}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"object","from":"path"},"record":{"at":"","from":"body","type":"object"}}},
+      "tooling.sobjects.delete": {"action":"services.data.tooling.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/tooling/sobjects/{object}/{id}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+      "tooling.sobjects.describe": {"action":"services.data.tooling.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/services/data/{version}/tooling/sobjects/{object}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"object","from":"path"}}},
+      "tooling.sobjects.get": {"action":"services.data.tooling.read","effects":["read"],"method":"GET","origin":"{origin}","params":["fields"],"path":"/services/data/{version}/tooling/sobjects/{object}/{path*}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"object":{"at":"object","from":"path"},"path":{"at":"path","from":"path"}}},
+      "tooling.sobjects.update": {"action":"services.data.tooling.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/tooling/sobjects/{object}/{id}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+      "ui_api.get": {"action":"services.data.ui_api.read","effects":["read"],"method":"GET","origin":"{origin}","params":["childRelationships","dependentFieldBindings","fields","formFactor","layoutTypes","modes","objectApiNames","optionalFields","page","pageSize","pageToken","q","recordTypeId","searchType","sortBy","updateMru","where"],"path":"/services/data/{version}/ui-api/{path*}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"path":{"at":"path","from":"path"}}},
+      "ui_api.list_records.post": {"action":"services.data.ui_api.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/ui-api/list-records/{object}/{list_view}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"list_view":{"at":"list_view","from":"path"},"object":{"at":"object","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "ui_api.records.create": {"action":"services.data.ui_api.records.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/ui-api/records","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"record":{"at":"","from":"body","type":"object"}}},
+      "ui_api.records.delete": {"action":"services.data.ui_api.records.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/ui-api/records/{id}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"id":{"at":"id","from":"path"}}},
+      "ui_api.records.update": {"action":"services.data.ui_api.records.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/{version}/ui-api/records/{id}","path_patterns":{"version":"v[0-9]+\\.[0-9]+"},"scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"}}},
+      "userinfo": {"action":"services.oauth2.userinfo.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/services/oauth2/userinfo","scope":{}},
+      "users.password.reset": {"action":"services.data.sobjects.user.password.admin","effects":["admin","send"],"method":"DELETE","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{id}/password","path_patterns":{"id":"[a-zA-Z0-9]{15}(?:[a-zA-Z0-9]{3})?","object":"(?i:user|selfserviceuser)","version":"v[0-9]+\\.[0-9]+"},"scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+      "users.password.set": {"action":"services.data.sobjects.user.password.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/services/data/{version}/sobjects/{object}/{id}/password","path_patterns":{"id":"[a-zA-Z0-9]{15}(?:[a-zA-Z0-9]{3})?","object":"(?i:user|selfserviceuser)","version":"v[0-9]+\\.[0-9]+"},"scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"},"password":{"at":"","from":"body","type":"object"}}},
+      "versions": {"action":"services.data.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/services/data","scope":{}}
     }
   }
 }

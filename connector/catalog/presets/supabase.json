@@ -1,6 +1,288 @@
 {
   "catalog": {
     "actions": {
+      "auth": {
+        "title": "Auth"
+      },
+      "auth.admin": {
+        "title": "Manage"
+      },
+      "auth.admin.audit": {
+        "title": "Audit"
+      },
+      "auth.admin.audit.read": {
+        "title": "Read"
+      },
+      "auth.admin.custom_providers": {
+        "title": "Custom providers"
+      },
+      "auth.admin.custom_providers.admin": {
+        "title": "Manage"
+      },
+      "auth.admin.custom_providers.read": {
+        "title": "Read"
+      },
+      "auth.admin.oauth": {
+        "title": "Oauth"
+      },
+      "auth.admin.oauth.clients": {
+        "title": "Clients"
+      },
+      "auth.admin.oauth.clients.admin": {
+        "title": "Manage"
+      },
+      "auth.admin.oauth.clients.read": {
+        "title": "Read"
+      },
+      "auth.admin.oauth.clients.secret": {
+        "title": "Secret"
+      },
+      "auth.admin.oauth.clients.secret.admin": {
+        "title": "Manage"
+      },
+      "auth.admin.sso": {
+        "title": "Sso"
+      },
+      "auth.admin.sso.providers": {
+        "title": "Providers"
+      },
+      "auth.admin.sso.providers.admin": {
+        "title": "Manage"
+      },
+      "auth.admin.sso.providers.read": {
+        "title": "Read"
+      },
+      "auth.admin.users": {
+        "title": "Users"
+      },
+      "auth.admin.users.admin": {
+        "title": "Manage"
+      },
+      "auth.admin.users.factors": {
+        "title": "Factors"
+      },
+      "auth.admin.users.factors.admin": {
+        "title": "Manage"
+      },
+      "auth.admin.users.factors.read": {
+        "title": "Read"
+      },
+      "auth.admin.users.links": {
+        "title": "Links"
+      },
+      "auth.admin.users.links.admin": {
+        "title": "Manage"
+      },
+      "auth.admin.users.read": {
+        "title": "Read"
+      },
+      "auth.authorize": {
+        "title": "Authorize"
+      },
+      "auth.authorize.read": {
+        "title": "Read"
+      },
+      "auth.callback": {
+        "title": "Callback"
+      },
+      "auth.callback.write": {
+        "title": "Create and edit"
+      },
+      "auth.factors": {
+        "title": "Factors"
+      },
+      "auth.factors.admin": {
+        "title": "Manage"
+      },
+      "auth.factors.challenge": {
+        "title": "Challenge"
+      },
+      "auth.factors.challenge.send": {
+        "title": "Send"
+      },
+      "auth.factors.recovery_codes": {
+        "title": "Recovery codes"
+      },
+      "auth.factors.recovery_codes.admin": {
+        "title": "Manage"
+      },
+      "auth.factors.recovery_codes.read": {
+        "title": "Read"
+      },
+      "auth.factors.recovery_codes.write": {
+        "title": "Create and edit"
+      },
+      "auth.factors.write": {
+        "title": "Create and edit"
+      },
+      "auth.health": {
+        "title": "Health"
+      },
+      "auth.health.read": {
+        "title": "Read"
+      },
+      "auth.invite": {
+        "title": "Invite"
+      },
+      "auth.invite.admin": {
+        "title": "Manage"
+      },
+      "auth.logout": {
+        "title": "Logout"
+      },
+      "auth.logout.admin": {
+        "title": "Manage"
+      },
+      "auth.magiclink": {
+        "title": "Magiclink"
+      },
+      "auth.magiclink.send": {
+        "title": "Send"
+      },
+      "auth.oauth": {
+        "title": "Oauth"
+      },
+      "auth.oauth.authorizations": {
+        "title": "Authorizations"
+      },
+      "auth.oauth.authorizations.consent": {
+        "title": "Consent"
+      },
+      "auth.oauth.authorizations.consent.share": {
+        "title": "Share"
+      },
+      "auth.oauth.authorizations.read": {
+        "title": "Read"
+      },
+      "auth.oauth.authorize": {
+        "title": "Authorize"
+      },
+      "auth.oauth.authorize.read": {
+        "title": "Read"
+      },
+      "auth.oauth.clients": {
+        "title": "Clients"
+      },
+      "auth.oauth.clients.register": {
+        "title": "Register"
+      },
+      "auth.oauth.clients.register.admin": {
+        "title": "Manage"
+      },
+      "auth.oauth.token": {
+        "title": "Token"
+      },
+      "auth.oauth.token.admin": {
+        "title": "Manage"
+      },
+      "auth.otp": {
+        "title": "Otp"
+      },
+      "auth.otp.send": {
+        "title": "Send"
+      },
+      "auth.reauthenticate": {
+        "title": "Reauthenticate"
+      },
+      "auth.reauthenticate.send": {
+        "title": "Send"
+      },
+      "auth.recover": {
+        "title": "Recover"
+      },
+      "auth.recover.send": {
+        "title": "Send"
+      },
+      "auth.resend": {
+        "title": "Resend"
+      },
+      "auth.resend.send": {
+        "title": "Send"
+      },
+      "auth.saml": {
+        "title": "Saml"
+      },
+      "auth.saml.acs": {
+        "title": "Acs"
+      },
+      "auth.saml.acs.write": {
+        "title": "Create and edit"
+      },
+      "auth.saml.metadata": {
+        "title": "Metadata"
+      },
+      "auth.saml.metadata.read": {
+        "title": "Read"
+      },
+      "auth.settings": {
+        "title": "Settings"
+      },
+      "auth.settings.read": {
+        "title": "Read"
+      },
+      "auth.signup": {
+        "title": "Signup"
+      },
+      "auth.signup.send": {
+        "title": "Send"
+      },
+      "auth.sso": {
+        "title": "Sso"
+      },
+      "auth.sso.write": {
+        "title": "Create and edit"
+      },
+      "auth.token": {
+        "title": "Token"
+      },
+      "auth.token.admin": {
+        "title": "Manage"
+      },
+      "auth.user": {
+        "title": "Account"
+      },
+      "auth.user.admin": {
+        "title": "Manage"
+      },
+      "auth.user.identities": {
+        "title": "Identities"
+      },
+      "auth.user.identities.admin": {
+        "title": "Manage"
+      },
+      "auth.user.identities.authorize": {
+        "title": "Authorize"
+      },
+      "auth.user.identities.authorize.read": {
+        "title": "Read"
+      },
+      "auth.user.oauth": {
+        "title": "Oauth"
+      },
+      "auth.user.oauth.grants": {
+        "title": "Grants"
+      },
+      "auth.user.oauth.grants.admin": {
+        "title": "Manage"
+      },
+      "auth.user.oauth.grants.read": {
+        "title": "Read"
+      },
+      "auth.user.read": {
+        "title": "Read"
+      },
+      "auth.verify": {
+        "title": "Verify"
+      },
+      "auth.verify.write": {
+        "title": "Create and edit"
+      },
+      "functions": {
+        "title": "Functions"
+      },
+      "functions.execute": {
+        "title": "Run"
+      },
       "general": {
         "title": "General"
       },
@@ -16,16 +298,109 @@
       "general.write": {
         "title": "Create and edit"
       },
+      "graphql": {
+        "title": "GraphQL"
+      },
+      "graphql.read": {
+        "title": "Read"
+      },
+      "graphql.write": {
+        "title": "Create and edit"
+      },
       "storage": {
         "title": "Storage"
+      },
+      "storage.bucket": {
+        "title": "Bucket"
+      },
+      "storage.bucket.admin": {
+        "title": "Manage"
+      },
+      "storage.bucket.delete": {
+        "title": "Delete"
+      },
+      "storage.bucket.empty": {
+        "title": "Empty"
+      },
+      "storage.bucket.empty.delete": {
+        "title": "Delete"
+      },
+      "storage.bucket.read": {
+        "title": "Read"
       },
       "storage.object": {
         "title": "Object"
       },
+      "storage.object.authenticated": {
+        "title": "Authenticated"
+      },
+      "storage.object.authenticated.read": {
+        "title": "Read"
+      },
+      "storage.object.delete": {
+        "title": "Delete"
+      },
+      "storage.object.info": {
+        "title": "Info"
+      },
+      "storage.object.info.read": {
+        "title": "Read"
+      },
+      "storage.object.list": {
+        "title": "List"
+      },
+      "storage.object.list.read": {
+        "title": "Read"
+      },
+      "storage.object.list_v2": {
+        "title": "List v2"
+      },
+      "storage.object.list_v2.read": {
+        "title": "Read"
+      },
+      "storage.object.public": {
+        "title": "Public"
+      },
+      "storage.object.public.read": {
+        "title": "Read"
+      },
       "storage.object.read": {
         "title": "Read"
       },
+      "storage.object.sign": {
+        "title": "Sign"
+      },
+      "storage.object.sign.read": {
+        "title": "Read"
+      },
+      "storage.object.sign.share": {
+        "title": "Share"
+      },
+      "storage.object.sign.write": {
+        "title": "Create and edit"
+      },
       "storage.object.write": {
+        "title": "Create and edit"
+      },
+      "storage.render": {
+        "title": "Render"
+      },
+      "storage.render.image": {
+        "title": "Image"
+      },
+      "storage.render.image.read": {
+        "title": "Read"
+      },
+      "storage.resumable": {
+        "title": "Resumable"
+      },
+      "storage.resumable.delete": {
+        "title": "Delete"
+      },
+      "storage.resumable.read": {
+        "title": "Read"
+      },
+      "storage.resumable.write": {
         "title": "Create and edit"
       }
     },
@@ -72,15 +447,15 @@
         ]
       },
       {
+        "credential": true,
         "key": "apikey",
         "label": "Anon or publishable API key (avoid service_role; prefer a user JWT for the Authorization field below under RLS)",
-        "credential": true,
         "secret": true
       },
       {
+        "credential": true,
         "key": "jwt",
         "label": "User access token (JWT), so row level security applies",
-        "credential": true,
         "secret": true
       }
     ],
@@ -89,16 +464,147 @@
   "title": "Supabase",
   "http": {
     "operations": {
-      "rest.delete": {"action":"general.delete","effects":["delete"],"headers":{"Accept-Profile":null,"Content-Profile":null,"Prefer":null},"method":"DELETE","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"filter":{"at":"","from":"query","type":"object"},"table":{"at":"table","from":"path"}}},
-      "rest.delete.returning": {"action":"general.delete","effects":["delete"],"headers":{"Accept-Profile":null,"Content-Profile":null,"Prefer":"return=representation"},"method":"DELETE","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"filter":{"at":"","from":"query","type":"object"},"table":{"at":"table","from":"path"}}},
-      "rest.insert": {"action":"general.write","body":"json","effects":["write"],"headers":{"Accept-Profile":null,"Content-Profile":null,"Prefer":null},"method":"POST","origin":"{origin}","path":"/rest/v1/{table}","scope":{"rows":{"at":"","from":"body","type":"object"},"table":{"at":"table","from":"path"}}},
-      "rest.insert.returning": {"action":"general.write","body":"json","effects":["write"],"headers":{"Accept-Profile":null,"Content-Profile":null,"Prefer":"return=representation"},"method":"POST","origin":"{origin}","path":"/rest/v1/{table}","scope":{"rows":{"at":"","from":"body","type":"object"},"table":{"at":"table","from":"path"}}},
-      "rest.select": {"action":"general.read","effects":["read"],"headers":{"Accept-Profile":null,"Content-Profile":null},"method":"GET","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"table":{"at":"table","from":"path"}}},
-      "rest.update": {"action":"general.write","body":"json","effects":["write"],"headers":{"Accept-Profile":null,"Content-Profile":null,"Prefer":null},"method":"PATCH","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"changes":{"at":"","from":"body","type":"object"},"filter":{"at":"","from":"query","type":"object"},"table":{"at":"table","from":"path"}}},
-      "rest.update.returning": {"action":"general.write","body":"json","effects":["write"],"headers":{"Accept-Profile":null,"Content-Profile":null,"Prefer":"return=representation"},"method":"PATCH","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"changes":{"at":"","from":"body","type":"object"},"filter":{"at":"","from":"query","type":"object"},"table":{"at":"table","from":"path"}}},
-      "rpc.call": {"action":"general.execute","body":"json","effects":["execute"],"headers":{"Accept-Profile":null,"Content-Profile":null,"Prefer":null},"method":"POST","origin":"{origin}","path":"/rest/v1/rpc/{function}","scope":{"arguments":{"at":"","from":"body","type":"object"},"function":{"at":"function","from":"path"}}},
-      "storage.object.get": {"action":"storage.object.read","effects":["read"],"headers":{"Accept-Profile":null,"Content-Profile":null},"method":"GET","origin":"{origin}","path":"/storage/v1/object/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
-      "storage.object.upload": {"action":"storage.object.write","body":"any","effects":["write"],"headers":{"Accept-Profile":null,"Content-Profile":null,"X-Upsert":null},"method":"POST","origin":"{origin}","path":"/storage/v1/object/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}}
+      "DELETE /auth/v1/admin/custom-providers/{identifier}": {"action":"auth.admin.custom_providers.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/auth/v1/admin/custom-providers/{identifier}","scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "DELETE /auth/v1/admin/oauth/clients/{client_id}": {"action":"auth.admin.oauth.clients.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/auth/v1/admin/oauth/clients/{client_id}","scope":{"client_id":{"at":"client_id","from":"path"}}},
+      "DELETE /auth/v1/admin/sso/providers/{ssoProviderId}": {"action":"auth.admin.sso.providers.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/auth/v1/admin/sso/providers/{ssoProviderId}","scope":{"ssoProviderId":{"at":"ssoProviderId","from":"path"}}},
+      "DELETE /auth/v1/admin/users/{userId}": {"action":"auth.admin.users.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/auth/v1/admin/users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "DELETE /auth/v1/admin/users/{userId}.json.6bd8117e1d42": {"action":"auth.admin.users.admin","body":"json","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/auth/v1/admin/users/{userId}","scope":{"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "DELETE /auth/v1/admin/users/{userId}/factors/{factorId}": {"action":"auth.admin.users.factors.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/auth/v1/admin/users/{userId}/factors/{factorId}","scope":{"factorId":{"at":"factorId","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "DELETE /auth/v1/factors/recovery-codes": {"action":"auth.factors.recovery_codes.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/auth/v1/factors/recovery-codes","scope":{}},
+      "DELETE /auth/v1/factors/{factorId}": {"action":"auth.factors.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/auth/v1/factors/{factorId}","path_patterns":{"factorId":"[^r].*|r(?:|[^e].*|e(?:|[^c].*|c(?:|[^o].*|o(?:|[^v].*|v(?:|[^e].*|e(?:|[^r].*|r(?:|[^y].*|y(?:|[^\\-].*|-(?:|[^c].*|c(?:|[^o].*|o(?:|[^d].*|d(?:|[^e].*|e(?:|[^s].*|s.+)))))))))))))"},"scope":{"factorId":{"at":"factorId","from":"path"}}},
+      "DELETE /auth/v1/user/identities/{identityId}": {"action":"auth.user.identities.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/auth/v1/user/identities/{identityId}","scope":{"identityId":{"at":"identityId","from":"path"}}},
+      "DELETE /auth/v1/user/oauth/grants": {"action":"auth.user.oauth.grants.admin","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","params":["client_id"],"path":"/auth/v1/user/oauth/grants","scope":{"client_id":{"at":"client_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /auth/v1/admin/audit": {"action":"auth.admin.audit.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","per_page"],"path":"/auth/v1/admin/audit","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /auth/v1/admin/custom-providers": {"action":"auth.admin.custom_providers.read","effects":["read"],"method":"GET","origin":"{origin}","params":["type"],"path":"/auth/v1/admin/custom-providers","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GET /auth/v1/admin/custom-providers/{identifier}": {"action":"auth.admin.custom_providers.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/auth/v1/admin/custom-providers/{identifier}","scope":{"identifier":{"at":"identifier","from":"path"}}},
+      "GET /auth/v1/admin/oauth/clients": {"action":"auth.admin.oauth.clients.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","per_page"],"path":"/auth/v1/admin/oauth/clients","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /auth/v1/admin/oauth/clients/{client_id}": {"action":"auth.admin.oauth.clients.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/auth/v1/admin/oauth/clients/{client_id}","scope":{"client_id":{"at":"client_id","from":"path"}}},
+      "GET /auth/v1/admin/sso/providers": {"action":"auth.admin.sso.providers.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/auth/v1/admin/sso/providers","scope":{}},
+      "GET /auth/v1/admin/sso/providers/{ssoProviderId}": {"action":"auth.admin.sso.providers.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/auth/v1/admin/sso/providers/{ssoProviderId}","scope":{"ssoProviderId":{"at":"ssoProviderId","from":"path"}}},
+      "GET /auth/v1/admin/users": {"action":"auth.admin.users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","per_page"],"path":"/auth/v1/admin/users","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /auth/v1/admin/users/{userId}": {"action":"auth.admin.users.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/auth/v1/admin/users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "GET /auth/v1/admin/users/{userId}/factors": {"action":"auth.admin.users.factors.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/auth/v1/admin/users/{userId}/factors","scope":{"userId":{"at":"userId","from":"path"}}},
+      "GET /auth/v1/authorize": {"action":"auth.authorize.read","effects":["read"],"method":"GET","origin":"{origin}","params":["provider","scopes","invite_token","redirect_to","code_challenge_method"],"path":"/auth/v1/authorize","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GET /auth/v1/callback": {"action":"auth.callback.write","effects":["write"],"method":"GET","origin":"{origin}","path":"/auth/v1/callback","scope":{}},
+      "GET /auth/v1/factors/recovery-codes": {"action":"auth.factors.recovery_codes.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/auth/v1/factors/recovery-codes","scope":{}},
+      "GET /auth/v1/health": {"action":"auth.health.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/auth/v1/health","scope":{}},
+      "GET /auth/v1/oauth/authorizations/{authorization_id}": {"action":"auth.oauth.authorizations.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/auth/v1/oauth/authorizations/{authorization_id}","scope":{"authorization_id":{"at":"authorization_id","from":"path"}}},
+      "GET /auth/v1/oauth/authorize": {"action":"auth.oauth.authorize.read","effects":["read"],"method":"GET","origin":"{origin}","params":["response_type","client_id","redirect_uri","scope","state","code_challenge","code_challenge_method"],"path":"/auth/v1/oauth/authorize","scope":{"client_id":{"at":"client_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "GET /auth/v1/saml/metadata": {"action":"auth.saml.metadata.read","effects":["read"],"method":"GET","origin":"{origin}","params":["download"],"path":"/auth/v1/saml/metadata","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GET /auth/v1/settings": {"action":"auth.settings.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/auth/v1/settings","scope":{}},
+      "GET /auth/v1/user": {"action":"auth.user.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/auth/v1/user","scope":{}},
+      "GET /auth/v1/user/identities/authorize": {"action":"auth.user.identities.authorize.read","effects":["read"],"method":"GET","origin":"{origin}","params":["provider","scopes","redirect_to","code_challenge_method"],"path":"/auth/v1/user/identities/authorize","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "GET /auth/v1/user/oauth/grants": {"action":"auth.user.oauth.grants.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/auth/v1/user/oauth/grants","scope":{}},
+      "GET /auth/v1/verify": {"action":"auth.verify.write","effects":["write"],"method":"GET","origin":"{origin}","params":["token","type","redirect_to"],"path":"/auth/v1/verify","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "POST /auth/v1/admin/custom-providers": {"action":"auth.admin.custom_providers.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth/v1/admin/custom-providers","scope":{"acceptable_client_ids":{"at":"/acceptable_client_ids","from":"body","optional":true,"type":"array"},"authorization_url":{"at":"/authorization_url","from":"body","optional":true},"client_id":{"at":"/client_id","from":"body"},"discovery_url":{"at":"/discovery_url","from":"body","optional":true},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"token_url":{"at":"/token_url","from":"body","optional":true},"userinfo_url":{"at":"/userinfo_url","from":"body","optional":true}}},
+      "POST /auth/v1/admin/generate_link": {"action":"auth.admin.users.links.admin","effects":["admin","share"],"method":"POST","origin":"{origin}","path":"/auth/v1/admin/generate_link","scope":{}},
+      "POST /auth/v1/admin/generate_link.json.1f3d36500e46": {"action":"auth.admin.users.links.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","path":"/auth/v1/admin/generate_link","scope":{"email":{"at":"/email","from":"body"},"new_email":{"at":"/new_email","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/admin/oauth/clients": {"action":"auth.admin.oauth.clients.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth/v1/admin/oauth/clients","scope":{}},
+      "POST /auth/v1/admin/oauth/clients.json.90b54ff65b04": {"action":"auth.admin.oauth.clients.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth/v1/admin/oauth/clients","scope":{"client_name":{"at":"/client_name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/admin/oauth/clients/{client_id}/regenerate_secret": {"action":"auth.admin.oauth.clients.secret.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth/v1/admin/oauth/clients/{client_id}/regenerate_secret","scope":{"client_id":{"at":"client_id","from":"path"}}},
+      "POST /auth/v1/admin/sso/providers": {"action":"auth.admin.sso.providers.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth/v1/admin/sso/providers","scope":{}},
+      "POST /auth/v1/admin/sso/providers.json.70aaa55f137f": {"action":"auth.admin.sso.providers.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth/v1/admin/sso/providers","scope":{"metadata_url":{"at":"/metadata_url","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/callback": {"action":"auth.callback.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/auth/v1/callback","scope":{}},
+      "POST /auth/v1/factors": {"action":"auth.factors.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth/v1/factors","scope":{}},
+      "POST /auth/v1/factors.json.795e08897c3a": {"action":"auth.factors.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth/v1/factors","scope":{"friendly_name":{"at":"/friendly_name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/factors/recovery-codes": {"action":"auth.factors.recovery_codes.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth/v1/factors/recovery-codes","scope":{}},
+      "POST /auth/v1/factors/recovery-codes.json.df2e322c5bdf": {"action":"auth.factors.recovery_codes.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth/v1/factors/recovery-codes","scope":{"friendly_name":{"at":"/friendly_name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/factors/recovery-codes/regenerate": {"action":"auth.factors.recovery_codes.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth/v1/factors/recovery-codes/regenerate","scope":{}},
+      "POST /auth/v1/factors/recovery-codes/verify": {"action":"auth.factors.recovery_codes.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/auth/v1/factors/recovery-codes/verify","scope":{}},
+      "POST /auth/v1/factors/recovery-codes/verify.json.eef7e17ff672": {"action":"auth.factors.recovery_codes.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/auth/v1/factors/recovery-codes/verify","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/factors/{factorId}/challenge": {"action":"auth.factors.challenge.send","effects":["send"],"method":"POST","origin":"{origin}","path":"/auth/v1/factors/{factorId}/challenge","scope":{"factorId":{"at":"factorId","from":"path"}}},
+      "POST /auth/v1/factors/{factorId}/challenge.json.3e5c00a7ae8f": {"action":"auth.factors.challenge.send","body":"json","effects":["send"],"method":"POST","origin":"{origin}","path":"/auth/v1/factors/{factorId}/challenge","scope":{"channel":{"at":"/channel","from":"body","optional":true},"factorId":{"at":"factorId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/factors/{factorId}/verify": {"action":"auth.factors.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/auth/v1/factors/{factorId}/verify","path_patterns":{"factorId":"[^r].*|r(?:|[^e].*|e(?:|[^c].*|c(?:|[^o].*|o(?:|[^v].*|v(?:|[^e].*|e(?:|[^r].*|r(?:|[^y].*|y(?:|[^\\-].*|-(?:|[^c].*|c(?:|[^o].*|o(?:|[^d].*|d(?:|[^e].*|e(?:|[^s].*|s.+)))))))))))))"},"scope":{"factorId":{"at":"factorId","from":"path"}}},
+      "POST /auth/v1/factors/{factorId}/verify.json.d13ce7661bfa": {"action":"auth.factors.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/auth/v1/factors/{factorId}/verify","path_patterns":{"factorId":"[^r].*|r(?:|[^e].*|e(?:|[^c].*|c(?:|[^o].*|o(?:|[^v].*|v(?:|[^e].*|e(?:|[^r].*|r(?:|[^y].*|y(?:|[^\\-].*|-(?:|[^c].*|c(?:|[^o].*|o(?:|[^d].*|d(?:|[^e].*|e(?:|[^s].*|s.+)))))))))))))"},"scope":{"challenge_id":{"at":"/challenge_id","from":"body"},"factorId":{"at":"factorId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/invite": {"action":"auth.invite.admin","effects":["admin","send"],"method":"POST","origin":"{origin}","path":"/auth/v1/invite","scope":{}},
+      "POST /auth/v1/invite.json.e235d5fd7106": {"action":"auth.invite.admin","body":"json","effects":["admin","send"],"method":"POST","origin":"{origin}","path":"/auth/v1/invite","scope":{"email":{"at":"/email","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/logout": {"action":"auth.logout.admin","effects":["admin"],"method":"POST","origin":"{origin}","params":["scope"],"path":"/auth/v1/logout","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "POST /auth/v1/magiclink": {"action":"auth.magiclink.send","effects":["send"],"method":"POST","origin":"{origin}","path":"/auth/v1/magiclink","scope":{}},
+      "POST /auth/v1/magiclink.json.77e20cc065a3": {"action":"auth.magiclink.send","body":"json","effects":["send"],"method":"POST","origin":"{origin}","path":"/auth/v1/magiclink","scope":{"email":{"at":"/email","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/oauth/authorizations/{authorization_id}/consent": {"action":"auth.oauth.authorizations.consent.share","effects":["share"],"method":"POST","origin":"{origin}","path":"/auth/v1/oauth/authorizations/{authorization_id}/consent","scope":{"authorization_id":{"at":"authorization_id","from":"path"}}},
+      "POST /auth/v1/oauth/authorizations/{authorization_id}/consent.json.d0bb6dc0f6a3": {"action":"auth.oauth.authorizations.consent.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","path":"/auth/v1/oauth/authorizations/{authorization_id}/consent","scope":{"authorization_id":{"at":"authorization_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/oauth/clients/register": {"action":"auth.oauth.clients.register.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth/v1/oauth/clients/register","scope":{}},
+      "POST /auth/v1/oauth/clients/register.json.0e036bfcf4ba": {"action":"auth.oauth.clients.register.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth/v1/oauth/clients/register","scope":{"client_name":{"at":"/client_name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/oauth/token": {"action":"auth.oauth.token.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth/v1/oauth/token","scope":{}},
+      "POST /auth/v1/oauth/token.form.645630477ea4": {"action":"auth.oauth.token.admin","body":"form","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth/v1/oauth/token","scope":{"client_id":{"at":"client_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"}}},
+      "POST /auth/v1/otp": {"action":"auth.otp.send","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/auth/v1/otp","scope":{}},
+      "POST /auth/v1/otp.json.f91a121add64": {"action":"auth.otp.send","body":"json","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/auth/v1/otp","scope":{"channel":{"at":"/channel","from":"body","optional":true},"email":{"at":"/email","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/reauthenticate": {"action":"auth.reauthenticate.send","effects":["send"],"method":"POST","origin":"{origin}","path":"/auth/v1/reauthenticate","scope":{}},
+      "POST /auth/v1/recover": {"action":"auth.recover.send","effects":["send"],"method":"POST","origin":"{origin}","path":"/auth/v1/recover","scope":{}},
+      "POST /auth/v1/recover.json.bbb0c510d4d2": {"action":"auth.recover.send","body":"json","effects":["send"],"method":"POST","origin":"{origin}","path":"/auth/v1/recover","scope":{"email":{"at":"/email","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/resend": {"action":"auth.resend.send","effects":["send"],"method":"POST","origin":"{origin}","path":"/auth/v1/resend","scope":{}},
+      "POST /auth/v1/resend.json.7db4e293bfa6": {"action":"auth.resend.send","body":"json","effects":["send"],"method":"POST","origin":"{origin}","path":"/auth/v1/resend","scope":{"email":{"at":"/email","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/saml/acs": {"action":"auth.saml.acs.write","effects":["write"],"method":"POST","origin":"{origin}","params":["RelayState","SAMLArt","SAMLResponse"],"path":"/auth/v1/saml/acs","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "POST /auth/v1/signup": {"action":"auth.signup.send","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/auth/v1/signup","scope":{}},
+      "POST /auth/v1/signup.json.8f975b8a7cef": {"action":"auth.signup.send","body":"json","effects":["send","write"],"method":"POST","origin":"{origin}","path":"/auth/v1/signup","scope":{"channel":{"at":"/channel","from":"body","optional":true},"email":{"at":"/email","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/sso": {"action":"auth.sso.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/auth/v1/sso","scope":{}},
+      "POST /auth/v1/sso.json.2a1ac9573dae": {"action":"auth.sso.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/auth/v1/sso","scope":{"provider_id":{"at":"/provider_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/token": {"action":"auth.token.admin","effects":["admin"],"method":"POST","origin":"{origin}","params":["grant_type"],"path":"/auth/v1/token","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "POST /auth/v1/token.json.58f16890c606": {"action":"auth.token.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","params":["grant_type"],"path":"/auth/v1/token","scope":{"client_id":{"at":"/client_id","from":"body","optional":true},"email":{"at":"/email","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /auth/v1/verify": {"action":"auth.verify.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/auth/v1/verify","scope":{}},
+      "POST /auth/v1/verify.json.5cfcb6833468": {"action":"auth.verify.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/auth/v1/verify","scope":{"email":{"at":"/email","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "PUT /auth/v1/admin/custom-providers/{identifier}": {"action":"auth.admin.custom_providers.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/auth/v1/admin/custom-providers/{identifier}","scope":{"acceptable_client_ids":{"at":"/acceptable_client_ids","from":"body","optional":true,"type":"array"},"authorization_url":{"at":"/authorization_url","from":"body","optional":true},"client_id":{"at":"/client_id","from":"body","optional":true},"discovery_url":{"at":"/discovery_url","from":"body","optional":true},"identifier":{"at":"identifier","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"token_url":{"at":"/token_url","from":"body","optional":true},"userinfo_url":{"at":"/userinfo_url","from":"body","optional":true}}},
+      "PUT /auth/v1/admin/oauth/clients/{client_id}": {"action":"auth.admin.oauth.clients.admin","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/auth/v1/admin/oauth/clients/{client_id}","scope":{"client_id":{"at":"client_id","from":"path"}}},
+      "PUT /auth/v1/admin/oauth/clients/{client_id}.json.b3cfad7304f9": {"action":"auth.admin.oauth.clients.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/auth/v1/admin/oauth/clients/{client_id}","scope":{"client_id":{"at":"client_id","from":"path"},"client_name":{"at":"/client_name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "PUT /auth/v1/admin/sso/providers/{ssoProviderId}": {"action":"auth.admin.sso.providers.admin","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/auth/v1/admin/sso/providers/{ssoProviderId}","scope":{"ssoProviderId":{"at":"ssoProviderId","from":"path"}}},
+      "PUT /auth/v1/admin/sso/providers/{ssoProviderId}.json.c8803e9b7193": {"action":"auth.admin.sso.providers.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/auth/v1/admin/sso/providers/{ssoProviderId}","scope":{"metadata_url":{"at":"/metadata_url","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"ssoProviderId":{"at":"ssoProviderId","from":"path"}}},
+      "PUT /auth/v1/admin/users/{userId}": {"action":"auth.admin.users.admin","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/auth/v1/admin/users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "PUT /auth/v1/admin/users/{userId}.json.2159e8fe2b5f": {"action":"auth.admin.users.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/auth/v1/admin/users/{userId}","scope":{"email":{"at":"/email","from":"body","optional":true},"id":{"at":"/id","from":"body","optional":true},"new_email":{"at":"/new_email","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "PUT /auth/v1/admin/users/{userId}/factors/{factorId}": {"action":"auth.admin.users.factors.admin","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/auth/v1/admin/users/{userId}/factors/{factorId}","scope":{"factorId":{"at":"factorId","from":"path"},"userId":{"at":"userId","from":"path"}}},
+      "PUT /auth/v1/admin/users/{userId}/factors/{factorId}.json.215ca714de78": {"action":"auth.admin.users.factors.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/auth/v1/admin/users/{userId}/factors/{factorId}","scope":{"factorId":{"at":"factorId","from":"path"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+      "PUT /auth/v1/user": {"action":"auth.user.admin","effects":["admin","send"],"method":"PUT","origin":"{origin}","path":"/auth/v1/user","scope":{}},
+      "PUT /auth/v1/user.json.9dd5a46f6a1f": {"action":"auth.user.admin","body":"json","effects":["admin","send"],"method":"PUT","origin":"{origin}","path":"/auth/v1/user","scope":{"channel":{"at":"/channel","from":"body","optional":true},"email":{"at":"/email","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "auth.admin.users.create": {"action":"auth.admin.users.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/auth/v1/admin/users","scope":{"user":{"at":"","from":"body","type":"object"}}},
+      "functions.invoke": {"action":"functions.execute","body":"any","effects":["execute"],"method":"*","open_params":true,"origin":"{origin}","path":"/functions/v1/{function}","scope":{"function":{"at":"function","from":"path"}}},
+      "functions.invoke.path": {"action":"functions.execute","body":"any","effects":["execute"],"method":"*","open_params":true,"origin":"{origin}","path":"/functions/v1/{function}/{path*}","scope":{"function":{"at":"function","from":"path"},"path":{"at":"path","from":"path"}}},
+      "graphql.mutation": {"action":"graphql.write","body":"graphql","effects":["write","delete"],"graphql":{"field":"*","operation":"mutation"},"method":"POST","origin":"{origin}","path":"/graphql/v1","scope":{}},
+      "graphql.query": {"action":"graphql.read","body":"graphql","effects":["read"],"graphql":{"field":"*","operation":"query"},"method":"POST","origin":"{origin}","path":"/graphql/v1","scope":{}},
+      "rest.delete": {"action":"general.delete","effects":["delete"],"headers":{"Content-Profile":null},"method":"DELETE","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"filter":{"at":"","from":"query","type":"object"},"table":{"at":"table","from":"path"}}},
+      "rest.delete.schema": {"action":"general.delete","effects":["delete"],"headers":{"Content-Profile":true},"method":"DELETE","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"filter":{"at":"","from":"query","type":"object"},"schema":{"at":"/headers/Content-Profile/0","from":"http"},"table":{"at":"table","from":"path"}}},
+      "rest.head": {"action":"general.read","effects":["read"],"headers":{"Accept-Profile":null},"method":"HEAD","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"table":{"at":"table","from":"path"}}},
+      "rest.head.schema": {"action":"general.read","effects":["read"],"headers":{"Accept-Profile":true},"method":"HEAD","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"schema":{"at":"/headers/Accept-Profile/0","from":"http"},"table":{"at":"table","from":"path"}}},
+      "rest.insert": {"action":"general.write","body":"json","effects":["write"],"headers":{"Content-Profile":null},"method":"POST","origin":"{origin}","params":["columns","on_conflict","select"],"path":"/rest/v1/{table}","scope":{"table":{"at":"table","from":"path"}}},
+      "rest.insert.schema": {"action":"general.write","body":"json","effects":["write"],"headers":{"Content-Profile":true},"method":"POST","origin":"{origin}","params":["columns","on_conflict","select"],"path":"/rest/v1/{table}","scope":{"schema":{"at":"/headers/Content-Profile/0","from":"http"},"table":{"at":"table","from":"path"}}},
+      "rest.openapi": {"action":"general.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/rest/v1/","scope":{}},
+      "rest.select": {"action":"general.read","effects":["read"],"headers":{"Accept-Profile":null},"method":"GET","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"table":{"at":"table","from":"path"}}},
+      "rest.select.schema": {"action":"general.read","effects":["read"],"headers":{"Accept-Profile":true},"method":"GET","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"schema":{"at":"/headers/Accept-Profile/0","from":"http"},"table":{"at":"table","from":"path"}}},
+      "rest.update": {"action":"general.write","body":"json","effects":["write"],"headers":{"Content-Profile":null},"method":"PATCH","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"changes":{"at":"","from":"body","type":"object"},"filter":{"at":"","from":"query","type":"object"},"table":{"at":"table","from":"path"}}},
+      "rest.update.schema": {"action":"general.write","body":"json","effects":["write"],"headers":{"Content-Profile":true},"method":"PATCH","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"changes":{"at":"","from":"body","type":"object"},"filter":{"at":"","from":"query","type":"object"},"schema":{"at":"/headers/Content-Profile/0","from":"http"},"table":{"at":"table","from":"path"}}},
+      "rest.upsert": {"action":"general.write","body":"json","effects":["write"],"headers":{"Content-Profile":null},"method":"PUT","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"changes":{"at":"","from":"body","type":"object"},"filter":{"at":"","from":"query","type":"object"},"table":{"at":"table","from":"path"}}},
+      "rest.upsert.schema": {"action":"general.write","body":"json","effects":["write"],"headers":{"Content-Profile":true},"method":"PUT","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"changes":{"at":"","from":"body","type":"object"},"filter":{"at":"","from":"query","type":"object"},"schema":{"at":"/headers/Content-Profile/0","from":"http"},"table":{"at":"table","from":"path"}}},
+      "rpc.call": {"action":"general.execute","body":"json","effects":["execute"],"headers":{"Content-Profile":null},"method":"POST","open_params":true,"origin":"{origin}","path":"/rest/v1/rpc/{function}","scope":{"arguments":{"at":"","from":"body","type":"object"},"function":{"at":"function","from":"path"}}},
+      "rpc.call.schema": {"action":"general.execute","body":"json","effects":["execute"],"headers":{"Content-Profile":true},"method":"POST","open_params":true,"origin":"{origin}","path":"/rest/v1/rpc/{function}","scope":{"arguments":{"at":"","from":"body","type":"object"},"function":{"at":"function","from":"path"},"schema":{"at":"/headers/Content-Profile/0","from":"http"}}},
+      "rpc.get": {"action":"general.execute","effects":["execute"],"headers":{"Accept-Profile":null},"method":"GET","open_params":true,"origin":"{origin}","path":"/rest/v1/rpc/{function}","scope":{"arguments":{"at":"","from":"query","type":"object"},"function":{"at":"function","from":"path"}}},
+      "rpc.get.schema": {"action":"general.execute","effects":["execute"],"headers":{"Accept-Profile":true},"method":"GET","open_params":true,"origin":"{origin}","path":"/rest/v1/rpc/{function}","scope":{"arguments":{"at":"","from":"query","type":"object"},"function":{"at":"function","from":"path"},"schema":{"at":"/headers/Accept-Profile/0","from":"http"}}},
+      "storage.bucket.create": {"action":"storage.bucket.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"{origin}","path":"/storage/v1/bucket","scope":{"bucket":{"at":"","from":"body","type":"object"}}},
+      "storage.bucket.delete": {"action":"storage.bucket.delete","body":"any","effects":["admin","delete"],"method":"DELETE","origin":"{origin}","path":"/storage/v1/bucket/{bucket}","scope":{"bucket":{"at":"bucket","from":"path"}}},
+      "storage.bucket.empty": {"action":"storage.bucket.empty.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","path":"/storage/v1/bucket/{bucket}/empty","scope":{"bucket":{"at":"bucket","from":"path"}}},
+      "storage.bucket.get": {"action":"storage.bucket.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/storage/v1/bucket/{bucket}","scope":{"bucket":{"at":"bucket","from":"path"}}},
+      "storage.bucket.update": {"action":"storage.bucket.admin","body":"json","effects":["admin","share"],"method":"PUT","origin":"{origin}","path":"/storage/v1/bucket/{bucket}","scope":{"bucket":{"at":"bucket","from":"path"},"changes":{"at":"","from":"body","type":"object"}}},
+      "storage.buckets.list": {"action":"storage.bucket.read","effects":["read"],"method":"GET","origin":"{origin}","params":["limit","offset","search","sortColumn","sortOrder"],"path":"/storage/v1/bucket","scope":{}},
+      "storage.object.authenticated.get": {"action":"storage.object.authenticated.read","effects":["read"],"method":"GET","origin":"{origin}","params":["cacheNonce","download","versionId"],"path":"/storage/v1/object/authenticated/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
+      "storage.object.delete": {"action":"storage.object.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/storage/v1/object/{bucket}/{key*}","path_patterns":{"bucket":"[^acilmpsu].*|a(?:|[^u].*|u(?:|[^t].*|t(?:|[^h].*|h(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^i].*|i(?:|[^c].*|c(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^d].*|d.+))))))))))))|c(?:|[^o].*|o(?:|[^p].*|p(?:|[^y].*|y.+)))|i(?:|[^n].*|n(?:|[^f].*|f(?:|[^o].*|o.+)))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:[^\\-].*|\\-(?:|[^v].*|v(?:|[^2].*|2.+))))))|m(?:|[^o].*|o(?:|[^v].*|v(?:|[^e].*|e.+)))|p(?:|[^u].*|u(?:|[^b].*|b(?:|[^l].*|l(?:|[^i].*|i(?:|[^c].*|c.+)))))|s(?:|[^i].*|i(?:|[^g].*|g(?:|[^n].*|n.+)))|u(?:|[^p].*|p(?:|[^l].*|l(?:|[^o].*|o(?:|[^a].*|a(?:|[^d].*|d.+)))))"},"scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
+      "storage.object.exists": {"action":"storage.object.read","effects":["read"],"method":"HEAD","origin":"{origin}","params":["versionId"],"path":"/storage/v1/object/{bucket}/{key*}","path_patterns":{"bucket":"[^acilmpsu].*|a(?:|[^u].*|u(?:|[^t].*|t(?:|[^h].*|h(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^i].*|i(?:|[^c].*|c(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^d].*|d.+))))))))))))|c(?:|[^o].*|o(?:|[^p].*|p(?:|[^y].*|y.+)))|i(?:|[^n].*|n(?:|[^f].*|f(?:|[^o].*|o.+)))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:[^\\-].*|\\-(?:|[^v].*|v(?:|[^2].*|2.+))))))|m(?:|[^o].*|o(?:|[^v].*|v(?:|[^e].*|e.+)))|p(?:|[^u].*|u(?:|[^b].*|b(?:|[^l].*|l(?:|[^i].*|i(?:|[^c].*|c.+)))))|s(?:|[^i].*|i(?:|[^g].*|g(?:|[^n].*|n.+)))|u(?:|[^p].*|p(?:|[^l].*|l(?:|[^o].*|o(?:|[^a].*|a(?:|[^d].*|d.+)))))"},"scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
+      "storage.object.get": {"action":"storage.object.read","effects":["read"],"headers":{"Accept-Profile":null,"Content-Profile":null},"method":"GET","origin":"{origin}","params":["cacheNonce","download","versionId"],"path":"/storage/v1/object/{bucket}/{key*}","path_patterns":{"bucket":"[^acilmpsu].*|a(?:|[^u].*|u(?:|[^t].*|t(?:|[^h].*|h(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^i].*|i(?:|[^c].*|c(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^d].*|d.+))))))))))))|c(?:|[^o].*|o(?:|[^p].*|p(?:|[^y].*|y.+)))|i(?:|[^n].*|n(?:|[^f].*|f(?:|[^o].*|o.+)))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:[^\\-].*|\\-(?:|[^v].*|v(?:|[^2].*|2.+))))))|m(?:|[^o].*|o(?:|[^v].*|v(?:|[^e].*|e.+)))|p(?:|[^u].*|u(?:|[^b].*|b(?:|[^l].*|l(?:|[^i].*|i(?:|[^c].*|c.+)))))|s(?:|[^i].*|i(?:|[^g].*|g(?:|[^n].*|n.+)))|u(?:|[^p].*|p(?:|[^l].*|l(?:|[^o].*|o(?:|[^a].*|a(?:|[^d].*|d.+)))))"},"scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
+      "storage.object.info": {"action":"storage.object.info.read","effects":["read"],"method":"GET","origin":"{origin}","params":["versionId"],"path":"/storage/v1/object/info/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
+      "storage.object.public.get": {"action":"storage.object.public.read","effects":["read"],"method":"GET","origin":"{origin}","params":["cacheNonce","download","versionId"],"path":"/storage/v1/object/public/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
+      "storage.object.render": {"action":"storage.render.image.read","effects":["read"],"method":"GET","origin":"{origin}","params":["download","format","height","quality","resize","token","width"],"path":"/storage/v1/render/image/{access}/{bucket}/{key*}","path_patterns":{"access":"authenticated|public|sign"},"scope":{"access":{"at":"access","from":"path"},"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
+      "storage.object.sign": {"action":"storage.object.sign.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","path":"/storage/v1/object/sign/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"},"options":{"at":"","from":"body","type":"object"}}},
+      "storage.object.signed.get": {"action":"storage.object.sign.read","effects":["read"],"method":"GET","origin":"{origin}","params":["download","token"],"path":"/storage/v1/object/sign/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
+      "storage.object.update": {"action":"storage.object.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","path":"/storage/v1/object/{bucket}/{key*}","path_patterns":{"bucket":"[^acilmpsu].*|a(?:|[^u].*|u(?:|[^t].*|t(?:|[^h].*|h(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^i].*|i(?:|[^c].*|c(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^d].*|d.+))))))))))))|c(?:|[^o].*|o(?:|[^p].*|p(?:|[^y].*|y.+)))|i(?:|[^n].*|n(?:|[^f].*|f(?:|[^o].*|o.+)))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:[^\\-].*|\\-(?:|[^v].*|v(?:|[^2].*|2.+))))))|m(?:|[^o].*|o(?:|[^v].*|v(?:|[^e].*|e.+)))|p(?:|[^u].*|u(?:|[^b].*|b(?:|[^l].*|l(?:|[^i].*|i(?:|[^c].*|c.+)))))|s(?:|[^i].*|i(?:|[^g].*|g(?:|[^n].*|n.+)))|u(?:|[^p].*|p(?:|[^l].*|l(?:|[^o].*|o(?:|[^a].*|a(?:|[^d].*|d.+)))))"},"scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
+      "storage.object.upload": {"action":"storage.object.write","body":"any","effects":["write"],"headers":{"Accept-Profile":null,"Content-Profile":null},"method":"POST","origin":"{origin}","path":"/storage/v1/object/{bucket}/{key*}","path_patterns":{"bucket":"[^acilmpsu].*|a(?:|[^u].*|u(?:|[^t].*|t(?:|[^h].*|h(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^i].*|i(?:|[^c].*|c(?:|[^a].*|a(?:|[^t].*|t(?:|[^e].*|e(?:|[^d].*|d.+))))))))))))|c(?:|[^o].*|o(?:|[^p].*|p(?:|[^y].*|y.+)))|i(?:|[^n].*|n(?:|[^f].*|f(?:|[^o].*|o.+)))|l(?:|[^i].*|i(?:|[^s].*|s(?:|[^t].*|t(?:[^\\-].*|\\-(?:|[^v].*|v(?:|[^2].*|2.+))))))|m(?:|[^o].*|o(?:|[^v].*|v(?:|[^e].*|e.+)))|p(?:|[^u].*|u(?:|[^b].*|b(?:|[^l].*|l(?:|[^i].*|i(?:|[^c].*|c.+)))))|s(?:|[^i].*|i(?:|[^g].*|g(?:|[^n].*|n.+)))|u(?:|[^p].*|p(?:|[^l].*|l(?:|[^o].*|o(?:|[^a].*|a(?:|[^d].*|d.+)))))"},"scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
+      "storage.object.upload.sign": {"action":"storage.object.sign.share","body":"any","effects":["share","write"],"method":"POST","origin":"{origin}","path":"/storage/v1/object/upload/sign/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
+      "storage.object.upload.signed": {"action":"storage.object.sign.write","body":"any","effects":["write"],"method":"PUT","origin":"{origin}","params":["token"],"path":"/storage/v1/object/upload/sign/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
+      "storage.objects.copy": {"action":"storage.object.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/storage/v1/object/copy","scope":{"copy":{"at":"","from":"body","type":"object"}}},
+      "storage.objects.delete": {"action":"storage.object.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/storage/v1/object/{bucket}","scope":{"bucket":{"at":"bucket","from":"path"},"prefixes":{"at":"/prefixes","from":"body","type":"array"}}},
+      "storage.objects.list": {"action":"storage.object.list.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/storage/v1/object/list/{bucket}","scope":{"bucket":{"at":"bucket","from":"path"},"options":{"at":"","from":"body","type":"object"}}},
+      "storage.objects.list.v2": {"action":"storage.object.list_v2.read","body":"json","effects":["read"],"method":"POST","origin":"{origin}","path":"/storage/v1/object/list-v2/{bucket}","scope":{"bucket":{"at":"bucket","from":"path"},"options":{"at":"","from":"body","type":"object"}}},
+      "storage.objects.move": {"action":"storage.object.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/storage/v1/object/move","scope":{"move":{"at":"","from":"body","type":"object"}}},
+      "storage.objects.sign": {"action":"storage.object.sign.share","body":"json","effects":["share"],"method":"POST","origin":"{origin}","path":"/storage/v1/object/sign/{bucket}","scope":{"bucket":{"at":"bucket","from":"path"},"paths":{"at":"/paths","from":"body","type":"array"}}},
+      "storage.upload.resumable.append": {"action":"storage.resumable.write","body":"any","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/storage/v1/upload/resumable/{upload*}","scope":{"upload":{"at":"upload","from":"path"}}},
+      "storage.upload.resumable.cancel": {"action":"storage.resumable.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/storage/v1/upload/resumable/{upload*}","scope":{"upload":{"at":"upload","from":"path"}}},
+      "storage.upload.resumable.create": {"action":"storage.resumable.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/storage/v1/upload/resumable","scope":{}},
+      "storage.upload.resumable.status": {"action":"storage.resumable.read","effects":["read"],"method":"HEAD","origin":"{origin}","path":"/storage/v1/upload/resumable/{upload*}","scope":{"upload":{"at":"upload","from":"path"}}}
     }
   }
 }

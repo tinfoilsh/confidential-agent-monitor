@@ -1,200 +1,711 @@
 {
-  "title": "Grist",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your Grist origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://example.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "admin.groups": {"title": "Admin: groups"},
-      "admin.orgs": {"title": "Admin: orgs"},
-      "admin.roles": {"title": "Admin: roles"},
-      "admin.users": {"title": "Admin: users"},
-      "admin.webhooks": {"title": "Admin: webhooks"},
-      "admin.workspaces": {"title": "Admin: workspaces"},
-      "delete.apikey": {"title": "Delete: apikey"},
-      "delete.columns": {"title": "Delete: columns"},
-      "delete.delete": {"title": "Delete: delete"},
-      "delete.docs": {"title": "Delete: docs"},
-      "delete.groups": {"title": "Delete: groups"},
-      "delete.orgs": {"title": "Delete: orgs"},
-      "delete.queue": {"title": "Delete: queue"},
-      "delete.remove": {"title": "Delete: remove"},
-      "delete.remove_unused": {"title": "Delete: remove unused"},
-      "delete.service_accounts": {"title": "Delete: service accounts"},
-      "delete.users": {"title": "Delete: users"},
-      "delete.webhooks": {"title": "Delete: webhooks"},
-      "delete.workspaces": {"title": "Delete: workspaces"},
-      "execute.sql": {"title": "Execute: sql"},
-      "pay.attachments": {"title": "Pay: attachments"},
-      "read": {"title": "Read everything the account can see"},
-      "write.access": {"title": "Write: access"},
-      "write.active": {"title": "Write: active"},
-      "write.apikey": {"title": "Write: apikey"},
-      "write.apply": {"title": "Write: apply"},
-      "write.attachments": {"title": "Write: attachments"},
-      "write.bulk": {"title": "Write: bulk"},
-      "write.columns": {"title": "Write: columns"},
-      "write.data": {"title": "Write: data"},
-      "write.docs": {"title": "Write: docs"},
-      "write.flush": {"title": "Write: flush"},
-      "write.fork": {"title": "Write: fork"},
-      "write.locale": {"title": "Write: locale"},
-      "write.name": {"title": "Write: name"},
-      "write.propose": {"title": "Write: propose"},
-      "write.records": {"title": "Write: records"},
-      "write.recover": {"title": "Write: recover"},
-      "write.replace": {"title": "Write: replace"},
-      "write.service_accounts": {"title": "Write: service accounts"},
-      "write.store": {"title": "Write: store"},
-      "write.tables": {"title": "Write: tables"},
-      "write.timing": {"title": "Write: timing"},
-      "write.unremove": {"title": "Write: unremove"},
-      "write.update_used": {"title": "Write: update used"}
-    }
+      "docs": {
+        "title": "Docs"
+      },
+      "docs.access": {
+        "title": "Access"
+      },
+      "docs.access.read": {
+        "title": "Read"
+      },
+      "docs.access.share": {
+        "title": "Share"
+      },
+      "docs.apply": {
+        "title": "Apply"
+      },
+      "docs.apply.write": {
+        "title": "Create and edit"
+      },
+      "docs.assign": {
+        "title": "Assign"
+      },
+      "docs.assign.write": {
+        "title": "Create and edit"
+      },
+      "docs.attachments": {
+        "title": "Attachments"
+      },
+      "docs.attachments.all": {
+        "title": "All"
+      },
+      "docs.attachments.all.write": {
+        "title": "Create and edit"
+      },
+      "docs.attachments.files": {
+        "title": "Files"
+      },
+      "docs.attachments.files.read": {
+        "title": "Read"
+      },
+      "docs.attachments.read": {
+        "title": "Read"
+      },
+      "docs.attachments.store": {
+        "title": "Store"
+      },
+      "docs.attachments.store.read": {
+        "title": "Read"
+      },
+      "docs.attachments.store.write": {
+        "title": "Create and edit"
+      },
+      "docs.attachments.stores": {
+        "title": "Stores"
+      },
+      "docs.attachments.stores.read": {
+        "title": "Read"
+      },
+      "docs.attachments.transfer_status": {
+        "title": "Transfer status"
+      },
+      "docs.attachments.transfer_status.read": {
+        "title": "Read"
+      },
+      "docs.attachments.unused": {
+        "title": "Unused"
+      },
+      "docs.attachments.unused.delete": {
+        "title": "Delete"
+      },
+      "docs.attachments.used": {
+        "title": "Used"
+      },
+      "docs.attachments.used.write": {
+        "title": "Create and edit"
+      },
+      "docs.attachments.write": {
+        "title": "Create and edit"
+      },
+      "docs.compare": {
+        "title": "Compare"
+      },
+      "docs.compare.read": {
+        "title": "Read"
+      },
+      "docs.csv": {
+        "title": "Csv"
+      },
+      "docs.csv.read": {
+        "title": "Read"
+      },
+      "docs.delete": {
+        "title": "Delete"
+      },
+      "docs.dsv": {
+        "title": "Dsv"
+      },
+      "docs.dsv.read": {
+        "title": "Read"
+      },
+      "docs.flush": {
+        "title": "Flush"
+      },
+      "docs.flush.write": {
+        "title": "Create and edit"
+      },
+      "docs.force_reload": {
+        "title": "Force reload"
+      },
+      "docs.force_reload.write": {
+        "title": "Create and edit"
+      },
+      "docs.fork": {
+        "title": "Fork"
+      },
+      "docs.fork.write": {
+        "title": "Create and edit"
+      },
+      "docs.forms": {
+        "title": "Forms"
+      },
+      "docs.forms.read": {
+        "title": "Read"
+      },
+      "docs.proposals": {
+        "title": "Proposals"
+      },
+      "docs.proposals.apply": {
+        "title": "Apply"
+      },
+      "docs.proposals.apply.write": {
+        "title": "Create and edit"
+      },
+      "docs.proposals.read": {
+        "title": "Read"
+      },
+      "docs.propose": {
+        "title": "Propose"
+      },
+      "docs.propose.write": {
+        "title": "Create and edit"
+      },
+      "docs.read": {
+        "title": "Read"
+      },
+      "docs.recover": {
+        "title": "Recover"
+      },
+      "docs.recover.write": {
+        "title": "Create and edit"
+      },
+      "docs.replace": {
+        "title": "Replace"
+      },
+      "docs.replace.write": {
+        "title": "Create and edit"
+      },
+      "docs.snapshots": {
+        "title": "Snapshots"
+      },
+      "docs.snapshots.delete": {
+        "title": "Delete"
+      },
+      "docs.snapshots.read": {
+        "title": "Read"
+      },
+      "docs.sql": {
+        "title": "Sql"
+      },
+      "docs.sql.read": {
+        "title": "Read"
+      },
+      "docs.states": {
+        "title": "States"
+      },
+      "docs.states.delete": {
+        "title": "Delete"
+      },
+      "docs.states.read": {
+        "title": "Read"
+      },
+      "docs.table_schema": {
+        "title": "Table schema"
+      },
+      "docs.table_schema.read": {
+        "title": "Read"
+      },
+      "docs.tables": {
+        "title": "Tables"
+      },
+      "docs.tables.columns": {
+        "title": "Columns"
+      },
+      "docs.tables.columns.delete": {
+        "title": "Delete"
+      },
+      "docs.tables.columns.read": {
+        "title": "Read"
+      },
+      "docs.tables.columns.write": {
+        "title": "Create and edit"
+      },
+      "docs.tables.data": {
+        "title": "Data"
+      },
+      "docs.tables.data.delete": {
+        "title": "Delete"
+      },
+      "docs.tables.data.read": {
+        "title": "Read"
+      },
+      "docs.tables.data.write": {
+        "title": "Create and edit"
+      },
+      "docs.tables.read": {
+        "title": "Read"
+      },
+      "docs.tables.records": {
+        "title": "Records"
+      },
+      "docs.tables.records.delete": {
+        "title": "Delete"
+      },
+      "docs.tables.records.read": {
+        "title": "Read"
+      },
+      "docs.tables.records.write": {
+        "title": "Create and edit"
+      },
+      "docs.tables.write": {
+        "title": "Create and edit"
+      },
+      "docs.timing": {
+        "title": "Timing"
+      },
+      "docs.timing.read": {
+        "title": "Read"
+      },
+      "docs.timing.write": {
+        "title": "Create and edit"
+      },
+      "docs.tsv": {
+        "title": "Tsv"
+      },
+      "docs.tsv.read": {
+        "title": "Read"
+      },
+      "docs.unremove": {
+        "title": "Unremove"
+      },
+      "docs.unremove.write": {
+        "title": "Create and edit"
+      },
+      "docs.users_for_view_as": {
+        "title": "Users for view as"
+      },
+      "docs.users_for_view_as.read": {
+        "title": "Read"
+      },
+      "docs.webhooks": {
+        "title": "Webhooks"
+      },
+      "docs.webhooks.admin": {
+        "title": "Manage"
+      },
+      "docs.webhooks.delete": {
+        "title": "Delete"
+      },
+      "docs.webhooks.queue": {
+        "title": "Queue"
+      },
+      "docs.webhooks.queue.delete": {
+        "title": "Delete"
+      },
+      "docs.webhooks.read": {
+        "title": "Read"
+      },
+      "docs.write": {
+        "title": "Create and edit"
+      },
+      "docs.xlsx": {
+        "title": "Xlsx"
+      },
+      "docs.xlsx.read": {
+        "title": "Read"
+      },
+      "orgs": {
+        "title": "Organizations"
+      },
+      "orgs.access": {
+        "title": "Access"
+      },
+      "orgs.access.read": {
+        "title": "Read"
+      },
+      "orgs.access.share": {
+        "title": "Share"
+      },
+      "orgs.admin": {
+        "title": "Manage"
+      },
+      "orgs.delete": {
+        "title": "Delete"
+      },
+      "orgs.read": {
+        "title": "Read"
+      },
+      "orgs.usage": {
+        "title": "Usage"
+      },
+      "orgs.usage.read": {
+        "title": "Read"
+      },
+      "orgs.workspaces": {
+        "title": "Workspaces"
+      },
+      "orgs.workspaces.admin": {
+        "title": "Manage"
+      },
+      "orgs.workspaces.read": {
+        "title": "Read"
+      },
+      "profile": {
+        "title": "Profile"
+      },
+      "profile.apikey": {
+        "title": "Apikey"
+      },
+      "profile.apikey.admin": {
+        "title": "Manage"
+      },
+      "profile.apikey.delete": {
+        "title": "Delete"
+      },
+      "profile.apikey.read": {
+        "title": "Read"
+      },
+      "profile.user": {
+        "title": "Account"
+      },
+      "profile.user.locale": {
+        "title": "Locale"
+      },
+      "profile.user.locale.write": {
+        "title": "Create and edit"
+      },
+      "profile.user.name": {
+        "title": "Name"
+      },
+      "profile.user.name.write": {
+        "title": "Create and edit"
+      },
+      "profile.user.read": {
+        "title": "Read"
+      },
+      "scim": {
+        "title": "Scim"
+      },
+      "scim.bulk": {
+        "title": "Bulk"
+      },
+      "scim.bulk.admin": {
+        "title": "Manage"
+      },
+      "scim.groups": {
+        "title": "Groups"
+      },
+      "scim.groups.admin": {
+        "title": "Manage"
+      },
+      "scim.groups.delete": {
+        "title": "Delete"
+      },
+      "scim.groups.read": {
+        "title": "Read"
+      },
+      "scim.me": {
+        "title": "Me"
+      },
+      "scim.me.read": {
+        "title": "Read"
+      },
+      "scim.resource_types": {
+        "title": "Resource types"
+      },
+      "scim.resource_types.read": {
+        "title": "Read"
+      },
+      "scim.roles": {
+        "title": "Roles"
+      },
+      "scim.roles.admin": {
+        "title": "Manage"
+      },
+      "scim.roles.read": {
+        "title": "Read"
+      },
+      "scim.schemas": {
+        "title": "Schemas"
+      },
+      "scim.schemas.read": {
+        "title": "Read"
+      },
+      "scim.service_provider_config": {
+        "title": "Service provider config"
+      },
+      "scim.service_provider_config.read": {
+        "title": "Read"
+      },
+      "scim.users": {
+        "title": "Users"
+      },
+      "scim.users.admin": {
+        "title": "Manage"
+      },
+      "scim.users.delete": {
+        "title": "Delete"
+      },
+      "scim.users.read": {
+        "title": "Read"
+      },
+      "service_accounts": {
+        "title": "Service accounts"
+      },
+      "service_accounts.admin": {
+        "title": "Manage"
+      },
+      "service_accounts.apikey": {
+        "title": "Apikey"
+      },
+      "service_accounts.apikey.admin": {
+        "title": "Manage"
+      },
+      "service_accounts.apikey.delete": {
+        "title": "Delete"
+      },
+      "service_accounts.delete": {
+        "title": "Delete"
+      },
+      "service_accounts.read": {
+        "title": "Read"
+      },
+      "session": {
+        "title": "Session"
+      },
+      "session.access": {
+        "title": "Access"
+      },
+      "session.access.active": {
+        "title": "Active"
+      },
+      "session.access.active.read": {
+        "title": "Read"
+      },
+      "session.access.active.write": {
+        "title": "Create and edit"
+      },
+      "session.access.all": {
+        "title": "All"
+      },
+      "session.access.all.read": {
+        "title": "Read"
+      },
+      "templates": {
+        "title": "Templates"
+      },
+      "templates.read": {
+        "title": "Read"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.admin": {
+        "title": "Manage"
+      },
+      "users.delete": {
+        "title": "Delete"
+      },
+      "widgets": {
+        "title": "Widgets"
+      },
+      "widgets.read": {
+        "title": "Read"
+      },
+      "workspaces": {
+        "title": "Workspaces"
+      },
+      "workspaces.access": {
+        "title": "Access"
+      },
+      "workspaces.access.read": {
+        "title": "Read"
+      },
+      "workspaces.access.share": {
+        "title": "Share"
+      },
+      "workspaces.admin": {
+        "title": "Manage"
+      },
+      "workspaces.delete": {
+        "title": "Delete"
+      },
+      "workspaces.docs": {
+        "title": "Docs"
+      },
+      "workspaces.docs.write": {
+        "title": "Create and edit"
+      },
+      "workspaces.read": {
+        "title": "Read"
+      },
+      "workspaces.unremove": {
+        "title": "Unremove"
+      },
+      "workspaces.unremove.write": {
+        "title": "Create and edit"
+      },
+      "workspaces.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://example.com",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Your Grist origin (https://host)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Grist",
   "http": {
     "operations": {
-      "addColumns": {"action":"write.columns","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/tables/{tableId}/columns","body":"json","scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"path","at":"tableId"}}},
-      "addRecords": {"action":"write.records","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/tables/{tableId}/records","params":["noparse"],"body":"json","scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"path","at":"tableId"}}},
-      "addRows": {"action":"write.data","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/tables/{tableId}/data","params":["noparse"],"body":"json","scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"path","at":"tableId"}}},
-      "addTables": {"action":"write.tables","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/tables","body":"json","scope":{"docId":{"from":"path","at":"docId"}}},
-      "applyProposal": {"action":"write.apply","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/proposals/{proposalId}/apply","scope":{"docId":{"from":"path","at":"docId"},"proposalId":{"from":"path","at":"proposalId"}}},
-      "applyUserActions": {"action":"write.apply","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/apply","params":["noparse"],"body":"json","scope":{"docId":{"from":"path","at":"docId"}}},
-      "assignDoc": {"action":"write.docs","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/assign","params":["group"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "bulkOperation": {"action":"write.bulk","effects":["write"],"method":"POST","origin":"{origin}","path":"/scim/v2/Bulk","body":"any","scope":{}},
-      "clearWebhookQueueForWebhook": {"action":"delete.queue","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/docs/{docId}/webhooks/queue/{webhookId}","scope":{"docId":{"from":"path","at":"docId"},"webhookId":{"from":"path","at":"webhookId"}}},
-      "compareDocuments": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/compare/{docId2}","params":["detail","maxRows"],"scope":{"docId":{"from":"path","at":"docId"},"docId2":{"from":"path","at":"docId2"}}},
-      "compareVersions": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/compare","params":["left","right","maxRows"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "copyDoc": {"action":"write.docs","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/copy","body":"any","scope":{"docId":{"from":"path","at":"docId"}}},
-      "createApiKey": {"action":"write.apikey","effects":["write"],"method":"POST","origin":"{origin}","path":"/profile/apikey","body":"any","scope":{}},
-      "createDoc": {"action":"write.docs","effects":["write"],"method":"POST","origin":"{origin}","path":"/workspaces/{workspaceId}/docs","body":"json","scope":{"workspaceId":{"from":"path","at":"workspaceId"}}},
-      "createDocUnified": {"action":"write.docs","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs","body":"any","scope":{}},
-      "createGroup": {"action":"admin.groups","effects":["admin"],"method":"POST","origin":"{origin}","path":"/scim/v2/Groups","body":"any","scope":{}},
-      "createProposal": {"action":"write.propose","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/propose","body":"any","scope":{"docId":{"from":"path","at":"docId"}}},
-      "createServiceAccount": {"action":"write.service_accounts","effects":["write"],"method":"POST","origin":"{origin}","path":"/service-accounts","body":"any","scope":{}},
-      "createUser": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"{origin}","path":"/scim/v2/Users","body":"any","scope":{}},
-      "createWebhooks": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/webhooks","body":"any","scope":{"docId":{"from":"path","at":"docId"}}},
-      "createWorkspace": {"action":"admin.workspaces","effects":["admin"],"method":"POST","origin":"{origin}","path":"/orgs/{orgId}/workspaces","body":"json","scope":{"orgId":{"from":"path","at":"orgId"}}},
-      "deleteActions": {"action":"delete.remove","effects":["delete"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/states/remove","body":"any","scope":{"docId":{"from":"path","at":"docId"}}},
-      "deleteApiKey": {"action":"delete.apikey","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/profile/apikey","scope":{}},
-      "deleteColumn": {"action":"delete.columns","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/docs/{docId}/tables/{tableId}/columns/{colId}","scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"path","at":"tableId"},"colId":{"from":"path","at":"colId"}}},
-      "deleteDoc": {"action":"delete.docs","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/docs/{docId}","scope":{"docId":{"from":"path","at":"docId"}}},
-      "deleteGroupById": {"action":"delete.groups","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/scim/v2/Groups/{groupId}","scope":{"groupId":{"from":"path","at":"groupId"}}},
-      "deleteOrg": {"action":"delete.orgs","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/orgs/{orgId}/{name}","scope":{"orgId":{"from":"path","at":"orgId"},"name":{"from":"path","at":"name"}}},
-      "deleteRecords": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/tables/{tableId}/records/delete","body":"json","scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"path","at":"tableId"}}},
-      "deleteRows": {"action":"delete.delete","effects":["delete"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/tables/{tableId}/data/delete","body":"json","scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"path","at":"tableId"}}},
-      "deleteServiceAccount": {"action":"delete.service_accounts","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/service-accounts/{saId}","scope":{"saId":{"from":"path","at":"saId"}}},
-      "deleteServiceAccountApiKey": {"action":"delete.apikey","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/service-accounts/{saId}/apikey","scope":{"saId":{"from":"path","at":"saId"}}},
-      "deleteUser": {"action":"delete.users","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/users/{userId}","body":"any","scope":{"userId":{"from":"path","at":"userId"}}},
-      "deleteUserById": {"action":"delete.users","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/scim/v2/Users/{userId}","scope":{"userId":{"from":"path","at":"userId"}}},
-      "deleteWebhook": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/docs/{docId}/webhooks/{webhookId}","scope":{"docId":{"from":"path","at":"docId"},"webhookId":{"from":"path","at":"webhookId"}}},
-      "deleteWorkspace": {"action":"delete.workspaces","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/workspaces/{workspaceId}","scope":{"workspaceId":{"from":"path","at":"workspaceId"}}},
-      "describeDoc": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}","scope":{"docId":{"from":"path","at":"docId"}}},
-      "describeOrg": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/orgs/{orgId}","scope":{"orgId":{"from":"path","at":"orgId"}}},
-      "describeWorkspace": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/workspaces/{workspaceId}","scope":{"workspaceId":{"from":"path","at":"workspaceId"}}},
-      "disableDoc": {"action":"write.docs","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/disable","scope":{"docId":{"from":"path","at":"docId"}}},
-      "disableUser": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"{origin}","path":"/users/{userId}/disable","scope":{"userId":{"from":"path","at":"userId"}}},
-      "downloadAttachment": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/attachments/{attachmentId}/download","scope":{"docId":{"from":"path","at":"docId"},"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "downloadDoc": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/download","params":["nohistory","template"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "downloadDocCsv": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/download/csv","params":["tableId","header"],"scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"query","at":"tableId"}}},
-      "downloadDocDsv": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/download/dsv","params":["tableId","header"],"scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"query","at":"tableId"}}},
-      "downloadDocTsv": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/download/tsv","params":["tableId","header"],"scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"query","at":"tableId"}}},
-      "downloadDocXlsx": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/download/xlsx","params":["header","tableId"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "downloadTableSchema": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/download/table-schema","params":["tableId","header"],"scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"query","at":"tableId"}}},
-      "enableDoc": {"action":"write.docs","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/enable","scope":{"docId":{"from":"path","at":"docId"}}},
-      "enableUser": {"action":"admin.users","effects":["admin"],"method":"POST","origin":"{origin}","path":"/users/{userId}/enable","scope":{"userId":{"from":"path","at":"userId"}}},
-      "flushDoc": {"action":"write.flush","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/flush","scope":{"docId":{"from":"path","at":"docId"}}},
-      "forceReload": {"action":"write.docs","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/force-reload","scope":{"docId":{"from":"path","at":"docId"}}},
-      "forkDoc": {"action":"write.fork","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/fork","scope":{"docId":{"from":"path","at":"docId"}}},
-      "getActiveSession": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/session/access/active","scope":{}},
-      "getAllSessions": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/session/access/all","scope":{}},
-      "getApiKey": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/profile/apikey","scope":{}},
-      "getAttachmentMetadata": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/attachments/{attachmentId}","params":["format"],"scope":{"docId":{"from":"path","at":"docId"},"attachmentId":{"from":"path","at":"attachmentId"}}},
-      "getFormData": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/forms/{viewSectionId}","scope":{"docId":{"from":"path","at":"docId"},"viewSectionId":{"from":"path","at":"viewSectionId"}}},
-      "getGroupById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/scim/v2/Groups/{groupId}","scope":{"groupId":{"from":"path","at":"groupId"}}},
-      "getGroups": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/scim/v2/Groups","params":["startIndex","count","filter"],"scope":{}},
-      "getMe": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/scim/v2/Me","scope":{}},
-      "getOrgUsage": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/orgs/{orgId}/usage","scope":{"orgId":{"from":"path","at":"orgId"}}},
-      "getProfile": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/profile/user","scope":{}},
-      "getResourceTypes": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/scim/v2/ResourceTypes","scope":{}},
-      "getRoleById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/scim/v2/Roles/{roleId}","scope":{"roleId":{"from":"path","at":"roleId"}}},
-      "getRoles": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/scim/v2/Roles","params":["startIndex","count","filter"],"scope":{}},
-      "getSchemas": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/scim/v2/Schemas","scope":{}},
-      "getServiceAccount": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/service-accounts/{saId}","scope":{"saId":{"from":"path","at":"saId"}}},
-      "getServiceProviderConfig": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/scim/v2/ServiceProviderConfig","scope":{}},
-      "getStates": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/states","scope":{"docId":{"from":"path","at":"docId"}}},
-      "getTableData": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/tables/{tableId}/data","params":["filter","sort","limit","cellFormat"],"scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"path","at":"tableId"}}},
-      "getTemplate": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/templates/{templateId}","scope":{"templateId":{"from":"path","at":"templateId"}}},
-      "getTimingStatus": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/timing","scope":{"docId":{"from":"path","at":"docId"}}},
-      "getUserById": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/scim/v2/Users/{userId}","scope":{"userId":{"from":"path","at":"userId"}}},
-      "getUsers": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/scim/v2/Users","params":["startIndex","count","filter"],"scope":{}},
-      "getUsersForViewAs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/usersForViewAs","scope":{"docId":{"from":"path","at":"docId"}}},
-      "importDoc": {"action":"admin.workspaces","effects":["admin"],"method":"POST","origin":"{origin}","path":"/workspaces/{workspaceId}/import","body":"any","scope":{"workspaceId":{"from":"path","at":"workspaceId"}}},
-      "listAttachments": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/attachments","params":["filter","sort","limit"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "listColumns": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/tables/{tableId}/columns","params":["hidden"],"scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"path","at":"tableId"}}},
-      "listDocAccess": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/access","scope":{"docId":{"from":"path","at":"docId"}}},
-      "listOrgAccess": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/orgs/{orgId}/access","scope":{"orgId":{"from":"path","at":"orgId"}}},
-      "listOrgs": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/orgs","scope":{}},
-      "listProposals": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/proposals","params":["outgoing"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "listRecords": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/tables/{tableId}/records","params":["filter","sort","limit","hidden","cellFormat"],"scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"path","at":"tableId"}}},
-      "listServiceAccounts": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/service-accounts","scope":{}},
-      "listSnapshots": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/snapshots","params":["raw"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "listTables": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/tables","params":["expand"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "listTemplates": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/templates","scope":{}},
-      "listWebhooks": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/webhooks","scope":{"docId":{"from":"path","at":"docId"}}},
-      "listWidgets": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/widgets","scope":{}},
-      "listWorkspaceAccess": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/workspaces/{workspaceId}/access","scope":{"workspaceId":{"from":"path","at":"workspaceId"}}},
-      "listWorkspaces": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/orgs/{orgId}/workspaces","scope":{"orgId":{"from":"path","at":"orgId"}}},
-      "modifyColumns": {"action":"write.columns","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/docs/{docId}/tables/{tableId}/columns","body":"json","scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"path","at":"tableId"}}},
-      "modifyDoc": {"action":"write.docs","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/docs/{docId}","body":"json","scope":{"docId":{"from":"path","at":"docId"}}},
-      "modifyDocAccess": {"action":"write.access","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/docs/{docId}/access","body":"json","scope":{"docId":{"from":"path","at":"docId"}}},
-      "modifyOrg": {"action":"admin.orgs","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/orgs/{orgId}","body":"json","scope":{"orgId":{"from":"path","at":"orgId"}}},
-      "modifyOrgAccess": {"action":"write.access","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/orgs/{orgId}/access","body":"json","scope":{"orgId":{"from":"path","at":"orgId"}}},
-      "modifyRecords": {"action":"write.records","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/docs/{docId}/tables/{tableId}/records","params":["noparse"],"body":"json","scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"path","at":"tableId"}}},
-      "modifyRows": {"action":"write.data","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/docs/{docId}/tables/{tableId}/data","params":["noparse"],"body":"json","scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"path","at":"tableId"}}},
-      "modifyServiceAccount": {"action":"write.service_accounts","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/service-accounts/{saId}","body":"any","scope":{"saId":{"from":"path","at":"saId"}}},
-      "modifyTables": {"action":"write.tables","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/docs/{docId}/tables","body":"json","scope":{"docId":{"from":"path","at":"docId"}}},
-      "modifyWebhook": {"action":"admin.webhooks","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/docs/{docId}/webhooks/{webhookId}","body":"any","scope":{"docId":{"from":"path","at":"docId"},"webhookId":{"from":"path","at":"webhookId"}}},
-      "modifyWorkspace": {"action":"admin.workspaces","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/workspaces/{workspaceId}","body":"json","scope":{"workspaceId":{"from":"path","at":"workspaceId"}}},
-      "modifyWorkspaceAccess": {"action":"write.access","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/workspaces/{workspaceId}/access","body":"json","scope":{"workspaceId":{"from":"path","at":"workspaceId"}}},
-      "moveDoc": {"action":"write.docs","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/docs/{docId}/move","body":"any","scope":{"docId":{"from":"path","at":"docId"}}},
-      "patchGroupById": {"action":"admin.groups","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/scim/v2/Groups/{groupId}","body":"any","scope":{"groupId":{"from":"path","at":"groupId"}}},
-      "patchRoleById": {"action":"admin.roles","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/scim/v2/Roles/{roleId}","body":"any","scope":{"roleId":{"from":"path","at":"roleId"}}},
-      "patchUserById": {"action":"admin.users","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/scim/v2/Users/{userId}","body":"any","scope":{"userId":{"from":"path","at":"userId"}}},
-      "pinDoc": {"action":"write.docs","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/docs/{docId}/pin","scope":{"docId":{"from":"path","at":"docId"}}},
-      "recoverDoc": {"action":"write.recover","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/recover","body":"any","scope":{"docId":{"from":"path","at":"docId"}}},
-      "regenerateServiceAccountApiKey": {"action":"write.apikey","effects":["write"],"method":"POST","origin":"{origin}","path":"/service-accounts/{saId}/apikey","scope":{"saId":{"from":"path","at":"saId"}}},
-      "removeDoc": {"action":"delete.remove","effects":["delete"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/remove","params":["permanent"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "removeSnapshots": {"action":"delete.remove","effects":["delete"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/snapshots/remove","body":"any","scope":{"docId":{"from":"path","at":"docId"}}},
-      "removeUnusedAttachments": {"action":"delete.remove_unused","effects":["delete"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/attachments/removeUnused","params":["expiredOnly"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "removeWorkspace": {"action":"delete.remove","effects":["delete"],"method":"POST","origin":"{origin}","path":"/workspaces/{workspaceId}/remove","params":["permanent"],"scope":{"workspaceId":{"from":"path","at":"workspaceId"}}},
-      "replaceColumns": {"action":"write.columns","effects":["write"],"method":"PUT","origin":"{origin}","path":"/docs/{docId}/tables/{tableId}/columns","params":["noadd","noupdate","replaceall"],"body":"json","scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"path","at":"tableId"}}},
-      "replaceDoc": {"action":"write.replace","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/replace","body":"any","scope":{"docId":{"from":"path","at":"docId"}}},
-      "replaceRecords": {"action":"write.records","effects":["write"],"method":"PUT","origin":"{origin}","path":"/docs/{docId}/tables/{tableId}/records","params":["noparse","onmany","noadd","noupdate","allow_empty_require"],"body":"json","scope":{"docId":{"from":"path","at":"docId"},"tableId":{"from":"path","at":"tableId"}}},
-      "runSql": {"action":"execute.sql","effects":["execute"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/sql","body":"any","scope":{"docId":{"from":"path","at":"docId"}}},
-      "runSqlGet": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/docs/{docId}/sql","params":["q"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "searchGroups": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/scim/v2/Groups/.search","body":"any","scope":{}},
-      "searchUsers": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/scim/v2/Users/.search","body":"any","scope":{}},
-      "setActiveUser": {"action":"write.active","effects":["write"],"method":"POST","origin":"{origin}","path":"/session/access/active","body":"any","scope":{}},
-      "setDocumentAttachmentStore": {"action":"write.store","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/attachments/store","body":"any","scope":{"docId":{"from":"path","at":"docId"}}},
-      "startAttachmentTransfer": {"action":"pay.attachments","effects":["pay"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/attachments/transferAll","scope":{"docId":{"from":"path","at":"docId"}}},
-      "startTiming": {"action":"write.timing","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/timing/start","scope":{"docId":{"from":"path","at":"docId"}}},
-      "stopTiming": {"action":"write.timing","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/timing/stop","scope":{"docId":{"from":"path","at":"docId"}}},
-      "unpinDoc": {"action":"write.docs","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/docs/{docId}/unpin","scope":{"docId":{"from":"path","at":"docId"}}},
-      "unremoveDoc": {"action":"write.unremove","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/unremove","scope":{"docId":{"from":"path","at":"docId"}}},
-      "unremoveWorkspace": {"action":"write.unremove","effects":["write"],"method":"POST","origin":"{origin}","path":"/workspaces/{workspaceId}/unremove","scope":{"workspaceId":{"from":"path","at":"workspaceId"}}},
-      "updateGroupById": {"action":"admin.groups","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/scim/v2/Groups/{groupId}","body":"any","scope":{"groupId":{"from":"path","at":"groupId"}}},
-      "updateRoleById": {"action":"admin.roles","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/scim/v2/Roles/{roleId}","body":"any","scope":{"roleId":{"from":"path","at":"roleId"}}},
-      "updateUsedAttachments": {"action":"write.update_used","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/attachments/updateUsed","scope":{"docId":{"from":"path","at":"docId"}}},
-      "updateUserById": {"action":"admin.users","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/scim/v2/Users/{userId}","body":"any","scope":{"userId":{"from":"path","at":"userId"}}},
-      "updateUserLocale": {"action":"write.locale","effects":["write"],"method":"POST","origin":"{origin}","path":"/profile/user/locale","body":"any","scope":{}},
-      "updateUserName": {"action":"write.name","effects":["write"],"method":"POST","origin":"{origin}","path":"/profile/user/name","body":"any","scope":{}},
-      "uploadAttachments": {"action":"write.attachments","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/attachments","body":"any","scope":{"docId":{"from":"path","at":"docId"}}},
-      "uploadMissingAttachments": {"action":"write.attachments","effects":["write"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/attachments/archive","body":"any","scope":{"docId":{"from":"path","at":"docId"}}},
-      "verifyAttachmentFiles": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/docs/{docId}/attachments/verifyFiles","scope":{"docId":{"from":"path","at":"docId"}}}
+      "addColumns": {"action":"docs.tables.columns.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/tables/{tableId}/columns","scope":{"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"path"}}},
+      "addRecords": {"action":"docs.tables.records.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["noparse"],"path":"/api/docs/{docId}/tables/{tableId}/records","scope":{"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"path"}}},
+      "addRows": {"action":"docs.tables.data.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["noparse"],"path":"/api/docs/{docId}/tables/{tableId}/data","scope":{"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"path"}}},
+      "addTables": {"action":"docs.tables.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/tables","scope":{"docId":{"at":"docId","from":"path"}}},
+      "applyProposal": {"action":"docs.proposals.apply.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/proposals/{proposalId}/apply","scope":{"docId":{"at":"docId","from":"path"},"proposalId":{"at":"proposalId","from":"path"}}},
+      "applyUserActions": {"action":"docs.apply.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","params":["noparse"],"path":"/api/docs/{docId}/apply","scope":{"docId":{"at":"docId","from":"path"}}},
+      "assignDoc": {"action":"docs.assign.write","effects":["write"],"method":"POST","origin":"{origin}","params":["group"],"path":"/api/docs/{docId}/assign","scope":{"docId":{"at":"docId","from":"path"}}},
+      "bulkOperation": {"action":"scim.bulk.admin","body":"any","effects":["delete","admin"],"method":"POST","origin":"{origin}","path":"/api/scim/v2/Bulk","scope":{}},
+      "clearWebhookQueue": {"action":"docs.webhooks.queue.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/docs/{docId}/webhooks/queue","scope":{"docId":{"at":"docId","from":"path"}}},
+      "clearWebhookQueueForWebhook": {"action":"docs.webhooks.queue.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/docs/{docId}/webhooks/queue/{webhookId}","scope":{"docId":{"at":"docId","from":"path"},"webhookId":{"at":"webhookId","from":"path"}}},
+      "compareDocuments": {"action":"docs.compare.read","effects":["read"],"method":"GET","origin":"{origin}","params":["detail","maxRows"],"path":"/api/docs/{docId}/compare/{docId2}","scope":{"docId":{"at":"docId","from":"path"},"docId2":{"at":"docId2","from":"path"}}},
+      "compareVersions": {"action":"docs.compare.read","effects":["read"],"method":"GET","origin":"{origin}","params":["left","right","maxRows"],"path":"/api/docs/{docId}/compare","scope":{"docId":{"at":"docId","from":"path"}}},
+      "copyDoc": {"action":"docs.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/copy","scope":{"docId":{"at":"docId","from":"path"}}},
+      "createApiKey": {"action":"profile.apikey.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/profile/apikey","scope":{}},
+      "createDoc": {"action":"workspaces.docs.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/workspaces/{workspaceId}/docs","scope":{"workspaceId":{"at":"workspaceId","from":"path"}}},
+      "createDocUnified": {"action":"docs.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs","scope":{}},
+      "createGroup": {"action":"scim.groups.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/scim/v2/Groups","scope":{}},
+      "createProposal": {"action":"docs.propose.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/propose","scope":{"docId":{"at":"docId","from":"path"}}},
+      "createServiceAccount": {"action":"service_accounts.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/service-accounts","scope":{}},
+      "createUser": {"action":"scim.users.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/scim/v2/Users","scope":{}},
+      "createWebhooks": {"action":"docs.webhooks.admin","body":"any","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/webhooks","scope":{"docId":{"at":"docId","from":"path"}}},
+      "createWorkspace": {"action":"orgs.workspaces.admin","body":"json","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/orgs/{orgId}/workspaces","scope":{"orgId":{"at":"orgId","from":"path"}}},
+      "deleteActions": {"action":"docs.states.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/states/remove","scope":{"docId":{"at":"docId","from":"path"}}},
+      "deleteApiKey": {"action":"profile.apikey.delete","effects":["delete","admin"],"method":"DELETE","origin":"{origin}","path":"/api/profile/apikey","scope":{}},
+      "deleteColumn": {"action":"docs.tables.columns.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/docs/{docId}/tables/{tableId}/columns/{colId}","scope":{"colId":{"at":"colId","from":"path"},"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"path"}}},
+      "deleteDoc": {"action":"docs.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/docs/{docId}","scope":{"docId":{"at":"docId","from":"path"}}},
+      "deleteGroupById": {"action":"scim.groups.delete","effects":["delete","admin"],"method":"DELETE","origin":"{origin}","path":"/api/scim/v2/Groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"}}},
+      "deleteOrg": {"action":"orgs.delete","effects":["delete","admin"],"method":"DELETE","origin":"{origin}","path":"/api/orgs/{orgId}/{name}","scope":{"name":{"at":"name","from":"path"},"orgId":{"at":"orgId","from":"path"}}},
+      "deleteRecords": {"action":"docs.tables.records.delete","body":"json","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/tables/{tableId}/records/delete","scope":{"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"path"}}},
+      "deleteRows": {"action":"docs.tables.data.delete","body":"json","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/tables/{tableId}/data/delete","scope":{"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"path"}}},
+      "deleteServiceAccount": {"action":"service_accounts.delete","effects":["delete","admin"],"method":"DELETE","origin":"{origin}","path":"/api/service-accounts/{saId}","scope":{"saId":{"at":"saId","from":"path"}}},
+      "deleteServiceAccountApiKey": {"action":"service_accounts.apikey.delete","effects":["delete","admin"],"method":"DELETE","origin":"{origin}","path":"/api/service-accounts/{saId}/apikey","scope":{"saId":{"at":"saId","from":"path"}}},
+      "deleteUser": {"action":"users.delete","body":"any","effects":["delete","admin"],"method":"DELETE","origin":"{origin}","path":"/api/users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "deleteUserById": {"action":"scim.users.delete","effects":["delete","admin"],"method":"DELETE","origin":"{origin}","path":"/api/scim/v2/Users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "deleteWebhook": {"action":"docs.webhooks.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/docs/{docId}/webhooks/{webhookId}","path_patterns":{"webhookId":"[^q].*|q(?:|[^u].*|u(?:|[^e].*|e(?:|[^u].*|u(?:|[^e].*|e.+))))"},"scope":{"docId":{"at":"docId","from":"path"},"webhookId":{"at":"webhookId","from":"path"}}},
+      "deleteWorkspace": {"action":"workspaces.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/workspaces/{workspaceId}","scope":{"workspaceId":{"at":"workspaceId","from":"path"}}},
+      "describeDoc": {"action":"docs.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/docs/{docId}","scope":{"docId":{"at":"docId","from":"path"}}},
+      "describeOrg": {"action":"orgs.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/orgs/{orgId}","scope":{"orgId":{"at":"orgId","from":"path"}}},
+      "describeWorkspace": {"action":"workspaces.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/workspaces/{workspaceId}","scope":{"workspaceId":{"at":"workspaceId","from":"path"}}},
+      "disableDoc": {"action":"docs.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/disable","scope":{"docId":{"at":"docId","from":"path"}}},
+      "disableUser": {"action":"users.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/users/{userId}/disable","scope":{"userId":{"at":"userId","from":"path"}}},
+      "downloadAttachment": {"action":"docs.attachments.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/docs/{docId}/attachments/{attachmentId}/download","scope":{"attachmentId":{"at":"attachmentId","from":"path"},"docId":{"at":"docId","from":"path"}}},
+      "downloadAttachments": {"action":"docs.attachments.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/api/docs/{docId}/attachments/archive","scope":{"docId":{"at":"docId","from":"path"}}},
+      "downloadDoc": {"action":"docs.read","effects":["read"],"method":"GET","origin":"{origin}","params":["nohistory","template"],"path":"/api/docs/{docId}/download","scope":{"docId":{"at":"docId","from":"path"}}},
+      "downloadDocCsv": {"action":"docs.csv.read","effects":["read"],"method":"GET","origin":"{origin}","params":["tableId","header"],"path":"/api/docs/{docId}/download/csv","scope":{"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"query"}}},
+      "downloadDocDsv": {"action":"docs.dsv.read","effects":["read"],"method":"GET","origin":"{origin}","params":["tableId","header"],"path":"/api/docs/{docId}/download/dsv","scope":{"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"query"}}},
+      "downloadDocTsv": {"action":"docs.tsv.read","effects":["read"],"method":"GET","origin":"{origin}","params":["tableId","header"],"path":"/api/docs/{docId}/download/tsv","scope":{"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"query"}}},
+      "downloadDocXlsx": {"action":"docs.xlsx.read","effects":["read"],"method":"GET","origin":"{origin}","params":["header","tableId"],"path":"/api/docs/{docId}/download/xlsx","scope":{"docId":{"at":"docId","from":"path"}}},
+      "downloadTableSchema": {"action":"docs.table_schema.read","effects":["read"],"method":"GET","origin":"{origin}","params":["tableId","header"],"path":"/api/docs/{docId}/download/table-schema","scope":{"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"query"}}},
+      "enableDoc": {"action":"docs.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/enable","scope":{"docId":{"at":"docId","from":"path"}}},
+      "enableUser": {"action":"users.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/users/{userId}/enable","scope":{"userId":{"at":"userId","from":"path"}}},
+      "flushDoc": {"action":"docs.flush.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/flush","scope":{"docId":{"at":"docId","from":"path"}}},
+      "forceReload": {"action":"docs.force_reload.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/force-reload","scope":{"docId":{"at":"docId","from":"path"}}},
+      "forkDoc": {"action":"docs.fork.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/fork","scope":{"docId":{"at":"docId","from":"path"}}},
+      "getActiveSession": {"action":"session.access.active.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/session/access/active","scope":{}},
+      "getAllSessions": {"action":"session.access.all.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/session/access/all","scope":{}},
+      "getApiKey": {"action":"profile.apikey.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/profile/apikey","scope":{}},
+      "getAttachmentMetadata": {"action":"docs.attachments.read","effects":["read"],"method":"GET","origin":"{origin}","params":["format"],"path":"/api/docs/{docId}/attachments/{attachmentId}","path_patterns":{"attachmentId":"[0-9]+"},"scope":{"attachmentId":{"at":"attachmentId","from":"path"},"docId":{"at":"docId","from":"path"}}},
+      "getAttachmentTransferStatus": {"action":"docs.attachments.transfer_status.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/docs/{docId}/attachments/transferStatus","scope":{"docId":{"at":"docId","from":"path"}}},
+      "getDocumentAttachmentStore": {"action":"docs.attachments.store.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/docs/{docId}/attachments/store","scope":{"docId":{"at":"docId","from":"path"}}},
+      "getFormData": {"action":"docs.forms.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/docs/{docId}/forms/{viewSectionId}","scope":{"docId":{"at":"docId","from":"path"},"viewSectionId":{"at":"viewSectionId","from":"path"}}},
+      "getGroupById": {"action":"scim.groups.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/scim/v2/Groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"}}},
+      "getGroups": {"action":"scim.groups.read","effects":["read"],"method":"GET","origin":"{origin}","params":["startIndex","count","filter"],"path":"/api/scim/v2/Groups","scope":{}},
+      "getMe": {"action":"scim.me.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/scim/v2/Me","scope":{}},
+      "getOrgUsage": {"action":"orgs.usage.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/orgs/{orgId}/usage","scope":{"orgId":{"at":"orgId","from":"path"}}},
+      "getProfile": {"action":"profile.user.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/profile/user","scope":{}},
+      "getResourceTypes": {"action":"scim.resource_types.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/scim/v2/ResourceTypes","scope":{}},
+      "getRoleById": {"action":"scim.roles.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/scim/v2/Roles/{roleId}","scope":{"roleId":{"at":"roleId","from":"path"}}},
+      "getRoles": {"action":"scim.roles.read","effects":["read"],"method":"GET","origin":"{origin}","params":["startIndex","count","filter"],"path":"/api/scim/v2/Roles","scope":{}},
+      "getSchemas": {"action":"scim.schemas.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/scim/v2/Schemas","scope":{}},
+      "getServiceAccount": {"action":"service_accounts.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/service-accounts/{saId}","scope":{"saId":{"at":"saId","from":"path"}}},
+      "getServiceProviderConfig": {"action":"scim.service_provider_config.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/scim/v2/ServiceProviderConfig","scope":{}},
+      "getStates": {"action":"docs.states.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/docs/{docId}/states","scope":{"docId":{"at":"docId","from":"path"}}},
+      "getTableData": {"action":"docs.tables.data.read","effects":["read"],"method":"GET","origin":"{origin}","params":["filter","sort","limit","cellFormat"],"path":"/api/docs/{docId}/tables/{tableId}/data","scope":{"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"path"}}},
+      "getTemplate": {"action":"templates.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/templates/{templateId}","scope":{"templateId":{"at":"templateId","from":"path"}}},
+      "getTimingStatus": {"action":"docs.timing.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/docs/{docId}/timing","scope":{"docId":{"at":"docId","from":"path"}}},
+      "getUserById": {"action":"scim.users.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/scim/v2/Users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "getUsers": {"action":"scim.users.read","effects":["read"],"method":"GET","origin":"{origin}","params":["startIndex","count","filter"],"path":"/api/scim/v2/Users","scope":{}},
+      "getUsersForViewAs": {"action":"docs.users_for_view_as.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/docs/{docId}/usersForViewAs","scope":{"docId":{"at":"docId","from":"path"}}},
+      "importDoc": {"action":"workspaces.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/workspaces/{workspaceId}/import","scope":{"workspaceId":{"at":"workspaceId","from":"path"}}},
+      "listAttachmentStores": {"action":"docs.attachments.stores.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/docs/{docId}/attachments/stores","scope":{"docId":{"at":"docId","from":"path"}}},
+      "listAttachments": {"action":"docs.attachments.read","effects":["read"],"method":"GET","origin":"{origin}","params":["filter","sort","limit"],"path":"/api/docs/{docId}/attachments","scope":{"docId":{"at":"docId","from":"path"}}},
+      "listColumns": {"action":"docs.tables.columns.read","effects":["read"],"method":"GET","origin":"{origin}","params":["hidden"],"path":"/api/docs/{docId}/tables/{tableId}/columns","scope":{"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"path"}}},
+      "listDocAccess": {"action":"docs.access.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/docs/{docId}/access","scope":{"docId":{"at":"docId","from":"path"}}},
+      "listOrgAccess": {"action":"orgs.access.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/orgs/{orgId}/access","scope":{"orgId":{"at":"orgId","from":"path"}}},
+      "listOrgs": {"action":"orgs.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/orgs","scope":{}},
+      "listProposals": {"action":"docs.proposals.read","effects":["read"],"method":"GET","origin":"{origin}","params":["outgoing"],"path":"/api/docs/{docId}/proposals","scope":{"docId":{"at":"docId","from":"path"}}},
+      "listRecords": {"action":"docs.tables.records.read","effects":["read"],"method":"GET","origin":"{origin}","params":["filter","sort","limit","hidden","cellFormat"],"path":"/api/docs/{docId}/tables/{tableId}/records","scope":{"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"path"}}},
+      "listServiceAccounts": {"action":"service_accounts.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/service-accounts","scope":{}},
+      "listSnapshots": {"action":"docs.snapshots.read","effects":["read"],"method":"GET","origin":"{origin}","params":["raw"],"path":"/api/docs/{docId}/snapshots","scope":{"docId":{"at":"docId","from":"path"}}},
+      "listTables": {"action":"docs.tables.read","effects":["read"],"method":"GET","origin":"{origin}","params":["expand"],"path":"/api/docs/{docId}/tables","scope":{"docId":{"at":"docId","from":"path"}}},
+      "listTemplates": {"action":"templates.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/templates","scope":{}},
+      "listWebhooks": {"action":"docs.webhooks.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/docs/{docId}/webhooks","scope":{"docId":{"at":"docId","from":"path"}}},
+      "listWidgets": {"action":"widgets.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/widgets","scope":{}},
+      "listWorkspaceAccess": {"action":"workspaces.access.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/workspaces/{workspaceId}/access","scope":{"workspaceId":{"at":"workspaceId","from":"path"}}},
+      "listWorkspaces": {"action":"orgs.workspaces.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/orgs/{orgId}/workspaces","scope":{"orgId":{"at":"orgId","from":"path"}}},
+      "modifyColumns": {"action":"docs.tables.columns.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/docs/{docId}/tables/{tableId}/columns","scope":{"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"path"}}},
+      "modifyDoc": {"action":"docs.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/docs/{docId}","scope":{"docId":{"at":"docId","from":"path"}}},
+      "modifyDocAccess": {"action":"docs.access.share","body":"json","effects":["share"],"method":"PATCH","origin":"{origin}","path":"/api/docs/{docId}/access","scope":{"docId":{"at":"docId","from":"path"}}},
+      "modifyOrg": {"action":"orgs.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/orgs/{orgId}","scope":{"orgId":{"at":"orgId","from":"path"}}},
+      "modifyOrgAccess": {"action":"orgs.access.share","body":"json","effects":["share"],"method":"PATCH","origin":"{origin}","path":"/api/orgs/{orgId}/access","scope":{"orgId":{"at":"orgId","from":"path"}}},
+      "modifyRecords": {"action":"docs.tables.records.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","params":["noparse"],"path":"/api/docs/{docId}/tables/{tableId}/records","scope":{"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"path"}}},
+      "modifyRows": {"action":"docs.tables.data.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","params":["noparse"],"path":"/api/docs/{docId}/tables/{tableId}/data","scope":{"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"path"}}},
+      "modifyServiceAccount": {"action":"service_accounts.admin","body":"any","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/service-accounts/{saId}","scope":{"saId":{"at":"saId","from":"path"}}},
+      "modifyTables": {"action":"docs.tables.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/docs/{docId}/tables","scope":{"docId":{"at":"docId","from":"path"}}},
+      "modifyWebhook": {"action":"docs.webhooks.admin","body":"any","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/docs/{docId}/webhooks/{webhookId}","scope":{"docId":{"at":"docId","from":"path"},"webhookId":{"at":"webhookId","from":"path"}}},
+      "modifyWorkspace": {"action":"workspaces.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/workspaces/{workspaceId}","scope":{"workspaceId":{"at":"workspaceId","from":"path"}}},
+      "modifyWorkspaceAccess": {"action":"workspaces.access.share","body":"json","effects":["share"],"method":"PATCH","origin":"{origin}","path":"/api/workspaces/{workspaceId}/access","scope":{"workspaceId":{"at":"workspaceId","from":"path"}}},
+      "moveDoc": {"action":"docs.write","body":"any","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/docs/{docId}/move","scope":{"docId":{"at":"docId","from":"path"}}},
+      "patchGroupById": {"action":"scim.groups.admin","body":"any","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/scim/v2/Groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"}}},
+      "patchRoleById": {"action":"scim.roles.admin","body":"any","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/scim/v2/Roles/{roleId}","scope":{"roleId":{"at":"roleId","from":"path"}}},
+      "patchUserById": {"action":"scim.users.admin","body":"any","effects":["admin"],"method":"PATCH","origin":"{origin}","path":"/api/scim/v2/Users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "pinDoc": {"action":"docs.write","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/docs/{docId}/pin","scope":{"docId":{"at":"docId","from":"path"}}},
+      "recoverDoc": {"action":"docs.recover.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/recover","scope":{"docId":{"at":"docId","from":"path"}}},
+      "regenerateServiceAccountApiKey": {"action":"service_accounts.apikey.admin","effects":["admin"],"method":"POST","origin":"{origin}","path":"/api/service-accounts/{saId}/apikey","scope":{"saId":{"at":"saId","from":"path"}}},
+      "removeDoc": {"action":"docs.delete","effects":["delete"],"method":"POST","origin":"{origin}","params":["permanent"],"path":"/api/docs/{docId}/remove","scope":{"docId":{"at":"docId","from":"path"}}},
+      "removeSnapshots": {"action":"docs.snapshots.delete","body":"any","effects":["delete"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/snapshots/remove","scope":{"docId":{"at":"docId","from":"path"}}},
+      "removeUnusedAttachments": {"action":"docs.attachments.unused.delete","effects":["delete"],"method":"POST","origin":"{origin}","params":["expiredOnly"],"path":"/api/docs/{docId}/attachments/removeUnused","scope":{"docId":{"at":"docId","from":"path"}}},
+      "removeWorkspace": {"action":"workspaces.delete","effects":["delete"],"method":"POST","origin":"{origin}","params":["permanent"],"path":"/api/workspaces/{workspaceId}/remove","scope":{"workspaceId":{"at":"workspaceId","from":"path"}}},
+      "replaceColumns": {"action":"docs.tables.columns.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","params":["noadd","noupdate","replaceall"],"path":"/api/docs/{docId}/tables/{tableId}/columns","scope":{"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"path"}}},
+      "replaceDoc": {"action":"docs.replace.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/replace","scope":{"docId":{"at":"docId","from":"path"}}},
+      "replaceRecords": {"action":"docs.tables.records.write","body":"json","effects":["write"],"method":"PUT","origin":"{origin}","params":["noparse","onmany","noadd","noupdate","allow_empty_require"],"path":"/api/docs/{docId}/tables/{tableId}/records","scope":{"docId":{"at":"docId","from":"path"},"tableId":{"at":"tableId","from":"path"}}},
+      "runSql": {"action":"docs.sql.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/sql","scope":{"docId":{"at":"docId","from":"path"}}},
+      "runSqlGet": {"action":"docs.sql.read","effects":["read"],"method":"GET","origin":"{origin}","params":["q"],"path":"/api/docs/{docId}/sql","scope":{"docId":{"at":"docId","from":"path"}}},
+      "searchGroups": {"action":"scim.groups.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/scim/v2/Groups/.search","scope":{}},
+      "searchUsers": {"action":"scim.users.read","body":"any","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/scim/v2/Users/.search","scope":{}},
+      "setActiveUser": {"action":"session.access.active.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/session/access/active","scope":{}},
+      "setDocumentAttachmentStore": {"action":"docs.attachments.store.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/attachments/store","scope":{"docId":{"at":"docId","from":"path"}}},
+      "startAttachmentTransfer": {"action":"docs.attachments.all.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/attachments/transferAll","scope":{"docId":{"at":"docId","from":"path"}}},
+      "startTiming": {"action":"docs.timing.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/timing/start","scope":{"docId":{"at":"docId","from":"path"}}},
+      "stopTiming": {"action":"docs.timing.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/timing/stop","scope":{"docId":{"at":"docId","from":"path"}}},
+      "unpinDoc": {"action":"docs.write","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/api/docs/{docId}/unpin","scope":{"docId":{"at":"docId","from":"path"}}},
+      "unremoveDoc": {"action":"docs.unremove.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/unremove","scope":{"docId":{"at":"docId","from":"path"}}},
+      "unremoveWorkspace": {"action":"workspaces.unremove.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/workspaces/{workspaceId}/unremove","scope":{"workspaceId":{"at":"workspaceId","from":"path"}}},
+      "updateGroupById": {"action":"scim.groups.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/scim/v2/Groups/{groupId}","scope":{"groupId":{"at":"groupId","from":"path"}}},
+      "updateRoleById": {"action":"scim.roles.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/scim/v2/Roles/{roleId}","scope":{"roleId":{"at":"roleId","from":"path"}}},
+      "updateUsedAttachments": {"action":"docs.attachments.used.write","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/attachments/updateUsed","scope":{"docId":{"at":"docId","from":"path"}}},
+      "updateUserById": {"action":"scim.users.admin","body":"any","effects":["admin"],"method":"PUT","origin":"{origin}","path":"/api/scim/v2/Users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "updateUserLocale": {"action":"profile.user.locale.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/profile/user/locale","scope":{}},
+      "updateUserName": {"action":"profile.user.name.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/profile/user/name","scope":{}},
+      "uploadAttachments": {"action":"docs.attachments.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/attachments","scope":{"docId":{"at":"docId","from":"path"}}},
+      "uploadMissingAttachments": {"action":"docs.attachments.write","body":"any","effects":["write"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/attachments/archive","scope":{"docId":{"at":"docId","from":"path"}}},
+      "verifyAttachmentFiles": {"action":"docs.attachments.files.read","effects":["read"],"method":"POST","origin":"{origin}","path":"/api/docs/{docId}/attachments/verifyFiles","scope":{"docId":{"at":"docId","from":"path"}}}
     }
   }
 }

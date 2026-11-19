@@ -1,180 +1,721 @@
 {
-  "title": "Coda",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "access_token", "label": "Access Token", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "access_token", "origin": "https://coda.io", "path": "/apis/v1", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "admin.domains": {"title": "Admin: domains"},
-      "admin.role": {"title": "Admin: role"},
-      "admin.settings": {"title": "Admin: settings"},
-      "delete.category": {"title": "Delete: category"},
-      "delete.content": {"title": "Delete: content"},
-      "delete.docs": {"title": "Delete: docs"},
-      "delete.domains": {"title": "Delete: domains"},
-      "delete.folders": {"title": "Delete: folders"},
-      "delete.invitations": {"title": "Delete: invitations"},
-      "delete.listing_draft": {"title": "Delete: listing draft"},
-      "delete.maker": {"title": "Delete: maker"},
-      "delete.packs": {"title": "Delete: packs"},
-      "delete.pages": {"title": "Delete: pages"},
-      "delete.permissions": {"title": "Delete: permissions"},
-      "delete.rows": {"title": "Delete: rows"},
-      "execute.automation": {"title": "Execute: automation"},
-      "generate.asset_type": {"title": "Generate: asset type"},
-      "generate.source_code": {"title": "Generate: source code"},
-      "generate.versions": {"title": "Generate: versions"},
-      "publish.docs": {"title": "Publish: docs"},
-      "publish.releases": {"title": "Publish: releases"},
-      "read": {"title": "Read everything the account can see"},
-      "send.reply": {"title": "Send: reply"},
-      "share.invitations": {"title": "Share: invitations"},
-      "share.permissions": {"title": "Share: permissions"},
-      "write.buttons": {"title": "Write: buttons"},
-      "write.category": {"title": "Write: category"},
-      "write.docs": {"title": "Write: docs"},
-      "write.featured_docs": {"title": "Write: featured docs"},
-      "write.folders": {"title": "Write: folders"},
-      "write.go_links": {"title": "Write: go links"},
-      "write.listing_draft": {"title": "Write: listing draft"},
-      "write.maker": {"title": "Write: maker"},
-      "write.oauth_config": {"title": "Write: oauth config"},
-      "write.packs": {"title": "Write: packs"},
-      "write.pages": {"title": "Write: pages"},
-      "write.pending": {"title": "Write: pending"},
-      "write.register": {"title": "Write: register"},
-      "write.reviews": {"title": "Write: reviews"},
-      "write.rows": {"title": "Write: rows"},
-      "write.system_connection": {"title": "Write: system connection"}
-    }
+      "analytics": {
+        "title": "Analytics"
+      },
+      "analytics.docs": {
+        "title": "Docs"
+      },
+      "analytics.docs.pages": {
+        "title": "Pages"
+      },
+      "analytics.docs.pages.read": {
+        "title": "Read"
+      },
+      "analytics.docs.read": {
+        "title": "Read"
+      },
+      "analytics.docs.summary": {
+        "title": "Summary"
+      },
+      "analytics.docs.summary.read": {
+        "title": "Read"
+      },
+      "analytics.packs": {
+        "title": "Packs"
+      },
+      "analytics.packs.formulas": {
+        "title": "Formulas"
+      },
+      "analytics.packs.formulas.read": {
+        "title": "Read"
+      },
+      "analytics.packs.read": {
+        "title": "Read"
+      },
+      "analytics.packs.summary": {
+        "title": "Summary"
+      },
+      "analytics.packs.summary.read": {
+        "title": "Read"
+      },
+      "analytics.updated": {
+        "title": "Updated"
+      },
+      "analytics.updated.read": {
+        "title": "Read"
+      },
+      "categories": {
+        "title": "Categories"
+      },
+      "categories.read": {
+        "title": "Read"
+      },
+      "docs": {
+        "title": "Docs"
+      },
+      "docs.acl": {
+        "title": "Acl"
+      },
+      "docs.acl.metadata": {
+        "title": "Metadata"
+      },
+      "docs.acl.metadata.read": {
+        "title": "Read"
+      },
+      "docs.acl.permissions": {
+        "title": "Permissions"
+      },
+      "docs.acl.permissions.delete": {
+        "title": "Delete"
+      },
+      "docs.acl.permissions.read": {
+        "title": "Read"
+      },
+      "docs.acl.permissions.share": {
+        "title": "Share"
+      },
+      "docs.acl.principals": {
+        "title": "Principals"
+      },
+      "docs.acl.principals.read": {
+        "title": "Read"
+      },
+      "docs.acl.settings": {
+        "title": "Settings"
+      },
+      "docs.acl.settings.admin": {
+        "title": "Manage"
+      },
+      "docs.acl.settings.read": {
+        "title": "Read"
+      },
+      "docs.controls": {
+        "title": "Controls"
+      },
+      "docs.controls.read": {
+        "title": "Read"
+      },
+      "docs.delete": {
+        "title": "Delete"
+      },
+      "docs.domains": {
+        "title": "Domains"
+      },
+      "docs.domains.admin": {
+        "title": "Manage"
+      },
+      "docs.domains.delete": {
+        "title": "Delete"
+      },
+      "docs.domains.read": {
+        "title": "Read"
+      },
+      "docs.formulas": {
+        "title": "Formulas"
+      },
+      "docs.formulas.read": {
+        "title": "Read"
+      },
+      "docs.hooks": {
+        "title": "Hooks"
+      },
+      "docs.hooks.automation": {
+        "title": "Automation"
+      },
+      "docs.hooks.automation.execute": {
+        "title": "Run"
+      },
+      "docs.pages": {
+        "title": "Pages"
+      },
+      "docs.pages.content": {
+        "title": "Content"
+      },
+      "docs.pages.content.delete": {
+        "title": "Delete"
+      },
+      "docs.pages.content.read": {
+        "title": "Read"
+      },
+      "docs.pages.delete": {
+        "title": "Delete"
+      },
+      "docs.pages.export": {
+        "title": "Export"
+      },
+      "docs.pages.export.read": {
+        "title": "Read"
+      },
+      "docs.pages.read": {
+        "title": "Read"
+      },
+      "docs.pages.write": {
+        "title": "Create and edit"
+      },
+      "docs.publish": {
+        "title": "Publish"
+      },
+      "docs.read": {
+        "title": "Read"
+      },
+      "docs.tables": {
+        "title": "Tables"
+      },
+      "docs.tables.columns": {
+        "title": "Columns"
+      },
+      "docs.tables.columns.read": {
+        "title": "Read"
+      },
+      "docs.tables.read": {
+        "title": "Read"
+      },
+      "docs.tables.rows": {
+        "title": "Rows"
+      },
+      "docs.tables.rows.buttons": {
+        "title": "Buttons"
+      },
+      "docs.tables.rows.buttons.execute": {
+        "title": "Run"
+      },
+      "docs.tables.rows.delete": {
+        "title": "Delete"
+      },
+      "docs.tables.rows.read": {
+        "title": "Read"
+      },
+      "docs.tables.rows.write": {
+        "title": "Create and edit"
+      },
+      "docs.write": {
+        "title": "Create and edit"
+      },
+      "domains": {
+        "title": "Domains"
+      },
+      "domains.provider": {
+        "title": "Provider"
+      },
+      "domains.provider.read": {
+        "title": "Read"
+      },
+      "folders": {
+        "title": "Folders"
+      },
+      "folders.children": {
+        "title": "Children"
+      },
+      "folders.children.read": {
+        "title": "Read"
+      },
+      "folders.delete": {
+        "title": "Delete"
+      },
+      "folders.read": {
+        "title": "Read"
+      },
+      "folders.write": {
+        "title": "Create and edit"
+      },
+      "go": {
+        "title": "Go"
+      },
+      "go.tenants": {
+        "title": "Tenants"
+      },
+      "go.tenants.agent_instances": {
+        "title": "Agent instances"
+      },
+      "go.tenants.agent_instances.agent_session_ids": {
+        "title": "Agent session ids"
+      },
+      "go.tenants.agent_instances.agent_session_ids.read": {
+        "title": "Read"
+      },
+      "go.tenants.agent_instances.logs": {
+        "title": "Logs"
+      },
+      "go.tenants.agent_instances.logs.read": {
+        "title": "Read"
+      },
+      "mutation_status": {
+        "title": "Mutation status"
+      },
+      "mutation_status.read": {
+        "title": "Read"
+      },
+      "organizations": {
+        "title": "Organizations"
+      },
+      "organizations.go_links": {
+        "title": "Go links"
+      },
+      "organizations.go_links.write": {
+        "title": "Create and edit"
+      },
+      "packs": {
+        "title": "Packs"
+      },
+      "packs.asset": {
+        "title": "Asset"
+      },
+      "packs.asset.write": {
+        "title": "Create and edit"
+      },
+      "packs.assets": {
+        "title": "Assets"
+      },
+      "packs.assets.asset_type": {
+        "title": "Asset type"
+      },
+      "packs.assets.asset_type.complete": {
+        "title": "Complete"
+      },
+      "packs.assets.asset_type.complete.write": {
+        "title": "Create and edit"
+      },
+      "packs.categories": {
+        "title": "Categories"
+      },
+      "packs.categories.read": {
+        "title": "Read"
+      },
+      "packs.category": {
+        "title": "Category"
+      },
+      "packs.category.delete": {
+        "title": "Delete"
+      },
+      "packs.category.write": {
+        "title": "Create and edit"
+      },
+      "packs.configurations": {
+        "title": "Configurations"
+      },
+      "packs.configurations.schema": {
+        "title": "Schema"
+      },
+      "packs.configurations.schema.read": {
+        "title": "Read"
+      },
+      "packs.delete": {
+        "title": "Delete"
+      },
+      "packs.docs": {
+        "title": "Docs"
+      },
+      "packs.docs.grouped_logs": {
+        "title": "Grouped logs"
+      },
+      "packs.docs.grouped_logs.read": {
+        "title": "Read"
+      },
+      "packs.docs.logs": {
+        "title": "Logs"
+      },
+      "packs.docs.logs.read": {
+        "title": "Read"
+      },
+      "packs.featured_docs": {
+        "title": "Featured docs"
+      },
+      "packs.featured_docs.read": {
+        "title": "Read"
+      },
+      "packs.featured_docs.write": {
+        "title": "Create and edit"
+      },
+      "packs.invitations": {
+        "title": "Invitations"
+      },
+      "packs.invitations.delete": {
+        "title": "Delete"
+      },
+      "packs.invitations.read": {
+        "title": "Read"
+      },
+      "packs.invitations.reply": {
+        "title": "Reply"
+      },
+      "packs.invitations.reply.write": {
+        "title": "Create and edit"
+      },
+      "packs.invitations.share": {
+        "title": "Share"
+      },
+      "packs.listing": {
+        "title": "Listing"
+      },
+      "packs.listing.read": {
+        "title": "Read"
+      },
+      "packs.listing_draft": {
+        "title": "Listing draft"
+      },
+      "packs.listing_draft.delete": {
+        "title": "Delete"
+      },
+      "packs.listing_draft.read": {
+        "title": "Read"
+      },
+      "packs.listing_draft.write": {
+        "title": "Create and edit"
+      },
+      "packs.listings": {
+        "title": "Listings"
+      },
+      "packs.listings.read": {
+        "title": "Read"
+      },
+      "packs.maker": {
+        "title": "Maker"
+      },
+      "packs.maker.delete": {
+        "title": "Delete"
+      },
+      "packs.maker.write": {
+        "title": "Create and edit"
+      },
+      "packs.makers": {
+        "title": "Makers"
+      },
+      "packs.makers.read": {
+        "title": "Read"
+      },
+      "packs.next_version": {
+        "title": "Next version"
+      },
+      "packs.next_version.read": {
+        "title": "Read"
+      },
+      "packs.oauth_config": {
+        "title": "Oauth config"
+      },
+      "packs.oauth_config.admin": {
+        "title": "Manage"
+      },
+      "packs.oauth_config.read": {
+        "title": "Read"
+      },
+      "packs.permissions": {
+        "title": "Permissions"
+      },
+      "packs.permissions.delete": {
+        "title": "Delete"
+      },
+      "packs.permissions.read": {
+        "title": "Read"
+      },
+      "packs.permissions.share": {
+        "title": "Share"
+      },
+      "packs.read": {
+        "title": "Read"
+      },
+      "packs.releases": {
+        "title": "Releases"
+      },
+      "packs.releases.publish": {
+        "title": "Publish"
+      },
+      "packs.releases.read": {
+        "title": "Read"
+      },
+      "packs.reviews": {
+        "title": "Reviews"
+      },
+      "packs.reviews.pending": {
+        "title": "Pending"
+      },
+      "packs.reviews.pending.write": {
+        "title": "Create and edit"
+      },
+      "packs.reviews.read": {
+        "title": "Read"
+      },
+      "packs.reviews.write": {
+        "title": "Create and edit"
+      },
+      "packs.source_code": {
+        "title": "Source code"
+      },
+      "packs.source_code.write": {
+        "title": "Create and edit"
+      },
+      "packs.system_connection": {
+        "title": "System connection"
+      },
+      "packs.system_connection.admin": {
+        "title": "Manage"
+      },
+      "packs.system_connection.read": {
+        "title": "Read"
+      },
+      "packs.tenant_id": {
+        "title": "Tenant id"
+      },
+      "packs.tenant_id.root_ingestion_id": {
+        "title": "Root ingestion id"
+      },
+      "packs.tenant_id.root_ingestion_id.grouped_logs": {
+        "title": "Grouped logs"
+      },
+      "packs.tenant_id.root_ingestion_id.grouped_logs.read": {
+        "title": "Read"
+      },
+      "packs.tenant_id.root_ingestion_id.ingestion_batch_executions": {
+        "title": "Ingestion batch executions"
+      },
+      "packs.tenant_id.root_ingestion_id.ingestion_batch_executions.parent_items": {
+        "title": "Parent items"
+      },
+      "packs.tenant_id.root_ingestion_id.ingestion_batch_executions.parent_items.read": {
+        "title": "Read"
+      },
+      "packs.tenant_id.root_ingestion_id.ingestion_batch_executions.read": {
+        "title": "Read"
+      },
+      "packs.tenant_id.root_ingestion_id.logs": {
+        "title": "Logs"
+      },
+      "packs.tenant_id.root_ingestion_id.logs.read": {
+        "title": "Read"
+      },
+      "packs.versions": {
+        "title": "Versions"
+      },
+      "packs.versions.complete": {
+        "title": "Complete"
+      },
+      "packs.versions.complete.write": {
+        "title": "Create and edit"
+      },
+      "packs.versions.diff": {
+        "title": "Diff"
+      },
+      "packs.versions.diff.read": {
+        "title": "Read"
+      },
+      "packs.versions.read": {
+        "title": "Read"
+      },
+      "packs.versions.register": {
+        "title": "Register"
+      },
+      "packs.versions.register.write": {
+        "title": "Create and edit"
+      },
+      "packs.versions.source_code": {
+        "title": "Source code"
+      },
+      "packs.versions.source_code.complete": {
+        "title": "Complete"
+      },
+      "packs.versions.source_code.complete.write": {
+        "title": "Create and edit"
+      },
+      "packs.versions.source_code.read": {
+        "title": "Read"
+      },
+      "packs.write": {
+        "title": "Create and edit"
+      },
+      "resolve_browser_link": {
+        "title": "Resolve browser link"
+      },
+      "resolve_browser_link.read": {
+        "title": "Read"
+      },
+      "whoami": {
+        "title": "Whoami"
+      },
+      "whoami.read": {
+        "title": "Read"
+      },
+      "workspaces": {
+        "title": "Workspaces"
+      },
+      "workspaces.roles": {
+        "title": "Roles"
+      },
+      "workspaces.roles.read": {
+        "title": "Read"
+      },
+      "workspaces.users": {
+        "title": "Users"
+      },
+      "workspaces.users.read": {
+        "title": "Read"
+      },
+      "workspaces.users.role": {
+        "title": "Role"
+      },
+      "workspaces.users.role.admin": {
+        "title": "Manage"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://coda.io",
+            "path": "/apis/v1",
+            "prefix": "Bearer ",
+            "value": "access_token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://docs.superhuman.com",
+            "path": "/apis/v1",
+            "prefix": "Bearer ",
+            "value": "access_token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "access_token",
+        "label": "Access Token",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Coda",
   "http": {
+    "origins": {"api":["https://coda.io","https://docs.superhuman.com"]},
     "operations": {
-      "addCustomDocDomain": {"action":"admin.domains","effects":["admin"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/docs/${docId}/domains","body":"json","scope":{"docId":{"from":"path","at":"docId"}}},
-      "addGoLink": {"action":"write.go_links","effects":["write"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/organizations/{organizationId}/goLinks","body":"json","scope":{"organizationId":{"from":"path","at":"organizationId"},"name":{"from":"body","at":"/name"},"destinationUrl":{"from":"body","at":"/destinationUrl"}}},
-      "addPackCategory": {"action":"write.category","effects":["write"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/category","body":"json","scope":{"packId":{"from":"path","at":"packId"},"categoryName":{"from":"body","at":"/categoryName"}}},
-      "addPackMaker": {"action":"write.maker","effects":["write"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/maker","body":"json","scope":{"packId":{"from":"path","at":"packId"},"loginId":{"from":"body","at":"/loginId"}}},
-      "addPackPermission": {"action":"share.permissions","effects":["share"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/permissions","body":"json","scope":{"packId":{"from":"path","at":"packId"},"request":{"from":"body","at":"","type":"object"}},"grant":["packId"]},
-      "addPermission": {"action":"share.permissions","effects":["share"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/acl/permissions","body":"json","scope":{"docId":{"from":"path","at":"docId"},"request":{"from":"body","at":"","type":"object"}},"grant":["docId"]},
-      "beginPageContentExport": {"action":"write.pages","effects":["write"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/pages/{pageIdOrName}/export","body":"json","scope":{"docId":{"from":"path","at":"docId"},"pageIdOrName":{"from":"path","at":"pageIdOrName"}}},
-      "cancelPackReview": {"action":"write.pending","effects":["write"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/reviews/pending/cancel","scope":{"packId":{"from":"path","at":"packId"}}},
-      "changeUserRole": {"action":"admin.role","effects":["admin"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/workspaces/{workspaceId}/users/role","body":"json","scope":{"workspaceId":{"from":"path","at":"workspaceId"},"email":{"from":"body","at":"/email"}}},
-      "createDoc": {"action":"write.docs","effects":["write"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/docs","body":"json","scope":{}},
-      "createFolder": {"action":"write.folders","effects":["write"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/folders","body":"json","scope":{"name":{"from":"body","at":"/name"},"workspaceId":{"from":"body","at":"/workspaceId"}}},
-      "createPack": {"action":"write.packs","effects":["write"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/packs","body":"json","scope":{}},
-      "createPackInvitation": {"action":"share.invitations","effects":["share"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/invitations","body":"json","scope":{"packId":{"from":"path","at":"packId"},"email":{"from":"body","at":"/email"},"request":{"from":"body","at":"","type":"object"}},"grant":["packId","email"]},
-      "createPackRelease": {"action":"publish.releases","effects":["publish"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/releases","body":"json","scope":{"packId":{"from":"path","at":"packId"},"request":{"from":"body","at":"","type":"object"}},"grant":["packId"]},
-      "createPackReview": {"action":"write.reviews","effects":["write"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/reviews","body":"json","scope":{"packId":{"from":"path","at":"packId"}}},
-      "createPage": {"action":"write.pages","effects":["write"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/pages","body":"json","scope":{"docId":{"from":"path","at":"docId"}}},
-      "deleteCustomDocDomain": {"action":"delete.domains","effects":["delete"],"method":"DELETE","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/domains/{customDocDomain}","scope":{"docId":{"from":"path","at":"docId"},"customDocDomain":{"from":"path","at":"customDocDomain"}}},
-      "deleteDoc": {"action":"delete.docs","effects":["delete"],"method":"DELETE","origin":"https://coda.io","path":"/apis/v1/docs/{docId}","scope":{"docId":{"from":"path","at":"docId"}}},
-      "deleteFolder": {"action":"delete.folders","effects":["delete"],"method":"DELETE","origin":"https://coda.io","path":"/apis/v1/folders/{folderId}","scope":{"folderId":{"from":"path","at":"folderId"}}},
-      "deletePack": {"action":"delete.packs","effects":["delete"],"method":"DELETE","origin":"https://coda.io","path":"/apis/v1/packs/{packId}","scope":{"packId":{"from":"path","at":"packId"}}},
-      "deletePackCategory": {"action":"delete.category","effects":["delete"],"method":"DELETE","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/category/{categoryName}","scope":{"packId":{"from":"path","at":"packId"},"categoryName":{"from":"path","at":"categoryName"}}},
-      "deletePackInvitation": {"action":"delete.invitations","effects":["delete"],"method":"DELETE","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/invitations/{invitationId}","scope":{"packId":{"from":"path","at":"packId"},"invitationId":{"from":"path","at":"invitationId"}}},
-      "deletePackListingDraft": {"action":"delete.listing_draft","effects":["delete"],"method":"DELETE","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/listingDraft","scope":{"packId":{"from":"path","at":"packId"}}},
-      "deletePackMaker": {"action":"delete.maker","effects":["delete"],"method":"DELETE","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/maker/{loginId}","scope":{"packId":{"from":"path","at":"packId"},"loginId":{"from":"path","at":"loginId"}}},
-      "deletePackPermission": {"action":"delete.permissions","effects":["delete"],"method":"DELETE","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/permissions/{permissionId}","scope":{"packId":{"from":"path","at":"packId"},"permissionId":{"from":"path","at":"permissionId"}}},
-      "deletePage": {"action":"delete.pages","effects":["delete"],"method":"DELETE","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/pages/{pageIdOrName}","scope":{"docId":{"from":"path","at":"docId"},"pageIdOrName":{"from":"path","at":"pageIdOrName"}}},
-      "deletePageContent": {"action":"delete.content","effects":["delete"],"method":"DELETE","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/pages/{pageIdOrName}/content","body":"any","scope":{"docId":{"from":"path","at":"docId"},"pageIdOrName":{"from":"path","at":"pageIdOrName"}}},
-      "deletePermission": {"action":"delete.permissions","effects":["delete"],"method":"DELETE","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/acl/permissions/{permissionId}","scope":{"docId":{"from":"path","at":"docId"},"permissionId":{"from":"path","at":"permissionId"}}},
-      "deleteRow": {"action":"delete.rows","effects":["delete"],"method":"DELETE","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}","scope":{"docId":{"from":"path","at":"docId"},"tableIdOrName":{"from":"path","at":"tableIdOrName"},"rowIdOrName":{"from":"path","at":"rowIdOrName"}}},
-      "deleteRows": {"action":"delete.rows","effects":["delete"],"method":"DELETE","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/rows","body":"json","scope":{"docId":{"from":"path","at":"docId"},"tableIdOrName":{"from":"path","at":"tableIdOrName"}}},
-      "deleteUserPackPermission": {"action":"delete.permissions","effects":["delete"],"method":"DELETE","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/permissions","scope":{"packId":{"from":"path","at":"packId"}}},
-      "getAclSettings": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/acl/settings","scope":{"docId":{"from":"path","at":"docId"}}},
-      "getAgentPackLogDetails": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/go/tenants/{tenantId}/agentInstances/{agentInstanceId}/logs/{logId}","params":["detailsKey"],"scope":{"tenantId":{"from":"path","at":"tenantId"},"agentInstanceId":{"from":"path","at":"agentInstanceId"},"logId":{"from":"path","at":"logId"},"detailsKey":{"from":"query","at":"detailsKey"}}},
-      "getAnalyticsLastUpdated": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/analytics/updated","scope":{}},
-      "getColumn": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/columns/{columnIdOrName}","scope":{"docId":{"from":"path","at":"docId"},"tableIdOrName":{"from":"path","at":"tableIdOrName"},"columnIdOrName":{"from":"path","at":"columnIdOrName"}}},
-      "getControl": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/controls/{controlIdOrName}","scope":{"docId":{"from":"path","at":"docId"},"controlIdOrName":{"from":"path","at":"controlIdOrName"}}},
-      "getCustomDocDomainProvider": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/domains/provider/{customDocDomain}","scope":{"customDocDomain":{"from":"path","at":"customDocDomain"}}},
-      "getDoc": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}","scope":{"docId":{"from":"path","at":"docId"}}},
-      "getFolder": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/folders/{folderId}","scope":{"folderId":{"from":"path","at":"folderId"}}},
-      "getFormula": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/formulas/{formulaIdOrName}","scope":{"docId":{"from":"path","at":"docId"},"formulaIdOrName":{"from":"path","at":"formulaIdOrName"}}},
-      "getMutationStatus": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/mutationStatus/{requestId}","scope":{"requestId":{"from":"path","at":"requestId"}}},
-      "getNextPackVersion": {"action":"read","effects":["read"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/nextVersion","body":"any","scope":{"packId":{"from":"path","at":"packId"}}},
-      "getPack": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}","params":["limit","pageToken","packAccessTypes","packIds","onlyWorkspaceId","parentWorkspaceIds","excludePublicPacks","packEntrypoint","certifiedAgentsOnly","packCategories","sortBy","orderBy","direction","installContext"],"scope":{"packId":{"from":"path","at":"packId"}}},
-      "getPackConfigurationSchema": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/configurations/schema","scope":{"packId":{"from":"path","at":"packId"}}},
-      "getPackListing": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/listing","params":["workspaceId","docId","ingestionId","installContext","releaseChannel"],"scope":{"packId":{"from":"path","at":"packId"}}},
-      "getPackListingDraft": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/listingDraft","scope":{"packId":{"from":"path","at":"packId"}}},
-      "getPackLogDetails": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/tenantId/{tenantId}/rootIngestionId/{rootIngestionId}/logs/{logId}","params":["detailsKey"],"scope":{"packId":{"from":"path","at":"packId"},"tenantId":{"from":"path","at":"tenantId"},"rootIngestionId":{"from":"path","at":"rootIngestionId"},"logId":{"from":"path","at":"logId"},"detailsKey":{"from":"query","at":"detailsKey"}}},
-      "getPackOauthConfig": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/oauthConfig","scope":{"packId":{"from":"path","at":"packId"}}},
-      "getPackPermissions": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/permissions","scope":{"packId":{"from":"path","at":"packId"}}},
-      "getPackSourceCode": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/versions/{packVersion}/sourceCode","scope":{"packId":{"from":"path","at":"packId"},"packVersion":{"from":"path","at":"packVersion"}}},
-      "getPackSystemConnection": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/systemConnection","scope":{"packId":{"from":"path","at":"packId"}}},
-      "getPackVersionDiffs": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/versions/{basePackVersion}/diff/{targetPackVersion}","scope":{"packId":{"from":"path","at":"packId"},"basePackVersion":{"from":"path","at":"basePackVersion"},"targetPackVersion":{"from":"path","at":"targetPackVersion"}}},
-      "getPage": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/pages/{pageIdOrName}","scope":{"docId":{"from":"path","at":"docId"},"pageIdOrName":{"from":"path","at":"pageIdOrName"}}},
-      "getPageContentExportStatus": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/pages/{pageIdOrName}/export/{requestId}","scope":{"docId":{"from":"path","at":"docId"},"pageIdOrName":{"from":"path","at":"pageIdOrName"},"requestId":{"from":"path","at":"requestId"}}},
-      "getPermissions": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/acl/permissions","params":["limit","pageToken"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "getRow": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}","params":["useColumnNames","valueFormat"],"scope":{"docId":{"from":"path","at":"docId"},"tableIdOrName":{"from":"path","at":"tableIdOrName"},"rowIdOrName":{"from":"path","at":"rowIdOrName"}}},
-      "getSharingMetadata": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/acl/metadata","scope":{"docId":{"from":"path","at":"docId"}}},
-      "getTable": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}","params":["useUpdatedTableLayouts"],"scope":{"docId":{"from":"path","at":"docId"},"tableIdOrName":{"from":"path","at":"tableIdOrName"}}},
-      "listAgentLogs": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/go/tenants/{tenantId}/agentInstances/{agentInstanceId}/logs","params":["limit","pageToken","logTypes","agentSessionId","beforeTimestamp","afterTimestamp","order","q","requestIds"],"scope":{"tenantId":{"from":"path","at":"tenantId"},"agentInstanceId":{"from":"path","at":"agentInstanceId"}}},
-      "listAgentSessionIds": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/go/tenants/{tenantId}/agentInstances/{agentInstanceId}/agentSessionIds","params":["limit","pageToken","agentSessionId","logTypes","beforeTimestamp","afterTimestamp","order","q","requestIds"],"scope":{"tenantId":{"from":"path","at":"tenantId"},"agentInstanceId":{"from":"path","at":"agentInstanceId"}}},
-      "listCategories": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/categories","scope":{}},
-      "listColumns": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/columns","params":["limit","pageToken","visibleOnly"],"scope":{"docId":{"from":"path","at":"docId"},"tableIdOrName":{"from":"path","at":"tableIdOrName"}}},
-      "listControls": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/controls","params":["limit","pageToken","sortBy"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "listCustomDocDomains": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/${docId}/domains","scope":{"docId":{"from":"path","at":"docId"}}},
-      "listDocAnalytics": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/analytics/docs","params":["docIds","workspaceId","query","isPublished","sinceDate","untilDate","scale","pageToken","orderBy","direction","limit"],"scope":{}},
-      "listDocAnalyticsSummary": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/analytics/docs/summary","params":["isPublished","sinceDate","untilDate","workspaceId"],"scope":{}},
-      "listDocs": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs","params":["isOwner","isPublished","query","sourceDoc","isStarred","inGallery","workspaceId","folderId","minimumAccess","limit","pageToken"],"scope":{}},
-      "listFolderChildren": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/folders/{folderId}/children","params":["limit","pageToken"],"scope":{"folderId":{"from":"path","at":"folderId"}}},
-      "listFolders": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/folders","params":["workspaceId","isStarred","limit","pageToken"],"scope":{}},
-      "listFormulas": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/formulas","params":["limit","pageToken","sortBy"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "listGroupedIngestionLogs": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/tenantId/{tenantId}/rootIngestionId/{rootIngestionId}/groupedLogs","params":["limit","pageToken","ingestionExecutionId","beforeTimestamp","afterTimestamp","order","q"],"scope":{"packId":{"from":"path","at":"packId"},"tenantId":{"from":"path","at":"tenantId"},"rootIngestionId":{"from":"path","at":"rootIngestionId"}}},
-      "listGroupedPackLogs": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/docs/{docId}/groupedLogs","params":["limit","pageToken","beforeTimestamp","afterTimestamp","order","q"],"scope":{"packId":{"from":"path","at":"packId"},"docId":{"from":"path","at":"docId"}}},
-      "listIngestionBatchExecutions": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/tenantId/{tenantId}/rootIngestionId/{rootIngestionId}/ingestionBatchExecutions","params":["pageToken","limit","datasource","executionType","includeDeletedIngestions","ingestionExecutionId","ingestionId","ingestionStatus"],"scope":{"packId":{"from":"path","at":"packId"},"tenantId":{"from":"path","at":"tenantId"},"rootIngestionId":{"from":"path","at":"rootIngestionId"}}},
-      "listIngestionLogs": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/tenantId/{tenantId}/rootIngestionId/{rootIngestionId}/logs","params":["limit","pageToken","logTypes","ingestionExecutionId","beforeTimestamp","afterTimestamp","ingestionStatus","onlyExecutionCompletions","order","q","requestIds"],"scope":{"packId":{"from":"path","at":"packId"},"tenantId":{"from":"path","at":"tenantId"},"rootIngestionId":{"from":"path","at":"rootIngestionId"}}},
-      "listIngestionParentItems": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/tenantId/{tenantId}/rootIngestionId/{rootIngestionId}/ingestionBatchExecutions/{ingestionExecutionId}/parentItems","params":["pageToken","limit","ingestionId","ingestionStatus"],"scope":{"packId":{"from":"path","at":"packId"},"tenantId":{"from":"path","at":"tenantId"},"rootIngestionId":{"from":"path","at":"rootIngestionId"},"ingestionExecutionId":{"from":"path","at":"ingestionExecutionId"},"ingestionId":{"from":"query","at":"ingestionId"}}},
-      "listPackAnalytics": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/analytics/packs","params":["packIds","workspaceId","query","sinceDate","untilDate","scale","pageToken","orderBy","direction","isPublished","limit"],"scope":{}},
-      "listPackAnalyticsSummary": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/analytics/packs/summary","params":["packIds","workspaceId","isPublished","sinceDate","untilDate"],"scope":{}},
-      "listPackCategories": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/categories","scope":{"packId":{"from":"path","at":"packId"}}},
-      "listPackFeaturedDocs": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/featuredDocs","scope":{"packId":{"from":"path","at":"packId"}}},
-      "listPackFormulaAnalytics": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/analytics/packs/{packId}/formulas","params":["packFormulaNames","packFormulaTypes","sinceDate","untilDate","scale","pageToken","orderBy","direction","limit"],"scope":{"packId":{"from":"path","at":"packId"}}},
-      "listPackInvitations": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/invitations","params":["limit","pageToken"],"scope":{"packId":{"from":"path","at":"packId"}}},
-      "listPackLogs": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/docs/{docId}/logs","params":["limit","pageToken","logTypes","beforeTimestamp","afterTimestamp","order","q","requestIds"],"scope":{"packId":{"from":"path","at":"packId"},"docId":{"from":"path","at":"docId"}}},
-      "listPackMakers": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/makers","scope":{"packId":{"from":"path","at":"packId"}}},
-      "listPackReleases": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/releases","params":["limit","pageToken"],"scope":{"packId":{"from":"path","at":"packId"}}},
-      "listPackReviews": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/reviews","params":["limit","pageToken","status"],"scope":{"packId":{"from":"path","at":"packId"}}},
-      "listPackVersions": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/versions","params":["limit","pageToken"],"scope":{"packId":{"from":"path","at":"packId"}}},
-      "listPacks": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/packs","params":["accessType","accessTypes","sortBy","limit","direction","pageToken","onlyWorkspaceId","parentWorkspaceIds","excludePublicPacks","packEntrypoint","excludePackCategories"],"scope":{}},
-      "listPageAnalytics": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/analytics/docs/{docId}/pages","params":["sinceDate","untilDate","pageToken","limit"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "listPageContent": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/pages/{pageIdOrName}/content","params":["limit","pageToken","contentFormat"],"scope":{"docId":{"from":"path","at":"docId"},"pageIdOrName":{"from":"path","at":"pageIdOrName"}}},
-      "listPages": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/pages","params":["limit","pageToken"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "listRows": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/rows","params":["query","sortBy","useColumnNames","valueFormat","visibleOnly","limit","pageToken","syncToken"],"scope":{"docId":{"from":"path","at":"docId"},"tableIdOrName":{"from":"path","at":"tableIdOrName"}}},
-      "listTables": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/tables","params":["limit","pageToken","sortBy","tableTypes"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "listWorkspaceMembers": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/workspaces/{workspaceId}/users","params":["includedRoles","pageToken"],"scope":{"workspaceId":{"from":"path","at":"workspaceId"}}},
-      "listWorkspaceRoleActivity": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/workspaces/{workspaceId}/roles","scope":{"workspaceId":{"from":"path","at":"workspaceId"}}},
-      "packAssetUploadComplete": {"action":"generate.asset_type","effects":["generate"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/assets/{packAssetId}/assetType/{packAssetType}/uploadComplete","scope":{"packId":{"from":"path","at":"packId"},"packAssetId":{"from":"path","at":"packAssetId"},"packAssetType":{"from":"path","at":"packAssetType"}}},
-      "packSourceCodeUploadComplete": {"action":"generate.source_code","effects":["generate"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/versions/{packVersion}/sourceCode/uploadComplete","body":"json","scope":{"packId":{"from":"path","at":"packId"},"packVersion":{"from":"path","at":"packVersion"},"filename":{"from":"body","at":"/filename"}}},
-      "packVersionUploadComplete": {"action":"generate.versions","effects":["generate"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/versions/{packVersion}/uploadComplete","body":"json","scope":{"packId":{"from":"path","at":"packId"},"packVersion":{"from":"path","at":"packVersion"}}},
-      "patchPackSystemConnection": {"action":"write.system_connection","effects":["write"],"method":"PATCH","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/systemConnection","body":"json","scope":{"packId":{"from":"path","at":"packId"}}},
-      "publishDoc": {"action":"publish.docs","effects":["publish"],"method":"PUT","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/publish","body":"json","scope":{"docId":{"from":"path","at":"docId"},"request":{"from":"body","at":"","type":"object"}},"grant":["docId"]},
-      "pushButton": {"action":"write.buttons","effects":["write"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}/buttons/{columnIdOrName}","scope":{"docId":{"from":"path","at":"docId"},"tableIdOrName":{"from":"path","at":"tableIdOrName"},"rowIdOrName":{"from":"path","at":"rowIdOrName"},"columnIdOrName":{"from":"path","at":"columnIdOrName"}}},
-      "registerPackVersion": {"action":"write.register","effects":["write"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/versions/{packVersion}/register","body":"json","scope":{"packId":{"from":"path","at":"packId"},"packVersion":{"from":"path","at":"packVersion"}}},
-      "replyToPackInvitation": {"action":"send.reply","effects":["send"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/packs/invitations/{invitationId}/reply","body":"json","scope":{"invitationId":{"from":"path","at":"invitationId"},"request":{"from":"body","at":"","type":"object"}},"grant":["invitationId"]},
-      "resolveBrowserLink": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/resolveBrowserLink","params":["url","degradeGracefully"],"scope":{"url":{"from":"query","at":"url"}}},
-      "searchPrincipals": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/acl/principals/search","params":["query"],"scope":{"docId":{"from":"path","at":"docId"}}},
-      "setPackOauthConfig": {"action":"write.oauth_config","effects":["write"],"method":"PUT","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/oauthConfig","body":"json","scope":{"packId":{"from":"path","at":"packId"}}},
-      "setPackSystemConnection": {"action":"write.system_connection","effects":["write"],"method":"PUT","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/systemConnection","body":"json","scope":{"packId":{"from":"path","at":"packId"}}},
-      "triggerWebhookAutomation": {"action":"execute.automation","effects":["execute"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/hooks/automation/{ruleId}","body":"any","scope":{"docId":{"from":"path","at":"docId"},"ruleId":{"from":"path","at":"ruleId"}}},
-      "unpublishDoc": {"action":"delete.docs","effects":["delete"],"method":"DELETE","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/publish","scope":{"docId":{"from":"path","at":"docId"}}},
-      "updateAclSettings": {"action":"admin.settings","effects":["admin"],"method":"PATCH","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/acl/settings","body":"json","scope":{"docId":{"from":"path","at":"docId"}}},
-      "updateCustomDocDomain": {"action":"admin.domains","effects":["admin"],"method":"PATCH","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/domains/{customDocDomain}","body":"json","scope":{"docId":{"from":"path","at":"docId"},"customDocDomain":{"from":"path","at":"customDocDomain"}}},
-      "updateDoc": {"action":"write.docs","effects":["write"],"method":"PATCH","origin":"https://coda.io","path":"/apis/v1/docs/{docId}","body":"json","scope":{"docId":{"from":"path","at":"docId"}}},
-      "updateFolder": {"action":"write.folders","effects":["write"],"method":"PATCH","origin":"https://coda.io","path":"/apis/v1/folders/{folderId}","body":"json","scope":{"folderId":{"from":"path","at":"folderId"}}},
-      "updatePack": {"action":"write.packs","effects":["write"],"method":"PATCH","origin":"https://coda.io","path":"/apis/v1/packs/{packId}","body":"json","scope":{"packId":{"from":"path","at":"packId"}}},
-      "updatePackFeaturedDocs": {"action":"write.featured_docs","effects":["write"],"method":"PUT","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/featuredDocs","body":"json","scope":{"packId":{"from":"path","at":"packId"}}},
-      "updatePackInvitation": {"action":"share.invitations","effects":["share"],"method":"PUT","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/invitations/{invitationId}","body":"json","scope":{"packId":{"from":"path","at":"packId"},"invitationId":{"from":"path","at":"invitationId"},"request":{"from":"body","at":"","type":"object"}},"grant":["packId","invitationId"]},
-      "updatePackRelease": {"action":"publish.releases","effects":["publish"],"method":"PUT","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/releases/{packReleaseId}","body":"json","scope":{"packId":{"from":"path","at":"packId"},"packReleaseId":{"from":"path","at":"packReleaseId"},"request":{"from":"body","at":"","type":"object"}},"grant":["packId","packReleaseId"]},
-      "updatePage": {"action":"write.pages","effects":["write"],"method":"PUT","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/pages/{pageIdOrName}","body":"json","scope":{"docId":{"from":"path","at":"docId"},"pageIdOrName":{"from":"path","at":"pageIdOrName"}}},
-      "updateRow": {"action":"write.rows","effects":["write"],"method":"PUT","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}","params":["disableParsing"],"body":"json","scope":{"docId":{"from":"path","at":"docId"},"tableIdOrName":{"from":"path","at":"tableIdOrName"},"rowIdOrName":{"from":"path","at":"rowIdOrName"}}},
-      "uploadPackAsset": {"action":"write.packs","effects":["write"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/uploadAsset","body":"json","scope":{"packId":{"from":"path","at":"packId"},"filename":{"from":"body","at":"/filename"}}},
-      "uploadPackSourceCode": {"action":"write.packs","effects":["write"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/uploadSourceCode","body":"json","scope":{"packId":{"from":"path","at":"packId"},"filename":{"from":"body","at":"/filename"}}},
-      "upsertPackListingDraft": {"action":"write.listing_draft","effects":["write"],"method":"PUT","origin":"https://coda.io","path":"/apis/v1/packs/{packId}/listingDraft","body":"json","scope":{"packId":{"from":"path","at":"packId"}}},
-      "upsertRows": {"action":"write.rows","effects":["write"],"method":"POST","origin":"https://coda.io","path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/rows","params":["disableParsing"],"body":"json","scope":{"docId":{"from":"path","at":"docId"},"tableIdOrName":{"from":"path","at":"tableIdOrName"}}},
-      "whoami": {"action":"read","effects":["read"],"method":"GET","origin":"https://coda.io","path":"/apis/v1/whoami","scope":{}}
+      "addCustomDocDomain": {"action":"docs.domains.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/apis/v1/docs/{docId}/domains","scope":{"docId":{"at":"docId","from":"path"}}},
+      "addGoLink": {"action":"organizations.go_links.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/apis/v1/organizations/{organizationId}/goLinks","scope":{"destinationUrl":{"at":"/destinationUrl","from":"body"},"name":{"at":"/name","from":"body"},"organizationId":{"at":"organizationId","from":"path"}}},
+      "addPackCategory": {"action":"packs.category.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/apis/v1/packs/{packId}/category","scope":{"categoryName":{"at":"/categoryName","from":"body"},"packId":{"at":"packId","from":"path"}}},
+      "addPackMaker": {"action":"packs.maker.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/apis/v1/packs/{packId}/maker","scope":{"loginId":{"at":"/loginId","from":"body"},"packId":{"at":"packId","from":"path"}}},
+      "addPackPermission": {"action":"packs.permissions.share","body":"json","effects":["share"],"grant":["packId"],"method":"POST","origin":"{api}","path":"/apis/v1/packs/{packId}/permissions","scope":{"packId":{"at":"packId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "addPermission": {"action":"docs.acl.permissions.share","body":"json","effects":["share"],"grant":["docId"],"method":"POST","origin":"{api}","path":"/apis/v1/docs/{docId}/acl/permissions","scope":{"docId":{"at":"docId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "beginPageContentExport": {"action":"docs.pages.export.read","body":"json","effects":["read"],"method":"POST","origin":"{api}","path":"/apis/v1/docs/{docId}/pages/{pageIdOrName}/export","scope":{"docId":{"at":"docId","from":"path"},"pageIdOrName":{"at":"pageIdOrName","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "cancelPackReview": {"action":"packs.reviews.pending.write","effects":["write"],"method":"POST","origin":"{api}","path":"/apis/v1/packs/{packId}/reviews/pending/cancel","scope":{"packId":{"at":"packId","from":"path"}}},
+      "changeUserRole": {"action":"workspaces.users.role.admin","body":"json","effects":["admin"],"method":"POST","origin":"{api}","path":"/apis/v1/workspaces/{workspaceId}/users/role","scope":{"email":{"at":"/email","from":"body"},"workspaceId":{"at":"workspaceId","from":"path"}}},
+      "createDoc": {"action":"docs.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/apis/v1/docs","scope":{}},
+      "createFolder": {"action":"folders.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/apis/v1/folders","scope":{"name":{"at":"/name","from":"body"},"workspaceId":{"at":"/workspaceId","from":"body"}}},
+      "createPack": {"action":"packs.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/apis/v1/packs","scope":{}},
+      "createPackInvitation": {"action":"packs.invitations.share","body":"json","effects":["share"],"grant":["packId","email"],"method":"POST","origin":"{api}","path":"/apis/v1/packs/{packId}/invitations","scope":{"email":{"at":"/email","from":"body"},"packId":{"at":"packId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createPackRelease": {"action":"packs.releases.publish","body":"json","effects":["publish"],"grant":["packId"],"method":"POST","origin":"{api}","path":"/apis/v1/packs/{packId}/releases","scope":{"packId":{"at":"packId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createPackReview": {"action":"packs.reviews.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/apis/v1/packs/{packId}/reviews","scope":{"packId":{"at":"packId","from":"path"}}},
+      "createPage": {"action":"docs.pages.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/apis/v1/docs/{docId}/pages","scope":{"docId":{"at":"docId","from":"path"}}},
+      "deleteCustomDocDomain": {"action":"docs.domains.delete","effects":["delete","admin"],"method":"DELETE","origin":"{api}","path":"/apis/v1/docs/{docId}/domains/{customDocDomain}","scope":{"customDocDomain":{"at":"customDocDomain","from":"path"},"docId":{"at":"docId","from":"path"}}},
+      "deleteDoc": {"action":"docs.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/apis/v1/docs/{docId}","scope":{"docId":{"at":"docId","from":"path"}}},
+      "deleteFolder": {"action":"folders.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/apis/v1/folders/{folderId}","scope":{"folderId":{"at":"folderId","from":"path"}}},
+      "deletePack": {"action":"packs.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/apis/v1/packs/{packId}","scope":{"packId":{"at":"packId","from":"path"}}},
+      "deletePackCategory": {"action":"packs.category.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/apis/v1/packs/{packId}/category/{categoryName}","scope":{"categoryName":{"at":"categoryName","from":"path"},"packId":{"at":"packId","from":"path"}}},
+      "deletePackInvitation": {"action":"packs.invitations.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/apis/v1/packs/{packId}/invitations/{invitationId}","scope":{"invitationId":{"at":"invitationId","from":"path"},"packId":{"at":"packId","from":"path"}}},
+      "deletePackListingDraft": {"action":"packs.listing_draft.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/apis/v1/packs/{packId}/listingDraft","scope":{"packId":{"at":"packId","from":"path"}}},
+      "deletePackMaker": {"action":"packs.maker.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/apis/v1/packs/{packId}/maker/{loginId}","scope":{"loginId":{"at":"loginId","from":"path"},"packId":{"at":"packId","from":"path"}}},
+      "deletePackPermission": {"action":"packs.permissions.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/apis/v1/packs/{packId}/permissions/{permissionId}","scope":{"packId":{"at":"packId","from":"path"},"permissionId":{"at":"permissionId","from":"path"}}},
+      "deletePage": {"action":"docs.pages.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/apis/v1/docs/{docId}/pages/{pageIdOrName}","scope":{"docId":{"at":"docId","from":"path"},"pageIdOrName":{"at":"pageIdOrName","from":"path"}}},
+      "deletePageContent": {"action":"docs.pages.content.delete","body":"any","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/apis/v1/docs/{docId}/pages/{pageIdOrName}/content","scope":{"docId":{"at":"docId","from":"path"},"pageIdOrName":{"at":"pageIdOrName","from":"path"}}},
+      "deletePermission": {"action":"docs.acl.permissions.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/apis/v1/docs/{docId}/acl/permissions/{permissionId}","scope":{"docId":{"at":"docId","from":"path"},"permissionId":{"at":"permissionId","from":"path"}}},
+      "deleteRow": {"action":"docs.tables.rows.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}","scope":{"docId":{"at":"docId","from":"path"},"rowIdOrName":{"at":"rowIdOrName","from":"path"},"tableIdOrName":{"at":"tableIdOrName","from":"path"}}},
+      "deleteRows": {"action":"docs.tables.rows.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/rows","scope":{"docId":{"at":"docId","from":"path"},"tableIdOrName":{"at":"tableIdOrName","from":"path"}}},
+      "deleteUserPackPermission": {"action":"packs.permissions.delete","effects":["delete"],"method":"DELETE","origin":"{api}","path":"/apis/v1/packs/{packId}/permissions","scope":{"packId":{"at":"packId","from":"path"}}},
+      "getAclSettings": {"action":"docs.acl.settings.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/docs/{docId}/acl/settings","scope":{"docId":{"at":"docId","from":"path"}}},
+      "getAgentPackLogDetails": {"action":"go.tenants.agent_instances.logs.read","effects":["read"],"method":"GET","origin":"{api}","params":["detailsKey"],"path":"/apis/v1/go/tenants/{tenantId}/agentInstances/{agentInstanceId}/logs/{logId}","scope":{"agentInstanceId":{"at":"agentInstanceId","from":"path"},"detailsKey":{"at":"detailsKey","from":"query"},"logId":{"at":"logId","from":"path"},"tenantId":{"at":"tenantId","from":"path"}}},
+      "getAnalyticsLastUpdated": {"action":"analytics.updated.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/analytics/updated","scope":{}},
+      "getColumn": {"action":"docs.tables.columns.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/columns/{columnIdOrName}","scope":{"columnIdOrName":{"at":"columnIdOrName","from":"path"},"docId":{"at":"docId","from":"path"},"tableIdOrName":{"at":"tableIdOrName","from":"path"}}},
+      "getControl": {"action":"docs.controls.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/docs/{docId}/controls/{controlIdOrName}","scope":{"controlIdOrName":{"at":"controlIdOrName","from":"path"},"docId":{"at":"docId","from":"path"}}},
+      "getCustomDocDomainProvider": {"action":"domains.provider.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/domains/provider/{customDocDomain}","scope":{"customDocDomain":{"at":"customDocDomain","from":"path"}}},
+      "getDoc": {"action":"docs.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/docs/{docId}","scope":{"docId":{"at":"docId","from":"path"}}},
+      "getFolder": {"action":"folders.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/folders/{folderId}","scope":{"folderId":{"at":"folderId","from":"path"}}},
+      "getFormula": {"action":"docs.formulas.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/docs/{docId}/formulas/{formulaIdOrName}","scope":{"docId":{"at":"docId","from":"path"},"formulaIdOrName":{"at":"formulaIdOrName","from":"path"}}},
+      "getMutationStatus": {"action":"mutation_status.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/mutationStatus/{requestId}","scope":{"requestId":{"at":"requestId","from":"path"}}},
+      "getNextPackVersion": {"action":"packs.next_version.read","body":"any","effects":["read"],"method":"POST","origin":"{api}","path":"/apis/v1/packs/{packId}/nextVersion","scope":{"packId":{"at":"packId","from":"path"}}},
+      "getPack": {"action":"packs.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken","packAccessTypes","packIds","onlyWorkspaceId","parentWorkspaceIds","excludePublicPacks","packEntrypoint","certifiedAgentsOnly","packCategories","sortBy","orderBy","direction","installContext"],"path":"/apis/v1/packs/{packId}","path_patterns":{"packId":"[0-9]+"},"scope":{"packId":{"at":"packId","from":"path"}}},
+      "getPackConfigurationSchema": {"action":"packs.configurations.schema.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/packs/{packId}/configurations/schema","scope":{"packId":{"at":"packId","from":"path"}}},
+      "getPackListing": {"action":"packs.listing.read","effects":["read"],"method":"GET","origin":"{api}","params":["workspaceId","docId","ingestionId","installContext","releaseChannel","includeViewerPackRelationship"],"path":"/apis/v1/packs/{packId}/listing","scope":{"packId":{"at":"packId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getPackListingDraft": {"action":"packs.listing_draft.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/packs/{packId}/listingDraft","scope":{"packId":{"at":"packId","from":"path"}}},
+      "getPackLogDetails": {"action":"packs.tenant_id.root_ingestion_id.logs.read","effects":["read"],"method":"GET","origin":"{api}","params":["detailsKey"],"path":"/apis/v1/packs/{packId}/tenantId/{tenantId}/rootIngestionId/{rootIngestionId}/logs/{logId}","scope":{"detailsKey":{"at":"detailsKey","from":"query"},"logId":{"at":"logId","from":"path"},"packId":{"at":"packId","from":"path"},"rootIngestionId":{"at":"rootIngestionId","from":"path"},"tenantId":{"at":"tenantId","from":"path"}}},
+      "getPackOauthConfig": {"action":"packs.oauth_config.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/packs/{packId}/oauthConfig","scope":{"packId":{"at":"packId","from":"path"}}},
+      "getPackPermissions": {"action":"packs.permissions.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/packs/{packId}/permissions","scope":{"packId":{"at":"packId","from":"path"}}},
+      "getPackSourceCode": {"action":"packs.versions.source_code.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/packs/{packId}/versions/{packVersion}/sourceCode","scope":{"packId":{"at":"packId","from":"path"},"packVersion":{"at":"packVersion","from":"path"}}},
+      "getPackSystemConnection": {"action":"packs.system_connection.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/packs/{packId}/systemConnection","scope":{"packId":{"at":"packId","from":"path"}}},
+      "getPackVersionDiffs": {"action":"packs.versions.diff.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/packs/{packId}/versions/{basePackVersion}/diff/{targetPackVersion}","scope":{"basePackVersion":{"at":"basePackVersion","from":"path"},"packId":{"at":"packId","from":"path"},"targetPackVersion":{"at":"targetPackVersion","from":"path"}}},
+      "getPage": {"action":"docs.pages.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/docs/{docId}/pages/{pageIdOrName}","scope":{"docId":{"at":"docId","from":"path"},"pageIdOrName":{"at":"pageIdOrName","from":"path"}}},
+      "getPageContentExportStatus": {"action":"docs.pages.export.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/docs/{docId}/pages/{pageIdOrName}/export/{requestId}","scope":{"docId":{"at":"docId","from":"path"},"pageIdOrName":{"at":"pageIdOrName","from":"path"},"requestId":{"at":"requestId","from":"path"}}},
+      "getPermissions": {"action":"docs.acl.permissions.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken"],"path":"/apis/v1/docs/{docId}/acl/permissions","scope":{"docId":{"at":"docId","from":"path"}}},
+      "getRow": {"action":"docs.tables.rows.read","effects":["read"],"method":"GET","origin":"{api}","params":["useColumnNames","valueFormat"],"path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}","scope":{"docId":{"at":"docId","from":"path"},"rowIdOrName":{"at":"rowIdOrName","from":"path"},"tableIdOrName":{"at":"tableIdOrName","from":"path"}}},
+      "getSharingMetadata": {"action":"docs.acl.metadata.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/docs/{docId}/acl/metadata","scope":{"docId":{"at":"docId","from":"path"}}},
+      "getTable": {"action":"docs.tables.read","effects":["read"],"method":"GET","origin":"{api}","params":["useUpdatedTableLayouts"],"path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}","scope":{"docId":{"at":"docId","from":"path"},"tableIdOrName":{"at":"tableIdOrName","from":"path"}}},
+      "listAgentLogs": {"action":"go.tenants.agent_instances.logs.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken","logTypes","agentSessionId","beforeTimestamp","afterTimestamp","order","q","requestIds"],"path":"/apis/v1/go/tenants/{tenantId}/agentInstances/{agentInstanceId}/logs","scope":{"agentInstanceId":{"at":"agentInstanceId","from":"path"},"tenantId":{"at":"tenantId","from":"path"}}},
+      "listAgentSessionIds": {"action":"go.tenants.agent_instances.agent_session_ids.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken","agentSessionId","logTypes","beforeTimestamp","afterTimestamp","order","q","requestIds"],"path":"/apis/v1/go/tenants/{tenantId}/agentInstances/{agentInstanceId}/agentSessionIds","scope":{"agentInstanceId":{"at":"agentInstanceId","from":"path"},"tenantId":{"at":"tenantId","from":"path"}}},
+      "listCategories": {"action":"categories.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/categories","scope":{}},
+      "listColumns": {"action":"docs.tables.columns.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken","visibleOnly"],"path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/columns","scope":{"docId":{"at":"docId","from":"path"},"tableIdOrName":{"at":"tableIdOrName","from":"path"}}},
+      "listControls": {"action":"docs.controls.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken","sortBy"],"path":"/apis/v1/docs/{docId}/controls","scope":{"docId":{"at":"docId","from":"path"}}},
+      "listCustomDocDomains": {"action":"docs.domains.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/docs/{docId}/domains","scope":{"docId":{"at":"docId","from":"path"}}},
+      "listDocAnalytics": {"action":"analytics.docs.read","effects":["read"],"method":"GET","origin":"{api}","params":["docIds","workspaceId","query","isPublished","sinceDate","untilDate","scale","pageToken","orderBy","direction","limit"],"path":"/apis/v1/analytics/docs","scope":{}},
+      "listDocAnalyticsSummary": {"action":"analytics.docs.summary.read","effects":["read"],"method":"GET","origin":"{api}","params":["isPublished","sinceDate","untilDate","workspaceId"],"path":"/apis/v1/analytics/docs/summary","scope":{}},
+      "listDocs": {"action":"docs.read","effects":["read"],"method":"GET","origin":"{api}","params":["isOwner","isPublished","query","sourceDoc","isStarred","inGallery","workspaceId","folderId","minimumAccess","limit","pageToken"],"path":"/apis/v1/docs","scope":{}},
+      "listFolderChildren": {"action":"folders.children.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken"],"path":"/apis/v1/folders/{folderId}/children","scope":{"folderId":{"at":"folderId","from":"path"}}},
+      "listFolders": {"action":"folders.read","effects":["read"],"method":"GET","origin":"{api}","params":["workspaceId","isStarred","limit","pageToken"],"path":"/apis/v1/folders","scope":{}},
+      "listFormulas": {"action":"docs.formulas.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken","sortBy"],"path":"/apis/v1/docs/{docId}/formulas","scope":{"docId":{"at":"docId","from":"path"}}},
+      "listGroupedIngestionLogs": {"action":"packs.tenant_id.root_ingestion_id.grouped_logs.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken","ingestionExecutionId","beforeTimestamp","afterTimestamp","order","q"],"path":"/apis/v1/packs/{packId}/tenantId/{tenantId}/rootIngestionId/{rootIngestionId}/groupedLogs","scope":{"packId":{"at":"packId","from":"path"},"rootIngestionId":{"at":"rootIngestionId","from":"path"},"tenantId":{"at":"tenantId","from":"path"}}},
+      "listGroupedPackLogs": {"action":"packs.docs.grouped_logs.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken","beforeTimestamp","afterTimestamp","order","q"],"path":"/apis/v1/packs/{packId}/docs/{docId}/groupedLogs","scope":{"docId":{"at":"docId","from":"path"},"packId":{"at":"packId","from":"path"}}},
+      "listIngestionBatchExecutions": {"action":"packs.tenant_id.root_ingestion_id.ingestion_batch_executions.read","effects":["read"],"method":"GET","origin":"{api}","params":["pageToken","limit","datasource","executionType","includeDeletedIngestions","ingestionExecutionId","ingestionId","ingestionStatus"],"path":"/apis/v1/packs/{packId}/tenantId/{tenantId}/rootIngestionId/{rootIngestionId}/ingestionBatchExecutions","scope":{"packId":{"at":"packId","from":"path"},"rootIngestionId":{"at":"rootIngestionId","from":"path"},"tenantId":{"at":"tenantId","from":"path"}}},
+      "listIngestionLogs": {"action":"packs.tenant_id.root_ingestion_id.logs.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken","logTypes","ingestionExecutionId","beforeTimestamp","afterTimestamp","ingestionStatus","onlyExecutionCompletions","order","q","requestIds"],"path":"/apis/v1/packs/{packId}/tenantId/{tenantId}/rootIngestionId/{rootIngestionId}/logs","scope":{"packId":{"at":"packId","from":"path"},"rootIngestionId":{"at":"rootIngestionId","from":"path"},"tenantId":{"at":"tenantId","from":"path"}}},
+      "listIngestionParentItems": {"action":"packs.tenant_id.root_ingestion_id.ingestion_batch_executions.parent_items.read","effects":["read"],"method":"GET","origin":"{api}","params":["pageToken","limit","ingestionId","ingestionStatus"],"path":"/apis/v1/packs/{packId}/tenantId/{tenantId}/rootIngestionId/{rootIngestionId}/ingestionBatchExecutions/{ingestionExecutionId}/parentItems","scope":{"ingestionExecutionId":{"at":"ingestionExecutionId","from":"path"},"ingestionId":{"at":"ingestionId","from":"query"},"packId":{"at":"packId","from":"path"},"rootIngestionId":{"at":"rootIngestionId","from":"path"},"tenantId":{"at":"tenantId","from":"path"}}},
+      "listPackAnalytics": {"action":"analytics.packs.read","effects":["read"],"method":"GET","origin":"{api}","params":["packIds","workspaceId","query","sinceDate","untilDate","scale","pageToken","orderBy","direction","isPublished","limit"],"path":"/apis/v1/analytics/packs","scope":{}},
+      "listPackAnalyticsSummary": {"action":"analytics.packs.summary.read","effects":["read"],"method":"GET","origin":"{api}","params":["packIds","workspaceId","isPublished","sinceDate","untilDate"],"path":"/apis/v1/analytics/packs/summary","scope":{}},
+      "listPackCategories": {"action":"packs.categories.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/packs/{packId}/categories","scope":{"packId":{"at":"packId","from":"path"}}},
+      "listPackFeaturedDocs": {"action":"packs.featured_docs.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/packs/{packId}/featuredDocs","scope":{"packId":{"at":"packId","from":"path"}}},
+      "listPackFormulaAnalytics": {"action":"analytics.packs.formulas.read","effects":["read"],"method":"GET","origin":"{api}","params":["packFormulaNames","packFormulaTypes","sinceDate","untilDate","scale","pageToken","orderBy","direction","limit"],"path":"/apis/v1/analytics/packs/{packId}/formulas","scope":{"packId":{"at":"packId","from":"path"}}},
+      "listPackInvitations": {"action":"packs.invitations.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken"],"path":"/apis/v1/packs/{packId}/invitations","scope":{"packId":{"at":"packId","from":"path"}}},
+      "listPackListings": {"action":"packs.listings.read","effects":["read"],"method":"GET","origin":"{api}","params":["packAccessTypes","packIds","onlyWorkspaceId","parentWorkspaceIds","excludePublicPacks","packEntrypoint","certifiedAgentsOnly","packCategories","sortBy","orderBy","direction","limit","pageToken","installContext"],"path":"/apis/v1/packs/listings","scope":{"onlyWorkspaceId":{"at":"onlyWorkspaceId","from":"query","optional":true},"packIds":{"at":"packIds","from":"query","optional":true},"parentWorkspaceIds":{"at":"parentWorkspaceIds","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listPackLogs": {"action":"packs.docs.logs.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken","logTypes","beforeTimestamp","afterTimestamp","order","q","requestIds"],"path":"/apis/v1/packs/{packId}/docs/{docId}/logs","scope":{"docId":{"at":"docId","from":"path"},"packId":{"at":"packId","from":"path"}}},
+      "listPackMakers": {"action":"packs.makers.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/packs/{packId}/makers","scope":{"packId":{"at":"packId","from":"path"}}},
+      "listPackReleases": {"action":"packs.releases.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken"],"path":"/apis/v1/packs/{packId}/releases","scope":{"packId":{"at":"packId","from":"path"}}},
+      "listPackReviews": {"action":"packs.reviews.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken","status"],"path":"/apis/v1/packs/{packId}/reviews","scope":{"packId":{"at":"packId","from":"path"}}},
+      "listPackVersions": {"action":"packs.versions.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken"],"path":"/apis/v1/packs/{packId}/versions","scope":{"packId":{"at":"packId","from":"path"}}},
+      "listPacks": {"action":"packs.read","effects":["read"],"method":"GET","origin":"{api}","params":["accessType","accessTypes","sortBy","limit","direction","pageToken","onlyWorkspaceId","parentWorkspaceIds","excludePublicPacks","packEntrypoint","excludePackCategories"],"path":"/apis/v1/packs","scope":{}},
+      "listPageAnalytics": {"action":"analytics.docs.pages.read","effects":["read"],"method":"GET","origin":"{api}","params":["sinceDate","untilDate","pageToken","limit"],"path":"/apis/v1/analytics/docs/{docId}/pages","scope":{"docId":{"at":"docId","from":"path"}}},
+      "listPageContent": {"action":"docs.pages.content.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken","contentFormat"],"path":"/apis/v1/docs/{docId}/pages/{pageIdOrName}/content","scope":{"docId":{"at":"docId","from":"path"},"pageIdOrName":{"at":"pageIdOrName","from":"path"}}},
+      "listPages": {"action":"docs.pages.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken"],"path":"/apis/v1/docs/{docId}/pages","scope":{"docId":{"at":"docId","from":"path"}}},
+      "listRows": {"action":"docs.tables.rows.read","effects":["read"],"method":"GET","origin":"{api}","params":["query","sortBy","useColumnNames","valueFormat","visibleOnly","limit","pageToken","syncToken"],"path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/rows","scope":{"docId":{"at":"docId","from":"path"},"tableIdOrName":{"at":"tableIdOrName","from":"path"}}},
+      "listTables": {"action":"docs.tables.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken","sortBy","tableTypes"],"path":"/apis/v1/docs/{docId}/tables","scope":{"docId":{"at":"docId","from":"path"}}},
+      "listUserPackInvitations": {"action":"packs.invitations.read","effects":["read"],"method":"GET","origin":"{api}","params":["limit","pageToken"],"path":"/apis/v1/packs/invitations","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listWorkspaceMembers": {"action":"workspaces.users.read","effects":["read"],"method":"GET","origin":"{api}","params":["includedRoles","pageToken"],"path":"/apis/v1/workspaces/{workspaceId}/users","scope":{"workspaceId":{"at":"workspaceId","from":"path"}}},
+      "listWorkspaceRoleActivity": {"action":"workspaces.roles.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/workspaces/{workspaceId}/roles","scope":{"workspaceId":{"at":"workspaceId","from":"path"}}},
+      "packAssetUploadComplete": {"action":"packs.assets.asset_type.complete.write","effects":["write"],"method":"POST","origin":"{api}","path":"/apis/v1/packs/{packId}/assets/{packAssetId}/assetType/{packAssetType}/uploadComplete","scope":{"packAssetId":{"at":"packAssetId","from":"path"},"packAssetType":{"at":"packAssetType","from":"path"},"packId":{"at":"packId","from":"path"}}},
+      "packSourceCodeUploadComplete": {"action":"packs.versions.source_code.complete.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/apis/v1/packs/{packId}/versions/{packVersion}/sourceCode/uploadComplete","scope":{"filename":{"at":"/filename","from":"body"},"packId":{"at":"packId","from":"path"},"packVersion":{"at":"packVersion","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "packVersionUploadComplete": {"action":"packs.versions.complete.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/apis/v1/packs/{packId}/versions/{packVersion}/uploadComplete","scope":{"packId":{"at":"packId","from":"path"},"packVersion":{"at":"packVersion","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "patchPackSystemConnection": {"action":"packs.system_connection.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/apis/v1/packs/{packId}/systemConnection","scope":{"packId":{"at":"packId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "publishDoc": {"action":"docs.publish","body":"json","effects":["publish"],"grant":["docId"],"method":"PUT","origin":"{api}","path":"/apis/v1/docs/{docId}/publish","scope":{"docId":{"at":"docId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "pushButton": {"action":"docs.tables.rows.buttons.execute","effects":["execute"],"method":"POST","origin":"{api}","path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}/buttons/{columnIdOrName}","scope":{"columnIdOrName":{"at":"columnIdOrName","from":"path"},"docId":{"at":"docId","from":"path"},"rowIdOrName":{"at":"rowIdOrName","from":"path"},"tableIdOrName":{"at":"tableIdOrName","from":"path"}}},
+      "registerPackVersion": {"action":"packs.versions.register.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/apis/v1/packs/{packId}/versions/{packVersion}/register","scope":{"packId":{"at":"packId","from":"path"},"packVersion":{"at":"packVersion","from":"path"}}},
+      "replyToPackInvitation": {"action":"packs.invitations.reply.write","body":"json","effects":["write"],"grant":["invitationId"],"method":"POST","origin":"{api}","path":"/apis/v1/packs/invitations/{invitationId}/reply","scope":{"invitationId":{"at":"invitationId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "resolveBrowserLink": {"action":"resolve_browser_link.read","effects":["read"],"method":"GET","origin":"{api}","params":["url","degradeGracefully"],"path":"/apis/v1/resolveBrowserLink","scope":{"url":{"at":"url","from":"query"}}},
+      "searchPrincipals": {"action":"docs.acl.principals.read","effects":["read"],"method":"GET","origin":"{api}","params":["query"],"path":"/apis/v1/docs/{docId}/acl/principals/search","scope":{"docId":{"at":"docId","from":"path"}}},
+      "setPackOauthConfig": {"action":"packs.oauth_config.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/apis/v1/packs/{packId}/oauthConfig","scope":{"clientId":{"at":"/clientId","from":"body","optional":true},"packId":{"at":"packId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "setPackSystemConnection": {"action":"packs.system_connection.admin","body":"json","effects":["admin"],"method":"PUT","origin":"{api}","path":"/apis/v1/packs/{packId}/systemConnection","scope":{"packId":{"at":"packId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "triggerWebhookAutomation": {"action":"docs.hooks.automation.execute","body":"any","effects":["execute"],"method":"POST","origin":"{api}","path":"/apis/v1/docs/{docId}/hooks/automation/{ruleId}","scope":{"docId":{"at":"docId","from":"path"},"ruleId":{"at":"ruleId","from":"path"}}},
+      "unpublishDoc": {"action":"docs.publish","effects":["publish"],"method":"DELETE","origin":"{api}","path":"/apis/v1/docs/{docId}/publish","scope":{"docId":{"at":"docId","from":"path"}}},
+      "updateAclSettings": {"action":"docs.acl.settings.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/apis/v1/docs/{docId}/acl/settings","scope":{"docId":{"at":"docId","from":"path"}}},
+      "updateCustomDocDomain": {"action":"docs.domains.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"{api}","path":"/apis/v1/docs/{docId}/domains/{customDocDomain}","scope":{"customDocDomain":{"at":"customDocDomain","from":"path"},"docId":{"at":"docId","from":"path"}}},
+      "updateDoc": {"action":"docs.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","path":"/apis/v1/docs/{docId}","scope":{"docId":{"at":"docId","from":"path"}}},
+      "updateFolder": {"action":"folders.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","path":"/apis/v1/folders/{folderId}","scope":{"folderId":{"at":"folderId","from":"path"}}},
+      "updatePack": {"action":"packs.write","body":"json","effects":["write"],"method":"PATCH","origin":"{api}","path":"/apis/v1/packs/{packId}","scope":{"packId":{"at":"packId","from":"path"}}},
+      "updatePackFeaturedDocs": {"action":"packs.featured_docs.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/apis/v1/packs/{packId}/featuredDocs","scope":{"packId":{"at":"packId","from":"path"}}},
+      "updatePackInvitation": {"action":"packs.invitations.share","body":"json","effects":["share"],"grant":["packId","invitationId"],"method":"PUT","origin":"{api}","path":"/apis/v1/packs/{packId}/invitations/{invitationId}","scope":{"invitationId":{"at":"invitationId","from":"path"},"packId":{"at":"packId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updatePackRelease": {"action":"packs.releases.publish","body":"json","effects":["publish"],"grant":["packId","packReleaseId"],"method":"PUT","origin":"{api}","path":"/apis/v1/packs/{packId}/releases/{packReleaseId}","scope":{"packId":{"at":"packId","from":"path"},"packReleaseId":{"at":"packReleaseId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updatePage": {"action":"docs.pages.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/apis/v1/docs/{docId}/pages/{pageIdOrName}","scope":{"docId":{"at":"docId","from":"path"},"pageIdOrName":{"at":"pageIdOrName","from":"path"}}},
+      "updateRow": {"action":"docs.tables.rows.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","params":["disableParsing"],"path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}","scope":{"docId":{"at":"docId","from":"path"},"rowIdOrName":{"at":"rowIdOrName","from":"path"},"tableIdOrName":{"at":"tableIdOrName","from":"path"}}},
+      "uploadPackAsset": {"action":"packs.asset.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/apis/v1/packs/{packId}/uploadAsset","scope":{"filename":{"at":"/filename","from":"body"},"packId":{"at":"packId","from":"path"}}},
+      "uploadPackSourceCode": {"action":"packs.source_code.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","path":"/apis/v1/packs/{packId}/uploadSourceCode","scope":{"filename":{"at":"/filename","from":"body"},"packId":{"at":"packId","from":"path"}}},
+      "upsertPackListingDraft": {"action":"packs.listing_draft.write","body":"json","effects":["write"],"method":"PUT","origin":"{api}","path":"/apis/v1/packs/{packId}/listingDraft","scope":{"packId":{"at":"packId","from":"path"}}},
+      "upsertRows": {"action":"docs.tables.rows.write","body":"json","effects":["write"],"method":"POST","origin":"{api}","params":["disableParsing"],"path":"/apis/v1/docs/{docId}/tables/{tableIdOrName}/rows","scope":{"docId":{"at":"docId","from":"path"},"tableIdOrName":{"at":"tableIdOrName","from":"path"}}},
+      "whoami": {"action":"whoami.read","effects":["read"],"method":"GET","origin":"{api}","path":"/apis/v1/whoami","scope":{}}
     }
   }
 }

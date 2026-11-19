@@ -4,7 +4,24 @@
     "group": "mcp",
     "actions": {
       "read": {"title": "Use read-only tools", "effects": ["read"]},
-      "use": {"title": "Use tools that change things", "effects": ["write"]}
+      "use": {"title": "Use tools that change things", "effects": ["write"]},
+      "use.add_cors_origin": {"title": "Add cors origin", "effects": ["admin"]},
+      "use.cors_origins_delete": {"title": "Cors origins delete", "effects": ["admin", "delete"]},
+      "use.create_project": {"title": "Create project", "effects": ["admin"]},
+      "use.deploy_studio": {"title": "Deploy studio", "effects": ["publish"]},
+      "use.discard_drafts": {"title": "Discard drafts", "effects": ["delete"]},
+      "use.generate_image": {"title": "Generate image", "effects": ["generate"]},
+      "use.give_sanity_feedback": {"title": "Give sanity feedback", "effects": ["send"]},
+      "use.media_library_discard_drafts": {"title": "Media library discard drafts", "effects": ["delete"]},
+      "use.media_library_publish_documents": {"title": "Media library publish documents", "effects": ["publish"]},
+      "use.publish_documents": {"title": "Publish documents", "effects": ["publish"]},
+      "use.run_sanity_cli": {"title": "Run sanity cli", "effects": ["execute"]},
+      "use.schema_types_delete": {"title": "Schema types delete", "effects": ["delete"]},
+      "use.transform_image": {"title": "Transform image", "effects": ["generate"]},
+      "use.undeploy_schema": {"title": "Undeploy schema", "effects": ["delete"]},
+      "use.unpublish_documents": {"title": "Unpublish documents", "effects": ["delete"]},
+      "use.update_dataset": {"title": "Update dataset", "effects": ["admin", "share"]},
+      "use.version_discard": {"title": "Version discard", "effects": ["delete"]}
     },
     "connection": {"mcp": {"url": "https://mcp.sanity.io"}},
     "fields": [

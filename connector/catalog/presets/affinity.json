@@ -1,143 +1,640 @@
 {
-  "title": "Affinity",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
-    ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.affinity.co", "path": "/v2", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
-      "admin.webhooks": {"title": "Admin: webhooks"},
-      "delete.dropdown_options": {"title": "Delete: dropdown options"},
-      "delete.notes": {"title": "Delete: notes"},
-      "delete.opportunities": {"title": "Delete: opportunities"},
-      "delete.persons": {"title": "Delete: persons"},
-      "delete.reminders": {"title": "Delete: reminders"},
-      "delete.transcripts": {"title": "Delete: transcripts"},
-      "delete.webhooks": {"title": "Delete: webhooks"},
-      "read": {"title": "Read everything the account can see"},
-      "send.notes": {"title": "Send: notes"},
-      "write.company_merges": {"title": "Write: company merges"},
-      "write.dropdown_options": {"title": "Write: dropdown options"},
-      "write.feedback": {"title": "Write: feedback"},
-      "write.fields": {"title": "Write: fields"},
-      "write.list_entries": {"title": "Write: list entries"},
-      "write.lists": {"title": "Write: lists"},
-      "write.opportunities": {"title": "Write: opportunities"},
-      "write.person_merges": {"title": "Write: person merges"},
-      "write.persons": {"title": "Write: persons"},
-      "write.reminders": {"title": "Write: reminders"},
-      "write.search": {"title": "Write: search"},
-      "write.semantic_search": {"title": "Write: semantic search"}
-    }
+      "auth": {
+        "title": "Auth"
+      },
+      "auth.whoami": {
+        "title": "Whoami"
+      },
+      "auth.whoami.read": {
+        "title": "Read"
+      },
+      "calls": {
+        "title": "Calls"
+      },
+      "calls.read": {
+        "title": "Read"
+      },
+      "chat_messages": {
+        "title": "Chat messages"
+      },
+      "chat_messages.read": {
+        "title": "Read"
+      },
+      "companies": {
+        "title": "Companies"
+      },
+      "companies.entries": {
+        "title": "Entries"
+      },
+      "companies.entries.read": {
+        "title": "Read"
+      },
+      "companies.fields": {
+        "title": "Fields"
+      },
+      "companies.fields.delete": {
+        "title": "Delete"
+      },
+      "companies.fields.dropdown_options": {
+        "title": "Dropdown options"
+      },
+      "companies.fields.dropdown_options.read": {
+        "title": "Read"
+      },
+      "companies.fields.read": {
+        "title": "Read"
+      },
+      "companies.fields.values": {
+        "title": "Values"
+      },
+      "companies.fields.values.read": {
+        "title": "Read"
+      },
+      "companies.fields.write": {
+        "title": "Create and edit"
+      },
+      "companies.lists": {
+        "title": "Lists"
+      },
+      "companies.lists.read": {
+        "title": "Read"
+      },
+      "companies.notes": {
+        "title": "Notes"
+      },
+      "companies.notes.read": {
+        "title": "Read"
+      },
+      "companies.read": {
+        "title": "Read"
+      },
+      "companies.relationships": {
+        "title": "Relationships"
+      },
+      "companies.relationships.read": {
+        "title": "Read"
+      },
+      "company_merges": {
+        "title": "Company merges"
+      },
+      "company_merges.delete": {
+        "title": "Delete"
+      },
+      "company_merges.read": {
+        "title": "Read"
+      },
+      "duplicates": {
+        "title": "Duplicates"
+      },
+      "duplicates.company_suggestions": {
+        "title": "Company suggestions"
+      },
+      "duplicates.company_suggestions.read": {
+        "title": "Read"
+      },
+      "duplicates.person_suggestions": {
+        "title": "Person suggestions"
+      },
+      "duplicates.person_suggestions.read": {
+        "title": "Read"
+      },
+      "emails": {
+        "title": "Emails"
+      },
+      "emails.read": {
+        "title": "Read"
+      },
+      "feedback": {
+        "title": "Feedback"
+      },
+      "feedback.write": {
+        "title": "Create and edit"
+      },
+      "field_value_changes": {
+        "title": "Field value changes"
+      },
+      "field_value_changes.read": {
+        "title": "Read"
+      },
+      "files": {
+        "title": "Files"
+      },
+      "files.read": {
+        "title": "Read"
+      },
+      "inferred_connections": {
+        "title": "Inferred connections"
+      },
+      "inferred_connections.coworkers": {
+        "title": "Coworkers"
+      },
+      "inferred_connections.coworkers.read": {
+        "title": "Read"
+      },
+      "inferred_connections.investor_executive_connections": {
+        "title": "Investor executive connections"
+      },
+      "inferred_connections.investor_executive_connections.read": {
+        "title": "Read"
+      },
+      "intro_paths": {
+        "title": "Intro paths"
+      },
+      "intro_paths.read": {
+        "title": "Read"
+      },
+      "lists": {
+        "title": "Lists"
+      },
+      "lists.fields": {
+        "title": "Fields"
+      },
+      "lists.fields.delete": {
+        "title": "Delete"
+      },
+      "lists.fields.dropdown_options": {
+        "title": "Dropdown options"
+      },
+      "lists.fields.dropdown_options.delete": {
+        "title": "Delete"
+      },
+      "lists.fields.dropdown_options.read": {
+        "title": "Read"
+      },
+      "lists.fields.dropdown_options.write": {
+        "title": "Create and edit"
+      },
+      "lists.fields.read": {
+        "title": "Read"
+      },
+      "lists.fields.write": {
+        "title": "Create and edit"
+      },
+      "lists.list_entries": {
+        "title": "List entries"
+      },
+      "lists.list_entries.delete": {
+        "title": "Delete"
+      },
+      "lists.list_entries.field_value_changes": {
+        "title": "Field value changes"
+      },
+      "lists.list_entries.field_value_changes.read": {
+        "title": "Read"
+      },
+      "lists.list_entries.fields": {
+        "title": "Fields"
+      },
+      "lists.list_entries.fields.read": {
+        "title": "Read"
+      },
+      "lists.list_entries.fields.values": {
+        "title": "Values"
+      },
+      "lists.list_entries.fields.values.read": {
+        "title": "Read"
+      },
+      "lists.list_entries.fields.write": {
+        "title": "Create and edit"
+      },
+      "lists.list_entries.read": {
+        "title": "Read"
+      },
+      "lists.list_entries.write": {
+        "title": "Create and edit"
+      },
+      "lists.read": {
+        "title": "Read"
+      },
+      "lists.saved_views": {
+        "title": "Saved views"
+      },
+      "lists.saved_views.entries": {
+        "title": "Entries"
+      },
+      "lists.saved_views.entries.read": {
+        "title": "Read"
+      },
+      "lists.saved_views.read": {
+        "title": "Read"
+      },
+      "lists.write": {
+        "title": "Create and edit"
+      },
+      "meetings": {
+        "title": "Meetings"
+      },
+      "meetings.read": {
+        "title": "Read"
+      },
+      "notes": {
+        "title": "Notes"
+      },
+      "notes.attached_companies": {
+        "title": "Attached companies"
+      },
+      "notes.attached_companies.read": {
+        "title": "Read"
+      },
+      "notes.attached_opportunities": {
+        "title": "Attached opportunities"
+      },
+      "notes.attached_opportunities.read": {
+        "title": "Read"
+      },
+      "notes.attached_persons": {
+        "title": "Attached persons"
+      },
+      "notes.attached_persons.read": {
+        "title": "Read"
+      },
+      "notes.delete": {
+        "title": "Delete"
+      },
+      "notes.read": {
+        "title": "Read"
+      },
+      "notes.replies": {
+        "title": "Replies"
+      },
+      "notes.replies.read": {
+        "title": "Read"
+      },
+      "notes.write": {
+        "title": "Create and edit"
+      },
+      "opportunities": {
+        "title": "Opportunities"
+      },
+      "opportunities.delete": {
+        "title": "Delete"
+      },
+      "opportunities.notes": {
+        "title": "Notes"
+      },
+      "opportunities.notes.read": {
+        "title": "Read"
+      },
+      "opportunities.read": {
+        "title": "Read"
+      },
+      "opportunities.write": {
+        "title": "Create and edit"
+      },
+      "person_merges": {
+        "title": "Person merges"
+      },
+      "person_merges.delete": {
+        "title": "Delete"
+      },
+      "person_merges.read": {
+        "title": "Read"
+      },
+      "persons": {
+        "title": "Persons"
+      },
+      "persons.delete": {
+        "title": "Delete"
+      },
+      "persons.entries": {
+        "title": "Entries"
+      },
+      "persons.entries.read": {
+        "title": "Read"
+      },
+      "persons.fields": {
+        "title": "Fields"
+      },
+      "persons.fields.delete": {
+        "title": "Delete"
+      },
+      "persons.fields.dropdown_options": {
+        "title": "Dropdown options"
+      },
+      "persons.fields.dropdown_options.read": {
+        "title": "Read"
+      },
+      "persons.fields.read": {
+        "title": "Read"
+      },
+      "persons.fields.values": {
+        "title": "Values"
+      },
+      "persons.fields.values.read": {
+        "title": "Read"
+      },
+      "persons.fields.write": {
+        "title": "Create and edit"
+      },
+      "persons.lists": {
+        "title": "Lists"
+      },
+      "persons.lists.read": {
+        "title": "Read"
+      },
+      "persons.notes": {
+        "title": "Notes"
+      },
+      "persons.notes.read": {
+        "title": "Read"
+      },
+      "persons.read": {
+        "title": "Read"
+      },
+      "persons.relationships": {
+        "title": "Relationships"
+      },
+      "persons.relationships.read": {
+        "title": "Read"
+      },
+      "persons.write": {
+        "title": "Create and edit"
+      },
+      "rate_limit": {
+        "title": "Rate limit"
+      },
+      "rate_limit.read": {
+        "title": "Read"
+      },
+      "reminders": {
+        "title": "Reminders"
+      },
+      "reminders.delete": {
+        "title": "Delete"
+      },
+      "reminders.read": {
+        "title": "Read"
+      },
+      "reminders.write": {
+        "title": "Create and edit"
+      },
+      "semantic_search": {
+        "title": "Semantic search"
+      },
+      "semantic_search.read": {
+        "title": "Read"
+      },
+      "suggested_field_updates": {
+        "title": "Suggested field updates"
+      },
+      "suggested_field_updates.read": {
+        "title": "Read"
+      },
+      "suggested_field_updates.suggestions": {
+        "title": "Suggestions"
+      },
+      "suggested_field_updates.suggestions.write": {
+        "title": "Create and edit"
+      },
+      "suggested_field_updates.write": {
+        "title": "Create and edit"
+      },
+      "tasks": {
+        "title": "Tasks"
+      },
+      "tasks.company_merges": {
+        "title": "Company merges"
+      },
+      "tasks.company_merges.read": {
+        "title": "Read"
+      },
+      "tasks.person_merges": {
+        "title": "Person merges"
+      },
+      "tasks.person_merges.read": {
+        "title": "Read"
+      },
+      "tasks.suggested_field_updates": {
+        "title": "Suggested field updates"
+      },
+      "tasks.suggested_field_updates.create": {
+        "title": "Create"
+      },
+      "tasks.suggested_field_updates.create.read": {
+        "title": "Read"
+      },
+      "teams": {
+        "title": "Teams"
+      },
+      "teams.accessible_lists": {
+        "title": "Accessible lists"
+      },
+      "teams.accessible_lists.read": {
+        "title": "Read"
+      },
+      "teams.members": {
+        "title": "Members"
+      },
+      "teams.members.read": {
+        "title": "Read"
+      },
+      "teams.read": {
+        "title": "Read"
+      },
+      "transcripts": {
+        "title": "Transcripts"
+      },
+      "transcripts.delete": {
+        "title": "Delete"
+      },
+      "transcripts.fragments": {
+        "title": "Fragments"
+      },
+      "transcripts.fragments.read": {
+        "title": "Read"
+      },
+      "transcripts.read": {
+        "title": "Read"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.read": {
+        "title": "Read"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.delete": {
+        "title": "Delete"
+      },
+      "webhooks.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.affinity.co",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "api_key"
+          },
+          {
+            "basic": "password",
+            "origin": "https://api.affinity.co",
+            "path": "/",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "api_key",
+        "label": "API Key",
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Affinity",
   "http": {
     "operations": {
-      "v2_auth_whoami__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/auth/whoami","scope":{}},
-      "v2_calls__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/calls","params":["cursor","limit","filter"],"scope":{}},
-      "v2_chat-messages__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/chat-messages","params":["cursor","limit","filter"],"scope":{}},
-      "v2_companies__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/companies","params":["cursor","limit","ids","fieldIds","fieldTypes"],"scope":{}},
-      "v2_companies_companyId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/companies/{companyId}","params":["fieldIds","fieldTypes","cursor","limit","filter","includes"],"scope":{"companyId":{"from":"path","at":"companyId"}}},
-      "v2_companies_companyId_fields__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/companies/{companyId}/fields","params":["ids","types","cursor","limit"],"scope":{"companyId":{"from":"path","at":"companyId"}}},
-      "v2_companies_companyId_fields__PATCH": {"action":"write.fields","effects":["write"],"method":"PATCH","origin":"https://api.affinity.co","path":"/v2/companies/{companyId}/fields","body":"json","scope":{"companyId":{"from":"path","at":"companyId"}}},
-      "v2_companies_companyId_fields_fieldId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/companies/{companyId}/fields/{fieldId}","params":["cursor","limit"],"scope":{"companyId":{"from":"path","at":"companyId"},"fieldId":{"from":"path","at":"fieldId"}}},
-      "v2_companies_companyId_fields_fieldId__POST": {"action":"write.fields","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/companies/{companyId}/fields/{fieldId}","body":"json","scope":{"companyId":{"from":"path","at":"companyId"},"fieldId":{"from":"path","at":"fieldId"}}},
-      "v2_companies_companyId_fields_fieldId_values__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/companies/{companyId}/fields/{fieldId}/values","params":["cursor","limit"],"scope":{"companyId":{"from":"path","at":"companyId"},"fieldId":{"from":"path","at":"fieldId"}}},
-      "v2_companies_companyId_list-entries__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/companies/{companyId}/list-entries","params":["cursor","limit"],"scope":{"companyId":{"from":"path","at":"companyId"}}},
-      "v2_companies_companyId_lists__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/companies/{companyId}/lists","params":["cursor","limit"],"scope":{"companyId":{"from":"path","at":"companyId"}}},
-      "v2_companies_companyId_notes__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/companies/{companyId}/notes","params":["filter","cursor","limit","totalCount"],"scope":{"companyId":{"from":"path","at":"companyId"}}},
-      "v2_companies_companyId_relationships__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/companies/{companyId}/relationships","params":["filter","orderBy","cursor","limit","totalCount"],"scope":{"companyId":{"from":"path","at":"companyId"}}},
-      "v2_companies_search__POST": {"action":"write.search","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/companies/search","params":["fieldIds","fieldTypes","cursor","limit","totalCount"],"body":"any","scope":{}},
-      "v2_company-merges__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/company-merges","params":["cursor","limit","filter"],"scope":{}},
-      "v2_company-merges__POST": {"action":"write.company_merges","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/company-merges","body":"json","scope":{"primaryCompanyId":{"from":"body","at":"/primaryCompanyId","type":"number"},"duplicateCompanyId":{"from":"body","at":"/duplicateCompanyId","type":"number"}}},
-      "v2_company-merges_mergeId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/company-merges/{mergeId}","scope":{"mergeId":{"from":"path","at":"mergeId"}}},
-      "v2_duplicates_company-suggestions__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/duplicates/company-suggestions","params":["cursor","limit","totalCount","term","filter","orderBy"],"scope":{}},
-      "v2_duplicates_person-suggestions__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/duplicates/person-suggestions","params":["cursor","limit","totalCount","term","filter","orderBy"],"scope":{}},
-      "v2_emails__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/emails","params":["cursor","limit","filter"],"scope":{}},
-      "v2_feedback__POST": {"action":"write.feedback","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/feedback","body":"json","scope":{}},
-      "v2_field-value-changes__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/field-value-changes","params":["filter","orderBy","cursor","limit"],"scope":{}},
-      "v2_files_search__POST": {"action":"write.search","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/files/search","body":"json","scope":{}},
-      "v2_inferred-connections_coworkers__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/inferred-connections/coworkers","params":["filter","cursor","limit","totalCount"],"scope":{}},
-      "v2_inferred-connections_investor-executive-connections__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/inferred-connections/investor-executive-connections","params":["filter","cursor","limit","totalCount"],"scope":{}},
-      "v2_lists__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists","params":["term","cursor","limit"],"scope":{}},
-      "v2_lists__POST": {"action":"write.lists","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/lists","body":"json","scope":{"name":{"from":"body","at":"/name"}}},
-      "v2_lists_listId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}","scope":{"listId":{"from":"path","at":"listId"}}},
-      "v2_lists_listId_fields__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/fields","params":["cursor","limit","filter","includes"],"scope":{"listId":{"from":"path","at":"listId"}}},
-      "v2_lists_listId_fields_fieldId_dropdown-options__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/fields/{fieldId}/dropdown-options","params":["cursor","limit"],"scope":{"listId":{"from":"path","at":"listId"},"fieldId":{"from":"path","at":"fieldId"}}},
-      "v2_lists_listId_fields_fieldId_dropdown-options__POST": {"action":"write.dropdown_options","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/fields/{fieldId}/dropdown-options","body":"json","scope":{"listId":{"from":"path","at":"listId"},"fieldId":{"from":"path","at":"fieldId"}}},
-      "v2_lists_listId_fields_fieldId_dropdown-options_dropdownOptionId__DELETE": {"action":"delete.dropdown_options","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/fields/{fieldId}/dropdown-options/{dropdownOptionId}","scope":{"listId":{"from":"path","at":"listId"},"fieldId":{"from":"path","at":"fieldId"},"dropdownOptionId":{"from":"path","at":"dropdownOptionId"}}},
-      "v2_lists_listId_fields_fieldId_dropdown-options_dropdownOptionId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/fields/{fieldId}/dropdown-options/{dropdownOptionId}","scope":{"listId":{"from":"path","at":"listId"},"fieldId":{"from":"path","at":"fieldId"},"dropdownOptionId":{"from":"path","at":"dropdownOptionId"}}},
-      "v2_lists_listId_fields_fieldId_dropdown-options_dropdownOptionId__POST": {"action":"write.dropdown_options","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/fields/{fieldId}/dropdown-options/{dropdownOptionId}","body":"json","scope":{"listId":{"from":"path","at":"listId"},"fieldId":{"from":"path","at":"fieldId"},"dropdownOptionId":{"from":"path","at":"dropdownOptionId"}}},
-      "v2_lists_listId_list-entries__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/list-entries","params":["cursor","limit","fieldIds","fieldTypes"],"scope":{"listId":{"from":"path","at":"listId"}}},
-      "v2_lists_listId_list-entries__POST": {"action":"write.list_entries","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/list-entries","body":"json","scope":{"listId":{"from":"path","at":"listId"}}},
-      "v2_lists_listId_list-entries_listEntryId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/list-entries/{listEntryId}","params":["fieldIds","fieldTypes"],"scope":{"listId":{"from":"path","at":"listId"},"listEntryId":{"from":"path","at":"listEntryId"}}},
-      "v2_lists_listId_list-entries_listEntryId_field-value-changes__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/list-entries/{listEntryId}/field-value-changes","params":["filter","cursor","limit"],"scope":{"listId":{"from":"path","at":"listId"},"listEntryId":{"from":"path","at":"listEntryId"}}},
-      "v2_lists_listId_list-entries_listEntryId_fields__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/list-entries/{listEntryId}/fields","params":["ids","types","cursor","limit"],"scope":{"listId":{"from":"path","at":"listId"},"listEntryId":{"from":"path","at":"listEntryId"}}},
-      "v2_lists_listId_list-entries_listEntryId_fields__PATCH": {"action":"write.fields","effects":["write"],"method":"PATCH","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/list-entries/{listEntryId}/fields","body":"json","scope":{"listId":{"from":"path","at":"listId"},"listEntryId":{"from":"path","at":"listEntryId"}}},
-      "v2_lists_listId_list-entries_listEntryId_fields_fieldId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/list-entries/{listEntryId}/fields/{fieldId}","scope":{"listId":{"from":"path","at":"listId"},"listEntryId":{"from":"path","at":"listEntryId"},"fieldId":{"from":"path","at":"fieldId"}}},
-      "v2_lists_listId_list-entries_listEntryId_fields_fieldId__POST": {"action":"write.fields","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/list-entries/{listEntryId}/fields/{fieldId}","body":"json","scope":{"listId":{"from":"path","at":"listId"},"listEntryId":{"from":"path","at":"listEntryId"},"fieldId":{"from":"path","at":"fieldId"}}},
-      "v2_lists_listId_list-entries_listEntryId_fields_fieldId_values__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/list-entries/{listEntryId}/fields/{fieldId}/values","params":["cursor","limit"],"scope":{"listId":{"from":"path","at":"listId"},"listEntryId":{"from":"path","at":"listEntryId"},"fieldId":{"from":"path","at":"fieldId"}}},
-      "v2_lists_listId_list-entries_search__POST": {"action":"write.search","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/list-entries/search","params":["fieldIds","fieldTypes","cursor","limit","totalCount"],"body":"any","scope":{"listId":{"from":"path","at":"listId"}}},
-      "v2_lists_listId_saved-views__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/saved-views","params":["cursor","limit"],"scope":{"listId":{"from":"path","at":"listId"}}},
-      "v2_lists_listId_saved-views_viewId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/saved-views/{viewId}","scope":{"listId":{"from":"path","at":"listId"},"viewId":{"from":"path","at":"viewId"}}},
-      "v2_lists_listId_saved-views_viewId_list-entries__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/saved-views/{viewId}/list-entries","params":["cursor","limit"],"scope":{"listId":{"from":"path","at":"listId"},"viewId":{"from":"path","at":"viewId"}}},
-      "v2_meetings__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/meetings","params":["cursor","limit","filter"],"scope":{}},
-      "v2_meetings_meetingId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/meetings/{meetingId}","scope":{"meetingId":{"from":"path","at":"meetingId"}}},
-      "v2_notes__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/notes","params":["totalCount","cursor","limit","filter","includes"],"scope":{}},
-      "v2_notes__POST": {"action":"send.notes","effects":["send"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/notes","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
-      "v2_notes_noteId__DELETE": {"action":"delete.notes","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/notes/{noteId}","scope":{"noteId":{"from":"path","at":"noteId"}}},
-      "v2_notes_noteId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/notes/{noteId}","params":["includes"],"scope":{"noteId":{"from":"path","at":"noteId"}}},
-      "v2_notes_noteId__POST": {"action":"send.notes","effects":["send"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/notes/{noteId}","body":"json","scope":{"noteId":{"from":"path","at":"noteId"},"request":{"from":"body","at":"","type":"object"}},"grant":["noteId"]},
-      "v2_notes_noteId_attached-companies__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/notes/{noteId}/attached-companies","params":["totalCount","cursor","limit"],"scope":{"noteId":{"from":"path","at":"noteId"}}},
-      "v2_notes_noteId_attached-opportunities__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/notes/{noteId}/attached-opportunities","params":["totalCount","cursor","limit"],"scope":{"noteId":{"from":"path","at":"noteId"}}},
-      "v2_notes_noteId_attached-persons__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/notes/{noteId}/attached-persons","params":["totalCount","cursor","limit"],"scope":{"noteId":{"from":"path","at":"noteId"}}},
-      "v2_notes_noteId_replies__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/notes/{noteId}/replies","params":["filter","cursor","limit","totalCount"],"scope":{"noteId":{"from":"path","at":"noteId"}}},
-      "v2_opportunities__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/opportunities","params":["cursor","limit","ids"],"scope":{}},
-      "v2_opportunities_opportunityId__DELETE": {"action":"delete.opportunities","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/opportunities/{opportunityId}","scope":{"opportunityId":{"from":"path","at":"opportunityId"}}},
-      "v2_opportunities_opportunityId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/opportunities/{opportunityId}","scope":{"opportunityId":{"from":"path","at":"opportunityId"}}},
-      "v2_opportunities_opportunityId__POST": {"action":"write.opportunities","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/opportunities/{opportunityId}","body":"json","scope":{"opportunityId":{"from":"path","at":"opportunityId"}}},
-      "v2_opportunities_opportunityId_notes__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/opportunities/{opportunityId}/notes","params":["filter","cursor","limit","totalCount"],"scope":{"opportunityId":{"from":"path","at":"opportunityId"}}},
-      "v2_person-merges__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/person-merges","params":["cursor","limit","filter"],"scope":{}},
-      "v2_person-merges__POST": {"action":"write.person_merges","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/person-merges","body":"json","scope":{"primaryPersonId":{"from":"body","at":"/primaryPersonId","type":"number"},"duplicatePersonId":{"from":"body","at":"/duplicatePersonId","type":"number"}}},
-      "v2_person-merges_mergeId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/person-merges/{mergeId}","scope":{"mergeId":{"from":"path","at":"mergeId"}}},
-      "v2_persons__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/persons","params":["cursor","limit","ids","fieldIds","fieldTypes"],"scope":{}},
-      "v2_persons__POST": {"action":"write.persons","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/persons","body":"json","scope":{"firstName":{"from":"body","at":"/firstName"}}},
-      "v2_persons_personId__DELETE": {"action":"delete.persons","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/persons/{personId}","scope":{"personId":{"from":"path","at":"personId"}}},
-      "v2_persons_personId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/persons/{personId}","params":["fieldIds","fieldTypes","cursor","limit","filter","includes"],"scope":{"personId":{"from":"path","at":"personId"}}},
-      "v2_persons_personId_fields__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/persons/{personId}/fields","params":["ids","types","cursor","limit"],"scope":{"personId":{"from":"path","at":"personId"}}},
-      "v2_persons_personId_fields__PATCH": {"action":"write.fields","effects":["write"],"method":"PATCH","origin":"https://api.affinity.co","path":"/v2/persons/{personId}/fields","body":"json","scope":{"personId":{"from":"path","at":"personId"}}},
-      "v2_persons_personId_fields_fieldId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/persons/{personId}/fields/{fieldId}","params":["cursor","limit"],"scope":{"personId":{"from":"path","at":"personId"},"fieldId":{"from":"path","at":"fieldId"}}},
-      "v2_persons_personId_fields_fieldId__POST": {"action":"write.fields","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/persons/{personId}/fields/{fieldId}","body":"json","scope":{"personId":{"from":"path","at":"personId"},"fieldId":{"from":"path","at":"fieldId"}}},
-      "v2_persons_personId_fields_fieldId_values__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/persons/{personId}/fields/{fieldId}/values","params":["cursor","limit"],"scope":{"personId":{"from":"path","at":"personId"},"fieldId":{"from":"path","at":"fieldId"}}},
-      "v2_persons_personId_list-entries__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/persons/{personId}/list-entries","params":["cursor","limit"],"scope":{"personId":{"from":"path","at":"personId"}}},
-      "v2_persons_personId_lists__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/persons/{personId}/lists","params":["cursor","limit"],"scope":{"personId":{"from":"path","at":"personId"}}},
-      "v2_persons_personId_notes__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/persons/{personId}/notes","params":["filter","cursor","limit","totalCount"],"scope":{"personId":{"from":"path","at":"personId"}}},
-      "v2_persons_personId_relationships__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/persons/{personId}/relationships","params":["filter","orderBy","cursor","limit","totalCount"],"scope":{"personId":{"from":"path","at":"personId"}}},
-      "v2_persons_search__POST": {"action":"write.search","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/persons/search","params":["fieldIds","fieldTypes","cursor","limit","totalCount"],"body":"any","scope":{}},
-      "v2_rate-limit__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/rate-limit","scope":{}},
-      "v2_reminders__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/reminders","params":["totalCount","cursor","limit","filter"],"scope":{}},
-      "v2_reminders__POST": {"action":"write.reminders","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/reminders","body":"json","scope":{}},
-      "v2_reminders_reminderId__DELETE": {"action":"delete.reminders","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/reminders/{reminderId}","scope":{"reminderId":{"from":"path","at":"reminderId"}}},
-      "v2_reminders_reminderId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/reminders/{reminderId}","scope":{"reminderId":{"from":"path","at":"reminderId"}}},
-      "v2_reminders_reminderId__POST": {"action":"write.reminders","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/reminders/{reminderId}","body":"json","scope":{"reminderId":{"from":"path","at":"reminderId"}}},
-      "v2_semantic-search__POST": {"action":"write.semantic_search","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/semantic-search","body":"json","scope":{}},
-      "v2_tasks_company-merges__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/tasks/company-merges","params":["cursor","limit","filter"],"scope":{}},
-      "v2_tasks_company-merges_taskId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/tasks/company-merges/{taskId}","scope":{"taskId":{"from":"path","at":"taskId"}}},
-      "v2_tasks_person-merges__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/tasks/person-merges","params":["cursor","limit","filter"],"scope":{}},
-      "v2_tasks_person-merges_taskId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/tasks/person-merges/{taskId}","scope":{"taskId":{"from":"path","at":"taskId"}}},
-      "v2_teams__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/teams","params":["cursor","limit","totalCount","filter","orderBy","includes"],"scope":{}},
-      "v2_teams_teamId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/teams/{teamId}","params":["includes"],"scope":{"teamId":{"from":"path","at":"teamId"}}},
-      "v2_transcripts__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/transcripts","params":["totalCount","cursor","limit","filter"],"scope":{}},
-      "v2_transcripts_transcriptId__DELETE": {"action":"delete.transcripts","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/transcripts/{transcriptId}","scope":{"transcriptId":{"from":"path","at":"transcriptId"}}},
-      "v2_transcripts_transcriptId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/transcripts/{transcriptId}","scope":{"transcriptId":{"from":"path","at":"transcriptId"}}},
-      "v2_transcripts_transcriptId_fragments__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/transcripts/{transcriptId}/fragments","params":["cursor","limit","totalCount"],"scope":{"transcriptId":{"from":"path","at":"transcriptId"}}},
-      "v2_users__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/users","params":["cursor","limit","term","filter"],"scope":{}},
-      "v2_users_userId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/users/{userId}","scope":{"userId":{"from":"path","at":"userId"}}},
-      "v2_webhooks__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/webhooks","params":["totalCount","cursor","limit","filter"],"scope":{}},
-      "v2_webhooks__POST": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/webhooks","body":"json","scope":{"url":{"from":"body","at":"/url"}}},
-      "v2_webhooks_webhookId__DELETE": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/webhooks/{webhookId}","scope":{"webhookId":{"from":"path","at":"webhookId"}}},
-      "v2_webhooks_webhookId__GET": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/webhooks/{webhookId}","scope":{"webhookId":{"from":"path","at":"webhookId"}}},
-      "v2_webhooks_webhookId__POST": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/webhooks/{webhookId}","body":"json","scope":{"webhookId":{"from":"path","at":"webhookId"}}}
+      "v2_auth_whoami__GET": {"action":"auth.whoami.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/auth/whoami","scope":{}},
+      "v2_calls__GET": {"action":"calls.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","filter"],"path":"/v2/calls","scope":{}},
+      "v2_chat-messages__GET": {"action":"chat_messages.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","filter"],"path":"/v2/chat-messages","scope":{}},
+      "v2_companies__GET": {"action":"companies.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","ids","fieldIds","fieldTypes"],"path":"/v2/companies","scope":{}},
+      "v2_companies_companyId__GET": {"action":"companies.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["fieldIds","fieldTypes","cursor","limit","filter","includes"],"path":"/v2/companies/{companyId}","path_patterns":{"companyId":"[0-9]+"},"scope":{"companyId":{"at":"companyId","from":"path"}}},
+      "v2_companies_companyId_fields__GET": {"action":"companies.fields.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["ids","types","cursor","limit"],"path":"/v2/companies/{companyId}/fields","path_patterns":{"companyId":"[0-9]+"},"scope":{"companyId":{"at":"companyId","from":"path"}}},
+      "v2_companies_companyId_fields__PATCH": {"action":"companies.fields.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.affinity.co","path":"/v2/companies/{companyId}/fields","scope":{"companyId":{"at":"companyId","from":"path"}}},
+      "v2_companies_companyId_fields_fieldId__GET": {"action":"companies.fields.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit"],"path":"/v2/companies/{companyId}/fields/{fieldId}","scope":{"companyId":{"at":"companyId","from":"path"},"fieldId":{"at":"fieldId","from":"path"}}},
+      "v2_companies_companyId_fields_fieldId__POST": {"action":"companies.fields.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/companies/{companyId}/fields/{fieldId}","scope":{"companyId":{"at":"companyId","from":"path"},"fieldId":{"at":"fieldId","from":"path"}}},
+      "v2_companies_companyId_fields_fieldId_values__GET": {"action":"companies.fields.values.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit"],"path":"/v2/companies/{companyId}/fields/{fieldId}/values","scope":{"companyId":{"at":"companyId","from":"path"},"fieldId":{"at":"fieldId","from":"path"}}},
+      "v2_companies_companyId_list-entries__GET": {"action":"companies.entries.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit"],"path":"/v2/companies/{companyId}/list-entries","path_patterns":{"companyId":"[0-9]+"},"scope":{"companyId":{"at":"companyId","from":"path"}}},
+      "v2_companies_companyId_lists__GET": {"action":"companies.lists.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit"],"path":"/v2/companies/{companyId}/lists","path_patterns":{"companyId":"[0-9]+"},"scope":{"companyId":{"at":"companyId","from":"path"}}},
+      "v2_companies_companyId_notes__GET": {"action":"companies.notes.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["filter","cursor","limit","totalCount"],"path":"/v2/companies/{companyId}/notes","path_patterns":{"companyId":"[0-9]+"},"scope":{"companyId":{"at":"companyId","from":"path"}}},
+      "v2_companies_companyId_relationships__GET": {"action":"companies.relationships.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["filter","orderBy","cursor","limit","totalCount"],"path":"/v2/companies/{companyId}/relationships","path_patterns":{"companyId":"[0-9]+"},"scope":{"companyId":{"at":"companyId","from":"path"}}},
+      "v2_companies_fields__GET": {"action":"companies.fields.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","filter","includes"],"path":"/v2/companies/fields","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "v2_companies_fields__POST": {"action":"companies.fields.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/companies/fields","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "v2_companies_fields_fieldId__DELETE": {"action":"companies.fields.delete","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/companies/fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"}}},
+      "v2_companies_fields_fieldId__GET": {"action":"companies.fields.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/companies/fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"}}},
+      "v2_companies_fields_fieldId__POST": {"action":"companies.fields.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/companies/fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "v2_companies_fields_fieldId_dropdown-options__GET": {"action":"companies.fields.dropdown_options.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit"],"path":"/v2/companies/fields/{fieldId}/dropdown-options","path_patterns":{"fieldId":"[^f].*|f(?:|[^i].*|i(?:|[^e].*|e(?:|[^l].*|l(?:|[^d].*|d(?:|[^s].*|s.+)))))"},"scope":{"fieldId":{"at":"fieldId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "v2_companies_search__POST": {"action":"companies.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.affinity.co","params":["fieldIds","fieldTypes","cursor","limit","totalCount"],"path":"/v2/companies/search","scope":{"fieldIds":{"at":"fieldIds","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "v2_company-merges__GET": {"action":"company_merges.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","filter"],"path":"/v2/company-merges","scope":{}},
+      "v2_company-merges__POST": {"action":"company_merges.delete","body":"json","effects":["delete","write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/company-merges","scope":{"duplicateCompanyId":{"at":"/duplicateCompanyId","from":"body","type":"number"},"primaryCompanyId":{"at":"/primaryCompanyId","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "v2_company-merges_mergeId__GET": {"action":"company_merges.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/company-merges/{mergeId}","scope":{"mergeId":{"at":"mergeId","from":"path"}}},
+      "v2_duplicates_company-suggestions__GET": {"action":"duplicates.company_suggestions.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","totalCount","term","filter","orderBy"],"path":"/v2/duplicates/company-suggestions","scope":{}},
+      "v2_duplicates_person-suggestions__GET": {"action":"duplicates.person_suggestions.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","totalCount","term","filter","orderBy"],"path":"/v2/duplicates/person-suggestions","scope":{}},
+      "v2_emails__GET": {"action":"emails.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","filter"],"path":"/v2/emails","scope":{}},
+      "v2_feedback__POST": {"action":"feedback.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/feedback","scope":{}},
+      "v2_field-value-changes__GET": {"action":"field_value_changes.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["filter","orderBy","cursor","limit"],"path":"/v2/field-value-changes","scope":{}},
+      "v2_files__GET": {"action":"files.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["totalCount","cursor","limit","filter"],"path":"/v2/files","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "v2_files_fileId__GET": {"action":"files.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/files/{fileId}","scope":{"fileId":{"at":"fileId","from":"path"}}},
+      "v2_files_search__POST": {"action":"files.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/files/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "v2_inferred-connections_coworkers__GET": {"action":"inferred_connections.coworkers.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["filter","cursor","limit","totalCount"],"path":"/v2/inferred-connections/coworkers","scope":{}},
+      "v2_inferred-connections_investor-executive-connections__GET": {"action":"inferred_connections.investor_executive_connections.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["filter","cursor","limit","totalCount"],"path":"/v2/inferred-connections/investor-executive-connections","scope":{}},
+      "v2_intro-paths__GET": {"action":"intro_paths.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["filter","cursor","limit","totalCount"],"path":"/v2/intro-paths","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "v2_lists__GET": {"action":"lists.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["term","cursor","limit"],"path":"/v2/lists","scope":{}},
+      "v2_lists__POST": {"action":"lists.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/lists","scope":{"name":{"at":"/name","from":"body"}}},
+      "v2_lists_listId__GET": {"action":"lists.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}","scope":{"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_fields__GET": {"action":"lists.fields.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","filter","includes"],"path":"/v2/lists/{listId}/fields","scope":{"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_fields__POST": {"action":"lists.fields.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/fields","scope":{"listId":{"at":"listId","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "v2_lists_listId_fields_fieldId__DELETE": {"action":"lists.fields.delete","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"},"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_fields_fieldId__GET": {"action":"lists.fields.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"},"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_fields_fieldId__POST": {"action":"lists.fields.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"},"listId":{"at":"listId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "v2_lists_listId_fields_fieldId_dropdown-options__GET": {"action":"lists.fields.dropdown_options.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit"],"path":"/v2/lists/{listId}/fields/{fieldId}/dropdown-options","scope":{"fieldId":{"at":"fieldId","from":"path"},"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_fields_fieldId_dropdown-options__POST": {"action":"lists.fields.dropdown_options.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/fields/{fieldId}/dropdown-options","scope":{"fieldId":{"at":"fieldId","from":"path"},"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_fields_fieldId_dropdown-options_dropdownOptionId__DELETE": {"action":"lists.fields.dropdown_options.delete","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/fields/{fieldId}/dropdown-options/{dropdownOptionId}","scope":{"dropdownOptionId":{"at":"dropdownOptionId","from":"path"},"fieldId":{"at":"fieldId","from":"path"},"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_fields_fieldId_dropdown-options_dropdownOptionId__GET": {"action":"lists.fields.dropdown_options.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/fields/{fieldId}/dropdown-options/{dropdownOptionId}","scope":{"dropdownOptionId":{"at":"dropdownOptionId","from":"path"},"fieldId":{"at":"fieldId","from":"path"},"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_fields_fieldId_dropdown-options_dropdownOptionId__POST": {"action":"lists.fields.dropdown_options.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/fields/{fieldId}/dropdown-options/{dropdownOptionId}","scope":{"dropdownOptionId":{"at":"dropdownOptionId","from":"path"},"fieldId":{"at":"fieldId","from":"path"},"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_list-entries__GET": {"action":"lists.list_entries.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","fieldIds","fieldTypes"],"path":"/v2/lists/{listId}/list-entries","scope":{"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_list-entries__POST": {"action":"lists.list_entries.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/list-entries","scope":{"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_list-entries_listEntryId__DELETE": {"action":"lists.list_entries.delete","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/list-entries/{listEntryId}","scope":{"listEntryId":{"at":"listEntryId","from":"path"},"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_list-entries_listEntryId__GET": {"action":"lists.list_entries.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["fieldIds","fieldTypes"],"path":"/v2/lists/{listId}/list-entries/{listEntryId}","scope":{"listEntryId":{"at":"listEntryId","from":"path"},"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_list-entries_listEntryId_field-value-changes__GET": {"action":"lists.list_entries.field_value_changes.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["filter","cursor","limit"],"path":"/v2/lists/{listId}/list-entries/{listEntryId}/field-value-changes","scope":{"listEntryId":{"at":"listEntryId","from":"path"},"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_list-entries_listEntryId_fields__GET": {"action":"lists.list_entries.fields.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["ids","types","cursor","limit"],"path":"/v2/lists/{listId}/list-entries/{listEntryId}/fields","scope":{"listEntryId":{"at":"listEntryId","from":"path"},"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_list-entries_listEntryId_fields__PATCH": {"action":"lists.list_entries.fields.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/list-entries/{listEntryId}/fields","scope":{"listEntryId":{"at":"listEntryId","from":"path"},"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_list-entries_listEntryId_fields_fieldId__GET": {"action":"lists.list_entries.fields.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/list-entries/{listEntryId}/fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"},"listEntryId":{"at":"listEntryId","from":"path"},"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_list-entries_listEntryId_fields_fieldId__POST": {"action":"lists.list_entries.fields.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/list-entries/{listEntryId}/fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"},"listEntryId":{"at":"listEntryId","from":"path"},"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_list-entries_listEntryId_fields_fieldId_values__GET": {"action":"lists.list_entries.fields.values.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit"],"path":"/v2/lists/{listId}/list-entries/{listEntryId}/fields/{fieldId}/values","scope":{"fieldId":{"at":"fieldId","from":"path"},"listEntryId":{"at":"listEntryId","from":"path"},"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_list-entries_search__POST": {"action":"lists.list_entries.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.affinity.co","params":["fieldIds","fieldTypes","cursor","limit","totalCount"],"path":"/v2/lists/{listId}/list-entries/search","scope":{"fieldIds":{"at":"fieldIds","from":"query","optional":true},"listId":{"at":"listId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "v2_lists_listId_saved-views__GET": {"action":"lists.saved_views.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit"],"path":"/v2/lists/{listId}/saved-views","scope":{"listId":{"at":"listId","from":"path"}}},
+      "v2_lists_listId_saved-views_viewId__GET": {"action":"lists.saved_views.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/lists/{listId}/saved-views/{viewId}","scope":{"listId":{"at":"listId","from":"path"},"viewId":{"at":"viewId","from":"path"}}},
+      "v2_lists_listId_saved-views_viewId_list-entries__GET": {"action":"lists.saved_views.entries.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit"],"path":"/v2/lists/{listId}/saved-views/{viewId}/list-entries","scope":{"listId":{"at":"listId","from":"path"},"viewId":{"at":"viewId","from":"path"}}},
+      "v2_meetings__GET": {"action":"meetings.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","filter"],"path":"/v2/meetings","scope":{}},
+      "v2_meetings_meetingId__GET": {"action":"meetings.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/meetings/{meetingId}","scope":{"meetingId":{"at":"meetingId","from":"path"}}},
+      "v2_notes__GET": {"action":"notes.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["totalCount","cursor","limit","filter","includes"],"path":"/v2/notes","scope":{}},
+      "v2_notes__POST": {"action":"notes.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/notes","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "v2_notes_noteId__DELETE": {"action":"notes.delete","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/notes/{noteId}","scope":{"noteId":{"at":"noteId","from":"path"}}},
+      "v2_notes_noteId__GET": {"action":"notes.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["includes"],"path":"/v2/notes/{noteId}","scope":{"noteId":{"at":"noteId","from":"path"}}},
+      "v2_notes_noteId__POST": {"action":"notes.write","body":"json","effects":["write"],"grant":["noteId"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/notes/{noteId}","path_patterns":{"noteId":"[0-9]+"},"scope":{"noteId":{"at":"noteId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "v2_notes_noteId_attached-companies__GET": {"action":"notes.attached_companies.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["totalCount","cursor","limit"],"path":"/v2/notes/{noteId}/attached-companies","scope":{"noteId":{"at":"noteId","from":"path"}}},
+      "v2_notes_noteId_attached-opportunities__GET": {"action":"notes.attached_opportunities.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["totalCount","cursor","limit"],"path":"/v2/notes/{noteId}/attached-opportunities","scope":{"noteId":{"at":"noteId","from":"path"}}},
+      "v2_notes_noteId_attached-persons__GET": {"action":"notes.attached_persons.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["totalCount","cursor","limit"],"path":"/v2/notes/{noteId}/attached-persons","scope":{"noteId":{"at":"noteId","from":"path"}}},
+      "v2_notes_noteId_replies__GET": {"action":"notes.replies.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["filter","cursor","limit","totalCount"],"path":"/v2/notes/{noteId}/replies","scope":{"noteId":{"at":"noteId","from":"path"}}},
+      "v2_notes_search__POST": {"action":"notes.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/notes/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "v2_opportunities__GET": {"action":"opportunities.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","ids"],"path":"/v2/opportunities","scope":{}},
+      "v2_opportunities__POST": {"action":"opportunities.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/opportunities","scope":{"listId":{"at":"/listId","from":"body","type":"number"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "v2_opportunities_opportunityId__DELETE": {"action":"opportunities.delete","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/opportunities/{opportunityId}","scope":{"opportunityId":{"at":"opportunityId","from":"path"}}},
+      "v2_opportunities_opportunityId__GET": {"action":"opportunities.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/opportunities/{opportunityId}","scope":{"opportunityId":{"at":"opportunityId","from":"path"}}},
+      "v2_opportunities_opportunityId__POST": {"action":"opportunities.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/opportunities/{opportunityId}","scope":{"opportunityId":{"at":"opportunityId","from":"path"}}},
+      "v2_opportunities_opportunityId_notes__GET": {"action":"opportunities.notes.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["filter","cursor","limit","totalCount"],"path":"/v2/opportunities/{opportunityId}/notes","scope":{"opportunityId":{"at":"opportunityId","from":"path"}}},
+      "v2_person-merges__GET": {"action":"person_merges.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","filter"],"path":"/v2/person-merges","scope":{}},
+      "v2_person-merges__POST": {"action":"person_merges.delete","body":"json","effects":["delete","write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/person-merges","scope":{"duplicatePersonId":{"at":"/duplicatePersonId","from":"body","type":"number"},"primaryPersonId":{"at":"/primaryPersonId","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+      "v2_person-merges_mergeId__GET": {"action":"person_merges.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/person-merges/{mergeId}","scope":{"mergeId":{"at":"mergeId","from":"path"}}},
+      "v2_persons__GET": {"action":"persons.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","ids","fieldIds","fieldTypes"],"path":"/v2/persons","scope":{}},
+      "v2_persons__POST": {"action":"persons.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/persons","scope":{"firstName":{"at":"/firstName","from":"body"}}},
+      "v2_persons_fields__GET": {"action":"persons.fields.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","filter","includes"],"path":"/v2/persons/fields","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "v2_persons_fields__POST": {"action":"persons.fields.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/persons/fields","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "v2_persons_fields_fieldId__DELETE": {"action":"persons.fields.delete","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/persons/fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"}}},
+      "v2_persons_fields_fieldId__GET": {"action":"persons.fields.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/persons/fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"}}},
+      "v2_persons_fields_fieldId__POST": {"action":"persons.fields.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/persons/fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "v2_persons_fields_fieldId_dropdown-options__GET": {"action":"persons.fields.dropdown_options.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit"],"path":"/v2/persons/fields/{fieldId}/dropdown-options","path_patterns":{"fieldId":"[^f].*|f(?:|[^i].*|i(?:|[^e].*|e(?:|[^l].*|l(?:|[^d].*|d(?:|[^s].*|s.+)))))"},"scope":{"fieldId":{"at":"fieldId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "v2_persons_personId__DELETE": {"action":"persons.delete","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/persons/{personId}","scope":{"personId":{"at":"personId","from":"path"}}},
+      "v2_persons_personId__GET": {"action":"persons.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["fieldIds","fieldTypes","cursor","limit","filter","includes"],"path":"/v2/persons/{personId}","path_patterns":{"personId":"[0-9]+"},"scope":{"personId":{"at":"personId","from":"path"}}},
+      "v2_persons_personId__POST": {"action":"persons.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/persons/{personId}","path_patterns":{"personId":"[0-9]+"},"scope":{"firstName":{"at":"/firstName","from":"body","optional":true},"personId":{"at":"personId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "v2_persons_personId_fields__GET": {"action":"persons.fields.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["ids","types","cursor","limit"],"path":"/v2/persons/{personId}/fields","path_patterns":{"personId":"[0-9]+"},"scope":{"personId":{"at":"personId","from":"path"}}},
+      "v2_persons_personId_fields__PATCH": {"action":"persons.fields.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.affinity.co","path":"/v2/persons/{personId}/fields","scope":{"personId":{"at":"personId","from":"path"}}},
+      "v2_persons_personId_fields_fieldId__GET": {"action":"persons.fields.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit"],"path":"/v2/persons/{personId}/fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"},"personId":{"at":"personId","from":"path"}}},
+      "v2_persons_personId_fields_fieldId__POST": {"action":"persons.fields.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/persons/{personId}/fields/{fieldId}","scope":{"fieldId":{"at":"fieldId","from":"path"},"personId":{"at":"personId","from":"path"}}},
+      "v2_persons_personId_fields_fieldId_values__GET": {"action":"persons.fields.values.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit"],"path":"/v2/persons/{personId}/fields/{fieldId}/values","scope":{"fieldId":{"at":"fieldId","from":"path"},"personId":{"at":"personId","from":"path"}}},
+      "v2_persons_personId_list-entries__GET": {"action":"persons.entries.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit"],"path":"/v2/persons/{personId}/list-entries","path_patterns":{"personId":"[0-9]+"},"scope":{"personId":{"at":"personId","from":"path"}}},
+      "v2_persons_personId_lists__GET": {"action":"persons.lists.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit"],"path":"/v2/persons/{personId}/lists","path_patterns":{"personId":"[0-9]+"},"scope":{"personId":{"at":"personId","from":"path"}}},
+      "v2_persons_personId_notes__GET": {"action":"persons.notes.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["filter","cursor","limit","totalCount"],"path":"/v2/persons/{personId}/notes","path_patterns":{"personId":"[0-9]+"},"scope":{"personId":{"at":"personId","from":"path"}}},
+      "v2_persons_personId_relationships__GET": {"action":"persons.relationships.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["filter","orderBy","cursor","limit","totalCount"],"path":"/v2/persons/{personId}/relationships","path_patterns":{"personId":"[0-9]+"},"scope":{"personId":{"at":"personId","from":"path"}}},
+      "v2_persons_search__POST": {"action":"persons.read","body":"any","effects":["read"],"method":"POST","origin":"https://api.affinity.co","params":["fieldIds","fieldTypes","cursor","limit","totalCount"],"path":"/v2/persons/search","scope":{"fieldIds":{"at":"fieldIds","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "v2_rate-limit__GET": {"action":"rate_limit.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/rate-limit","scope":{}},
+      "v2_reminders__GET": {"action":"reminders.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["totalCount","cursor","limit","filter"],"path":"/v2/reminders","scope":{}},
+      "v2_reminders__POST": {"action":"reminders.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/reminders","scope":{}},
+      "v2_reminders_reminderId__DELETE": {"action":"reminders.delete","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/reminders/{reminderId}","scope":{"reminderId":{"at":"reminderId","from":"path"}}},
+      "v2_reminders_reminderId__GET": {"action":"reminders.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/reminders/{reminderId}","scope":{"reminderId":{"at":"reminderId","from":"path"}}},
+      "v2_reminders_reminderId__POST": {"action":"reminders.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/reminders/{reminderId}","scope":{"reminderId":{"at":"reminderId","from":"path"}}},
+      "v2_semantic-search__POST": {"action":"semantic_search.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/semantic-search","scope":{"listIds":{"at":"/listIds","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "v2_suggested-field-updates__GET": {"action":"suggested_field_updates.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","filter"],"path":"/v2/suggested-field-updates","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "v2_suggested-field-updates__POST": {"action":"suggested_field_updates.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/suggested-field-updates","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "v2_suggested-field-updates_suggestedFieldUpdateId__GET": {"action":"suggested_field_updates.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/suggested-field-updates/{suggestedFieldUpdateId}","scope":{"suggestedFieldUpdateId":{"at":"suggestedFieldUpdateId","from":"path"}}},
+      "v2_suggested-field-updates_suggestedFieldUpdateId_suggestions__PATCH": {"action":"suggested_field_updates.suggestions.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.affinity.co","path":"/v2/suggested-field-updates/{suggestedFieldUpdateId}/suggestions","scope":{"request":{"at":"","from":"body","type":"object"},"suggestedFieldUpdateId":{"at":"suggestedFieldUpdateId","from":"path"}}},
+      "v2_tasks_company-merges__GET": {"action":"tasks.company_merges.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","filter"],"path":"/v2/tasks/company-merges","scope":{}},
+      "v2_tasks_company-merges_taskId__GET": {"action":"tasks.company_merges.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/tasks/company-merges/{taskId}","scope":{"taskId":{"at":"taskId","from":"path"}}},
+      "v2_tasks_person-merges__GET": {"action":"tasks.person_merges.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","filter"],"path":"/v2/tasks/person-merges","scope":{}},
+      "v2_tasks_person-merges_taskId__GET": {"action":"tasks.person_merges.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/tasks/person-merges/{taskId}","scope":{"taskId":{"at":"taskId","from":"path"}}},
+      "v2_tasks_suggested-field-updates_create__GET": {"action":"tasks.suggested_field_updates.create.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","filter"],"path":"/v2/tasks/suggested-field-updates/create","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "v2_tasks_suggested-field-updates_create_taskId__GET": {"action":"tasks.suggested_field_updates.create.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/tasks/suggested-field-updates/create/{taskId}","scope":{"taskId":{"at":"taskId","from":"path"}}},
+      "v2_teams__GET": {"action":"teams.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","totalCount","filter","orderBy","includes"],"path":"/v2/teams","scope":{}},
+      "v2_teams_teamId__GET": {"action":"teams.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["includes"],"path":"/v2/teams/{teamId}","scope":{"teamId":{"at":"teamId","from":"path"}}},
+      "v2_teams_teamId_accessible-lists__GET": {"action":"teams.accessible_lists.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","totalCount"],"path":"/v2/teams/{teamId}/accessible-lists","scope":{"query":{"at":"","from":"query","type":"object"},"teamId":{"at":"teamId","from":"path"}}},
+      "v2_teams_teamId_members__GET": {"action":"teams.members.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","totalCount"],"path":"/v2/teams/{teamId}/members","scope":{"query":{"at":"","from":"query","type":"object"},"teamId":{"at":"teamId","from":"path"}}},
+      "v2_transcripts__GET": {"action":"transcripts.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["totalCount","cursor","limit","filter"],"path":"/v2/transcripts","scope":{}},
+      "v2_transcripts_transcriptId__DELETE": {"action":"transcripts.delete","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/transcripts/{transcriptId}","scope":{"transcriptId":{"at":"transcriptId","from":"path"}}},
+      "v2_transcripts_transcriptId__GET": {"action":"transcripts.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/transcripts/{transcriptId}","scope":{"transcriptId":{"at":"transcriptId","from":"path"}}},
+      "v2_transcripts_transcriptId_fragments__GET": {"action":"transcripts.fragments.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","totalCount"],"path":"/v2/transcripts/{transcriptId}/fragments","scope":{"transcriptId":{"at":"transcriptId","from":"path"}}},
+      "v2_users__GET": {"action":"users.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["cursor","limit","term","filter"],"path":"/v2/users","scope":{}},
+      "v2_users_userId__GET": {"action":"users.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/users/{userId}","scope":{"userId":{"at":"userId","from":"path"}}},
+      "v2_webhooks__GET": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","params":["totalCount","cursor","limit","filter"],"path":"/v2/webhooks","scope":{}},
+      "v2_webhooks__POST": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/webhooks","scope":{"url":{"at":"/url","from":"body"}}},
+      "v2_webhooks_webhookId__DELETE": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"https://api.affinity.co","path":"/v2/webhooks/{webhookId}","scope":{"webhookId":{"at":"webhookId","from":"path"}}},
+      "v2_webhooks_webhookId__GET": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://api.affinity.co","path":"/v2/webhooks/{webhookId}","scope":{"webhookId":{"at":"webhookId","from":"path"}}},
+      "v2_webhooks_webhookId__POST": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.affinity.co","path":"/v2/webhooks/{webhookId}","scope":{"webhookId":{"at":"webhookId","from":"path"}}}
     }
   }
 }
