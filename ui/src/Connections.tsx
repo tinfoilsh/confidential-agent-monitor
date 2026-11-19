@@ -601,7 +601,7 @@ function CatalogSources() {
       <For
         each={Object.keys(catalogs())}
         fallback={
-          <Empty title="No preset sources configured" icon="crate">
+          <Empty title="No preset sources configured" icon="stack">
             You only have built-in presets. Add a source for more.
           </Empty>
         }
