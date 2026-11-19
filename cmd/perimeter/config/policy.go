@@ -13,7 +13,7 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-const FactsVersion = 13
+const FactsVersion = 14
 
 const (
 	KindOperation   = "operation"
