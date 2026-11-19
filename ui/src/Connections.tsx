@@ -584,10 +584,8 @@ function CatalogSources() {
         each={Object.keys(catalogs())}
         fallback={
           <Show when={!adding()}>
-            <Empty title="No sources">
-              The catalog lists the services this Perimeter ships with. Add a
-              catalog file by its URL and SHA-256 to list that file's services
-              instead.
+            <Empty title="You are only seeing built-in presets">
+              Add a source for more.
             </Empty>
           </Show>
         }
@@ -634,7 +632,7 @@ function CatalogSources() {
                   (await askConfirm({
                     title: "Remove this source?",
                     description:
-                      "Its services leave the catalog. With no sources left, the catalog lists the services this Perimeter ships with.",
+                      "Its services leave the catalog. With no sources left, you see only the built-in presets.",
                     confirmLabel: "Remove source",
                     destructive: true,
                   })) &&
