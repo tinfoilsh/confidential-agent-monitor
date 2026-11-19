@@ -1189,7 +1189,7 @@ function Connection(props: { name: string }) {
             <For
               each={owner.sandboxNames(m.view()!)}
               fallback={
-                <p class="muted">Enrol a bunker to use this service.</p>
+                <p class="muted">Enroll a bunker to use this service.</p>
               }
             >
               {(name) => (
