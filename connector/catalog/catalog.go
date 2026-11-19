@@ -1,6 +1,7 @@
 package catalog
 
 import (
+	"bytes"
 	"cmp"
 	"embed"
 	"encoding/json"
@@ -69,6 +70,25 @@ func Load(source fs.FS) (map[string]*Preset, error) {
 		}
 	}
 	return presets, nil
+}
+
+// File is a directory of presets as the one catalog file a policy lists under its SHA-256.
+func File(source fs.FS) ([]byte, error) {
+	files, _ := fs.Glob(source, "*.json")
+	if len(files) == 0 {
+		return nil, errors.New("no presets")
+	}
+	presets := map[string]json.RawMessage{}
+	for _, file := range files {
+		raw, err := fs.ReadFile(source, file)
+		if err != nil {
+			return nil, err
+		}
+		presets[strings.TrimSuffix(file, ".json")] = raw
+	}
+	var out bytes.Buffer
+	err := json.NewEncoder(&out).Encode(presets)
+	return out.Bytes(), err
 }
 
 type composite struct {

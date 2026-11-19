@@ -108,6 +108,8 @@ export type ConnectionStatus = {
   error?: string;
   details?: { blocked?: number; changes?: string[]; pin?: Json };
 };
+// The newer version a followed catalog can move to, by the SHA-256 it is at now.
+export type CatalogUpdate = { pin?: string; url?: string; error?: string };
 export type View = {
   generation: number;
   revision: number;
@@ -205,6 +207,7 @@ export type OwnerApi = {
     id: string,
     signal?: AbortSignal,
   ): Promise<RequestRecord>;
+  catalogUpdates(signal?: AbortSignal): Promise<Record<string, CatalogUpdate>>;
   unlock(generation?: number, signal?: AbortSignal): Promise<View>;
   onboard(
     view: View,
@@ -596,6 +599,7 @@ export function ownerApi(
         `/audit/${encodeURIComponent(segment)}/${encodeURIComponent(id)}`,
         signal,
       ),
+    catalogUpdates: (signal) => get("/catalogs/updates", signal),
     unlock,
     async onboard(view, choices, signal) {
       if (onboarded(view)) return view;
