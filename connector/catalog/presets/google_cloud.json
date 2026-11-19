@@ -6,8 +6,7 @@
       {"key": "credentials", "label": "Service account key or authorized user credentials (JSON)", "paths": [], "secret": true, "multiline": true},
       {"key": "token", "label": "Google Cloud credentials", "credential": true, "secret": true, "compose": {"google": "{credentials}"}}
     ],
-    "connection": {"http": {"slots": [{"value": "token", "origin": "https://*.googleapis.com", "header": "Authorization", "prefix": "Bearer "}]}},
-    "defaults": {"contents": "team", "sends": "anyone", "strangers": true}
+    "connection": {"http": {"slots": [{"value": "token", "origin": "https://*.googleapis.com", "header": "Authorization", "prefix": "Bearer "}]}}
   },
   "fragments": {
     "bigquery": "google_big_query",

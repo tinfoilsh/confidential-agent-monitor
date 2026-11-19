@@ -9,7 +9,6 @@
     "connection": {"mcp": {"url": "https://netlify-mcp.netlify.app/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://netlify-mcp.netlify.app/mcp"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

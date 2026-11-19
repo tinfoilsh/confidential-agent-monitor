@@ -10,7 +10,6 @@
     "fields": [
       {"key": "url", "label": "Server URL", "default": "https://mcp.make.com/v2", "help": "With a Make API key, use your organization's zone instead, such as https://eu2.make.com/mcp/v2.", "path": ["mcp", "url"]},
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

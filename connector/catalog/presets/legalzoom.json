@@ -9,7 +9,6 @@
     "connection": {"mcp": {"url": "https://www.legalzoom.com/mcp/claude/v2"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://www.legalzoom.com/mcp/claude/v2"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

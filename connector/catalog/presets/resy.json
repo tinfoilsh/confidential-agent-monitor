@@ -9,7 +9,6 @@
     "connection": {"mcp": {"url": "https://apigw.americanexpress.com/dining/v1/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://apigw.americanexpress.com/dining/v1/mcp"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

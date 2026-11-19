@@ -16,7 +16,6 @@
     "connection": {"mcp": {"url": "https://mcp.workable.com/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.workable.com/mcp"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

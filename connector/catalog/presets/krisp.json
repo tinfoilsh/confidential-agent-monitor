@@ -9,7 +9,6 @@
     "connection": {"mcp": {"url": "https://mcp.krisp.ai/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.krisp.ai/mcp"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

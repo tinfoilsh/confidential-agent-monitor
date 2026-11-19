@@ -18,8 +18,7 @@
     "connection": {"mcp": {"url": "https://mcp.razorpay.com/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.razorpay.com/mcp"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   },
   "mcp": {"token": {"header": "Authorization", "prefix": "Basic "}}
 }

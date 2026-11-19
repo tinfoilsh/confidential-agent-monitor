@@ -63,7 +63,6 @@
     "connection": {"mcp": {"url": "https://mcp.vercel.com"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.vercel.com"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

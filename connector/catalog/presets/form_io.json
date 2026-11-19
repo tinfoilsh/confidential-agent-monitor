@@ -56,8 +56,7 @@
       "teams.write": {"title": "Create and edit"},
       "tokens": {"title": "Download tokens"},
       "tokens.read": {"title": "Read"}
-    },
-    "defaults": {"contents": "team", "sends": "anyone", "strangers": true}
+    }
   },
   "http": {
     "sensitive_query": ["token"],

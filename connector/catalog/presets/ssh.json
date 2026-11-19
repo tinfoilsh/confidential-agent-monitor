@@ -50,7 +50,6 @@
         "credential": true,
         "secret": true
       }
-    ],
-    "defaults": { "contents": "me", "sends": "me", "strangers": true }
+    ]
   }
 }

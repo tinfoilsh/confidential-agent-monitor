@@ -9,7 +9,6 @@
     "connection": {"mcp": {"url": "https://search-mcp.parallel.ai/mcp"}},
     "fields": [
       {"key": "token", "label": "API key", "credential": true, "secret": true, "oauth": {"resource": "https://search-mcp.parallel.ai/mcp"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

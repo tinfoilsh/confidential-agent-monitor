@@ -15,7 +15,6 @@
     "connection": {"mcp": {"url": "https://mcp.miro.com/"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.miro.com/"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

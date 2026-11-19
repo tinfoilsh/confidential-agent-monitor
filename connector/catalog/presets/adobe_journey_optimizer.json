@@ -9,7 +9,6 @@
     "connection": {"mcp": {"url": "https://ajo-mcp.adobe.io/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://ajo-mcp.adobe.io/mcp"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

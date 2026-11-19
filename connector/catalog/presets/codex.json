@@ -17,8 +17,7 @@
           "oidc": {"issuer": "https://auth.openai.com", "jwks_url": "https://auth.openai.com/.well-known/jwks.json"}
         }}
     ],
-    "actions": {"models.read": {"title": "List models"}, "responses.connect": {"effects": ["session"], "title": "Open response WebSockets"}, "responses.generate": {"title": "Generate responses"}},
-    "defaults": {"contents": "team", "sends": "anyone", "strangers": true}
+    "actions": {"models.read": {"title": "List models"}, "responses.connect": {"effects": ["session"], "title": "Open response WebSockets"}, "responses.generate": {"title": "Generate responses"}}
   },
   "http": {
     "operations": {

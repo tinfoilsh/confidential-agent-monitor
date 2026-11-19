@@ -9,7 +9,6 @@
     "connection": {"mcp": {"url": "https://mcp.gocardless.com"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.gocardless.com"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

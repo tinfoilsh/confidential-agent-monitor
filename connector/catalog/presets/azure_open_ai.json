@@ -432,11 +432,6 @@
         ]
       }
     },
-    "defaults": {
-      "contents": "team",
-      "sends": "anyone",
-      "strangers": true
-    },
     "fields": [
       {
         "hint": "Foundry resources can also use https://\u003cresource\u003e.services.ai.azure.com or https://\u003cresource\u003e.cognitiveservices.azure.com.",

@@ -9,7 +9,6 @@
     "connection": {"mcp": {"url": "https://api.contentsquare.com/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://api.contentsquare.com/mcp"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

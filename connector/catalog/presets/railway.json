@@ -19,7 +19,6 @@
     "connection": {"mcp": {"url": "https://mcp.railway.com"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.railway.com"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

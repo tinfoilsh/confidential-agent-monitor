@@ -9,7 +9,6 @@
     "connection": {"mcp": {"url": "https://mcp.adobeaemcloud.com/adobe/mcp/aem"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.adobeaemcloud.com/adobe/mcp/aem", "loopback": true}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

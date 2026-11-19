@@ -1655,11 +1655,6 @@
         ]
       }
     },
-    "defaults": {
-      "contents": "team",
-      "sends": "anyone",
-      "strangers": true
-    },
     "fields": [
       {
         "hint": "For a scoped API token, use https://api.atlassian.com/ex/confluence/\u003ccloud ID\u003e. Your site's /_edge/tenant_info page shows the cloud ID.",

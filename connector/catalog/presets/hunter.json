@@ -9,8 +9,7 @@
     "connection": {"mcp": {"url": "https://mcp.hunter.io/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.hunter.io/mcp"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   },
   "mcp": {"token": {"header": "X-API-Key"}}
 }

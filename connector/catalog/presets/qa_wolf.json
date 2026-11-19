@@ -10,7 +10,6 @@
     "connection": {"mcp": {"url": "https://app.qawolf.com/api/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://app.qawolf.com/api/mcp"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

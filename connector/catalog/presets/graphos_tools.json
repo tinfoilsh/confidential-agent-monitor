@@ -9,8 +9,7 @@
     "connection": {"mcp": {"url": "https://mcp.apollographql.com"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.apollographql.com"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   },
   "mcp": {"token": {"header": "x-api-key"}}
 }

@@ -9,7 +9,6 @@
     "connection": {"mcp": {"url": "https://estuary.mcp.kapa.ai"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://estuary.mcp.kapa.ai"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

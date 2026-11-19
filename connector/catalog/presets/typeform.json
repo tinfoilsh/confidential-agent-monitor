@@ -27,7 +27,6 @@
     "fields": [
       {"key": "url", "label": "Server URL", "default": "https://api.typeform.com/mcp", "hint": "Use https://api.eu.typeform.com/mcp or https://api.typeform.eu/mcp for accounts hosted in the EU.", "path": ["mcp", "url"]},
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}", "loopback": true}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

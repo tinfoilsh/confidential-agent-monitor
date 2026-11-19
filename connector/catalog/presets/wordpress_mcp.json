@@ -10,7 +10,6 @@
     "fields": [
       {"key": "url", "label": "Server URL", "default": "https://{site}/wp-json/mosmcp/v1/mcp", "path": ["mcp", "url"]},
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "{url}"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

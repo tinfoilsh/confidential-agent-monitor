@@ -22,7 +22,6 @@
     "connection": {"mcp": {"url": "https://mcp.tickettailor.ai/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.tickettailor.ai/mcp"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

@@ -9,7 +9,6 @@
     "connection": {"mcp": {"url": "https://mcp.process.st/"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.process.st/"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

@@ -9,7 +9,6 @@
     "connection": {"mcp": {"url": "https://mcp.otter.ai/mcp"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.otter.ai/mcp"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

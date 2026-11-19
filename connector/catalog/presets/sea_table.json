@@ -388,11 +388,6 @@
         ]
       }
     },
-    "defaults": {
-      "contents": "team",
-      "sends": "anyone",
-      "strangers": true
-    },
     "fields": [
       {
         "default": "https://cloud.seatable.io",

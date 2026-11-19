@@ -34,7 +34,6 @@
         "secret": true,
         "credential": true
       }
-    ],
-    "defaults": { "contents": "me", "sends": "me", "strangers": true }
+    ]
   }
 }

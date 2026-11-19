@@ -11812,11 +11812,6 @@
         ]
       }
     },
-    "defaults": {
-      "contents": "team",
-      "sends": "anyone",
-      "strangers": true
-    },
     "fields": [
       {
         "default": "https://us.posthog.com",

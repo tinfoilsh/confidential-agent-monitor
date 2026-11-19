@@ -434,11 +434,6 @@
         ]
       }
     },
-    "defaults": {
-      "contents": "team",
-      "sends": "anyone",
-      "strangers": true
-    },
     "fields": [
       {
         "default": "https://api.gong.io",

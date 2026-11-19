@@ -26,7 +26,6 @@
     "connection": {"mcp": {"url": "https://mcp.sanity.io"}},
     "fields": [
       {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.sanity.io"}}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   }
 }

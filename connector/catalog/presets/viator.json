@@ -7,7 +7,6 @@
       "use": {"title": "Use tools that change things", "effects": ["write"]}
     },
     "connection": {"mcp": {"url": "https://exp-app-mcp.prod.ep.viator.com/mcp"}},
-    "fields": [],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    "fields": []
   }
 }

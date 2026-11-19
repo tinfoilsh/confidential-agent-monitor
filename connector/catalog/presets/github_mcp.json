@@ -26,8 +26,7 @@
         "secret": true
       },
       {"key": "private", "label": "Private orgs and repos", "hint": "owner/* or owner/repo", "list": true, "path": ["policy_options", "private"]}
-    ],
-    "defaults": {"contents": "team", "sends": "me", "strangers": true}
+    ]
   },
   "mcp": {
     "scope": {

@@ -975,11 +975,6 @@
         ]
       }
     },
-    "defaults": {
-      "contents": "team",
-      "sends": "anyone",
-      "strangers": true
-    },
     "fields": [
       {
         "hint": "https://\u003cdc\u003e.api.mailchimp.com, where \u003cdc\u003e is the part after the dash in your API key, such as us21.",
