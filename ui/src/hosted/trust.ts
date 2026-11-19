@@ -39,6 +39,7 @@ const PRIVATE_REGISTRY =
 const CONFIG_NAME = /^\/([^/]+\/[^/]+)\/([^/]+)$/;
 // The measured settings the controlplane renders only into a perimeterless sandbox.
 const PERIMETERLESS_INBOUND_PORTS = [22];
+// Perimeterless sandboxes that have not been updated still measure this TLS mode.
 const PERIMETERLESS_TLS_MODE = "cert-proxy";
 export const OWNER_SOCKET = "/owner/ws";
 
@@ -214,7 +215,6 @@ export const sandboxDigest = (
   const expected = strictYAML(template) as Record<string, any>;
   if (expect.mode === "perimeterless") {
     expected["cvm-network"] = { "inbound-ports": PERIMETERLESS_INBOUND_PORTS };
-    expected.shim["tls-mode"] = PERIMETERLESS_TLS_MODE;
   }
   // Sandbox releases without the owner socket are still running; their shim.paths lacks it.
   const withoutSocket = JSON.stringify(
@@ -231,9 +231,11 @@ export const sandboxDigest = (
     },
     expect.size,
     (path, value) =>
-      expect.mode === "perimeter" &&
-      path.join(".") === "shim.paths" &&
-      JSON.stringify(value) === withoutSocket,
+      expect.mode === "perimeter"
+        ? path.join(".") === "shim.paths" &&
+          JSON.stringify(value) === withoutSocket
+        : path.join(".") === "shim.tls-mode" &&
+          value === PERIMETERLESS_TLS_MODE,
   );
 };
 

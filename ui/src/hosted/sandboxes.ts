@@ -1,6 +1,6 @@
 import { ed25519 } from "@noble/curves/ed25519.js";
 import { Verifier } from "@tinfoilsh/verifier";
-import { EnclaveHTTPClient, type Fetch } from "tinfoil";
+import { EnclaveHTTPClient } from "tinfoil";
 import type { ShellOpen, ShellOpener } from "../owner";
 import {
   openChannel,
@@ -33,7 +33,9 @@ import {
 } from "./trust";
 
 const PROTOCOL = "sandbox-owner-v1";
+const OWNER_SUBPROTOCOL = "tinfoil-owner-v1";
 const ATTESTATION = "/.well-known/tinfoil-attestation";
+const OWNER_ATTESTATION = "/owner/attestation";
 const REGISTRY_ACCOUNT = "/api/config-registry/v2/account";
 const VOLUMES = "/api/volumes";
 const HOST = /^[a-z0-9.-]+$/;
@@ -49,7 +51,7 @@ type RelayReply = { status: number; body: string };
 type Route = {
   mode: SandboxMode;
   registry: string;
-  attestationFetch?: Fetch;
+  attest: (nonce: string, signal?: AbortSignal) => Promise<Response>;
   open: (session: Session, signal?: AbortSignal) => Promise<OwnerChannel>;
   refresh?: () => Promise<unknown>;
 };
@@ -69,16 +71,12 @@ const agentKey = (resource: MKResource) =>
 const viaPerimeter = (monitor: OpenedMonitor, instance_id: string): Route => ({
   mode: "perimeter",
   registry: monitor.registry,
-  attestationFetch: async (input, init) => {
-    const url = new URL(String(input));
-    const nonce = url.searchParams.get("nonce") ?? "";
-    if (url.pathname !== ATTESTATION || !/^[0-9a-f]{64}$/.test(nonce))
-      throw new Error("Refused bunker attestation request.");
+  attest: async (nonce, signal) => {
     const reply = (await monitor.client.call(
       "POST",
       "/sandboxes/relay",
       { instance_id, nonce },
-      init?.signal ?? undefined,
+      signal,
     )) as RelayReply;
     return new Response(new Uint8Array(unb64u(reply.body)), {
       status: reply.status,
@@ -115,7 +113,13 @@ export async function sandboxClient(
   signal.throwIfAborted();
   const secure = await EnclaveHTTPClient.create(row.domain, target.reference, {
     verifier: await Verifier.create({ configRegistryIDs: [target.registry] }),
-    attestationFetch: route.attestationFetch,
+    attestationFetch: async (input, init) => {
+      const url = new URL(String(input));
+      const nonce = url.searchParams.get("nonce") ?? "";
+      if (url.pathname !== ATTESTATION || !/^[0-9a-f]{64}$/.test(nonce))
+        throw new Error("Refused bunker attestation request.");
+      return route.attest(nonce, init?.signal ?? undefined);
+    },
     signal,
   });
   const connect = async (hello: object, signal?: AbortSignal) => {
@@ -338,14 +342,21 @@ export async function openBunker(
     true,
   ))!;
   const account = (await scope.api(REGISTRY_ACCOUNT)) as { scope: string };
+  const container = `${keys.TARGETS.api_origin}/api/containers/${row.id}`;
   const route: Route = {
     mode: "perimeterless",
     registry: account.scope,
-    open: (session, at) =>
+    attest: async (nonce, at) =>
+      fetch(`${container}${OWNER_ATTESTATION}?nonce=${nonce}`, {
+        headers: { Authorization: `Bearer ${await scope.token()}` },
+        signal: at,
+      }),
+    open: async (session, at) =>
       openChannel(
-        `wss://${row.domain}${OWNER_SOCKET}`,
+        `${container.replace("https:", "wss:")}${OWNER_SOCKET}`,
         [session],
         at ? AbortSignal.any([signal, at]) : signal,
+        [OWNER_SUBPROTOCOL, `bearer.${await scope.token()}`],
       ),
   };
   const sandbox = await sandboxClient(

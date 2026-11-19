@@ -41,9 +41,10 @@ export async function openChannel(
   url: string,
   sessions: Session[],
   signal?: AbortSignal,
+  protocols?: string[],
 ): Promise<OwnerChannel> {
   signal?.throwIfAborted();
-  const socket = new WebSocket(url);
+  const socket = new WebSocket(url, protocols);
   socket.binaryType = "arraybuffer";
   signal?.addEventListener("abort", () => socket.close(), { once: true });
   let reason = "The owner connection closed.",

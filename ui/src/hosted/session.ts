@@ -91,13 +91,12 @@ export function createSession(clerk: Clerk) {
   let inflight: { scope: AbortController; done: Promise<void> } | undefined;
   let lastRead = 0;
 
-  async function request(
-    path: string,
+  async function bearer(
     who: { user?: string; account: string },
-    init: Parameters<keys.Api>[1] = {},
-  ): Promise<unknown> {
+    signal?: AbortSignal,
+  ) {
     const token = await clerk.session?.getToken();
-    init.signal?.throwIfAborted();
+    signal?.throwIfAborted();
     // The token must still belong to the user and account the request was made for.
     if (
       !token ||
@@ -107,6 +106,14 @@ export function createSession(clerk: Clerk) {
       throw new keys.ApiError(401, {
         error: "Your account changed. Try again.",
       });
+    return token;
+  }
+  async function request(
+    path: string,
+    who: { user?: string; account: string },
+    init: Parameters<keys.Api>[1] = {},
+  ): Promise<unknown> {
+    const token = await bearer(who, init.signal);
     const response = await fetch(keys.TARGETS.api_origin + path, {
       method: init.method ?? "GET",
       signal: init.signal,
@@ -264,6 +271,7 @@ export function createSession(clerk: Clerk) {
   // sign-out, starts no key action; storage refuses the writes of any other.
   function bind() {
     const current = signingOut || ended ? fenced : scope;
+    const who = { user: user()?.id, account: account() };
     const live = () => current === scope && !current.signal.aborted;
     const gone = () => new Error("Your account changed. Start again.");
     return {
@@ -271,6 +279,7 @@ export function createSession(clerk: Clerk) {
       fence,
       account: account(),
       api: scoped(current),
+      token: () => bearer(who, current.signal),
       signal: current.signal,
       live,
       unlocked: () => (live() ? unlocked() : undefined),
