@@ -45,12 +45,16 @@ const (
 var (
 	methods         = []string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions}
 	methodOverrides = []string{"X-Http-Method-Override", "X-Http-Method", "X-Method-Override"}
+	jsonMediaTypes  = []string{"application/json", "text/json", "application/x-amz-json-1.0", "application/x-amz-json-1.1"}
+
+	errNoncanonicalPath = errors.New("the path is not canonical")
 )
 
 type Setup struct {
 	Hosts         []string
 	Preset        *Preset
 	title, origin string
+	base          string
 	slots         Slots
 }
 
@@ -212,9 +216,13 @@ func (request *Request) capture(h *Handler, r *http.Request) error {
 	if upgrade && layer.BodyKind != bodyNone {
 		return errors.New("WebSocket handshakes cannot carry a body")
 	}
-	layer.Secrets, request.place, err = h.slots.Bind(r, origin, h.Placeholder)
+	var credentials []string
+	layer.Secrets, credentials, request.place, err = h.slots.Bind(r, origin, h.Placeholder)
 	if err != nil {
 		return err
+	}
+	for _, key := range credentials {
+		delete(query, key)
 	}
 	request.answer = h.slots.Answer(r, origin, layer.Form, h.Placeholder)
 	for name, values := range r.Header {
@@ -287,12 +295,11 @@ func origin(scheme, host string, port uint32) string {
 
 func canonicalPath(u *url.URL) error {
 	if !strings.HasPrefix(u.Path, "/") || !utf8.ValidString(u.Path) || strings.ContainsAny(u.Path, "\\%\x00") {
-		return errors.New("the path is not canonical")
+		return errNoncanonicalPath
 	}
-	segments := strings.Split(u.Path[1:], "/")
-	for i, segment := range segments {
-		if segment == "." || segment == ".." || (segment == "" && i < len(segments)-1) {
-			return errors.New("the path is not canonical")
+	for _, segment := range strings.Split(u.Path[1:], "/") {
+		if segment == "." || segment == ".." {
+			return errNoncanonicalPath
 		}
 	}
 	return nil
@@ -339,7 +346,7 @@ func inspect(r *http.Request, layer *HTTPFacts, limit int64) error {
 		return nil
 	}
 	switch {
-	case mediaType == "application/json" || strings.HasSuffix(mediaType, "+json"):
+	case slices.Contains(jsonMediaTypes, mediaType) || strings.HasSuffix(mediaType, "+json"):
 		if layer.Body, err = decodeJSON(body); err == nil {
 			layer.BodyKind = BodyJSON
 		}

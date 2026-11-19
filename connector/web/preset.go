@@ -61,6 +61,9 @@ func (r *Request) describe(config *Setup) (facts.Observation, error) {
 	if p := config.Preset; p != nil {
 		return p.Match(r, config, f)
 	}
+	if strings.Contains(h.Path, "//") {
+		return f, errNoncanonicalPath
+	}
 	if h.WebSocket {
 		return f, nil
 	}
@@ -78,6 +81,8 @@ type Preset struct {
 	Origins        map[string][]string  `json:"origins,omitempty"`
 	Slots          bool                 `json:"slots,omitempty"`
 	SensitiveQuery []string             `json:"sensitive_query,omitempty"`
+	FormatSuffixes []string             `json:"format_suffixes,omitempty"`
+	TrailingSlash  bool                 `json:"trailing_slash,omitempty"`
 	routes         map[routeKey]*routeNode
 	hosts          map[string][][]pathPart
 }
@@ -96,6 +101,9 @@ func (p *Preset) validate() error {
 			return errors.New("sensitive query names must be nonempty and unique")
 		}
 	}
+	if slices.ContainsFunc(p.FormatSuffixes, func(suffix string) bool { return len(suffix) < 2 || suffix[0] != '.' || strings.Contains(suffix, "/") }) {
+		return errors.New("format suffixes must start with a dot and contain no slash")
+	}
 	for id, o := range p.Operations {
 		if id == "" || o.Action == "" {
 			return fmt.Errorf("invalid operation %q", id)
@@ -110,6 +118,9 @@ func (p *Preset) validate() error {
 			if o.Query[key] != nil {
 				return fmt.Errorf("operation %s cannot match a literal sensitive query value", id)
 			}
+		}
+		if len(o.Present) > 0 && o.Body != BodyJSON {
+			return fmt.Errorf("operation %s needs a json body to require present fields", id)
 		}
 		if o.WebSocket && (o.Method != "GET" || !slices.Contains([]string{"", bodyNone, BodyJSON}, o.Body)) {
 			return fmt.Errorf("WebSocket operation %s needs GET and a none or json body", id)
@@ -146,6 +157,7 @@ type Operation struct {
 	Query        map[string]any      `json:"query,omitempty"`
 	Headers      map[string]any      `json:"headers,omitempty"`
 	Fields       map[string]any      `json:"fields,omitempty"`
+	Present      []string            `json:"present,omitempty"`
 	Params       []string            `json:"params,omitempty"`
 	OpenParams   bool                `json:"open_params,omitempty"`
 	Body         string              `json:"body,omitempty"`
@@ -168,9 +180,11 @@ type Selector struct {
 	facts.Selector
 }
 
+var keyPlaceholder = regexp.MustCompile(`\{[^{}]+\}`)
+
 var selectorSources = map[string]struct{ json, optional bool }{
 	"path": {}, "query": {optional: true}, "form": {optional: true}, "body": {json: true, optional: true},
-	"header_json": {json: true}, "argument": {json: true, optional: true}, "http": {json: true}, "host": {},
+	"header_json": {json: true, optional: true}, "argument": {json: true, optional: true}, "http": {json: true}, "host": {},
 }
 
 type selection struct {
@@ -203,7 +217,7 @@ func (compiled *compiledOperation) matches(r *Request, headers map[string][]stri
 	}
 
 	for k := range h.Query {
-		if _, ok := o.Query[k]; !ok && !o.OpenParams && !compiled.params[k] {
+		if _, ok := o.Query[k]; !ok && !o.OpenParams && !compiled.params[k] && !slices.ContainsFunc(compiled.keys, func(key *regexp.Regexp) bool { return key.MatchString(k) }) {
 			return false, nil
 		}
 	}
@@ -230,15 +244,20 @@ func (compiled *compiledOperation) matches(r *Request, headers map[string][]stri
 			return false, nil
 		}
 	}
+	for _, at := range o.Present {
+		if _, present := compiled.fields[at](h.Body); !present {
+			return false, nil
+		}
+	}
 	if body == bodyAny {
 		return true, nil
 	}
 	if body == bodyGraphQL {
 		g, spec := r.GraphQL, o.GraphQL
-		if g == nil {
+		if r.gqlErr != nil {
 			return false, fmt.Errorf("the GraphQL document could not be decoded: %w", r.gqlErr)
 		}
-		if h.BodyKind != BodyJSON || g.Kind != spec.Operation || len(g.Fields) == 0 {
+		if g == nil || h.BodyKind != BodyJSON || g.Kind != spec.Operation || len(g.Fields) == 0 {
 			return false, nil
 		}
 		if spec.Field != "" {
@@ -260,7 +279,7 @@ func condition(values map[string][]string, key string, want any) bool {
 
 func (spec Selector) Compile() (facts.Selector, func(any) (any, bool), error) {
 	source, ok := selectorSources[spec.From]
-	if !ok || !spec.Valid() {
+	if !ok || !spec.Valid() || !source.json && slices.Contains([]string{"number", "boolean", "null"}, spec.Type) {
 		return spec.Selector, nil, fmt.Errorf("invalid selector source %q or type %q", spec.From, spec.Type)
 	}
 	var pointer func(any) (any, bool)
@@ -272,6 +291,7 @@ func (spec Selector) Compile() (facts.Selector, func(any) (any, bool), error) {
 	}
 	checked := spec.Selector
 	checked.Optional = checked.Optional && source.optional
+	spec.Header = http.CanonicalHeaderKey(spec.Header)
 	return checked, func(doc any) (any, bool) { return spec.value(doc.(*selection), pointer) }, nil
 }
 
@@ -291,7 +311,7 @@ func (spec Selector) value(r *selection, pointer func(any) (any, bool)) (any, bo
 	case "header_json":
 		value, present := h.HeaderJSON[spec.Header]
 		if !present {
-			return nil, false
+			return invalidSelection{}, h.Headers[spec.Header] != nil
 		}
 		return pointer(value)
 	case "argument":
@@ -312,6 +332,10 @@ func (spec Selector) value(r *selection, pointer func(any) (any, bool)) (any, bo
 			return object, true
 		}
 		v, ok := values[at]
+		if spec.Type == "array" {
+			items, _ := facts.JSON[[]any](v)
+			return items, ok
+		}
 		if len(v) != 1 {
 			return invalidSelection{}, ok
 		}
@@ -370,7 +394,7 @@ func pathCaptures(pattern []pathPart, values []string) (map[string]string, bool)
 		value := values[i]
 		if part.rest {
 			value = strings.Join(values[i:], "/")
-			if value == "" {
+			if value == "" || strings.HasPrefix(value, "/") || strings.Contains(value, "//") {
 				return nil, false
 			}
 		} else {
@@ -387,7 +411,37 @@ func pathCaptures(pattern []pathPart, values []string) (map[string]string, bool)
 			return out, true
 		}
 	}
-	return out, pattern == nil || len(pattern) == len(values)
+	return out, pattern == nil && !strings.Contains(strings.Join(values, "/"), "//") || len(pattern) == len(values)
+}
+
+// capture also tries the spellings the preset opts into, except where they would change a captured value.
+func (p *Preset) capture(pattern []pathPart, parts []string) (map[string]string, bool) {
+	captures, matches := pathCaptures(pattern, parts)
+	if matches || len(pattern) == 0 || pattern[len(pattern)-1].rest {
+		return captures, matches
+	}
+	slashed, stripped := p.spellings(parts)
+	if captures, matches = pathCaptures(pattern, slashed); matches || pattern[len(pattern)-1].name != "" {
+		return captures, matches
+	}
+	return pathCaptures(pattern, stripped)
+}
+
+func (p *Preset) spellings(parts []string) (slashed, stripped []string) {
+	last := len(parts) - 1
+	switch {
+	case !p.TrailingSlash:
+	case parts[last] != "":
+		slashed = append(slices.Clip(parts), "")
+	case last > 1 && parts[last-1] != "":
+		slashed = parts[:last]
+	}
+	for _, suffix := range p.FormatSuffixes {
+		if base, ok := strings.CutSuffix(parts[last], suffix); ok && base != "" {
+			stripped = append(slices.Clone(parts[:last]), base)
+		}
+	}
+	return slashed, stripped
 }
 
 type headerCondition struct {
@@ -401,6 +455,7 @@ type compiledOperation struct {
 	pathPatterns map[string]*regexp.Regexp
 	selectors    []facts.Compiled
 	params       map[string]bool
+	keys         []*regexp.Regexp
 	fields       map[string]func(any) (any, bool)
 	headers      []headerCondition
 }
@@ -467,14 +522,29 @@ func (p *Preset) compile() error {
 		}
 		op := &compiledOperation{operation: o, path: parts, pathPatterns: pathPatterns, selectors: selectors,
 			params: map[string]bool{}, fields: map[string]func(any) (any, bool){}}
+		bound := o.OpenParams
+		for name, s := range o.Scope {
+			bound = bound || s.From == "query" && s.At == "" && (o.Grant == nil || slices.Contains(o.Grant, name))
+		}
 		for _, key := range o.Params {
-			op.params[key] = true
+			if !strings.ContainsAny(key, "{}") {
+				op.params[key] = true
+				continue
+			}
+			pieces := keyPlaceholder.Split(key, -1)
+			if !bound || strings.ContainsAny(strings.Join(pieces, ""), "{}") {
+				return fmt.Errorf("operation %s needs a well-formed query key template %s and a scope binding the whole query", id, key)
+			}
+			for i, piece := range pieces {
+				pieces[i] = regexp.QuoteMeta(piece)
+			}
+			op.keys = append(op.keys, regexp.MustCompile(`\A`+strings.Join(pieces, ".*")+`\z`))
 		}
 		for key, value := range o.Headers {
 			op.headers = append(op.headers, headerCondition{strings.ToLower(key), value})
 		}
 		if o.Body == BodyJSON {
-			for at := range o.Fields {
+			for _, at := range append(slices.Collect(maps.Keys(o.Fields)), o.Present...) {
 				op.fields[at], err = facts.CompilePointer(at)
 				if err != nil {
 					return err
@@ -543,9 +613,16 @@ func (p *Preset) Match(r *Request, config *Setup, f facts.Observation) (facts.Ob
 		return f, errors.New("the request is outside this API's address")
 	}
 	parts := strings.Split(h.Path, "/")
+	local := parts
 	origins, methods := []string{h.Origin, "*"}, []string{h.Method, "*"}
-	if config.origin == h.Origin || config.origin == "*" {
-		origins = append(origins, "{origin}")
+	if rest, under := strings.CutPrefix(h.Path, config.base); under && strings.HasPrefix(rest, "/") && (config.origin == h.Origin || config.origin == "*") {
+		origins, local = append(origins, "{origin}"), strings.Split(rest, "/")
+	}
+	path := func(origin string) []string {
+		if origin == "{origin}" {
+			return local
+		}
+		return parts
 	}
 	hosts, labels := map[string]map[string]string{}, strings.Split(strings.ReplaceAll(h.Origin, ".", "/"), "/")
 	for name, templates := range p.hosts {
@@ -565,11 +642,15 @@ func (p *Preset) Match(r *Request, config *Setup, f facts.Observation) (facts.Ob
 	}
 	var candidates []*compiledOperation
 	for _, origin := range origins {
-		for _, method := range methods {
-			candidates = p.routes[routeKey{origin, method}].candidates(parts, candidates)
+		slashed, stripped := p.spellings(path(origin))
+		for _, spelling := range [][]string{path(origin), slashed, stripped} {
+			for _, method := range methods {
+				candidates = p.routes[routeKey{origin, method}].candidates(spelling, candidates)
+			}
 		}
 	}
 	slices.SortFunc(candidates, func(a, b *compiledOperation) int { return strings.Compare(a.operation.ID, b.operation.ID) })
+	candidates = slices.Compact(candidates)
 	headers := map[string][]string{}
 	for key, values := range h.Headers {
 		headers[strings.ToLower(key)] = append(headers[strings.ToLower(key)], values...)
@@ -577,7 +658,7 @@ func (p *Preset) Match(r *Request, config *Setup, f facts.Observation) (facts.Ob
 	var matched *compiledOperation
 	var captures map[string]string
 	for _, candidate := range candidates {
-		caps, matches := pathCaptures(candidate.path, parts)
+		caps, matches := p.capture(candidate.path, path(candidate.operation.Origin))
 		if !matches {
 			continue
 		}
@@ -602,6 +683,9 @@ func (p *Preset) Match(r *Request, config *Setup, f facts.Observation) (facts.Ob
 		}
 	}
 	if matched == nil {
+		if strings.Contains(h.Path, "//") {
+			return f, errNoncanonicalPath
+		}
 		return f, nil
 	}
 	o := matched.operation

@@ -147,6 +147,9 @@ func (s Set) Form(origin, text string, placeholder func(string) string) (name, f
 }
 
 func (s *Slot) validate() error {
+	if u, err := url.Parse(s.Origin); err == nil && u.Host != "" && strings.HasPrefix(u.Path, "/") && strings.HasPrefix(cmp.Or(s.Path, "/"), "/") {
+		s.Origin, s.Path = strings.TrimSuffix(s.Origin, u.Path), strings.TrimSuffix(u.Path, "/")+cmp.Or(s.Path, "/")
+	}
 	if !ValidOrigin(s.Origin) {
 		return fmt.Errorf("slot origin %s must be https://host[:port] in lowercase without the default port", s.Origin)
 	}
@@ -193,13 +196,22 @@ func (s *Slot) validate() error {
 	return nil
 }
 
+// carries reports whether values hold exactly the slot's placeholder; an Authorization scheme is case-insensitive (RFC 7235).
+func (s *Slot) carries(values []string, value string) bool {
+	if len(values) != 1 || len(values[0]) != len(s.Prefix)+len(value) || values[0][len(s.Prefix):] != value {
+		return false
+	}
+	scheme := values[0][:len(s.Prefix)]
+	return scheme == s.Prefix || s.Header == authorization && strings.EqualFold(scheme, s.Prefix)
+}
+
 func ValidOrigin(origin string) bool {
 	u, err := url.Parse(origin)
 	return err == nil && u.Scheme == "https" && u.Host != "" && u.User == nil && u.Path == "" && u.RawQuery == "" && u.Fragment == "" &&
 		u.Host == strings.ToLower(u.Host) && u.Port() != "443" && !strings.HasSuffix(origin, ":")
 }
 
-func (s Set) Bind(r *http.Request, origin string, placeholder func(string) string) ([]string, func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error), error) {
+func (s Set) Bind(r *http.Request, origin string, placeholder func(string) string) ([]string, []string, func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error), error) {
 	header := r.Header.Clone()
 	query := r.URL.Query()
 	segments := strings.Split(r.URL.Path, "/")
@@ -221,7 +233,7 @@ func (s Set) Bind(r *http.Request, origin string, placeholder func(string) strin
 		}
 		want := slot.Prefix + value
 		switch {
-		case slot.Header != "" && slices.Equal(header.Values(slot.Header), []string{want}):
+		case slot.Header != "" && slot.carries(header.Values(slot.Header), value):
 			header.Del(slot.Header)
 		case slot.Query != "" && slices.Equal(query[slot.Query], []string{want}):
 			delete(query, slot.Query)
@@ -233,11 +245,11 @@ func (s Set) Bind(r *http.Request, origin string, placeholder func(string) strin
 			pass = ""
 		case slot.SigV4 != nil && len(header.Values(authorization)) == 1 && strings.HasPrefix(header.Get(authorization), sigV4Credential+want+"/"):
 			if err := streaming(header); err != nil {
-				return nil, nil, err
+				return nil, nil, nil, err
 			}
 			sig, err := slot.SigV4.scoped(strings.TrimPrefix(header.Get(authorization), sigV4Credential+want+"/"))
 			if err != nil {
-				return nil, nil, err
+				return nil, nil, nil, err
 			}
 			bound := *slot
 			bound.SigV4, slot = sig, &bound
@@ -249,7 +261,7 @@ func (s Set) Bind(r *http.Request, origin string, placeholder func(string) strin
 		used = append(used, slot)
 	}
 	if signed && (header.Get(authorization) != "" || presigned(query)) {
-		return nil, nil, errors.New("this SigV4 origin accepts only the signature its slot places")
+		return nil, nil, nil, errors.New("this SigV4 origin accepts only the signature its slot places")
 	}
 	for _, slot := range s.slots {
 		if !slot.serves(origin) || !under(r.URL.Path, slot.Path) {
@@ -275,9 +287,9 @@ func (s Set) Bind(r *http.Request, origin string, placeholder func(string) strin
 				continue
 			}
 			if strings.Contains(v, value) {
-				return nil, nil, fmt.Errorf("%s has an incorrectly formatted or repeated credential placeholder. Send exactly one value: %q", location, slot.Prefix+value)
+				return nil, nil, nil, fmt.Errorf("%s has an incorrectly formatted or repeated credential placeholder. Send exactly one value: %q", location, slot.Prefix+value)
 			}
-			return nil, nil, fmt.Errorf("%s contains an unrecognized credential placeholder. Expected %q. Update the client's %s credential placeholder to %q, then restart the client", location, slot.Prefix+value, slot.Value, value)
+			return nil, nil, nil, fmt.Errorf("%s contains an unrecognized credential placeholder. Expected %q. Update the client's %s credential placeholder to %q, then restart the client", location, slot.Prefix+value, slot.Value, value)
 		}
 	}
 	fields := map[string]string{"Basic authentication username": user, "Basic authentication password": pass}
@@ -296,19 +308,22 @@ func (s Set) Bind(r *http.Request, origin string, placeholder func(string) strin
 		}
 		for _, name := range s.Names() {
 			if p := placeholder(name); p != "" && strings.Contains(fields[field], p) {
-				return nil, nil, fmt.Errorf("%s: credential %s is not allowed for %s%s", field, name, origin, r.URL.Path)
+				return nil, nil, nil, fmt.Errorf("%s: credential %s is not allowed for %s%s", field, name, origin, r.URL.Path)
 			}
 		}
-		return nil, nil, fmt.Errorf("%s: this identity has no credential with this placeholder for %s", field, origin)
+		return nil, nil, nil, fmt.Errorf("%s: this identity has no credential with this placeholder for %s", field, origin)
 	}
-	var names []string
+	var names, keys []string
 	for _, slot := range used {
 		if r.Header["Upgrade"] != nil && strings.HasPrefix(slot.Header, "Sec-Websocket-") {
-			return nil, nil, errors.New("WebSocket negotiation headers cannot carry credentials")
+			return nil, nil, nil, errors.New("WebSocket negotiation headers cannot carry credentials")
 		}
 		names = append(names, slot.Value)
+		if slot.Query != "" {
+			keys = append(keys, slot.Query)
+		}
 	}
-	return names, func(r *http.Request, value func(context.Context, string) (string, error)) (*http.Request, error) {
+	return names, keys, func(r *http.Request, value func(context.Context, string) (string, error)) (*http.Request, error) {
 		return place(r, used, value, s.MaxSignedBody)
 	}, nil
 }
