@@ -1,0 +1,42 @@
+name: Catalog
+run-name: Publish the catalog from ${{ github.ref_name }}
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - connector/catalog/presets/**
+      - cmd/perimeter/catalogs.go
+
+concurrency:
+  group: catalog
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
+      - name: Publish the catalog
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE: catalog
+        run: |
+          GOWORK=off go -C dev/presets run . catalog ../../connector/catalog/presets > catalog.json
+          pin=$(sha256sum catalog.json | cut -d' ' -f1)
+          if ! grep -q "\"$pin\"" cmd/perimeter/catalogs.go; then
+            echo "::error::cmd/perimeter/catalogs.go does not pin $pin"
+            exit 1
+          fi
+          cp catalog.json "$pin.json"
+          gh release view "$RELEASE" > /dev/null 2>&1 ||
+            gh release create "$RELEASE" --latest=false --title "Tinfoil catalog" --notes "Each catalog version under its SHA-256, and the latest as catalog.json."
+          gh release upload "$RELEASE" "$pin.json" --clobber
+          if [ "$GITHUB_REF_NAME" = main ]; then
+            gh release upload "$RELEASE" catalog.json --clobber
+          fi
