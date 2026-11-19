@@ -66,21 +66,7 @@ func LoadPresets(extra fs.FS) (map[string]*catalog.Preset, map[string]json.RawMe
 			if out[name] != nil {
 				return nil, nil, fmt.Errorf("preset %s.json is already shipped", name)
 			}
-			if source == extra {
-				if defaults[name] = p.Catalog.Defaults; !bytes.HasPrefix(defaults[name], []byte("{")) {
-					err = errors.New("catalog must be an object with defaults")
-				}
-			} else {
-				defaults[name], err = json.Marshal(shippedDefaults(name, p))
-			}
-			if err == nil {
-				for action, a := range p.Catalog.Actions {
-					if a.Effects != nil && !ValidEffects(a.Effects) {
-						err = fmt.Errorf("invalid effects for action %s", action)
-					}
-				}
-			}
-			if err != nil {
+			if defaults[name], err = checkedDefaults(name, p, source != extra); err != nil {
 				return nil, nil, fmt.Errorf("preset %s.json: %w", name, err)
 			}
 			out[name] = p
@@ -90,6 +76,39 @@ func LoadPresets(extra fs.FS) (map[string]*catalog.Preset, map[string]json.RawMe
 		return nil, nil, err
 	}
 	return out, defaults, nil
+}
+
+func checkedDefaults(name string, p *catalog.Preset, shipped bool) (defaults json.RawMessage, err error) {
+	if shipped {
+		defaults, err = json.Marshal(shippedDefaults(name, p))
+	} else if defaults = p.Catalog.Defaults; !bytes.HasPrefix(defaults, []byte("{")) {
+		err = errors.New("catalog must be an object with defaults")
+	}
+	for action, a := range p.Catalog.Actions {
+		if err == nil && a.Effects != nil && !ValidEffects(a.Effects) {
+			err = fmt.Errorf("invalid effects for action %s", action)
+		}
+	}
+	return defaults, err
+}
+
+// A fetched catalog resolves fragments and replacements among its own presets only.
+func AddCatalog(prefix string, loaded, out map[string]*catalog.Preset, defaults map[string]json.RawMessage) error {
+	for name, p := range loaded {
+		if _, err := checkedDefaults(name, p, false); err != nil {
+			return fmt.Errorf("preset %s.json: %w", name, err)
+		}
+	}
+	if err := catalog.Compose(loaded); err != nil {
+		return err
+	}
+	for name, p := range loaded {
+		if p.Catalog.ReplacedBy != "" {
+			p.Catalog.ReplacedBy = prefix + p.Catalog.ReplacedBy
+		}
+		out[prefix+name], defaults[prefix+name] = p, p.Catalog.Defaults
+	}
+	return nil
 }
 
 type OperationSummary struct {

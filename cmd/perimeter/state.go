@@ -173,7 +173,11 @@ func (s *state) unlock(ctx context.Context, key []byte, minimum uint64) (bool, e
 		}
 		source = string(file)
 	}
-	plan, err := s.prepareSettings(ctx, source, everyConnection, nil, authority, signer)
+	lib, err := s.loadLibrary(ctx, sealer, doc.Catalogs)
+	if err != nil {
+		return false, err
+	}
+	plan, err := s.prepareSettings(ctx, lib, source, everyConnection, nil, authority, signer)
 	if err != nil {
 		return false, err
 	}

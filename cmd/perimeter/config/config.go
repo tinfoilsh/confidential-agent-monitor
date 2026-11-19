@@ -289,12 +289,12 @@ func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	return spec, nil
 }
 
-func (c *Config) Edit(source string, changes []tomledit.Change) (edited string, rebuild func(connection string) bool, renamed map[string]string, err error) {
+func (c *Config) Edit(source string, changes []tomledit.Change, presets map[string]*catalog.Preset) (edited string, rebuild func(connection string) bool, renamed map[string]string, err error) {
 	edited, err = tomledit.Edit(source, changes)
 	if err != nil {
 		return "", nil, nil, err
 	}
-	next, err := Load(edited, c.presets)
+	next, err := Load(edited, presets)
 	if err != nil {
 		return "", nil, nil, err
 	}

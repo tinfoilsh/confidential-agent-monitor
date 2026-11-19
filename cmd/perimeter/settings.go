@@ -32,6 +32,7 @@ import (
 
 type settings struct {
 	*config.Config
+	lib         library
 	policy      *config.Program
 	catalog     map[string]config.CatalogEntry
 	catalogID   string
@@ -52,6 +53,7 @@ type settingsPlan struct {
 	source      string
 	credentials format.Secrets
 	renamed     map[string]string
+	catalogs    map[string]format.Catalog
 	updates     []string
 	remove      []string
 }
@@ -63,6 +65,8 @@ type settingsWrite struct {
 	credentials format.Secrets
 	check       func(held) error
 	saved       *savedAnswer
+	lib         *library
+	catalogs    map[string]format.Catalog
 }
 
 func (w settingsWrite) checked(h held) error {
@@ -109,15 +113,19 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	if w.source != nil {
 		source = *w.source
 	}
-	source, rebuild, renamed, err := current.Edit(source, w.changes)
+	lib := current.lib
+	if w.lib != nil {
+		lib = *w.lib
+	}
+	source, rebuild, renamed, err := current.Edit(source, w.changes, lib.presets)
 	if err != nil {
 		return err
 	}
-	plan, err := s.prepareSettings(ctx, source, rebuild, w.credentials, current.authority, current.hostKey)
+	plan, err := s.prepareSettings(ctx, lib, source, rebuild, w.credentials, current.authority, current.hostKey)
 	if err != nil {
 		return err
 	}
-	plan.renamed = renamed
+	plan.renamed, plan.catalogs = renamed, w.catalogs
 
 	s.mu.Lock()
 	if err = w.checked(h); err == nil {
@@ -133,8 +141,8 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	return err
 }
 
-func (s *state) prepareSettings(ctx context.Context, source string, rebuild func(connection string) bool, credentials format.Secrets, authority *certificates.Authority, hostKey ssh.Signer) (*settingsPlan, error) {
-	cfg, err := config.Load(source, presets)
+func (s *state) prepareSettings(ctx context.Context, lib library, source string, rebuild func(connection string) bool, credentials format.Secrets, authority *certificates.Authority, hostKey ssh.Signer) (*settingsPlan, error) {
+	cfg, err := config.Load(source, lib.presets)
 	if err != nil {
 		return nil, err
 	}
@@ -154,7 +162,7 @@ func (s *state) prepareSettings(ctx context.Context, source string, rebuild func
 		return nil, err
 	}
 
-	next := &settings{Config: cfg, policy: program, authority: authority, hostKey: hostKey, publicScope: map[string][]string{}, connections: map[string]*installed{}}
+	next := &settings{Config: cfg, lib: lib, policy: program, authority: authority, hostKey: hostKey, publicScope: map[string][]string{}, connections: map[string]*installed{}}
 	operations := map[string]map[string]config.OperationSummary{}
 	plan := &settingsPlan{next: next, source: source, credentials: credentials}
 	var current map[string]*installed
@@ -201,7 +209,7 @@ func (s *state) prepareSettings(ctx context.Context, source string, rebuild func
 		plan.updates = append(plan.updates, name)
 	}
 
-	if next.catalog, next.catalogID, err = config.CatalogEntries(cfg, presetDefaults, operations); err != nil {
+	if next.catalog, next.catalogID, err = config.CatalogEntries(cfg, lib.defaults, operations); err != nil {
 		return nil, err
 	}
 	for name := range credentials {
@@ -221,6 +229,9 @@ func (s held) commitSettings(ctx context.Context, plan *settingsPlan, saved *sav
 	current := s.doc
 	next := current
 	next.Policy = plan.source
+	if plan.catalogs != nil {
+		next.Catalogs = plan.catalogs
+	}
 	next.Credentials = next.Credentials.Clone()
 	for to, from := range plan.renamed {
 		if values, ok := current.Credentials[from]; ok {
@@ -323,11 +334,11 @@ func sourceDiff(a, b string) string {
 }
 
 func (s *state) previewPolicy(ctx context.Context, base format.Document, before *settings, source string) (*policyDiff, error) {
-	source, _, _, err := before.Edit(source, nil)
+	source, _, _, err := before.Edit(source, nil, before.lib.presets)
 	if err != nil {
 		return nil, err
 	}
-	plan, err := s.prepareSettings(ctx, source, everyConnection, nil, before.authority, before.hostKey)
+	plan, err := s.prepareSettings(ctx, before.lib, source, everyConnection, nil, before.authority, before.hostKey)
 	if err != nil {
 		return nil, err
 	}

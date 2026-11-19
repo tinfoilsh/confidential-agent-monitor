@@ -29,6 +29,11 @@ type Label struct {
 	Because  map[string]string `json:"because,omitempty"`
 }
 
+type Catalog struct {
+	URL string `json:"url"`
+	Pin string `json:"pin"`
+}
+
 type Document struct {
 	Version     int                        `json:"version"`
 	Generation  uint64                     `json:"generation"`
@@ -39,6 +44,7 @@ type Document struct {
 	Credentials Secrets                    `json:"credentials,omitempty"`
 	Enrolled    map[string]bool            `json:"enrolled,omitempty"`
 	Pending     map[string]json.RawMessage `json:"pending,omitempty"`
+	Catalogs    map[string]Catalog         `json:"catalogs,omitempty"`
 }
 
 func DecodeDocument(plain []byte, v1Presets map[string]bool) (Document, error) {
