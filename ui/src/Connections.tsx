@@ -616,6 +616,18 @@ function ApiFields(props: {
     </>
   );
 }
+function LocalSignIn() {
+  const m = useMonitor();
+  return (
+    <div class="connection-warning" role="note">
+      <CopyField
+        label={`Sign-in unavailable on ${m.options.product?.name}. Open locally to sign in.`}
+        value={`tinfoil perimeter open ${m.options.perimeter}`}
+        copyLabel="Copy command"
+      />
+    </div>
+  );
+}
 export function AddConnection(props: { preset: string }) {
   const m = useMonitor();
   const preset = m.view()!.presets[props.preset];
@@ -690,13 +702,7 @@ export function AddConnection(props: { preset: string }) {
       >
         <ConnectionWarning warning={preset?.warning} />
         <Show when={fields.some((f) => f.oauth && !tokens[f.key] && local(f))}>
-          <div class="connection-warning" role="note">
-            <CopyField
-              label={`Sign-in unavailable on ${m.options.product?.name}. Open locally to sign in.`}
-              value={`tinfoil perimeter open ${m.options.perimeter}`}
-              copyLabel="Copy command"
-            />
-          </div>
+          <LocalSignIn />
         </Show>
         <label>
           Name
@@ -936,6 +942,16 @@ function ConnectionForm(props: { name: string; setup?: JSX.Element }) {
                   const status = () =>
                     field().status +
                     (field().account ? ` · ${field().account}` : "");
+                  const local = () =>
+                    !!m.options.product &&
+                    field().signIn &&
+                    owner.loopbackSignIn(field(), {
+                      ...Object.fromEntries(
+                        clientFields.map((c) => [c.key, ""]),
+                      ),
+                      ...values,
+                      ...clients,
+                    });
                   const signIn = () => (
                     <Show when={field().signIn}>
                       <button
@@ -1021,6 +1037,9 @@ function ConnectionForm(props: { name: string; setup?: JSX.Element }) {
                           <p class="muted field-help">{status()}</p>
                           <div class="form-actions">{signIn()}</div>
                         </div>
+                      </Show>
+                      <Show when={local()}>
+                        <LocalSignIn />
                       </Show>
                     </div>
                   );
