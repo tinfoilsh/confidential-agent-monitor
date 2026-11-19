@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -19,7 +18,6 @@ const (
 	cacheDir    = ".cache"
 	shippedDir  = "../../connector/catalog/presets"
 
-	indexName     = "index"
 	catalogFormat = 1
 )
 
@@ -38,30 +36,24 @@ func load[T any](path string) (T, error) {
 	return v, err
 }
 
-// A Perimeter fetches a directory's presets by the digests in its index.json and pins that file.
-func index(dir string) error {
+// A catalog source serves this one file; a Perimeter pins its SHA-256.
+func printCatalog(dir string) error {
 	files, err := filepath.Glob(filepath.Join(dir, "*.json"))
-	presets := map[string]string{}
+	presets := map[string]json.RawMessage{}
 	for _, file := range files {
-		name := strings.TrimSuffix(filepath.Base(file), ".json")
-		if name == indexName {
-			continue
-		}
-		var raw []byte
-		if raw, err = os.ReadFile(file); err != nil {
+		if presets[strings.TrimSuffix(filepath.Base(file), ".json")], err = os.ReadFile(file); err != nil {
 			return err
 		}
-		presets[name] = fmt.Sprintf("%x", sha256.Sum256(raw))
 	}
 	if err != nil {
 		return err
 	}
-	return writeJSON(filepath.Join(dir, indexName+".json"), map[string]any{"format": catalogFormat, "presets": presets})
+	return json.NewEncoder(os.Stdout).Encode(map[string]any{"format": catalogFormat, "presets": presets})
 }
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: presets update|fetch|group|generate|check|accept [service...] | index <directory>; group regroups shipped operations; accept writes a checked candidate over its shipped preset; update --all refreshes every source; check --reviewed requires complete review")
+		fmt.Fprintln(os.Stderr, "usage: presets update|fetch|group|generate|check|accept [service...] | catalog <directory>; group regroups shipped operations; accept writes a checked candidate over its shipped preset; update --all refreshes every source; check --reviewed requires complete review")
 		os.Exit(2)
 	}
 	var err error
@@ -109,12 +101,12 @@ func main() {
 		}
 	case "generate":
 		err = generate(os.Args[2:])
-	case "index":
+	case "catalog":
 		if len(os.Args) != 3 {
-			err = fmt.Errorf("index needs the directory of presets to list")
+			err = fmt.Errorf("catalog needs the directory of presets to print")
 			break
 		}
-		err = index(os.Args[2])
+		err = printCatalog(os.Args[2])
 	case "group":
 		err = groupShipped(os.Args[2:])
 	case "accept":

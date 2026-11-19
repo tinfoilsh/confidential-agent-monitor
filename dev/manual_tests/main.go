@@ -11,7 +11,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/fs"
 	"log"
 	"net"
 	"net/http"
@@ -35,6 +34,8 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 )
 
+const presetsDir = "connector/catalog/presets"
+
 type input struct {
 	Service      string `json:"service"`
 	BotToken     string `json:"bot_token"`
@@ -52,7 +53,7 @@ type liveConnection struct {
 }
 
 func prepare(tlsConfig func(context.Context, string) *tls.Config, transport http.RoundTripper, name, credentialName, secret, placeholder, origin string) (*liveConnection, error) {
-	raw, err := fs.ReadFile(catalog.Shipped, name+".json")
+	raw, err := os.ReadFile(filepath.Join(presetsDir, name+".json"))
 	if err != nil {
 		return nil, err
 	}

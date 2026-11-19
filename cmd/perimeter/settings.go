@@ -65,7 +65,7 @@ type settingsWrite struct {
 	credentials format.Secrets
 	check       func(held) error
 	saved       *savedAnswer
-	lib         *library
+	lib         library
 	catalogs    map[string]format.Catalog
 }
 
@@ -115,9 +115,9 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	}
 	lib := current.lib
 	if w.lib != nil {
-		lib = *w.lib
+		lib = w.lib
 	}
-	source, rebuild, renamed, err := current.Edit(source, w.changes, lib.presets)
+	source, rebuild, renamed, err := current.Edit(source, w.changes, lib)
 	if err != nil {
 		return err
 	}
@@ -142,7 +142,7 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 }
 
 func (s *state) prepareSettings(ctx context.Context, lib library, source string, rebuild func(connection string) bool, credentials format.Secrets, authority *certificates.Authority, hostKey ssh.Signer) (*settingsPlan, error) {
-	cfg, err := config.Load(source, lib.presets)
+	cfg, err := config.Load(source, lib)
 	if err != nil {
 		return nil, err
 	}
@@ -209,7 +209,7 @@ func (s *state) prepareSettings(ctx context.Context, lib library, source string,
 		plan.updates = append(plan.updates, name)
 	}
 
-	if next.catalog, next.catalogID, err = config.CatalogEntries(cfg, lib.defaults, operations); err != nil {
+	if next.catalog, next.catalogID, err = config.CatalogEntries(cfg, operations); err != nil {
 		return nil, err
 	}
 	for name := range credentials {
@@ -334,7 +334,7 @@ func sourceDiff(a, b string) string {
 }
 
 func (s *state) previewPolicy(ctx context.Context, base format.Document, before *settings, source string) (*policyDiff, error) {
-	source, _, _, err := before.Edit(source, nil, before.lib.presets)
+	source, _, _, err := before.Edit(source, nil, before.lib)
 	if err != nil {
 		return nil, err
 	}

@@ -343,7 +343,7 @@ func (s *state) proposal(st *settings, source string, p facts.Principal, target,
 	if _, err := config.ProposalChanges(p, changes, st.capable(current, capabilityPropose)); err != nil {
 		return "", nil, err
 	}
-	candidate, _, _, err := st.Edit(source, changes, st.lib.presets)
+	candidate, _, _, err := st.Edit(source, changes, st.lib)
 	if err == nil && candidate == source {
 		err = errors.New("proposal does not change policy")
 	}

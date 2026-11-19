@@ -1,10 +1,12 @@
-Each shipped preset has a `<name>.json` record. Connections select it with
-`"preset": "<name>"`. Perimeter accepts these shipped definitions and those in the `-presets` directory.
+Each preset has a `<name>.json` record with `catalog.defaults`. Connections select it with
+`"preset": "<name>"`. This directory is Tinfoil's catalog. `GOWORK=off go run . catalog <directory>`
+in `dev/presets` prints a directory's presets as one catalog file. After changing a preset here, set
+`tinfoilCatalogPin` in `cmd/perimeter/catalogs.go` to that file's SHA-256; the Catalog workflow
+publishes it. A new Perimeter starts at the version its build pins, and its owner reviews and pins
+later versions under **Permissions → Catalog**.
 
-An owner can also pin catalog sources under **Permissions → Catalog**. A source is the URL of an
-`index.json` beside its preset files, written by `GOWORK=off go run . index <directory>` in
-`dev/presets`. Its presets are named `<source>/<name>`, need `catalog.defaults`, and resolve
-fragments within the source.
+An owner can pin other catalog sources there too. A source is the URL of such a file. Its presets
+are named `<source>/<name>` and resolve fragments within the source.
 
 For authoring, see [adding protocol presets](../../../dev/presets/README.md#adding-protocol-presets).
 Provider request definitions live in the JSON files; SDK scenarios and coverage

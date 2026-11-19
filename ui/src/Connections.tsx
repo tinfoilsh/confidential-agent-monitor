@@ -488,9 +488,7 @@ function SourceReview(props: {
         <p>
           <strong>{props.found.name}</strong> at{" "}
           <code>{props.found.pin.slice(0, PIN_SHOWN)}</code>. Services:{" "}
-          {props.found.presets} ({props.found.added.length} new,{" "}
-          {props.found.changed.length} changed, {props.found.removed.length}{" "}
-          removed)
+          {props.found.presets}
         </p>
         <For each={Object.entries(props.found.services)}>
           {([service, changes]) => (
@@ -598,7 +596,7 @@ function CatalogSources() {
                   <input
                     type="url"
                     required
-                    placeholder="https://raw.githubusercontent.com/acme/presets/main/index.json"
+                    placeholder="https://raw.githubusercontent.com/acme/presets/main/catalog.json"
                     value={draft.url}
                     onInput={(e) => setDraft("url", e.currentTarget.value)}
                   />
@@ -629,7 +627,7 @@ function CatalogSources() {
         fallback={
           <Show when={!adding()}>
             <Empty title="No sources yet">
-              Add the URL of a source's index.json to list its services in the
+              Add the URL of a source's catalog file to list its services in the
               catalog.
             </Empty>
           </Show>

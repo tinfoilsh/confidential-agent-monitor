@@ -107,13 +107,10 @@ export type ConnectionStatus = {
   details?: { blocked?: number; changes?: string[]; pin?: Json };
 };
 export type CatalogSource = { url: string; pin: string };
-// What pinning a fetched index changes; services holds the changes to each service already set up.
+// What pinning a fetched catalog changes; services holds the changes to each service already set up.
 export type CatalogReview = {
   pin: string;
   presets: number;
-  added: string[];
-  changed: string[];
-  removed: string[];
   services: Record<string, string[]>;
 };
 export type View = {

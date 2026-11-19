@@ -10,11 +10,11 @@ import (
 	"io"
 	"maps"
 	"net/http"
+	"net/netip"
 	"net/url"
 	"regexp"
 	"slices"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
@@ -22,17 +22,20 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/sealedlog"
-	"golang.org/x/sync/errgroup"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 )
 
 const (
-	catalogPrefix     = "catalogs/"
-	catalogFormat     = 1
-	catalogTimeout    = 5 * time.Minute
-	catalogFetchers   = 8
-	maxCatalogIndex   = 1 << 20
-	maxCatalogPreset  = 8 << 20
-	maxCatalogPresets = 4096
+	catalogPrefix   = "catalogs/"
+	catalogFormat   = 1
+	catalogTimeout  = 5 * time.Minute
+	maxCatalogBytes = 64 << 20
+
+	// The Catalog workflow publishes connector/catalog/presets under its SHA-256 and as the latest version.
+	tinfoilCatalog       = "tinfoil"
+	tinfoilCatalogPin    = "be4acddc64188226ab1eb5163ee40071a2d9a2f068f5ce0704f3e0b44ada91da"
+	tinfoilCatalogs      = "https://github.com/tinfoilsh/confidential-agent-monitor/releases/download/catalog/"
+	tinfoilCatalogLatest = tinfoilCatalogs + "catalog.json"
 )
 
 var (
@@ -40,14 +43,11 @@ var (
 	catalogDigest = regexp.MustCompile(`\A[0-9a-f]{64}\z`)
 )
 
-type library struct {
-	presets  map[string]*catalog.Preset
-	defaults map[string]json.RawMessage
-}
+type library map[string]*catalog.Preset
 
-// A pin is the SHA-256 of a source's index.json; the bundle stored under it holds every preset that index lists.
-type catalogBundle struct {
-	Digests map[string]string          `json:"digests"`
+// A catalog is one file holding every preset; its pin is that file's SHA-256.
+type catalogFile struct {
+	Format  int                        `json:"format"`
 	Presets map[string]json.RawMessage `json:"presets"`
 }
 
@@ -60,129 +60,114 @@ type catalogInput struct {
 type catalogReview struct {
 	Pin      string              `json:"pin"`
 	Presets  int                 `json:"presets"`
-	Added    []string            `json:"added"`
-	Changed  []string            `json:"changed"`
-	Removed  []string            `json:"removed"`
 	Services map[string][]string `json:"services"`
 }
 
-func digestOf(raw []byte) string { return fmt.Sprintf("%x", sha256.Sum256(raw)) }
+// No credential travels with the request, so redirects are followed.
+func fetchCatalog(ctx context.Context, allowed []netip.Prefix, source string) (pin string, raw []byte, err error) {
+	if u, err := url.Parse(source); err != nil || u.Host == "" || (u.Scheme != "https" && !development) {
+		return "", nil, errors.New("a catalog source is the https URL of its catalog file")
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, source, nil)
+	if err != nil {
+		return "", nil, err
+	}
+	res, err := (&http.Client{Transport: netx.Transport(guardedDialer(allowed, "tcp").DialContext)}).Do(req)
+	if err != nil {
+		return "", nil, err
+	}
+	defer res.Body.Close()
+	raw, err = io.ReadAll(io.LimitReader(res.Body, maxCatalogBytes+1))
+	switch {
+	case err != nil:
+		return "", nil, err
+	case res.StatusCode != http.StatusOK:
+		return "", nil, fmt.Errorf("%s: %s", source, res.Status)
+	case len(raw) > maxCatalogBytes:
+		return "", nil, fmt.Errorf("%s is larger than %d bytes", source, maxCatalogBytes)
+	}
+	return fmt.Sprintf("%x", sha256.Sum256(raw)), raw, nil
+}
 
-func (s *state) readBundle(ctx context.Context, sealer sealedlog.Sealer, pin string) (b catalogBundle, err error) {
+func decodeCatalog(raw []byte) (map[string]*catalog.Preset, error) {
+	var file catalogFile
+	if err := json.Unmarshal(raw, &file); err != nil {
+		return nil, err
+	}
+	if file.Format != catalogFormat {
+		return nil, fmt.Errorf("catalog format %d needs another Perimeter version; this one reads format %d", file.Format, catalogFormat)
+	}
+	loaded := map[string]*catalog.Preset{}
+	for name, preset := range file.Presets {
+		if !catalogName.MatchString(name) {
+			return nil, fmt.Errorf("preset name %q must be lowercase letters, digits and underscores", name)
+		}
+		var err error
+		if loaded[name], err = catalog.Decode(preset); err != nil {
+			return nil, fmt.Errorf("preset %s: %w", name, err)
+		}
+	}
+	return loaded, nil
+}
+
+func (s *state) readCatalog(ctx context.Context, sealer sealedlog.Sealer, pin string) (map[string]*catalog.Preset, error) {
 	if !catalogDigest.MatchString(pin) {
-		return b, errors.New("pin must be a SHA-256 digest")
+		return nil, errors.New("pin must be a SHA-256 digest")
 	}
 	sealed, err := s.bucket.ReadAll(ctx, catalogPrefix+pin)
 	if err != nil {
-		return b, fmt.Errorf("pin %s is not stored; fetch the catalog again", pin)
+		return nil, fmt.Errorf("pin %s is not stored; fetch the catalog again", pin)
 	}
-	plain, err := sealer.Open(pin, sealed)
+	raw, err := sealer.Open(pin, sealed)
+	if err != nil {
+		return nil, err
+	}
+	return decodeCatalog(raw)
+}
+
+func presetPrefix(source string) string {
+	if source == tinfoilCatalog {
+		return ""
+	}
+	return source + "/"
+}
+
+// A state without Tinfoil's catalog starts at the version this build pins; the owner reviews later ones like any other source's.
+func (s *state) pinTinfoilCatalog(ctx context.Context, sealer sealedlog.Sealer, doc *format.Document) error {
+	if _, pinned := doc.Catalogs[tinfoilCatalog]; pinned {
+		return nil
+	}
+	ctx, cancel := context.WithTimeout(ctx, catalogTimeout)
+	defer cancel()
+	pin, raw, err := fetchCatalog(ctx, nil, tinfoilCatalogs+tinfoilCatalogPin+".json")
+	if err == nil && pin != tinfoilCatalogPin {
+		err = errors.New("the published file does not match the digest this build pins")
+	}
 	if err == nil {
-		err = json.Unmarshal(plain, &b)
+		err = s.bucket.WriteAll(ctx, catalogPrefix+pin, sealer.Seal(pin, raw), nil)
 	}
-	return b, err
+	if err != nil {
+		return fmt.Errorf("the Tinfoil catalog: %w", err)
+	}
+	if doc.Catalogs == nil {
+		doc.Catalogs = map[string]format.Catalog{}
+	}
+	doc.Catalogs[tinfoilCatalog] = format.Catalog{URL: tinfoilCatalogLatest, Pin: pin}
+	return nil
 }
 
 func (s *state) loadLibrary(ctx context.Context, sealer sealedlog.Sealer, catalogs map[string]format.Catalog) (library, error) {
-	lib := library{maps.Clone(presets), maps.Clone(presetDefaults)}
+	lib := library{}
 	for _, name := range slices.Sorted(maps.Keys(catalogs)) {
-		bundle, err := s.readBundle(ctx, sealer, catalogs[name].Pin)
-		loaded := map[string]*catalog.Preset{}
-		for preset, raw := range bundle.Presets {
-			if loaded[preset], err = catalog.Decode(raw); err != nil {
-				err = fmt.Errorf("preset %s.json: %w", preset, err)
-				break
-			}
-		}
+		loaded, err := s.readCatalog(ctx, sealer, catalogs[name].Pin)
 		if err == nil {
-			err = config.AddCatalog(name+"/", loaded, lib.presets, lib.defaults)
+			err = config.AddCatalog(presetPrefix(name), loaded, lib)
 		}
 		if err != nil {
-			return lib, fmt.Errorf("catalog %s: %w", name, err)
+			return nil, fmt.Errorf("catalog %s: %w", name, err)
 		}
 	}
 	return lib, nil
-}
-
-func fetchLimited(ctx context.Context, client *http.Client, from string, limit int) ([]byte, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, from, nil)
-	if err != nil {
-		return nil, err
-	}
-	res, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-	raw, err := io.ReadAll(io.LimitReader(res.Body, int64(limit)+1))
-	switch {
-	case err != nil:
-		return nil, err
-	case res.StatusCode != http.StatusOK:
-		return nil, fmt.Errorf("%s: %s", from, res.Status)
-	case len(raw) > limit:
-		return nil, fmt.Errorf("%s is larger than %d bytes", from, limit)
-	}
-	return raw, nil
-}
-
-// Presets the previous pin already holds under the same digest are not downloaded again.
-func (s *state) fetchCatalog(ctx context.Context, client *http.Client, sealer sealedlog.Sealer, source string, previous catalogBundle) (string, catalogBundle, error) {
-	bundle := catalogBundle{Presets: map[string]json.RawMessage{}}
-	index, err := url.Parse(source)
-	if err != nil || index.Host == "" || (index.Scheme != "https" && !development) {
-		return "", bundle, errors.New("a catalog source is the https URL of its index.json")
-	}
-	raw, err := fetchLimited(ctx, client, source, maxCatalogIndex)
-	if err != nil {
-		return "", bundle, err
-	}
-	var listed struct {
-		Format  int               `json:"format"`
-		Presets map[string]string `json:"presets"`
-	}
-	if err := json.Unmarshal(raw, &listed); err != nil {
-		return "", bundle, fmt.Errorf("%s: %w", source, err)
-	}
-	if listed.Format != catalogFormat {
-		return "", bundle, fmt.Errorf("catalog format %d needs another Perimeter version; this one reads format %d", listed.Format, catalogFormat)
-	}
-	if len(listed.Presets) > maxCatalogPresets {
-		return "", bundle, fmt.Errorf("a catalog holds at most %d presets", maxCatalogPresets)
-	}
-	pin := digestOf(raw)
-	bundle.Digests = listed.Presets
-	var mu sync.Mutex
-	group, fetching := errgroup.WithContext(ctx)
-	group.SetLimit(catalogFetchers)
-	for name, digest := range listed.Presets {
-		if !catalogName.MatchString(name) || !catalogDigest.MatchString(digest) {
-			return "", bundle, fmt.Errorf("catalog entry %q must be a lowercase name with a SHA-256 digest", name)
-		}
-		if previous.Digests[name] == digest {
-			bundle.Presets[name] = previous.Presets[name]
-			continue
-		}
-		group.Go(func() error {
-			from := index.ResolveReference(&url.URL{Path: name + ".json"}).String()
-			preset, err := fetchLimited(fetching, client, from, maxCatalogPreset)
-			if err == nil && digestOf(preset) != digest {
-				err = fmt.Errorf("%s does not match the digest in the index", from)
-			}
-			mu.Lock()
-			defer mu.Unlock()
-			bundle.Presets[name] = preset
-			return err
-		})
-	}
-	if err := group.Wait(); err != nil {
-		return "", bundle, err
-	}
-	plain, err := json.Marshal(bundle)
-	if err == nil {
-		err = s.bucket.WriteAll(ctx, catalogPrefix+pin, sealer.Seal(pin, plain), nil)
-	}
-	return pin, bundle, err
 }
 
 func credentialSlots(set any) (list []string) {
@@ -240,34 +225,17 @@ func (s *state) reviewCatalog(r *http.Request, in catalogInput) (any, error) {
 	var sealer sealedlog.Sealer
 	s.locked(func(h held) { doc, sealer = h.doc, h.sealer })
 	st := s.settings.Load()
-	var previous catalogBundle
-	if pinned, ok := doc.Catalogs[name]; ok {
-		var err error
-		if previous, err = s.readBundle(ctx, sealer, pinned.Pin); err != nil {
-			return nil, err
-		}
+	pin, raw, err := fetchCatalog(ctx, st.AllowNetworks, in.URL)
+	var loaded map[string]*catalog.Preset
+	if err == nil {
+		loaded, err = decodeCatalog(raw)
 	}
-	pin, bundle, err := s.fetchCatalog(ctx, st.client(), sealer, in.URL, previous)
+	if err == nil {
+		err = s.bucket.WriteAll(ctx, catalogPrefix+pin, sealer.Seal(pin, raw), nil)
+	}
 	if err != nil {
 		return nil, err
 	}
-	review := catalogReview{Pin: pin, Presets: len(bundle.Presets), Added: []string{}, Changed: []string{}, Removed: []string{}, Services: map[string][]string{}}
-	for preset, digest := range bundle.Digests {
-		if old, had := previous.Digests[preset]; !had {
-			review.Added = append(review.Added, preset)
-		} else if old != digest {
-			review.Changed = append(review.Changed, preset)
-		}
-	}
-	for preset := range previous.Digests {
-		if _, kept := bundle.Digests[preset]; !kept {
-			review.Removed = append(review.Removed, preset)
-		}
-	}
-	slices.Sort(review.Added)
-	slices.Sort(review.Changed)
-	slices.Sort(review.Removed)
-
 	catalogs := maps.Clone(doc.Catalogs)
 	if catalogs == nil {
 		catalogs = map[string]format.Catalog{}
@@ -277,13 +245,14 @@ func (s *state) reviewCatalog(r *http.Request, in catalogInput) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	cfg, err := config.Load(doc.Policy, lib.presets)
+	review := catalogReview{Pin: pin, Presets: len(loaded), Services: map[string][]string{}}
+	cfg, err := config.Load(doc.Policy, lib)
 	if err != nil {
 		return nil, err
 	}
 	for service, c := range cfg.Connections {
 		before := st.connections[service]
-		if before == nil || !strings.HasPrefix(c.Preset, name+"/") {
+		if before == nil || !strings.HasPrefix(c.Preset, presetPrefix(name)) {
 			continue
 		}
 		spec, err := cfg.Spec(service)
@@ -312,6 +281,9 @@ func (s *state) pinCatalog(ctx context.Context, name string, in catalogInput) er
 	if catalogs == nil {
 		catalogs = map[string]format.Catalog{}
 	}
+	if in.URL == "" && name == tinfoilCatalog {
+		return errors.New("the Tinfoil catalog cannot be removed")
+	}
 	if in.URL == "" {
 		delete(catalogs, name)
 	} else {
@@ -319,7 +291,7 @@ func (s *state) pinCatalog(ctx context.Context, name string, in catalogInput) er
 	}
 	lib, err := s.loadLibrary(ctx, sealer, catalogs)
 	if err == nil {
-		err = s.writeSettings(ctx, settingsWrite{lib: &lib, catalogs: catalogs, check: reviewed(&in.Revision)})
+		err = s.writeSettings(ctx, settingsWrite{lib: lib, catalogs: catalogs, check: reviewed(&in.Revision)})
 	}
 	s.locked(func(h held) { h.recordAdmin(ctx, "Set catalog "+name, catalogs[name], err) })
 	if err != nil {

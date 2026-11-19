@@ -89,7 +89,7 @@ func (st *settings) observe(connection string, event facts.Event) (requestFacts,
 		err = refused
 	}
 	if o.Operation != nil {
-		f.Operation = st.lib.presets[st.Connections[connection].Preset].Catalog.Resolve(o.Operation.ID, o.Operation.Action, o.Operation.Effects)
+		f.Operation = st.lib[st.Connections[connection].Preset].Catalog.Resolve(o.Operation.ID, o.Operation.Action, o.Operation.Effects)
 	}
 	return f, err
 }

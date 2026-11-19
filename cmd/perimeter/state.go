@@ -165,6 +165,9 @@ func (s *state) unlock(ctx context.Context, key []byte, minimum uint64) (bool, e
 		}
 		source = string(file)
 	}
+	if err := s.pinTinfoilCatalog(ctx, sealer, &doc); err != nil {
+		return false, err
+	}
 	lib, err := s.loadLibrary(ctx, sealer, doc.Catalogs)
 	if err != nil {
 		return false, err
