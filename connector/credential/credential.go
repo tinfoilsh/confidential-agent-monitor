@@ -159,6 +159,8 @@ func DecodeGrant(raw json.RawMessage) (*Grant, error) {
 
 func (v *Value) Configured() bool { return v != nil && v.configured }
 
+func (v *Value) OAuth() bool { return v != nil && v.grant != nil }
+
 func (v *Value) Value(ctx context.Context) (string, error) {
 	if v == nil {
 		return "", errNotConfigured

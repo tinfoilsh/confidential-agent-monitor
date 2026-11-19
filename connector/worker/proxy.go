@@ -34,6 +34,7 @@ type Endpoint struct {
 
 type Secret struct {
 	Configured  bool
+	OAuth       bool
 	Placeholder string
 	Value       func(context.Context) (string, error)
 }
@@ -48,6 +49,7 @@ type Grants struct {
 func (g Grants) Host() Host {
 	return Host{Dial: g.Dial, HostKey: g.HostKey, Secret: g.secret,
 		Configured:  func(name string) bool { return g.Secrets[name].Configured },
+		OAuth:       func(name string) bool { return g.Secrets[name].OAuth },
 		Placeholder: func(name string) string { return g.Secrets[name].Placeholder },
 		TLS: func(_ context.Context, host string) *tls.Config {
 			return &tls.Config{GetCertificate: func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
@@ -90,7 +92,7 @@ type stream struct {
 func Launch(ctx context.Context, start func(ctx context.Context, config []byte, broker http.Handler) (Endpoint, error), data json.RawMessage, grants Grants, limits Limits) (*Process, error) {
 	boot := bootstrap{Data: data, Secrets: map[string]secretHandle{}}
 	for name, value := range grants.Secrets {
-		boot.Secrets[name] = secretHandle{value.Configured, value.Placeholder}
+		boot.Secrets[name] = secretHandle{value.Configured, value.OAuth, value.Placeholder}
 	}
 	if grants.HostKey != nil {
 		boot.HostKey = grants.HostKey.PublicKey().Marshal()
