@@ -1,0 +1,919 @@
+{
+  "catalog": {
+    "actions": {
+      "accounts": {
+        "title": "Accounts"
+      },
+      "accounts.admin": {
+        "title": "Manage"
+      },
+      "accounts.ai_gateway": {
+        "title": "Ai gateway"
+      },
+      "accounts.ai_gateway.token": {
+        "title": "Token"
+      },
+      "accounts.ai_gateway.token.read": {
+        "title": "Read"
+      },
+      "accounts.audit": {
+        "title": "Audit"
+      },
+      "accounts.audit.read": {
+        "title": "Read"
+      },
+      "accounts.env": {
+        "title": "Env"
+      },
+      "accounts.env.admin": {
+        "title": "Manage"
+      },
+      "accounts.env.read": {
+        "title": "Read"
+      },
+      "accounts.env.value": {
+        "title": "Value"
+      },
+      "accounts.env.value.admin": {
+        "title": "Manage"
+      },
+      "accounts.read": {
+        "title": "Read"
+      },
+      "accounts.types": {
+        "title": "Types"
+      },
+      "accounts.types.read": {
+        "title": "Read"
+      },
+      "agent_runners": {
+        "title": "Agent runners"
+      },
+      "agent_runners.commit": {
+        "title": "Commit"
+      },
+      "agent_runners.commit.write": {
+        "title": "Create and edit"
+      },
+      "agent_runners.delete": {
+        "title": "Delete"
+      },
+      "agent_runners.diff": {
+        "title": "Diff"
+      },
+      "agent_runners.diff.read": {
+        "title": "Read"
+      },
+      "agent_runners.execute": {
+        "title": "Run"
+      },
+      "agent_runners.pull_request": {
+        "title": "Pull request"
+      },
+      "agent_runners.pull_request.write": {
+        "title": "Create and edit"
+      },
+      "agent_runners.read": {
+        "title": "Read"
+      },
+      "agent_runners.sessions": {
+        "title": "Sessions"
+      },
+      "agent_runners.sessions.answers": {
+        "title": "Answers"
+      },
+      "agent_runners.sessions.answers.write": {
+        "title": "Create and edit"
+      },
+      "agent_runners.sessions.delete": {
+        "title": "Delete"
+      },
+      "agent_runners.sessions.execute": {
+        "title": "Run"
+      },
+      "agent_runners.sessions.read": {
+        "title": "Read"
+      },
+      "agent_runners.sessions.write": {
+        "title": "Create and edit"
+      },
+      "agent_runners.url": {
+        "title": "Url"
+      },
+      "agent_runners.url.write": {
+        "title": "Create and edit"
+      },
+      "agent_runners.write": {
+        "title": "Create and edit"
+      },
+      "ai_gateway": {
+        "title": "Ai gateway"
+      },
+      "ai_gateway.providers": {
+        "title": "Providers"
+      },
+      "ai_gateway.providers.read": {
+        "title": "Read"
+      },
+      "billing": {
+        "title": "Billing"
+      },
+      "billing.payment_methods": {
+        "title": "Payment methods"
+      },
+      "billing.payment_methods.read": {
+        "title": "Read"
+      },
+      "builds": {
+        "title": "Builds"
+      },
+      "builds.log": {
+        "title": "Log"
+      },
+      "builds.log.write": {
+        "title": "Create and edit"
+      },
+      "builds.read": {
+        "title": "Read"
+      },
+      "builds.status": {
+        "title": "Status"
+      },
+      "builds.status.read": {
+        "title": "Read"
+      },
+      "builds.write": {
+        "title": "Create and edit"
+      },
+      "deploy_keys": {
+        "title": "Deploy keys"
+      },
+      "deploy_keys.admin": {
+        "title": "Manage"
+      },
+      "deploy_keys.delete": {
+        "title": "Delete"
+      },
+      "deploy_keys.read": {
+        "title": "Read"
+      },
+      "deploys": {
+        "title": "Deploys"
+      },
+      "deploys.delete": {
+        "title": "Delete"
+      },
+      "deploys.edge_functions": {
+        "title": "Edge functions"
+      },
+      "deploys.edge_functions.write": {
+        "title": "Create and edit"
+      },
+      "deploys.execute": {
+        "title": "Run"
+      },
+      "deploys.files": {
+        "title": "Files"
+      },
+      "deploys.files.write": {
+        "title": "Create and edit"
+      },
+      "deploys.functions": {
+        "title": "Functions"
+      },
+      "deploys.functions.write": {
+        "title": "Create and edit"
+      },
+      "deploys.plugin_runs": {
+        "title": "Plugin runs"
+      },
+      "deploys.plugin_runs.execute": {
+        "title": "Run"
+      },
+      "deploys.read": {
+        "title": "Read"
+      },
+      "deploys.server": {
+        "title": "Server"
+      },
+      "deploys.server.write": {
+        "title": "Create and edit"
+      },
+      "deploys.validations_report": {
+        "title": "Validations report"
+      },
+      "deploys.validations_report.write": {
+        "title": "Create and edit"
+      },
+      "deploys.write": {
+        "title": "Create and edit"
+      },
+      "dns_zones": {
+        "title": "Dns zones"
+      },
+      "dns_zones.admin": {
+        "title": "Manage"
+      },
+      "dns_zones.delete": {
+        "title": "Delete"
+      },
+      "dns_zones.dns_records": {
+        "title": "Dns records"
+      },
+      "dns_zones.dns_records.delete": {
+        "title": "Delete"
+      },
+      "dns_zones.dns_records.read": {
+        "title": "Read"
+      },
+      "dns_zones.dns_records.write": {
+        "title": "Create and edit"
+      },
+      "dns_zones.read": {
+        "title": "Read"
+      },
+      "dns_zones.write": {
+        "title": "Create and edit"
+      },
+      "forms": {
+        "title": "Forms"
+      },
+      "forms.submissions": {
+        "title": "Submissions"
+      },
+      "forms.submissions.read": {
+        "title": "Read"
+      },
+      "hooks": {
+        "title": "Hooks"
+      },
+      "hooks.admin": {
+        "title": "Manage"
+      },
+      "hooks.delete": {
+        "title": "Delete"
+      },
+      "hooks.read": {
+        "title": "Read"
+      },
+      "hooks.types": {
+        "title": "Types"
+      },
+      "hooks.types.read": {
+        "title": "Read"
+      },
+      "members": {
+        "title": "Members"
+      },
+      "members.admin": {
+        "title": "Manage"
+      },
+      "members.read": {
+        "title": "Read"
+      },
+      "oauth": {
+        "title": "Oauth"
+      },
+      "oauth.tickets": {
+        "title": "Tickets"
+      },
+      "oauth.tickets.admin": {
+        "title": "Manage"
+      },
+      "oauth.tickets.exchange": {
+        "title": "Exchange"
+      },
+      "oauth.tickets.exchange.admin": {
+        "title": "Manage"
+      },
+      "oauth.tickets.read": {
+        "title": "Read"
+      },
+      "purge": {
+        "title": "Purge"
+      },
+      "purge.write": {
+        "title": "Create and edit"
+      },
+      "services": {
+        "title": "Services"
+      },
+      "services.manifest": {
+        "title": "Manifest"
+      },
+      "services.manifest.read": {
+        "title": "Read"
+      },
+      "services.read": {
+        "title": "Read"
+      },
+      "sites": {
+        "title": "Sites"
+      },
+      "sites.agent_runner_hooks": {
+        "title": "Agent runner hooks"
+      },
+      "sites.agent_runner_hooks.delete": {
+        "title": "Delete"
+      },
+      "sites.agent_runner_hooks.read": {
+        "title": "Read"
+      },
+      "sites.agent_runner_hooks.write": {
+        "title": "Create and edit"
+      },
+      "sites.agent_runners": {
+        "title": "Agent runners"
+      },
+      "sites.agent_runners.execute": {
+        "title": "Run"
+      },
+      "sites.ai_gateway": {
+        "title": "Ai gateway"
+      },
+      "sites.ai_gateway.token": {
+        "title": "Token"
+      },
+      "sites.ai_gateway.token.read": {
+        "title": "Read"
+      },
+      "sites.assets": {
+        "title": "Assets"
+      },
+      "sites.assets.delete": {
+        "title": "Delete"
+      },
+      "sites.assets.public_signature": {
+        "title": "Public signature"
+      },
+      "sites.assets.public_signature.read": {
+        "title": "Read"
+      },
+      "sites.assets.read": {
+        "title": "Read"
+      },
+      "sites.assets.write": {
+        "title": "Create and edit"
+      },
+      "sites.build_hooks": {
+        "title": "Build hooks"
+      },
+      "sites.build_hooks.admin": {
+        "title": "Manage"
+      },
+      "sites.build_hooks.delete": {
+        "title": "Delete"
+      },
+      "sites.build_hooks.read": {
+        "title": "Read"
+      },
+      "sites.builds": {
+        "title": "Builds"
+      },
+      "sites.builds.execute": {
+        "title": "Run"
+      },
+      "sites.builds.read": {
+        "title": "Read"
+      },
+      "sites.database": {
+        "title": "Database"
+      },
+      "sites.database.branch": {
+        "title": "Branch"
+      },
+      "sites.database.branch.compute": {
+        "title": "Compute"
+      },
+      "sites.database.branch.compute.settings": {
+        "title": "Settings"
+      },
+      "sites.database.branch.compute.settings.admin": {
+        "title": "Manage"
+      },
+      "sites.database.branch.delete": {
+        "title": "Delete"
+      },
+      "sites.database.branch.read": {
+        "title": "Read"
+      },
+      "sites.database.branch.write": {
+        "title": "Create and edit"
+      },
+      "sites.database.branches": {
+        "title": "Branches"
+      },
+      "sites.database.branches.read": {
+        "title": "Read"
+      },
+      "sites.database.compute": {
+        "title": "Compute"
+      },
+      "sites.database.compute.settings": {
+        "title": "Settings"
+      },
+      "sites.database.compute.settings.admin": {
+        "title": "Manage"
+      },
+      "sites.database.compute.settings.delete": {
+        "title": "Delete"
+      },
+      "sites.database.compute.settings.read": {
+        "title": "Read"
+      },
+      "sites.database.delete": {
+        "title": "Delete"
+      },
+      "sites.database.migrations": {
+        "title": "Migrations"
+      },
+      "sites.database.migrations.execute": {
+        "title": "Run"
+      },
+      "sites.database.migrations.read": {
+        "title": "Read"
+      },
+      "sites.database.read": {
+        "title": "Read"
+      },
+      "sites.database.snapshot": {
+        "title": "Snapshot"
+      },
+      "sites.database.snapshot.delete": {
+        "title": "Delete"
+      },
+      "sites.database.snapshot.write": {
+        "title": "Create and edit"
+      },
+      "sites.database.snapshots": {
+        "title": "Snapshots"
+      },
+      "sites.database.snapshots.read": {
+        "title": "Read"
+      },
+      "sites.database.write": {
+        "title": "Create and edit"
+      },
+      "sites.delete": {
+        "title": "Delete"
+      },
+      "sites.deployed_branches": {
+        "title": "Deployed branches"
+      },
+      "sites.deployed_branches.read": {
+        "title": "Read"
+      },
+      "sites.deploys": {
+        "title": "Deploys"
+      },
+      "sites.deploys.delete": {
+        "title": "Delete"
+      },
+      "sites.deploys.execute": {
+        "title": "Run"
+      },
+      "sites.deploys.read": {
+        "title": "Read"
+      },
+      "sites.dev_server_hooks": {
+        "title": "Dev server hooks"
+      },
+      "sites.dev_server_hooks.delete": {
+        "title": "Delete"
+      },
+      "sites.dev_server_hooks.read": {
+        "title": "Read"
+      },
+      "sites.dev_server_hooks.write": {
+        "title": "Create and edit"
+      },
+      "sites.dev_servers": {
+        "title": "Dev servers"
+      },
+      "sites.dev_servers.activity": {
+        "title": "Activity"
+      },
+      "sites.dev_servers.activity.write": {
+        "title": "Create and edit"
+      },
+      "sites.dev_servers.delete": {
+        "title": "Delete"
+      },
+      "sites.dev_servers.read": {
+        "title": "Read"
+      },
+      "sites.dev_servers.state": {
+        "title": "State"
+      },
+      "sites.dev_servers.state.write": {
+        "title": "Create and edit"
+      },
+      "sites.dev_servers.write": {
+        "title": "Create and edit"
+      },
+      "sites.dns": {
+        "title": "Dns"
+      },
+      "sites.dns.read": {
+        "title": "Read"
+      },
+      "sites.dns.write": {
+        "title": "Create and edit"
+      },
+      "sites.env": {
+        "title": "Env"
+      },
+      "sites.env.read": {
+        "title": "Read"
+      },
+      "sites.files": {
+        "title": "Files"
+      },
+      "sites.files.read": {
+        "title": "Read"
+      },
+      "sites.forms": {
+        "title": "Forms"
+      },
+      "sites.forms.delete": {
+        "title": "Delete"
+      },
+      "sites.forms.read": {
+        "title": "Read"
+      },
+      "sites.functions": {
+        "title": "Functions"
+      },
+      "sites.functions.read": {
+        "title": "Read"
+      },
+      "sites.identity": {
+        "title": "Identity"
+      },
+      "sites.identity.users": {
+        "title": "Users"
+      },
+      "sites.identity.users.lookup": {
+        "title": "Lookup"
+      },
+      "sites.identity.users.lookup.read": {
+        "title": "Read"
+      },
+      "sites.identity.users.read": {
+        "title": "Read"
+      },
+      "sites.metadata": {
+        "title": "Metadata"
+      },
+      "sites.metadata.read": {
+        "title": "Read"
+      },
+      "sites.metadata.write": {
+        "title": "Create and edit"
+      },
+      "sites.plugin_runs": {
+        "title": "Plugin runs"
+      },
+      "sites.plugin_runs.latest": {
+        "title": "Latest"
+      },
+      "sites.plugin_runs.latest.read": {
+        "title": "Read"
+      },
+      "sites.plugins": {
+        "title": "Plugins"
+      },
+      "sites.plugins.write": {
+        "title": "Create and edit"
+      },
+      "sites.read": {
+        "title": "Read"
+      },
+      "sites.rollback": {
+        "title": "Rollback"
+      },
+      "sites.rollback.execute": {
+        "title": "Run"
+      },
+      "sites.service_instances": {
+        "title": "Service instances"
+      },
+      "sites.service_instances.read": {
+        "title": "Read"
+      },
+      "sites.services": {
+        "title": "Services"
+      },
+      "sites.services.instances": {
+        "title": "Instances"
+      },
+      "sites.services.instances.delete": {
+        "title": "Delete"
+      },
+      "sites.services.instances.read": {
+        "title": "Read"
+      },
+      "sites.services.instances.write": {
+        "title": "Create and edit"
+      },
+      "sites.snippets": {
+        "title": "Snippets"
+      },
+      "sites.snippets.delete": {
+        "title": "Delete"
+      },
+      "sites.snippets.read": {
+        "title": "Read"
+      },
+      "sites.snippets.write": {
+        "title": "Create and edit"
+      },
+      "sites.ssl": {
+        "title": "Ssl"
+      },
+      "sites.ssl.certificates": {
+        "title": "Certificates"
+      },
+      "sites.ssl.certificates.read": {
+        "title": "Read"
+      },
+      "sites.ssl.read": {
+        "title": "Read"
+      },
+      "sites.ssl.write": {
+        "title": "Create and edit"
+      },
+      "sites.submissions": {
+        "title": "Submissions"
+      },
+      "sites.submissions.read": {
+        "title": "Read"
+      },
+      "sites.traffic_splits": {
+        "title": "Traffic splits"
+      },
+      "sites.traffic_splits.publish": {
+        "title": "Publish"
+      },
+      "sites.traffic_splits.read": {
+        "title": "Read"
+      },
+      "sites.traffic_splits.write": {
+        "title": "Create and edit"
+      },
+      "sites.unlink_repo": {
+        "title": "Unlink repo"
+      },
+      "sites.unlink_repo.write": {
+        "title": "Create and edit"
+      },
+      "sites.write": {
+        "title": "Create and edit"
+      },
+      "submissions": {
+        "title": "Submissions"
+      },
+      "submissions.delete": {
+        "title": "Delete"
+      },
+      "submissions.read": {
+        "title": "Read"
+      },
+      "user": {
+        "title": "Account"
+      },
+      "user.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.netlify.com",
+            "path": "/api/v1",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "credential": true,
+        "key": "token",
+        "label": "Personal access token",
+        "secret": true
+      }
+    ],
+    "group": "api"
+  },
+  "title": "Netlify",
+  "http": {
+    "operations": {
+      "addMemberToAccount": {"action":"members.admin","body":"json","effects":["admin","send","share"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/{account_slug}/members","scope":{"account_slug":{"at":"account_slug","from":"path"},"email":{"at":"/email","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "agentRunnerCommitToBranch": {"action":"agent_runners.commit.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","params":["target_branch"],"path":"/api/v1/agent_runners/{agent_runner_id}/commit","scope":{"agent_runner_id":{"at":"agent_runner_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "agentRunnerPullRequest": {"action":"agent_runners.pull_request.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/agent_runners/{agent_runner_id}/pull_request","scope":{"agent_runner_id":{"at":"agent_runner_id","from":"path"}}},
+      "answerAgentRunnerSession": {"action":"agent_runners.sessions.answers.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/agent_runners/{agent_runner_id}/sessions/{agent_runner_session_id}/answers","scope":{"agent_runner_id":{"at":"agent_runner_id","from":"path"},"agent_runner_session_id":{"at":"agent_runner_session_id","from":"path"},"refId":{"at":"/refId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "archiveAgentRunner": {"action":"agent_runners.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/agent_runners/{agent_runner_id}/archive","scope":{"agent_runner_id":{"at":"agent_runner_id","from":"path"}}},
+      "cancelAccount": {"action":"accounts.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/accounts/{account_id}","scope":{"account_id":{"at":"account_id","from":"path"}}},
+      "cancelSiteDeploy": {"action":"deploys.execute","effects":["execute"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/deploys/{deploy_id}/cancel","scope":{"deploy_id":{"at":"deploy_id","from":"path"}}},
+      "clearSiteDatabaseComputeSettings": {"action":"sites.database.compute.settings.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database/compute/settings","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "configureDNSForSite": {"action":"sites.dns.write","effects":["write"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/dns","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "createAccount": {"action":"accounts.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/accounts","scope":{"name":{"at":"/name","from":"body"},"payment_method_id":{"at":"/payment_method_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"type_id":{"at":"/type_id","from":"body"}}},
+      "createAgentRunner": {"action":"agent_runners.execute","effects":["execute","generate"],"method":"POST","origin":"https://api.netlify.com","params":["site_id","deploy_id","branch","prompt","agent","model","parent_agent_runner_id","dev_server_image","file_keys"],"path":"/api/v1/agent_runners","scope":{"deploy_id":{"at":"deploy_id","from":"query","optional":true},"file_keys":{"at":"file_keys","from":"query","optional":true},"parent_agent_runner_id":{"at":"parent_agent_runner_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"query"}}},
+      "createAgentRunnerSession": {"action":"agent_runners.sessions.execute","effects":["execute","generate"],"method":"POST","origin":"https://api.netlify.com","params":["prompt","agent","model","file_keys"],"path":"/api/v1/agent_runners/{agent_runner_id}/sessions","scope":{"agent_runner_id":{"at":"agent_runner_id","from":"path"},"file_keys":{"at":"file_keys","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "createAgentRunnerSession.json.704c711220ec": {"action":"agent_runners.sessions.execute","body":"json","effects":["execute","generate"],"method":"POST","origin":"https://api.netlify.com","params":["prompt","agent","model","file_keys"],"path":"/api/v1/agent_runners/{agent_runner_id}/sessions","scope":{"agent_runner_id":{"at":"agent_runner_id","from":"path"},"file_keys":{"at":"file_keys","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createAgentRunnerUploadUrl": {"action":"agent_runners.url.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","params":["account_id","filename","content_type"],"path":"/api/v1/agent_runners/upload_url","scope":{"account_id":{"at":"account_id","from":"query"},"filename":{"at":"filename","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "createDeployKey": {"action":"deploy_keys.admin","effects":["admin"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/deploy_keys","scope":{}},
+      "createDnsRecord": {"action":"dns_zones.dns_records.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/dns_zones/{zone_id}/dns_records","scope":{"hostname":{"at":"/hostname","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"zone_id":{"at":"zone_id","from":"path"}}},
+      "createDnsZone": {"action":"dns_zones.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/dns_zones","scope":{"account_slug":{"at":"/account_slug","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"/site_id","from":"body","optional":true}}},
+      "createEnvVars": {"action":"accounts.env.admin","effects":["admin"],"method":"POST","origin":"https://api.netlify.com","params":["site_id"],"path":"/api/v1/accounts/{account_id}/env","scope":{"account_id":{"at":"account_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"query","optional":true}}},
+      "createEnvVars.json.4e21f94e62ef": {"action":"accounts.env.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.netlify.com","params":["site_id"],"path":"/api/v1/accounts/{account_id}/env","scope":{"account_id":{"at":"account_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"array"},"site_id":{"at":"site_id","from":"query","optional":true}}},
+      "createHookBySiteId": {"action":"hooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.netlify.com","params":["site_id"],"path":"/api/v1/hooks","scope":{"body.site_id":{"at":"/site_id","from":"body","optional":true},"id":{"at":"/id","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"query"}}},
+      "createPluginRun": {"action":"deploys.plugin_runs.execute","effects":["execute"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/deploys/{deploy_id}/plugin_runs","scope":{"deploy_id":{"at":"deploy_id","from":"path"}}},
+      "createPluginRun.json.1b5e13a8a07d": {"action":"deploys.plugin_runs.execute","body":"json","effects":["execute"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/deploys/{deploy_id}/plugin_runs","scope":{"deploy_id":{"at":"deploy_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createServiceInstance": {"action":"sites.services.instances.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/services/{addon}/instances","scope":{"addon":{"at":"addon","from":"path"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "createSite": {"action":"sites.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","params":["configure_dns"],"path":"/api/v1/sites","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createSiteAgentRunner": {"action":"sites.agent_runners.execute","body":"json","effects":["execute","generate"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/agent_runners","scope":{"deploy_id":{"at":"/deploy_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "createSiteAgentRunnerHook": {"action":"sites.agent_runner_hooks.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/agent_runner_hooks","scope":{"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "createSiteAsset": {"action":"sites.assets.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","params":["name","size","content_type","visibility"],"path":"/api/v1/sites/{site_id}/assets","scope":{"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "createSiteBuild": {"action":"sites.builds.execute","body":"any","effects":["execute"],"method":"POST","origin":"https://api.netlify.com","params":["branch","clear_cache","commit_sha","draft","image","review_id","template_id","title"],"path":"/api/v1/sites/{site_id}/builds","scope":{"query":{"at":"","from":"query","type":"object"},"review_id":{"at":"review_id","from":"query","optional":true},"site_id":{"at":"site_id","from":"path"},"template_id":{"at":"template_id","from":"query","optional":true}}},
+      "createSiteBuildHook": {"action":"sites.build_hooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/build_hooks","scope":{"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "createSiteDatabase": {"action":"sites.database.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "createSiteDatabase.json.700e9b092273": {"action":"sites.database.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database","scope":{"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "createSiteDatabaseBranch": {"action":"sites.database.branch.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database/branch","scope":{"branch_id":{"at":"/branch_id","from":"body"},"parent_branch_id":{"at":"/parent_branch_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "createSiteDatabaseSnapshot": {"action":"sites.database.snapshot.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database/snapshot","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "createSiteDatabaseSnapshot.json.0d203bafc575": {"action":"sites.database.snapshot.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database/snapshot","scope":{"branch_id":{"at":"/branch_id","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "createSiteDeploy": {"action":"sites.deploys.execute","body":"json","effects":["execute","publish"],"method":"POST","origin":"https://api.netlify.com","params":["deploy-previews","production","state","branch","latest-published","title"],"path":"/api/v1/sites/{site_id}/deploys","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "createSiteDevServer": {"action":"sites.dev_servers.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","params":["branch"],"path":"/api/v1/sites/{site_id}/dev_servers","scope":{"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "createSiteDevServerHook": {"action":"sites.dev_server_hooks.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/dev_server_hooks","scope":{"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "createSiteInTeam": {"action":"sites.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","params":["configure_dns"],"path":"/api/v1/{account_slug}/sites","scope":{"account_slug":{"at":"account_slug","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "createSiteInTeam.json.ec8f3e7454fd": {"action":"sites.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","params":["configure_dns"],"path":"/api/v1/{account_slug}/sites","scope":{"account_slug":{"at":"account_slug","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createSiteSnippet": {"action":"sites.snippets.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/snippets","scope":{"body.site_id":{"at":"/site_id","from":"body","optional":true},"id":{"at":"/id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "createSplitTest": {"action":"sites.traffic_splits.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/traffic_splits","scope":{"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "createTicket": {"action":"oauth.tickets.admin","effects":["admin"],"method":"POST","origin":"https://api.netlify.com","params":["client_id"],"path":"/api/v1/oauth/tickets","scope":{"client_id":{"at":"client_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "createTicket.json.e242693e2e21": {"action":"oauth.tickets.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://api.netlify.com","params":["client_id"],"path":"/api/v1/oauth/tickets","scope":{"client_id":{"at":"client_id","from":"query"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "deleteAgentRunner": {"action":"agent_runners.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/agent_runners/{agent_runner_id}","scope":{"agent_runner_id":{"at":"agent_runner_id","from":"path"}}},
+      "deleteAgentRunnerSession": {"action":"agent_runners.sessions.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/agent_runners/{agent_runner_id}/sessions/{agent_runner_session_id}","scope":{"agent_runner_id":{"at":"agent_runner_id","from":"path"},"agent_runner_session_id":{"at":"agent_runner_session_id","from":"path"}}},
+      "deleteDeploy": {"action":"deploys.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/deploys/{deploy_id}","scope":{"deploy_id":{"at":"deploy_id","from":"path"}}},
+      "deleteDeployKey": {"action":"deploy_keys.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/deploy_keys/{key_id}","scope":{"key_id":{"at":"key_id","from":"path"}}},
+      "deleteDnsRecord": {"action":"dns_zones.dns_records.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/dns_zones/{zone_id}/dns_records/{dns_record_id}","scope":{"dns_record_id":{"at":"dns_record_id","from":"path"},"zone_id":{"at":"zone_id","from":"path"}}},
+      "deleteDnsZone": {"action":"dns_zones.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/dns_zones/{zone_id}","scope":{"zone_id":{"at":"zone_id","from":"path"}}},
+      "deleteEnvVar": {"action":"accounts.env.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://api.netlify.com","params":["site_id"],"path":"/api/v1/accounts/{account_id}/env/{key}","scope":{"account_id":{"at":"account_id","from":"path"},"key":{"at":"key","from":"path"},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"query","optional":true}}},
+      "deleteEnvVarValue": {"action":"accounts.env.value.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://api.netlify.com","params":["site_id"],"path":"/api/v1/accounts/{account_id}/env/{key}/value/{id}","scope":{"account_id":{"at":"account_id","from":"path"},"id":{"at":"id","from":"path"},"key":{"at":"key","from":"path"},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"query","optional":true}}},
+      "deleteHook": {"action":"hooks.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/hooks/{hook_id}","scope":{"hook_id":{"at":"hook_id","from":"path"}}},
+      "deleteServiceInstance": {"action":"sites.services.instances.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/services/{addon}/instances/{instance_id}","scope":{"addon":{"at":"addon","from":"path"},"instance_id":{"at":"instance_id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "deleteSite": {"action":"sites.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "deleteSiteAgentRunnerHook": {"action":"sites.agent_runner_hooks.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/agent_runner_hooks/{id}","scope":{"id":{"at":"id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "deleteSiteAsset": {"action":"sites.assets.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/assets/{asset_id}","scope":{"asset_id":{"at":"asset_id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "deleteSiteBuildHook": {"action":"sites.build_hooks.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/build_hooks/{id}","scope":{"id":{"at":"id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "deleteSiteDatabase": {"action":"sites.database.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "deleteSiteDatabaseBranch": {"action":"sites.database.branch.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database/branch/{branch_id}","scope":{"branch_id":{"at":"branch_id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "deleteSiteDatabaseSnapshot": {"action":"sites.database.snapshot.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database/snapshot/{snapshot_id}","scope":{"site_id":{"at":"site_id","from":"path"},"snapshot_id":{"at":"snapshot_id","from":"path"}}},
+      "deleteSiteDeploy": {"action":"sites.deploys.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/deploys/{deploy_id}","scope":{"deploy_id":{"at":"deploy_id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "deleteSiteDevServerHook": {"action":"sites.dev_server_hooks.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/dev_server_hooks/{id}","scope":{"id":{"at":"id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "deleteSiteDevServers": {"action":"sites.dev_servers.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","params":["branch"],"path":"/api/v1/sites/{site_id}/dev_servers","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "deleteSiteForm": {"action":"sites.forms.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/forms/{form_id}","scope":{"form_id":{"at":"form_id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "deleteSiteSnippet": {"action":"sites.snippets.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/snippets/{snippet_id}","scope":{"site_id":{"at":"site_id","from":"path"},"snippet_id":{"at":"snippet_id","from":"path"}}},
+      "deleteSubmission": {"action":"submissions.delete","effects":["delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/submissions/{submission_id}","scope":{"submission_id":{"at":"submission_id","from":"path"}}},
+      "disableSite": {"action":"sites.write","effects":["write"],"method":"PUT","origin":"https://api.netlify.com","params":["reason"],"path":"/api/v1/sites/{site_id}/disable","scope":{"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "disableSplitTest": {"action":"sites.traffic_splits.publish","effects":["publish"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/traffic_splits/{split_test_id}/unpublish","scope":{"site_id":{"at":"site_id","from":"path"},"split_test_id":{"at":"split_test_id","from":"path"}}},
+      "enableHook": {"action":"hooks.admin","effects":["admin"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/hooks/{hook_id}/enable","scope":{"hook_id":{"at":"hook_id","from":"path"}}},
+      "enableSite": {"action":"sites.write","effects":["write"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/enable","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "enableSplitTest": {"action":"sites.traffic_splits.publish","effects":["publish"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/traffic_splits/{split_test_id}/publish","scope":{"site_id":{"at":"site_id","from":"path"},"split_test_id":{"at":"split_test_id","from":"path"}}},
+      "exchangeTicket": {"action":"oauth.tickets.exchange.admin","effects":["admin"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/oauth/tickets/{ticket_id}/exchange","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "getAIGatewayProviders": {"action":"ai_gateway.providers.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/ai-gateway/providers","scope":{}},
+      "getAIGatewayToken": {"action":"sites.ai_gateway.token.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/ai-gateway/token","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "getAccount": {"action":"accounts.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/accounts/{account_id}","path_patterns":{"account_id":"[^t].*|t(?:|[^y].*|y(?:|[^p].*|p(?:|[^e].*|e(?:|[^s].*|s.+))))"},"scope":{"account_id":{"at":"account_id","from":"path"}}},
+      "getAccountAIGatewayToken": {"action":"accounts.ai_gateway.token.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/accounts/{account_id}/ai-gateway/token","scope":{"account_id":{"at":"account_id","from":"path"}}},
+      "getAccountBuildStatus": {"action":"builds.status.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/{account_id}/builds/status","scope":{"account_id":{"at":"account_id","from":"path"}}},
+      "getAccountMember": {"action":"members.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/{account_slug}/members/{member_id}","scope":{"account_slug":{"at":"account_slug","from":"path"},"member_id":{"at":"member_id","from":"path"}}},
+      "getAgentRunner": {"action":"agent_runners.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/agent_runners/{agent_runner_id}","scope":{"agent_runner_id":{"at":"agent_runner_id","from":"path"}}},
+      "getAgentRunnerDiff": {"action":"agent_runners.diff.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["page","per_page","strip_binary"],"path":"/api/v1/agent_runners/{agent_runner_id}/diff","path_patterns":{"agent_runner_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"agent_runner_id":{"at":"agent_runner_id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getAgentRunnerSession": {"action":"agent_runners.sessions.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/agent_runners/{agent_runner_id}/sessions/{agent_runner_session_id}","scope":{"agent_runner_id":{"at":"agent_runner_id","from":"path"},"agent_runner_session_id":{"at":"agent_runner_session_id","from":"path"}}},
+      "getAllCertificates": {"action":"sites.ssl.certificates.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["domain"],"path":"/api/v1/sites/{site_id}/ssl/certificates","scope":{"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "getCurrentUser": {"action":"user.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/user","scope":{}},
+      "getDNSForSite": {"action":"sites.dns.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/dns","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "getDeploy": {"action":"deploys.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/deploys/{deploy_id}","scope":{"deploy_id":{"at":"deploy_id","from":"path"}}},
+      "getDeployKey": {"action":"deploy_keys.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/deploy_keys/{key_id}","scope":{"key_id":{"at":"key_id","from":"path"}}},
+      "getDnsRecords": {"action":"dns_zones.dns_records.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/dns_zones/{zone_id}/dns_records","path_patterns":{"zone_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"zone_id":{"at":"zone_id","from":"path"}}},
+      "getDnsZone": {"action":"dns_zones.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/dns_zones/{zone_id}","scope":{"zone_id":{"at":"zone_id","from":"path"}}},
+      "getDnsZones": {"action":"dns_zones.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["account_slug"],"path":"/api/v1/dns_zones","scope":{"account_slug":{"at":"account_slug","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getEnvVar": {"action":"accounts.env.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["site_id"],"path":"/api/v1/accounts/{account_id}/env/{key}","scope":{"account_id":{"at":"account_id","from":"path"},"key":{"at":"key","from":"path"},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"query","optional":true}}},
+      "getEnvVars": {"action":"accounts.env.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["context_name","scope","site_id"],"path":"/api/v1/accounts/{account_id}/env","path_patterns":{"account_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"account_id":{"at":"account_id","from":"path"},"context_name":{"at":"context_name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"query","optional":true}}},
+      "getHook": {"action":"hooks.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/hooks/{hook_id}","path_patterns":{"hook_id":"[^t].*|t(?:|[^y].*|y(?:|[^p].*|p(?:|[^e].*|e(?:|[^s].*|s.+))))"},"scope":{"hook_id":{"at":"hook_id","from":"path"}}},
+      "getIdentityUser": {"action":"sites.identity.users.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/identity/{identity_id}/users/{user_id}","scope":{"identity_id":{"at":"identity_id","from":"path"},"site_id":{"at":"site_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+      "getIndividualDnsRecord": {"action":"dns_zones.dns_records.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/dns_zones/{zone_id}/dns_records/{dns_record_id}","scope":{"dns_record_id":{"at":"dns_record_id","from":"path"},"zone_id":{"at":"zone_id","from":"path"}}},
+      "getLatestPluginRuns": {"action":"sites.plugin_runs.latest.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["packages","state"],"path":"/api/v1/sites/{site_id}/plugin_runs/latest","scope":{"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "getServices": {"action":"services.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["search"],"path":"/api/v1/services/","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getSite": {"action":"sites.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["feature_flags"],"path":"/api/v1/sites/{site_id}","scope":{"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "getSiteAgentRunnerHook": {"action":"sites.agent_runner_hooks.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/agent_runner_hooks/{id}","scope":{"id":{"at":"id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "getSiteAssetInfo": {"action":"sites.assets.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/assets/{asset_id}","scope":{"asset_id":{"at":"asset_id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "getSiteAssetPublicSignature": {"action":"sites.assets.public_signature.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/assets/{asset_id}/public_signature","scope":{"asset_id":{"at":"asset_id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "getSiteBuild": {"action":"builds.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/builds/{build_id}","scope":{"build_id":{"at":"build_id","from":"path"}}},
+      "getSiteBuildHook": {"action":"sites.build_hooks.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/build_hooks/{id}","scope":{"id":{"at":"id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "getSiteDatabase": {"action":"sites.database.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["role"],"path":"/api/v1/sites/{site_id}/database","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "getSiteDatabaseBranch": {"action":"sites.database.branch.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["role"],"path":"/api/v1/sites/{site_id}/database/branch/{branch_id}","scope":{"branch_id":{"at":"branch_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "getSiteDatabaseComputeSettings": {"action":"sites.database.compute.settings.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database/compute/settings","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "getSiteDatabaseMigration": {"action":"sites.database.migrations.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["branch"],"path":"/api/v1/sites/{site_id}/database/migrations/{name}","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "getSiteDeploy": {"action":"sites.deploys.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/deploys/{deploy_id}","scope":{"deploy_id":{"at":"deploy_id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "getSiteDevServer": {"action":"sites.dev_servers.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/dev_servers/{dev_server_id}","scope":{"dev_server_id":{"at":"dev_server_id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "getSiteDevServerHook": {"action":"sites.dev_server_hooks.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/dev_server_hooks/{id}","scope":{"id":{"at":"id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "getSiteEnvVars": {"action":"sites.env.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["context_name","scope"],"path":"/api/v1/sites/{site_id}/env","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "getSiteFileByPathName": {"action":"sites.files.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/files/{file_path}","scope":{"file_path":{"at":"file_path","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "getSiteMetadata": {"action":"sites.metadata.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/metadata","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "getSiteSnippet": {"action":"sites.snippets.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/snippets/{snippet_id}","scope":{"site_id":{"at":"site_id","from":"path"},"snippet_id":{"at":"snippet_id","from":"path"}}},
+      "getSplitTest": {"action":"sites.traffic_splits.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/traffic_splits/{split_test_id}","scope":{"site_id":{"at":"site_id","from":"path"},"split_test_id":{"at":"split_test_id","from":"path"}}},
+      "getSplitTests": {"action":"sites.traffic_splits.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/traffic_splits","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "listAccountAuditEvents": {"action":"accounts.audit.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["query","log_type","page","per_page"],"path":"/api/v1/accounts/{account_id}/audit","path_patterns":{"account_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"account_id":{"at":"account_id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listAccountTypesForUser": {"action":"accounts.types.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/accounts/types","scope":{}},
+      "listAccountsForUser": {"action":"accounts.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["minimal"],"path":"/api/v1/accounts","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listAgentRunnerSessions": {"action":"agent_runners.sessions.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["page","per_page","state","from","to","order_by"],"path":"/api/v1/agent_runners/{agent_runner_id}/sessions","path_patterns":{"agent_runner_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"agent_runner_id":{"at":"agent_runner_id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listAgentRunners": {"action":"agent_runners.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["site_id","account_id","page","per_page","state","title","branch","result_branch","user_id","from","to"],"path":"/api/v1/agent_runners","scope":{"account_id":{"at":"account_id","from":"query"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"query"},"user_id":{"at":"user_id","from":"query","optional":true}}},
+      "listDeployKeys": {"action":"deploy_keys.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/deploy_keys","scope":{}},
+      "listFormSubmission": {"action":"submissions.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["query","page","per_page"],"path":"/api/v1/submissions/{submission_id}","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"submission_id":{"at":"submission_id","from":"path"}}},
+      "listFormSubmissions": {"action":"forms.submissions.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["page","per_page"],"path":"/api/v1/forms/{form_id}/submissions","path_patterns":{"form_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"form_id":{"at":"form_id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listHookTypes": {"action":"hooks.types.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["site_id"],"path":"/api/v1/hooks/types","scope":{"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"query","optional":true}}},
+      "listHooksBySiteId": {"action":"hooks.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["site_id","form_id","event"],"path":"/api/v1/hooks","scope":{"form_id":{"at":"form_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"query"}}},
+      "listMembersForAccount": {"action":"members.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/{account_slug}/members","path_patterns":{"account_slug":"[^abdhs].*|a(?:|[^cg].*|c(?:|[^c].*|c(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+))))))|g(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^_].*|_(?:|[^r].*|r(?:|[^u].*|u(?:|[^n].*|n(?:|[^n].*|n(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))))))))|b(?:|[^u].*|u(?:|[^i].*|i(?:|[^l].*|l(?:|[^d].*|d(?:|[^s].*|s.+)))))|d(?:|[^en].*|e(?:|[^p].*|p(?:|[^l].*|l(?:|[^o].*|o(?:|[^y].*|y(?:|[^_s].*|_(?:|[^k].*|k(?:|[^e].*|e(?:|[^y].*|y(?:|[^s].*|s.+))))|s.+)))))|n(?:|[^s].*|s(?:|[^_].*|_(?:|[^z].*|z(?:|[^o].*|o(?:|[^n].*|n(?:|[^e].*|e(?:|[^s].*|s.+))))))))|h(?:|[^o].*|o(?:|[^o].*|o(?:|[^k].*|k(?:|[^s].*|s.+))))|s(?:|[^eiu].*|e(?:|[^r].*|r(?:|[^v].*|v(?:|[^i].*|i(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))|i(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))|u(?:|[^b].*|b(?:|[^m].*|m(?:|[^i].*|i(?:|[^s].*|s(?:|[^s].*|s(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s.+))))))))))"},"scope":{"account_slug":{"at":"account_slug","from":"path"}}},
+      "listPaymentMethodsForUser": {"action":"billing.payment_methods.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/billing/payment_methods","scope":{}},
+      "listServiceInstancesForSite": {"action":"sites.service_instances.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/service-instances","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "listSiteAgentRunnerHooks": {"action":"sites.agent_runner_hooks.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/agent_runner_hooks","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "listSiteAssets": {"action":"sites.assets.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/assets","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "listSiteBuildHooks": {"action":"sites.build_hooks.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/build_hooks","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "listSiteBuilds": {"action":"sites.builds.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["page","per_page"],"path":"/api/v1/sites/{site_id}/builds","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "listSiteDatabaseBranches": {"action":"sites.database.branches.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database/branches","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "listSiteDatabaseMigrations": {"action":"sites.database.migrations.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["branch"],"path":"/api/v1/sites/{site_id}/database/migrations","scope":{"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "listSiteDatabaseSnapshots": {"action":"sites.database.snapshots.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database/snapshots","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "listSiteDeployedBranches": {"action":"sites.deployed_branches.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/deployed-branches","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "listSiteDeploys": {"action":"sites.deploys.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["deploy-previews","production","state","branch","latest-published","page","per_page"],"path":"/api/v1/sites/{site_id}/deploys","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "listSiteDevServerHooks": {"action":"sites.dev_server_hooks.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/dev_server_hooks","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "listSiteDevServers": {"action":"sites.dev_servers.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["page","per_page"],"path":"/api/v1/sites/{site_id}/dev_servers","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "listSiteFiles": {"action":"sites.files.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/files","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "listSiteForms": {"action":"sites.forms.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/forms","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "listSiteSnippets": {"action":"sites.snippets.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/snippets","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "listSiteSubmissions": {"action":"sites.submissions.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["page","per_page"],"path":"/api/v1/sites/{site_id}/submissions","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "listSites": {"action":"sites.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["name","filter","page","per_page"],"path":"/api/v1/sites","scope":{"name":{"at":"name","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listSitesForAccount": {"action":"sites.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["name","page","per_page"],"path":"/api/v1/{account_slug}/sites","path_patterns":{"account_slug":"[^abdhs].*|a(?:|[^cg].*|c(?:|[^c].*|c(?:|[^o].*|o(?:|[^u].*|u(?:|[^n].*|n(?:|[^t].*|t(?:|[^s].*|s.+))))))|g(?:|[^e].*|e(?:|[^n].*|n(?:|[^t].*|t(?:|[^_].*|_(?:|[^r].*|r(?:|[^u].*|u(?:|[^n].*|n(?:|[^n].*|n(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))))))))|b(?:|[^u].*|u(?:|[^i].*|i(?:|[^l].*|l(?:|[^d].*|d(?:|[^s].*|s.+)))))|d(?:|[^en].*|e(?:|[^p].*|p(?:|[^l].*|l(?:|[^o].*|o(?:|[^y].*|y(?:|[^_s].*|_(?:|[^k].*|k(?:|[^e].*|e(?:|[^y].*|y(?:|[^s].*|s.+))))|s.+)))))|n(?:|[^s].*|s(?:|[^_].*|_(?:|[^z].*|z(?:|[^o].*|o(?:|[^n].*|n(?:|[^e].*|e(?:|[^s].*|s.+))))))))|h(?:|[^o].*|o(?:|[^o].*|o(?:|[^k].*|k(?:|[^s].*|s.+))))|s(?:|[^eiu].*|e(?:|[^r].*|r(?:|[^v].*|v(?:|[^i].*|i(?:|[^c].*|c(?:|[^e].*|e(?:|[^s].*|s.+))))))|i(?:|[^t].*|t(?:|[^e].*|e(?:|[^s].*|s.+)))|u(?:|[^b].*|b(?:|[^m].*|m(?:|[^i].*|i(?:|[^s].*|s(?:|[^s].*|s(?:|[^i].*|i(?:|[^o].*|o(?:|[^n].*|n(?:|[^s].*|s.+))))))))))"},"scope":{"account_slug":{"at":"account_slug","from":"path"},"name":{"at":"name","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "lockDeploy": {"action":"deploys.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/deploys/{deploy_id}/lock","scope":{"deploy_id":{"at":"deploy_id","from":"path"}}},
+      "lookupIdentityUser": {"action":"sites.identity.users.lookup.read","body":"json","effects":["read"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/identity/{identity_id}/users/lookup","scope":{"email":{"at":"/email","from":"body"},"identity_id":{"at":"identity_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "markDevServerActivity": {"action":"sites.dev_servers.activity.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/dev_servers/{dev_server_id}/activity","scope":{"dev_server_id":{"at":"dev_server_id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "notifyBuildStart": {"action":"builds.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","params":["buildbot_version","build_version","task_id"],"path":"/api/v1/builds/{build_id}/start","scope":{"build_id":{"at":"build_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"query","optional":true}}},
+      "provisionSiteTLSCertificate": {"action":"sites.ssl.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","params":["certificate","key","ca_certificates"],"path":"/api/v1/sites/{site_id}/ssl","scope":{"key":{"at":"key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "purgeCache": {"action":"purge.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/purge","scope":{"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"/site_id","from":"body","optional":true},"site_slug":{"at":"/site_slug","from":"body","optional":true}}},
+      "removeAccountMember": {"action":"members.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://api.netlify.com","path":"/api/v1/{account_slug}/members/{member_id}","scope":{"account_slug":{"at":"account_slug","from":"path"},"member_id":{"at":"member_id","from":"path"}}},
+      "resetSiteDatabaseBranch": {"action":"sites.database.branch.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","params":["force","role"],"path":"/api/v1/sites/{site_id}/database/branch/{branch_id}/reset","scope":{"branch_id":{"at":"branch_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "resetSiteDatabaseBranch.json.21d8a69981bd": {"action":"sites.database.branch.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","params":["force","role"],"path":"/api/v1/sites/{site_id}/database/branch/{branch_id}/reset","scope":{"branch_id":{"at":"branch_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"},"source_branch_id":{"at":"/source_branch_id","from":"body","optional":true}}},
+      "restoreSiteDatabaseSnapshot": {"action":"sites.database.snapshot.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database/snapshot/{snapshot_id}/restore","scope":{"site_id":{"at":"site_id","from":"path"},"snapshot_id":{"at":"snapshot_id","from":"path"}}},
+      "restoreSiteDatabaseSnapshot.json.4b8dfb404de7": {"action":"sites.database.snapshot.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database/snapshot/{snapshot_id}/restore","scope":{"branch_id":{"at":"/branch_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"},"snapshot_id":{"at":"snapshot_id","from":"path"}}},
+      "restoreSiteDeploy": {"action":"sites.deploys.execute","effects":["execute","publish"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/deploys/{deploy_id}/restore","scope":{"deploy_id":{"at":"deploy_id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "rollbackSiteDeploy": {"action":"sites.rollback.execute","effects":["execute","publish"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/rollback","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "runSiteDatabaseMigrations": {"action":"sites.database.migrations.execute","effects":["execute"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database/migrations/{deploy_id}","scope":{"deploy_id":{"at":"deploy_id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "runSiteDatabaseMigrations.json.aa06636fc3a6": {"action":"sites.database.migrations.execute","body":"json","effects":["execute"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database/migrations/{deploy_id}","scope":{"deploy_id":{"at":"deploy_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "searchSiteFunctions": {"action":"sites.functions.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","params":["filter"],"path":"/api/v1/sites/{site_id}/functions","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "setEnvVarValue": {"action":"accounts.env.admin","effects":["admin"],"method":"PATCH","origin":"https://api.netlify.com","params":["site_id"],"path":"/api/v1/accounts/{account_id}/env/{key}","scope":{"account_id":{"at":"account_id","from":"path"},"key":{"at":"key","from":"path"},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"query","optional":true}}},
+      "setEnvVarValue.json.fcfa5dabb8b6": {"action":"accounts.env.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://api.netlify.com","params":["site_id"],"path":"/api/v1/accounts/{account_id}/env/{key}","scope":{"account_id":{"at":"account_id","from":"path"},"key":{"at":"key","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"query","optional":true}}},
+      "setSiteDatabaseBranchComputeSettings": {"action":"sites.database.branch.compute.settings.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database/branch/{branch_id}/compute/settings","scope":{"branch_id":{"at":"branch_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "setSiteDatabaseComputeSettings": {"action":"sites.database.compute.settings.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/database/compute/settings","scope":{"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "showService": {"action":"services.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/services/{addonName}","scope":{"addonName":{"at":"addonName","from":"path"}}},
+      "showServiceInstance": {"action":"sites.services.instances.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/services/{addon}/instances/{instance_id}","scope":{"addon":{"at":"addon","from":"path"},"instance_id":{"at":"instance_id","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "showServiceManifest": {"action":"services.manifest.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/services/{addonName}/manifest","path_patterns":{"addonName":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"addonName":{"at":"addonName","from":"path"}}},
+      "showSiteTLSCertificate": {"action":"sites.ssl.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/ssl","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "showTicket": {"action":"oauth.tickets.read","effects":["read"],"method":"GET","origin":"https://api.netlify.com","path":"/api/v1/oauth/tickets/{ticket_id}","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
+      "stopAgentRunner": {"action":"agent_runners.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/agent_runners/{agent_runner_id}/stop","scope":{"agent_runner_id":{"at":"agent_runner_id","from":"path"}}},
+      "stopAgentRunnerSession": {"action":"agent_runners.sessions.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/agent_runners/{agent_runner_id}/sessions/{agent_runner_session_id}/stop","scope":{"agent_runner_id":{"at":"agent_runner_id","from":"path"},"agent_runner_session_id":{"at":"agent_runner_session_id","from":"path"}}},
+      "transferDnsZone": {"action":"dns_zones.admin","effects":["admin"],"method":"PUT","origin":"https://api.netlify.com","params":["account_id","transfer_account_id","transfer_user_id"],"path":"/api/v1/dns_zones/{zone_id}/transfer","scope":{"account_id":{"at":"account_id","from":"query"},"query":{"at":"","from":"query","type":"object"},"transfer_account_id":{"at":"transfer_account_id","from":"query"},"transfer_user_id":{"at":"transfer_user_id","from":"query"},"zone_id":{"at":"zone_id","from":"path"}}},
+      "unlinkSiteRepo": {"action":"sites.unlink_repo.write","effects":["write"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/unlink_repo","scope":{"site_id":{"at":"site_id","from":"path"}}},
+      "unlockDeploy": {"action":"deploys.write","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/deploys/{deploy_id}/unlock","scope":{"deploy_id":{"at":"deploy_id","from":"path"}}},
+      "updateAccount": {"action":"accounts.admin","effects":["admin"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/accounts/{account_id}","scope":{"account_id":{"at":"account_id","from":"path"}}},
+      "updateAccount.json.51f1cb17439f": {"action":"accounts.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/accounts/{account_id}","scope":{"account_id":{"at":"account_id","from":"path"},"billing_email":{"at":"/billing_email","from":"body","optional":true},"billing_name":{"at":"/billing_name","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"slug":{"at":"/slug","from":"body","optional":true},"type_id":{"at":"/type_id","from":"body","optional":true}}},
+      "updateAccountMember": {"action":"members.admin","body":"json","effects":["admin","share"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/{account_slug}/members/{member_id}","scope":{"account_slug":{"at":"account_slug","from":"path"},"member_id":{"at":"member_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"site_ids":{"at":"/site_ids","from":"body","optional":true,"type":"array"}}},
+      "updateAgentRunner": {"action":"agent_runners.write","effects":["write"],"method":"PATCH","origin":"https://api.netlify.com","path":"/api/v1/agent_runners/{agent_runner_id}","scope":{"agent_runner_id":{"at":"agent_runner_id","from":"path"}}},
+      "updateAgentRunnerSession": {"action":"agent_runners.sessions.write","effects":["write"],"method":"PATCH","origin":"https://api.netlify.com","params":["is_published"],"path":"/api/v1/agent_runners/{agent_runner_id}/sessions/{agent_runner_session_id}","scope":{"agent_runner_id":{"at":"agent_runner_id","from":"path"},"agent_runner_session_id":{"at":"agent_runner_session_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateDeployValidations": {"action":"deploys.validations_report.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.netlify.com","path":"/api/v1/deploys/{deploy_id}/validations_report","scope":{"deploy_id":{"at":"deploy_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateDevServerState": {"action":"sites.dev_servers.state.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/dev_servers/{dev_server_id}/state","scope":{"dev_server_id":{"at":"dev_server_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"},"task_id":{"at":"/task_id","from":"body","optional":true}}},
+      "updateEnvVar": {"action":"accounts.env.admin","effects":["admin"],"method":"PUT","origin":"https://api.netlify.com","params":["site_id"],"path":"/api/v1/accounts/{account_id}/env/{key}","scope":{"account_id":{"at":"account_id","from":"path"},"key":{"at":"key","from":"path"},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"query","optional":true}}},
+      "updateEnvVar.json.366b4b8965b9": {"action":"accounts.env.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.netlify.com","params":["site_id"],"path":"/api/v1/accounts/{account_id}/env/{key}","scope":{"account_id":{"at":"account_id","from":"path"},"body.key":{"at":"/key","from":"body","optional":true},"key":{"at":"key","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"query","optional":true}}},
+      "updateHook": {"action":"hooks.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/hooks/{hook_id}","scope":{"hook_id":{"at":"hook_id","from":"path"},"id":{"at":"/id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"/site_id","from":"body","optional":true}}},
+      "updatePlugin": {"action":"sites.plugins.write","effects":["write"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/plugins/{package}","scope":{"package":{"at":"package","from":"path"},"site_id":{"at":"site_id","from":"path"}}},
+      "updatePlugin.json.a85bcfcdf661": {"action":"sites.plugins.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/plugins/{package}","scope":{"package":{"at":"package","from":"path"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "updateServiceInstance": {"action":"sites.services.instances.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/services/{addon}/instances/{instance_id}","scope":{"addon":{"at":"addon","from":"path"},"instance_id":{"at":"instance_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "updateSite": {"action":"sites.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}","scope":{"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "updateSiteAgentRunnerHook": {"action":"sites.agent_runner_hooks.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/agent_runner_hooks/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "updateSiteAsset": {"action":"sites.assets.write","effects":["write"],"method":"PUT","origin":"https://api.netlify.com","params":["state"],"path":"/api/v1/sites/{site_id}/assets/{asset_id}","scope":{"asset_id":{"at":"asset_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "updateSiteBuildHook": {"action":"sites.build_hooks.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/build_hooks/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "updateSiteBuildLog": {"action":"builds.log.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.netlify.com","path":"/api/v1/builds/{build_id}/log","scope":{"build_id":{"at":"build_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateSiteDeploy": {"action":"sites.deploys.execute","body":"json","effects":["execute"],"method":"PUT","origin":"https://api.netlify.com","params":["commit_ref"],"path":"/api/v1/sites/{site_id}/deploys/{deploy_id}","scope":{"deploy_id":{"at":"deploy_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "updateSiteDevServerHook": {"action":"sites.dev_server_hooks.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/dev_server_hooks/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "updateSiteMetadata": {"action":"sites.metadata.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/metadata","path_patterns":{"site_id":"[^m].*|m(?:|[^e].*|e(?:|[^m].*|m(?:|[^b].*|b(?:|[^e].*|e(?:|[^r].*|r(?:|[^s].*|s.+))))))"},"scope":{"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"}}},
+      "updateSiteSnippet": {"action":"sites.snippets.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/snippets/{snippet_id}","scope":{"body.site_id":{"at":"/site_id","from":"body","optional":true},"id":{"at":"/id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"},"snippet_id":{"at":"snippet_id","from":"path"}}},
+      "updateSplitTest": {"action":"sites.traffic_splits.write","body":"json","effects":["write"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/sites/{site_id}/traffic_splits/{split_test_id}","scope":{"request":{"at":"","from":"body","type":"object"},"site_id":{"at":"site_id","from":"path"},"split_test_id":{"at":"split_test_id","from":"path"}}},
+      "uploadDeployEdgeFunction": {"action":"deploys.edge_functions.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.netlify.com","path":"/api/v1/deploys/{deploy_id}/edge_functions/{code_sha}","scope":{"code_sha":{"at":"code_sha","from":"path"},"deploy_id":{"at":"deploy_id","from":"path"}}},
+      "uploadDeployFile": {"action":"deploys.files.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.netlify.com","params":["size"],"path":"/api/v1/deploys/{deploy_id}/files/{path*}","scope":{"deploy_id":{"at":"deploy_id","from":"path"},"path":{"at":"path","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "uploadDeployFunction": {"action":"deploys.functions.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.netlify.com","params":["runtime","invocation_mode","timeout","size"],"path":"/api/v1/deploys/{deploy_id}/functions/{name}","scope":{"deploy_id":{"at":"deploy_id","from":"path"},"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "uploadDeployServer": {"action":"deploys.server.write","body":"any","effects":["write"],"method":"PUT","origin":"https://api.netlify.com","params":["size"],"path":"/api/v1/deploys/{deploy_id}/server/{code_sha}","scope":{"code_sha":{"at":"code_sha","from":"path"},"deploy_id":{"at":"deploy_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}}
+    }
+  }
+}

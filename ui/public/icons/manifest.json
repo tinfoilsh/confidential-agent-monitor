@@ -699,6 +699,9 @@
   "netlify": {
     "src": "netlify.svg"
   },
+  "netlify_api": {
+    "src": "netlify.svg"
+  },
   "next_cloud": {
     "src": "next_cloud.svg"
   },
