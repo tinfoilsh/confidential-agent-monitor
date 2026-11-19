@@ -520,18 +520,31 @@ function CatalogSources() {
         <h2>
           Sources <span class="count">{Object.keys(catalogs()).length}</span>
         </h2>
-        <button
-          class="button"
-          disabled={adding()}
-          onClick={() => setAdding(true)}
-        >
+        <button class="button" onClick={() => setAdding(true)}>
           <Icon name="plus" />
           Add source
         </button>
       </div>
-      <Show when={adding()}>
+      <Modal
+        class="dialog-panel"
+        aria-labelledby="catalog-source-title"
+        open={adding()}
+        onClose={() => setAdding(false)}
+      >
+        <header class="dialog-header">
+          <div>
+            <h1 id="catalog-source-title">Add source</h1>
+          </div>
+          <button
+            class="dialog-close icon-button"
+            aria-label="Close dialog"
+            onClick={() => setAdding(false)}
+          >
+            <Icon name="close" />
+          </button>
+        </header>
         <form
-          class="agent-inline form-fields"
+          class="dialog-body form-fields"
           onSubmit={async (event) => {
             event.preventDefault();
             const added = await m.edit([
@@ -577,15 +590,20 @@ function CatalogSources() {
             </button>
           </div>
         </form>
-      </Show>
+        <Show when={m.message(location.hash)}>
+          {(text) => (
+            <p class="dialog-notice" role="status">
+              {text()}
+            </p>
+          )}
+        </Show>
+      </Modal>
       <For
         each={Object.keys(catalogs())}
         fallback={
-          <Show when={!adding()}>
-            <Empty title="No preset sources configured" icon="crate">
-              You only have built-in presets. Add a source for more.
-            </Empty>
-          </Show>
+          <Empty title="No preset sources configured" icon="crate">
+            You only have built-in presets. Add a source for more.
+          </Empty>
         }
       >
         {(pin) => (
