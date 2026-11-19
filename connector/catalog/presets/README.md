@@ -1,6 +1,11 @@
 Each shipped preset has a `<name>.json` record. Connections select it with
 `"preset": "<name>"`. Perimeter accepts these shipped definitions and those in the `-presets` directory.
 
+An owner can also pin catalog sources under **Permissions → Catalog**. A source is the URL of an
+`index.json` beside its preset files, written by `GOWORK=off go run . index <directory>` in
+`dev/presets`. Its presets are named `<source>/<name>`, need `catalog.defaults`, and resolve
+fragments within the source.
+
 For authoring, see [adding protocol presets](../../../dev/presets/README.md#adding-protocol-presets).
 Provider request definitions live in the JSON files; SDK scenarios and coverage
 live in [tf-test's use cases](https://github.com/tinfoilsh/tf-test/tree/eaf007c2890ca041df40a2cf3bc79c23507bb8cf/services/connections-flywheel/usecases).

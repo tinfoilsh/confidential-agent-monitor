@@ -1,10 +1,12 @@
 package main
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 	"slices"
 	"strings"
@@ -16,6 +18,9 @@ const (
 	lockPath    = "sources.lock.json"
 	cacheDir    = ".cache"
 	shippedDir  = "../../connector/catalog/presets"
+
+	indexName     = "index"
+	catalogFormat = 1
 )
 
 var camel = regexp.MustCompile(`([a-z0-9])([A-Z])`)
@@ -33,9 +38,30 @@ func load[T any](path string) (T, error) {
 	return v, err
 }
 
+// A Perimeter fetches a directory's presets by the digests in its index.json and pins that file.
+func index(dir string) error {
+	files, err := filepath.Glob(filepath.Join(dir, "*.json"))
+	presets := map[string]string{}
+	for _, file := range files {
+		name := strings.TrimSuffix(filepath.Base(file), ".json")
+		if name == indexName {
+			continue
+		}
+		var raw []byte
+		if raw, err = os.ReadFile(file); err != nil {
+			return err
+		}
+		presets[name] = fmt.Sprintf("%x", sha256.Sum256(raw))
+	}
+	if err != nil {
+		return err
+	}
+	return writeJSON(filepath.Join(dir, indexName+".json"), map[string]any{"format": catalogFormat, "presets": presets})
+}
+
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: presets update|fetch|group|generate|check|accept [service...]; group regroups shipped operations; accept writes a checked candidate over its shipped preset; update --all refreshes every source; check --reviewed requires complete review")
+		fmt.Fprintln(os.Stderr, "usage: presets update|fetch|group|generate|check|accept [service...] | index <directory>; group regroups shipped operations; accept writes a checked candidate over its shipped preset; update --all refreshes every source; check --reviewed requires complete review")
 		os.Exit(2)
 	}
 	var err error
@@ -83,6 +109,12 @@ func main() {
 		}
 	case "generate":
 		err = generate(os.Args[2:])
+	case "index":
+		if len(os.Args) != 3 {
+			err = fmt.Errorf("index needs the directory of presets to list")
+			break
+		}
+		err = index(os.Args[2])
 	case "group":
 		err = groupShipped(os.Args[2:])
 	case "accept":
