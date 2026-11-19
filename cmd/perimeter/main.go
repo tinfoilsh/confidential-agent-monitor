@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/fs"
 	"log"
 	"log/slog"
 	"net"
@@ -22,7 +21,6 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/connections"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
-	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/worker"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/noisetransport"
 	"github.com/tinfoilsh/confidential-agent-monitor/ui"
@@ -66,7 +64,6 @@ var (
 var (
 	sshHostKey         ssh.Signer
 	unlockKey          []byte
-	extraPresets       fs.FS
 	identityCA         ssh.PublicKey
 	basePolicy         string
 	policyFile         string
@@ -75,8 +72,6 @@ var (
 	development        bool
 	passphraseKeys     bool
 	workers            *worker.Local
-	presets            map[string]*catalog.Preset
-	presetDefaults     map[string]json.RawMessage
 	identityAttributes = map[string]func(json.RawMessage) error{sandbox.Attribute: sandbox.ValidateBoot}
 	events             = slog.New(slog.NewJSONHandler(os.Stdout, nil))
 )
@@ -128,11 +123,6 @@ func init() {
 		policyFile = path
 		return nil
 	})
-	flag.Func("presets", "directory of an organization's own preset definitions, added to the shipped ones", func(path string) error {
-		extraPresets = os.DirFS(path)
-		_, err := fs.Stat(extraPresets, ".")
-		return err
-	})
 	flag.Func("secrets", "directory that file credentials are read from at each use", func(path string) (err error) {
 		secretFiles, err = os.OpenRoot(path)
 		return err
@@ -152,10 +142,6 @@ func main() {
 	}
 
 	development = !*production && strings.HasPrefix(*bucketURL, "file://")
-	var err error
-	if presets, presetDefaults, err = config.LoadPresets(extraPresets); err != nil {
-		log.Fatal(err)
-	}
 	if basePolicy != "" {
 		if _, err := config.PreparePolicy(context.Background(), new(config.Config), basePolicy); err != nil {
 			log.Fatal(err)

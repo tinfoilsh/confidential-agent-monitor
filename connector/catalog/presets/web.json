@@ -8,6 +8,7 @@
       "submit": { "title": "Submit forms and post", "effects": ["send"] }
     },
     "connection": { "http": { "hosts": ["*"] } },
-    "fields": []
+    "fields": [],
+    "defaults": { "contents": "anyone", "sends": "anyone", "strangers": true }
   }
 }

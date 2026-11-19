@@ -7495,6 +7495,7 @@
         "secret": true
       }
     ],
+    "defaults": { "contents": "team", "sends": "team", "strangers": true },
     "group": "api"
   },
   "title": "Datadog",

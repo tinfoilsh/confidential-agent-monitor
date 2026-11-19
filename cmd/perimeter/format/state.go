@@ -41,11 +41,8 @@ type Document struct {
 	Pending     map[string]json.RawMessage `json:"pending,omitempty"`
 }
 
-func DecodeDocument(plain []byte, v1Presets map[string]bool) (Document, error) {
-	plain, err := upgrade(plain, v1Presets)
-	if err == nil {
-		plain, err = upgradeV2(plain)
-	}
+func DecodeDocument(plain []byte) (Document, error) {
+	plain, err := upgradeV2(plain)
 	if err == nil {
 		plain, err = upgradeV3(plain)
 	}
@@ -62,7 +59,7 @@ func DecodeDocument(plain []byte, v1Presets map[string]bool) (Document, error) {
 	return d, nil
 }
 
-func Load(ctx context.Context, bucket *blob.Bucket, key []byte, minimum uint64, v1Presets map[string]bool) (Document, sealedlog.Sealer, bool, error) {
+func Load(ctx context.Context, bucket *blob.Bucket, key []byte, minimum uint64) (Document, sealedlog.Sealer, bool, error) {
 	var doc Document
 	if len(key) < sealedlog.MinKeyBytes || len(key) > sealedlog.MaxKeyBytes {
 		return doc, sealedlog.Sealer{}, false, sealedlog.ErrKey
@@ -84,7 +81,7 @@ func Load(ctx context.Context, bucket *blob.Bucket, key []byte, minimum uint64, 
 	} else {
 		var plain []byte
 		if sealer, plain, err = sealedlog.OpenState(key, raw); err == nil {
-			doc, err = DecodeDocument(plain, v1Presets)
+			doc, err = DecodeDocument(plain)
 		}
 	}
 	if err == nil && doc.Generation < minimum {

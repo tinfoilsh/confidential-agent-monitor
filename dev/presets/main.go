@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 	"slices"
 	"strings"
@@ -33,9 +34,24 @@ func load[T any](path string) (T, error) {
 	return v, err
 }
 
+// A policy lists this one file under its SHA-256.
+func printCatalog(dir string) error {
+	files, err := filepath.Glob(filepath.Join(dir, "*.json"))
+	presets := map[string]json.RawMessage{}
+	for _, file := range files {
+		if presets[strings.TrimSuffix(filepath.Base(file), ".json")], err = os.ReadFile(file); err != nil {
+			return err
+		}
+	}
+	if err != nil {
+		return err
+	}
+	return json.NewEncoder(os.Stdout).Encode(presets)
+}
+
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: presets update|fetch|group|generate|check|accept [service...]; group regroups shipped operations; accept writes a checked candidate over its shipped preset; update --all refreshes every source; check --reviewed requires complete review")
+		fmt.Fprintln(os.Stderr, "usage: presets update|fetch|group|generate|check|accept [service...] | catalog <directory>; group regroups shipped operations; accept writes a checked candidate over its shipped preset; update --all refreshes every source; check --reviewed requires complete review")
 		os.Exit(2)
 	}
 	var err error
@@ -83,6 +99,12 @@ func main() {
 		}
 	case "generate":
 		err = generate(os.Args[2:])
+	case "catalog":
+		if len(os.Args) != 3 {
+			err = fmt.Errorf("catalog needs the directory of presets to print")
+			break
+		}
+		err = printCatalog(os.Args[2])
 	case "group":
 		err = groupShipped(os.Args[2:])
 	case "accept":

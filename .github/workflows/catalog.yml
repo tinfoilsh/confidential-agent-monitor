@@ -1,0 +1,69 @@
+name: Catalog
+run-name: Publish the catalog from ${{ github.ref_name }}
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - connector/catalog/presets/**
+      - dev/presets/**
+
+permissions: {}
+
+concurrency:
+  group: catalog
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      pin: ${{ steps.catalog.outputs.pin }}
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
+      - name: Build the catalog
+        id: catalog
+        env:
+          OUT: ${{ runner.temp }}/catalog
+        run: |
+          mkdir -p "$OUT"
+          GOWORK=off go -C dev/presets run . catalog ../../connector/catalog/presets > "$OUT/catalog.json"
+          pin=$(sha256sum "$OUT/catalog.json" | cut -d' ' -f1)
+          mv "$OUT/catalog.json" "$OUT/$pin.json"
+          echo "pin=$pin" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: catalog
+          path: ${{ runner.temp }}/catalog
+          retention-days: 1
+
+  # Holds the write token, so it runs no repository code.
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: catalog
+          path: ${{ runner.temp }}/catalog
+      - name: Publish the catalog
+        working-directory: ${{ runner.temp }}/catalog
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE: catalog
+          PIN: ${{ needs.build.outputs.pin }}
+        run: |
+          echo "$PIN  $PIN.json" | sha256sum --check --strict
+          gh release view "$RELEASE" > /dev/null 2>&1 ||
+            gh release create "$RELEASE" --latest=false --title "Tinfoil catalog" --notes "Each catalog version under its SHA-256."
+          # A version is never replaced; one already published under this digest is the same file.
+          gh release upload "$RELEASE" "$PIN.json" ||
+            gh release view "$RELEASE" --json assets --jq '.assets[].name' | grep -qxF "$PIN.json"

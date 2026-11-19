@@ -109,11 +109,12 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	if w.source != nil {
 		source = *w.source
 	}
-	source, rebuild, renamed, err := current.Edit(source, w.changes)
+	lib := s.library(ctx, s.sealer)
+	source, rebuild, renamed, err := current.Edit(source, w.changes, lib)
 	if err != nil {
 		return err
 	}
-	plan, err := s.prepareSettings(ctx, source, rebuild, w.credentials, current.authority, current.hostKey)
+	plan, err := s.prepareSettings(ctx, lib, source, rebuild, w.credentials, current.authority, current.hostKey)
 	if err != nil {
 		return err
 	}
@@ -133,8 +134,8 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	return err
 }
 
-func (s *state) prepareSettings(ctx context.Context, source string, rebuild func(connection string) bool, credentials format.Secrets, authority *certificates.Authority, hostKey ssh.Signer) (*settingsPlan, error) {
-	cfg, err := config.Load(source, presets)
+func (s *state) prepareSettings(ctx context.Context, lib config.Library, source string, rebuild func(connection string) bool, credentials format.Secrets, authority *certificates.Authority, hostKey ssh.Signer) (*settingsPlan, error) {
+	cfg, err := config.Load(source, lib)
 	if err != nil {
 		return nil, err
 	}
@@ -201,7 +202,7 @@ func (s *state) prepareSettings(ctx context.Context, source string, rebuild func
 		plan.updates = append(plan.updates, name)
 	}
 
-	if next.catalog, next.catalogID, err = config.CatalogEntries(cfg, presetDefaults, operations); err != nil {
+	if next.catalog, next.catalogID, err = config.CatalogEntries(cfg, operations); err != nil {
 		return nil, err
 	}
 	for name := range credentials {
@@ -323,11 +324,12 @@ func sourceDiff(a, b string) string {
 }
 
 func (s *state) previewPolicy(ctx context.Context, base format.Document, before *settings, source string) (*policyDiff, error) {
-	source, _, _, err := before.Edit(source, nil)
+	lib := s.library(ctx, s.sealer)
+	source, _, _, err := before.Edit(source, nil, lib)
 	if err != nil {
 		return nil, err
 	}
-	plan, err := s.prepareSettings(ctx, source, everyConnection, nil, before.authority, before.hostKey)
+	plan, err := s.prepareSettings(ctx, lib, source, everyConnection, nil, before.authority, before.hostKey)
 	if err != nil {
 		return nil, err
 	}

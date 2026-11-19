@@ -89,11 +89,11 @@ func (st *settings) observe(connection string, event facts.Event) (requestFacts,
 		err = refused
 	}
 	if o.Operation != nil {
-		f.Operation = presets[st.Connections[connection].Preset].Catalog.Resolve(o.Operation.ID, o.Operation.Action, o.Operation.Effects)
+		f.Operation = st.Presets[st.Connections[connection].Preset].Catalog.Resolve(o.Operation.ID, o.Operation.Action, o.Operation.Effects)
 	}
 	// A match-only connection does not fail closed: a valid request it does not recognize is a Custom API request.
 	if f.Operation == nil && err == nil && st.Connections[connection].MatchOnly {
-		f.Operation = presets[st.Connections[connection].Preset].Catalog.Resolve("", "request", []string{"execute", "send"})
+		f.Operation = st.Presets[st.Connections[connection].Preset].Catalog.Resolve("", "request", []string{"execute", "send"})
 		f.Context.Sends = config.SendsConnection
 	}
 	return f, err

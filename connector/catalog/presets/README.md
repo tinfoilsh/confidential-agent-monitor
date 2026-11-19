@@ -1,5 +1,12 @@
-Each shipped preset has a `<name>.json` record. Connections select it with
-`"preset": "<name>"`. Perimeter accepts these shipped definitions and those in the `-presets` directory.
+Each preset has a `<name>.json` record. Connections select it with `"preset": "<name>"`. A preset
+without `catalog.defaults` takes those of its protocol. This directory is Tinfoil's catalog; a
+Perimeter ships with it. `GOWORK=off go run . catalog <directory>` in `dev/presets` prints a
+directory's presets as one catalog file, and the Catalog workflow publishes this directory's to
+the `catalog` release under its SHA-256.
+
+A policy's `catalogs` table lists the catalog files a Perimeter uses, each as
+`<SHA-256> = "<https URL>"`; without it, a Perimeter uses the presets it ships with. A preset
+name belongs to one catalog only.
 
 For authoring, see [adding protocol presets](../../../dev/presets/README.md#adding-protocol-presets).
 Provider request definitions live in the JSON files; SDK scenarios and coverage
