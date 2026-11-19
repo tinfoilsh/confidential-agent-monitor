@@ -506,11 +506,170 @@ function CatalogDialog(props: { preset?: string; onClose: () => void }) {
     </Modal>
   );
 }
+const PIN_SHOWN = 12;
+// The Catalog workflow publishes each catalog as <SHA-256>.json.
+const PIN_IN_URL = /\/([0-9a-f]{64})\.json$/;
+function CatalogSources() {
+  const m = useMonitor();
+  const [adding, setAdding] = createSignal(false);
+  const [draft, setDraft] = createStore({ url: "", pin: "" });
+  const catalogs = () => m.view()!.config.catalogs ?? {};
+  return (
+    <div class="resource-list collection-list">
+      <div class="resource-heading">
+        <h2>
+          Sources <span class="count">{Object.keys(catalogs()).length}</span>
+        </h2>
+        <button class="button" onClick={() => setAdding(true)}>
+          <Icon name="plus" />
+          Add source
+        </button>
+      </div>
+      <Modal
+        class="dialog-panel"
+        aria-labelledby="catalog-source-title"
+        open={adding()}
+        onClose={() => setAdding(false)}
+      >
+        <header class="dialog-header">
+          <div>
+            <h1 id="catalog-source-title">Add source</h1>
+          </div>
+          <button
+            class="dialog-close icon-button"
+            aria-label="Close dialog"
+            onClick={() => setAdding(false)}
+          >
+            <Icon name="close" />
+          </button>
+        </header>
+        <form
+          class="dialog-body form-fields"
+          onSubmit={async (event) => {
+            event.preventDefault();
+            const added = await m.edit([
+              { path: ["catalogs", draft.pin], value: draft.url },
+            ]);
+            if (!added) return;
+            setAdding(false);
+            setDraft({ url: "", pin: "" });
+          }}
+        >
+          <label>
+            Catalog URL
+            <input
+              type="url"
+              required
+              placeholder="https://github.com/acme/presets/releases/download/catalog/<SHA-256>.json"
+              value={draft.url}
+              onInput={(e) => {
+                const pinIn = (url: string) => PIN_IN_URL.exec(url)?.[1];
+                const url = e.currentTarget.value;
+                const typed = draft.pin === pinIn(draft.url) ? "" : draft.pin;
+                setDraft({ url, pin: pinIn(url) ?? typed });
+              }}
+            />
+          </label>
+          <label>
+            SHA-256
+            <input
+              class="mono"
+              required
+              pattern="[0-9a-f]{64}"
+              title="64 lowercase hexadecimal characters"
+              value={draft.pin}
+              onInput={(e) => setDraft("pin", e.currentTarget.value)}
+            />
+          </label>
+          <div class="form-actions">
+            <button class="primary" disabled={m.busy()}>
+              Add source
+            </button>
+            <button type="button" onClick={() => setAdding(false)}>
+              Cancel
+            </button>
+          </div>
+        </form>
+        <Show when={m.message(location.hash)}>
+          {(text) => (
+            <p class="dialog-notice" role="status">
+              {text()}
+            </p>
+          )}
+        </Show>
+      </Modal>
+      <For
+        each={Object.keys(catalogs())}
+        fallback={
+          <Empty title="No preset sources configured" icon="stack">
+            You only have built-in presets. Add a source for more.
+          </Empty>
+        }
+      >
+        {(pin) => (
+          <div class="menu-row">
+            <ResourceDisclosure
+              class="connection-item"
+              summary={
+                <>
+                  <Icon name="globe" />
+                  <strong class="collection-name" title={catalogs()[pin]}>
+                    {catalogs()[pin]}
+                  </strong>
+                  <span class="resource-meta">
+                    <code>{pin.slice(0, PIN_SHOWN)}</code>
+                  </span>
+                  <span class="collection-chevron">
+                    <Icon name="arrow" />
+                  </span>
+                </>
+              }
+            >
+              {() => (
+                <div class="agent-inline form-fields">
+                  <CopyField
+                    label="URL"
+                    value={catalogs()[pin]}
+                    copyLabel="Copy URL"
+                  />
+                  <CopyField
+                    label="SHA-256"
+                    value={pin}
+                    copyLabel="Copy SHA-256"
+                  />
+                </div>
+              )}
+            </ResourceDisclosure>
+            <RowMenu name={catalogs()[pin]}>
+              <button
+                class="danger"
+                disabled={m.busy()}
+                onClick={async () =>
+                  (await askConfirm({
+                    title: "Remove this source?",
+                    description:
+                      "Its services leave the catalog. With no sources left, you see only the built-in presets.",
+                    confirmLabel: "Remove source",
+                    destructive: true,
+                  })) &&
+                  void m.edit([{ path: ["catalogs", pin], delete: true }])
+                }
+              >
+                Remove source
+              </button>
+            </RowMenu>
+          </div>
+        )}
+      </For>
+    </div>
+  );
+}
 function Catalog() {
   let catalog!: HTMLDivElement;
   const m = useMonitor(),
     [query, setQuery] = m.search("connections");
   const [chosen, setChosen] = createSignal<string>();
+  const [sources, setSources] = createSignal(false);
   const groups = createMemo(() => owner.catalog(m.view()!));
   const filtered = createMemo(() => {
     const search = query().toLowerCase();
@@ -538,7 +697,19 @@ function Catalog() {
               ?.click()
           }
         />
+        <button
+          class="icon-button"
+          aria-label="Catalog sources"
+          title="Catalog sources"
+          aria-expanded={sources()}
+          onClick={() => setSources(!sources())}
+        >
+          <Icon name="setting" />
+        </button>
       </div>
+      <Show when={sources()}>
+        <CatalogSources />
+      </Show>
       <For each={groups().map((g) => g.group)}>
         {(id) => {
           const group = () => filtered().get(id)!;
