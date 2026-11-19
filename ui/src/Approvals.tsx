@@ -481,7 +481,12 @@ function ToolDetails(props: { change: ToolChange }) {
       >
         {(tool) => (
           <>
-            <Show when={tool().description}>
+            <Show
+              when={
+                tool().description?.trim() !==
+                firstSentence(tool().description ?? "")
+              }
+            >
               <p class="tool-source">Description from the service</p>
               <p class="tool-description">{tool().description}</p>
             </Show>

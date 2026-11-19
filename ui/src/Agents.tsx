@@ -164,6 +164,9 @@ export function Agents(props: { expanded?: string }) {
                               {summaries().get(name)?.description}
                             </span>
                             <span class="resource-meta">
+                              <Show when={kind === "devices"}>
+                                <span class="badge">CLI</span>
+                              </Show>
                               <Show
                                 when={kind !== "devices" && m.shellFor(name)}
                               >
