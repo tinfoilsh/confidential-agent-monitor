@@ -477,9 +477,7 @@ class Session:
             env["MONITOR_SSH_CONFIG"] = os.path.abspath(self.client.ssh_config)
         else:
             env.pop("MONITOR_SSH_CONFIG", None)
-        git_slots = [{"origin": s["origin"], "path": s.get("path", ""), "password": c["placeholders"][s["value"]]}
-                     for c in connections for s in c["slots"] or []
-                     if s.get("basic") == "password" and s["origin"] == "https://github.com" and s["value"] in c["placeholders"]]
+        git_slots = github_slots(connections)
         helper = self.directory / "git-credential"
         helper.write_text(GIT_HELPER.replace("SLOTS = []", "SLOTS = " + repr(git_slots)))
         helper.chmod(0o700)
@@ -490,17 +488,7 @@ class Session:
             # URL-specific Git configuration outranks generic http settings.
             for key, value in (("proxy", proxy), ("sslCAInfo", str(bundle)), ("sslVerify", "true"), ("extraHeader", "")):
                 git_settings.append((f"http.{origin}.{key}", value))
-        try:
-            count = int(env.get("GIT_CONFIG_COUNT", "0"))
-            if count < 0:
-                raise ValueError()
-        except ValueError as error:
-            raise MonitorError("invalid inherited GIT_CONFIG_COUNT") from error
-        for key, value in git_settings:
-            env[f"GIT_CONFIG_KEY_{count}"], env[f"GIT_CONFIG_VALUE_{count}"] = key, value
-            count += 1
-        env["GIT_CONFIG_COUNT"] = str(count)
-        env["GIT_TERMINAL_PROMPT"] = "0"
+        add_git_config(env, git_settings)
         return env
 
 
@@ -562,6 +550,42 @@ if len(slots) == 1:
     print("username=x-access-token")
     print("password=" + slots[0]["password"])
 '''
+
+
+def github_slots(connections):
+    return [{"origin": s["origin"], "path": s.get("path", ""), "password": c["placeholders"][s["value"]]}
+            for c in connections for s in c["slots"] or []
+            if s.get("basic") == "password" and s["origin"] == "https://github.com" and s["value"] in c["placeholders"]]
+
+
+def add_git_config(env, settings):
+    try:
+        count = int(env.get("GIT_CONFIG_COUNT", "0"))
+        if count < 0:
+            raise ValueError()
+    except ValueError as error:
+        raise MonitorError("invalid inherited GIT_CONFIG_COUNT") from error
+    for key, value in settings:
+        env[f"GIT_CONFIG_KEY_{count}"], env[f"GIT_CONFIG_VALUE_{count}"] = key, value
+        count += 1
+    env["GIT_CONFIG_COUNT"] = str(count)
+    env["GIT_TERMINAL_PROMPT"] = "0"
+
+
+def env_command(client):
+    connections = [c for c in client.connections()["connections"] if c["placeholders"] is not None]
+    placeholders, shared = credential_environment(connections)
+    for variable, names in shared.items():
+        print(f"perimeter: {variable} is shared; use " + ", ".join("$" + name for name in names), file=sys.stderr)
+    env = {"GIT_CONFIG_COUNT": os.environ.get("GIT_CONFIG_COUNT", "0"), **placeholders}
+    if "GITHUB_TOKEN" in placeholders:
+        env["GH_TOKEN"] = placeholders["GITHUB_TOKEN"]
+    # Transparent routing and the system CA cover the rest; Git only needs its credential helper.
+    helper = GIT_HELPER.replace("SLOTS = []", "SLOTS = " + repr(github_slots(connections)))
+    add_git_config(env, [("credential.helper", ""), ("credential.helper", "!" + shlex.quote(sys.executable) + " -c " + shlex.quote(helper)),
+                         ("credential.useHttpPath", "true")])
+    print("\n".join(f"export {key}={shlex.quote(value)}" for key, value in env.items()))
+    return 0
 
 
 def foreground(group):
@@ -916,6 +940,7 @@ def parser():
     catalog.add_argument("--json", action="store_true", help="show complete safe catalog metadata as JSON")
     if SING_BOX.exists():
         commands.add_parser("network", help="run the system-wide SSH/TUN service (root only)")
+        commands.add_parser("env", help="print exports of credential placeholders and Git setup for this shell")
     vm = vm_module()
     if vm:
         vm.add_commands(commands, policy_commands)
@@ -940,6 +965,8 @@ def main(argv=None):
         client = connect(args)
         if args.command == "policy":
             return policy_command(client, args)
+        if args.command == "env":
+            return env_command(client)
         if args.command in ("run", "shell", "mcp", "network"):
             if sys.version_info < (3, 11):
                 raise MonitorError("run, shell, mcp serve and network require Python 3.11 or newer")
