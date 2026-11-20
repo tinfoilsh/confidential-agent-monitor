@@ -1,21 +1,14 @@
 # Perimeter
 
-A Perimeter lets you control how services and their credentials get used,
-without ever handing computers a real credential.
+A **Perimeter** lets you control how services and their credentials get used by your workloads, without handing over any secrets.
 
-Instead of connecting a workload/environment access to services directly, a Perimeter sets precise policies on exactly what kinds of actions
-are and aren't allowed, and substitute / proxy real credentials on the workload's behalf.
+Instead of connecting a workload/environment to services directly, a Perimeter sets precise policies on exactly what kinds of actions are and aren't allowed, and substitutes / proxies real credentials on the workload's behalf.
 
-The perimeter was designed to be **fail-closed**. To correctly enforce a "read-only" rule
-on an API, we have to know its full schema, and not let a writeable operation slip through.
+The perimeter was designed to be **fail-closed**. To enforce policies such as *read-only*, we use **presets** on connectors to undestand the full behavior of a platform being used, and deny unknown requests. We ship hundreds of pre-configured and frequently updated connector definitions to use out of the box.
 
-We address this using **presets**. We ship hundreds of pre-configured and frequently updated connector
-definitions to use out of the box.
+Want a fully confidential workspace built for long running tasks, better availability, access from your phone, or for running untrusted code? Check out [Tinfoil Bunkers](https://tinfoil.sh/bunkers)! Tinfoil Bunkers are fortified against compromised infrastructure, rogue agents, and are verifiably end-to-end private. All bunkers run inside a secure enclave, where every piece of code up to the firmware, is fully verifiable and open source.
 
-You can run a perimeter locally, or on [Tinfoil's confidential cloud](https://tinfoil.sh/bunkers) for
-longer running tasks and greater availability!
-
-Authorization and configuration is done through a web UI or a TOML policy.
+You can also run a Perimeter locally, for smaller agent isolation usecases.
 
 ## Get started
 
@@ -41,7 +34,7 @@ perimeter run -- your-command # Run a command with Perimeter-aware substitution 
 perimeter shell # Enter a shell that uses a Perimeter for access
 ```
 
-You can also open the webui to access the local control panel. The key to unlock it is in `~/.local/share/perimeter/server/owner.key`.
+You can also open the webui at `localhost:8081/app` to access the local control panel. The key to unlock it is in `~/.local/share/perimeter/server/owner.key`.
 
 `perimeter setup --backend` lets you pick an isolation primitive. Supported:
 
@@ -77,6 +70,8 @@ Tinfoil-hosted Perimeters are convenient for a number of reasons:
 
 For a Tinfoil-hosted Perimeter, run `perimeter setup --tinfoil NAME` instead, which performs full attestation against your key and registers your CLI to use the remote endpoint.
 You will need the [Tinfoil CLI](https://github.com/tinfoilsh/tinfoil-cli/releases) to perform the attestation.
+
+A Tinfoil-hosted perimeter has a WebUI that can be opened via `tinfoil perimeter open my-perimeter`
 
 ## How to edit Perimeter policy
 
