@@ -49,7 +49,7 @@ func parse(config json.RawMessage) (*Endpoint, error) {
 		return nil, errors.New("destination requires a URL with a scheme and host")
 	}
 	if _, set := u.User.Password(); set || u.Query().Has("password") {
-		return nil, errors.New("put the password in the service's password credential, not the URL")
+		return nil, errors.New("put the password in the connection's password credential, not the URL")
 	}
 	if e.User != "" {
 		u.User = url.User(e.User)

@@ -87,7 +87,7 @@ func New(slots []Slot, o Options) (Set, error) {
 			return Set{}, err
 		}
 		if (s.slots[i].Form != "") != o.Form {
-			return Set{}, fmt.Errorf("slot for %s does not fit this kind of service", s.slots[i].Value)
+			return Set{}, fmt.Errorf("slot for %s does not fit this kind of connection", s.slots[i].Value)
 		}
 	}
 	return s, nil
@@ -143,7 +143,7 @@ func (s Set) Form(origin, text string, placeholder func(string) string) (name, f
 			return slot.Value, slot.Form, formTypes[slot.Form], nil
 		}
 	}
-	return "", "", nil, errors.New("a secret placeholder is outside this service's declared slots")
+	return "", "", nil, errors.New("a secret placeholder is outside this connection's declared slots")
 }
 
 func (s *Slot) validate() error {

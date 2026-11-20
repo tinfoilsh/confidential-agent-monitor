@@ -41,7 +41,7 @@ func Parse(config json.RawMessage) (*MQTT, error) {
 		return nil, errors.New("destination requires a URL with a scheme and host")
 	}
 	if _, set := u.User.Password(); set || u.Query().Has("password") {
-		return nil, errors.New("put the password in the service's password credential, not the URL")
+		return nil, errors.New("put the password in the connection's password credential, not the URL")
 	}
 	if (u.Scheme != "mqtt" && u.Scheme != "mqtts") || u.Path != "" && u.Path != "/" || u.RawQuery != "" || u.Fragment != "" {
 		return nil, errors.New("MQTT requires an mqtt:// or mqtts:// host URL without a path, query or fragment")

@@ -156,7 +156,7 @@ function Requests(props: { expanded?: string }) {
             <span>Request</span>
             <span class="request-count">Count</span>
             <span>Bunker</span>
-            <span>Service</span>
+            <span>Connection</span>
             <span>Status</span>
             <span>Time</span>
             <span />
@@ -170,11 +170,11 @@ function Requests(props: { expanded?: string }) {
               action={
                 <a class="button primary" href="#connections/catalog">
                   <Icon name="plus" />
-                  Add a service
+                  Add a connection
                 </a>
               }
             >
-              Requests appear here when a bunker uses a service.
+              Requests appear here when a bunker uses a connection.
             </Empty>
           }
         >
@@ -259,7 +259,7 @@ function RequestRow(props: { id: string; stack: string[]; open?: boolean }) {
               {record().facts.principal.name}
             </span>
             <span title={record().facts.connection || "Policy"}>
-              <span class="sr-only">Service: </span>
+              <span class="sr-only">Connection: </span>
               {record().facts.connection || "Policy"}
             </span>
           </span>
@@ -375,7 +375,7 @@ export function RequestDetail(props: {
                   </dd>
                 </div>
                 <div>
-                  <dt>Service</dt>
+                  <dt>Connection</dt>
                   <dd>
                     <Show
                       when={
@@ -423,7 +423,7 @@ export function RequestDetail(props: {
                             : state() === "expired"
                               ? "Nobody answered in time."
                               : state() === "outdated"
-                                ? "Settings for this service changed before review."
+                                ? "Settings for this connection changed before review."
                                 : state() === "allowed" || state() === "approved"
                                   ? owner.isProposal(r())
                                     ? "Proposal approved."
@@ -489,7 +489,7 @@ export function RequestDetail(props: {
                     class="button"
                     href={href("connection", r().facts.connection)}
                   >
-                    {r().invalid ? "View service setup" : "Change access"}
+                    {r().invalid ? "View connection setup" : "Change access"}
                     <Icon name="arrow" />
                   </a>
                 </div>

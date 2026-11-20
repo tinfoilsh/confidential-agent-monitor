@@ -384,7 +384,7 @@ func (s *state) proposePolicy(ctx context.Context, fingerprint string, input con
 				_, err = s.prepareSettings(ctx, s.library(ctx, s.sealer), candidate, everyConnection, nil, before.authority, before.hostKey)
 			}
 			if err != nil {
-				return nil, fmt.Errorf("service %s: %w", target, err)
+				return nil, fmt.Errorf("connection %s: %w", target, err)
 			}
 			proposals = append(proposals, &record{Changes: groups[target], Facts: raw,
 				Decision: config.Decision{Requirements: []config.Requirement{{ID: "policy", Message: reason}}}})

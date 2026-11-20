@@ -193,7 +193,7 @@ for (const theme of ["light", "dark"] as const) {
         "Request count: 2",
       );
       await expect(row).toHaveAccessibleName(
-        /Request: .*Bunker: new-bunker.*Service: network.*Status: Expired.*Requested at:/,
+        /Request: .*Bunker: new-bunker.*Connection: network.*Status: Expired.*Requested at:/,
       );
       const header = list.locator(":scope > .resource-heading");
       const box = (await list.boundingBox())!;
@@ -268,8 +268,8 @@ for (const theme of ["light", "dark"] as const) {
         const bunker = (await detail
           .getByText("Bunker", { exact: true })
           .boundingBox())!;
-        const service = (await detail
-          .getByText("Service", { exact: true })
+        const connection = (await detail
+          .getByText("Connection", { exact: true })
           .boundingBox())!;
         const requested = (await detail
           .getByText("Requested", { exact: true })
@@ -277,10 +277,12 @@ for (const theme of ["light", "dark"] as const) {
         const review = (await detail
           .getByText("Review", { exact: true })
           .boundingBox())!;
-        expect(Math.abs(bunker.y - service.y)).toBeLessThanOrEqual(TOLERANCE);
+        expect(Math.abs(bunker.y - connection.y)).toBeLessThanOrEqual(
+          TOLERANCE,
+        );
         expect(Math.abs(bunker.y - requested.y)).toBeLessThanOrEqual(TOLERANCE);
-        expect(bunker.x).toBeLessThan(service.x);
-        expect(service.x).toBeLessThan(requested.x);
+        expect(bunker.x).toBeLessThan(connection.x);
+        expect(connection.x).toBeLessThan(requested.x);
         expect(review.y).toBeGreaterThan(requested.y + requested.height);
       }
       await row.click();

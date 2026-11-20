@@ -59,7 +59,7 @@ const LEVEL_NOTES: { [L in owner.Level]: string } = {
   ask: "Reads go through; changes ask you first.",
   allow: "Recognized requests go through.",
 };
-// How a service handles data, as its settings name it.
+// How a connection handles data, as its settings name it.
 const ANSWERS: Record<string, Pick<Item, "label" | "kind">> = {
   preset: { label: "Type", kind: "preset" },
   contents: { label: "Confidentiality", kind: "audience" },
@@ -78,11 +78,11 @@ const accessItem = (
         leaf,
       }
     : { label: "Access", kind: kind === "level" ? "level" : undefined, leaf };
-// Every changed setting, split into the service's own setup and who may use it.
+// Every changed setting, split into the connection's own setup and who may use it.
 function changeGroups(view: owner.View, record: owner.RequestRecord) {
   const name = record.facts.connection;
   const preset = view.presets[proposalPreset(record, view)];
-  const service: Item[] = [],
+  const setup: Item[] = [],
     other: Item[] = [],
     access = new Map<string, Item[]>();
   const grant = (who: string, item: Item) =>
@@ -94,7 +94,7 @@ function changeGroups(view: owner.View, record: owner.RequestRecord) {
       const field = preset?.fields?.find((f) =>
         (f.paths ?? [f.path ?? []]).some((p) => p.join("/") === setting),
       );
-      service.push({
+      setup.push({
         ...(ANSWERS[setting] ?? {
           label: field?.label ?? leaf.path.slice(2).join(" › "),
         }),
@@ -106,7 +106,7 @@ function changeGroups(view: owner.View, record: owner.RequestRecord) {
       grant(a, accessItem(rest, leaf, preset?.actions));
     else other.push({ label: leaf.path.join(" › "), leaf });
   }
-  return { service, access: [...access], other };
+  return { setup, access: [...access], other };
 }
 const itemText = (view: owner.View, item: Item, value: owner.Json) =>
   item.kind === "level"
@@ -265,9 +265,9 @@ export function ProposalChanges(props: { record: owner.RequestRecord }) {
   const m = useMonitor();
   const groups = createMemo(() => changeGroups(m.view()!, props.record));
   const preset = () => proposalPreset(props.record, m.view()!);
-  const added = () => groups().service.some((item) => item.kind === "preset");
+  const added = () => groups().setup.some((item) => item.kind === "preset");
   const removed = () =>
-    groups().service.some((item) => item.leaf.path.length === 2);
+    groups().setup.some((item) => item.leaf.path.length === 2);
   const Facts = (facts: { items: Item[] }) => (
     <ul class="proposal-facts">
       <For each={facts.items}>
@@ -290,9 +290,9 @@ export function ProposalChanges(props: { record: owner.RequestRecord }) {
   );
   return (
     <>
-      <Show when={groups().service.length}>
+      <Show when={groups().setup.length}>
         <section class="proposal-group">
-          <header class="proposal-service">
+          <header class="proposal-connection">
             <ConnectorIcon preset={preset()} />
             <span class="proposal-summary">
               <strong>{props.record.facts.connection}</strong>
@@ -303,14 +303,14 @@ export function ProposalChanges(props: { record: owner.RequestRecord }) {
               classList={{ "status-new": added(), "status-denied": removed() }}
             >
               {added()
-                ? "New service"
+                ? "New connection"
                 : removed()
-                  ? "Removes this service"
+                  ? "Removes this connection"
                   : "Changes settings"}
             </span>
           </header>
           <Facts
-            items={groups().service.filter(
+            items={groups().setup.filter(
               (item) => item.kind !== "preset" && item.leaf.path.length > 2,
             )}
           />

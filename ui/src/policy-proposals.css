@@ -57,7 +57,7 @@
   font-size: var(--font-detail);
   font-weight: 500;
 }
-.proposal-service {
+.proposal-connection {
   display: flex;
   align-items: center;
   gap: 12px;

@@ -1015,10 +1015,10 @@ def setup_launch(args):
         connections = view["config"].get("connections") or {}
         access = {}
         for item in args.access or []:
-            service, sep, level = item.partition("=")
-            if not sep or service not in connections or level not in ("read", "ask", "allow"):
-                raise Error(f"invalid service access {item!r}; use an existing service and read, ask or allow")
-            access[service] = {"level": level}
+            connection, sep, level = item.partition("=")
+            if not sep or connection not in connections or level not in ("read", "ask", "allow"):
+                raise Error(f"invalid connection access {item!r}; use an existing connection and read, ask or allow")
+            access[connection] = {"level": level}
         if args.tinfoil and name == "default":
             pair_computer(owner, view, endpoint, root)
         for pin, data in pins.items():
@@ -1041,18 +1041,18 @@ def setup_launch(args):
     return 0
 
 
-def agent_service(view, recipe, chosen):
-    """Pick the HTTP service an agent uses: the first of its presets with exactly one candidate."""
+def agent_connection(view, recipe, chosen):
+    """Pick the HTTP connection an agent uses: the first of its presets with exactly one candidate."""
     connections = view["config"].get("connections") or {}
     for preset in recipe["via"]:
         # A connection's kind is its key naming a connector, such as "http".
         names = [name for name, settings in connections.items()
                  if settings.get("preset") == preset and "http" in settings and chosen in (None, name)]
         if len(names) > 1:
-            raise Error(f"several {preset} services exist; choose one with --service")
+            raise Error(f"several {preset} connections exist; choose one with --connection")
         if names:
             return names[0], preset
-    raise Error("add " + " or ".join(recipe["via"]) + " service in the Perimeter"
+    raise Error("add " + " or ".join(recipe["via"]) + " connection in the Perimeter"
                 + (f", or choose another than {chosen!r}" if chosen else ""))
 
 
@@ -1199,8 +1199,8 @@ def launch_vm(args, cli):
         agent = args.command == "launch" and args.agent != "shell"
         if agent:
             recipe = json.loads(asset("agents.json"))[args.agent]
-            service, via = agent_service(view, recipe, args.service)
-            profile["access"].setdefault(service, {"level": "allow"})
+            connection, via = agent_connection(view, recipe, args.connection)
+            profile["access"].setdefault(connection, {"level": "allow"})
         if args.command == "launch":
             enroll_identity(owner, state, state_path, public_key, profile["access"])
             close()
@@ -1217,7 +1217,7 @@ def launch_vm(args, cli):
                 return 0
             if agent:
                 mcp = profile.get("mcp", False) and "mcp" in recipe
-                command = GUEST_CLI + ["_agent", "--service", service, "--via", via,
+                command = GUEST_CLI + ["_agent", "--connection", connection, "--via", via,
                                        *(["--mcp"] if mcp else []), args.agent, "--", *args.argv]
             else:
                 command = GUEST_CLI + (["run", "--", *args.argv] if args.argv else ["shell"])
@@ -1229,16 +1229,16 @@ def guest_agent(cli, client, args):
     via = recipe["via"][args.via]
     with cli.Session(client) as session:
         env = session.environment([], None)
-        connection = next((c for c in session.connections if c["name"] == args.service), None)
+        connection = next((c for c in session.connections if c["name"] == args.connection), None)
         if connection is None:
-            raise Error(f"the {args.service} service is not accessible to this bunker; grant it access in the Perimeter")
+            raise Error(f"the {args.connection} connection is not accessible to this bunker; grant it access in the Perimeter")
         if connection["state"] != "ready":
-            raise Error("the model service is not ready; check its access and status in the Perimeter")
+            raise Error("the model connection is not ready; check its access and status in the Perimeter")
         values = connection["placeholders"] or {}
         variable = via["key"]
         key = values.get(variable) or values.get("token") or (next(iter(values.values())) if len(values) == 1 else None)
         if key is None:
-            raise Error(f"model service needs a token or {variable} credential slot")
+            raise Error(f"model connection needs a token or {variable} credential slot")
         for name in recipe.get("unset", []):
             env.pop(name, None)
         env.update(recipe.get("env", {}))
@@ -1248,7 +1248,7 @@ def guest_agent(cli, client, args):
         if args.mcp:
             servers, count = cli.mcp_servers(session)
             if not count:
-                raise Error("no MCP tools are available; review service access and tools in the Perimeter")
+                raise Error("no MCP tools are available; review connection access and tools in the Perimeter")
             mcp_config = session.directory / "mcp.json"
             mcp_config.write_text(json.dumps({"mcpServers": servers}))
             # These endpoints live in the guest. Sending them through the HTTP
@@ -1303,12 +1303,12 @@ def add_commands(commands, policy_commands):
     setup.add_argument("--cpus", type=int, default=2, help="VM CPU count (default: 2)")
     setup.add_argument("--memory", type=int, default=4096, help="VM memory in MiB (default: 4096)")
     setup.add_argument("--disk-size", type=int, default=DISK_GIB, help=f"VM disk size in GiB (default: {DISK_GIB})")
-    setup.add_argument("--access", action="append", help="initial service access NAME=read|ask|allow; repeat for several")
-    setup.add_argument("--mcp", action="store_true", help="also connect agents that support it to the Perimeter's MCP services")
+    setup.add_argument("--access", action="append", help="initial connection access NAME=read|ask|allow; repeat for several")
+    setup.add_argument("--mcp", action="store_true", help="also connect agents that support it to the Perimeter's MCP connections")
     agents = list(json.loads(asset("agents.json")))
     launch = commands.add_parser("launch", help="launch an agent in a Perimeter-connected Linux bunker")
     launch.add_argument("--workspace", default=".", help="project directory (default: current directory)")
-    launch.add_argument("--service", help="model service for the agent (default: the only one of a kind it supports)")
+    launch.add_argument("--connection", help="model connection for the agent (default: the only one of a kind it supports)")
     launch.add_argument("agent", choices=agents + ["shell"], help="an agent, or a shell routed through the Perimeter")
     launch.add_argument("argv", nargs="*", help="-- ARGUMENTS passed to the agent, or a COMMAND to run instead of the shell")
     destroy = commands.add_parser("destroy", help="revoke the project's Perimeter identity and destroy its bunker")
@@ -1324,7 +1324,7 @@ def add_commands(commands, policy_commands):
     proxy.add_argument("socket")
     agent = commands.add_parser("_agent")
     agent.add_argument("agent", choices=agents)
-    agent.add_argument("--service", required=True)
+    agent.add_argument("--connection", required=True)
     agent.add_argument("--via", required=True)
     agent.add_argument("--mcp", action="store_true")
     agent.add_argument("argv", nargs=argparse.REMAINDER)

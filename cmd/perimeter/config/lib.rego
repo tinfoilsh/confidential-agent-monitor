@@ -45,7 +45,7 @@ default mode := "off"
 mode := overrides[0] if {
 	overrides != []
 } else := "allow" if {
-	# A session opens to any service the bunker reaches.
+	# A session opens to any connection the bunker reaches.
 	admission
 	auth.reaches
 } else := grants[auth.access.level][request] if {
@@ -61,7 +61,7 @@ paid := {"pay": "allow"} if {
 	"pay" in op.effects
 } else := {}
 
-# Scopes run from global settings to this bunker's access on this service; the most specific wins.
+# Scopes run from global settings to this bunker's access on this connection; the most specific wins.
 effects := object.union_n(array.concat([effect_defaults, paid], auth.effects))
 
 # A preset's public scope lists the parameters that together name one resource, such as owner and repo.
