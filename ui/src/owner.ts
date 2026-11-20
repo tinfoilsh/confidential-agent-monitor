@@ -324,10 +324,10 @@ export type ConnectionAnswers = {
   strangers: boolean;
   sends: Audience;
 };
-// What the owner picked at first setup: services with their credential, if
-// they take one, and how bunkers reach hosts outside those services.
+// What the owner picked at first setup: connections with their credential, if
+// they take one, and how bunkers reach hosts outside those connections.
 export type OnboardingChoices = {
-  services: { preset: string; level: Level; credential?: string }[];
+  connections: { preset: string; level: Level; credential?: string }[];
   network: Exclude<Level, "read">;
   registries: boolean;
 };
@@ -784,7 +784,7 @@ export const kindOf = (c?: Connection) =>
   Object.keys(c ?? {}).find((key) => !SETTINGS.includes(key));
 export const setupOf = (c?: Connection) =>
   c?.[kindOf(c)!] as { [key: string]: Json } | undefined;
-const UNKNOWN_PRESET = { title: "Service" };
+const UNKNOWN_PRESET = { title: "Connection" };
 export const presetOf = (view: View, name: string): Omit<Preset, "defaults"> =>
   view.presets[connections(view)[name]?.preset] ?? UNKNOWN_PRESET;
 export const matchOnly = (view: View, name: string) =>
@@ -1107,7 +1107,7 @@ export function agentAccess(view: View, name: string, only?: string) {
       mode: mode(access, view.vocabulary, node.effects, node.key),
       children: node.children.map(describe),
     });
-    // A lone group without an override repeats the service's own row.
+    // A lone group without an override repeats the connection's own row.
     const ungrouped = (nodes: AccessNode[]): AccessNode[] =>
       nodes.length === 1 &&
       nodes[0].children.length > 1 &&
@@ -1162,7 +1162,7 @@ export function toolReviewDescription(review: Review): string {
     return "The server's instructions changed since you approved them. Bunkers can use the affected tools again once you approve.";
   return "These tools changed since you approved them. Bunkers can use them again once you approve.";
 }
-// Services whose MCP tools wait for the owner's approval.
+// Connections whose MCP tools wait for the owner's approval.
 export const toolReviews = (view: View) =>
   Object.keys(connections(view))
     .filter((name) => (view.status[name]?.details?.blocked ?? 0) > 0)
@@ -1620,7 +1620,7 @@ supports_websockets = false`;
 const KEY_PREFIX_LENGTH = 8;
 export const apiKeyLabel = (key: { name: string; key: string }) =>
   `${key.name || "Unnamed key"} · ${key.key.slice(0, KEY_PREFIX_LENGTH)}…`;
-// Which of the owner's Tinfoil API keys a service uses is kept as a short hash
+// Which of the owner's Tinfoil API keys a connection uses is kept as a short hash
 // in owner-only data, so the key can be shown without storing it again.
 const TINFOIL_KEYS = ["data", "tinfoil_keys"];
 const FINGERPRINT_LENGTH = 16;
@@ -1643,7 +1643,7 @@ export function tinfoilSetup(view: View, name: string) {
   return { mcp, url: `https://${name}.perimeter/${mcp ? "mcp" : "v1"}` };
 }
 
-// Bunkers reach these services by name and send no password; the Perimeter adds it upstream.
+// Bunkers reach these connections by name and send no password; the Perimeter adds it upstream.
 export function serviceURL(view: View, name: string) {
   const c = connections(view)[name];
   const kind = kindOf(c);
@@ -1761,7 +1761,7 @@ function onboardingChanges(
     const kind = Object.keys(view.presets[preset].connection ?? {})[0];
     if (PINNED_KINDS.includes(kind)) approveTools.push(connection);
   };
-  for (const { preset, level, credential } of choices.services) {
+  for (const { preset, level, credential } of choices.connections) {
     if (preset !== "tinfoil") {
       add(unusedName(view, preset), preset, level, credential);
       continue;
@@ -1781,7 +1781,7 @@ function onboardingChanges(
   return { changes, credentials };
 }
 
-// MCP services chosen during setup have their first reported tools approved
+// MCP connections chosen during setup have their first reported tools approved
 // without a review; later changes to those tools still wait for the owner.
 const SETUP_TOOLS = ["data", "onboarding", "approve_tools"];
 const PINNED_KINDS = ["mcp", "tinfoil-mcp"];
@@ -1796,7 +1796,7 @@ export function setupToolApprovals(view: View): Change[] {
   const ready = names.filter(
     (name) => view.status[name]?.details?.pin != null && !approved(name),
   );
-  // A removed or already approved service needs no first approval.
+  // A removed or already approved connection needs no first approval.
   const settled = names.filter(
     (name) => !connections(view)[name] || approved(name),
   );
@@ -1898,13 +1898,13 @@ export const edits = {
       throw new Error("This name is already in use.");
     return [{ path: ["identities", to], from: ["identities", from] }];
   },
-  // Saved credentials and rules follow the service to its new name.
+  // Saved credentials and rules follow the connection to its new name.
   renameConnection(view: View, from: string, to: string): Change[] {
     if (!NAME.test(to))
-      throw new Error("Name this service using letters, numbers, and hyphens.");
+      throw new Error("Name this connection using letters, numbers, and hyphens.");
     if (Object.hasOwn(connections(view), to))
       throw new Error(
-        "A service with that name already exists. Choose another name.",
+        "A connection with that name already exists. Choose another name.",
       );
     return [
       ...connectionPaths(view, from).map((path) => ({
@@ -1924,7 +1924,7 @@ export const edits = {
   setRoutes: (name: string, routes: boolean): Change[] => [
     { path: ["identities", name, "routes"], value: routes },
   ],
-  // The bunkers service is added by the first access set to it.
+  // The bunkers connection is added by the first access set to it.
   setLevel: (
     view: View,
     name: string,
@@ -1985,7 +1985,7 @@ export const edits = {
         },
       },
     }),
-  // Replaces a Tinfoil service's key with another of the owner's keys.
+  // Replaces a Tinfoil connection's key with another of the owner's keys.
   setTinfoilKey: (connection: string, field: string, key: string) => ({
     changes: [tinfoilKeyChange(connection, key)],
     credentials: { [connection]: { [field]: key } },
@@ -2009,10 +2009,10 @@ export const edits = {
   ): { changes: Change[]; credentials: Credentials } {
     const c = view.presets[preset];
     name = name.trim();
-    if (!name) throw new Error("Name this service.");
+    if (!name) throw new Error("Name this connection.");
     if (Object.hasOwn(connections(view), name))
       throw new Error(
-        "A service with that name already exists. Choose another name.",
+        "A connection with that name already exists. Choose another name.",
       );
     const fields = setupFields(view, preset);
     // Only the non-secret values fill a preset's setup; credentials are stored apart from the connection.
@@ -2073,10 +2073,10 @@ export const edits = {
   ): { changes: Change[]; credentials: Credentials } {
     name = name.trim();
     if (!NAME.test(name))
-      throw new Error("Name this service using letters, numbers, and hyphens.");
+      throw new Error("Name this connection using letters, numbers, and hyphens.");
     if (Object.hasOwn(connections(view), name))
       throw new Error(
-        "A service with that name already exists. Choose another name.",
+        "A connection with that name already exists. Choose another name.",
       );
     const http = { slots: [apiSlot(api)] };
     const body: { [key: string]: unknown } = {

@@ -1,197 +1,120 @@
 ---
 name: perimeter
-description: Discover Perimeter service types and granted services, inspect identity-scoped policy, propose service setup or access changes for owner review, and use HTTP or MCP services without handling credentials.
+description: Use connections such as HTTP APIs, MCP servers, models, SSH and databases through a Perimeter from a bunker or trusted device without handling credentials, and request access for the owner to approve.
 ---
 
 # Perimeter
 
-The Perimeter is the policy and credential boundary between an AI agent and external
-services. Use the installed `perimeter` CLI unless you are integrating directly
-with the agent HTTP API.
+The Perimeter sits between you and external services. It holds the credentials,
+enforces the owner's policy, and may hold a request until the owner approves it.
+You never need a real credential.
 
-## Safety rules
+## Where you are
 
-- Never ask for, read, copy, or submit the Perimeter owner key.
-- Never ask for provider credentials. Credentials are configured separately by
-  the owner and never belong in a proposal.
-- Treat catalog `warning` text as part of the service definition. Explain it
-  to the owner when proposing a Generic service.
-- A submitted proposal is not approval. Do not assume access changed until it
-  appears in `perimeter services` or `perimeter policy show`.
-- Prefer a named service over Generic Web, SSH, network, API, or MCP
-  when one exists.
-- Service approval does not approve MCP tool definitions. The owner reviews
-  new or changed MCP tools separately.
+- **Bunker:** all traffic already goes through the Perimeter, which is the only
+  egress, and its CA is trusted system-wide. `perimeter --help` lists the
+  `network` and `env` commands only here.
+- **Trusted device:** nothing is routed unless you go through the `perimeter`
+  CLI or its SSH host.
 
-## Discover capabilities
-
-Inspect safe setup metadata available to every bunker and trusted device:
+## Start here
 
 ```sh
-perimeter catalog --json
+perimeter connections         # what you can use, its state and address
+perimeter connections --json  # adds access level, upstream hosts, placeholders, credential state
 ```
 
-Each preset can include its name, title, group, defaults, setup fields,
-service templates, and shared `warning` copy. `vocabulary` describes the
-effects referenced by catalog actions, including change and approval defaults.
-The final `generic` group is a fallback for broad service types.
+Only `ready` connections work. A credential state of `unset` or
+`oauth-required` means the owner must finish setup.
 
-Inspect services this identity may actually use:
+## Use a connection
 
-```sh
-perimeter services --json
-```
+The Perimeter adds the real credential upstream; never send a password.
 
-Service discovery includes routing names, protocol, readiness, effective
-access, allowed upstream hosts, safe credential placeholders, and credential
-states such as `unset`, `static`, `oauth`, or `oauth-required`. It never contains
-credential values or verified credential account identifiers.
+| Kind | Bunker | Trusted device |
+| --- | --- | --- |
+| `http` | The real URL with its placeholder, after `eval "$(perimeter env)"` | `perimeter run -- CMD` or `perimeter shell` |
+| `mcp`, `tinfoil-mcp` | `https://NAME.perimeter/mcp` | The same URL under `perimeter run`, or `perimeter mcp serve` for clients that ignore proxy variables |
+| `tinfoil` | `https://NAME.perimeter/v1`, OpenAI- or Anthropic-compatible, with any API key | The same URL under `perimeter run` |
+| `ssh`, `sftp`, `postgres`, `redis`, `imap`, `smtp`, `mqtt`, `nats` | `NAME.perimeter` on the usual port | `ssh -N -L PORT:NAME.perimeter:PORT perimeter`, then `127.0.0.1:PORT` |
+| `tcp` | The real host and port | `perimeter run` for proxy-aware tools, or `ssh -N -L PORT:HOST:PORT perimeter` |
 
-Inspect policy visible to this identity:
+`perimeter run` and `perimeter shell` set proxy and CA variables, configure
+`git` and `gh` for GitHub, and export each credential as a placeholder in its
+usual variable, such as `GITHUB_TOKEN`. A variable shared by several connections
+is exported as `MONITOR_CREDENTIAL_<CONNECTION>_<VARIABLE>`. Pass placeholders
+where a tool expects its credential; a request without one reaches the service
+unauthenticated. Never replace one with a real value. Select connections
+with `--connection NAME` when a host is ambiguous. In a bunker, traffic is
+routed without the CLI; `eval "$(perimeter env)"` exports the same placeholders
+and Git credential setup into the current shell, so plain `gh`, `git` and `curl`
+authenticate. Run it again after connections change.
 
-```sh
-perimeter policy show
-perimeter policy show --json
-```
+`perimeter launch claude` after `perimeter setup --mcp` connects Claude to every
+ready MCP connection. In a Tinfoil bunker, agent settings preconfigure only the
+`tinfoil_websearch` MCP connection. Add any other ready MCP connection yourself,
+for example `claude mcp add --transport http NAME https://NAME.perimeter/mcp`.
 
-A bunker sees only its own identity, its own access and rules, and semantics
-for services it can reach. A trusted device sees a credential-free, expanded
-configuration projection, including services, identities, public keys, routes,
-bunker access and global settings. Inherited access and resolved services are
-materialized, so this projection is not source TOML and must not be round-tripped.
-Neither view includes values from the Perimeter's credential store.
+On a trusted device the CLI finds the `perimeter` SSH host in
+`~/.config/perimeter/launch/default/ssh_config` or
+`~/.local/share/perimeter/server/ssh_config`; pass that file to `ssh -F`.
 
-## Propose service changes
+Another bunker is reachable at `NAME.sandbox` on listeners bound to `0.0.0.0`,
+once the owner allows it.
 
-Use a paired trusted-device identity for host automation. Code running inside a
-bunker uses that bunker's identity. Do not borrow an owner-panel session.
+A request that needs approval waits up to two minutes for the owner. Give such a
+command a longer timeout or run it in the background; a retry asks the owner
+again. After an uncertain write times out, check the destination before retrying.
 
-Structured changes are preferred for automation:
+A refusal saying a request has no recognized operation means the connection's
+preset does not cover that endpoint, and retrying will not help. Use a covered
+endpoint or propose a connection that covers it, such as `custom_api`.
 
-```sh
-perimeter policy propose --changes changes.json \
-  --reason "Grant this bunker GitHub access for issue triage"
-```
+## Get access
 
-`changes.json` is a non-empty JSON array:
+1. `perimeter catalog` lists connection types; `--json` adds setup fields and
+   `warning` text. Prefer a named type over a generic one.
+2. `perimeter policy show` shows your identity name and current access.
+3. Propose the change and say why:
 
-```json
-[
-  {
-    "path": ["identities", "my-bunker", "connections", "github", "level"],
-    "value": "ask"
-  }
-]
-```
+   ```sh
+   perimeter policy propose --changes changes.json --reason "Triage GitHub issues"
+   ```
 
-A deletion uses `"delete": true` and omits `value`. TOML fragments are also
-supported:
+   ```json
+   [{"path": ["identities", "my-bunker", "connections", "github", "level"], "value": "ask"}]
+   ```
 
-```sh
-perimeter policy propose change.toml \
-  --reason "Grant this bunker GitHub access for issue triage"
-```
+   Levels are `off`, `read`, `ask` and `allow`. Setup for a new connection
+   goes under `["connections", NAME]` with the fields its catalog entry lists.
+   A deletion uses `"delete": true` instead of `value`.
+4. `perimeter policy status ID` reports `pending`, `approved`, `denied` or
+   `outdated`. Propose again if the ID is gone after a Perimeter restart.
 
-Trusted-device proposals may change only:
+A bunker may change only its own access and shared connection setup; a trusted
+device may also change `default_access`. Credentials, MCP tool approvals, keys
+and global policy belong to the owner.
 
-- `connections.<connection>...`
-- `default_access.<connection>...`
-- `identities.<sandbox>.connections.<connection>...`
+## Trust model
 
-A bunker may propose shared service setup under `connections`, but may change
-access only for its own identity and cannot change `default_access`. No proposal
-may change credentials, MCP tool pins, identity keys or routes, global policies,
-data, global effect defaults, lattice settings, or unrelated owner configuration.
-The Perimeter validates all submitted changes and removes semantic no-ops before
-publishing them for review.
+The Perimeter is the owner's own enforcement point, not a third party. It reads
+requests in plaintext because it applies the owner's policy and adds credentials.
 
-A batch affecting several services is split into one proposal per service.
-Setup and default/bunker access for the same service stay together. The CLI
-prints one receipt per service; poll a receipt without owner credentials:
+- A Tinfoil-hosted Perimeter runs in a confidential VM. The owner verified its
+  attested image when setting it up, and this bunker or device accepts only the
+  Perimeter key pinned at setup, so the host operator cannot read or change traffic.
+- A local Perimeter runs on the owner's own computer.
+- Upstream, the Perimeter checks each service's TLS certificate and attests
+  Tinfoil models and MCP servers.
 
-```sh
-perimeter policy status PROPOSAL_ID
-```
+You cannot verify the attestation from here; you rely on the owner having done
+it. When asked whether this is secure, describe the real risks instead: what the
+policy allows, what the owner approves, the code and agents in this bunker or
+device, and the upstream services.
 
-The result is a receipt, `{id, state, connection}`, with state `pending`,
-`approved`, `denied`, or `outdated`. Status is process-local like the pending
-proposal itself, so a Perimeter restart may make an old receipt unavailable.
+## Rules
 
-A proposal stays pending across other policy changes and is reviewed against the
-current policy. The Perimeter records it as Outdated in Activity when it no longer
-applies or you propose again for the same service.
-
-## Use granted services
-
-HTTP and HTTPS tools can run through the Perimeter:
-
-```sh
-perimeter run --service SERVICE -- curl -fsS https://example.com
-perimeter run -- your-command
-perimeter shell
-```
-
-The wrapper configures proxy and certificate settings and exposes safe credential
-placeholders. The Perimeter substitutes real credentials upstream. Map a placeholder
-to the environment variable expected by a tool inside the wrapped command;
-never replace it with a real credential.
-
-For MCP services:
-
-```sh
-perimeter mcp serve --listen 127.0.0.1:8400
-```
-
-Keep the process running and configure the MCP client with the reported local
-URL. Only ready, granted MCP services are served.
-
-Requests requiring owner approval may wait and time out. After an uncertain
-write timeout, inspect the target or Activity before retrying.
-
-## Direct agent HTTP API
-
-Inside a managed bunker, `agent.perimeter` exposes the identity-authenticated API.
-Authentication comes from the bunker or trusted-device SSH identity; do not add
-an owner bearer token.
-
-| Method | Path                | Purpose                                      |
-| ------ | ------------------- | -------------------------------------------- |
-| `GET`  | `/catalog`          | Safe preset catalog and shared warnings      |
-| `GET`  | `/connections`      | Services this identity can use            |
-| `GET`  | `/policy`                | Identity-scoped credential-free policy TOML  |
-| `GET`  | `/policy/proposals/{id}` | Poll one proposal submitted by this identity |
-| `POST` | `/policy/proposals`      | Submit TOML or structured service changes |
-
-Examples from a bunker where `agent.perimeter` is directly routable:
-
-```sh
-curl -fsS http://agent.perimeter/catalog
-curl -fsS http://agent.perimeter/connections
-curl -fsS http://agent.perimeter/policy
-curl -fsS -X POST http://agent.perimeter/policy/proposals \
-  -H 'Content-Type: application/json' \
-  --data-binary @proposal.json
-```
-
-A structured request body has `reason` and `changes`:
-
-```json
-{
-  "reason": "Grant this sandbox GitHub access for issue triage",
-  "changes": [
-    {
-      "path": ["identities", "my-bunker", "connections", "github", "level"],
-      "value": "ask"
-    }
-  ]
-}
-```
-
-A TOML request body uses `source`, optional path arrays in `delete`, and
-`reason`. Agent proposal responses contain only receipts, and resubmitting
-replaces the pending proposal with a new one; owner-only source diffs and
-configuration are not returned.
-
-On a paired host, use the `perimeter` CLI because it carries these requests through
-the authenticated SSH transport. Run `perimeter --help` for SSH host, config, and
-profile options.
+- Never ask for, read or use the owner key or a real credential.
+- A proposal is not approval. Wait until `perimeter connections` shows the change.
+- Approving a connection does not approve its MCP tools; the owner reviews them.
+- When proposing a generic connection, relay its catalog `warning` to the owner.

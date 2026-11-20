@@ -35,14 +35,14 @@ export function Agents(props: { expanded?: string }) {
       Object.keys(view.config.identities ?? {})
         .sort()
         .map((name) => {
-          const services = owner
+          const connections = owner
             .agentAccess(view, name)
             .filter((access) => access.level !== "off").length;
           const description = owner.isDevice(name)
             ? view.config.identities![name].routes
               ? "Can reach bunkers"
               : "Bunker access off"
-            : `${services} ${services === 1 ? "service" : "services"}`;
+            : `${connections} ${connections === 1 ? "connection" : "connections"}`;
           return [name, { description }];
         }),
     );
@@ -657,10 +657,10 @@ function AgentAccess(props: { name: string }) {
   return (
     <section
       class="agent-access-section"
-      aria-label={`Service access for ${props.name}`}
+      aria-label={`Connection access for ${props.name}`}
     >
       <SectionHeading
-        title="Service access"
+        title="Connection access"
         description={`What ${props.name} can reach through the Perimeter, and what asks you first.`}
       />
       <div class="agent-access">
@@ -677,7 +677,7 @@ function AgentAccess(props: { name: string }) {
           )}
           fallback={
             <p>
-              No services yet. <a href="#connections/catalog">Add a service</a>
+              No connections yet. <a href="#connections/catalog">Add a connection</a>
             </p>
           }
         >
@@ -784,7 +784,7 @@ function AgentSettings(props: { name: string }) {
                 <div class="setting-row">
                   <span>
                     Copy bunker profile
-                    <small>Takes its service access, actions and rules.</small>
+                    <small>Takes its connection access, actions and rules.</small>
                   </span>
                   <span class="agent-advanced-actions">
                     <select

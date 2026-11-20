@@ -1,178 +1,77 @@
 # Perimeter
 
-Perimeter controls how AI agents use your accounts to read repositories, send
-email, query databases, and call models. You set permissions and approve
-requests through a web UI or TOML policy.
+A **Perimeter** lets you control how services and their credentials get used by your workloads, without handing over any secrets.
 
-Credentials stay in the Perimeter. Agents receive placeholders. Perimeter supplies the
-real credentials after checking each request. Stored state is encrypted with
-your owner secret.
+Instead of connecting a workload/environment to services directly, a Perimeter sets precise policies on exactly what kinds of actions are and aren't allowed, and substitutes / proxies real credentials on the workload's behalf.
 
-## How it works
+The perimeter was designed to be **fail-closed**. To enforce policies such as *read-only*, we use **presets** on connectors to undestand the full behavior of a platform being used, and deny unknown requests. We ship hundreds of pre-configured and frequently updated connector definitions to use out of the box.
 
-Agents connect over SSH using their own keys. Perimeter interprets requests,
-checks permissions, then forwards, denies, or holds them for approval. Service
-presets describe operations and effects such as reading, deleting, or publishing.
+Want a fully confidential workspace built for long running tasks, better availability, access from your phone, or for running untrusted code? Check out [Tinfoil Bunkers](https://tinfoil.sh/bunkers)! Tinfoil Bunkers are fortified against compromised infrastructure, rogue agents, and are verifiably end-to-end private. All bunkers run inside a secure enclave, where every piece of code up to the firmware, is fully verifiable and open source.
 
-Perimeter also tracks private and untrusted data an agent has read. Data-flow
-rules can require approval before it shares that data or acts on untrusted input.
-
-These controls apply to traffic routed through the Perimeter. Bunkers provide
-process isolation and network restrictions. The local CLI only configures
-routing for compatible clients.
+You can also run a Perimeter locally, for smaller agent isolation usecases.
 
 ## Get started
 
+### Local setup
+
+You can get set up with a local perimeter through the CLI:
+
+``` sh
+./install.sh --daemon # Build, install, and enable the perimeter as a daemon
+
+export PATH="$HOME/.local/bin:$PATH" # Add this to your .bashrc, .zshrc, etc.
+```
+
+After that's done, off to the races:
+
+```sh
+# Start a firecracker (or vfkit on Mac) VM with an agent running and the current directory loaded in
+perimeter launch claude # codex,opencode,pi,shell also supported
+
+perimeter connections # List connections and whether they are ready
+perimeter catalog # View the catalog of possible connections
+perimeter run -- your-command # Run a command with Perimeter-aware substitution and routing
+perimeter shell # Enter a shell that uses a Perimeter for access
+```
+
+You can also open the webui at `localhost:8081/app` to access the local control panel. The key to unlock it is in `~/.local/share/perimeter/server/owner.key`.
+
+`perimeter setup --backend` lets you pick an isolation primitive. Supported:
+
+| Backend                          | Isolation                       |
+| -------------------------------- | ------------------------------- |
+| `firecracker` (default on Linux) | KVM virtual machine             |
+| `docker` (default on macOS)      | container with `--network none` |
+| `vfkit`                          | Virtualization.framework VM     |
+| `bwrap`                          | unprivileged namespaces         |
+
 ### Tinfoil Bunkers
 
-Create a Perimeter and a bunker in it from the
-[Tinfoil dashboard](https://dash.tinfoil.sh/). Using the
-[Tinfoil CLI](https://github.com/tinfoilsh/tinfoil-cli/releases), connect to your
-bunker, named `work` in this example.
+Tinfoil provides fully confidential, end-to-end attested bunkers and perimeters which act as an extension of your laptop. You can set them up in the [Tinfoil dashboard](https://dash.tinfoil.sh/), or using the [Tinfoil CLI](https://github.com/tinfoilsh/tinfoil-cli/releases):
+
+``` sh
+tinfoil perimeter create my-perimeter
+tinfoil bunker create work --perimeter=my-perimeter
+```
+
+Once created, you can pin the bunkers SSH keys to the attestation and connect:
 
 ```sh
 tinfoil attest-ssh work --install
 ssh work
 ```
 
-In the Perimeter, add services under **Permissions** and grant the bunker access
-under **Bunkers**. Run `perimeter services` inside the bunker to see what's available.
-Repeat attestation after either VM reboots.
+In the Bunker, you can use the `perimeter` CLI to manage from the inside, and the Perimeter is the only point of egress.
 
-### Local commands
+Tinfoil-hosted Perimeters are convenient for a number of reasons:
+- Accessible both on your cloud workloads, and your personal devices
+- Zero-data **exposure**, instead of zero-data retention (fully confidential, with an attested image)
+- Runs a specialized workload that only runs an attested Perimeter, making for a *much smaller attack surface* than a workstation computer
 
-Install the CLI, and optionally its agent skill, from this checkout. It requires Python 3.11+ and OpenSSH on Linux
-or macOS.
+For a Tinfoil-hosted Perimeter, run `perimeter setup --tinfoil NAME` instead, which performs full attestation against your key and registers your CLI to use the remote endpoint.
+You will need the [Tinfoil CLI](https://github.com/tinfoilsh/tinfoil-cli/releases) to perform the attestation.
 
-```sh
-./install.sh
-export PATH="$HOME/.local/bin:$PATH"
-```
-
-Add your public key under **Bunkers → Trusted devices** and grant it access.
-Configure an SSH alias named `perimeter` with that identity and the Perimeter's
-verified host key, or select a configuration with `--ssh-host` and `--ssh-config`.
-
-```sh
-perimeter services
-perimeter catalog
-perimeter run -- your-command
-perimeter shell
-```
-
-Use `perimeter mcp serve` to connect local MCP clients. Trusted-device automation
-should follow the full [Perimeter skill](client/skills/perimeter/SKILL.md) for
-catalog discovery, broad credential-free reads, proposals and direct API calls. Managed bunker
-images should seed the reduced [bunker skill](client/skills/perimeter-sandbox/SKILL.md),
-which covers only that bunker's discovery, policy, proposals, credentials boundary
-and service usage.
-
-### Local bunkers
-
-The CLI can launch coding agents in local bunkers connected to an existing Perimeter.
-
-```sh
-perimeter setup
-perimeter launch claude    # or codex, opencode, pi, shell
-```
-
-Nothing is built locally. The first launch downloads one image holding the base
-system and every agent. All bunkers share it read-only and keep their own changes
-in a writable layer, so a new image reaches every bunker on its next launch;
-container bunkers keep `/workspace` and home in volumes and are recreated from it.
-An agent uses the one Anthropic or OpenAI service it supports, or the one named
-with `--service`; a new bunker is granted that service.
-
-`perimeter setup --backend` chooses the isolation. Each bunker's only network is
-its link to the Perimeter.
-
-| Backend                          | Isolation                       | Also requires                                                                         |
-| -------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------- |
-| `firecracker` (default on Linux) | KVM virtual machine             | x86_64 Linux, writable `/dev/kvm`, bubblewrap, `mke2fs` 1.47.1+ with libarchive       |
-| `docker` (default on macOS)      | container with `--network none` | Docker, or Podman as `docker`                                                         |
-| `vfkit`                          | Virtualization.framework VM     | Apple silicon, `mke2fs` 1.47.1+ with libarchive (nixpkgs `e2fsprogs`, not Homebrew's) |
-| `bwrap`                          | unprivileged namespaces         | Linux, bubblewrap with overlay support, unprivileged user namespaces, `script`        |
-
-All need OpenSSH and GNU tar (`gtar` on macOS). Containers share their engine's
-kernel, and bwrap the host's. Setup asks for your Perimeter endpoint and owner
-credentials; its defaults reach a local Perimeter, and
-the passphrase you enter claims a fresh one. Running it again for the same
-`--profile` replaces that profile and keeps its bunkers. The [daemon](#run-a-perimeter-locally)
-runs setup for you.
-See `perimeter --help` for stopping, exporting, and deleting bunkers.
-
-For a Perimeter hosted by Tinfoil, run `perimeter setup --tinfoil NAME` instead.
-Launching and destroying a bunker then run `tinfoil perimeter open NAME` for the
-owner steps, so they need the [Tinfoil CLI](https://github.com/tinfoilsh/tinfoil-cli/releases)
-signed in, and no owner key is saved with the profile. Setup also adds this computer
-as a bunker; for the default profile, commands such as `perimeter policy show`
-then reach that Perimeter instead of the [daemon](#run-a-perimeter-locally).
-
-`dev/vm-artifacts DIR [ARCH...]` builds the image for x86_64 and aarch64 with
-Docker alone and pins it in
-[client/vm/assets.json](client/vm/assets.json). It also caches the image, so this
-checkout's `client/perimeter`, or a CLI installed from it with `./install.sh`,
-launches it without downloading. Each agent is its
-vendor's release binary, pinned by URL and SHA-256 in
-[client/vm/agents.json](client/vm/agents.json).
-
-A bunker reaches another as `NAME.sandbox`, where NAME is that bunker's identity;
-only listeners bound to `0.0.0.0` answer. Set Other bunkers to Ask on the dialing
-bunker, then approve each bunker and port the first time it connects.
-
-```sh
-perimeter launch shell --name b -- python3 -m http.server 8080 --bind 0.0.0.0
-perimeter launch shell --name a           # then: curl http://b.sandbox:8080
-```
-
-### Run a Perimeter locally
-
-```sh
-./install.sh --daemon
-```
-
-This builds the checkout with Go and Bun and runs it as a user service on
-`127.0.0.1:8081`, with its state and owner key in `~/.local/share/perimeter/server`.
-It also installs the CLI, adds this computer as a bunker and sets up
-bunker launch. Sign in to [the UI](http://127.0.0.1:8081/app/) with the owner
-key. Run it from another checkout to switch the daemon to that code; the previous
-store is kept in `store.prev`. Logs are in `journalctl --user -u perimeter` on
-Linux and `server.log` on macOS.
-
-To run one in the foreground instead, use the Go version in [go.mod](go.mod).
-
-```sh
-mkdir -p .dev/store
-go -C cmd/perimeter run . -bucket "file://$(pwd)/.dev/store?no_tmp_dir=true"
-```
-
-Open [the UI](http://127.0.0.1:8080/app/) and initialize an owner key or passphrase.
-SSH listens on `127.0.0.1:2223`. See [Dockerfile](Dockerfile) and
-[tinfoil-config.yml](tinfoil-config.yml) for deployment configuration.
-
-## Access control
-
-In **Bunkers**, set each bunker's access to each service.
-
-| Access    | TOML/API | Default behavior                         |
-| --------- | -------- | ---------------------------------------- |
-| No access | `off`    | Deny everything not overridden below.    |
-| Read only | `read`   | Allow recognized reads and deny changes. |
-| Ask       | `ask`    | Allow reads and ask before changes.      |
-| Allow     | `allow`  | Allow recognized operations.             |
-
-Expand a service to override individual actions. Action and effect overrides
-use `off`, `ask`, and `allow`; `off` means Deny. Other policy checks still apply,
-and an approval cannot override an explicit denial. Pending requests appear at
-the top of **Activity** and as notices on other pages.
-
-Nothing is allowed by default. Besides this access, a request needs an owner
-policy in package `sentinel` that allows it. Onboarding writes one; a Perimeter
-configured only through TOML needs its own under `[policies]`.
-
-Payments and publishing default to Ask. Onboarding enables **Allow paid AI
-inference**, which skips payment approval for model generation unless an explicit
-payment setting requires it.
+A Tinfoil-hosted perimeter has a WebUI that can be opened via `tinfoil perimeter open my-perimeter`
 
 ## How to edit Perimeter policy
 
@@ -184,10 +83,9 @@ payment setting requires it.
   `perimeter policy propose`. Trusted devices receive a credential-free, expanded
   configuration projection, while bunkers see only their own access and reachable
   service semantics. This view materializes inherited settings and is not source
-  TOML. Both remain limited to service-scoped proposals. See the full
-  [Perimeter skill](client/skills/perimeter/SKILL.md) and reduced
-  [bunker skill](client/skills/perimeter-sandbox/SKILL.md) for TOML, structured
-  changes, direct API requests, and credential boundaries.
+  TOML. Both remain limited to service-scoped proposals. See the
+  [Perimeter skill](client/skills/perimeter/SKILL.md) for using connections and
+  proposing changes from either.
 - **Owner API:** The owner API is root authority and applies full-policy changes
   directly. Use it only for intentional owner operations, preview the TOML diff
   before applying it, and never give owner credentials to a bunker or routine

@@ -24,10 +24,10 @@ const view = (): owner.View => ({
   presets: { tcp: { title: tcp.title, ...tcp.catalog } },
 });
 
-test("missing preset metadata has a display fallback, not a raw Custom service", () => {
+test("missing preset metadata has a display fallback, not a raw Custom connection", () => {
   const v = view();
   v.config.connections!.network.preset = "removed";
-  expect(owner.presetOf(v, "network").title).toBe("Service");
+  expect(owner.presetOf(v, "network").title).toBe("Connection");
   expect(owner.connectorIcon({}, "", "/app/").src).toContain("custom.svg");
   expect(Object.hasOwn(v.presets, "custom")).toBe(false);
   expect(owner.catalog(v).flatMap((group) => group.presets).some((p) => p.name === "custom" || p.name === "browser")).toBe(false);
@@ -155,7 +155,7 @@ describe("SSH connection ports", () => {
   });
 });
 
-describe("a service's action list", () => {
+describe("a connection's action list", () => {
   const withService = (name: string, connection: owner.Connection) => {
     const v = view();
     const { title, catalog } = preset(connection.preset);
@@ -341,7 +341,7 @@ describe("MCP review uses saved pins without approving them", () => {
   });
 });
 
-describe("tools of services chosen in setup", () => {
+describe("tools of connections chosen in setup", () => {
   const tools = { tools: [{ name: "search", inputSchema: { type: "object" } }] };
   const setupView = (names: string[]) => {
     const v = view();
@@ -360,7 +360,7 @@ describe("tools of services chosen in setup", () => {
     expect(owner.setupToolApprovals(v)).toEqual([]);
   });
 
-  test("approve the reported tools and leave services that have not reported", () => {
+  test("approve the reported tools and leave connections that have not reported", () => {
     const v = setupView(["websearch", "linear"]);
     v.status.websearch = {
       state: "ready",
@@ -447,9 +447,9 @@ describe("first setup", () => {
         change.path.join("/") === `default_access/${connection}`,
     )?.value;
 
-  test("adds the picked services with their keys and the chosen network access", async () => {
+  test("adds the picked connections with their keys and the chosen network access", async () => {
     const [{ method, path, body }] = await onboard({
-      services: [
+      connections: [
         { preset: "tinfoil", level: "allow", credential: "tk_live" },
         { preset: "anthropic", level: "allow", credential: "sk-ant" },
         { preset: "github", level: "ask" },
@@ -476,7 +476,7 @@ describe("first setup", () => {
           change.path.join("/") === "data/onboarding/approve_tools",
       )?.value,
     ).toEqual(["tinfoil-websearch"]);
-    // Both Tinfoil services record which key they use, never the key itself.
+    // Both Tinfoil connections record which key they use, never the key itself.
     const recorded = (connection: string) =>
       body.changes.find(
         (change: owner.Change) =>
@@ -490,7 +490,7 @@ describe("first setup", () => {
   test("refuses Tinfoil without a key", async () => {
     await expect(
       onboard({
-        services: [{ preset: "tinfoil", level: "allow", credential: " " }],
+        connections: [{ preset: "tinfoil", level: "allow", credential: " " }],
         network: "off",
         registries: false,
       }),

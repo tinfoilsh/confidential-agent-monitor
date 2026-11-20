@@ -222,10 +222,10 @@ function MyConnections(props: { expanded?: string }) {
       <div class="resource-list collection-list">
         <div class="resource-heading">
           <h2>
-            Services <span class="count">{names().length}</span>
+            Connections <span class="count">{names().length}</span>
           </h2>
           <Search
-            label="Search connections and services"
+            label="Search connections"
             autofocus
             value={query()}
             onInput={setQuery}
@@ -235,18 +235,18 @@ function MyConnections(props: { expanded?: string }) {
           each={names()}
           fallback={
             <Empty
-              title={query() ? "None match" : "No services yet"}
+              title={query() ? "None match" : "No connections yet"}
               action={
                 <Show when={!query()}>
                   <a class="button primary" href="#connections/catalog">
                     <Icon name="plus" />
-                    Add a service
+                    Add a connection
                   </a>
                 </Show>
               }
             >
               <Show when={!query()}>
-                Add a service from the catalog to let your bunkers use it.
+                Add a connection from the catalog to let your bunkers use it.
               </Show>
             </Empty>
           }
@@ -279,14 +279,14 @@ function MyConnections(props: { expanded?: string }) {
                       </Show>
                       <span class="resource-meta">
                         <Show when={owner.matchOnly(m.view()!, name)}>
-                          <span class="service-status" data-state="match-only">
+                          <span class="connection-status" data-state="match-only">
                             Match-only
                           </span>
                         </Show>
                         <Show when={status()}>
                           {(status) => (
                             <span
-                              class="service-status"
+                              class="connection-status"
                               data-state={status().state}
                             >
                               {status().text}
@@ -340,7 +340,7 @@ function MyConnections(props: { expanded?: string }) {
     </>
   );
 }
-// Account-wide rules that apply to every bunker and service.
+// Account-wide rules that apply to every bunker and connection.
 function GlobalPermissions() {
   const m = useMonitor();
   return (
@@ -460,7 +460,7 @@ function CatalogRow(props: {
 }
 function CatalogDialog(props: { preset?: string; onClose: () => void }) {
   const m = useMonitor();
-  // Keep the chosen service while the dialog fades out.
+  // Keep the chosen connection while the dialog fades out.
   const shown = createMemo<string | undefined>(
     (previous) => props.preset ?? previous,
   );
@@ -698,7 +698,7 @@ function CatalogSources(props: {
                   (await askConfirm({
                     title: "Remove this source?",
                     description:
-                      "Its services leave the catalog. With no sources left, you see only the built-in presets.",
+                      "Its connections leave the catalog. With no sources left, you see only the built-in presets.",
                     confirmLabel: "Remove source",
                     destructive: true,
                   })) &&
@@ -755,7 +755,7 @@ function Catalog() {
     <div ref={catalog}>
       <div class="catalog-toolbar">
         <Search
-          label="Search services"
+          label="Search connections"
           autofocus
           value={query()}
           onInput={setQuery}
@@ -821,7 +821,7 @@ function Catalog() {
         }}
       </For>
       <Show when={![...filtered().values()].some((g) => g.presets.length)}>
-        <Empty title="No matching services">Try a different search.</Empty>
+        <Empty title="No matching connections">Try a different search.</Empty>
       </Show>
       <CatalogDialog preset={chosen()} onClose={() => setChosen()} />
     </div>
@@ -1096,7 +1096,7 @@ export function AddConnection(props: { preset: string }) {
             classList={{ primary: !signIns().length }}
             disabled={m.busy()}
           >
-            {signIns().length ? "Add without signing in" : "Add service"}
+            {signIns().length ? "Add without signing in" : "Add connection"}
           </button>
           <For each={signIns()}>
             {(field) => (
@@ -1185,7 +1185,7 @@ function ConnectionForm(props: { name: string; setup?: JSX.Element }) {
   return (
     <Show when={setup() || configurable()}>
       <section class="connection-section connection-config">
-        <SectionHeading title="Service settings" />
+        <SectionHeading title="Connection settings" />
         <div class="connection-settings">
           {setup()}
           <Show when={configurable()}>
@@ -1363,7 +1363,7 @@ function ConnectionForm(props: { name: string; setup?: JSX.Element }) {
   );
 }
 
-// A Tinfoil service uses one of the owner's API keys; choosing one saves it.
+// A Tinfoil connection uses one of the owner's API keys; choosing one saves it.
 function TinfoilKeySelect(props: {
   name: string;
   field: owner.CredentialField;
@@ -1455,7 +1455,7 @@ function Connection(props: { name: string }) {
   });
   return (
     <div class="connection-detail">
-      <Show when={connection()} fallback={<Empty title="Service not found" />}>
+      <Show when={connection()} fallback={<Empty title="Connection not found" />}>
         <Show when={owner.presetOf(m.view()!, props.name).warning}>
           {(warning) => (
             <section class="connection-section">
@@ -1465,9 +1465,9 @@ function Connection(props: { name: string }) {
         </Show>
         <Show when={review()}>
           {(review) => (
-            <section class="connection-section" aria-label="Service status">
+            <section class="connection-section" aria-label="Connection status">
               <SectionHeading
-                title={review().blocked ? "Review tools" : "Service status"}
+                title={review().blocked ? "Review tools" : "Connection status"}
                 description={
                   review().blocked
                     ? owner.toolReviewDescription(review())
@@ -1477,7 +1477,7 @@ function Connection(props: { name: string }) {
               <div class="settings-group">
                 <Show when={!review().blocked}>
                   <span
-                    class="service-status"
+                    class="connection-status"
                     data-state={owner.connectionStatus(review())!.state}
                     role="status"
                   >
@@ -1502,7 +1502,7 @@ function Connection(props: { name: string }) {
             <For
               each={owner.sandboxNames(m.view()!)}
               fallback={
-                <p class="muted">Enroll a bunker to use this service.</p>
+                <p class="muted">Enroll a bunker to use this connection.</p>
               }
             >
               {(name) => (
@@ -1620,7 +1620,7 @@ function Connection(props: { name: string }) {
                               then run Codex in your Perimeter-connected bunker
                               or with <code>perimeter run -- codex</code>. Choose
                               a model available to your ChatGPT account. Grant
-                              your bunker access to this service, then approve
+                              your bunker access to this connection, then approve
                               its requests when asked.
                             </p>
                             <pre ref={code}>{text()}</pre>
@@ -1648,7 +1648,7 @@ function Connection(props: { name: string }) {
     </div>
   );
 }
-// Match-only mode lets requests the service does not recognize through instead of failing closed,
+// Match-only mode lets requests the connection does not recognize through instead of failing closed,
 // so the owner confirms turning it on.
 function MatchOnlySetting(props: { name: string }) {
   const m = useMonitor();
@@ -1660,7 +1660,7 @@ function MatchOnlySetting(props: { name: string }) {
           <span>
             <span class="setting-title">Match-only mode</span>
             <small>
-              Only match this service's hosts and substitute its credentials.
+              Only match this connection's hosts and substitute its credentials.
               Requests it does not recognize are treated like Custom API
               requests.
             </small>
@@ -1695,7 +1695,7 @@ function MatchOnlySetting(props: { name: string }) {
         </label>
         <Show when={owner.matchOnly(m.view()!, props.name)}>
           <p class="connection-warning" role="note">
-            Match-only mode is on. Requests this service does not recognize are
+            Match-only mode is on. Requests this connection does not recognize are
             treated like Custom API requests, so access and effect settings
             still apply.
           </p>
@@ -1711,7 +1711,7 @@ function ServiceMenu(props: { name: string }) {
       <Show when={props.name !== owner.BUNKERS}>
         <RenameItem
           name={props.name}
-          description="Bunkers reach this service by its name, so point any that use the old name at the new one. Its credentials, access and rules are kept."
+          description="Bunkers reach this connection by its name, so point any that use the old name at the new one. Its credentials, access and rules are kept."
           changes={(to) =>
             owner.edits.renameConnection(m.view()!, props.name, to)
           }
@@ -1726,8 +1726,8 @@ function ServiceMenu(props: { name: string }) {
             (await askConfirm({
               title: `Remove ${props.name}?`,
               description:
-                "Bunkers lose access to this service, and its saved credentials are deleted.",
-              confirmLabel: "Remove service",
+                "Bunkers lose access to this connection, and its saved credentials are deleted.",
+              confirmLabel: "Remove connection",
               destructive: true,
             })) &&
             (await m.edit(owner.edits.removeConnection(m.view()!, props.name)))
@@ -1735,7 +1735,7 @@ function ServiceMenu(props: { name: string }) {
             location.hash = "#connections";
         }}
       >
-        Remove service
+        Remove connection
       </button>
     </RowMenu>
   );

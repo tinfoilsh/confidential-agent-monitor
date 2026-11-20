@@ -42,7 +42,7 @@ func Parse(config json.RawMessage) (*NATS, error) {
 		return nil, errors.New("destination requires a URL with a scheme and host")
 	}
 	if _, set := u.User.Password(); set || u.Query().Has("password") {
-		return nil, errors.New("put the password in the service's password credential, not the URL")
+		return nil, errors.New("put the password in the connection's password credential, not the URL")
 	}
 	if u.Scheme != "nats" && u.Scheme != "tls" || u.Path != "" && u.Path != "/" || u.RawQuery != "" || u.Fragment != "" || strings.Contains(u.Host, ",") {
 		return nil, errors.New("NATS requires a nats:// or tls:// host URL without a path, query or fragment")

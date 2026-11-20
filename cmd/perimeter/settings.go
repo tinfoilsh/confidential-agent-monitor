@@ -170,7 +170,7 @@ func (s *state) prepareSettings(ctx context.Context, lib config.Library, source 
 		}
 		next.publicScope[name] = spec.PublicScope
 		if !connections.Registered(spec.Protocol, development) {
-			return nil, fmt.Errorf("service %s has unknown kind %s", name, spec.Protocol)
+			return nil, fmt.Errorf("connection %s has unknown kind %s", name, spec.Protocol)
 		}
 		c, exists := current[name]
 		if exists && c.Protocol != spec.Protocol {
@@ -186,7 +186,7 @@ func (s *state) prepareSettings(ctx context.Context, lib config.Library, source 
 		}
 		p, err := connections.Parse(spec)
 		if err != nil {
-			return nil, fmt.Errorf("service %s: %w", name, err)
+			return nil, fmt.Errorf("connection %s: %w", name, err)
 		}
 		operations[next.Connections[name].Preset] = p.Operations
 		handles := map[string]*credential.Value{}
@@ -195,7 +195,7 @@ func (s *state) prepareSettings(ctx context.Context, lib config.Library, source 
 		}
 		for secret, raw := range credentials[name] {
 			if _, uses := handles[secret]; raw != nil && !uses {
-				return nil, fmt.Errorf("service %s does not use credential %s", name, secret)
+				return nil, fmt.Errorf("connection %s does not use credential %s", name, secret)
 			}
 		}
 		next.connections[name] = &installed{Setup: p, secrets: handles, placeholders: map[string]string{}}
@@ -207,7 +207,7 @@ func (s *state) prepareSettings(ctx context.Context, lib config.Library, source 
 	}
 	for name := range credentials {
 		if _, present := next.Connections[name]; !present {
-			return nil, fmt.Errorf("service %s does not exist", name)
+			return nil, fmt.Errorf("connection %s does not exist", name)
 		}
 	}
 	for name := range current {

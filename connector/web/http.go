@@ -178,7 +178,7 @@ func (request *Request) capture(h *Handler, r *http.Request) error {
 	}
 	switch {
 	case h.Claim(connector.Target{Host: host, Port: port}) < 0:
-		return fmt.Errorf("this service does not serve %s:%d", host, port)
+		return fmt.Errorf("this connection does not serve %s:%d", host, port)
 	case !slices.Contains(methods, r.Method):
 		return fmt.Errorf("method %s is refused", r.Method)
 	case len(r.Trailer) > 0:

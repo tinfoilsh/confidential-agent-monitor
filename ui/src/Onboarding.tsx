@@ -13,7 +13,7 @@ import * as owner from "./owner.js";
 import { AuthCard, AuthScreen, Field, Icon, Loading } from "./components";
 import { useMonitor } from "./monitor";
 
-type Service = {
+type Connection = {
   preset: string;
   title: string;
   level: owner.Level;
@@ -23,7 +23,7 @@ type Service = {
 };
 // The agents, model providers, and work tools offered at first setup, in the
 // order shown: three rows of three.
-const SERVICES: Service[] = [
+const CONNECTIONS: Connection[] = [
   {
     preset: "tinfoil",
     title: "Tinfoil",
@@ -87,7 +87,7 @@ const NETWORK = [
     "Always allow",
     "Bunkers reach any host. The Perimeter still records where they connect.",
   ],
-  ["off", "Reject", "Bunkers reach only the services you added."],
+  ["off", "Reject", "Bunkers reach only the connections you added."],
 ] as const;
 
 export function Onboarding(props: {
@@ -96,8 +96,8 @@ export function Onboarding(props: {
   onFinish(choices: owner.OnboardingChoices, signIns: string[]): void;
 }) {
   const m = useMonitor();
-  const [step, setStep] = createSignal<"services" | "keys" | "network">(
-    "services",
+  const [step, setStep] = createSignal<"connections" | "keys" | "network">(
+    "connections",
   );
   // Steps slide in from the side they are reached from.
   const [back, setBack] = createSignal(false);
@@ -113,7 +113,7 @@ export function Onboarding(props: {
     createSignal<owner.OnboardingChoices["network"]>("ask");
   const [registries, setRegistries] = createSignal(true);
   const [missing, setMissing] = createSignal("");
-  const offered = () => SERVICES.filter((s) => m.view()!.presets[s.preset]);
+  const offered = () => CONNECTIONS.filter((s) => m.view()!.presets[s.preset]);
   const chosen = () => offered().filter((s) => picked().includes(s.preset));
   const toggle = (preset: string) =>
     setPicked((list) =>
@@ -130,7 +130,7 @@ export function Onboarding(props: {
   const loaded = () => (apiKeys.error ? undefined : apiKeys());
   const tinfoilKey = () =>
     keys.tinfoil || (loaded()?.length === 1 ? loaded()![0].key : "");
-  const keyOf = (s: Service) =>
+  const keyOf = (s: Connection) =>
     s.preset === "tinfoil" ? tinfoilKey() : (keys[s.preset] ?? "");
   const credentialField = (preset: string) =>
     owner.setupFields(m.view()!, preset).find((f) => f.credential && !f.oauth);
@@ -146,7 +146,7 @@ export function Onboarding(props: {
   const finish = () =>
     props.onFinish(
       {
-        services: chosen().map((s) => ({
+        connections: chosen().map((s) => ({
           preset: s.preset,
           level: s.level,
           credential: s.signIn ? undefined : keyOf(s),
@@ -160,26 +160,26 @@ export function Onboarding(props: {
     );
   return (
     <Switch>
-      <Match when={step() === "services"}>
+      <Match when={step() === "connections"}>
         <AuthScreen
           id="gate"
           class={stepClass()}
           title="What will your bunkers use?"
-          description="Pick the services your agents need. You can add more from Permissions later."
+          description="Pick the connections your agents need. You can add more from Permissions later."
         >
           <AuthCard>
-            <div class="service-grid" role="group" aria-label="Services">
+            <div class="connection-grid" role="group" aria-label="Connections">
               <For each={offered()}>
                 {(s) => (
                   <button
                     type="button"
-                    class="service-tile"
+                    class="connection-tile"
                     aria-pressed={picked().includes(s.preset)}
                     onClick={() => toggle(s.preset)}
                   >
                     <ServiceMark preset={s.preset} />
                     {s.title}
-                    <span class="service-check" aria-hidden="true">
+                    <span class="connection-check" aria-hidden="true">
                       <Icon name="check" />
                     </span>
                   </button>
@@ -214,7 +214,7 @@ export function Onboarding(props: {
             </span>
             <For each={chosen()}>
               {(s) => (
-                <section class="onboarding-service">
+                <section class="onboarding-connection">
                   <header>
                     <ServiceMark preset={s.preset} />
                     <h2>{s.title}</h2>
@@ -324,7 +324,7 @@ export function Onboarding(props: {
               class="link"
               onClick={() => {
                 setMissing("");
-                go("services", true);
+                go("connections", true);
               }}
             >
               Back
@@ -337,7 +337,7 @@ export function Onboarding(props: {
           id="gate"
           class={stepClass()}
           title="Network access"
-          description="When a bunker connects to a host that isn't one of your services:"
+          description="When a bunker connects to a host that isn't one of your connections:"
         >
           <form
             class="auth-card"
@@ -395,7 +395,7 @@ export function Onboarding(props: {
               type="button"
               class="link"
               disabled={props.busy}
-              onClick={() => go(picked().length ? "keys" : "services", true)}
+              onClick={() => go(picked().length ? "keys" : "connections", true)}
             >
               Back
             </button>
@@ -413,7 +413,7 @@ function ServiceMark(props: { preset: string }) {
     owner.connectorIcon(m.icons(), props.preset, import.meta.env.BASE_URL).src;
   return (
     <span
-      class="service-mark"
+      class="connection-mark"
       aria-hidden="true"
       style={{ "--mark": `url("${src()}")` }}
     />

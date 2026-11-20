@@ -1341,7 +1341,7 @@ details[open] > summary > .collection-chevron {
   border-top: 1px solid var(--line);
   background: var(--card);
 }
-.service-status {
+.connection-status {
   display: inline-flex;
   align-items: center;
   justify-self: start;
@@ -1355,7 +1355,7 @@ details[open] > summary > .collection-chevron {
   line-height: 18px;
   white-space: nowrap;
 }
-.service-status::before {
+.connection-status::before {
   content: "";
   flex: none;
   width: 6px;
@@ -1364,15 +1364,15 @@ details[open] > summary > .collection-chevron {
   corner-shape: round;
   background: currentColor;
 }
-.service-status[data-state="review"] {
+.connection-status[data-state="review"] {
   background: color-mix(in srgb, var(--warn) 8%, var(--card));
   color: var(--warn);
 }
-.service-status[data-state="match-only"] {
+.connection-status[data-state="match-only"] {
   background: color-mix(in srgb, var(--warn) 8%, var(--card));
   color: var(--warn);
 }
-.service-status[data-state="error"] {
+.connection-status[data-state="error"] {
   background: color-mix(in srgb, var(--bad) 8%, var(--card));
   color: var(--bad);
 }
@@ -1872,7 +1872,7 @@ details[open] > summary > .collection-chevron {
   border-top: 1px solid var(--line);
   background: var(--open-body);
 }
-/* A bunker's open body: its service access, then Advanced, each in a box. */
+/* A bunker's open body: its connection access, then Advanced, each in a box. */
 .agent-access-section {
   display: grid;
   gap: 12px;
@@ -2865,13 +2865,13 @@ td {
   border-radius: var(--card-radius);
   background: var(--hover);
 }
-/* First setup: a grid of services to pick, their keys, then network access. */
-.service-grid {
+/* First setup: a grid of connections to pick, their keys, then network access. */
+.connection-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
-.service-tile {
+.connection-tile {
   position: relative;
   flex-direction: column;
   gap: 8px;
@@ -2884,7 +2884,7 @@ td {
   font-weight: 400;
   line-height: 16px;
 }
-.service-mark {
+.connection-mark {
   display: block;
   flex: none;
   width: 24px;
@@ -2892,7 +2892,7 @@ td {
   background: currentColor;
   mask: var(--mark) center / contain no-repeat;
 }
-.onboarding-service .service-mark {
+.onboarding-connection .connection-mark {
   width: 16px;
   height: 16px;
 }
@@ -2920,60 +2920,60 @@ td {
     animation: none;
   }
 }
-.service-tile:hover:not(:disabled) {
+.connection-tile:hover:not(:disabled) {
   border-color: var(--border-strong);
   background: transparent;
 }
-.service-tile[aria-pressed="true"],
-.service-tile[aria-pressed="true"]:hover:not(:disabled) {
+.connection-tile[aria-pressed="true"],
+.connection-tile[aria-pressed="true"]:hover:not(:disabled) {
   border-color: var(--tinfoil-accent-light);
   background: rgb(104 199 172 / 10%);
 }
-.service-check {
+.connection-check {
   position: absolute;
   top: 6px;
   right: 6px;
   display: none;
   color: var(--tinfoil-accent-light);
 }
-.service-check > .icon {
+.connection-check > .icon {
   width: 14px;
   height: 14px;
 }
-.service-tile[aria-pressed="true"] > .service-check {
+.connection-tile[aria-pressed="true"] > .connection-check {
   display: flex;
 }
-.onboarding-service {
+.onboarding-connection {
   display: grid;
   gap: 8px;
   text-align: start;
 }
-.onboarding-service + .onboarding-service {
+.onboarding-connection + .onboarding-connection {
   padding-top: 16px;
   border-top: 1px solid var(--line);
 }
-.onboarding-service > header {
+.onboarding-connection > header {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-.onboarding-service h2 {
+.onboarding-connection h2 {
   flex: 1;
   margin: 0;
   font-size: var(--font-body);
   font-weight: 500;
 }
-.onboarding-service > header > a {
+.onboarding-connection > header > a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-size: var(--font-detail);
 }
-.onboarding-service > header > a > .icon {
+.onboarding-connection > header > a > .icon {
   width: 12px;
   height: 12px;
 }
-.onboarding-service .loading-status {
+.onboarding-connection .loading-status {
   margin: 0;
 }
 .network-options {
