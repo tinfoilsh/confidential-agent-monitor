@@ -193,9 +193,11 @@ export function openShell(
   const pending: string[] = [];
   let timer: ReturnType<typeof setTimeout> | undefined,
     due = 0,
+    queued = 0,
     chaffUntil = 0,
     rateFuzz = 0;
   const flush = () => {
+    queued = 0;
     for (const message of pending.splice(0)) channel.send(utf8ToBytes(message));
   };
   const arm = (ticks: number) => {
@@ -215,9 +217,9 @@ export function openShell(
       arm(Math.max(1, Math.floor((now - due) / SHELL_TICK_MS) + 1));
     } catch {}
   };
-  const send = (message: object) => {
+  const send = (message: object, bytes = 0) => {
     pending.push(JSON.stringify(message));
-    const interactive = pending.join("").length < SHELL_INTERACTIVE_BYTES;
+    const interactive = (queued += bytes) < SHELL_INTERACTIVE_BYTES;
     const keystroke = interactive && "input" in message;
     if (keystroke)
       chaffUntil = performance.now() + CHAFF_MIN_MS + uniform(CHAFF_RANGE_MS);
@@ -239,8 +241,10 @@ export function openShell(
   })().catch((cause) => signal.aborted || error(cause));
   return {
     input(bytes) {
-      for (let at = 0; at < bytes.length; at += SHELL_INPUT_BYTES)
-        send({ input: toBase64(bytes.subarray(at, at + SHELL_INPUT_BYTES)) });
+      for (let at = 0; at < bytes.length; at += SHELL_INPUT_BYTES) {
+        const chunk = bytes.subarray(at, at + SHELL_INPUT_BYTES);
+        send({ input: toBase64(chunk) }, chunk.length);
+      }
     },
     resize: (cols, rows) => send({ resize: { cols, rows } }),
   };
