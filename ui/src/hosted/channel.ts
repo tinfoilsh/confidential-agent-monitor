@@ -11,6 +11,15 @@ const FRAME_BYTES = 65518,
   FRAME_MORE = 0,
   FRAME_LAST = 1;
 const SHELL_INPUT_BYTES = 16384;
+const SHELL_TICK_MS = 20,
+  SHELL_TICK_FUZZ = 0.1,
+  SHELL_INTERACTIVE_BYTES = 256,
+  CHAFF_MIN_MS = 1024,
+  CHAFF_RANGE_MS = 2048;
+// The size of one keystroke and of its echo: "chaff" is as long as "input", "ignore" as "output".
+const CHAFF = JSON.stringify({ chaff: toBase64(new Uint8Array(1)) });
+const uniform = (below: number) =>
+  (crypto.getRandomValues(new Uint32Array(1))[0] / 2 ** 32) * below;
 const decoder = new TextDecoder();
 
 /** An authenticated owner socket that carries whole messages. */
@@ -174,21 +183,58 @@ export function rpcChannel(
   };
 }
 
-// One sandbox shell for as long as its socket: input and resizes go out as they happen,
-// output streams back until the exit code.
+// One sandbox shell for as long as its socket: input and resizes go out as OpenSSH's
+// ObscureKeystrokeTiming sends them, output streams back until the exit code.
 export function openShell(
   channel: OwnerChannel,
   { output, exit, error }: ShellHandlers,
   signal: AbortSignal,
 ): Shell {
-  const send = (message: object) =>
-    channel.send(new TextEncoder().encode(JSON.stringify(message)));
+  const pending: string[] = [];
+  let timer: ReturnType<typeof setTimeout> | undefined,
+    due = 0,
+    chaffUntil = 0,
+    rateFuzz = 0;
+  const flush = () => {
+    for (const message of pending.splice(0)) channel.send(utf8ToBytes(message));
+  };
+  const arm = (ticks: number) => {
+    const fuzz = ticks * SHELL_TICK_MS * SHELL_TICK_FUZZ;
+    const wait = ticks * SHELL_TICK_MS - fuzz + uniform(fuzz) + rateFuzz;
+    due = performance.now() + wait;
+    timer = setTimeout(tick, wait);
+  };
+  const tick = () => {
+    const now = performance.now();
+    timer = undefined;
+    if (!pending.length && now >= chaffUntil) return;
+    if (!pending.length) pending.push(CHAFF);
+    // A closed channel ends the ticks; the receive loop reports it.
+    try {
+      flush();
+      arm(Math.max(1, Math.floor((now - due) / SHELL_TICK_MS) + 1));
+    } catch {}
+  };
+  const send = (message: object) => {
+    pending.push(JSON.stringify(message));
+    const interactive = pending.join("").length < SHELL_INTERACTIVE_BYTES;
+    const keystroke = interactive && "input" in message;
+    if (keystroke)
+      chaffUntil = performance.now() + CHAFF_MIN_MS + uniform(CHAFF_RANGE_MS);
+    if (interactive && timer !== undefined) return;
+    clearTimeout(timer);
+    timer = undefined;
+    flush();
+    if (!keystroke) return;
+    rateFuzz = uniform(SHELL_TICK_MS * SHELL_TICK_FUZZ);
+    arm(1);
+  };
   signal.addEventListener("abort", () => channel.close(), { once: true });
   void (async () => {
     for (;;) {
       const message = JSON.parse(decoder.decode(await channel.receive()));
       if ("exit" in message) return exit(message.exit ?? undefined);
-      output(fromBase64(message.output));
+      if ("output" in message) output(fromBase64(message.output));
     }
   })().catch((cause) => signal.aborted || error(cause));
   return {
