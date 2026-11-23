@@ -55,7 +55,7 @@ type CatalogEntry struct {
 	Operations *map[string]OperationSummary `json:"operations,omitempty"`
 }
 
-func CatalogEntries(cfg *Config, operations map[string]map[string]OperationSummary) (map[string]CatalogEntry, string, error) {
+func CatalogEntries(cfg *Config) (map[string]CatalogEntry, string, error) {
 	used := map[string]bool{}
 	for _, connection := range cfg.Connections {
 		used[connection.Preset] = true
@@ -66,7 +66,7 @@ func CatalogEntries(cfg *Config, operations map[string]map[string]OperationSumma
 		entry := CatalogEntry{Catalog: &metadata, Title: p.Title}
 		if !used[name] {
 			metadata.Actions = nil
-		} else if ops := operations[name]; ops != nil {
+		} else if ops := cfg.Operations[name]; ops != nil {
 			entry.Operations = &ops
 		}
 		entries[name] = entry

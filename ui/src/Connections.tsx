@@ -21,6 +21,7 @@ import {
   SectionHeading,
   Field,
   Icon,
+  LimitsLine,
   Modal,
   RenameItem,
   ResourceDisclosure,
@@ -187,7 +188,8 @@ function MyConnections(props: { expanded?: string }) {
     [query, setQuery] = m.search("connections");
   if (props.expanded) setQuery("");
   const searchable = createMemo(() =>
-    Object.keys(m.view()!.config.connections ?? {})
+    owner
+      .serviceNames(m.view()!)
       .sort()
       .map((name) => ({
         name,
@@ -343,6 +345,9 @@ function MyConnections(props: { expanded?: string }) {
 // Account-wide rules that apply to every bunker and connection.
 function GlobalPermissions() {
   const m = useMonitor();
+  const pay = () => m.view()!.config.limits?.effects?.pay;
+  // A limit of allow caps nothing.
+  const payLimited = () => !!pay() && pay() !== "allow";
   return (
     <div class="settings">
       <section class="settings-section resource-list">
@@ -351,20 +356,28 @@ function GlobalPermissions() {
         </div>
         <label class="settings-card setting-toggle">
           <span>
-            <span class="setting-title">Ask before any payment</span>
+            <span class="setting-title">
+              {pay() === "off"
+                ? "Refuse every payment"
+                : "Ask before any payment"}
+            </span>
             <small>
-              A bunker must get your approval for anything that spends money.
+              {pay() === "off"
+                ? "Every payment is refused, paid AI inference included."
+                : payLimited()
+                  ? "Every payment asks, paid AI inference included, even where a connection's access grants it."
+                  : "Payments ask unless a connection's access grants pay = allow."}
             </small>
           </span>
           <input
             type="checkbox"
             role="switch"
-            checked={owner.effectMode(m.view()!, "pay") !== "allow"}
+            checked={payLimited()}
             onChange={(e) =>
               void m.edit(
-                owner.edits.setEffect(
+                owner.edits.setEffectLimit(
                   "pay",
-                  e.currentTarget.checked ? undefined : "allow",
+                  e.currentTarget.checked ? "ask" : undefined,
                 ),
               )
             }
@@ -374,8 +387,11 @@ function GlobalPermissions() {
           <span>
             <span class="setting-title">Allow AI inference without asking</span>
             <small>
-              Paid model calls (Tinfoil, OpenAI, …) go through without
-              approval. Other payments still ask.
+              {pay() === "off"
+                ? "Paid model calls are refused too, like every other payment."
+                : payLimited()
+                  ? "Paid model calls ask too, like every other payment."
+                  : "Paid model calls (Tinfoil, OpenAI, …) go through without approval. Other payments still ask."}
             </small>
           </span>
           <input
@@ -930,7 +946,7 @@ export function AddConnection(props: { preset: string }) {
   const [agent, setAgent] = createSignal(
       names().length === 1 ? names()[0] : "",
     ),
-    [level, setLevel] = createSignal<owner.Level>("ask");
+    [level, setLevel] = createSignal<owner.GrantLevel>("ask");
   const add = async (signInKey?: string) => {
     try {
       const connection = name().trim();
@@ -1084,7 +1100,7 @@ export function AddConnection(props: { preset: string }) {
             Access
             <select
               value={level()}
-              onChange={(e) => setLevel(e.currentTarget.value as owner.Level)}
+              onChange={(e) => setLevel(e.currentTarget.value as owner.GrantLevel)}
             >
               <option value="ask">Ask before each request</option>
               <option value="allow">Allow all API requests</option>
@@ -1515,6 +1531,10 @@ function Connection(props: { name: string }) {
               )}
             </For>
           </div>
+          <LimitsLine
+            limits={connection()?.limits}
+            description="Ceilings for every bunker on this connection. Edit them in the policy source."
+          />
         </section>
         <MatchOnlySetting name={props.name} />
         <ConnectionForm

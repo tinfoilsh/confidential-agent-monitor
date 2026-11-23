@@ -12,6 +12,7 @@ import (
 	"net"
 	"net/http"
 	"net/netip"
+	"reflect"
 	"slices"
 	"strings"
 	"time"
@@ -25,6 +26,7 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/certificates"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 	"golang.org/x/crypto/ssh"
@@ -105,7 +107,6 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 		return err
 	}
 
-	before := source
 	if w.source != nil {
 		source = *w.source
 	}
@@ -123,9 +124,6 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	s.mu.Lock()
 	if err = w.checked(h); err == nil {
 		err = h.commitSettings(ctx, plan, w.saved)
-	}
-	if source != before || len(w.credentials) != 0 {
-		h.recordAdmin(ctx, "Change settings", map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(before, source)}, "credentials": slices.Sorted(maps.Keys(w.credentials))}, err)
 	}
 	s.mu.Unlock()
 	if err == nil {
@@ -156,7 +154,7 @@ func (s *state) prepareSettings(ctx context.Context, lib config.Library, source 
 	}
 
 	next := &settings{Config: cfg, policy: program, authority: authority, hostKey: hostKey, publicScope: map[string][]string{}, connections: map[string]*installed{}}
-	operations := map[string]map[string]config.OperationSummary{}
+	cfg.Operations = map[string]map[string]config.OperationSummary{}
 	plan := &settingsPlan{next: next, source: source, credentials: credentials}
 	var current map[string]*installed
 	if st := s.settings.Load(); st != nil {
@@ -164,6 +162,9 @@ func (s *state) prepareSettings(ctx context.Context, lib config.Library, source 
 	}
 	status := s.table.Connections()
 	for _, name := range slices.Sorted(maps.Keys(next.Connections)) {
+		if name == config.PerimeterConnection {
+			continue
+		}
 		spec, err := next.Spec(name)
 		if err != nil {
 			return nil, err
@@ -178,7 +179,7 @@ func (s *state) prepareSettings(ctx context.Context, lib config.Library, source 
 		}
 		if exists && c.Protocol == spec.Protocol && !rebuild(name) && len(credentials[name]) == 0 {
 			next.connections[name] = c
-			operations[next.Connections[name].Preset] = c.Operations
+			cfg.Operations[next.Connections[name].Preset] = c.Operations
 			if status[name].State != core.Ready {
 				plan.updates = append(plan.updates, name)
 			}
@@ -188,7 +189,7 @@ func (s *state) prepareSettings(ctx context.Context, lib config.Library, source 
 		if err != nil {
 			return nil, fmt.Errorf("connection %s: %w", name, err)
 		}
-		operations[next.Connections[name].Preset] = p.Operations
+		cfg.Operations[next.Connections[name].Preset] = p.Operations
 		handles := map[string]*credential.Value{}
 		for _, secret := range p.SecretNames {
 			handles[secret] = nil
@@ -202,12 +203,15 @@ func (s *state) prepareSettings(ctx context.Context, lib config.Library, source 
 		plan.updates = append(plan.updates, name)
 	}
 
-	if next.catalog, next.catalogID, err = config.CatalogEntries(cfg, operations); err != nil {
+	if next.catalog, next.catalogID, err = config.CatalogEntries(cfg); err != nil {
 		return nil, err
 	}
 	for name := range credentials {
-		if _, present := next.Connections[name]; !present {
+		switch _, present := next.Connections[name]; {
+		case !present:
 			return nil, fmt.Errorf("connection %s does not exist", name)
+		case name == config.PerimeterConnection:
+			return nil, fmt.Errorf("connection %s holds no credentials", name)
 		}
 	}
 	for name := range current {
@@ -284,6 +288,10 @@ func (s held) commitSettings(ctx context.Context, plan *settingsPlan, saved *sav
 				s.identities.Unregister(fingerprint)
 			}
 		}
+		// A certificate binds when it registers, so after any change to what it could bind to, every one registers again.
+		if !reflect.DeepEqual(certificateBindings(previous.Config), certificateBindings(plan.next.Config)) {
+			s.identities.UnregisterShared()
+		}
 	}
 	for fingerprint := range plan.next.Principals {
 		p, _ := plan.next.Config.Principal(fingerprint)
@@ -294,7 +302,7 @@ func (s held) commitSettings(ctx context.Context, plan *settingsPlan, saved *sav
 			continue
 		}
 		f := r.subject()
-		if _, raw, err := s.proposal(plan.next, plan.source, f.Principal, f.Connection, r.Requirements[0].Message, r.Changes); err == nil {
+		if _, raw, err := s.proposal(plan.next, plan.source, f.Principal, f.Connection, f.Title, r.Changes, s.mayProposeOthers(plan.next, f.Principal)); err == nil {
 			r.Facts = raw
 		} else {
 			s.outdateRecord(r)
@@ -302,6 +310,18 @@ func (s held) commitSettings(ctx context.Context, plan *settingsPlan, saved *sav
 	}
 	s.recheckAll()
 	return nil
+}
+
+// Every declared name counts, since an unbound certificate may not take one.
+func certificateBindings(cfg *config.Config) map[string]config.Identity {
+	bindings := map[string]config.Identity{}
+	for name, id := range cfg.Identities {
+		bindings[name] = config.Identity{}
+		if id.Certificate != nil {
+			bindings[name] = config.Identity{Certificate: id.Certificate, Groups: id.Groups, Attributes: id.Attributes}
+		}
+	}
+	return bindings
 }
 
 func reviewed(revision *uint64) func(held) error {
@@ -321,6 +341,26 @@ type policyDiff struct {
 func sourceDiff(a, b string) string {
 	text, _ := difflib.GetUnifiedDiffString(difflib.UnifiedDiff{A: difflib.SplitLines(a), B: difflib.SplitLines(b), FromFile: "active/policy.toml", ToFile: "proposed/policy.toml", Context: 3})
 	return text
+}
+
+var errPreviewFetches = httpError{errors.New("only the owner previews a policy that changes catalogs or allow_networks"), http.StatusForbidden}
+
+// Loading a policy fetches its catalogs through its allowed networks, so an identity's preview may change neither.
+func fetchesUnchanged(before, after string) error {
+	old, err := tomledit.Read(before)
+	if err != nil {
+		return err
+	}
+	next, err := tomledit.Read(after)
+	if err != nil {
+		return err
+	}
+	for _, key := range []string{"catalogs", "allow_networks"} {
+		if !reflect.DeepEqual(old[key], next[key]) {
+			return errPreviewFetches
+		}
+	}
+	return nil
 }
 
 func (s *state) previewPolicy(ctx context.Context, base format.Document, before *settings, source string) (*policyDiff, error) {
@@ -420,6 +460,7 @@ func (s *state) signInCredential(connection, name string) (json.RawMessage, func
 	}, nil
 }
 
+// An unlock is not a call, so a restore that changes the policy is recorded as the owner's enroll.
 func (s *state) restoreDevice(ctx context.Context, public string) error {
 	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(public))
 	if err != nil {
@@ -427,11 +468,21 @@ func (s *state) restoreDevice(ctx context.Context, public string) error {
 	}
 	public = strings.TrimSpace(string(ssh.MarshalAuthorizedKey(key)))
 	digest := sha256.Sum256([]byte(public))
-	return s.enroll(ctx, map[string]config.Enrollment{fmt.Sprintf("device-%x", digest[:8]): {Key: public, Routes: true, Restore: true}})
+	device := map[string]config.Enrollment{fmt.Sprintf("device-%x", digest[:8]): {Key: public, Routes: true, Restore: true}}
+	changed, err := s.enroll(ctx, device)
+	if changed {
+		s.locked(func(h held) {
+			h.recordOwner(facts.Observation{Operation: &facts.Operation{Action: "enroll"}, Details: device}, err)
+		})
+	}
+	return err
 }
 
-func (s *state) enroll(ctx context.Context, identities map[string]config.Enrollment) error {
-	return s.writeSettings(ctx, settingsWrite{derive: func(h held) ([]tomledit.Change, error) {
-		return h.settings.Load().Enroll(identities, h.doc.Enrolled, identityAttributes)
+func (s *state) enroll(ctx context.Context, identities map[string]config.Enrollment) (changed bool, err error) {
+	err = s.writeSettings(ctx, settingsWrite{derive: func(h held) ([]tomledit.Change, error) {
+		changes, err := h.settings.Load().Enroll(identities, h.doc.Enrolled)
+		changed = len(changes) != 0
+		return changes, err
 	}})
+	return changed, err
 }

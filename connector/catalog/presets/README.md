@@ -128,13 +128,18 @@ Owner policies remain in `config.policies`. They allow requests and can require
 approval using both common and protocol-specific facts. They do not supply
 operation descriptions.
 Unknown requests have a null operation and require approval; malformed or
-ambiguous matches are refused. Approval grants stay
-outside the facts snapshot. Decisions contain `facts`, `allow`, `deny`, `requirements`, `next`,
-and `grant`; the app reads operation, title, parameters, principal,
+ambiguous matches are refused. Admissions have a null operation too and are told
+apart by `input.facts.kind`. Approval grants stay
+outside the facts snapshot. Records contain `facts`, `decision`, `scope`, and, when
+refused, `refusal`; the app reads operation, title, parameters, principal,
 connection, and the current label from `facts`. Audit records add lifecycle fields
 without duplicating those facts.
 
-The Rego rules in `../config/policy.go` compute access restrictions, label-flow checks, and
+Go resolves the policy's grants and limits into `input.authorization.modes`, one
+`{mode, from, capped_by}` entry per effect of the request. `off` denies the request;
+`ask` adds the requirement `effect.<effect>`.
+
+The Rego rules in `../config/lib.rego` apply those modes, the label-flow checks, and
 saved approval waivers. Every request evaluates the same prepared query,
 `data.perimeter.decision`. Owner policies receive `input.facts` and
 `input.authorization`; they can also read `data.perimeter.gaps` to inspect remaining
@@ -143,8 +148,9 @@ label levels in `data.levels`. Description errors are appended to denials in Go.
 Owner policies cannot define
 rules or data under `perimeter`, `lattices`, or `levels`, which the Perimeter reserves.
 
-A request passes only when the decision's `allow` is true; `deny` and
-`requirements` only say what is missing. `allow` needs every built-in check to
+The decision is one outcome: `{"outcome": "allow", "sends", "next"}`,
+`{"outcome": "ask", "sends", "gaps"}`, or `{"outcome": "deny", "sends", "reasons"}`;
+any deny reason wins over any gap. `allow` needs every built-in check to
 pass and `data.sentinel.allow` to be `true`, so a Perimeter with no policy in
 package `sentinel` refuses every request, as does an evaluation error. Onboarding
 writes that policy. `allow` rules add up across owner policies, so a second
@@ -176,10 +182,11 @@ identical entries are accepted; conflicting messages for one ID, malformed
 entries, and evaluation errors refuse the request. Owner requirements add to
 built-in checks and never stand in for `allow`.
 
-`requirements` contains the remaining `{id, message}` objects, including
-explanations for built-in requirements. Saved rules carry the same collection;
+`gaps` contains the remaining `{id, message}` objects, including
+explanations for built-in requirements. Saved rules carry them as `requirements`;
 only each requirement's ID grants authority. Messages are for display.
-Saved approvals waive IDs for the same facts version, connection, operation, and scope.
+Saved approvals waive IDs for the same facts version, connection, operation, and scope,
+until the rule's optional `expires` time.
 Use a stable ID for each requirement. A new requirement that appears while a
 request waits cannot be covered by an approval of the earlier requirements.
 Saved approvals survive policy and data edits: a requirement they do not name
@@ -213,7 +220,7 @@ Observations use the same commit path. Failed persistence keeps restrictive
 labels in memory and marks the request refused. A later observation retries any
 outstanding label write.
 
-Go computes `next` by joining the current label with the observation.
+Rego computes `next` by joining the current label with the observation.
 Admission leaves the current label unchanged. Observations continue to
 record both label axes when their enforcement switches are off.
 

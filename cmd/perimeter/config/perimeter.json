@@ -1,0 +1,25 @@
+{
+  "title": "Perimeter",
+  "catalog": {
+    "actions": {
+      "overview.read": { "title": "Read the overview", "effects": ["read"] },
+      "policy.read": { "title": "Read the policy", "effects": ["read"] },
+      "policy.preview": { "title": "Preview a policy", "effects": ["read"] },
+      "policy.write": { "title": "Write the policy", "effects": ["admin"] },
+      "credentials.write": { "title": "Write credentials", "effects": ["admin"] },
+      "connections.control": { "title": "Control a connection", "effects": ["admin"] },
+      "enroll": { "title": "Enroll identities", "effects": ["admin"] },
+      "labels.write": { "title": "Set a label", "effects": ["admin"] },
+      "requests.read": { "title": "Read requests", "effects": ["read"] },
+      "requests.answer": { "title": "Answer a request once or deny it", "effects": ["write"] },
+      "requests.save": { "title": "Save an answer as a rule", "effects": ["admin"] },
+      "proposals.answer": { "title": "Answer a policy proposal or a Perimeter call", "effects": ["admin"] },
+      "proposals.others": { "title": "Propose changes beyond its own access", "effects": ["write"] },
+      "audit.read": { "title": "Read the audit log", "effects": ["read"] },
+      "catalogs.read": { "title": "Check for catalog updates", "effects": ["read"] },
+      "explain": { "title": "Explain another identity's access", "effects": ["read"] },
+      "bunkers.relay": { "title": "Relay to a bunker", "effects": ["execute"] },
+      "routes.publish": { "title": "Publish device routes", "effects": ["execute"] }
+    }
+  }
+}

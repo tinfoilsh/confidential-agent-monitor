@@ -15,10 +15,10 @@ import (
 )
 
 type Program struct {
-	queries map[string]rego.PreparedEvalQuery
+	query rego.PreparedEvalQuery
 }
 
-func prepareRego(ctx context.Context, modules map[string]string, data map[string]any, queries map[string]string) (*Program, error) {
+func prepareRego(ctx context.Context, modules map[string]string, data map[string]any) (*Program, error) {
 	if data == nil {
 		data = map[string]any{}
 	}
@@ -30,55 +30,51 @@ func prepareRego(ctx context.Context, modules map[string]string, data map[string
 		}
 		opts = append(opts, rego.ParsedModule(module))
 	}
-	p := &Program{queries: map[string]rego.PreparedEvalQuery{}}
-	for _, name := range slices.Sorted(maps.Keys(queries)) {
-		prepared, err := rego.New(append(slices.Clip(opts), rego.Query(queries[name]))...).PrepareForEval(ctx)
-		if err != nil {
-			return nil, err
-		}
-		p.queries[name] = prepared
-	}
-	return p, nil
-}
-
-func regoPackage(filename, source string) ([]string, error) {
-	module, err := ast.ParseModule(filename, source)
+	query, err := rego.New(append(opts, rego.Query(decisionQuery))...).PrepareForEval(ctx)
 	if err != nil {
 		return nil, err
+	}
+	return &Program{query: query}, nil
+}
+
+func regoModule(filename, source string) (*ast.Module, []string, error) {
+	module, err := ast.ParseModule(filename, source)
+	if err != nil {
+		return nil, nil, err
 	}
 	var path []string
 	for _, term := range module.Package.Path[1:] {
 		name, ok := term.Value.(ast.String)
 		if !ok {
-			return nil, fmt.Errorf("%s: package path must be constant", filename)
+			return nil, nil, fmt.Errorf("%s: package path must be constant", filename)
 		}
 		path = append(path, string(name))
 	}
-	return path, nil
+	return module, path, nil
 }
 
-func (p *Program) Eval(ctx context.Context, name string, input any, out any) error {
-	query, ok := p.queries[name]
-	if !ok {
-		return fmt.Errorf("policy query %s is not configured", name)
-	}
+func (p *Program) Decide(ctx context.Context, input DecisionInput) (Decision, error) {
+	var d Decision
 	in, err := facts.JSON[map[string]any](input)
 	if err != nil {
-		return err
+		return d, err
 	}
-	results, err := query.Eval(ctx, rego.EvalParsedInput(ast.LazyObject(in)))
+	results, err := p.query.Eval(ctx, rego.EvalParsedInput(ast.LazyObject(in)))
 	if err != nil {
-		return fmt.Errorf("policy: %w", err)
+		return d, fmt.Errorf("policy: %w", err)
 	}
 	if len(results) != 1 || len(results[0].Expressions) != 1 {
-		return errors.New("policy returned no decision")
+		return d, errors.New("policy returned no decision")
 	}
 	raw, err := json.Marshal(results[0].Expressions[0].Value)
 	if err == nil {
-		err = facts.DecodeNumbers(raw, out)
+		err = facts.DecodeNumbers(raw, &d)
+	}
+	if err == nil {
+		err = d.Validate()
 	}
 	if err != nil {
-		return fmt.Errorf("policy returned an invalid decision: %w", err)
+		return d, fmt.Errorf("policy returned an invalid decision: %w", err)
 	}
-	return nil
+	return d, nil
 }

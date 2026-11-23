@@ -1,4 +1,4 @@
-package format
+package migrate
 
 import (
 	"encoding/json"
@@ -16,7 +16,7 @@ const (
 	ownerPackage    = "sentinel"
 	ownerPolicy     = "network-default"
 	denyUnknown     = "package sentinel\n\ndeny contains \"This request has no recognized policy operation.\" if input.facts.operation == null\n"
-	allowKnown      = "package sentinel\n\nallow if input.facts.operation != null\n"
+	allowKnown      = "package sentinel\n\nallow if input.facts.operation != null\n\nallow if input.facts.kind == \"admission\"\n"
 	allowEverything = "package sentinel\n\nallow := true\n"
 )
 

@@ -7,43 +7,87 @@ import { bytesToHex, utf8ToBytes } from "@noble/hashes/utils.js";
 
 export type Json =
   null | boolean | number | string | Json[] | { [key: string]: Json };
-export type Level = "off" | "read" | "ask" | "allow";
+export type Level = "off" | "read" | "ask" | "allow" | "custom";
+export type GrantLevel = Exclude<Level, "custom">;
 export type Mode = "off" | "ask" | "allow";
 export type Audience = "me" | "team" | "anyone";
 export type Trust = "trusted" | "untrusted";
-export type Decision = "once" | "save" | "deny";
+export type Choice = "once" | "save" | "deny";
 export type ApprovalAnswer = {
-  by: "owner";
-  decision: Decision;
+  by: string;
+  decision: Choice;
   reason?: string;
   time: string;
 };
 export type RequestState =
   | "pending"
   | "allowed"
-  | "approved"
   | "refused"
   | "denied"
   | "expired"
+  | "revoked"
   | "outdated";
 export type Access = {
-  level: Level;
+  level?: GrantLevel;
   actions?: Record<string, Mode>;
   effects?: Record<string, Mode>;
 };
-export type Requirement = { id?: string; message: string };
+export type Limits = {
+  effects?: Record<string, Mode>;
+  actions?: Record<string, Mode>;
+};
+export type Role = {
+  groups?: string[];
+  limits?: Limits;
+  connections?: Record<string, Access>;
+};
+export type Setting = {
+  mode: Mode;
+  from: string;
+  grant: Mode;
+  limit: Mode;
+  capped_by?: string;
+};
+export type ResolvedNode = Setting & {
+  key: string;
+  title: string;
+  effects: string[];
+  children?: ResolvedNode[];
+};
+export type Resolved = {
+  reaches: boolean;
+  level: Level;
+  effects: Record<string, Setting>;
+  actions?: Record<string, Setting>;
+  tree?: ResolvedNode[];
+};
+export type Requirement = { id: string; message: string };
+export type Decision =
+  | { outcome: "allow"; sends: Audience; next: Label }
+  | { outcome: "ask"; sends: Audience; gaps: Requirement[] }
+  | { outcome: "deny"; sends: Audience; reasons: string[] };
+// A denied refusal of a deny decision leaves its reasons to the decision.
+export type Refusal = {
+  cause: "invalid" | "precondition" | "denied" | "rejected" | "expired";
+  reasons?: string[];
+};
 export type Rule = {
+  enabled?: boolean;
+  version?: number;
   connection: string;
   action: string;
   operation?: string;
   scope?: Record<string, Json>;
   requirements?: Requirement[];
+  expires?: string;
 };
 export type Identity = {
-  key: string;
+  key?: string;
+  certificate?: { key_id?: string; group?: string };
   sandbox?: { source: string; instance_id: string };
-  effects?: Record<string, Mode>;
-  routes?: boolean;
+  groups?: string[];
+  roles?: string[];
+  limits?: Limits;
   connections?: Record<string, Access>;
   rules?: Record<string, Rule>;
 };
@@ -51,7 +95,7 @@ export type Identity = {
 const SETTINGS = [
   "preset",
   "match_only",
-  "effects",
+  "limits",
   "policy_options",
   "contents",
   "strangers",
@@ -60,7 +104,7 @@ const SETTINGS = [
 export type Connection = {
   preset: string;
   match_only?: boolean;
-  effects?: Record<string, Mode>;
+  limits?: Limits;
   contents: Audience;
   sends: Audience;
   strangers?: boolean;
@@ -125,8 +169,9 @@ export type View = {
   ca: string;
   config: {
     allow_paid_inference?: boolean;
-    effects?: Record<string, Mode>;
+    limits?: Limits;
     default_access?: Record<string, Access>;
+    roles?: Record<string, Role>;
     data?: { [key: string]: Json };
     identities?: Record<string, Identity> | null;
     connections?: Record<string, Connection> | null;
@@ -134,6 +179,9 @@ export type View = {
     lattices?: { confidentiality?: boolean; integrity?: boolean };
     allow_networks?: string[] | null;
     catalogs?: Record<string, string> | null;
+    resolved: Record<string, Record<string, Resolved>>;
+    identity_roles?: Record<string, string[]>;
+    stale?: Record<string, Record<string, string>>;
   };
   labels: Record<string, Label>;
   status: Record<string, ConnectionStatus>;
@@ -147,7 +195,6 @@ export type View = {
     }[]
   >;
   presets: Record<string, Preset>;
-  vocabulary: Record<string, { change?: boolean; ask?: boolean }>;
 };
 export type RequestDetails = {
   http?: { method: string; host: string; path: string };
@@ -158,25 +205,25 @@ export type RequestDetails = {
   policy?: { source_diff: string };
 };
 export type RequestRecord = {
-  invalid?: boolean;
   summary?: boolean;
   id: string;
   state: RequestState;
   time: string;
   expires?: string;
-  deny?: string[];
-  requirements?: Requirement[];
-  grant?: { [key: string]: Json };
+  decision?: Decision;
+  refusal?: Refusal;
+  scope?: { [key: string]: Json };
   savingDecision?: boolean;
   reviews?: ApprovalAnswer[];
   segment?: string;
   changes?: Change[];
   facts: {
+    kind: "operation" | "admission" | "";
     title?: string;
     principal: { key?: string; name: string };
     connection: string;
     service?: string;
-    operation?: { id: string; action: string; effects?: string[] };
+    operation: { id: string; action: string; effects?: string[] } | null;
     parameters?: { [key: string]: Json };
     details?: RequestDetails;
   };
@@ -225,7 +272,12 @@ export type OwnerApi = {
     credentials?: { [connection: string]: Credentials },
     signal?: AbortSignal,
   ): Promise<View>;
-  decide(id: string, decision: Decision, signal?: AbortSignal): Promise<null>;
+  decide(
+    id: string,
+    decision: Choice,
+    gaps?: string[],
+    signal?: AbortSignal,
+  ): Promise<null>;
   enroll(
     identities: {
       [name: string]: { key: string; routes: boolean; restore: boolean };
@@ -267,16 +319,7 @@ export type ShellOpener = (
 ) => Promise<Shell>;
 export type ConnectorIcon = { src: string; dark?: string };
 export type IconManifest = { [preset: string]: { src: string; dark?: string } };
-export type ActionNode = {
-  key: string;
-  title: string;
-  effects: string[];
-  children: ActionNode[];
-};
-export type AccessNode = {
-  key: string;
-  title: string;
-  mode: Mode;
+export type AccessNode = Omit<ResolvedNode, "children"> & {
   children: AccessNode[];
 };
 export type Review = {
@@ -327,12 +370,12 @@ export type ConnectionAnswers = {
 // What the owner picked at first setup: connections with their credential, if
 // they take one, and how bunkers reach hosts outside those connections.
 export type OnboardingChoices = {
-  connections: { preset: string; level: Level; credential?: string }[];
-  network: Exclude<Level, "read">;
+  connections: { preset: string; level: GrantLevel; credential?: string }[];
+  network: Exclude<GrantLevel, "read">;
   registries: boolean;
 };
 
-export const LEVELS: { [L in Level]: string } = {
+export const LEVELS: { [L in GrantLevel]: string } = {
   off: "No access",
   read: "Read only",
   ask: "Ask",
@@ -568,6 +611,12 @@ export function ownerApi(
       body,
       signal,
     )) as View & { pending?: true };
+    // A Perimeter from before grants and limits sends no resolved access, which every page reads.
+    if (view?.config && !("resolved" in view.config))
+      throw new OwnerError(
+        "This Perimeter is older than this console. Update the Perimeter to manage it here.",
+        426,
+      );
     if (view?.catalog_id) {
       if (view.presets)
         catalog = { id: view.catalog_id, presets: view.presets };
@@ -628,11 +677,11 @@ export function ownerApi(
         { changes, credentials, revision },
         signal,
       ),
-    decide: (id, decision, signal) =>
+    decide: (id, decision, gaps, signal) =>
       snapshot(
         "POST",
         `/requests/${encodeURIComponent(id)}`,
-        { decision, revision },
+        { decision, gaps, revision },
         signal,
       ).then(() => null),
     enroll: (identities, signal) =>
@@ -780,6 +829,26 @@ export const onboarded = (view: View) =>
   (view.config.data?.onboarding as { completed?: Json } | undefined)
     ?.completed === true;
 const connections = (view: View) => view.config.connections ?? {};
+const PERIMETER = "perimeter";
+export const isBuiltin = (name: string) => name === PERIMETER;
+export const serviceNames = (view: View) =>
+  Object.keys(connections(view)).filter((name) => !isBuiltin(name));
+const ROUTES_PUBLISH = "routes.publish";
+// The grant enrolling a device writes; see config.DeviceActions.
+const deviceAccess = (mode: Mode) => ({
+  actions: Object.fromEntries(
+    [ROUTES_PUBLISH, "policy.read", "proposals.others"].map((action) => [
+      action,
+      mode,
+    ]),
+  ),
+});
+const flatten = (nodes: ResolvedNode[] = []): ResolvedNode[] =>
+  nodes.flatMap((node) => [node, ...flatten(node.children)]);
+export const publishesRoutes = (view: View, name: string) =>
+  flatten(view.config.resolved[name]?.[PERIMETER]?.tree).some(
+    (node) => node.key === ROUTES_PUBLISH && node.mode === "allow",
+  );
 export const kindOf = (c?: Connection) =>
   Object.keys(c ?? {}).find((key) => !SETTINGS.includes(key));
 export const setupOf = (c?: Connection) =>
@@ -846,17 +915,40 @@ export const requestTitle = (r: RequestRecord): string =>
   summary(r.facts?.details) ||
   r.facts?.operation?.id ||
   r.facts?.connection;
-// Requirements worth showing. "ask" is what pending already means, and the
-// audience/trust label gates are a data-flow feature nobody set up on
-// purpose; what remains is effect overrides and unrecognised operations.
-const quietRequirements = ["ask", "audience", "trust"];
-export const reasons = (r: { requirements?: Requirement[] }) =>
-  (r.requirements ?? [])
-    .filter(
-      (requirement) =>
-        !quietRequirements.includes(requirement.id?.split(".")[0] ?? ""),
-    )
-    .map((requirement) => requirement.message);
+const effectOf = (gap: Requirement) =>
+  gap.id.startsWith("effect.") && gap.id !== "effect.unknown"
+    ? gap.id.slice("effect.".length)
+    : undefined;
+const listText = (items: string[]) =>
+  items.length < 3
+    ? items.join(" and ")
+    : `${items.slice(0, -1).join(", ")}, and ${items.at(-1)}`;
+const gapReasons = (gaps: Requirement[]) => {
+  const asking = gaps.filter(effectOf);
+  return [
+    ...(asking.length > 1
+      ? [
+          `The ${listText(asking.map(effectOf) as string[])} effects require approval (Ask).`,
+        ]
+      : asking.map((gap) => gap.message)),
+    ...gaps.filter((gap) => !effectOf(gap)).map((gap) => gap.message),
+  ];
+};
+export const gapIds = (r?: RequestRecord) =>
+  r?.decision?.outcome === "ask"
+    ? r.decision.gaps.map((gap) => gap.id)
+    : undefined;
+export const reasons = ({
+  decision,
+  refusal,
+}: Pick<RequestRecord, "decision" | "refusal">) => [
+  ...(decision?.outcome === "deny"
+    ? decision.reasons
+    : decision?.outcome === "ask"
+      ? gapReasons(decision.gaps)
+      : []),
+  ...(refusal?.reasons ?? []),
+];
 // A pending request past its deadline is expired, even before the next poll says so.
 export const stateAt = (r: RequestRecord, now: number): RequestState =>
   r.state === "pending" && r.expires && Date.parse(r.expires) <= now
@@ -864,21 +956,60 @@ export const stateAt = (r: RequestRecord, now: number): RequestState =>
     : r.state;
 export const isProposal = (r: RequestRecord) =>
   r.facts.service === "policy-proposal";
+const OWNER = "owner";
+export const isOwner = (name: string) => name === OWNER;
+export const isOwnerCall = (r: RequestRecord) =>
+  isOwner(r.facts.principal.name);
+export const requester = (r: RequestRecord) =>
+  isOwnerCall(r) ? "You" : r.facts.principal.name;
+const approval = (r: RequestRecord) =>
+  r.state === "allowed"
+    ? r.reviews?.filter((review) => review.decision !== "deny").at(-1)
+    : undefined;
+export const approved = (r: RequestRecord) => !!approval(r);
 export function reviewStatus(r: RequestRecord): string {
-  const last = r.reviews?.at(-1);
-  if (
-    (last || r.savingDecision) &&
-    (r.state === "approved" || r.state === "denied")
-  ) {
-    const outcome =
-      r.state === "approved"
-        ? "Approved"
-        : isProposal(r)
-          ? "Rejected"
-          : "Denied";
-    return `${outcome} by you`;
+  if (isOwnerCall(r)) return r.state === "allowed" ? "Done" : "Failed";
+  const by = (review: ApprovalAnswer) =>
+    ` by ${isOwner(review.by) ? "you" : review.by}`;
+  const approver = approval(r);
+  if (approver) return "Approved" + by(approver);
+  if (r.state === "denied") {
+    const denier = r.reviews
+      ?.filter((review) => review.decision === "deny")
+      .at(-1);
+    return (isProposal(r) ? "Rejected" : "Denied") + (denier ? by(denier) : "");
   }
+  if (r.state === "revoked") return "Stopped";
   return r.state.charAt(0).toUpperCase() + r.state.slice(1);
+}
+// Rejected and expired refusals end in states of their own.
+const refusedText: Partial<Record<Refusal["cause"], string>> = {
+  invalid: "Refused: the Perimeter could not read this request.",
+  precondition: "Refused: the Perimeter could not complete it.",
+  denied: "Refused by policy.",
+};
+// Undefined where the reviews already say how it ended.
+export function outcomeText(r: RequestRecord): string | undefined {
+  if (isOwnerCall(r))
+    return r.state === "allowed"
+      ? "You did this. Your own actions are not checked against policy."
+      : "You did this, and it failed.";
+  switch (r.state) {
+    case "pending":
+      return r.savingDecision ? undefined : "Waiting for you.";
+    case "allowed":
+      return approved(r) ? undefined : "Allowed by policy.";
+    case "refused":
+      return (r.refusal && refusedText[r.refusal.cause]) ?? "Refused.";
+    case "denied":
+      return undefined;
+    case "expired":
+      return "Nobody answered in time.";
+    case "revoked":
+      return "Stopped: this access no longer passes.";
+    case "outdated":
+      return "Settings for this connection changed before review.";
+  }
 }
 export function ordered(records: RequestRecord[], dismissed: string[] = []) {
   const hidden = new Set(dismissed);
@@ -916,14 +1047,14 @@ export function grantText(
   );
 }
 export const saveText = (r: RequestRecord) =>
-  `${grantText(r.facts?.operation?.id, r.grant, r.facts?.parameters)} on ${stateAt(r, Date.now()) === "expired" ? "future attempts. Retry this request after saving." : "this and future attempts."}`;
+  `${grantText(r.facts?.operation?.id, r.scope, r.facts?.parameters)} on ${stateAt(r, Date.now()) === "expired" ? "future attempts. Retry this request after saving." : "this and future attempts."}`;
 // Saving a rule also works after a timeout.
 export function decisions(
   r: RequestRecord,
   now?: number,
 ): { once?: boolean; save?: boolean; deny?: boolean; dismiss?: boolean } {
   const state = now === undefined ? r.state : stateAt(r, now);
-  const save = r.facts?.operation?.action != null && !!r.facts?.operation?.id;
+  const save = !!r.facts.operation?.id;
   return r.savingDecision
     ? {}
     : state === "pending"
@@ -932,155 +1063,41 @@ export function decisions(
         ? { save, dismiss: true }
         : {};
 }
+// Every identity has every connection's tree, so any one gives the titles.
+const titlesOf = (view: View, connection: string) =>
+  Object.fromEntries(
+    flatten(
+      Object.values(view.config.resolved).find(
+        (access) => access[connection],
+      )?.[connection]?.tree,
+    ).map((node) => [node.key, node.title]),
+  );
 export function ruleTitle(view: View, r: Rule) {
-  const actions = actionsOf(view, r.connection);
+  const titles = titlesOf(view, r.connection);
   return (
     r.action
       .split(".")
-      .map((_, i, parts) => actions[parts.slice(0, i + 1).join(".")]?.title)
+      .map((_, i, parts) => titles[parts.slice(0, i + 1).join(".")])
       .filter(Boolean)
       .join(" › ") || r.action
   );
 }
 
-// Each pinned MCP tool is an action under read or use, by the hint the owner approved with the pin.
-export const actionsOf = (
-  view: View,
-  name: string,
-): { [action: string]: PresetAction } => ({
-  ...groupsOf(view, name),
-  ...presetOf(view, name).actions,
-  ...Object.fromEntries(
-    (
-      (
-        setupOf(connections(view)[name])?.pin as
-          | {
-              tools?: {
-                name: string;
-                title?: string;
-                annotations?: { readOnlyHint?: boolean };
-              }[];
-            }
-          | undefined
-      )?.tools ?? []
-    ).map((t) => [
-      `${t.annotations?.readOnlyHint ? "read" : "use"}.${t.name}`,
-      { title: t.title || t.name },
-    ]),
-  ),
-});
-// Record operations also contribute permission groups to their preset.
-const operationsOf = (view: View, name: string) =>
-  Object.values(presetOf(view, name).operations ?? {});
-const groupsOf = (view: View, name: string) =>
-  Object.fromEntries(
-    operationsOf(view, name).map((o) => [o.action, { title: o.action }]),
-  );
-// A preset keeps its identity when a read changes it in place; a new catalog marks the change.
-const effectGroups = new WeakMap<
-  object,
-  { catalog?: string; groups: Map<string, Set<string>> }
->();
-const effectGroupsOf = (view: View, name: string) => {
-  const preset = presetOf(view, name),
-    actions = preset.actions ?? {};
-  const cached = effectGroups.get(preset);
-  let groups = cached?.catalog === view.catalog_id ? cached?.groups : undefined;
-  if (!groups) {
-    groups = new Map();
-    const add = (action: string, effects: string[]) =>
-      action.split(".").forEach((_, i, parts) => {
-        const key = parts.slice(0, i + 1).join(".");
-        if (!groups!.has(key)) groups!.set(key, new Set());
-        for (const effect of effects) groups!.get(key)!.add(effect);
-      });
-    for (const [action, meta] of Object.entries(actions))
-      add(action, meta.effects ?? []);
-    for (const op of Object.values(preset.operations ?? {}))
-      add(op.action, op.effects ?? []);
-    effectGroups.set(preset, { catalog: view.catalog_id, groups });
-  }
-  return groups;
-};
-export const effectsOf = (view: View, name: string, k: string) => {
-  const actions = presetOf(view, name).actions ?? {},
-    groups = effectGroupsOf(view, name);
-  const lineage = k
-    .split(".")
-    .map((_, i, parts) => parts.slice(0, i + 1).join("."))
-    .reverse();
-  const inherited = lineage.find((a) => actions[a]?.effects);
-  return [
-    ...new Set([
-      ...(actions[inherited!]?.effects ?? []),
-      ...(groups.get(k) ?? []),
-    ]),
-  ];
-};
-
-// Mirrors effects in internal/policy/lib.rego for a global setting, outside any agent, connection or operation.
-export const effectMode = (view: View, effect: string): Mode =>
-  view.config.effects?.[effect] ??
-  (view.vocabulary[effect]?.ask ? "ask" : "allow");
-
-// Mirrors mode in internal/policy/lib.rego. Effect settings restrict requests separately.
-export function mode(
-  access: Access,
-  vocabulary: View["vocabulary"],
-  effects: string[],
-  k: string,
-): Mode {
-  const lineage = k
-    .split(".")
-    .map((_, i, p) => p.slice(0, p.length - i).join("."));
-  return (
-    lineage.map((a) => access.actions?.[a]).find(Boolean) ??
-    (!access.level || access.level === "off"
-      ? "off"
-      : !effects.some((e) => vocabulary[e]?.change)
-        ? "allow"
-        : access.level === "read"
-          ? "off"
-          : access.level)
-  );
-}
-
-export function actionTree(view: View, name: string): ActionNode[] {
-  const roots: ActionNode[] = [],
-    nodes = new Map<string, ActionNode>();
-  for (const [key, action] of Object.entries(actionsOf(view, name)).sort(
-    ([a], [b]) => a.localeCompare(b),
-  )) {
-    let children = roots;
-    key.split(".").forEach((part, i, parts) => {
-      const path = parts.slice(0, i + 1).join(".");
-      let node = nodes.get(path);
-      if (!node) {
-        node = {
-          key: path,
-          title:
-            part.charAt(0).toUpperCase() + part.slice(1).replace(/[_-]/g, " "),
-          effects: effectsOf(view, name, path),
-          children: [],
-        };
-        nodes.set(path, node);
-        children.push(node);
-      }
-      if (path === key) node.title = action.title || key;
-      children = node.children;
-    });
-  }
-  return roots;
-}
+const inherited = (s: Setting) =>
+  s.from.startsWith("default_access.") || s.from.startsWith("roles.");
+export const provenance = (s: Setting) =>
+  s.capped_by
+    ? `${s.mode}, set by ${s.capped_by} (${s.from} grants ${s.grant})`
+    : `${s.mode}, ${inherited(s) ? "inherited from" : "set by"} ${s.from}`;
 
 export const levelsOf = (c?: Connection) =>
-  (Object.entries(LEVELS) as [Level, string][]).filter(
+  (Object.entries(LEVELS) as [GrantLevel, string][]).filter(
     ([l]) =>
       !["custom_api", "tcp", BUNKERS].includes(c?.preset ?? "") || l !== "read",
   );
 
+const UNRESOLVED: Resolved = { reaches: false, level: "off", effects: {} };
 export function agentAccess(view: View, name: string, only?: string) {
-  const id: Partial<Identity> = identities(view)[name] ?? {};
   const known: Record<string, Connection> = {
     [BUNKERS]: { preset: BUNKERS } as Connection,
     ...connections(view),
@@ -1091,44 +1108,43 @@ export function agentAccess(view: View, name: string, only?: string) {
       : known[only]
         ? [[only, known[only]]]
         : [];
+  const resolved = view.config.resolved[name] ?? {},
+    own = identities(view)[name]?.connections ?? {};
   return entries.map(([connection, c]) => {
-    // Mirrors config.Access: an entry without a level inherits the default access and its actions.
-    const own = id.connections?.[connection],
-      base = view.config.default_access?.[connection];
-    const access: Access = own?.level
-      ? own
-      : {
-          level: base?.level ?? "off",
-          actions: { ...base?.actions, ...own?.actions },
-        };
-    const describe = (node: ActionNode): AccessNode => ({
-      key: node.key,
-      title: node.title,
-      mode: mode(access, view.vocabulary, node.effects, node.key),
-      children: node.children.map(describe),
+    const r = resolved[connection] ?? UNRESOLVED,
+      named = r.actions ?? {};
+    const describe = ({ children, ...node }: ResolvedNode): AccessNode => ({
+      ...node,
+      children: (children ?? []).map(describe),
     });
-    // A lone group without an override repeats the connection's own row.
+    // A lone group nobody named repeats the connection's own row.
     const ungrouped = (nodes: AccessNode[]): AccessNode[] =>
       nodes.length === 1 &&
       nodes[0].children.length > 1 &&
-      !Object.hasOwn(access.actions ?? {}, nodes[0].key)
+      !Object.hasOwn(named, nodes[0].key)
         ? nodes[0].children
         : nodes;
     let actions: AccessNode[] | undefined;
     return {
       connection,
       preset: c.preset,
-      level: access.level,
+      level: r.level,
+      reaches: r.reaches,
       levels: levelsOf(c),
-      overrides: Object.values(access.actions ?? {}).filter(Boolean).length,
+      overrides: Object.keys(own[connection]?.actions ?? {}).length,
       get actions(): AccessNode[] {
-        return (actions ??= ungrouped(
-          actionTree(view, connection).map(describe),
-        ));
+        return (actions ??= ungrouped((r.tree ?? []).map(describe)));
       },
     };
   });
 }
+
+export const bindingText = (identity?: Identity) =>
+  identity?.certificate?.key_id
+    ? `certificate key ID ${identity.certificate.key_id}`
+    : identity?.certificate?.group
+      ? `certificate group ${identity.certificate.group}`
+      : undefined;
 
 export function review(view: View, name: string): Review | undefined {
   const c = connections(view)[name];
@@ -1433,6 +1449,7 @@ export function catalog(view: View) {
   )) {
     // Retired definitions still serve stored credentials and permission names.
     if (preset.replaced_by && view.presets[preset.replaced_by]) continue;
+    if (name === PERIMETER) continue;
     const group = preset.group ?? "api";
     if (!groups.has(group)) groups.set(group, []);
     groups.get(group)!.push({
@@ -1739,7 +1756,7 @@ function onboardingChanges(
   const add = (
     connection: string,
     preset: string,
-    level: Level,
+    level: GrantLevel,
     credential?: string,
   ) => {
     const fields = setupFields(view, preset);
@@ -1813,7 +1830,7 @@ export function setupToolApprovals(view: View): Change[] {
 }
 
 const KNOWN_ONLY_RULE =
-  "package sentinel\n\nallow if input.facts.operation != null\n";
+  'package sentinel\n\nallow if input.facts.operation != null\n\nallow if input.facts.kind == "admission"\n';
 const OPEN_RULE = "package sentinel\n\nallow := true\n";
 // Allow rules add up, so the network rule lives in one policy that each edit replaces.
 const networkRuleName = (view: View) => {
@@ -1880,10 +1897,13 @@ export const edits = {
       })),
     ];
   },
-  addIdentity: (name: string, key: string, routes: boolean) =>
+  addIdentity: (name: string, key: string, device: boolean) =>
     sourceChanges({
       identities: {
-        [name]: { key: key.trim(), routes, connections: {} },
+        [name]: {
+          key: key.trim(),
+          connections: device ? { [PERIMETER]: deviceAccess("allow") } : {},
+        },
       },
     }),
   removeAgent: (name: string): Change[] => [
@@ -1921,15 +1941,14 @@ export const edits = {
       ),
     ];
   },
-  setRoutes: (name: string, routes: boolean): Change[] => [
-    { path: ["identities", name, "routes"], value: routes },
-  ],
+  setRoutes: (name: string, routes: boolean): Change[] =>
+    edits.setAccess(name, PERIMETER, deviceAccess(routes ? "allow" : "off")),
   // The bunkers connection is added by the first access set to it.
   setLevel: (
     view: View,
     name: string,
     connection: string,
-    level: Level,
+    level: GrantLevel,
   ): Change[] => [
     ...(connection === BUNKERS && !connections(view)[BUNKERS]
       ? edits.addConnection(view, BUNKERS, {
@@ -1945,7 +1964,7 @@ export const edits = {
     name: string,
     connection: string,
     access: {
-      level?: Level;
+      level?: GrantLevel;
       actions?: { [action: string]: Mode | null };
       effects?: { [effect: string]: Mode | null };
     },
@@ -1958,17 +1977,39 @@ export const edits = {
       ? { path: ["connections", name, "match_only"], value: true }
       : { path: ["connections", name, "match_only"], delete: true },
   ],
-  setEffect: (effect: string, mode?: Mode): Change[] => [
+  setEffectLimit: (effect: string, mode?: Mode): Change[] => [
     {
-      path: ["effects", effect],
+      path: ["limits", "effects", effect],
       ...(mode ? { value: mode } : { delete: true }),
     },
   ],
-  copySettings: (view: View, from: string, name: string): Change[] =>
-    ["connections", "rules", "effects"].map((key) => ({
+  // Access to the Perimeter itself stays the identity's own.
+  copySettings: (view: View, from: string, name: string): Change[] => {
+    const source = identities(view)[from] ?? {},
+      target = identities(view)[name] ?? {};
+    const access = (identity: Identity, perimeter: boolean) => ({
+      connections: Object.entries(identity.connections ?? {}).filter(
+        ([connection]) => (connection === PERIMETER) === perimeter,
+      ),
+      rules: Object.entries(identity.rules ?? {}).filter(
+        ([, rule]) => (rule.connection === PERIMETER) === perimeter,
+      ),
+    });
+    const copied = access(source, false),
+      kept = access(target, true);
+    return Object.entries({
+      connections: Object.fromEntries([
+        ...copied.connections,
+        ...kept.connections,
+      ]),
+      rules: Object.fromEntries([...copied.rules, ...kept.rules]),
+      limits: source.limits ?? {},
+      roles: source.roles ?? [],
+    }).map(([key, value]) => ({
       path: ["identities", name, key],
-      value: clone(identities(view)[from]?.[key as keyof Identity] ?? {}),
-    })),
+      value: clone(value),
+    }));
+  },
   removeRule: (name: string, id: string): Change[] => [
     { path: ["identities", name, "rules", id], delete: true },
   ],
@@ -2067,7 +2108,7 @@ export const edits = {
       api: Partial<ApiSettings>;
       token: string;
       agent?: string;
-      level?: Level;
+      level?: GrantLevel;
       answers: ConnectionAnswers;
     },
   ): { changes: Change[]; credentials: Credentials } {

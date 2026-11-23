@@ -339,9 +339,19 @@ function createMonitor(options: MonitorOptions) {
       },
       to,
     });
-  const decide = (record: owner.RequestRecord, decision: owner.Decision) =>
+  // Once and save answer the gaps of the full record the owner was shown.
+  const decide = (
+    record: owner.RequestRecord,
+    decision: owner.Choice,
+    shown?: owner.RequestRecord,
+  ) =>
     perform(
-      (client) => client.decide(record.id, decision),
+      (client) =>
+        client.decide(
+          record.id,
+          decision,
+          decision === "deny" ? undefined : owner.gapIds(shown),
+        ),
       decision === "save" && owner.stateAt(record, Date.now()) === "expired"
         ? "Rule saved. Retry the request from your bunker."
         : "",
@@ -351,12 +361,11 @@ function createMonitor(options: MonitorOptions) {
             r.id === record.id
               ? {
                   ...r,
-                  state:
-                    decision === "once"
-                      ? "approved"
-                      : decision === "deny"
-                        ? "denied"
-                        : r.state,
+                  state: decision === "deny" ? "denied" : r.state,
+                  reviews: [
+                    ...(r.reviews ?? []),
+                    { by: "owner", decision, time: new Date().toISOString() },
+                  ],
                   savingDecision: true,
                 }
               : r,

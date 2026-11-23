@@ -17,12 +17,14 @@ import (
 	"time"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/migrate"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/admission"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/approval"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/certificates"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/identity"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/sealedlog"
 	"gocloud.dev/blob"
@@ -136,7 +138,11 @@ func (s *state) unlock(ctx context.Context, key []byte, minimum uint64) (bool, e
 		return false, err
 	}
 
-	doc, sealer, initialized, err := format.Load(ctx, s.bucket, key, minimum)
+	var migration *migrate.Migration
+	doc, sealer, initialized, err := format.Load(ctx, s.bucket, key, minimum, func(plain []byte) (upgraded []byte, err error) {
+		upgraded, migration, err = migrate.Document(plain)
+		return upgraded, err
+	})
 	if errors.Is(err, sealedlog.ErrKey) {
 		err = errOwner
 	}
@@ -177,13 +183,17 @@ func (s *state) unlock(ctx context.Context, key []byte, minimum uint64) (bool, e
 	s.storageKey, s.sealer = bytes.Clone(key), sealer
 	s.audit = sealedlog.New(format.Storage(s.bucket), auditPrefix, auditLimits, sealer.Seal, sealer.Open,
 		func(err error) { log.Printf("audit: %v", err) })
-	err = h.commitSettings(ctx, plan, nil)
+	err = h.commitSettings(context.WithoutCancel(ctx), plan, nil)
 	if err != nil {
 		s.doc, s.hostID = format.Document{}, ""
 		s.storageKey, s.sealer, s.audit = nil, sealedlog.Sealer{}, nil
 	} else {
 		s.flushing.Go(func() { s.audit.Run(s.life) })
-		h.recordAdmin(ctx, "Unlock", nil, nil)
+		h.recordOwner(facts.Observation{Title: "Unlock"}, nil)
+		if migration != nil {
+			h.recordOwner(facts.Observation{Title: "Migrated policy", Details: map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(migration.Policy, plan.source)},
+				"notices": migration.Notices}}, nil)
+		}
 		for _, raw := range interrupted {
 			r, err := decodeRecord(raw)
 			if err != nil {

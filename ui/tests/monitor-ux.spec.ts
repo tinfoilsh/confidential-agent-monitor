@@ -14,12 +14,12 @@ const view = (): owner.View => ({
   ca: "",
   fields: {},
   labels: {},
-  vocabulary: {},
   status: {},
   config: {
     connections: {
       network: { preset: "tcp", contents: "anyone", sends: "anyone" },
     },
+    resolved: {},
   },
   presets: { tcp: { title: tcp.title, ...tcp.catalog } },
 });
@@ -51,8 +51,8 @@ test("generic connections are an informed fallback group at the end of the catal
 describe("raw TCP setup and access", () => {
   test("does not offer read-only; existing stored settings remain unchanged", () => {
     const v = view();
-    v.config.identities = {
-      sandbox: { key: "key", connections: { network: { level: "read" } } },
+    v.config.resolved = {
+      sandbox: { network: { reaches: true, level: "read", effects: {} } },
     };
     const access = owner.agentAccess(v, "sandbox", "network")[0];
     expect(access.levels.map(([level]) => level)).toEqual([
@@ -163,6 +163,8 @@ describe("a connection's action list", () => {
     v.config.connections![name] = connection;
     return v;
   };
+  const node = (key: string, title: string, mode: owner.Mode, children?: owner.ResolvedNode[]): owner.ResolvedNode =>
+    ({ key, title, mode, from: "", grant: mode, limit: "allow", effects: [], children });
   const rows = (v: owner.View, connection: string) =>
     owner
       .agentAccess(v, "sandbox", connection)[0]
@@ -173,31 +175,21 @@ describe("a connection's action list", () => {
       contents: "me",
       sends: "me",
     });
-    v.config.identities = {
+    v.config.resolved = {
       sandbox: {
-        key: "key",
-        connections: { search: { level: "allow", actions: { "use.search": "ask" } } },
+        search: {
+          reaches: true, level: "custom", effects: {},
+          tree: [node("use", "Use", "allow", [
+            node("use.fetch", "Fetch web pages", "allow"),
+            node("use.search", "Search the web", "ask"),
+          ])],
+        },
       },
     };
     expect(rows(v, "search")).toEqual([
       { key: "use.fetch", title: "Fetch web pages", mode: "allow" },
       { key: "use.search", title: "Search the web", mode: "ask" },
     ]);
-  });
-  test.each(["own", "inherited"])("a %s root override keeps the group editable", (source) => {
-    const v = withService("search", {
-      preset: "tinfoil_websearch", contents: "me", sends: "me",
-    });
-    const access: owner.Access = { level: "allow", actions: { use: "ask" } };
-    v.config.identities = { sandbox: { key: "key", connections: source === "own" ? { search: access } : {} } };
-    if (source === "inherited") v.config.default_access = { search: access };
-    const [group] = owner.agentAccess(v, "sandbox", "search")[0].actions;
-    expect(group).toEqual({
-      key: "use", title: "Use", mode: "ask", children: [
-        { key: "use.fetch", title: "Fetch web pages", mode: "ask", children: [] },
-        { key: "use.search", title: "Search the web", mode: "ask", children: [] },
-      ],
-    });
   });
   test("several groups stay grouped", () => {
     const v = withService("tools", {
@@ -214,8 +206,16 @@ describe("a connection's action list", () => {
         },
       },
     });
-    v.config.identities = {
-      sandbox: { key: "key", connections: { tools: { level: "allow" } } },
+    v.config.resolved = {
+      sandbox: {
+        tools: {
+          reaches: true, level: "allow", effects: {},
+          tree: [
+            node("read", "Read", "allow", [node("read.lookup", "lookup", "allow")]),
+            node("use", "Use", "allow", [node("use.send", "send", "allow")]),
+          ],
+        },
+      },
     };
     expect(rows(v, "tools").map((row) => row.key)).toEqual(["read", "use"]);
   });

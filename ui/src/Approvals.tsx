@@ -32,27 +32,31 @@ const MOBILE_TOAST_TOP = 72;
 // Allow once and Deny sit together; Allow always, which saves a rule, stands apart.
 export function ApprovalActions(props: {
   record: owner.RequestRecord;
+  shown?: owner.RequestRecord;
   saveTitle?: string;
   onDismiss?: () => void;
+  onFailed?: () => void;
 }) {
   const m = useMonitor();
   const can = () => owner.decisions(props.record, m.now());
+  const answer = async (decision: owner.Choice) => {
+    if (!(await m.decide(props.record, decision, props.shown)))
+      props.onFailed?.();
+  };
   return (
     <Show when={Object.values(can()).some(Boolean)}>
       <div class="decision-buttons">
         <Show when={can().once}>
           <button
             class="allow"
-            onClick={() => void m.decide(props.record, "once")}
+            disabled={!props.shown}
+            onClick={() => void answer("once")}
           >
             Allow once
           </button>
         </Show>
         <Show when={can().deny}>
-          <button
-            class="danger"
-            onClick={() => void m.decide(props.record, "deny")}
-          >
+          <button class="danger" onClick={() => void answer("deny")}>
             Deny
           </button>
         </Show>
@@ -63,7 +67,8 @@ export function ApprovalActions(props: {
           <button
             class="primary"
             title={props.saveTitle}
-            onClick={() => void m.decide(props.record, "save")}
+            disabled={!props.shown}
+            onClick={() => void answer("save")}
           >
             Allow always
           </button>
@@ -114,7 +119,7 @@ function RequestApproval(props: {
   onClose?: () => void;
 }) {
   const m = useMonitor();
-  const [full] = createRecord(() => ({
+  const [full, { refetch }] = createRecord(() => ({
     api: m.api()!,
     id: props.record.id,
     segment: props.record.segment,
@@ -140,7 +145,9 @@ function RequestApproval(props: {
       </For>
       <ApprovalActions
         record={props.record}
+        shown={loaded()}
         saveTitle={loaded() && owner.saveText(loaded()!)}
+        onFailed={() => void refetch()}
       />
     </ApprovalNotice>
   );
@@ -569,10 +576,14 @@ export function SavedRules() {
             <div class="resource-row">
               <a
                 class="resource-link"
-                href={href("connection", rule().connection)}
+                href={
+                  owner.isBuiltin(rule().connection)
+                    ? href("agents", name)
+                    : href("connection", rule().connection)
+                }
               >
                 <ConnectorIcon connection={rule().connection} />
-                <RuleText rule={rule()}>
+                <RuleText rule={rule()} agent={name} id={id}>
                   <small>
                     {name} · {rule().connection}
                     {rule().operation

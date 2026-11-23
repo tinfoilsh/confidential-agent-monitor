@@ -254,9 +254,9 @@ function RequestRow(props: { id: string; stack: string[]; open?: boolean }) {
             {props.stack.length}
           </span>
           <span class="request-origin">
-            <span title={record().facts.principal.name}>
+            <span title={owner.requester(record())}>
               <span class="sr-only">Bunker: </span>
-              {record().facts.principal.name}
+              {owner.requester(record())}
             </span>
             <span title={record().facts.connection || "Policy"}>
               <span class="sr-only">Connection: </span>
@@ -328,6 +328,8 @@ export function RequestDetail(props: {
       current && {
         ...current,
         state: listed()?.state ?? current.state,
+        // An answer being saved is only on the listed record so far.
+        reviews: listed()?.savingDecision ? listed()!.reviews : current.reviews,
         savingDecision: listed()?.savingDecision,
       }
     );
@@ -350,9 +352,12 @@ export function RequestDetail(props: {
       >
         {(r) => {
           const state = createMemo(() => owner.stateAt(r(), m.now()));
-          const reasons = createMemo(() => [
-            ...new Set([...(r().deny ?? []), ...owner.reasons(r())]),
-          ]);
+          const reasons = createMemo(() => owner.reasons(r()));
+          const outcome = createMemo(() =>
+            owner.outcomeText({ ...r(), state: state() }),
+          );
+          const invalid = () => r().refusal?.cause === "invalid";
+          const builtin = () => owner.isBuiltin(r().facts.connection);
           return (
             <section class="request-detail">
               <Show when={!props.inline}>
@@ -365,13 +370,18 @@ export function RequestDetail(props: {
                 <div>
                   <dt>Bunker</dt>
                   <dd>
-                    <a
-                      class="request-context-link"
-                      href={href("agents", r().facts.principal.name)}
+                    <Show
+                      when={!owner.isOwnerCall(r())}
+                      fallback={owner.requester(r())}
                     >
-                      {r().facts.principal.name}
-                      <Icon name="arrow" />
-                    </a>
+                      <a
+                        class="request-context-link"
+                        href={href("agents", r().facts.principal.name)}
+                      >
+                        {r().facts.principal.name}
+                        <Icon name="arrow" />
+                      </a>
+                    </Show>
                   </dd>
                 </div>
                 <div>
@@ -379,6 +389,7 @@ export function RequestDetail(props: {
                   <dd>
                     <Show
                       when={
+                        !builtin() &&
                         m.view()!.config.connections?.[r().facts.connection]
                       }
                       fallback={r().facts.connection || "Policy"}
@@ -413,45 +424,29 @@ export function RequestDetail(props: {
                 <div class="request-context-wide">
                   <dt>Review</dt>
                   <dd>
-                    <Show
-                      when={r().reviews?.length}
-                      fallback={
-                        state() === "pending"
-                          ? "Waiting for you."
-                          : state() === "refused"
-                            ? "Blocked by policy. No one was asked."
-                            : state() === "expired"
-                              ? "Nobody answered in time."
-                              : state() === "outdated"
-                                ? "Settings for this connection changed before review."
-                                : state() === "allowed" || state() === "approved"
-                                  ? owner.isProposal(r())
-                                    ? "Proposal approved."
-                                    : "Allowed by policy."
-                                  : state() === "denied" && owner.isProposal(r())
-                                    ? "Proposal rejected."
-                                    : "Blocked."
-                      }
-                    >
-                      <For each={r().reviews}>
-                        {(answer) => (
-                          <p>
-                            You
-                            {answer.decision === "once"
-                              ? " approved it once"
-                              : answer.decision === "deny"
-                                ? owner.isProposal(r())
-                                  ? " rejected it"
-                                  : " denied it"
-                                : " approved it and saved a rule"}
-                            <Show when={answer.reason}>: {answer.reason}</Show>
-                          </p>
-                        )}
-                      </For>
-                    </Show>
-                    <Show when={state() === "pending"}>
-                      {" "}
-                      <ReviewLink record={r()}>Answer it</ReviewLink>
+                    <For each={r().reviews}>
+                      {(answer) => (
+                        <p>
+                          {owner.isOwner(answer.by) ? "You" : answer.by}
+                          {answer.decision === "once"
+                            ? " approved it once"
+                            : answer.decision === "deny"
+                              ? owner.isProposal(r())
+                                ? " rejected it"
+                                : " denied it"
+                              : " approved it and saved a rule"}
+                          <Show when={answer.reason}>: {answer.reason}</Show>
+                        </p>
+                      )}
+                    </For>
+                    <Show when={outcome()}>
+                      <p>
+                        {outcome()}
+                        <Show when={state() === "pending"}>
+                          {" "}
+                          <ReviewLink record={r()}>Answer it</ReviewLink>
+                        </Show>
+                      </p>
                     </Show>
                   </dd>
                 </div>
@@ -472,24 +467,31 @@ export function RequestDetail(props: {
               </Show>
               <Show
                 when={
-                  (state() === "refused" || state() === "denied") &&
+                  (state() === "refused" ||
+                    state() === "denied" ||
+                    state() === "revoked") &&
+                  r().refusal?.cause !== "precondition" &&
                   m.view()!.config.connections?.[r().facts.connection] &&
-                  (r().invalid ||
+                  (invalid() ||
                     (!owner.isDevice(r().facts.principal.name) &&
                       m.view()!.config.identities?.[r().facts.principal.name]))
                 }
               >
                 <div class="request-access">
                   <p class="muted">
-                    {r().invalid
+                    {invalid()
                       ? "Fix the request or client configuration using the error above, then retry."
                       : "Update this bunker’s access, then retry the request from your bunker."}
                   </p>
                   <a
                     class="button"
-                    href={href("connection", r().facts.connection)}
+                    href={
+                      builtin()
+                        ? href("agents", r().facts.principal.name)
+                        : href("connection", r().facts.connection)
+                    }
                   >
-                    {r().invalid ? "View connection setup" : "Change access"}
+                    {invalid() ? "View connection setup" : "Change access"}
                     <Icon name="arrow" />
                   </a>
                 </div>
@@ -497,7 +499,9 @@ export function RequestDetail(props: {
               <Show when={state() === "expired"}>
                 <ApprovalActions
                   record={r()}
+                  shown={full()}
                   saveTitle={owner.saveText(r())}
+                  onFailed={() => void refetch()}
                   onDismiss={() => {
                     m.dismiss(r().id);
                     location.hash = "#activity";

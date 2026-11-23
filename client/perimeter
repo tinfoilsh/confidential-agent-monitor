@@ -27,7 +27,7 @@ import sys
 import tempfile
 import threading
 import time
-from urllib.parse import urlsplit
+from urllib.parse import urlencode, urlsplit
 
 
 AGENT_HOST = "agent.perimeter"
@@ -813,7 +813,46 @@ def connect(args):
     return Client(args.ssh_host, args.ssh_config, args.timeout)
 
 
+def table(rows):
+    widths = [max(len(str(row[i])) for row in rows) for i in range(len(rows[0]))]
+    for row in rows:
+        print("  ".join(str(value).ljust(width) for value, width in zip(row, widths)).rstrip())
+
+
+def explain_command(client, args):
+    query = {"connection": args.connection}
+    if args.action:
+        query["action"] = args.action
+    result = json.loads(client.request("GET", "/explain?" + urlencode(query)))
+    if args.json:
+        print(json.dumps(result, indent=2))
+        return 0
+    resolved = result["resolved"]
+    settings = result.get("modes") or resolved["effects"]
+    print(f"{args.connection}: level {resolved['level']}")
+    table([("EFFECT", "MODE", "SET BY", "CAPPED BY")] + [
+        (effect, s["mode"], s["from"], s.get("capped_by", "")) for effect, s in sorted(settings.items())
+    ])
+    if not args.action:
+        actions = resolved.get("actions") or {}
+        if actions:
+            print()
+            table([("ACTION", "MODE", "SET BY", "CAPPED BY")] + [
+                (action, s["mode"], s["from"], s.get("capped_by", "")) for action, s in sorted(actions.items())
+            ])
+        return 0
+    decision = result["decision"]
+    print(f"\n{args.action}: {decision['outcome']}")
+    for reason in decision.get("reasons") or []:
+        print(f"  {reason}")
+    for gap in decision.get("gaps") or []:
+        print(f"  asks {gap['id']}: {gap['message']}")
+    return 0
+
+
 def policy_command(client, args):
+    if args.policy_action == "explain":
+        return explain_command(client, args)
     if args.policy_action == "show":
         result = json.loads(client.request("GET", "/policy"))
         if args.json:
@@ -826,7 +865,7 @@ def policy_command(client, args):
             raise MonitorError("proposal ID must be at least 26 base32 characters")
         result = json.loads(client.request("GET", f"/policy/proposals/{args.id}"))
         if (not isinstance(result, dict) or result.get("id") != args.id
-                or result.get("state") not in ("pending", "approved", "denied", "outdated")):
+                or result.get("state") not in ("pending", "allowed", "denied", "outdated")):
             raise MonitorError("invalid proposal status from the Perimeter")
         print(json.dumps(result, indent=2))
         return 0
@@ -912,6 +951,10 @@ def parser():
     show_policy.add_argument("--json", action="store_true", help="show the response as JSON")
     status_policy = policy_commands.add_parser("status", help="show the current state of one submitted proposal")
     status_policy.add_argument("id", help="proposal ID returned by policy propose")
+    explain = policy_commands.add_parser("explain", help="show why this identity gets each effect's mode on a connection")
+    explain.add_argument("connection", help="connection name")
+    explain.add_argument("action", nargs="?", help="catalog action, unknown, or admission; adds the decision a request would get")
+    explain.add_argument("--json", action="store_true", help="show the response as JSON")
     propose = policy_commands.add_parser("propose", help="submit connection changes for owner review")
     propose.add_argument("file", nargs="?", help="TOML file, or - for stdin")
     propose.add_argument("--changes", metavar="FILE", help="structured Change[] JSON file, or - for stdin")
@@ -968,12 +1011,9 @@ def main(argv=None):
             if args.json:
                 print(json.dumps({"connections": connections}, indent=2))
             elif connections:
-                rows = [("KIND", "NAME", "STATE", "HOST")] + [
+                table([("KIND", "NAME", "STATE", "HOST")] + [
                     (c["kind"], c["name"], c["state"], c["host"]) for c in connections
-                ]
-                widths = [max(len(row[i]) for row in rows) for i in range(4)]
-                for row in rows:
-                    print("  ".join(value.ljust(width) for value, width in zip(row, widths)).rstrip())
+                ])
             else:
                 print("No connections are available to this agent. Ask the owner to grant access.")
             return 0
@@ -984,15 +1024,12 @@ def main(argv=None):
             else:
                 presets = catalog["presets"]
                 group_order = {"api": 0, "mcp": 1, "protocol": 2, "generic": 99}
-                rows = [("GROUP", "NAME", "TITLE")] + [
+                table([("GROUP", "NAME", "TITLE")] + [
                     (entry.get("group", "api"), name, entry.get("title", name))
                     for name, entry in sorted(presets.items(), key=lambda item: (
                         group_order.get(item[1].get("group", "api"), 50),
                         item[1].get("title", item[0])))
-                ]
-                widths = [max(len(str(row[i])) for row in rows) for i in range(3)]
-                for row in rows:
-                    print("  ".join(str(value).ljust(width) for value, width in zip(row, widths)).rstrip())
+                ])
             return 0
     except (MonitorError, OSError, http.client.HTTPException, subprocess.SubprocessError, ValueError, KeyError, EOFError) as error:
         print(f"perimeter: {error}", file=sys.stderr)

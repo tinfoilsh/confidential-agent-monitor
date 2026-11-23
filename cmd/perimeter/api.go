@@ -28,7 +28,6 @@ import (
 )
 
 const (
-	ownerName        = "owner"
 	maxDocumentBytes = 16 << 20
 	maxCallBytes     = 2 * maxDocumentBytes
 	maxAgentBytes    = 96 << 10
@@ -44,7 +43,7 @@ var errOAuthLoopback = errors.New("this service only accepts sign-ins from a loo
 type caller struct {
 	Name          string
 	Owner         bool
-	Claims        map[string]any
+	Key           string
 	MinGeneration uint64
 	Acknowledge   func() error
 	Session       string
@@ -52,8 +51,6 @@ type caller struct {
 }
 
 type callerKey struct{}
-
-type routeKey struct{}
 
 func withCaller(ctx context.Context, c caller) context.Context {
 	return context.WithValue(ctx, callerKey{}, c)
@@ -139,6 +136,11 @@ type editsInput struct {
 	Credentials format.Secrets    `json:"credentials,omitempty"`
 }
 
+type answerInput struct {
+	Answer
+	Revision uint64 `json:"revision"`
+}
+
 func (s *state) adminAPI() http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("GET /healthz", jsonHandler(0, func(r *http.Request, _ struct{}) (any, error) {
@@ -174,9 +176,9 @@ func (s *state) adminAPI() http.Handler {
 		view.Initialized = initialized
 		return view, err
 	}))
-	mux.Handle("GET /{$}", ownerLocked(s, func(h held, r *http.Request, _ struct{}) (any, error) { return h.view(r) }))
+	mux.Handle("GET /{$}", perimeterHeld(s, named("overview.read"), func(h held, r *http.Request, _ struct{}) (any, error) { return h.view(r) }))
 
-	mux.Handle("GET /policy", ownerLocked(s, func(h held, r *http.Request, _ struct{}) (any, error) {
+	mux.Handle("GET /policy", perimeterHeld(s, named(config.PolicyRead), func(h held, r *http.Request, _ struct{}) (any, error) {
 		doc := h.doc
 		result := map[string]any{"source": doc.Policy, "revision": doc.Revision}
 		var err error
@@ -185,15 +187,21 @@ func (s *state) adminAPI() http.Handler {
 		}
 		return result, err
 	}))
-	mux.Handle("POST /policy/preview", s.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, input sourceInput) (any, error) {
+	mux.Handle("GET /explain", perimeterHeld(s, named("explain", "identity"), held.explainIdentity))
+	mux.Handle("POST /policy/preview", perimeterJSON(s, maxDocumentBytes, named("policy.preview"), func(r *http.Request, input sourceInput) (any, error) {
 		return stable(s, func(base format.Document, before *settings) (*policyDiff, error) {
+			if c, _ := callerFrom(r.Context()); !c.Owner {
+				if err := fetchesUnchanged(base.Policy, input.Source); err != nil {
+					return nil, err
+				}
+			}
 			return s.previewPolicy(r.Context(), base, before, input.Source)
 		})
-	})))
-	mux.Handle("POST /policy", s.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, input sourceInput) (any, error) {
+	}))
+	mux.Handle("POST /policy", perimeterJSON(s, maxDocumentBytes, policyWrite, func(r *http.Request, input sourceInput) (any, error) {
 		return s.viewAfter(r, s.writeSettings(r.Context(), settingsWrite{source: &input.Source, check: reviewed(input.Revision)}))
-	})))
-	mux.Handle("POST /policy/edits", s.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, input editsInput) (any, error) {
+	}))
+	mux.Handle("POST /policy/edits", perimeterJSON(s, maxDocumentBytes, edits, func(r *http.Request, input editsInput) (any, error) {
 		for _, values := range input.Credentials {
 			for name, raw := range values {
 				if bytes.Equal(raw, []byte("null")) {
@@ -203,54 +211,80 @@ func (s *state) adminAPI() http.Handler {
 		}
 		err := s.writeSettings(r.Context(), settingsWrite{changes: input.Changes, credentials: input.Credentials, check: reviewed(input.Revision)})
 		return s.viewAfter(r, err)
-	})))
-
-	mux.Handle("POST /enroll", s.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, input map[string]config.Enrollment) (any, error) {
-		return s.viewAfter(r, s.enroll(r.Context(), input))
-	})))
-	mux.Handle("POST /labels/{identity}", ownerLocked(s, held.setLabel))
-
-	mux.Handle("POST /connections/{name}/sign-in", s.ownerOnly(jsonHandler(maxDocumentBytes, s.startSignIn)))
-	mux.Handle("POST /sign-in/{state}", s.ownerOnly(jsonHandler(maxDocumentBytes, s.finishSignIn)))
-	mux.Handle("/connections/{name}/{control...}", s.ownerOnly(s.connectionControl))
-	mux.Handle(sandbox.RelayRoute, s.ownerOnly(jsonHandler(sandbox.MaxRelayBytes, func(r *http.Request, in sandbox.RelayInput) (any, error) {
-		return sandbox.Relay(r.Context(), s.relays, in)
-	})))
-
-	mux.Handle("GET /requests", ownerLocked(s, func(h held, _ *http.Request, _ struct{}) (any, error) {
-		newest := []recordSummary{}
-		for _, r := range slices.Backward(slices.Collect(h.records.All())) {
-			newest = append(newest, summarize(r))
-		}
-		return newest, nil
 	}))
-	mux.Handle("GET /requests/{id}", ownerLocked(s, func(h held, r *http.Request, _ struct{}) (any, error) {
+
+	mux.Handle("POST /enroll", perimeterJSON(s, maxDocumentBytes, enrollment, func(r *http.Request, input map[string]config.Enrollment) (any, error) {
+		_, err := s.enroll(r.Context(), input)
+		return s.viewAfter(r, err)
+	}))
+	mux.Handle("POST /labels/{identity}", perimeterHeld(s, detailed("labels.write", "identity"), held.setLabel))
+
+	mux.Handle("POST /connections/{connection}/sign-in", perimeterJSON(s, maxDocumentBytes, named("credentials.write", "connection"), s.startSignIn))
+	mux.Handle("POST /sign-in/{state}", perimeterJSON(s, maxDocumentBytes, named("credentials.write"), s.finishSignIn))
+	mux.Handle("/connections/{connection}/{control...}", s.unlocked(func(w http.ResponseWriter, r *http.Request) {
+		// The owner's use of a connection's controls is not audited.
+		if c, _ := callerFrom(r.Context()); c.Owner {
+			s.connectionControl(w, r)
+			return
+		}
+		if err := s.perform(r, named("connections.control", "connection"), nil, func() error { s.connectionControl(w, r); return nil }); err != nil {
+			fail(w, err)
+		}
+	}))
+	mux.Handle(sandbox.RelayRoute, perimeterJSON(s, sandbox.MaxRelayBytes, detailed("bunkers.relay"), func(r *http.Request, in sandbox.RelayInput) (any, error) {
+		return sandbox.Relay(r.Context(), s.relays, in)
+	}))
+
+	mux.Handle("GET /requests", s.unlocked(jsonHandler(0, func(r *http.Request, _ struct{}) (value any, err error) {
+		s.locked(func(h held) {
+			var d *disclosure
+			if d, err = h.disclose(r, config.RequestsRead); err != nil {
+				return
+			}
+			newest := []recordSummary{}
+			for _, record := range slices.Backward(slices.Collect(h.records.All())) {
+				if d.shows(record.subject().Principal.Name) {
+					newest = append(newest, summarize(record))
+				}
+			}
+			value, err = newest, d.record(r.Context(), h)
+		})
+		return value, err
+	})))
+	mux.Handle("GET /requests/{id}", perimeterHeld(s, subjectRead(config.RequestsRead, liveSubject), func(h held, r *http.Request, _ struct{}) (any, error) {
 		if record := h.findRecord(r.PathValue("id")); record != nil {
 			return *record, nil
 		}
 		return nil, errRecordGone
 	}))
-	mux.Handle("POST /requests/{id}", s.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, req struct {
-		Answer
-		Revision uint64 `json:"revision"`
-	}) (any, error) {
-		return s.viewAfter(r, s.answerRequest(r.Context(), r.PathValue("id"), req.Answer, req.Revision))
-	})))
+	mux.Handle("POST /requests/{id}", perimeterJSON(s, maxDocumentBytes, answer, func(r *http.Request, input answerInput) (any, error) {
+		return s.viewAfter(r, s.answerRequest(r.Context(), r.PathValue("id"), input.Answer, input.Revision))
+	}))
 
-	mux.Handle("GET /catalogs/updates", s.ownerOnly(jsonHandler(0, func(r *http.Request, _ struct{}) (any, error) {
+	mux.Handle("GET /catalogs/updates", perimeterJSON(s, 0, named("catalogs.read"), func(r *http.Request, _ struct{}) (any, error) {
 		return s.catalogUpdates(r.Context())
+	}))
+	mux.Handle("GET /audit", s.unlocked(jsonHandler(0, func(r *http.Request, _ struct{}) (any, error) {
+		var d *disclosure
+		var err error
+		s.locked(func(h held) { d, err = h.disclose(r, config.AuditRead) })
+		if err != nil {
+			return nil, err
+		}
+		page, err := s.readAuditPage(r.Context(), r.URL.Query().Get("before"), d.shows)
+		if err == nil {
+			s.locked(func(h held) { err = d.record(r.Context(), h) })
+		}
+		return page, err
 	})))
-	mux.Handle("GET /audit", s.ownerOnly(jsonHandler(0, func(r *http.Request, _ struct{}) (any, error) {
-		return s.readAuditPage(r.Context(), r.URL.Query().Get("before"))
-	})))
-	mux.Handle("GET /audit/{segment}/{id}", s.ownerOnly(jsonHandler(0, func(r *http.Request, _ struct{}) (any, error) {
+	mux.Handle("GET /audit/{segment}/{id}", perimeterJSON(s, 0, subjectRead(config.AuditRead, auditSubject), func(r *http.Request, _ struct{}) (any, error) {
 		return s.readAuditRecord(r.Context(), r.PathValue("segment"), r.PathValue("id"))
-	})))
+	}))
 	return mux
 }
 
 func (s *state) connectionControl(w http.ResponseWriter, r *http.Request) {
-	name := r.PathValue("name")
+	name := r.PathValue("connection")
 	handler, setupCtx, release, ok := s.table.Control(name)
 	if !ok {
 		if _, installed := s.table.Connections()[name]; !installed {
@@ -283,9 +317,7 @@ func (s held) setLabel(r *http.Request, l format.Label) (any, error) {
 	if l.Audience != config.InitialLabel.Audience {
 		l.Because["audience"] = cmp.Or(old.Because["audience"], "the owner")
 	}
-	err := s.relabel(r.Context(), identity, l, nil)
-	s.recordAdmin(r.Context(), "Set the label of "+identity, l, err)
-	if err != nil {
+	if err := s.relabel(r.Context(), identity, l, nil); err != nil {
 		return nil, err
 	}
 	return s.view(r)
@@ -297,44 +329,6 @@ func (s *state) viewAfter(r *http.Request, err error) (v ownerView, _ error) {
 	}
 	s.locked(func(h held) { v, err = h.view(r) })
 	return v, err
-}
-
-func ownerLocked[T any](s *state, fn func(held, *http.Request, T) (any, error)) http.HandlerFunc {
-	return s.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, input T) (value any, err error) {
-		s.locked(func(h held) { value, err = fn(h, r, input) })
-		return value, err
-	}))
-}
-
-func (s *state) ownerOnly(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		st := s.settings.Load()
-		c, err := requestCaller(r)
-		if err == nil && st == nil {
-			err = errLocked
-		}
-		ctx := withCaller(context.WithValue(r.Context(), routeKey{}, r.Pattern), c)
-		if err == nil {
-			err = s.checkAdminCall(ctx, st, config.AdminCall{})
-		}
-		if err != nil {
-			fail(w, err)
-			return
-		}
-		next(w, r.WithContext(ctx))
-	}
-}
-
-func (s *state) checkAdminCall(ctx context.Context, st *settings, call config.AdminCall) error {
-	c, _ := callerFrom(ctx)
-	call.Caller = config.PolicyCaller{Name: c.Name, Owner: c.Owner, Claims: c.Claims}
-	call.Route, _ = ctx.Value(routeKey{}).(string)
-	var allow bool
-	err := st.policy.Eval(ctx, config.QueryAdmin, call, &allow)
-	if err == nil && !allow {
-		err = httpError{errors.New("policy does not allow this caller to make this call"), http.StatusForbidden}
-	}
-	return err
 }
 
 func requestCaller(r *http.Request) (caller, error) {
@@ -355,9 +349,10 @@ func (s *state) agentAPI(fingerprint string) http.Handler {
 	mux.HandleFunc("GET /connections", agentLocked(s, fingerprint, func(h held, _ *http.Request, _ struct{}, p facts.Principal) (any, error) {
 		return h.listing(p), nil
 	}))
-	mux.HandleFunc("GET /policy", agentLocked(s, fingerprint, func(_ held, _ *http.Request, _ struct{}, p facts.Principal) (any, error) {
-		return s.agentPolicy(p)
+	mux.HandleFunc("GET /policy", agentLocked(s, fingerprint, func(h held, _ *http.Request, _ struct{}, p facts.Principal) (any, error) {
+		return h.agentPolicy(p)
 	}))
+	mux.HandleFunc("GET /explain", agentLocked(s, fingerprint, held.explainSelf))
 	mux.HandleFunc("GET /catalog", agentLocked(s, fingerprint, func(held, *http.Request, struct{}, facts.Principal) (any, error) {
 		st := s.settings.Load()
 		return agentCatalogView{CatalogID: st.catalogID, Presets: st.catalog, Vocabulary: config.Vocabulary}, nil
@@ -378,13 +373,10 @@ func (s *state) agentAPI(fingerprint string) http.Handler {
 		switch {
 		case !ok:
 			fail(w, errNoAgent)
-		case p.Name == ownerName:
-			http.Error(w, "an identity named owner cannot make admin calls", http.StatusForbidden)
 		case r.Host != agentHost || r.URL.Path == "/unlock":
 			http.NotFound(w, r)
 		default:
-			c := caller{Name: p.Name, Session: fingerprint, Claims: map[string]any{"key": fingerprint, "groups": append([]string{}, p.Groups...)}}
-			api.ServeHTTP(w, r.WithContext(withCaller(r.Context(), c)))
+			api.ServeHTTP(w, r.WithContext(withCaller(r.Context(), caller{Name: p.Name, Key: fingerprint, Session: fingerprint})))
 		}
 	})))
 	return mux
@@ -422,7 +414,6 @@ type ownerView struct {
 	Labels      map[string]format.Label        `json:"labels"`
 	CatalogID   string                         `json:"catalog_id"`
 	Presets     map[string]config.CatalogEntry `json:"presets,omitempty"`
-	Vocabulary  map[string]config.Obligations  `json:"vocabulary"`
 	Initialized bool                           `json:"initialized"`
 }
 
@@ -430,7 +421,7 @@ func (s held) view(r *http.Request) (ownerView, error) {
 	st, doc := s.settings.Load(), s.doc
 	v := ownerView{Generation: doc.Generation, Revision: doc.Revision, HostKey: string(ssh.MarshalAuthorizedKey(st.hostKey.PublicKey())), HostID: s.hostID, CA: doc.Keys.CACert,
 		Fields: map[string][]fieldMetadata{}, Status: map[string]core.Status{}, Labels: map[string]format.Label{},
-		CatalogID: st.catalogID, Presets: st.catalog, Vocabulary: config.Vocabulary}
+		CatalogID: st.catalogID, Presets: st.catalog}
 	if r.URL.Query().Get("catalog") == st.catalogID {
 		v.Presets = nil
 	}
@@ -448,7 +439,7 @@ func (s held) view(r *http.Request) (ownerView, error) {
 	for _, fields := range v.Fields {
 		slices.SortFunc(fields, func(a, b fieldMetadata) int { return strings.Compare(a.Name, b.Name) })
 	}
-	for _, name := range st.Principals {
+	for name := range st.Identities {
 		v.Labels[name] = s.label(name)
 	}
 	return v, nil
@@ -459,7 +450,7 @@ type connectionListing struct {
 	Protocol     string            `json:"kind"`
 	Host         string            `json:"host"`
 	State        string            `json:"state"`
-	Access       config.Access     `json:"access"`
+	Resolved     config.Resolved   `json:"resolved"`
 	Hosts        []string          `json:"hosts"`
 	Slots        any               `json:"slots"`
 	Placeholders map[string]string `json:"placeholders"`
@@ -475,12 +466,12 @@ func (s held) listing(p facts.Principal) any {
 	}{p.Name, doc.Keys.CACert, []connectionListing{}}
 	status := s.table.Connections()
 	for _, name := range slices.Sorted(maps.Keys(status)) {
-		c := st.connections[name]
-		if !st.Reaches(p.Name, name) {
+		c, resolved := st.connections[name], st.Resolve(p.Name, p.Groups, name)
+		if !resolved.Reaches {
 			continue
 		}
 		l := connectionListing{Name: name, Protocol: c.Protocol, Host: name + connections.Domain,
-			State: status[name].State, Access: st.Access(p.Name, name), Hosts: c.Discovery, Slots: c.Slots}
+			State: status[name].State, Resolved: resolved, Hosts: c.Discovery, Slots: c.Slots}
 		if c.ListsPlaceholders {
 			l.Placeholders = maps.Clone(c.placeholders)
 		}
@@ -495,11 +486,11 @@ func (s held) listing(p facts.Principal) any {
 	return result
 }
 
-func (s *state) agentPolicy(p facts.Principal) (any, error) {
+func (s held) agentPolicy(p facts.Principal) (any, error) {
 	st := s.settings.Load()
 	var visible map[string]any
 	var err error
-	if st.capable(p, capabilityConfig) {
+	if st.allowed(p, s.label(p.Name), call(config.PolicyRead, nil)) != nil {
 		visible, err = st.Config.View()
 	} else {
 		visible, err = st.Config.AgentView(p)
@@ -518,7 +509,7 @@ type signInInput struct {
 }
 
 func (s *state) startSignIn(r *http.Request, req signInInput) (any, error) {
-	raw, save, err := s.signInCredential(r.PathValue("name"), req.Name)
+	raw, save, err := s.signInCredential(r.PathValue("connection"), req.Name)
 	if err != nil {
 		return nil, err
 	}

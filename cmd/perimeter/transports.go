@@ -22,6 +22,7 @@ import (
 	"github.com/coder/websocket"
 	"github.com/flynn/noise"
 	"github.com/rs/cors"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/connections"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
@@ -99,7 +100,7 @@ func (s *state) serve(ctx context.Context, sshListener, apiListener net.Listener
 		handler.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			token, ok := strings.CutPrefix(r.Header.Get("Authorization"), "Bearer ")
 			if key, err := base64.StdEncoding.Strict().DecodeString(token); ok && err == nil && s.acceptsStorageKey(key) {
-				r = r.WithContext(withCaller(r.Context(), caller{Name: ownerName, Owner: true, StorageKey: key}))
+				r = r.WithContext(withCaller(r.Context(), caller{Name: config.OwnerName, Owner: true, StorageKey: key}))
 			}
 			api.ServeHTTP(w, r)
 		})
@@ -171,16 +172,15 @@ func (s *state) authenticate(o *owner, ownerSSH sshtransport.Session) sshtranspo
 		}
 		if cert, ok := key.(*ssh.Certificate); ok && identityCA != nil {
 			p, err := certificates.SSHUser(identityCA, cert)
+			if err == nil {
+				_, err = s.bindCertificate(p)
+			}
 			if err != nil {
 				return nil, nil, err
 			}
 			fingerprint := ssh.FingerprintSHA256(cert.Key)
 			return s.agentSession(fingerprint), func() error {
-				end, err := s.identities.Register(fingerprint, p, false)
-				if err == nil {
-					time.AfterFunc(time.Until(time.Unix(int64(cert.ValidBefore), 0)), end)
-				}
-				return err
+				return s.registerCertificate(fingerprint, p, time.Unix(int64(cert.ValidBefore), 0))
 			}, nil
 		}
 		fingerprint := ssh.FingerprintSHA256(key)
@@ -189,6 +189,43 @@ func (s *state) authenticate(o *owner, ownerSSH sshtransport.Session) sshtranspo
 		}
 		return s.agentSession(fingerprint), nil, nil
 	}
+}
+
+var (
+	errUnboundName = errors.New("this certificate's key ID names a declared identity it does not bind to")
+	errOwnerKeyID  = errors.New("the key ID owner is reserved for the Perimeter's owner")
+)
+
+// An unbound certificate must not act as the declared identity its key ID names, nor as the owner.
+func (s *state) bindCertificate(p facts.Principal) (facts.Principal, error) {
+	st := s.settings.Load()
+	if st == nil {
+		return p, errLocked
+	}
+	if p.Name == config.OwnerName {
+		return p, errOwnerKeyID
+	}
+	name, groups, ok := st.BindCertificate(p.Name, p.Groups)
+	if ok {
+		p.Name, p.Groups, p.Attributes = name, groups, st.Identities[name].Attributes
+	} else if _, declared := st.Identities[p.Name]; declared {
+		return p, errUnboundName
+	}
+	return p, nil
+}
+
+// Binding and registering under one lock with the settings swap means a session never keeps a binding older settings made.
+func (s *state) registerCertificate(fingerprint string, p facts.Principal, expires time.Time) (err error) {
+	s.locked(func(held) {
+		if p, err = s.bindCertificate(p); err != nil {
+			return
+		}
+		var end func()
+		if end, err = s.identities.Register(fingerprint, p, false); err == nil {
+			time.AfterFunc(time.Until(expires), end)
+		}
+	})
+	return err
 }
 
 func (s *state) agentSession(fingerprint string) sshtransport.Session {
@@ -206,7 +243,7 @@ func (s *state) agentSession(fingerprint string) sshtransport.Session {
 
 func (s *state) open(ctx context.Context, fingerprint, network, host string, port uint32, accept func() (net.Conn, error)) error {
 	if network == "tcp" && sandbox.ReservedRoute(host) {
-		if routed, release, ok := s.hold(context.WithoutCancel(ctx), fingerprint, capabilityRoutes); ok {
+		if routed, release, ok := s.holdRoutes(ctx, fingerprint); ok {
 			defer release()
 			if err := netx.Dial(s.routes.DialContext, connections.RelayDrain)(routed, network, host, port, accept); err != nil {
 				return sandbox.ErrDirectUnavailable
@@ -248,7 +285,7 @@ func selectTarget(target connector.Target, candidates []core.Candidate) (name st
 
 func (s *state) reaches(_ context.Context, p facts.Principal, connection string) bool {
 	current, known := s.identities.Lookup(p.Key)
-	return known && s.settings.Load().Reaches(current.Name, connection)
+	return known && s.settings.Load().Reaches(current.Name, current.Groups, connection)
 }
 
 func allowOrigins(origins []string, next http.Handler) http.Handler {
@@ -357,7 +394,7 @@ func panel(api http.Handler, options sshOptions, acknowledge func() error) http.
 			http.NotFound(w, r)
 			return
 		}
-		r = r.Clone(withCaller(r.Context(), caller{Name: ownerName, Owner: true, MinGeneration: options.Generation, Acknowledge: acknowledge, Session: options.Token}))
+		r = r.Clone(withCaller(r.Context(), caller{Name: config.OwnerName, Owner: true, MinGeneration: options.Generation, Acknowledge: acknowledge, Session: options.Token}))
 		r.URL.Path = apiPath
 		r.URL.RawPath = ""
 		api.ServeHTTP(w, r)
@@ -375,7 +412,7 @@ func (s *state) ownerRPC(api http.Handler) func(context.Context, noisetransport.
 		if call.Method == http.MethodPost {
 			ctx = context.WithoutCancel(ctx)
 		}
-		ctx = withCaller(ctx, caller{Name: ownerName, Owner: true, MinGeneration: call.Generation, Session: ownerRPCSession})
+		ctx = withCaller(ctx, caller{Name: config.OwnerName, Owner: true, MinGeneration: call.Generation, Session: ownerRPCSession})
 		r, err := http.NewRequestWithContext(ctx, call.Method, call.Path, bytes.NewReader(call.Body))
 		if err != nil {
 			return noisetransport.Reply{Status: http.StatusBadRequest, Body: []byte(errMalformed.Error())}

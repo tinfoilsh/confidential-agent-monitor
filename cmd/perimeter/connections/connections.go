@@ -92,11 +92,12 @@ const (
 	userAgent        = protocolIdentity + "/" + mcpVersion
 )
 
-type RequestContext struct {
-	Label    format.Label `json:"label"`
+type Flow struct {
 	Sends    string       `json:"sends"`
 	Observes format.Label `json:"observes"`
 }
+
+type Observe = func(facts.Observation) Flow
 
 type Setup struct {
 	config.ConnectionSpec
@@ -110,7 +111,7 @@ type Setup struct {
 	PerMessage        bool
 	ListsPlaceholders bool
 	HostKey           bool
-	Hint              func(o *facts.Observation, c *RequestContext) error
+	Observe           Observe
 	Open              func(ctx context.Context, h worker.Host) (connector.Instance, error)
 }
 
@@ -119,7 +120,7 @@ func Parse(spec config.ConnectionSpec) (*Setup, error) {
 	if parse == nil {
 		return nil, fmt.Errorf("unknown kind %s", spec.Protocol)
 	}
-	p := &Setup{ConnectionSpec: spec, Network: "tcp", Hint: func(*facts.Observation, *RequestContext) error { return nil }}
+	p := &Setup{ConnectionSpec: spec, Network: "tcp", Observe: func(facts.Observation) Flow { return Flow{} }}
 	if err := parse(spec, p); err != nil {
 		return nil, err
 	}
@@ -154,9 +155,8 @@ func parseTCP(spec config.ConnectionSpec, p *Setup) error {
 		return err
 	}
 	p.Claim, p.Hosts = t.Claim, t.Hosts
-	p.Hint = func(_ *facts.Observation, c *RequestContext) error {
-		c.Sends, c.Observes = config.AudienceAnyone, format.Label{Audience: config.AudienceMe, Trust: config.TrustUntrusted}
-		return nil
+	p.Observe = func(facts.Observation) Flow {
+		return Flow{Sends: config.AudienceAnyone, Observes: format.Label{Audience: config.AudienceMe, Trust: config.TrustUntrusted}}
 	}
 	p.Open = func(_ context.Context, h worker.Host) (connector.Instance, error) {
 		return connector.Instance{Serve: t.Handler(h.Dial, RelayDrain)}, nil
@@ -248,31 +248,32 @@ func httpSetup(p *Setup, setup *web.Setup, set slots.Set) error {
 			p.Operations[id], sends[id] = config.OperationSummary{Action: op.Action, Effects: op.Effects}, audience
 		}
 	}
-	p.Hint = func(o *facts.Observation, c *RequestContext) error {
-		var details struct {
-			HTTP struct {
-				WebSocket bool   `json:"websocket"`
-				Method    string `json:"method"`
-			} `json:"http"`
-		}
-		raw, _ := json.Marshal(o.Details)
-		json.Unmarshal(raw, &details)
+	p.Observe = func(o facts.Observation) Flow {
+		websocket, method := WebSocket(o)
 		switch {
-		case details.HTTP.WebSocket && details.HTTP.Method == "":
-			c.Sends = config.AudienceMe
-			if o.Operation != nil {
-				o.Operation.Effects = []string{"read"}
-			}
-		case details.HTTP.WebSocket && o.Operation == nil:
-			return errors.New("WebSocket requests require a reviewed operation")
-		case o.Operation != nil && o.Operation.Action == web.SignInAction:
-			c.Sends, c.Observes = config.AudienceMe, config.InitialLabel
-		case o.Operation != nil:
-			c.Sends = sends[o.Operation.ID]
+		// A message the upstream sends on a WebSocket reaches only the agent.
+		case websocket && method == "":
+			return Flow{Sends: config.AudienceMe}
+		case o.Operation == nil:
+			return Flow{}
+		case o.Operation.Action == web.SignInAction:
+			return Flow{Sends: config.AudienceMe, Observes: config.InitialLabel}
 		}
-		return nil
+		return Flow{Sends: sends[o.Operation.ID]}
 	}
 	return nil
+}
+
+func WebSocket(o facts.Observation) (websocket bool, method string) {
+	var details struct {
+		HTTP struct {
+			WebSocket bool   `json:"websocket"`
+			Method    string `json:"method"`
+		} `json:"http"`
+	}
+	raw, _ := json.Marshal(o.Details)
+	json.Unmarshal(raw, &details)
+	return details.HTTP.WebSocket, details.HTTP.Method
 }
 
 func parseTinfoil(spec config.ConnectionSpec, p *Setup) error {
@@ -337,13 +338,11 @@ func mcpSetup(p *Setup, setup *mcp.Setup, repo string) error {
 		}
 	}
 	p.Hosts, p.SecretNames = setup.Hosts(), []string{"token"}
-	p.Hint = func(_ *facts.Observation, c *RequestContext) error {
-		c.Sends = sends
-		if observes != nil {
-			c.Observes = *observes
-		}
-		return nil
+	flow := Flow{Sends: sends}
+	if observes != nil {
+		flow.Observes = *observes
 	}
+	p.Observe = func(facts.Observation) Flow { return flow }
 	p.Open = func(ctx context.Context, h worker.Host) (connector.Instance, error) {
 		transport := netx.Transport(h.Dial)
 		var base http.RoundTripper = transport
@@ -473,24 +472,7 @@ func parseEndpoint(spec config.ConnectionSpec, p *Setup) error {
 				return c.Handler(h.Dial, password(h), func(string, string, string) error { return nil }, protocolIdentity, maxMailBytes, h.TLS)
 			}
 		}
-		var options config.PolicyOptions
-		json.Unmarshal(spec.Options, &options)
-		p.Hint = func(o *facts.Observation, c *RequestContext) error {
-			var details struct {
-				SMTP struct {
-					To []string `json:"to"`
-				} `json:"smtp"`
-			}
-			raw, _ := json.Marshal(o.Details)
-			json.Unmarshal(raw, &details)
-			c.Sends = config.SendsConnection
-			for _, to := range details.SMTP.To {
-				if !strings.EqualFold(to, options.Address) {
-					c.Sends = config.AudienceAnyone
-				}
-			}
-			return nil
-		}
+		p.Observe = toConnection
 	case "redis":
 		var c *redis.Redis
 		if c, err = redis.Parse(spec.Config); err == nil {
@@ -506,7 +488,7 @@ func parseEndpoint(spec config.ConnectionSpec, p *Setup) error {
 			}
 		}
 		p.PerMessage = true
-		p.Hint = connectionAudience
+		p.Observe = toConnection
 	case "nats":
 		var c *nats.NATS
 		if c, err = nats.Parse(spec.Config); err == nil {
@@ -516,7 +498,7 @@ func parseEndpoint(spec config.ConnectionSpec, p *Setup) error {
 			}
 		}
 		p.SecretNames, p.PerMessage = []string{"password", "token"}, true
-		p.Hint = connectionAudience
+		p.Observe = toConnection
 	case "postgres":
 		var c *postgres.Postgres
 		if c, err = postgres.Parse(spec.Config); err == nil {
@@ -534,9 +516,16 @@ func parseEndpoint(spec config.ConnectionSpec, p *Setup) error {
 	return nil
 }
 
-func connectionAudience(_ *facts.Observation, c *RequestContext) error {
-	c.Sends = config.SendsConnection
-	return nil
+func toConnection(facts.Observation) Flow { return Flow{Sends: config.SendsConnection} }
+
+var privateActions = map[string]bool{config.RequestsRead: true, config.AuditRead: true}
+
+// Requests and the audit log are the owner's private data; every other action shows configuration, which is not.
+func Perimeter(o facts.Observation) Flow {
+	if o.Operation != nil && privateActions[o.Operation.Action] {
+		return Flow{Observes: format.Label{Audience: config.AudienceMe, Trust: config.TrustTrusted}}
+	}
+	return Flow{Observes: config.InitialLabel}
 }
 
 func validSends(sends string) bool {

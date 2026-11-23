@@ -783,13 +783,28 @@ export function CopyField(props: {
     </div>
   );
 }
-export function RuleText(props: { rule: owner.Rule; children?: JSX.Element }) {
+export function RuleText(props: {
+  rule: owner.Rule;
+  agent?: string;
+  id?: string;
+  children?: JSX.Element;
+}) {
   const m = useMonitor();
   const scope = () =>
     owner.scopeText(m.view()!, props.rule.connection, props.rule.scope);
+  const stale = () =>
+    props.agent !== undefined && props.id !== undefined
+      ? m.view()!.config.stale?.[props.agent]?.[props.id]
+      : undefined;
   return (
     <span>
-      <strong>{owner.ruleTitle(m.view()!, props.rule)}</strong>
+      <strong>
+        {owner.ruleTitle(m.view()!, props.rule)}
+        <Show when={stale()}>
+          {" "}
+          <span class="badge">Stale</span>
+        </Show>
+      </strong>
       <small class="rule-scope">
         {(() => {
           const text = scope();
@@ -802,8 +817,46 @@ export function RuleText(props: { rule: owner.Rule; children?: JSX.Element }) {
           );
         })()}
       </small>
+      <Show when={props.rule.expires}>
+        {(expires) => (
+          <small class="muted">
+            Expires {new Date(expires()).toLocaleString()}
+          </small>
+        )}
+      </Show>
+      <Show when={stale()}>
+        {(reason) => <small class="muted">{reason()}</small>}
+      </Show>
       {props.children}
     </span>
+  );
+}
+export function LimitsLine(props: {
+  limits?: owner.Limits;
+  description: string;
+}) {
+  const entries = () => [
+    ...Object.entries(props.limits?.effects ?? {}),
+    ...Object.entries(props.limits?.actions ?? {}),
+  ];
+  return (
+    <Show when={entries().length}>
+      <div class="setting-row">
+        <span>
+          Limits
+          <small>{props.description}</small>
+        </span>
+        <small class="rule-scope">
+          <For each={entries()}>
+            {([key, mode]) => (
+              <code title={`${key} = "${mode}"`}>
+                {key}: {owner.MODES[mode] ?? mode}
+              </code>
+            )}
+          </For>
+        </small>
+      </div>
+    </Show>
   );
 }
 // Row actions stay outside the disclosure so they are available when it is closed.

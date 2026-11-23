@@ -56,8 +56,9 @@ var packages = map[string]rule{
 	"connector/slots":               {library, []string{"core/connector", "core/facts"}},
 	"connector/worker":              {library, []string{"core/connector", "core/facts", "core/transport/netx"}},
 	"ui":                            {product, nil},
-	"cmd/perimeter/format":          {product, []string{"core/sealedlog", "core/tomledit"}},
+	"cmd/perimeter/format":          {product, []string{"core/sealedlog"}},
 	"cmd/perimeter/config":          {product, []string{"cmd/perimeter/format", "core/facts", "core/tomledit", "connector/catalog"}},
+	"cmd/perimeter/migrate":         {product, []string{"cmd/perimeter/config", "cmd/perimeter/format", "core/tomledit"}},
 	"cmd/perimeter/sandbox":         {product, []string{"core/connector", "core/facts", "core/transport/sshtransport", "connector/tinfoil"}},
 	"cmd/perimeter/connections": {product, []string{
 		"cmd/perimeter/config", "cmd/perimeter/format", "cmd/perimeter/sandbox",
@@ -68,7 +69,7 @@ var packages = map[string]rule{
 	}},
 	"cmd/perimeter": {application, []string{
 		"cmd/perimeter/config", "cmd/perimeter/connections", "cmd/perimeter/format",
-		"cmd/perimeter/sandbox", "ui",
+		"cmd/perimeter/migrate", "cmd/perimeter/sandbox", "ui",
 		"core", "core/admission", "core/approval", "core/certificates", "core/connector",
 		"core/facts", "core/identity", "core/sealedlog", "core/tomledit", "core/transport/netx",
 		"core/transport/noisetransport", "core/transport/sshtransport",

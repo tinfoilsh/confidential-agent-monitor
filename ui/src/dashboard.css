@@ -2063,10 +2063,14 @@ details[open] > summary > .collection-chevron {
   corner-shape: round;
   background: var(--dim);
 }
-.request-state:is([data-state="approved"], [data-state="allowed"])::before {
+.request-state[data-state="allowed"]::before {
   background: var(--ok);
 }
-.request-state:is([data-state="denied"], [data-state="refused"])::before {
+.request-state:is(
+    [data-state="denied"],
+    [data-state="refused"],
+    [data-state="revoked"]
+  )::before {
   background: var(--bad);
 }
 .request-state[data-state="pending"]::before {
@@ -2315,6 +2319,10 @@ button.access-toggle:hover:not(:disabled) {
 .access-modified {
   color: #f59e0b;
   font-weight: 600;
+}
+.access-warning {
+  display: block;
+  color: var(--bad);
 }
 .access-action-group[open] > summary .access-group-title > .icon {
   transform: rotate(90deg);

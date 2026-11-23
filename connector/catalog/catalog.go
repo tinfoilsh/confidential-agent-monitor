@@ -204,16 +204,22 @@ type Operation struct {
 	Lineage []string `json:"lineage"`
 }
 
-func (c *Catalog) Resolve(id, action string, effects []string) *Operation {
-	op := Operation{ID: id, Action: action}
+// Lineage is an action and each of its dotted prefixes, longest first.
+func Lineage(action string) []string {
+	var lineage []string
 	for a := action; a != ""; {
-		op.Lineage = append(op.Lineage, a)
+		lineage = append(lineage, a)
 		i := strings.LastIndexByte(a, '.')
 		if i < 0 {
 			break
 		}
 		a = a[:i]
 	}
+	return lineage
+}
+
+func (c *Catalog) Resolve(id, action string, effects []string) *Operation {
+	op := Operation{ID: id, Action: action, Lineage: Lineage(action)}
 	for i := 0; effects == nil && i < len(op.Lineage); i++ {
 		effects = c.Actions[op.Lineage[i]].Effects
 	}
