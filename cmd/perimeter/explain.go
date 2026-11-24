@@ -57,6 +57,9 @@ func (s held) explainIdentity(r *http.Request, _ struct{}) (any, error) {
 	if name == "" {
 		return nil, fmt.Errorf("explain needs an identity")
 	}
+	if _, declared := s.settings.Load().Identities[name]; !declared {
+		return nil, httpError{fmt.Errorf("no identity %s", name), http.StatusNotFound}
+	}
 	return s.explain(r.Context(), s.settings.Load().declared(name), query.Get("connection"), query.Get("action"))
 }
 
