@@ -135,8 +135,8 @@ refused, `refusal`; the app reads operation, title, parameters, principal,
 connection, and the current label from `facts`. Audit records add lifecycle fields
 without duplicating those facts.
 
-Go resolves the policy's grants and limits into `input.authorization.modes`, one
-`{mode, from, capped_by}` entry per effect of the request. `off` denies the request;
+Go resolves the policy's access into `input.authorization.modes`, one
+`{mode, from}` entry per effect of the request. `off` denies the request;
 `ask` adds the requirement `effect.<effect>`.
 
 The Rego rules in `../config/lib.rego` apply those modes, the label-flow checks, and

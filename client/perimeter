@@ -830,15 +830,15 @@ def explain_command(client, args):
     resolved = result["resolved"]
     settings = result.get("modes") or resolved["effects"]
     print(f"{args.connection}: level {resolved['level']}")
-    table([("EFFECT", "MODE", "SET BY", "CAPPED BY")] + [
-        (effect, s["mode"], s["from"], s.get("capped_by", "")) for effect, s in sorted(settings.items())
+    table([("EFFECT", "MODE", "SET BY")] + [
+        (effect, s["mode"], s["from"]) for effect, s in sorted(settings.items())
     ])
     if not args.action:
         actions = resolved.get("actions") or {}
         if actions:
             print()
-            table([("ACTION", "MODE", "SET BY", "CAPPED BY")] + [
-                (action, s["mode"], s["from"], s.get("capped_by", "")) for action, s in sorted(actions.items())
+            table([("ACTION", "MODE", "SET BY")] + [
+                (action, s["mode"], s["from"]) for action, s in sorted(actions.items())
             ])
         return 0
     decision = result["decision"]

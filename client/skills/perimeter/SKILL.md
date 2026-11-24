@@ -75,9 +75,9 @@ endpoint or propose a connection that covers it, such as `custom_api`.
 1. `perimeter catalog` lists connection types; `--json` adds setup fields and
    `warning` text. Prefer a named type over a generic one.
 2. `perimeter policy show` shows your identity name and current access.
-   `perimeter policy explain CONNECTION [ACTION]` shows each effect's mode, the
-   policy path that set it and any limit that capped it; with an action it adds
-   whether a request would be allowed, refused or need approval, and why.
+   `perimeter policy explain CONNECTION [ACTION]` shows each effect's mode and
+   the policy path that set it; with an action it adds whether a request would
+   be allowed, refused or need approval, and why.
 3. Propose the change and say why:
 
    ```sh
@@ -90,8 +90,10 @@ endpoint or propose a connection that covers it, such as `custom_api`.
 
    Levels are `off`, `read`, `ask` and `allow`. A level reported as `custom`
    means your effects or actions are set individually; propose `effects` or
-   `actions` entries rather than a level to change one of them. Limits and
-   roles belong to the owner and cap what any level grants. Setup for a new connection
+   `actions` entries rather than a level to change one of them. Access resolves
+   from the account's `access` through `default_access` and your groups to your
+   own block, the most specific setting winning; the account block, groups and
+   group membership belong to the owner. Setup for a new connection
    goes under `["connections", NAME]` with the fields its catalog entry lists.
    A deletion uses `"delete": true` instead of `value`.
 4. `perimeter policy status ID` reports `pending`, `allowed`, `denied` or
