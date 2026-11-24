@@ -64,7 +64,7 @@ type state struct {
 	routes     sandbox.Forwarder
 	relays     *http.Transport
 	identities identity.Registry
-	admissions admission.Set[*admitted]
+	admissions admission.Set[*stream]
 	records    *approval.Records[*record]
 	signIns    *credential.SignIns
 }
@@ -98,7 +98,7 @@ func (s *state) locked(fn func(held)) {
 	fn(held{s})
 }
 
-func stable[T any](s *state, fn func(format.Document, *settings) (T, error)) (T, error) {
+func withWriteLock[T any](s *state, fn func(format.Document, *settings) (T, error)) (T, error) {
 	s.writes.Lock()
 	defer s.writes.Unlock()
 	return fn(s.snapshot())
@@ -171,7 +171,7 @@ func (s *state) unlock(ctx context.Context, key []byte, minimum uint64) (bool, e
 		}
 		source = string(file)
 	}
-	plan, err := s.prepareSettings(ctx, s.library(ctx, sealer), source, everyConnection, nil, authority, signer)
+	plan, err := s.prepareSettings(ctx, s.presetLibrary(ctx, sealer), source, rebuildAll, nil, authority, signer)
 	if err != nil {
 		return false, err
 	}
@@ -189,9 +189,9 @@ func (s *state) unlock(ctx context.Context, key []byte, minimum uint64) (bool, e
 		s.storageKey, s.sealer, s.audit = nil, sealedlog.Sealer{}, nil
 	} else {
 		s.flushing.Go(func() { s.audit.Run(s.life) })
-		h.recordOwner(facts.Observation{Title: "Unlock"}, nil)
+		h.auditOwnerCall(facts.Observation{Title: "Unlock"}, nil)
 		if migration != nil {
-			h.recordOwner(facts.Observation{Title: "Migrated policy", Details: map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(migration.Policy, plan.source)},
+			h.auditOwnerCall(facts.Observation{Title: "Migrated policy", Details: map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(migration.Policy, plan.source)},
 				"notices": migration.Notices}}, nil)
 		}
 		for _, raw := range interrupted {

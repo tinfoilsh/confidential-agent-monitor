@@ -88,21 +88,21 @@ const (
 	maxStreamEvents = 256
 )
 
-type admitted struct {
+type stream struct {
 	fingerprint, connection string
 	name                    string
 	perMessage              bool
 	valid                   func() bool
-	opened                  *grant
-	allowed                 []*grant
+	opened                  *request
+	allowed                 []*request
 }
 
 // The perimeter connection is built in, so it never changes.
-func perimeterCaller(fingerprint, name string) *admitted {
-	return &admitted{fingerprint: fingerprint, connection: config.PerimeterConnection, name: name, valid: func() bool { return true }}
+func apiStream(fingerprint, name string) *stream {
+	return &stream{fingerprint: fingerprint, connection: config.PerimeterConnection, name: name, valid: func() bool { return true }}
 }
 
-type grant struct {
+type request struct {
 	kind     string
 	event    facts.Event
 	known    *requestFacts
@@ -129,13 +129,13 @@ type requestContext struct {
 	connections.Flow
 }
 
-func (st *settings) enforced() bool { return st.Lattices.Confidentiality || st.Lattices.Integrity }
+func (st *settings) latticesOn() bool { return st.Lattices.Confidentiality || st.Lattices.Integrity }
 
-func (st *settings) observe(connection string, event facts.Event) (requestFacts, *refusal) {
+func (st *settings) eventFacts(connection string, event facts.Event) (requestFacts, *refusal) {
 	o, err := event.Decode()
 	c := st.connections[connection]
 	if c != nil && err == nil {
-		return st.describe(connection, o, c.Observe)
+		return st.observationFacts(connection, o, c.Observe)
 	}
 	f := requestFacts{Parameters: o.Parameters, Scope: o.Scope, Title: o.Title, Details: o.Details}
 	if c == nil {
@@ -144,7 +144,7 @@ func (st *settings) observe(connection string, event facts.Event) (requestFacts,
 	return f, refuse(causeInvalid, err.Error())
 }
 
-func (st *settings) describe(connection string, o facts.Observation, observe connections.Observe) (requestFacts, *refusal) {
+func (st *settings) observationFacts(connection string, o facts.Observation, observe connections.Observe) (requestFacts, *refusal) {
 	f := requestFacts{Parameters: o.Parameters, Scope: o.Scope, Title: o.Title, Details: o.Details, Context: requestContext{Flow: observe(o)}}
 	// An operation with no effects would skip every access setting.
 	if o.Operation != nil && o.Operation.Effects != nil && !config.ValidEffects(o.Operation.Effects) {
@@ -164,15 +164,15 @@ func (st *settings) describe(connection string, o facts.Observation, observe con
 	return f, nil
 }
 
-func (st *settings) decide(ctx context.Context, p facts.Principal, connection string, gr *grant) (*record, *refusal) {
+func (st *settings) decide(ctx context.Context, p facts.Principal, connection string, req *request) (*record, *refusal) {
 	var f requestFacts
 	var refused *refusal
-	if gr.known != nil {
-		f = *gr.known
+	if req.known != nil {
+		f = *req.known
 	} else {
-		f, refused = st.observe(connection, gr.event)
+		f, refused = st.eventFacts(connection, req.event)
 	}
-	st.complete(&f, p, connection, gr.kind, gr.label)
+	st.completeFacts(&f, p, connection, req.kind, req.label)
 	if refused != nil {
 		f.Operation = nil
 	}
@@ -187,8 +187,8 @@ func (st *settings) decide(ctx context.Context, p facts.Principal, connection st
 	conn := st.Connections[connection]
 	input := config.DecisionInput{
 		Facts: encoded,
-		Authorization: config.AuthorizationInput{Modes: st.Modes(p.Name, p.Groups, connection, f.Operation, gr.kind), Rules: st.LiveRules(p.Name, time.Now()),
-			Approved: gr.approved, Scope: f.Scope},
+		Authorization: config.AuthorizationInput{Modes: st.EffectModes(p.Name, p.Groups, connection, f.Operation, req.kind), Rules: st.LiveRules(p.Name, time.Now()),
+			Approved: req.approved, Scope: f.Scope},
 		Connection: config.ConnectionInput{Contents: conn.Contents, Strangers: conn.Strangers, Sends: conn.Sends, Address: conn.PolicyOptions.Address,
 			Private: append([]string{}, conn.PolicyOptions.Private...), PublicScope: append([]string{}, st.publicScope[connection]...)},
 	}
@@ -200,7 +200,7 @@ func (st *settings) decide(ctx context.Context, p facts.Principal, connection st
 	return r, nil
 }
 
-func (st *settings) complete(f *requestFacts, p facts.Principal, connection, kind string, label format.Label) {
+func (st *settings) completeFacts(f *requestFacts, p facts.Principal, connection, kind string, label format.Label) {
 	f.Version, f.Kind = config.FactsVersion, kind
 	f.Service, f.Connection = st.Connections[connection].Preset, connection
 	f.Principal, f.Context.Label = p, label
@@ -212,16 +212,16 @@ func (st *settings) complete(f *requestFacts, p facts.Principal, connection, kin
 	}
 }
 
-func (st *settings) dryRun(ctx context.Context, p facts.Principal, label format.Label, connection, kind string, f *requestFacts) (*config.Decision, *refusal) {
-	r, refused := st.decide(ctx, p, connection, &grant{kind: kind, known: f, label: label, approved: []string{}})
+func (st *settings) decideOnly(ctx context.Context, p facts.Principal, label format.Label, connection, kind string, f *requestFacts) (*config.Decision, *refusal) {
+	r, refused := st.decide(ctx, p, connection, &request{kind: kind, known: f, label: label, approved: []string{}})
 	if refused != nil {
 		return nil, refused
 	}
 	return r.Decision, nil
 }
 
-func (st *settings) allowed(p facts.Principal, label format.Label, c facts.Observation) *config.Decision {
-	d, refused := st.dryRun(context.Background(), p, label, config.PerimeterConnection, config.KindOperation, st.callFacts(c))
+func (st *settings) wouldAllow(p facts.Principal, label format.Label, c facts.Observation) *config.Decision {
+	d, refused := st.decideOnly(context.Background(), p, label, config.PerimeterConnection, config.KindOperation, st.callFacts(c))
 	if refused != nil || d.Outcome != config.OutcomeAllow {
 		return nil
 	}
@@ -235,7 +235,7 @@ func (s held) label(name string) format.Label {
 	return config.InitialLabel
 }
 
-func (s held) decideGrant(ctx context.Context, a *admitted, gr *grant) (*record, *refusal) {
+func (s held) decideRequest(ctx context.Context, a *stream, req *request) (*record, *refusal) {
 	p, ok := s.identities.Lookup(a.fingerprint)
 	if !ok || p.Name != a.name {
 		return nil, errRemoved
@@ -243,15 +243,15 @@ func (s held) decideGrant(ctx context.Context, a *admitted, gr *grant) (*record,
 	if !a.valid() {
 		return nil, errChanged
 	}
-	return s.settings.Load().decide(ctx, p, a.connection, gr)
+	return s.settings.Load().decide(ctx, p, a.connection, req)
 }
 
-func (s held) authorize(ctx context.Context, a *admitted, gr *grant) *refusal {
-	r, refused := s.awaitDecision(ctx, a, gr)
+func (s held) authorize(ctx context.Context, a *stream, req *request) *refusal {
+	r, refused := s.decideUntilAnswered(ctx, a, req)
 	if r == nil {
 		return refused
 	}
-	refused = cmp.Or(refused, precondition(s.queue(s.life, r, false)))
+	refused = cmp.Or(refused, precondition(s.setPending(s.life, r, false)))
 	if refused == nil {
 		refused = precondition(s.relabel(ctx, a.name, *r.Decision.Next, a))
 	}
@@ -260,8 +260,8 @@ func (s held) authorize(ctx context.Context, a *admitted, gr *grant) *refusal {
 }
 
 // The deadline runs from when the gaps last changed, so it holds while they do not.
-func (s held) awaitDecision(ctx context.Context, a *admitted, gr *grant) (*record, *refusal) {
-	gr.approved = []string{}
+func (s held) decideUntilAnswered(ctx context.Context, a *stream, req *request) (*record, *refusal) {
+	req.approved = []string{}
 	var r *record
 	var asked []string
 	for {
@@ -271,8 +271,8 @@ func (s held) awaitDecision(ctx context.Context, a *admitted, gr *grant) (*recor
 		if s.audit.Backlogged() {
 			return r, errAuditBacklog
 		}
-		gr.label = s.label(a.name)
-		next, refused := s.decideGrant(ctx, a, gr)
+		req.label = s.label(a.name)
+		next, refused := s.decideRequest(ctx, a, req)
 		if next == nil {
 			return r, refused
 		}
@@ -300,7 +300,7 @@ func (s held) awaitDecision(ctx context.Context, a *admitted, gr *grant) (*recor
 		}
 		// An answer waives exactly the gaps it was given; a later decision can still deny.
 		if approved {
-			gr.approved = append(gr.approved, gaps...)
+			req.approved = append(req.approved, gaps...)
 		}
 	}
 }
@@ -315,7 +315,7 @@ func gapIDs(gaps []config.Requirement) []string {
 }
 
 func (s held) awaitAnswer(ctx context.Context, r *record, fresh bool) (bool, *refusal) {
-	if err := s.queue(ctx, r, true); err != nil {
+	if err := s.setPending(ctx, r, true); err != nil {
 		return false, precondition(err)
 	}
 	if fresh {
@@ -339,7 +339,7 @@ func (s held) awaitAnswer(ctx context.Context, r *record, fresh bool) (bool, *re
 }
 
 // A record stays in the stored document while it awaits an answer, so the next unlock settles it.
-func (s held) queue(ctx context.Context, r *record, pending bool) error {
+func (s held) setPending(ctx context.Context, r *record, pending bool) error {
 	var raw json.RawMessage
 	if pending {
 		var err error
@@ -360,20 +360,20 @@ func (s held) queue(ctx context.Context, r *record, pending bool) error {
 	return s.commit(ctx, next)
 }
 
-func (s *state) admit(ctx context.Context, p facts.Principal, req core.Request) (core.Watch, error) {
-	a := &admitted{fingerprint: p.Key, name: p.Name, connection: req.Connection, valid: req.Valid}
-	gr := &grant{kind: config.KindAdmission, known: &requestFacts{
-		Title:      "Open " + req.Connection,
-		Parameters: map[string]any{"host": req.Target.Host, "port": req.Target.Port},
-		Details:    map[string]any{req.Target.Network: map[string]any{"host": req.Target.Host, "port": req.Target.Port}},
+func (s *state) admit(ctx context.Context, p facts.Principal, opening core.Request) (core.Watch, error) {
+	a := &stream{fingerprint: p.Key, name: p.Name, connection: opening.Connection, valid: opening.Valid}
+	req := &request{kind: config.KindAdmission, known: &requestFacts{
+		Title:      "Open " + opening.Connection,
+		Parameters: map[string]any{"host": opening.Target.Host, "port": opening.Target.Port},
+		Details:    map[string]any{opening.Target.Network: map[string]any{"host": opening.Target.Host, "port": opening.Target.Port}},
 	}}
 	var refused *refusal
 	s.locked(func(h held) {
-		if c := h.settings.Load().connections[req.Connection]; c != nil {
+		if c := h.settings.Load().connections[opening.Connection]; c != nil {
 			a.perMessage = c.PerMessage
 		}
-		refused = h.authorize(ctx, a, gr)
-		a.opened = gr
+		refused = h.authorize(ctx, a, req)
+		a.opened = req
 	})
 	if refused != nil {
 		return nil, refused
@@ -384,23 +384,23 @@ func (s *state) admit(ctx context.Context, p facts.Principal, req core.Request) 
 				return
 			}
 			h.admissions.Hold(ctx, a, end)
-			gate = func(op context.Context, event facts.Event) error { return s.operation(op, ctx, a, event) }
+			gate = func(op context.Context, event facts.Event) error { return s.authorizeOperation(op, ctx, a, event) }
 		})
 		return gate, ok
 	}, nil
 }
 
-func (s *state) operation(ctx, stream context.Context, a *admitted, event facts.Event) error {
-	if err := stream.Err(); err != nil {
+func (s *state) authorizeOperation(ctx, connected context.Context, a *stream, event facts.Event) error {
+	if err := connected.Err(); err != nil {
 		return precondition(err)
 	}
-	ctx, cancel := netx.Bind(ctx, stream)
+	ctx, cancel := netx.Bind(ctx, connected)
 	defer cancel()
 	var refused *refusal
 	s.locked(func(h held) {
-		gr := &grant{kind: config.KindOperation, event: event}
-		if refused = h.authorize(ctx, a, gr); refused == nil {
-			a.remember(gr)
+		req := &request{kind: config.KindOperation, event: event}
+		if refused = h.authorize(ctx, a, req); refused == nil {
+			a.remember(req)
 		}
 	})
 	if refused != nil {
@@ -410,20 +410,20 @@ func (s *state) operation(ctx, stream context.Context, a *admitted, event facts.
 }
 
 // A repeated event is rechecked once, with every approval it was allowed with.
-func (a *admitted) remember(gr *grant) {
-	if i := slices.IndexFunc(a.allowed, func(g *grant) bool { return g.event == gr.event }); i >= 0 {
-		gr.approved = slices.Compact(slices.Sorted(slices.Values(append(gr.approved, a.allowed[i].approved...))))
+func (a *stream) remember(req *request) {
+	if i := slices.IndexFunc(a.allowed, func(g *request) bool { return g.event == req.event }); i >= 0 {
+		req.approved = slices.Compact(slices.Sorted(slices.Values(append(req.approved, a.allowed[i].approved...))))
 		a.allowed = slices.Delete(a.allowed, i, i+1)
 	}
-	if a.allowed = append(a.allowed, gr); len(a.allowed) > maxStreamEvents {
+	if a.allowed = append(a.allowed, req); len(a.allowed) > maxStreamEvents {
 		a.allowed = slices.Delete(a.allowed, 0, 1)
 	}
 }
 
-// Grants keep the label they were allowed under; a removed identity or connection ends the stream without a revoked record.
-func (s held) recheck(a *admitted) bool {
-	for _, gr := range slices.Concat([]*grant{a.opened}, a.allowed) {
-		r, refused := s.decideGrant(context.Background(), a, gr)
+// Requests keep the label they were allowed under; a removed identity or connection ends the stream without a revoked record.
+func (s held) recheck(a *stream) bool {
+	for _, req := range slices.Concat([]*request{a.opened}, a.allowed) {
+		r, refused := s.decideRequest(context.Background(), a, req)
 		switch {
 		case refused == nil && r.Decision.Outcome == config.OutcomeAllow:
 			continue
@@ -435,7 +435,7 @@ func (s held) recheck(a *admitted) bool {
 	return true
 }
 
-func (s held) relabel(ctx context.Context, name string, l format.Label, source *admitted) error {
+func (s held) relabel(ctx context.Context, name string, l format.Label, source *stream) error {
 	if old := s.label(name); old.Trust == l.Trust && old.Audience == l.Audience {
 		return nil
 	}
@@ -446,10 +446,10 @@ func (s held) relabel(ctx context.Context, name string, l format.Label, source *
 		return err
 	}
 	s.records.Notify()
-	if source != nil && !s.settings.Load().enforced() {
+	if source != nil && !s.settings.Load().latticesOn() {
 		return nil
 	}
-	s.admissions.Recheck(func(a *admitted) bool {
+	s.admissions.Recheck(func(a *stream) bool {
 		unaffected := a.name != name || a.connection == config.PerimeterConnection
 		gated := source != nil && a.perMessage
 		return unaffected || a == source || gated
@@ -472,8 +472,8 @@ func (s *state) holdRoutes(ctx context.Context, fingerprint string) (context.Con
 		if ok = known && st != nil; !ok {
 			return
 		}
-		a := perimeterCaller(fingerprint, p.Name)
-		a.opened = &grant{kind: config.KindOperation, known: st.callFacts(call(config.RoutesPublish, nil))}
+		a := apiStream(fingerprint, p.Name)
+		a.opened = &request{kind: config.KindOperation, known: st.callFacts(perimeterCall(config.RoutesPublish, nil))}
 		if ok = h.authorize(wait, a, a.opened) == nil; ok {
 			routed, cancel = context.WithCancel(routed)
 			h.admissions.Hold(routed, a, cancel)

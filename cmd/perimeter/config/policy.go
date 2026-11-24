@@ -76,6 +76,23 @@ func ValidLabel(l format.Label) bool {
 	return slices.Contains(Audiences, l.Audience) && slices.Contains(Trusts, l.Trust)
 }
 
+func Meet(a, b format.Label) format.Label {
+	l := format.Label{Because: map[string]string{}}
+	axis := func(name string, levels []string, x, y string) string {
+		level, because := x, a.Because[name]
+		if slices.Index(levels, y) < slices.Index(levels, x) {
+			level, because = y, b.Because[name]
+		}
+		if because != "" {
+			l.Because[name] = because
+		}
+		return level
+	}
+	l.Audience = axis("audience", Audiences, a.Audience, b.Audience)
+	l.Trust = axis("trust", Trusts, a.Trust, b.Trust)
+	return l
+}
+
 func ValidEffects(effects []string) bool {
 	return len(effects) != 0 && !slices.ContainsFunc(effects, func(effect string) bool { _, ok := Vocabulary[effect]; return !ok || effect == EffectUnknown })
 }

@@ -22,7 +22,7 @@ var modeRank = map[Mode]int{ModeOff: 0, ModeAsk: 1, ModeAllow: 2}
 
 func (m Mode) valid() bool { _, ok := modeRank[m]; return ok }
 
-func below(a, b Mode) bool { return modeRank[a] < modeRank[b] }
+func stricter(a, b Mode) bool { return modeRank[a] < modeRank[b] }
 
 type Setting struct {
 	Mode Mode   `json:"mode"`
@@ -44,7 +44,7 @@ func tomlPath(path string, keys ...string) string { return path + "." + tomledit
 
 // Every effect, so a more specific level replaces a less specific one entirely.
 // Read and up allow what needs no trust; read refuses the rest.
-func expand(level, effect string) (Mode, bool) {
+func levelMode(level, effect string) (Mode, bool) {
 	t, known := Vocabulary[effect]
 	switch {
 	case !known || level == "":
@@ -82,7 +82,7 @@ func (b block) cover(lineage []string, effect string) (Setting, bool) {
 	if m, ok := b.access.Effects[effect]; ok {
 		return Setting{Mode(m), tomlPath(b.path, "effects", effect)}, true
 	}
-	m, ok := expand(b.access.Level, effect)
+	m, ok := levelMode(b.access.Level, effect)
 	// Only an operation has a lineage; a level never opens a session, which follows reach.
 	return Setting{m, tomlPath(b.path, "level")}, ok && (len(lineage) != 0 || effect != "session")
 }
@@ -109,7 +109,7 @@ func (t tiers) modes(lineage, effects []string) map[string]Setting {
 		for _, tier := range t.blocks {
 			// Within a tier the most permissive block decides; ties go to the first group by name.
 			for _, b := range tier {
-				if m, ok := b.cover(lineage, e); ok && (!covered || below(s.Mode, m.Mode)) {
+				if m, ok := b.cover(lineage, e); ok && (!covered || stricter(s.Mode, m.Mode)) {
 					s, covered = m, true
 				}
 			}
@@ -126,7 +126,7 @@ func (t tiers) modes(lineage, effects []string) map[string]Setting {
 func strictest(settings map[string]Setting) Setting {
 	var lowest Setting
 	for i, effect := range slices.Sorted(maps.Keys(settings)) {
-		if s := settings[effect]; i == 0 || below(s.Mode, lowest.Mode) {
+		if s := settings[effect]; i == 0 || stricter(s.Mode, lowest.Mode) {
 			lowest = s
 		}
 	}
@@ -135,7 +135,7 @@ func strictest(settings map[string]Setting) Setting {
 
 // The effect only lets the catalog resolve the action, so every lineage is the catalog's own.
 // A request for an action carries its compiled operations' effects where it has any, else the catalog's.
-func (c *Config) Operation(connection, action string) *catalog.Operation {
+func (c *Config) ResolveAction(connection, action string) *catalog.Operation {
 	presetName := c.Connections[connection].Preset
 	preset := c.Presets[presetName]
 	if preset == nil {
@@ -151,7 +151,7 @@ func (c *Config) Operation(connection, action string) *catalog.Operation {
 }
 
 // Reachability looks at every effect but session, so session can follow it.
-func (c *Config) access(identity string, groups []string, connection string) tiers {
+func (c *Config) tiersFor(identity string, groups []string, connection string) tiers {
 	t := tiers{unset: c.accessPath(identity, connection)}
 	if a, ok := c.Identities[identity].Connections[connection]; ok {
 		t.blocks = append(t.blocks, []block{{tomlPath("identities", identity, "connections", connection), a}})
@@ -185,7 +185,7 @@ func (c *Config) actionSettings(t tiers, connection string) map[string]Setting {
 	for _, tier := range t.blocks {
 		for _, b := range tier {
 			for a := range b.access.Actions {
-				switch op := c.Operation(connection, a); {
+				switch op := c.ResolveAction(connection, a); {
 				case op != nil:
 					actions[a] = strictest(t.modes(op.Lineage, op.Effects))
 				// The account block names actions of every connection, so only those that resolve here are this one's.
@@ -199,7 +199,7 @@ func (c *Config) actionSettings(t tiers, connection string) map[string]Setting {
 }
 
 func (c *Config) Resolve(identity string, groups []string, connection string) Resolved {
-	t := c.access(identity, groups, connection)
+	t := c.tiersFor(identity, groups, connection)
 	r := Resolved{Reaches: t.reaches, Effects: map[string]Setting{}, Actions: t.actions, Tree: c.tree(connection, t)}
 	for e := range Vocabulary {
 		maps.Copy(r.Effects, t.modes(nil, []string{e}))
@@ -215,7 +215,7 @@ func (r Resolved) level() string {
 	for _, level := range accessLevels[1:] {
 		matches := true
 		for e := range Vocabulary {
-			m, _ := expand(level, e)
+			m, _ := levelMode(level, e)
 			matches = matches && (e == "session" || r.Effects[e].Mode == m)
 		}
 		if matches {
@@ -226,11 +226,11 @@ func (r Resolved) level() string {
 }
 
 func (c *Config) Reaches(identity string, groups []string, connection string) bool {
-	return c.access(identity, groups, connection).reaches
+	return c.tiersFor(identity, groups, connection).reaches
 }
 
-func (c *Config) Modes(identity string, groups []string, connection string, op *catalog.Operation, kind string) map[string]Setting {
-	t := c.access(identity, groups, connection)
+func (c *Config) EffectModes(identity string, groups []string, connection string, op *catalog.Operation, kind string) map[string]Setting {
+	t := c.tiersFor(identity, groups, connection)
 	if kind == KindAdmission {
 		// Only an explicit session entry or reach decides an admission, which never opens a connection the identity does not reach.
 		if !t.reaches {

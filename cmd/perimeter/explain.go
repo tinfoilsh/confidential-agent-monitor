@@ -30,15 +30,15 @@ func (s held) explain(ctx context.Context, p facts.Principal, connection, action
 		kind = config.KindAdmission
 	case config.EffectUnknown:
 	default:
-		if f.Operation = st.Operation(connection, action); f.Operation == nil {
+		if f.Operation = st.ResolveAction(connection, action); f.Operation == nil {
 			return explanation{}, fmt.Errorf("action %s has no effects on connection %s", action, connection)
 		}
 	}
-	d, refused := st.dryRun(ctx, p, s.label(p.Name), connection, kind, f)
+	d, refused := st.decideOnly(ctx, p, s.label(p.Name), connection, kind, f)
 	if refused != nil {
 		return explanation{}, refused
 	}
-	e.Modes, e.Decision = st.Modes(p.Name, p.Groups, connection, f.Operation, kind), d
+	e.Modes, e.Decision = st.EffectModes(p.Name, p.Groups, connection, f.Operation, kind), d
 	return e, nil
 }
 

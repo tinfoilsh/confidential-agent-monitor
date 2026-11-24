@@ -15,7 +15,7 @@ type connectionDefaults struct {
 }
 
 // A preset that states no defaults takes those of its protocol.
-func Compose(presets map[string]*catalog.Preset) error {
+func ComposePresets(presets map[string]*catalog.Preset) error {
 	if err := catalog.Compose(presets); err != nil {
 		return err
 	}

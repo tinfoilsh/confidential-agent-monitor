@@ -37,14 +37,14 @@ var perimeterPreset = func() *catalog.Preset {
 	return p
 }()
 
-func perimeterTable(decoded map[string]any) error {
+func rejectPerimeterSettings(decoded map[string]any) error {
 	if len(tomledit.Table(decoded, "connections", PerimeterConnection)) != 0 {
 		return fmt.Errorf("%s: the built-in %s connection takes no settings", tomlPath("connections", PerimeterConnection), PerimeterConnection)
 	}
 	return nil
 }
 
-func (c *Config) builtIn() error {
+func (c *Config) addBuiltIns() error {
 	if p, listed := c.Presets[PerimeterConnection]; listed && p != perimeterPreset {
 		return fmt.Errorf("preset %s is the Perimeter's own; a catalog cannot list one of that name", PerimeterConnection)
 	}

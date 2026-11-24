@@ -67,13 +67,6 @@ type settingsWrite struct {
 	saved       *savedAnswer
 }
 
-func (w settingsWrite) checked(h held) error {
-	if w.check == nil {
-		return nil
-	}
-	return w.check(h)
-}
-
 var (
 	errPolicyConflict = httpError{errors.New("policy changed; reload it and review a new diff before applying"), http.StatusConflict}
 	errPolicyFile     = httpError{errors.New("the policy is loaded from a file; change it there"), http.StatusForbidden}
@@ -83,12 +76,15 @@ var errCredentialChanged = errors.New("credential changed; start again")
 
 const credentialTimeout = 30 * time.Second
 
-func everyConnection(string) bool { return true }
+func rebuildAll(string) bool { return true }
 
 func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	s.writes.Lock()
 	defer s.writes.Unlock()
 	h := held{s}
+	if w.check == nil {
+		w.check = func(held) error { return nil }
+	}
 
 	s.mu.Lock()
 	source, current := s.doc.Policy, s.settings.Load()
@@ -100,7 +96,7 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 		err = errPolicyFile
 	}
 	if err == nil {
-		err = w.checked(h)
+		err = w.check(h)
 	}
 	s.mu.Unlock()
 	if err != nil {
@@ -110,7 +106,7 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	if w.source != nil {
 		source = *w.source
 	}
-	lib := s.library(ctx, s.sealer)
+	lib := s.presetLibrary(ctx, s.sealer)
 	source, rebuild, renamed, err := current.Edit(source, w.changes, lib)
 	if err != nil {
 		return err
@@ -122,7 +118,7 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	plan.renamed = renamed
 
 	s.mu.Lock()
-	if err = w.checked(h); err == nil {
+	if err = w.check(h); err == nil {
 		err = h.commitSettings(ctx, plan, w.saved)
 	}
 	s.mu.Unlock()
@@ -132,7 +128,7 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	return err
 }
 
-func (s *state) prepareSettings(ctx context.Context, lib config.Library, source string, rebuild func(connection string) bool, credentials format.Secrets, authority *certificates.Authority, hostKey ssh.Signer) (*settingsPlan, error) {
+func (s *state) prepareSettings(ctx context.Context, lib config.PresetLoader, source string, rebuild func(connection string) bool, credentials format.Secrets, authority *certificates.Authority, hostKey ssh.Signer) (*settingsPlan, error) {
 	cfg, err := config.Load(source, lib)
 	if err != nil {
 		return nil, err
@@ -241,7 +237,7 @@ func (s held) commitSettings(ctx context.Context, plan *settingsPlan, saved *sav
 		_, ok := plan.next.Connections[connection]
 		return !ok
 	})
-	client := plan.next.client()
+	client := plan.next.guardedClient()
 	for _, connection := range plan.updates {
 		c := plan.next.connections[connection]
 		for name, value := range c.secrets {
@@ -272,14 +268,14 @@ func (s held) commitSettings(ctx context.Context, plan *settingsPlan, saved *sav
 
 	// An answered proposal must leave pending before the loop below would outdate it.
 	if saved != nil {
-		s.saved(saved.record, saved.answer)
+		s.appendSavedReview(saved.record, saved.answer)
 	}
 	for _, name := range plan.remove {
 		s.table.Remove(name)
 	}
 	for _, name := range plan.updates {
 		c := plan.next.connections[name]
-		s.table.Stage(name, c.Network, c.Claim, s.opener(plan.next, c))
+		s.table.Stage(name, c.Network, c.Claim, s.connectorOpener(plan.next, c))
 	}
 	previous := s.settings.Swap(plan.next)
 	if previous != nil {
@@ -302,7 +298,7 @@ func (s held) commitSettings(ctx context.Context, plan *settingsPlan, saved *sav
 			continue
 		}
 		f := r.subject()
-		if _, raw, err := s.proposal(plan.next, plan.source, f.Principal, f.Connection, f.Title, r.Changes, s.mayProposeOthers(plan.next, f.Principal)); err == nil {
+		if _, raw, err := s.draftProposal(plan.next, plan.source, f.Principal, f.Connection, f.Title, r.Changes, s.mayProposeOthers(plan.next, f.Principal)); err == nil {
 			r.Facts = raw
 		} else {
 			s.outdateRecord(r)
@@ -364,12 +360,12 @@ func fetchesUnchanged(before, after string) error {
 }
 
 func (s *state) previewPolicy(ctx context.Context, base format.Document, before *settings, source string) (*policyDiff, error) {
-	lib := s.library(ctx, s.sealer)
+	lib := s.presetLibrary(ctx, s.sealer)
 	source, _, _, err := before.Edit(source, nil, lib)
 	if err != nil {
 		return nil, err
 	}
-	plan, err := s.prepareSettings(ctx, lib, source, everyConnection, nil, before.authority, before.hostKey)
+	plan, err := s.prepareSettings(ctx, lib, source, rebuildAll, nil, before.authority, before.hostKey)
 	if err != nil {
 		return nil, err
 	}
@@ -388,11 +384,11 @@ func guardedDialer(allowed []netip.Prefix, network string) *net.Dialer {
 	return &net.Dialer{Timeout: connections.DialTimeout, Control: netx.Guard(allowed, network)}
 }
 
-func (st *settings) client() *http.Client {
+func (st *settings) guardedClient() *http.Client {
 	return &http.Client{Transport: connections.Identified{RoundTripper: netx.Transport(guardedDialer(st.AllowNetworks, "tcp").DialContext)}, CheckRedirect: netx.RefuseRedirects}
 }
 
-func (s *state) opener(st *settings, c *installed) core.Open {
+func (s *state) connectorOpener(st *settings, c *installed) core.Open {
 	grants := worker.Grants{Dial: s.routes.RouteDial(c.Hosts, s.identities.Keys, guardedDialer(st.AllowNetworks, c.Network).DialContext), Secrets: map[string]worker.Secret{},
 		Certificate: func(name string) (*tls.Certificate, error) {
 			return st.authority.Issue(name, leafLifetime, leafBackdate)
@@ -419,7 +415,7 @@ func (s *state) opener(st *settings, c *installed) core.Open {
 	}
 }
 
-func (s held) unchanged(id format.SecretID, value *credential.Value, before json.RawMessage) bool {
+func (s held) secretUnchanged(id format.SecretID, value *credential.Value, before json.RawMessage) bool {
 	c := s.settings.Load().connections[id.Connection]
 	return c != nil && c.secrets[id.Name] == value && bytes.Equal(s.doc.Credentials.Get(id), before)
 }
@@ -427,7 +423,7 @@ func (s held) unchanged(id format.SecretID, value *credential.Value, before json
 func (s *state) replaceValue(ctx context.Context, id format.SecretID, value *credential.Value, before, after json.RawMessage) error {
 	err := errCredentialChanged
 	s.locked(func(h held) {
-		if h.unchanged(id, value, before) {
+		if h.secretUnchanged(id, value, before) {
 			next := h.doc
 			next.Credentials = next.Credentials.Clone()
 			next.Credentials.Set(id, bytes.Clone(after))
@@ -452,7 +448,7 @@ func (s *state) signInCredential(connection, name string) (json.RawMessage, func
 	}
 	return before, func(ctx context.Context, raw json.RawMessage) error {
 		return s.writeSettings(ctx, settingsWrite{credentials: format.Secrets{connection: {name: raw}}, check: func(h held) error {
-			if !h.unchanged(id, value, before) {
+			if !h.secretUnchanged(id, value, before) {
 				return errCredentialChanged
 			}
 			return nil
@@ -472,7 +468,7 @@ func (s *state) restoreDevice(ctx context.Context, public string) error {
 	changed, err := s.enroll(ctx, device)
 	if changed {
 		s.locked(func(h held) {
-			h.recordOwner(facts.Observation{Operation: &facts.Operation{Action: "enroll"}, Details: device}, err)
+			h.auditOwnerCall(facts.Observation{Operation: &facts.Operation{Action: "enroll"}, Details: device}, err)
 		})
 	}
 	return err

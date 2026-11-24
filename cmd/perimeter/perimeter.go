@@ -18,12 +18,12 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
 )
 
-func call(action string, parameters map[string]any) facts.Observation {
+func perimeterCall(action string, parameters map[string]any) facts.Observation {
 	return facts.Observation{Operation: &facts.Operation{Action: action}, Parameters: parameters}
 }
 
 // A single scoping parameter lets a saved rule grant a call for one subject, identity, or connection.
-func scope(parameters map[string]any) map[string]any {
+func ruleScope(parameters map[string]any) map[string]any {
 	for _, key := range []string{"subject", "identity", "connection"} {
 		if value, named := parameters[key]; named {
 			return map[string]any{key: value}
@@ -33,24 +33,30 @@ func scope(parameters map[string]any) map[string]any {
 }
 
 func (st *settings) callFacts(c facts.Observation) *requestFacts {
-	c.Scope = scope(c.Parameters)
+	c.Scope = ruleScope(c.Parameters)
 	if c.Operation != nil {
 		c.Title = st.Presets[config.PerimeterConnection].Catalog.Actions[c.Operation.Action].Title
 	}
-	f, _ := st.describe(config.PerimeterConnection, c, connections.Perimeter)
+	f, _ := st.observationFacts(config.PerimeterConnection, c, connections.Perimeter)
 	return &f
 }
 
-func (st *settings) changes(c facts.Observation) bool {
+func (st *settings) mutates(c facts.Observation) bool {
 	op := st.callFacts(c).Operation
 	return op != nil && slices.ContainsFunc(op.Effects, func(e string) bool { return config.Vocabulary[e].Integrity })
 }
 
-type describe func(s *state, r *http.Request, input any) ([]facts.Observation, error)
+// The owner's mount runs every route as root; an identity's mount decides each call a route makes.
+type adminMount struct {
+	*state
+	owner bool
+}
 
-func named(action string, parameters ...string) describe {
-	return func(_ *state, r *http.Request, _ any) ([]facts.Observation, error) {
-		c := call(action, map[string]any{})
+type routeActions func(m adminMount, r *http.Request, input any) ([]facts.Observation, error)
+
+func pathAction(action string, parameters ...string) routeActions {
+	return func(_ adminMount, r *http.Request, _ any) ([]facts.Observation, error) {
+		c := perimeterCall(action, map[string]any{})
 		for _, name := range parameters {
 			c.Parameters[name] = cmp.Or(r.PathValue(name), r.URL.Query().Get(name))
 		}
@@ -58,10 +64,10 @@ func named(action string, parameters ...string) describe {
 	}
 }
 
-func detailed(action string, parameters ...string) describe {
-	base := named(action, parameters...)
-	return func(s *state, r *http.Request, input any) ([]facts.Observation, error) {
-		calls, err := base(s, r, input)
+func bodyAction(action string, parameters ...string) routeActions {
+	base := pathAction(action, parameters...)
+	return func(m adminMount, r *http.Request, input any) ([]facts.Observation, error) {
+		calls, err := base(m, r, input)
 		calls[0].Details = input
 		return calls, err
 	}
@@ -69,27 +75,27 @@ func detailed(action string, parameters ...string) describe {
 
 var errUnreviewed = httpError{errors.New("an identity writes the policy only with the revision it reviewed"), http.StatusBadRequest}
 
-func policyCall(s *state, r *http.Request, revision *uint64, credentials format.Secrets, edit func(before string) string) ([]facts.Observation, error) {
-	if c, _ := callerFrom(r.Context()); !c.Owner && revision == nil {
+func policyCall(m adminMount, revision *uint64, credentials format.Secrets, edit func(before string) string) ([]facts.Observation, error) {
+	if !m.owner && revision == nil {
 		return nil, errUnreviewed
 	}
-	c := call("policy.write", nil)
-	s.locked(func(h held) {
+	c := perimeterCall("policy.write", nil)
+	m.locked(func(h held) {
 		c.Details = map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(h.doc.Policy, edit(h.doc.Policy))}, "credentials": slices.Sorted(maps.Keys(credentials))}
 	})
 	return []facts.Observation{c}, nil
 }
 
-func policyWrite(s *state, r *http.Request, input any) ([]facts.Observation, error) {
+func policyWriteActions(m adminMount, _ *http.Request, input any) ([]facts.Observation, error) {
 	in := input.(sourceInput)
-	return policyCall(s, r, in.Revision, nil, func(string) string { return in.Source })
+	return policyCall(m, in.Revision, nil, func(string) string { return in.Source })
 }
 
 // One call per action, so an identity needs each of them allowed.
-func edits(s *state, r *http.Request, input any) (calls []facts.Observation, err error) {
+func policyEditActions(m adminMount, _ *http.Request, input any) (calls []facts.Observation, err error) {
 	in := input.(editsInput)
 	if len(in.Changes) != 0 || len(in.Credentials) == 0 {
-		calls, err = policyCall(s, r, in.Revision, in.Credentials, func(before string) string {
+		calls, err = policyCall(m, in.Revision, in.Credentials, func(before string) string {
 			if edited, err := tomledit.Edit(before, in.Changes); err == nil {
 				return edited
 			}
@@ -97,14 +103,14 @@ func edits(s *state, r *http.Request, input any) (calls []facts.Observation, err
 		})
 	}
 	for _, connection := range slices.Sorted(maps.Keys(in.Credentials)) {
-		calls = append(calls, call("credentials.write", map[string]any{"connection": connection}))
+		calls = append(calls, perimeterCall("credentials.write", map[string]any{"connection": connection}))
 	}
 	return calls, err
 }
 
 // The identities its entries resolve to and their keys let the policy refuse an identity that enrolls itself.
-func enrollment(s *state, _ *http.Request, input any) ([]facts.Observation, error) {
-	st := s.settings.Load()
+func enrollActions(m adminMount, _ *http.Request, input any) ([]facts.Observation, error) {
+	st := m.settings.Load()
 	names, keys := []string{}, []string{}
 	for name, e := range input.(map[string]config.Enrollment) {
 		fingerprint, err := config.KeyFingerprint(e.Key)
@@ -122,21 +128,22 @@ func enrollment(s *state, _ *http.Request, input any) ([]facts.Observation, erro
 }
 
 // Access does not depend on the scope, so an action it turns off is refused before any record is read.
-func (s *state) offFor(c caller, action string) bool {
-	if c.Owner {
+func (m adminMount) accessOff(r *http.Request, action string) bool {
+	if m.owner {
 		return false
 	}
-	p, known := s.identities.Lookup(c.Key)
+	c, _ := callerFrom(r.Context())
+	p, known := m.identities.Lookup(c.Key)
 	if !known || p.Name != c.Name {
 		return true
 	}
-	return s.settings.Load().PerimeterOff(p, action)
+	return m.settings.Load().ActionOff(p, action)
 }
 
 var answerChoices = []string{answerOnce, answerSave, answerDeny}
 
 // Saving an answer changes the policy, and so does answering a proposal or any call on the Perimeter's own API.
-func answer(s *state, r *http.Request, input any) ([]facts.Observation, error) {
+func answerActions(m adminMount, r *http.Request, input any) ([]facts.Observation, error) {
 	a, id := input.(answerInput).Answer, r.PathValue("id")
 	if !slices.Contains(answerChoices, a.Choice) {
 		return nil, fmt.Errorf("decision must be one of %s", strings.Join(answerChoices, ", "))
@@ -146,12 +153,11 @@ func answer(s *state, r *http.Request, input any) ([]facts.Observation, error) {
 	if a.Choice == answerSave {
 		c.Operation.Action = "requests.save"
 	}
-	from, _ := callerFrom(r.Context())
-	if s.offFor(from, c.Operation.Action) && s.offFor(from, proposal) {
+	if m.accessOff(r, c.Operation.Action) && m.accessOff(r, proposal) {
 		return []facts.Observation{c}, nil
 	}
 	found := false
-	s.locked(func(h held) {
+	m.locked(func(h held) {
 		record := h.findRecord(id)
 		if found = record != nil; !found {
 			return
@@ -163,7 +169,7 @@ func answer(s *state, r *http.Request, input any) ([]facts.Observation, error) {
 		}
 	})
 	if !found {
-		return nil, missingRecord(from)
+		return nil, m.missingRecordError()
 	}
 	return []facts.Observation{c}, nil
 }
@@ -171,23 +177,23 @@ func answer(s *state, r *http.Request, input any) ([]facts.Observation, error) {
 var errUndescribed = httpError{errors.New("this route performs no action on the perimeter connection"), http.StatusForbidden}
 
 // The owner is root and never decided; any other caller runs only once every call is allowed.
-func (s *state) perform(r *http.Request, describe describe, input any, run func() error) error {
-	c, _ := callerFrom(r.Context())
-	if c.Owner && r.Method == http.MethodGet {
+func (m adminMount) perform(r *http.Request, actions routeActions, input any, run func() error) error {
+	if m.owner && r.Method == http.MethodGet {
 		return run()
 	}
-	calls, err := describe(s, r, input)
+	calls, err := actions(m, r, input)
 	if err != nil {
 		return err
 	}
-	if !c.Owner {
+	if !m.owner {
 		if len(calls) == 0 {
 			return errUndescribed
 		}
+		c, _ := callerFrom(r.Context())
 		for _, call := range calls {
 			var refused *refusal
-			s.locked(func(h held) {
-				refused = h.authorize(r.Context(), perimeterCaller(c.Key, c.Name), &grant{kind: config.KindOperation, known: h.settings.Load().callFacts(call)})
+			m.locked(func(h held) {
+				refused = h.authorize(r.Context(), apiStream(c.Key, c.Name), &request{kind: config.KindOperation, known: h.settings.Load().callFacts(call)})
 			})
 			if refused != nil {
 				return refused
@@ -196,19 +202,19 @@ func (s *state) perform(r *http.Request, describe describe, input any, run func(
 		return run()
 	}
 	err = run()
-	s.locked(func(h held) {
+	m.locked(func(h held) {
 		for _, call := range calls {
-			if h.settings.Load().changes(call) {
-				h.recordOwner(call, err)
+			if h.settings.Load().mutates(call) {
+				h.auditOwnerCall(call, err)
 			}
 		}
 	})
 	return err
 }
 
-func perimeterJSON[T any](s *state, limit int64, describe describe, fn func(*http.Request, T) (any, error)) http.HandlerFunc {
-	return s.unlocked(jsonHandler(limit, func(r *http.Request, input T) (value any, err error) {
-		err = s.perform(r, describe, input, func() (err error) {
+func authorizedHandler[T any](m adminMount, limit int64, actions routeActions, fn func(*http.Request, T) (any, error)) http.HandlerFunc {
+	return m.requireUnlocked(jsonHandler(limit, func(r *http.Request, input T) (value any, err error) {
+		err = m.perform(r, actions, input, func() (err error) {
 			value, err = fn(r, input)
 			return err
 		})
@@ -216,14 +222,33 @@ func perimeterJSON[T any](s *state, limit int64, describe describe, fn func(*htt
 	}))
 }
 
-func perimeterHeld[T any](s *state, describe describe, fn func(held, *http.Request, T) (any, error)) http.HandlerFunc {
-	return perimeterJSON(s, maxDocumentBytes, describe, func(r *http.Request, input T) (value any, err error) {
-		s.locked(func(h held) { value, err = fn(h, r, input) })
+func authorizedLockedHandler[T any](m adminMount, actions routeActions, fn func(held, *http.Request, T) (any, error)) http.HandlerFunc {
+	return authorizedHandler(m, maxDocumentBytes, actions, func(r *http.Request, input T) (value any, err error) {
+		m.locked(func(h held) { value, err = fn(h, r, input) })
 		return value, err
 	})
 }
 
-func (s *state) unlocked(next http.HandlerFunc) http.HandlerFunc {
+// An identity sees only the records whose subjects it may read, and its label falls for those it saw.
+func authorizedList(m adminMount, action string, list func(r *http.Request, shows func(subject string) bool) (any, error)) http.HandlerFunc {
+	return m.requireUnlocked(jsonHandler(0, func(r *http.Request, _ struct{}) (any, error) {
+		var d *disclosure
+		var err error
+		if !m.owner {
+			m.locked(func(h held) { d, err = m.newDisclosure(h, r, action) })
+		}
+		if err != nil {
+			return nil, err
+		}
+		value, err := list(r, d.shows)
+		if err == nil {
+			m.locked(func(h held) { err = d.audit(r.Context(), h) })
+		}
+		return value, err
+	}))
+}
+
+func (s *state) requireUnlocked(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		_, err := requestCaller(r)
 		if err == nil && s.settings.Load() == nil {
@@ -237,10 +262,10 @@ func (s *state) unlocked(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (s held) recordOwner(c facts.Observation, err error) {
+func (s held) auditOwnerCall(c facts.Observation, err error) {
 	st := s.settings.Load()
 	f := st.callFacts(c)
-	st.complete(f, facts.Principal{Name: config.OwnerName}, config.PerimeterConnection, config.KindOperation, format.Label{})
+	st.completeFacts(f, facts.Principal{Name: config.OwnerName}, config.PerimeterConnection, config.KindOperation, format.Label{})
 	raw, encodeErr := json.Marshal(f)
 	if encodeErr != nil {
 		log.Printf("audit %s: %v", f.Title, encodeErr)

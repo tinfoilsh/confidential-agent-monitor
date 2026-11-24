@@ -112,7 +112,7 @@ type Config struct {
 	Operations map[string]map[string]OperationSummary `json:"-"`
 }
 
-type Library func(*Config) (map[string]*catalog.Preset, error)
+type PresetLoader func(*Config) (map[string]*catalog.Preset, error)
 
 func validateModes(where string, modes map[string]string, effects bool) error {
 	for key, mode := range modes {
@@ -153,13 +153,13 @@ func (c *Config) validateAccess(where string, connections map[string]Access) err
 	return nil
 }
 
-func Load(text string, presets Library) (*Config, error) {
+func Load(text string, presets PresetLoader) (*Config, error) {
 	if len(text) > maxPolicyBytes {
 		return nil, errors.New("policy source is too large")
 	}
 	decoded, err := tomledit.Read(text)
 	if err == nil {
-		err = perimeterTable(decoded)
+		err = rejectPerimeterSettings(decoded)
 	}
 	if err != nil {
 		return nil, err
@@ -173,7 +173,7 @@ func Load(text string, presets Library) (*Config, error) {
 		cfg.Presets, err = presets(cfg)
 	}
 	if err == nil {
-		err = cfg.builtIn()
+		err = cfg.addBuiltIns()
 	}
 	if err == nil {
 		err = cfg.validate()
@@ -337,7 +337,7 @@ func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	return spec, nil
 }
 
-func (c *Config) Edit(source string, changes []tomledit.Change, presets Library) (edited string, rebuild func(connection string) bool, renamed map[string]string, err error) {
+func (c *Config) Edit(source string, changes []tomledit.Change, presets PresetLoader) (edited string, rebuild func(connection string) bool, renamed map[string]string, err error) {
 	edited, err = tomledit.Edit(source, changes)
 	if err != nil {
 		return "", nil, nil, err
@@ -383,7 +383,7 @@ func (c *Config) Edit(source string, changes []tomledit.Change, presets Library)
 	return edited, func(connection string) bool { return networks || setup(connection) }, renamed, err
 }
 
-func (c *Config) View() (map[string]any, error) {
+func (c *Config) OwnerView() (map[string]any, error) {
 	v := *c
 	v.Connections = maps.Clone(c.Connections)
 	for name, connection := range v.Connections {
@@ -418,7 +418,7 @@ func (c *Config) View() (map[string]any, error) {
 }
 
 func (c *Config) Effective() (string, error) {
-	v, err := c.View()
+	v, err := c.OwnerView()
 	if err != nil {
 		return "", err
 	}
@@ -519,9 +519,9 @@ type Enrollment struct {
 	Attributes map[string]json.RawMessage `json:",embed"`
 }
 
-func (c *Config) PerimeterOff(p facts.Principal, action string) bool {
-	op := c.Operation(PerimeterConnection, action)
-	return strictest(c.Modes(p.Name, p.Groups, PerimeterConnection, op, KindOperation)).Mode == ModeOff
+func (c *Config) ActionOff(p facts.Principal, action string) bool {
+	op := c.ResolveAction(PerimeterConnection, action)
+	return strictest(c.EffectModes(p.Name, p.Groups, PerimeterConnection, op, KindOperation)).Mode == ModeOff
 }
 
 func (c *Config) Enroll(input map[string]Enrollment, enrolled map[string]bool, fields map[string]func(json.RawMessage) error) ([]tomledit.Change, error) {
@@ -544,7 +544,7 @@ func (c *Config) Enroll(input map[string]Enrollment, enrolled map[string]bool, f
 		if principal, ok := c.Principal(fingerprint); ok {
 			existing := c.Identities[principal.Name]
 			// A label or the owner policy may stop a device for now; only its access says it was revoked.
-			if id.Routes && c.PerimeterOff(principal, RoutesPublish) {
+			if id.Routes && c.ActionOff(principal, RoutesPublish) {
 				if !id.Restore {
 					return nil, errors.New("device route access was revoked")
 				}

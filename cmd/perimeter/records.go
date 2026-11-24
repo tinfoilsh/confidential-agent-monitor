@@ -185,7 +185,7 @@ func (s held) ruleChange(r *record) (tomledit.Change, error) {
 		Scope: r.Scope, Requirements: slices.Clone(r.Decision.Gaps)}}, nil
 }
 
-func (s held) answerable(id string, input Answer, revision uint64) (*record, error) {
+func (s held) findAnswerable(id string, input Answer, revision uint64) (*record, error) {
 	if revision != s.doc.Revision {
 		return nil, errPolicyConflict
 	}
@@ -207,18 +207,18 @@ func (s held) answerable(id string, input Answer, revision uint64) (*record, err
 	return r, nil
 }
 
-func (s held) answer(r *record, review Review) {
+func (s held) appendReview(r *record, review Review) {
 	review.Time = time.Now()
 	r.Reviews = append(r.Reviews, review)
 	s.records.Notify()
 }
 
 // A proposal leaves pending at once, before the settings it applied could outdate it.
-func (s held) saved(r *record, review Review) {
+func (s held) appendSavedReview(r *record, review Review) {
 	if r.Changes != nil {
 		r.State = stateAllowed
 	}
-	s.answer(r, review)
+	s.appendReview(r, review)
 }
 
 func (s *state) answerRequest(ctx context.Context, id string, input Answer, revision uint64) error {
@@ -233,7 +233,7 @@ func (s *state) answerRequest(ctx context.Context, id string, input Answer, revi
 	if applies {
 		saved := &savedAnswer{answer: review}
 		err := s.writeSettings(ctx, settingsWrite{derive: func(h held) ([]tomledit.Change, error) {
-			r, err := h.answerable(id, input, revision)
+			r, err := h.findAnswerable(id, input, revision)
 			if err != nil {
 				return nil, err
 			}
@@ -244,7 +244,7 @@ func (s *state) answerRequest(ctx context.Context, id string, input Answer, revi
 			change, err := h.ruleChange(r)
 			return []tomledit.Change{change}, err
 		}, check: func(h held) error {
-			current, err := h.answerable(id, input, revision)
+			current, err := h.findAnswerable(id, input, revision)
 			if err == nil && current != saved.record {
 				return errRecordGone
 			}
@@ -258,10 +258,10 @@ func (s *state) answerRequest(ctx context.Context, id string, input Answer, revi
 	var err error
 	s.locked(func(h held) {
 		var r *record
-		if r, err = h.answerable(id, input, revision); err != nil {
+		if r, err = h.findAnswerable(id, input, revision); err != nil {
 			return
 		}
-		h.answer(r, review)
+		h.appendReview(r, review)
 		if r.Changes != nil {
 			h.settleRecord(r, errRejected)
 		}
@@ -333,31 +333,30 @@ const maxPolicyProposals = 32
 // An identity cannot tell a missing record from one it may not see.
 var errRecordHidden = httpError{errors.New("this identity may not see this request"), http.StatusForbidden}
 
-func missingRecord(c caller) error {
-	if c.Owner {
+func (m adminMount) missingRecordError() error {
+	if m.owner {
 		return errRecordGone
 	}
 	return errRecordHidden
 }
 
-func subjectRead(action string, find func(*state, *http.Request) (string, error)) describe {
-	return func(s *state, r *http.Request, _ any) ([]facts.Observation, error) {
-		c, _ := callerFrom(r.Context())
-		if s.offFor(c, action) {
-			return []facts.Observation{call(action, nil)}, nil
+func subjectReadActions(action string, find func(*state, *http.Request) (string, error)) routeActions {
+	return func(m adminMount, r *http.Request, _ any) ([]facts.Observation, error) {
+		if m.accessOff(r, action) {
+			return []facts.Observation{perimeterCall(action, nil)}, nil
 		}
-		subject, err := find(s, r)
+		subject, err := find(m.state, r)
 		if errors.Is(err, errRecordGone) {
-			err = missingRecord(c)
+			err = m.missingRecordError()
 		}
 		if err != nil {
 			return nil, err
 		}
-		return []facts.Observation{call(action, map[string]any{"subject": subject})}, nil
+		return []facts.Observation{perimeterCall(action, map[string]any{"subject": subject})}, nil
 	}
 }
 
-func liveSubject(s *state, r *http.Request) (subject string, err error) {
+func pendingRecordSubject(s *state, r *http.Request) (subject string, err error) {
 	err = errRecordGone
 	s.locked(func(h held) {
 		if record := h.findRecord(r.PathValue("id")); record != nil {
@@ -367,7 +366,7 @@ func liveSubject(s *state, r *http.Request) (subject string, err error) {
 	return subject, err
 }
 
-func auditSubject(s *state, r *http.Request) (string, error) {
+func auditRecordSubject(s *state, r *http.Request) (string, error) {
 	record, err := s.readAuditRecord(r.Context(), r.PathValue("segment"), r.PathValue("id"))
 	if err != nil {
 		return "", err
@@ -383,14 +382,11 @@ type disclosure struct {
 	reads map[string]*config.Decision
 }
 
-func (s held) disclose(r *http.Request, action string) (*disclosure, error) {
+func (m adminMount) newDisclosure(s held, r *http.Request, action string) (*disclosure, error) {
 	c, _ := callerFrom(r.Context())
-	if c.Owner {
-		return nil, nil
-	}
 	// Decided only so that the refusal is recorded; any other identity is filtered per subject.
-	if s.offFor(c, action) {
-		if refused := s.authorize(r.Context(), perimeterCaller(c.Key, c.Name), &grant{kind: config.KindOperation, known: s.settings.Load().callFacts(call(action, nil))}); refused != nil {
+	if m.accessOff(r, action) {
+		if refused := s.authorize(r.Context(), apiStream(c.Key, c.Name), &request{kind: config.KindOperation, known: s.settings.Load().callFacts(perimeterCall(action, nil))}); refused != nil {
 			return nil, refused
 		}
 	}
@@ -410,13 +406,13 @@ func (d *disclosure) shows(subject string) bool {
 	}
 	read, decided := d.reads[subject]
 	if !decided {
-		read = d.st.allowed(d.p, d.label, call(d.read, map[string]any{"subject": subject}))
+		read = d.st.wouldAllow(d.p, d.label, perimeterCall(d.read, map[string]any{"subject": subject}))
 		d.reads[subject] = read
 	}
 	return read != nil
 }
 
-func (d *disclosure) record(ctx context.Context, h held) error {
+func (d *disclosure) audit(ctx context.Context, h held) error {
 	if d == nil {
 		return nil
 	}
@@ -424,7 +420,7 @@ func (d *disclosure) record(ctx context.Context, h held) error {
 	var decision *config.Decision
 	for _, subject := range slices.Sorted(maps.Keys(d.reads)) {
 		if read := d.reads[subject]; read != nil {
-			disclosed, next = append(disclosed, subject), lowest(next, *read.Next)
+			disclosed, next = append(disclosed, subject), config.Meet(next, *read.Next)
 			decision = &config.Decision{Outcome: config.OutcomeAllow, Sends: read.Sends}
 		}
 	}
@@ -432,36 +428,19 @@ func (d *disclosure) record(ctx context.Context, h held) error {
 		return nil
 	}
 	decision.Next = &next
-	f := d.st.callFacts(call(d.read, map[string]any{"subjects": disclosed}))
-	d.st.complete(f, d.p, config.PerimeterConnection, config.KindOperation, d.label)
+	f := d.st.callFacts(perimeterCall(d.read, map[string]any{"subjects": disclosed}))
+	d.st.completeFacts(f, d.p, config.PerimeterConnection, config.KindOperation, d.label)
 	raw, err := json.Marshal(f)
 	if err != nil {
 		return err
 	}
 	r := h.addRecord(&record{Facts: raw, Decision: decision, Scope: f.Scope})
-	refused := precondition(h.relabel(ctx, d.p.Name, next, perimeterCaller(d.p.Key, d.p.Name)))
+	refused := precondition(h.relabel(ctx, d.p.Name, next, apiStream(d.p.Key, d.p.Name)))
 	h.settleRecord(r, refused)
 	if refused != nil {
 		return refused
 	}
 	return nil
-}
-
-func lowest(a, b format.Label) format.Label {
-	l := format.Label{Because: map[string]string{}}
-	axis := func(name string, levels []string, x, y string) string {
-		level, because := x, a.Because[name]
-		if slices.Index(levels, y) < slices.Index(levels, x) {
-			level, because = y, b.Because[name]
-		}
-		if because != "" {
-			l.Because[name] = because
-		}
-		return level
-	}
-	l.Audience = axis("audience", config.Audiences, a.Audience, b.Audience)
-	l.Trust = axis("trust", config.Trusts, a.Trust, b.Trust)
-	return l
 }
 
 type proposalReceipt struct {
@@ -474,14 +453,14 @@ func receipt(r *record) proposalReceipt {
 	return proposalReceipt{ID: r.ID, State: r.State, Connection: r.subject().Connection}
 }
 
-func (s *state) proposal(st *settings, source string, p facts.Principal, target, reason string, changes []tomledit.Change, others bool) (string, json.RawMessage, error) {
+func (s *state) draftProposal(st *settings, source string, p facts.Principal, target, reason string, changes []tomledit.Change, others bool) (string, json.RawMessage, error) {
 	if current, ok := s.identities.Lookup(p.Key); !ok || !current.Same(p) {
 		return "", nil, errNoAgent
 	}
 	if _, err := config.ProposalChanges(p, changes, others); err != nil {
 		return "", nil, err
 	}
-	candidate, _, _, err := st.Edit(source, changes, s.library(s.life, s.sealer))
+	candidate, _, _, err := st.Edit(source, changes, s.presetLibrary(s.life, s.sealer))
 	if err == nil && candidate == source {
 		err = errors.New("proposal does not change policy")
 	}
@@ -495,7 +474,7 @@ func (s *state) proposal(st *settings, source string, p facts.Principal, target,
 }
 
 func (s held) mayProposeOthers(st *settings, p facts.Principal) bool {
-	return st.allowed(p, s.label(p.Name), call(config.ProposalsOthers, nil)) != nil
+	return st.wouldAllow(p, s.label(p.Name), perimeterCall(config.ProposalsOthers, nil)) != nil
 }
 
 func (s *state) proposePolicy(ctx context.Context, fingerprint string, input config.Proposal) ([]proposalReceipt, error) {
@@ -510,7 +489,7 @@ func (s *state) proposePolicy(ctx context.Context, fingerprint string, input con
 	if policyFile != "" {
 		return nil, errPolicyFile
 	}
-	return stable(s, func(base format.Document, before *settings) ([]proposalReceipt, error) {
+	return withWriteLock(s, func(base format.Document, before *settings) ([]proposalReceipt, error) {
 		p, known := s.identities.Lookup(fingerprint)
 		if !known {
 			return nil, errNoAgent
@@ -523,9 +502,9 @@ func (s *state) proposePolicy(ctx context.Context, fingerprint string, input con
 		}
 		var proposals []*record
 		for _, target := range slices.Sorted(maps.Keys(groups)) {
-			candidate, raw, err := s.proposal(before, base.Policy, p, target, reason, groups[target], others)
+			candidate, raw, err := s.draftProposal(before, base.Policy, p, target, reason, groups[target], others)
 			if err == nil {
-				_, err = s.prepareSettings(ctx, s.library(ctx, s.sealer), candidate, everyConnection, nil, before.authority, before.hostKey)
+				_, err = s.prepareSettings(ctx, s.presetLibrary(ctx, s.sealer), candidate, rebuildAll, nil, before.authority, before.hostKey)
 			}
 			if err != nil {
 				return nil, fmt.Errorf("connection %s: %w", target, err)

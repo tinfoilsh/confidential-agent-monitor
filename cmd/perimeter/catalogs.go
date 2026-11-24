@@ -131,7 +131,7 @@ func (s *state) catalogUpdates(ctx context.Context) (map[string]catalogUpdate, e
 }
 
 // Listed catalogs add to the presets this build ships; a listed preset replaces the shipped one of its name.
-func (s *state) library(ctx context.Context, sealer sealedlog.Sealer) config.Library {
+func (s *state) presetLibrary(ctx context.Context, sealer sealedlog.Sealer) config.PresetLoader {
 	return func(cfg *config.Config) (map[string]*catalog.Preset, error) {
 		if st := s.settings.Load(); st != nil && maps.Equal(st.Catalogs, cfg.Catalogs) {
 			return st.Presets, nil
@@ -165,6 +165,6 @@ func (s *state) library(ctx context.Context, sealer sealedlog.Sealer) config.Lib
 				return nil, fmt.Errorf("catalog %s: %w", pin, err)
 			}
 		}
-		return presets, config.Compose(presets)
+		return presets, config.ComposePresets(presets)
 	}
 }

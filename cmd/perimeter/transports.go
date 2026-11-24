@@ -77,7 +77,7 @@ func (s *state) serve(ctx context.Context, sshListener, apiListener net.Listener
 		return errors.New("an owner requires a host key")
 	}
 
-	api, mode := s.adminAPI(), bearerMode
+	api, mode := s.adminAPI(true), bearerMode
 	if o != nil {
 		mode = sshMode
 	}
@@ -100,7 +100,7 @@ func (s *state) serve(ctx context.Context, sshListener, apiListener net.Listener
 		handler.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			token, ok := strings.CutPrefix(r.Header.Get("Authorization"), "Bearer ")
 			if key, err := base64.StdEncoding.Strict().DecodeString(token); ok && err == nil && s.acceptsStorageKey(key) {
-				r = r.WithContext(withCaller(r.Context(), caller{Name: config.OwnerName, Owner: true, StorageKey: key}))
+				r = r.WithContext(withCaller(r.Context(), caller{Name: config.OwnerName, StorageKey: key}))
 			}
 			api.ServeHTTP(w, r)
 		})
@@ -300,7 +300,7 @@ func allowOrigins(origins []string, next http.Handler) http.Handler {
 	}).Handler(next)
 }
 
-func (s *state) stale(minimum uint64) bool {
+func (s *state) generationBehind(minimum uint64) bool {
 	current, unlocked := s.generation()
 	return unlocked && current < minimum
 }
@@ -323,7 +323,7 @@ func (s *state) serveOwnerChannel(nc ssh.NewChannel, api http.Handler) {
 		nc.Reject(ssh.Prohibited, "invalid owner channel options")
 		return
 	}
-	if s.stale(options.Generation) {
+	if s.generationBehind(options.Generation) {
 		nc.Reject(ssh.Prohibited, errStaleGeneration.Error())
 		return
 	}
@@ -348,7 +348,7 @@ func (s *state) serveOwnerChannel(nc ssh.NewChannel, api http.Handler) {
 		}
 		return nil
 	}
-	server := &http.Server{Handler: panel(api, options, acknowledge), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: time.Minute, IdleTimeout: time.Minute, MaxHeaderBytes: 8192}
+	server := &http.Server{Handler: ownerPanelHandler(api, options, acknowledge), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: time.Minute, IdleTimeout: time.Minute, MaxHeaderBytes: 8192}
 	netx.ServeConn(ctx, conn, server)
 }
 
@@ -364,7 +364,7 @@ func validOptions(o sshOptions) bool {
 	return err == nil && host == "127.0.0.1" && port != "" && !strings.ContainsAny(port, "/?#@ ")
 }
 
-func panel(api http.Handler, options sshOptions, acknowledge func() error) http.Handler {
+func ownerPanelHandler(api http.Handler, options sshOptions, acknowledge func() error) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		w.Header().Set("Referrer-Policy", "no-referrer")
@@ -394,7 +394,7 @@ func panel(api http.Handler, options sshOptions, acknowledge func() error) http.
 			http.NotFound(w, r)
 			return
 		}
-		r = r.Clone(withCaller(r.Context(), caller{Name: config.OwnerName, Owner: true, MinGeneration: options.Generation, Acknowledge: acknowledge, Session: options.Token}))
+		r = r.Clone(withCaller(r.Context(), caller{Name: config.OwnerName, MinGeneration: options.Generation, Acknowledge: acknowledge, Session: options.Token}))
 		r.URL.Path = apiPath
 		r.URL.RawPath = ""
 		api.ServeHTTP(w, r)
@@ -406,13 +406,13 @@ func (s *state) ownerRPC(api http.Handler) func(context.Context, noisetransport.
 		if !validRPCPath(call.Path) || (call.Method != http.MethodGet && call.Method != http.MethodPost) || (call.Method == http.MethodGet && len(call.Body) != 0) {
 			return noisetransport.Reply{Status: http.StatusBadRequest, Body: []byte(errMalformed.Error())}
 		}
-		if s.stale(call.Generation) {
+		if s.generationBehind(call.Generation) {
 			return noisetransport.Reply{Status: http.StatusConflict, Body: []byte(errStaleGeneration.Error())}
 		}
 		if call.Method == http.MethodPost {
 			ctx = context.WithoutCancel(ctx)
 		}
-		ctx = withCaller(ctx, caller{Name: config.OwnerName, Owner: true, MinGeneration: call.Generation, Session: ownerRPCSession})
+		ctx = withCaller(ctx, caller{Name: config.OwnerName, MinGeneration: call.Generation, Session: ownerRPCSession})
 		r, err := http.NewRequestWithContext(ctx, call.Method, call.Path, bytes.NewReader(call.Body))
 		if err != nil {
 			return noisetransport.Reply{Status: http.StatusBadRequest, Body: []byte(errMalformed.Error())}
