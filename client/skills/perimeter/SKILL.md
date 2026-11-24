@@ -92,8 +92,8 @@ endpoint or propose a connection that covers it, such as `custom_api`.
    means your effects or actions are set individually; propose `effects` or
    `actions` entries rather than a level to change one of them. Access resolves
    from the account's `access` through `default_access` and your groups to your
-   own block, the most specific setting winning; the account block, groups and
-   group membership belong to the owner. Setup for a new connection
+   own block, the most specific setting winning; the `perimeter` connection skips
+   the account block. The account block, groups and group membership belong to the owner. Setup for a new connection
    goes under `["connections", NAME]` with the fields its catalog entry lists.
    A deletion uses `"delete": true` instead of `value`.
 4. `perimeter policy status ID` reports `pending`, `allowed`, `denied` or

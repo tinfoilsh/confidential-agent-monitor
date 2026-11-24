@@ -140,7 +140,7 @@ Go resolves the policy's access into `input.authorization.modes`, one
 `{mode, from}` entry per effect of the request. `off` denies the request;
 `ask` adds the requirement `effect.<effect>`.
 
-The Rego rules in `../config/lib.rego` apply those modes, the label-flow checks, and
+The Rego rules in `cmd/perimeter/config/lib.rego` apply those modes, the label-flow checks, and
 saved approval waivers. Every request evaluates the same prepared query,
 `data.perimeter.decision`. Owner policies receive `input.facts` and
 `input.authorization`; they can also read `data.perimeter.gaps` to inspect remaining
@@ -149,8 +149,8 @@ label levels in `data.levels`. Description errors are appended to denials in Go.
 Owner policies cannot define
 rules or data under `perimeter`, `lattices`, or `levels`, which the Perimeter reserves.
 
-The decision is one outcome: `{"outcome": "allow", "sends", "next"}`,
-`{"outcome": "ask", "sends", "gaps"}`, or `{"outcome": "deny", "sends", "reasons"}`;
+The decision has one `outcome`, `allow`, `ask` or `deny`, with `sends` and the
+outcome's own field: `next` for allow, `gaps` for ask, or `reasons` for deny;
 any deny reason wins over any gap. `allow` needs every built-in check to
 pass and `data.sentinel.allow` to be `true`, so a Perimeter with no policy in
 package `sentinel` refuses every request, as does an evaluation error. Onboarding
