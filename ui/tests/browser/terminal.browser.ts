@@ -110,7 +110,7 @@ for (const theme of ["light", "dark"] as const) {
       }
 
       const payment = page.getByRole("switch", {
-        name: /^Ask before any payment/,
+        name: /^Payments ask by default/,
       });
       await expect(payment).toBeChecked();
       await expect(payment).toHaveCSS(
