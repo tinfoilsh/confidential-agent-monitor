@@ -473,15 +473,14 @@ export function RequestDetail(props: {
                   r().refusal?.cause !== "precondition" &&
                   m.view()!.config.connections?.[r().facts.connection] &&
                   (invalid() ||
-                    (!owner.isDevice(r().facts.principal.name) &&
-                      m.view()!.config.identities?.[r().facts.principal.name]))
+                    m.view()!.config.identities?.[r().facts.principal.name])
                 }
               >
                 <div class="request-access">
                   <p class="muted">
                     {invalid()
                       ? "Fix the request or client configuration using the error above, then retry."
-                      : "Update this bunker’s access, then retry the request from your bunker."}
+                      : `Update this ${owner.isDevice(r().facts.principal.name) ? "device" : "bunker"}’s access, then retry the request from it.`}
                   </p>
                   <a
                     class="button"
