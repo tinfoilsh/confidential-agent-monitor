@@ -43,11 +43,6 @@ type Group struct {
 	Connections map[string]Access `json:"connections,omitempty"`
 }
 
-type CertificateBinding struct {
-	KeyID string `json:"key_id,omitempty"`
-	Group string `json:"group,omitempty"`
-}
-
 type Requirement struct {
 	ID      string `json:"id"`
 	Message string `json:"message"`
@@ -67,7 +62,7 @@ type Rule struct {
 
 type Identity struct {
 	Key         string                     `json:"key,omitempty"`
-	Certificate *CertificateBinding        `json:"certificate,omitempty"`
+	Certificate bool                       `json:"certificate,omitempty"`
 	Groups      []string                   `json:"groups,omitempty"`
 	Connections map[string]Access          `json:"connections"`
 	Rules       map[string]Rule            `json:"rules,omitempty"`
@@ -211,12 +206,11 @@ func (c *Config) validate() error {
 		}
 	}
 	c.Principals = map[string]string{}
-	keyIDs := map[string]string{}
 	for name, id := range c.Identities {
 		if name == OwnerName {
 			return fmt.Errorf("identity name %s is reserved for the owner", name)
 		}
-		if (id.Key == "") == (id.Certificate == nil) {
+		if (id.Key != "") == id.Certificate {
 			return fmt.Errorf("identity %s needs exactly one of key or certificate", name)
 		}
 		if err := c.validateAccess(tomlPath("identities", name, "connections"), id.Connections); err != nil {
@@ -227,14 +221,7 @@ func (c *Config) validate() error {
 				return fmt.Errorf("identity %s rule %s: expires must be an RFC 3339 timestamp", name, rule)
 			}
 		}
-		if cert := id.Certificate; cert != nil {
-			if (cert.KeyID == "") == (cert.Group == "") {
-				return fmt.Errorf("identity %s: certificate needs exactly one of key_id or group", name)
-			}
-			if other, taken := keyIDs[cert.KeyID]; cert.KeyID != "" && taken {
-				return fmt.Errorf("identities %s and %s bind the same certificate key ID", min(name, other), max(name, other))
-			}
-			keyIDs[cert.KeyID] = name
+		if id.Certificate {
 			continue
 		}
 		fingerprint, err := KeyFingerprint(id.Key)
@@ -249,26 +236,19 @@ func (c *Config) validate() error {
 	return nil
 }
 
-func (c *Config) BindCertificate(keyID string, principals []string) (name string, groups []string, ok bool) {
-	names := slices.Sorted(maps.Keys(c.Identities))
-	bound := func(match func(*CertificateBinding) bool) bool {
-		i := slices.IndexFunc(names, func(n string) bool { return c.Identities[n].Certificate != nil && match(c.Identities[n].Certificate) })
-		if i >= 0 {
-			name = names[i]
-		}
-		return i >= 0
-	}
-	if !bound(func(b *CertificateBinding) bool { return b.KeyID != "" && b.KeyID == keyID }) &&
-		!bound(func(b *CertificateBinding) bool { return b.Group != "" && slices.Contains(principals, b.Group) }) {
-		return "", nil, false
+// A certificate acts as the identity its key ID names, unless that identity signs in with a key.
+func (c *Config) BindCertificate(keyID string, principals []string) (groups []string, ok bool) {
+	id, declared := c.Identities[keyID]
+	if declared && !id.Certificate {
+		return nil, false
 	}
 	groups = slices.Clone(principals)
-	for _, g := range c.Identities[name].Groups {
+	for _, g := range id.Groups {
 		if !slices.Contains(groups, g) {
 			groups = append(groups, g)
 		}
 	}
-	return name, groups, true
+	return groups, true
 }
 
 func KeyFingerprint(authorizedKey string) (string, error) {

@@ -192,11 +192,11 @@ func (s *state) authenticate(o *owner, ownerSSH sshtransport.Session) sshtranspo
 }
 
 var (
-	errUnboundName = errors.New("this certificate's key ID names a declared identity it does not bind to")
+	errKeyIdentity = errors.New("this certificate's key ID names an identity that signs in with a key")
 	errOwnerKeyID  = errors.New("the key ID owner is reserved for the Perimeter's owner")
 )
 
-// An unbound certificate must not act as the declared identity its key ID names, nor as the owner.
+// A certificate must not act as an identity that signs in with a key, nor as the owner.
 func (s *state) bindCertificate(p facts.Principal) (facts.Principal, error) {
 	st := s.settings.Load()
 	if st == nil {
@@ -205,12 +205,11 @@ func (s *state) bindCertificate(p facts.Principal) (facts.Principal, error) {
 	if p.Name == config.OwnerName {
 		return p, errOwnerKeyID
 	}
-	name, groups, ok := st.BindCertificate(p.Name, p.Groups)
-	if ok {
-		p.Name, p.Groups, p.Attributes = name, groups, st.Identities[name].Attributes
-	} else if _, declared := st.Identities[p.Name]; declared {
-		return p, errUnboundName
+	groups, ok := st.BindCertificate(p.Name, p.Groups)
+	if !ok {
+		return p, errKeyIdentity
 	}
+	p.Groups, p.Attributes = groups, st.Identities[p.Name].Attributes
 	return p, nil
 }
 

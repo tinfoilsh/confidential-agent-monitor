@@ -305,12 +305,12 @@ func (s held) commitSettings(ctx context.Context, plan *settingsPlan, saved *sav
 	return nil
 }
 
-// Every declared name counts, since an unbound certificate may not take one.
+// Every declared name counts, since a certificate may not take a key identity's name.
 func certificateBindings(cfg *config.Config) map[string]config.Identity {
 	bindings := map[string]config.Identity{}
 	for name, id := range cfg.Identities {
 		bindings[name] = config.Identity{}
-		if id.Certificate != nil {
+		if id.Certificate {
 			bindings[name] = config.Identity{Certificate: id.Certificate, Groups: id.Groups, Attributes: id.Attributes}
 		}
 	}

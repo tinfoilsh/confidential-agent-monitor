@@ -757,7 +757,7 @@ function IdentityPolicy(props: { name: string }) {
   const m = useMonitor();
   const identity = () => m.view()!.config.identities?.[props.name];
   const binding = () =>
-    identity()?.key ? undefined : owner.bindingText(identity());
+    identity()?.certificate ? `certificate key ID ${props.name}` : undefined;
   const groups = () =>
     (identity()?.groups ?? []).filter((group) =>
       Object.hasOwn(m.view()!.config.groups ?? {}, group),
@@ -769,7 +769,7 @@ function IdentityPolicy(props: { name: string }) {
           <div class="setting-row">
             <span>
               Signs in with
-              <small>Certificates from the identity CA bind to it.</small>
+              <small>Certificates from the identity CA with this key ID sign in as it.</small>
             </span>
             <span class="key-pill">
               <code>{text()}</code>

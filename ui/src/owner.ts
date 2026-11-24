@@ -68,7 +68,7 @@ export type Rule = {
 };
 export type Identity = {
   key?: string;
-  certificate?: { key_id?: string; group?: string };
+  certificate?: boolean;
   sandbox?: { source: string; instance_id: string };
   groups?: string[];
   connections?: Record<string, Access>;
@@ -1108,13 +1108,6 @@ export function agentAccess(view: View, name: string, only?: string) {
     };
   });
 }
-
-export const bindingText = (identity?: Identity) =>
-  identity?.certificate?.key_id
-    ? `certificate key ID ${identity.certificate.key_id}`
-    : identity?.certificate?.group
-      ? `certificate group ${identity.certificate.group}`
-      : undefined;
 
 export function review(view: View, name: string): Review | undefined {
   const c = connections(view)[name];
