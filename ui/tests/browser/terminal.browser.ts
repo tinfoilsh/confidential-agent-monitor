@@ -112,11 +112,7 @@ for (const theme of ["light", "dark"] as const) {
       const payment = page.getByRole("switch", {
         name: /^Ask before any payment/,
       });
-      const inference = page.getByRole("switch", {
-        name: /^Allow AI inference without asking/,
-      });
       await expect(payment).toBeChecked();
-      await expect(inference).not.toBeChecked();
       await expect(payment).toHaveCSS(
         "background-color",
         SWITCH_COLORS[theme].track,
@@ -129,12 +125,7 @@ for (const theme of ["light", "dark"] as const) {
         )
         .toBe(SWITCH_COLORS[theme].thumb);
       await payment.uncheck();
-      await inference.check();
       await expect(payment).not.toHaveCSS(
-        "background-color",
-        SWITCH_COLORS[theme].track,
-      );
-      await expect(inference).toHaveCSS(
         "background-color",
         SWITCH_COLORS[theme].track,
       );
@@ -146,7 +137,6 @@ for (const theme of ["light", "dark"] as const) {
         location.hash = "#connections";
       });
       await expect(payment).not.toBeChecked();
-      await expect(inference).toBeChecked();
       await payment.check();
 
       const unrestricted = page.getByRole("switch", {

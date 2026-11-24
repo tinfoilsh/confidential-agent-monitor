@@ -29,13 +29,19 @@ effects_of := ["session"] if {
 	unknown
 } else := op.effects
 
-obligations contains name if {
-	some effect in effects_of
-	some name, true in data.levels.effects[effect]
+# Each effect's place in the two lattices, as Vocabulary in policy.go lists it.
+traits := [data.levels.effects[effect] | some effect in effects_of]
+
+# Delivered data is also stored where it lands, such as a post in a public channel.
+stores if {
+	some t in traits
+	t.confidentiality in {"stored", "delivered"}
 }
 
-changes if "change" in obligations
-discloses if "discloses" in obligations
+delivers if {
+	some t in traits
+	t.confidentiality == "delivered"
+}
 
 denied_mode := {"mode": "off", "from": "the Perimeter"}
 
@@ -60,15 +66,15 @@ public if {
 	not private
 }
 
-target := resource if changes
+target := resource if stores
 
-# A change to a public resource reaches anyone, whatever the connector hints; so does an unplaced disclosure.
+# Data stored in a public resource reaches anyone, whatever the connector hints; so does a delivery to unnamed recipients.
 sends := "anyone" if {
-	changes
+	stores
 	public
 } else := "anyone" if {
 	hint.sends == ""
-	discloses
+	delivers
 	not target
 } else := "anyone" if {
 	some to in facts.details.smtp.to
@@ -199,8 +205,10 @@ reasons contains "An identity cannot enroll itself." if {
 # A waiver of this gap covers only the audience it was approved for.
 disclosure := concat(".", ["audience", sends])
 
-needs_trust if unknown
-needs_trust if "trust" in obligations
+needs_trust if {
+	some t in traits
+	t.integrity
+}
 
 # Confidentiality: what the agent has seen goes to no wider an audience than its label.
 confidentiality := "allow" if {

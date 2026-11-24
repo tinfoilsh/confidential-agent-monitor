@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
 )
 
@@ -18,7 +19,11 @@ const (
 	// The owner policy onboarding wrote before admissions stopped carrying an operation.
 	legacyAllowKnown = "package sentinel\n\nallow if input.facts.operation != null\n"
 	operationHint    = "admissions carry no operation; test input.facts.kind"
+	paidInference    = "allow_paid_inference"
 )
+
+// Level allow asked for these unless an effects table set them; it now allows every effect.
+var legacyAsks = []string{"publish", "pay", config.EffectUnknown}
 
 // Migration keeps the policy as it was before the upgrade, so the first unlock can report what changed.
 type Migration struct {
@@ -53,6 +58,13 @@ func upgradeV4(plain []byte) ([]byte, *Migration, error) {
 	}
 	migration, policy := Migration{Policy: v4.Policy}, v4.Policy
 	changes := ruleChanges(source)
+	var inference map[string]map[string][]string
+	paid, _ := source[paidInference].(bool)
+	if paid {
+		if inference, err = inferenceActions(); err != nil {
+			return nil, nil, err
+		}
+	}
 	defaults, identities, connections := tomledit.Table(source, "default_access"), tomledit.Table(source, "identities"), tomledit.Table(source, "connections")
 	reaches := func(level string, actions map[string]any) bool {
 		return level != "" && level != "off" || slices.ContainsFunc(slices.Collect(maps.Values(actions)), func(mode any) bool { return mode != string(config.ModeOff) })
@@ -68,18 +80,19 @@ func upgradeV4(plain []byte) ([]byte, *Migration, error) {
 		}
 		shared, _ := d["level"].(string)
 		open, shares := reaches(level, reachable), reaches(shared, inherited)
+		legacy := map[string]config.Mode{}
 		for e, o := range config.Vocabulary {
 			mode, set := legacyEffect(source, identity, connection, e)
 			beneath, under := legacyEffect(source, nil, connection, e)
 			grant := config.ModeAllow
 			switch {
-			case level == "" || level == "off" || level == "read" && o.Change:
+			case level == "" || level == "off" || level == "read" && o.Integrity:
 				grant = config.ModeOff
-			case level == "ask" && o.Change:
+			case level == "ask" && o.Integrity:
 				grant = config.ModeAsk
 			}
+			legacy[e] = max(grant, mode)
 			switch {
-			case e == config.EffectUnknown:
 			case e == "session":
 				// Beneath an identity, default_access answers an admission with its session entry, and an operation too when the identity has no level.
 				admit, operate := config.ModeAllow, grant
@@ -99,6 +112,9 @@ func upgradeV4(plain []byte) ([]byte, *Migration, error) {
 			// Modes sort from most to least permissive, so the greater is the stricter.
 			case set && (inherits || grant != config.ModeOff):
 				effects[e] = max(grant, mode)
+			// An identity that inherits takes these from default_access, which writes them.
+			case !set && !inherits && max(grant, mode) != grant:
+				effects[e] = mode
 			}
 		}
 		// The identity's own entries would hide the actions of default_access, which merged with its own.
@@ -133,6 +149,23 @@ func upgradeV4(plain []byte) ([]byte, *Migration, error) {
 		if unasked != nil {
 			migration.Notices = append(migration.Notices, Notice{Path: tomledit.Path(slices.Concat(at, []string{"actions"})...), Hint: "an action set to allow no longer asks for " + strings.Join(unasked, ", ")})
 		}
+		// Paid inference waived the pay ask that level allow made, unless an effects table set pay.
+		if _, set := legacyEffect(source, identity, connection, "pay"); !paid || inherits || level != "allow" || set {
+			return
+		}
+		preset, _ := tomledit.Table(connections, connection)["preset"].(string)
+		paidActions, shipped := inference[preset]
+		if !shipped {
+			migration.Notices = append(migration.Notices, Notice{Path: tomledit.Path(at...), Hint: "AI inference now asks here, since this preset is not built in and its model calls cannot be told apart from other payments"})
+		}
+		for _, action := range slices.Sorted(maps.Keys(paidActions)) {
+			// An owner's entry on the action or an ancestor already decides it.
+			if slices.ContainsFunc(catalog.Lineage(action), func(a string) bool { _, ok := actions[a]; return ok }) ||
+				slices.ContainsFunc(paidActions[action], func(e string) bool { return e != "pay" && legacy[e] != config.ModeAllow }) {
+				continue
+			}
+			changes = append(changes, tomledit.Change{Path: slices.Concat(at, []string{"actions", action}), Value: string(config.ModeAllow)})
+		}
 	}
 	for _, c := range slices.Sorted(maps.Keys(defaults)) {
 		level, _ := tomledit.Table(defaults, c)["level"].(string)
@@ -155,7 +188,7 @@ func upgradeV4(plain []byte) ([]byte, *Migration, error) {
 			changes = append(changes, tomledit.Change{Path: []string{"identities", name, "groups"}, Value: append(groups, config.DeviceGroup)})
 		}
 	}
-	changes = append(changes, tomledit.Change{Path: []string{"effects"}, Delete: true})
+	changes = append(changes, tomledit.Change{Path: []string{"effects"}, Delete: true}, tomledit.Change{Path: []string{paidInference}, Delete: true})
 	for _, c := range slices.Sorted(maps.Keys(connections)) {
 		changes = append(changes, tomledit.Change{Path: []string{"connections", c, "effects"}, Delete: true})
 	}
@@ -230,8 +263,61 @@ func legacyEffect(source, identity map[string]any, connection, effect string) (c
 			return config.Mode(mode), true
 		}
 	}
-	if config.Vocabulary[effect].Ask {
+	if slices.Contains(legacyAsks, effect) {
 		return config.ModeAsk, false
 	}
 	return config.ModeAllow, false
+}
+
+// Paid model calls carry both generate and pay. An action counts only if every operation at or under it does,
+// since its access entry also covers them. Each maps to the effects those operations carry.
+func inferenceActions() (map[string]map[string][]string, error) {
+	presets, err := catalog.Load(catalog.Shipped)
+	if err == nil {
+		err = catalog.Compose(presets)
+	}
+	if err != nil {
+		return nil, err
+	}
+	inference := map[string]map[string][]string{}
+	for name, p := range presets {
+		var definition struct {
+			HTTP struct {
+				Operations map[string]struct {
+					Action  string   `json:"action"`
+					Effects []string `json:"effects"`
+				} `json:"operations"`
+			} `json:"http"`
+		}
+		if err := json.Unmarshal(p.Source, &definition); err != nil {
+			return nil, fmt.Errorf("preset %s: %w", name, err)
+		}
+		operations := map[string][][]string{}
+		for _, op := range definition.HTTP.Operations {
+			operations[op.Action] = append(operations[op.Action], op.Effects)
+		}
+		for action, a := range p.Catalog.Actions {
+			if a.Effects != nil {
+				operations[action] = append(operations[action], a.Effects)
+			}
+		}
+		inference[name] = map[string][]string{}
+		for action := range operations {
+			var effects []string
+			paid := action != ""
+			for under, carried := range operations {
+				if !slices.Contains(catalog.Lineage(under), action) {
+					continue
+				}
+				for _, op := range carried {
+					paid = paid && slices.Contains(op, "generate") && slices.Contains(op, "pay")
+					effects = append(effects, op...)
+				}
+			}
+			if paid {
+				inference[name][action] = slices.Compact(slices.Sorted(slices.Values(effects)))
+			}
+		}
+	}
+	return inference, nil
 }

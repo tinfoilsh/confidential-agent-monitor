@@ -149,7 +149,6 @@ export type View = {
   host_id: string;
   ca: string;
   config: {
-    allow_paid_inference?: boolean;
     access?: Access;
     default_access?: Record<string, Access>;
     groups?: Record<string, { connections?: Record<string, Access> }>;
@@ -643,7 +642,7 @@ export function ownerApi(
         "POST",
         "/policy/edits",
         {
-          changes: [...changes, ...edits.setPaidInference(true)],
+          changes,
           credentials,
           revision: view.revision,
         },
@@ -1995,9 +1994,6 @@ export const edits = {
   },
   removeRule: (name: string, id: string): Change[] => [
     { path: ["identities", name, "rules", id], delete: true },
-  ],
-  setPaidInference: (allow: boolean): Change[] => [
-    { path: ["allow_paid_inference"], value: allow },
   ],
   approveTools: (view: View, name: string) =>
     sourceChanges({

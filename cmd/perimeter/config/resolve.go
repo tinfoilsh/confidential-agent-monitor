@@ -42,21 +42,20 @@ const accountAccess = "access"
 // The first part may already be a path, so it is not quoted.
 func tomlPath(path string, keys ...string) string { return path + "." + tomledit.Path(keys...) }
 
-func changing(o Obligations) bool { return o.Change || o.Trust }
-
 // Every effect, so a more specific level replaces a less specific one entirely.
-func expand(level, effect string, paid bool) (Mode, bool) {
-	o, known := Vocabulary[effect]
+// Read and up allow what needs no trust; read refuses the rest.
+func expand(level, effect string) (Mode, bool) {
+	t, known := Vocabulary[effect]
 	switch {
 	case !known || level == "":
 		return "", false
 	case level == "off":
 		return ModeOff, true
-	case !changing(o):
+	case !t.Integrity:
 		return ModeAllow, true
 	case level == "read":
 		return ModeOff, true
-	case level == "ask" || o.Ask && !(paid && effect == "pay"):
+	case level == "ask":
 		return ModeAsk, true
 	}
 	return ModeAllow, true
@@ -74,7 +73,7 @@ type block struct {
 	access Access
 }
 
-func (b block) cover(lineage []string, effect string, paid bool) (Setting, bool) {
+func (b block) cover(lineage []string, effect string) (Setting, bool) {
 	for _, a := range lineage {
 		if m, ok := b.access.Actions[a]; ok {
 			return Setting{Mode(m), tomlPath(b.path, "actions", a)}, true
@@ -83,20 +82,19 @@ func (b block) cover(lineage []string, effect string, paid bool) (Setting, bool)
 	if m, ok := b.access.Effects[effect]; ok {
 		return Setting{Mode(m), tomlPath(b.path, "effects", effect)}, true
 	}
-	m, ok := expand(b.access.Level, effect, paid)
+	m, ok := expand(b.access.Level, effect)
 	// Only an operation has a lineage; a level never opens a session, which follows reach.
 	return Setting{m, tomlPath(b.path, "level")}, ok && (len(lineage) != 0 || effect != "session")
 }
 
 type tiers struct {
-	blocks        [][]block
-	actions       map[string]Setting
-	unset         string
-	paid, reaches bool
+	blocks  [][]block
+	actions map[string]Setting
+	unset   string
+	reaches bool
 }
 
 func (t tiers) modes(lineage, effects []string) map[string]Setting {
-	paid := t.paid && slices.Contains(effects, "generate") && slices.Contains(effects, "pay")
 	// An action with no known effects is decided as an unrecognized request is.
 	if len(effects) == 0 {
 		effects = []string{EffectUnknown}
@@ -111,7 +109,7 @@ func (t tiers) modes(lineage, effects []string) map[string]Setting {
 		for _, tier := range t.blocks {
 			// Within a tier the most permissive block decides; ties go to the first group by name.
 			for _, b := range tier {
-				if m, ok := b.cover(lineage, e, paid); ok && (!covered || below(s.Mode, m.Mode)) {
+				if m, ok := b.cover(lineage, e); ok && (!covered || below(s.Mode, m.Mode)) {
 					s, covered = m, true
 				}
 			}
@@ -154,7 +152,7 @@ func (c *Config) Operation(connection, action string) *catalog.Operation {
 
 // Reachability looks at every effect but session, so session can follow it.
 func (c *Config) access(identity string, groups []string, connection string) tiers {
-	t := tiers{unset: c.accessPath(identity, connection), paid: c.AllowPaidInference}
+	t := tiers{unset: c.accessPath(identity, connection)}
 	if a, ok := c.Identities[identity].Connections[connection]; ok {
 		t.blocks = append(t.blocks, []block{{tomlPath("identities", identity, "connections", connection), a}})
 	}
@@ -217,7 +215,7 @@ func (r Resolved) level() string {
 	for _, level := range accessLevels[1:] {
 		matches := true
 		for e := range Vocabulary {
-			m, _ := expand(level, e, false)
+			m, _ := expand(level, e)
 			matches = matches && (e == "session" || r.Effects[e].Mode == m)
 		}
 		if matches {

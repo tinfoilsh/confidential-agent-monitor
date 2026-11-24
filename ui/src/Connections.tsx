@@ -379,23 +379,6 @@ function GlobalPermissions() {
             }
           />
         </label>
-        <label class="settings-card setting-toggle">
-          <span>
-            <span class="setting-title">Allow AI inference without asking</span>
-            <small>
-              Paid model calls (Tinfoil, OpenAI, …) go through without approval
-              wherever a level grants them. Other payments still ask.
-            </small>
-          </span>
-          <input
-            type="checkbox"
-            role="switch"
-            checked={m.view()!.config.allow_paid_inference}
-            onChange={(e) =>
-              void m.edit(owner.edits.setPaidInference(e.currentTarget.checked))
-            }
-          />
-        </label>
       </section>
       <section class="settings-section settings-danger resource-list">
         <div class="resource-heading">

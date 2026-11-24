@@ -24,26 +24,38 @@ const (
 
 var CustomEffects = []string{"execute", "send"}
 
-type Obligations struct {
-	Change    bool `json:"change"`
-	Trust     bool `json:"trust"`
-	Ask       bool `json:"ask"`
-	Discloses bool `json:"discloses"`
+// Traits place an effect in the integrity and confidentiality lattices.
+type Traits struct {
+	// Only a trusted agent may do this, so one that has read untrusted content asks first.
+	Integrity bool `json:"integrity"`
+	// Who can see the data the request carries out: DataService, DataStored or DataDelivered.
+	Confidentiality string `json:"confidentiality"`
 }
 
-var Vocabulary = map[string]Obligations{
-	"read":        {},
-	"session":     {},
-	"write":       {Change: true, Trust: true},
-	"generate":    {Change: true, Trust: true},
-	"delete":      {Change: true, Trust: true},
-	"admin":       {Change: true, Trust: true},
-	"execute":     {Change: true, Trust: true},
-	"send":        {Change: true, Trust: true, Discloses: true},
-	"share":       {Change: true, Trust: true, Discloses: true},
-	"publish":     {Change: true, Trust: true, Ask: true, Discloses: true},
-	"pay":         {Change: true, Trust: true, Ask: true},
-	EffectUnknown: {Trust: true, Ask: true},
+// A connector that names the audience itself overrides these.
+const (
+	// Only the service sees the data, so the connection's sends audience does.
+	DataService = "service"
+	// Whoever can see the resource it is stored in does; a public resource means anyone.
+	DataStored = "stored"
+	// Its recipients do, as well as whoever can see where it is stored; unnamed recipients mean anyone.
+	DataDelivered = "delivered"
+)
+
+var Vocabulary = map[string]Traits{
+	"read":     {Confidentiality: DataService},
+	"session":  {Confidentiality: DataService},
+	"write":    {Integrity: true, Confidentiality: DataStored},
+	"generate": {Integrity: true, Confidentiality: DataStored},
+	"delete":   {Integrity: true, Confidentiality: DataStored},
+	"admin":    {Integrity: true, Confidentiality: DataStored},
+	"execute":  {Integrity: true, Confidentiality: DataStored},
+	"pay":      {Integrity: true, Confidentiality: DataStored},
+	"send":     {Integrity: true, Confidentiality: DataDelivered},
+	"share":    {Integrity: true, Confidentiality: DataDelivered},
+	"publish":  {Integrity: true, Confidentiality: DataDelivered},
+	// An unrecognized request may do anything, but nothing shows where its data goes.
+	EffectUnknown: {Integrity: true, Confidentiality: DataService},
 }
 
 const (

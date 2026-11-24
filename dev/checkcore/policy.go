@@ -58,7 +58,7 @@ var packages = map[string]rule{
 	"ui":                            {product, nil},
 	"cmd/perimeter/format":          {product, []string{"core/sealedlog"}},
 	"cmd/perimeter/config":          {product, []string{"cmd/perimeter/format", "core/facts", "core/tomledit", "connector/catalog"}},
-	"cmd/perimeter/migrate":         {product, []string{"cmd/perimeter/config", "cmd/perimeter/format", "core/tomledit"}},
+	"cmd/perimeter/migrate":         {product, []string{"cmd/perimeter/config", "cmd/perimeter/format", "core/tomledit", "connector/catalog"}},
 	"cmd/perimeter/sandbox":         {product, []string{"core/connector", "core/facts", "core/transport/sshtransport", "connector/tinfoil"}},
 	"cmd/perimeter/connections": {product, []string{
 		"cmd/perimeter/config", "cmd/perimeter/format", "cmd/perimeter/sandbox",

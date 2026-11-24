@@ -341,7 +341,7 @@ func requestCaller(r *http.Request) (caller, error) {
 type agentCatalogView struct {
 	CatalogID  string                         `json:"catalog_id"`
 	Presets    map[string]config.CatalogEntry `json:"presets"`
-	Vocabulary map[string]config.Obligations  `json:"vocabulary"`
+	Vocabulary map[string]config.Traits       `json:"vocabulary"`
 }
 
 func (s *state) agentAPI(fingerprint string) http.Handler {

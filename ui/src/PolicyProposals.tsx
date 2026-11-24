@@ -57,8 +57,7 @@ const LEVEL_NOTES: { [L in owner.GrantLevel]: string } = {
   off: "Nothing is allowed.",
   read: "Reads go through; everything else is denied.",
   ask: "Reads go through; everything else asks you first.",
-  allow:
-    "Requests go through, except publishing, payments, and unrecognized requests, which ask you first.",
+  allow: "Every request goes through.",
 };
 // How a connection handles data, as its settings name it.
 const ANSWERS: Record<string, Pick<Item, "label" | "kind">> = {

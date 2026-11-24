@@ -43,7 +43,7 @@ func (st *settings) callFacts(c facts.Observation) *requestFacts {
 
 func (st *settings) changes(c facts.Observation) bool {
 	op := st.callFacts(c).Operation
-	return op != nil && slices.ContainsFunc(op.Effects, func(e string) bool { return config.Vocabulary[e].Change })
+	return op != nil && slices.ContainsFunc(op.Effects, func(e string) bool { return config.Vocabulary[e].Integrity })
 }
 
 type describe func(s *state, r *http.Request, input any) ([]facts.Observation, error)

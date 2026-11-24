@@ -96,18 +96,17 @@ type Lattices struct {
 }
 
 type Config struct {
-	AllowPaidInference bool                  `json:"allow_paid_inference,omitempty"`
-	Access             Access                `json:"access,omitzero"`
-	DefaultAccess      map[string]Access     `json:"default_access,omitempty"`
-	Groups             map[string]Group      `json:"groups,omitempty"`
-	Lattices           Lattices              `json:"lattices"`
-	AllowNetworks      []netip.Prefix        `json:"allow_networks"`
-	Connections        map[string]Connection `json:"connections"`
-	Identities         map[string]Identity   `json:"identities"`
-	Policies           map[string]string     `json:"policies"`
-	Data               map[string]any        `json:"data"`
-	Catalogs           map[string]string     `json:"catalogs,omitempty"`
-	Principals         map[string]string     `json:"-"`
+	Access        Access                `json:"access,omitzero"`
+	DefaultAccess map[string]Access     `json:"default_access,omitempty"`
+	Groups        map[string]Group      `json:"groups,omitempty"`
+	Lattices      Lattices              `json:"lattices"`
+	AllowNetworks []netip.Prefix        `json:"allow_networks"`
+	Connections   map[string]Connection `json:"connections"`
+	Identities    map[string]Identity   `json:"identities"`
+	Policies      map[string]string     `json:"policies"`
+	Data          map[string]any        `json:"data"`
+	Catalogs      map[string]string     `json:"catalogs,omitempty"`
+	Principals    map[string]string     `json:"-"`
 
 	Presets    map[string]*catalog.Preset             `json:"-"`
 	Operations map[string]map[string]OperationSummary `json:"-"`
