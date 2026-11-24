@@ -176,7 +176,11 @@ func (s *state) adminAPI(owner bool) http.Handler {
 		view.Initialized = initialized
 		return view, err
 	}))
-	mux.Handle("GET /{$}", authorizedLockedHandler(m, pathAction("overview.read"), func(h held, r *http.Request, _ struct{}) (any, error) { return h.view(r) }))
+	// The overview includes the whole policy, so reading it needs policy.read as well.
+	overview := func(adminMount, *http.Request, any) ([]facts.Observation, error) {
+		return []facts.Observation{perimeterCall("overview.read", map[string]any{}), perimeterCall(config.PolicyRead, map[string]any{})}, nil
+	}
+	mux.Handle("GET /{$}", authorizedLockedHandler(m, overview, func(h held, r *http.Request, _ struct{}) (any, error) { return h.view(r) }))
 
 	mux.Handle("GET /policy", authorizedLockedHandler(m, pathAction(config.PolicyRead), func(h held, r *http.Request, _ struct{}) (any, error) {
 		doc := h.doc
