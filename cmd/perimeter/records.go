@@ -421,7 +421,7 @@ func (d *disclosure) audit(ctx context.Context, h held) error {
 	for _, subject := range slices.Sorted(maps.Keys(d.reads)) {
 		if read := d.reads[subject]; read != nil {
 			disclosed, next = append(disclosed, subject), config.Meet(next, *read.Next)
-			decision = &config.Decision{Outcome: config.OutcomeAllow, Sends: read.Sends}
+			decision = &config.Decision{Outcome: config.OutcomeAllow, SendsTo: read.SendsTo}
 		}
 	}
 	if decision == nil {

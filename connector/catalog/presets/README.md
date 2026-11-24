@@ -108,7 +108,8 @@ browse/submit actions when its catalog defines their effects.
 Policy and audit receive independent views of the same JSON snapshot.
 `Facts.Snapshot` uses standard JSON encoding and preserves exact numbers
 in bodies and service-specific parameters. Common fields live at
-`input.facts.operation`, `input.facts.parameters`, and `input.facts.context`.
+`input.facts.operation` and `input.facts.parameters`; `input.facts.label` is the
+agent's current label and `input.facts.flow` the connector's hint about the request.
 `input.facts.principal.key` and `.name` identify the requesting agent and come from
 the Perimeter's current identity settings. `input.facts.kind` is `operation`,
 `admission`; omitted kinds from connector descriptions default to

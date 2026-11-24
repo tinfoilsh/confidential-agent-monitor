@@ -119,14 +119,10 @@ type requestFacts struct {
 	Connection string             `json:"connection"`
 	Operation  *catalog.Operation `json:"operation"`
 	Parameters map[string]any     `json:"parameters"`
-	Context    requestContext     `json:"context"`
+	Label      format.Label       `json:"label"`
+	Flow       connections.Flow   `json:"flow"`
 	Title      string             `json:"title"`
 	Details    any                `json:"details"`
-}
-
-type requestContext struct {
-	Label format.Label `json:"label"`
-	connections.Flow
 }
 
 func (st *settings) latticesOn() bool { return st.Lattices.Confidentiality || st.Lattices.Integrity }
@@ -135,7 +131,7 @@ func (st *settings) eventFacts(connection string, event facts.Event) (requestFac
 	o, err := event.Decode()
 	c := st.connections[connection]
 	if c != nil && err == nil {
-		return st.observationFacts(connection, o, c.Observe)
+		return st.observationFacts(connection, o, c.Flow)
 	}
 	f := requestFacts{Parameters: o.Parameters, Scope: o.Scope, Title: o.Title, Details: o.Details}
 	if c == nil {
@@ -144,8 +140,8 @@ func (st *settings) eventFacts(connection string, event facts.Event) (requestFac
 	return f, refuse(causeInvalid, err.Error())
 }
 
-func (st *settings) observationFacts(connection string, o facts.Observation, observe connections.Observe) (requestFacts, *refusal) {
-	f := requestFacts{Parameters: o.Parameters, Scope: o.Scope, Title: o.Title, Details: o.Details, Context: requestContext{Flow: observe(o)}}
+func (st *settings) observationFacts(connection string, o facts.Observation, flow func(facts.Observation) connections.Flow) (requestFacts, *refusal) {
+	f := requestFacts{Parameters: o.Parameters, Scope: o.Scope, Title: o.Title, Details: o.Details, Flow: flow(o)}
 	// An operation with no effects would skip every access setting.
 	if o.Operation != nil && o.Operation.Effects != nil && !config.ValidEffects(o.Operation.Effects) {
 		return f, refuse(causeInvalid, "an operation's effects must be one or more effects of the vocabulary")
@@ -158,7 +154,7 @@ func (st *settings) observationFacts(connection string, o facts.Observation, obs
 	if f.Operation == nil && st.Connections[connection].MatchOnly {
 		if websocket, _ := connections.WebSocket(o); !websocket {
 			f.Operation = actions.Resolve("", config.CustomAction, config.CustomEffects)
-			f.Context.Sends = config.SendsConnection
+			f.Flow.SendsTo = config.SendsToConnection
 		}
 	}
 	return f, nil
@@ -189,8 +185,8 @@ func (st *settings) decide(ctx context.Context, p facts.Principal, connection st
 		Facts: encoded,
 		Authorization: config.AuthorizationInput{Modes: st.EffectModes(p.Name, p.Groups, connection, f.Operation, req.kind), Rules: st.LiveRules(p.Name),
 			Approved: req.approved, Scope: f.Scope},
-		Connection: config.ConnectionInput{Contents: conn.Contents, Strangers: conn.Strangers, Sends: conn.Sends, Address: conn.PolicyOptions.Address,
-			Private: append([]string{}, conn.PolicyOptions.Private...), PublicScope: append([]string{}, st.publicScope[connection]...)},
+		Connection: config.ConnectionInput{Returns: conn.Returns(), SendsTo: conn.Sends, Address: conn.PolicyOptions.Address,
+			Private: append([]string{}, conn.PolicyOptions.Private...), Resource: append([]string{}, st.resources[connection]...)},
 	}
 	d, err := st.policy.Decide(ctx, input)
 	if err != nil {
@@ -204,7 +200,7 @@ func (st *settings) completeFacts(f *requestFacts, p facts.Principal, connection
 	f.Version, f.Kind = config.FactsVersion, kind
 	conn, _ := st.Connection(connection)
 	f.Service, f.Connection = conn.Preset, connection
-	f.Principal, f.Context.Label = p, label
+	f.Principal, f.Label = p, label
 	if f.Parameters == nil {
 		f.Parameters = map[string]any{}
 	}

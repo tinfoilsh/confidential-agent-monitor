@@ -92,12 +92,11 @@ const (
 	userAgent        = protocolIdentity + "/" + mcpVersion
 )
 
+// A connector's hint about one request: who sees what it sends, and what its response returns to the agent.
 type Flow struct {
-	Sends    string       `json:"sends"`
-	Observes format.Label `json:"observes"`
+	SendsTo string       `json:"sends_to"`
+	Returns format.Label `json:"returns"`
 }
-
-type Observe = func(facts.Observation) Flow
 
 type Setup struct {
 	config.ConnectionSpec
@@ -111,7 +110,7 @@ type Setup struct {
 	PerMessage        bool
 	ListsPlaceholders bool
 	HostKey           bool
-	Observe           Observe
+	Flow              func(facts.Observation) Flow
 	Open              func(ctx context.Context, h worker.Host) (connector.Instance, error)
 }
 
@@ -120,7 +119,7 @@ func Parse(spec config.ConnectionSpec) (*Setup, error) {
 	if parse == nil {
 		return nil, fmt.Errorf("unknown kind %s", spec.Protocol)
 	}
-	p := &Setup{ConnectionSpec: spec, Network: "tcp", Observe: func(facts.Observation) Flow { return Flow{} }}
+	p := &Setup{ConnectionSpec: spec, Network: "tcp", Flow: func(facts.Observation) Flow { return Flow{} }}
 	if err := parse(spec, p); err != nil {
 		return nil, err
 	}
@@ -155,8 +154,8 @@ func parseTCP(spec config.ConnectionSpec, p *Setup) error {
 		return err
 	}
 	p.Claim, p.Hosts = t.Claim, t.Hosts
-	p.Observe = func(facts.Observation) Flow {
-		return Flow{Sends: config.AudienceAnyone, Observes: format.Label{Audience: config.AudienceMe, Trust: config.TrustUntrusted}}
+	p.Flow = func(facts.Observation) Flow {
+		return Flow{SendsTo: config.AudienceAnyone, Returns: format.Label{Audience: config.AudienceMe, Trust: config.TrustUntrusted}}
 	}
 	p.Open = func(_ context.Context, h worker.Host) (connector.Instance, error) {
 		return connector.Instance{Serve: t.Handler(h.Dial, RelayDrain)}, nil
@@ -242,24 +241,24 @@ func httpSetup(p *Setup, setup *web.Setup, set slots.Set) error {
 				return fmt.Errorf("invalid operation %q", id)
 			}
 			var audience string
-			if op.Sends != nil && json.Unmarshal(op.Sends, &audience) != nil || !config.ValidEffects(op.Effects) || !validSends(audience) {
+			if op.Sends != nil && json.Unmarshal(op.Sends, &audience) != nil || !config.ValidEffects(op.Effects) || !validSendsTo(audience) {
 				return fmt.Errorf("invalid effects or audience for operation %s", id)
 			}
 			p.Operations[id], sends[id] = config.OperationSummary{Action: op.Action, Effects: op.Effects}, audience
 		}
 	}
-	p.Observe = func(o facts.Observation) Flow {
+	p.Flow = func(o facts.Observation) Flow {
 		websocket, method := WebSocket(o)
 		switch {
 		// A message the upstream sends on a WebSocket reaches only the agent.
 		case websocket && method == "":
-			return Flow{Sends: config.AudienceMe}
+			return Flow{SendsTo: config.AudienceMe}
 		case o.Operation == nil:
 			return Flow{}
 		case o.Operation.Action == web.SignInAction:
-			return Flow{Sends: config.AudienceMe, Observes: config.InitialLabel}
+			return Flow{SendsTo: config.AudienceMe, Returns: config.InitialLabel}
 		}
-		return Flow{Sends: sends[o.Operation.ID]}
+		return Flow{SendsTo: sends[o.Operation.ID]}
 	}
 	return nil
 }
@@ -327,7 +326,7 @@ func mcpSetup(p *Setup, setup *mcp.Setup, repo string) error {
 	var place *mcp.Placement
 	if pr := setup.Preset; pr != nil {
 		if len(pr.Sends) != 0 && facts.DecodeNumbers(pr.Sends, &sends) != nil || len(pr.Observes) != 0 && facts.DecodeNumbers(pr.Observes, &observes) != nil ||
-			!validSends(sends) || observes != nil && !config.ValidLabel(*observes) {
+			!validSendsTo(sends) || observes != nil && !config.ValidLabel(*observes) {
 			return errors.New("invalid MCP data-flow settings")
 		}
 		if place = pr.Token; place != nil {
@@ -338,11 +337,11 @@ func mcpSetup(p *Setup, setup *mcp.Setup, repo string) error {
 		}
 	}
 	p.Hosts, p.SecretNames = setup.Hosts(), []string{"token"}
-	flow := Flow{Sends: sends}
+	flow := Flow{SendsTo: sends}
 	if observes != nil {
-		flow.Observes = *observes
+		flow.Returns = *observes
 	}
-	p.Observe = func(facts.Observation) Flow { return flow }
+	p.Flow = func(facts.Observation) Flow { return flow }
 	p.Open = func(ctx context.Context, h worker.Host) (connector.Instance, error) {
 		transport := netx.Transport(h.Dial)
 		var base http.RoundTripper = transport
@@ -472,7 +471,7 @@ func parseEndpoint(spec config.ConnectionSpec, p *Setup) error {
 				return c.Handler(h.Dial, password(h), func(string, string, string) error { return nil }, protocolIdentity, maxMailBytes, h.TLS)
 			}
 		}
-		p.Observe = toConnection
+		p.Flow = sendsToConnection
 	case "redis":
 		var c *redis.Redis
 		if c, err = redis.Parse(spec.Config); err == nil {
@@ -488,7 +487,7 @@ func parseEndpoint(spec config.ConnectionSpec, p *Setup) error {
 			}
 		}
 		p.PerMessage = true
-		p.Observe = toConnection
+		p.Flow = sendsToConnection
 	case "nats":
 		var c *nats.NATS
 		if c, err = nats.Parse(spec.Config); err == nil {
@@ -498,7 +497,7 @@ func parseEndpoint(spec config.ConnectionSpec, p *Setup) error {
 			}
 		}
 		p.SecretNames, p.PerMessage = []string{"password", "token"}, true
-		p.Observe = toConnection
+		p.Flow = sendsToConnection
 	case "postgres":
 		var c *postgres.Postgres
 		if c, err = postgres.Parse(spec.Config); err == nil {
@@ -516,18 +515,18 @@ func parseEndpoint(spec config.ConnectionSpec, p *Setup) error {
 	return nil
 }
 
-func toConnection(facts.Observation) Flow { return Flow{Sends: config.SendsConnection} }
+func sendsToConnection(facts.Observation) Flow { return Flow{SendsTo: config.SendsToConnection} }
 
 var privateActions = map[string]bool{config.RequestsRead: true, config.AuditRead: true}
 
 // Requests and the audit log are the owner's private data; every other action shows configuration, which is not.
-func Perimeter(o facts.Observation) Flow {
+func PerimeterFlow(o facts.Observation) Flow {
 	if o.Operation != nil && privateActions[o.Operation.Action] {
-		return Flow{Observes: format.Label{Audience: config.AudienceMe, Trust: config.TrustTrusted}}
+		return Flow{Returns: format.Label{Audience: config.AudienceMe, Trust: config.TrustTrusted}}
 	}
-	return Flow{Observes: config.InitialLabel}
+	return Flow{Returns: config.InitialLabel}
 }
 
-func validSends(sends string) bool {
-	return sends == "" || sends == config.SendsConnection || slices.Contains(config.Audiences, sends)
+func validSendsTo(sends string) bool {
+	return sends == "" || sends == config.SendsToConnection || slices.Contains(config.Audiences, sends)
 }

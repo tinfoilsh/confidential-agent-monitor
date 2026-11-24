@@ -15,11 +15,11 @@ import (
 const FactsVersion = 15
 
 const (
-	KindOperation   = "operation"
-	KindAdmission   = "admission"
-	SendsConnection = "connection"
-	CustomAction    = "request"
-	EffectUnknown   = "unknown"
+	KindOperation     = "operation"
+	KindAdmission     = "admission"
+	SendsToConnection = "connection"
+	CustomAction      = "request"
+	EffectUnknown     = "unknown"
 )
 
 var CustomEffects = []string{"execute", "send"}
@@ -180,12 +180,11 @@ type AuthorizationInput struct {
 }
 
 type ConnectionInput struct {
-	Contents    string   `json:"contents"`
-	Strangers   bool     `json:"strangers"`
-	Sends       string   `json:"sends"`
-	Address     string   `json:"address"`
-	Private     []string `json:"private"`
-	PublicScope []string `json:"public_scope"`
+	Returns  format.Label `json:"returns"`
+	SendsTo  string       `json:"sends_to"`
+	Address  string       `json:"address"`
+	Private  []string     `json:"private"`
+	Resource []string     `json:"resource"`
 }
 
 type Outcome string
@@ -198,7 +197,7 @@ const (
 
 type Decision struct {
 	Outcome Outcome       `json:"outcome"`
-	Sends   string        `json:"sends"`
+	SendsTo string        `json:"sends_to"`
 	Next    *format.Label `json:"next,omitempty"`
 	Gaps    []Requirement `json:"gaps,omitempty"`
 	Reasons []string      `json:"reasons,omitempty"`
@@ -209,8 +208,8 @@ func (d Decision) Validate() error {
 	if own == "" {
 		return fmt.Errorf("unknown outcome %q", d.Outcome)
 	}
-	if d.Sends == "" {
-		return fmt.Errorf("%s needs sends", d.Outcome)
+	if d.SendsTo == "" {
+		return fmt.Errorf("%s needs sends_to", d.Outcome)
 	}
 	for field, present := range map[string]bool{"next": d.Next != nil, "gaps": len(d.Gaps) != 0, "reasons": len(d.Reasons) != 0} {
 		if present != (field == own) {

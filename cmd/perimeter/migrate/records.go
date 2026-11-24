@@ -62,14 +62,14 @@ func Record(line []byte) ([]byte, error) {
 	case old.Invalid:
 		set("refusal", refusal{causeInvalid, old.Deny})
 	case len(old.Deny) != 0 && !failed:
-		set("decision", config.Decision{Outcome: config.OutcomeDeny, Sends: old.Sends, Reasons: old.Deny})
+		set("decision", config.Decision{Outcome: config.OutcomeDeny, SendsTo: old.Sends, Reasons: old.Deny})
 		if old.State == stateRefused {
 			set("refusal", refusal{Cause: causeDenied})
 		}
 	case len(old.Requirements) != 0:
-		set("decision", config.Decision{Outcome: config.OutcomeAsk, Sends: old.Sends, Gaps: old.Requirements})
+		set("decision", config.Decision{Outcome: config.OutcomeAsk, SendsTo: old.Sends, Gaps: old.Requirements})
 	case *old.Allow:
-		set("decision", config.Decision{Outcome: config.OutcomeAllow, Sends: old.Sends, Next: &old.Next})
+		set("decision", config.Decision{Outcome: config.OutcomeAllow, SendsTo: old.Sends, Next: &old.Next})
 	}
 	if failed {
 		set("refusal", refusal{causePrecondition, old.Deny})

@@ -48,9 +48,9 @@ export type Resolved = {
 };
 export type Requirement = { id: string; message: string };
 export type Decision =
-  | { outcome: "allow"; sends: Audience; next: Label }
-  | { outcome: "ask"; sends: Audience; gaps: Requirement[] }
-  | { outcome: "deny"; sends: Audience; reasons: string[] };
+  | { outcome: "allow"; sends_to: Audience; next: Label }
+  | { outcome: "ask"; sends_to: Audience; gaps: Requirement[] }
+  | { outcome: "deny"; sends_to: Audience; reasons: string[] };
 // A denied refusal of a deny decision leaves its reasons to the decision.
 export type Refusal = {
   cause: "invalid" | "precondition" | "denied" | "rejected" | "expired";

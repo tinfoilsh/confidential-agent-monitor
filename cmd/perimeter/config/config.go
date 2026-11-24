@@ -11,6 +11,7 @@ import (
 	"slices"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
@@ -29,7 +30,7 @@ var accessLevels = []string{"off", "read", "ask", "allow"}
 type ConnectionSpec struct {
 	Name, Protocol              string
 	Config, Definition, Options json.RawMessage
-	PublicScope                 []string
+	Resource                    []string
 }
 
 type Access struct {
@@ -81,6 +82,15 @@ type Connection struct {
 	Strangers     bool                       `json:"strangers"`
 	Sends         string                     `json:"sends"`
 	Setup         map[string]json.RawMessage `json:",embed"`
+}
+
+// What reading from a connection returns to an agent, unless its connector says otherwise.
+func (c Connection) Returns() format.Label {
+	trust := TrustTrusted
+	if c.Strangers {
+		trust = TrustUntrusted
+	}
+	return format.Label{Audience: c.Contents, Trust: trust}
 }
 
 type Lattices struct {
@@ -263,7 +273,7 @@ func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	if preset == nil {
 		return ConnectionSpec{}, fmt.Errorf("connection %s: unknown preset %s", name, connection.Preset)
 	}
-	spec := ConnectionSpec{Name: name, PublicScope: preset.PublicScope}
+	spec := ConnectionSpec{Name: name, Resource: preset.PublicScope}
 
 	var definition map[string]json.RawMessage
 	if err := json.Unmarshal(preset.Source, &definition); err != nil {

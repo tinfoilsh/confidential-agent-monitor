@@ -37,7 +37,7 @@ func (st *settings) callFacts(c facts.Observation) *requestFacts {
 	if c.Operation != nil {
 		c.Title = st.Preset(config.PerimeterConnection).Catalog.Actions[c.Operation.Action].Title
 	}
-	f, _ := st.observationFacts(config.PerimeterConnection, c, connections.Perimeter)
+	f, _ := st.observationFacts(config.PerimeterConnection, c, connections.PerimeterFlow)
 	return &f
 }
 

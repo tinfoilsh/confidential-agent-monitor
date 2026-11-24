@@ -3,8 +3,8 @@ package perimeter
 import input.authorization as auth
 import input.connection as conn
 import input.facts
-import input.facts.context as hint
-import input.facts.context.label
+import input.facts.flow
+import input.facts.label
 import input.facts.operation as op
 
 # Each axis orders its levels from most to least restrictive.
@@ -47,12 +47,12 @@ denied_mode := {"mode": "off", "from": "the Perimeter"}
 
 mode_of(effect) := object.get(auth.modes, effect, denied_mode)
 
-# A preset's public scope lists the parameters that together name one resource, such as owner and repo.
-names := [v | some key in conn.public_scope; v := facts.parameters[key]; is_string(v); v != ""]
+# A preset's resource lists the parameters that together name one resource, such as owner and repo.
+names := [v | some key in conn.resource; v := facts.parameters[key]; is_string(v); v != ""]
 
 resource := concat("/", names) if {
 	names != []
-	count(names) == count(conn.public_scope)
+	count(names) == count(conn.resource)
 }
 
 # The owner marks resources private with globs such as tinfoilsh/*; any other named resource is public.
@@ -69,38 +69,39 @@ public if {
 target := resource if stores
 
 # Data stored in a public resource reaches anyone, whatever the connector hints; so does a delivery to unnamed recipients.
-sends := "anyone" if {
+sends_to := "anyone" if {
 	stores
 	public
 } else := "anyone" if {
-	hint.sends == ""
+	flow.sends_to == ""
 	delivers
 	not target
 } else := "anyone" if {
 	some to in facts.details.smtp.to
 	not same_address(to, conn.address)
-} else := conn.sends if {
-	hint.sends in {"", "connection"}
-} else := hint.sends
+} else := conn.sends_to if {
+	flow.sends_to in {"", "connection"}
+} else := flow.sends_to
 
 # (?i) folds case as Go's strings.EqualFold does; lower() does not for every rune.
 same_address(a, b) if regex.match(concat("", [`(?i)\A\Q`, replace(b, `\E`, `\E\\E\Q`), `\E\z`]), a)
 
-expected := object.union(
-	{"audience": conn.contents, "trust": {true: "untrusted", false: "trusted"}[conn.strangers]},
-	{axis: level | some axis, _ in rank; level := hint.observes[axis]; level != ""},
+# What the connection returns, overridden axis by axis by what the connector says this request returns.
+stated := object.union(
+	{axis: conn.returns[axis] | some axis, _ in rank},
+	{axis: level | some axis, _ in rank; level := flow.returns[axis]; level != ""},
 )
 
 # An unrecognized request may return anything; a public resource holds nothing private.
-observes := {"audience": "me", "trust": "untrusted"} if {
+returns := {"audience": "me", "trust": "untrusted"} if {
 	unknown
-} else := object.union(expected, {"audience": "anyone"}) if {
+} else := object.union(stated, {"audience": "anyone"}) if {
 	public
-} else := expected
+} else := stated
 
 # The label keeps each axis's provenance unless this request makes it more restrictive.
 lowered[axis] := level if {
-	some axis, level in observes
+	some axis, level in returns
 	rank[axis][level] < rank[axis][label[axis]]
 }
 
@@ -203,7 +204,7 @@ reasons contains "An identity cannot enroll itself." if {
 }
 
 # A waiver of this gap covers only the audience it was approved for.
-disclosure := concat(".", ["audience", sends])
+disclosure := concat(".", ["audience", sends_to])
 
 needs_trust if {
 	some t in traits
@@ -214,7 +215,7 @@ needs_trust if {
 confidentiality := "allow" if {
 	data.lattices.confidentiality == false
 } else := "allow" if {
-	rank.audience[sends] <= rank.audience[label.audience]
+	rank.audience[sends_to] <= rank.audience[label.audience]
 } else := "ask"
 
 # Integrity: an agent that has read untrusted content does nothing that requires trust.
@@ -248,7 +249,7 @@ unknown_message := sprintf("This request has no recognized operation on %s.", [f
 recipients := {"me": "you", "team": "your team", "anyone": "anyone"}
 
 messages := {
-	disclosure: sprintf("This agent has seen private data from %s; this request can disclose it to %s.", [object.get(because, "audience", "an earlier request"), object.get(recipients, sends, "an unknown audience")]),
+	disclosure: sprintf("This agent has seen private data from %s; this request can disclose it to %s.", [object.get(because, "audience", "an earlier request"), object.get(recipients, sends_to, "an unknown audience")]),
 	"trust": sprintf("This agent has read untrusted content from %s; this operation requires trust.", [object.get(because, "trust", "an earlier request")]),
 }
 
@@ -273,8 +274,8 @@ requirements contains r if {
 
 gaps contains r.id if some r in requirements
 
-decision := {"outcome": "deny", "sends": sends, "reasons": reasons} if {
+decision := {"outcome": "deny", "sends_to": sends_to, "reasons": reasons} if {
 	count(reasons) != 0
-} else := {"outcome": "ask", "sends": sends, "gaps": requirements} if {
+} else := {"outcome": "ask", "sends_to": sends_to, "gaps": requirements} if {
 	count(requirements) != 0
-} else := {"outcome": "allow", "sends": sends, "next": next}
+} else := {"outcome": "allow", "sends_to": sends_to, "next": next}
