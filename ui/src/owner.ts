@@ -1848,6 +1848,9 @@ const connectionPaths = (view: View, name: string) => [
     "connections",
     name,
   ]),
+  ...Object.entries(view.config.groups ?? {})
+    .filter(([, group]) => group.connections?.[name])
+    .map(([group]) => ["groups", group, "connections", name]),
 ];
 // Each edit returns the source changes for POST /policy/edits.
 export const edits = {
