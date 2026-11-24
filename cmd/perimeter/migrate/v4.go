@@ -31,7 +31,7 @@ type Notice struct {
 	Hint string `json:"hint"`
 }
 
-// An effects table outside an access block was a grant a more specific one could widen; it is a limit now.
+// An effects entry in an access block beats its level, so each block takes what its level and every table in scope made of each effect.
 func upgradeV4(plain []byte) ([]byte, *Migration, error) {
 	var v4 struct {
 		Version int    `json:"version"`
@@ -53,50 +53,111 @@ func upgradeV4(plain []byte) ([]byte, *Migration, error) {
 	}
 	migration, policy := Migration{Policy: v4.Policy}, v4.Policy
 	changes := ruleChanges(source)
-	move := func(table map[string]any, hint func(effect string) string, at ...string) {
-		effects, _ := table["effects"].(map[string]any)
-		from := slices.Concat(at, []string{"effects"})
-		kept := 0
-		for _, effect := range slices.Sorted(maps.Keys(effects)) {
-			if effects[effect] != "allow" {
-				kept++
-				continue
-			}
-			// An allow would cap nothing as a limit, so the upgrade drops it.
-			changes = append(changes, tomledit.Change{Path: slices.Concat(from, []string{effect}), Delete: true})
-			migration.Notices = append(migration.Notices, Notice{Path: tomledit.Path(slices.Concat(from, []string{effect})...), Hint: hint(effect)})
-		}
-		switch {
-		case kept != 0:
-			changes = append(changes, tomledit.Change{Path: slices.Concat(at, []string{"limits", "effects"}), From: from})
-		case table["effects"] != nil:
-			changes = append(changes, tomledit.Change{Path: from, Delete: true})
-		}
+	defaults, identities, connections := tomledit.Table(source, "default_access"), tomledit.Table(source, "identities"), tomledit.Table(source, "connections")
+	reaches := func(level string, actions map[string]any) bool {
+		return level != "" && level != "off" || slices.ContainsFunc(slices.Collect(maps.Values(actions)), func(mode any) bool { return mode != string(config.ModeOff) })
 	}
-	move(source, func(e string) string {
-		return fmt.Sprintf("%s was allowed for every identity; grant it per connection with default_access.<C>.effects.%s = \"allow\"", e, e)
-	})
-	for _, kind := range []string{"connections", "identities"} {
-		for _, name := range slices.Sorted(maps.Keys(tomledit.Table(source, kind))) {
-			hint := func(e string) string {
-				return fmt.Sprintf("%s was allowed on %s for every identity; grant it with %s.effects.%s = \"allow\"", e, name, tomledit.Path("default_access", name), e)
+	rewrite := func(at []string, identity, block map[string]any, connection, level string, inherits bool) {
+		d := tomledit.Table(defaults, connection)
+		effects, actions, inherited := map[string]any{}, tomledit.Table(block, "actions"), tomledit.Table(d, "actions")
+		reachable := actions
+		if inherits {
+			reachable = map[string]any{}
+			maps.Copy(reachable, inherited)
+			maps.Copy(reachable, actions)
+		}
+		shared, _ := d["level"].(string)
+		open, shares := reaches(level, reachable), reaches(shared, inherited)
+		for e, o := range config.Vocabulary {
+			mode, set := legacyEffect(source, identity, connection, e)
+			beneath, under := legacyEffect(source, nil, connection, e)
+			grant := config.ModeAllow
+			switch {
+			case level == "" || level == "off" || level == "read" && o.Change:
+				grant = config.ModeOff
+			case level == "ask" && o.Change:
+				grant = config.ModeAsk
 			}
-			if kind == "identities" {
-				hint = func(e string) string {
-					return fmt.Sprintf("%s was allowed for %s on every connection; grant it per connection with %s.<C>.effects.%s = \"allow\"", e, name, tomledit.Path("identities", name, "connections"), e)
+			switch {
+			case e == config.EffectUnknown:
+			case e == "session":
+				// Beneath an identity, default_access answers an admission with its session entry, and an operation too when the identity has no level.
+				admit, operate := config.ModeAllow, grant
+				if identity != nil && shares && under && beneath != config.ModeAllow {
+					admit = beneath
+					if inherits {
+						operate = beneath
+					}
+				}
+				if !open {
+					admit, mode = config.ModeOff, config.ModeOff
+				}
+				if admit != mode || operate != max(grant, mode) {
+					effects[e] = mode
+				}
+			case inherits && under && mode == beneath:
+			// Modes sort from most to least permissive, so the greater is the stricter.
+			case set && (inherits || grant != config.ModeOff):
+				effects[e] = max(grant, mode)
+			}
+		}
+		// The identity's own entries would hide the actions of default_access, which merged with its own.
+		if inherits && (len(effects) != 0 || len(actions) != 0) {
+			if len(reachable) != len(actions) {
+				changes = append(changes, tomledit.Change{Path: slices.Concat(at, []string{"actions"}), Value: reachable})
+			}
+			actions = reachable
+		}
+		if len(effects) != 0 {
+			changes = append(changes, tomledit.Change{Path: slices.Concat(at, []string{"effects"}), Value: effects})
+		} else if block["effects"] != nil {
+			changes = append(changes, tomledit.Change{Path: slices.Concat(at, []string{"effects"}), Delete: true})
+		}
+		var unasked []string
+		for _, action := range slices.Sorted(maps.Keys(actions)) {
+			allowed, _ := actions[action].(string)
+			var lost []string
+			for _, e := range slices.Sorted(maps.Keys(config.Vocabulary)) {
+				switch mode, set := legacyEffect(source, identity, connection, e); {
+				case e == config.EffectUnknown || string(mode) <= allowed:
+				case set:
+					lost = append(lost, fmt.Sprintf("%s (%s)", e, mode))
+				case !slices.Contains(unasked, e):
+					unasked = append(unasked, e)
 				}
 			}
-			move(tomledit.Table(source, kind, name), hint, kind, name)
+			if lost != nil {
+				migration.Notices = append(migration.Notices, Notice{Path: tomledit.Path(slices.Concat(at, []string{"actions", action})...), Hint: "this action is no longer restricted by effects " + strings.Join(lost, ", ")})
+			}
+		}
+		if unasked != nil {
+			migration.Notices = append(migration.Notices, Notice{Path: tomledit.Path(slices.Concat(at, []string{"actions"})...), Hint: "an action set to allow no longer asks for " + strings.Join(unasked, ", ")})
 		}
 	}
-	for _, name := range slices.Sorted(maps.Keys(tomledit.Table(source, "identities"))) {
-		routes, set := tomledit.Table(source, "identities", name)["routes"]
-		if set {
-			changes = append(changes, tomledit.Change{Path: []string{"identities", name, "routes"}, Delete: true})
+	for _, c := range slices.Sorted(maps.Keys(defaults)) {
+		level, _ := tomledit.Table(defaults, c)["level"].(string)
+		rewrite([]string{"default_access", c}, nil, tomledit.Table(defaults, c), c, level, false)
+	}
+	for _, name := range slices.Sorted(maps.Keys(identities)) {
+		identity := tomledit.Table(identities, name)
+		for _, c := range slices.Sorted(maps.Keys(connections)) {
+			block, at := tomledit.Table(identity, "connections", c), []string{"identities", name, "connections", c}
+			level, _ := block["level"].(string)
+			switch inherited, inherits := tomledit.Table(defaults, c)["level"].(string); {
+			case level == "" && inherits:
+				rewrite(at, identity, block, c, inherited, true)
+			case block != nil:
+				rewrite(at, identity, block, c, level, false)
+			}
 		}
-		if routes == true {
-			changes = append(changes, tomledit.Change{Path: []string{"identities", name, "connections", config.PerimeterConnection}, Value: map[string]any{"actions": config.DeviceActions()}})
+		changes = append(changes, tomledit.Change{Path: []string{"identities", name, "effects"}, Delete: true}, tomledit.Change{Path: []string{"identities", name, "routes"}, Delete: true})
+		if groups, _ := identity["groups"].([]any); identity["routes"] == true && !slices.Contains(groups, any(config.DeviceGroup)) {
+			changes = append(changes, tomledit.Change{Path: []string{"identities", name, "groups"}, Value: append(groups, config.DeviceGroup)})
 		}
+	}
+	changes = append(changes, tomledit.Change{Path: []string{"effects"}, Delete: true})
+	for _, c := range slices.Sorted(maps.Keys(connections)) {
+		changes = append(changes, tomledit.Change{Path: []string{"connections", c, "effects"}, Delete: true})
 	}
 	policies := tomledit.Table(source, "policies")
 	for _, name := range slices.Sorted(maps.Keys(policies)) {
@@ -107,10 +168,8 @@ func upgradeV4(plain []byte) ([]byte, *Migration, error) {
 			migration.Notices = append(migration.Notices, Notice{Path: tomledit.Path("policies", name), Hint: operationHint})
 		}
 	}
-	if len(changes) != 0 {
-		if policy, err = tomledit.Edit(policy, changes); err != nil {
-			return nil, nil, err
-		}
+	if policy, err = tomledit.Edit(policy, changes); err != nil {
+		return nil, nil, err
 	}
 	doc["version"], _ = json.Marshal(version5)
 	doc["policy"], _ = json.Marshal(policy)
@@ -145,7 +204,7 @@ func ruleChanges(source map[string]any) []tomledit.Change {
 					continue
 				}
 				for _, e := range slices.Sorted(maps.Keys(config.Vocabulary)) {
-					if legacyEffect(source, identity, connection, e) == config.ModeAllow {
+					if mode, _ := legacyEffect(source, tomledit.Table(source, "identities", identity), connection, e); mode == config.ModeAllow {
 						add(config.Requirement{ID: "effect." + e, Message: fmt.Sprintf("The %s effect requires approval (Ask).", e)})
 					}
 				}
@@ -159,20 +218,20 @@ func ruleChanges(source map[string]any) []tomledit.Change {
 }
 
 // An access block with a level replaced default_access whole; the most specific effects table that set the effect won.
-func legacyEffect(source map[string]any, identity, connection, effect string) config.Mode {
-	own := tomledit.Table(source, "identities", identity, "connections", connection)
+func legacyEffect(source, identity map[string]any, connection, effect string) (config.Mode, bool) {
+	own := tomledit.Table(identity, "connections", connection)
 	scopes := []map[string]any{tomledit.Table(own, "effects")}
 	if level, _ := own["level"].(string); level == "" {
 		scopes = append(scopes, tomledit.Table(source, "default_access", connection, "effects"))
 	}
-	scopes = append(scopes, tomledit.Table(source, "identities", identity, "effects"), tomledit.Table(source, "connections", connection, "effects"), tomledit.Table(source, "effects"))
+	scopes = append(scopes, tomledit.Table(identity, "effects"), tomledit.Table(source, "connections", connection, "effects"), tomledit.Table(source, "effects"))
 	for _, scope := range scopes {
 		if mode, set := scope[effect].(string); set {
-			return config.Mode(mode)
+			return config.Mode(mode), true
 		}
 	}
 	if config.Vocabulary[effect].Ask {
-		return config.ModeAsk
+		return config.ModeAsk, false
 	}
-	return config.ModeAllow
+	return config.ModeAllow, false
 }

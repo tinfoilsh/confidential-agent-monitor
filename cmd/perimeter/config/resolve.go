@@ -25,11 +25,8 @@ func (m Mode) valid() bool { _, ok := modeRank[m]; return ok }
 func below(a, b Mode) bool { return modeRank[a] < modeRank[b] }
 
 type Setting struct {
-	Mode     Mode   `json:"mode"`
-	From     string `json:"from"`
-	Grant    Mode   `json:"grant"`
-	Limit    Mode   `json:"limit"`
-	CappedBy string `json:"capped_by,omitempty"`
+	Mode Mode   `json:"mode"`
+	From string `json:"from"`
 }
 
 type Resolved struct {
@@ -40,53 +37,29 @@ type Resolved struct {
 	Tree    []ResolvedNode     `json:"tree,omitempty"`
 }
 
-const pathPaid = "allow_paid_inference"
+const accountAccess = "access"
 
 // The first part may already be a path, so it is not quoted.
 func tomlPath(path string, keys ...string) string { return path + "." + tomledit.Path(keys...) }
 
 func changing(o Obligations) bool { return o.Change || o.Trust }
 
-// Every effect but session, so a more specific level replaces a less specific one entirely.
-func expand(level string) map[string]Mode {
-	if level == "" {
-		return nil
+// Every effect, so a more specific level replaces a less specific one entirely.
+func expand(level, effect string, paid bool) (Mode, bool) {
+	o, known := Vocabulary[effect]
+	switch {
+	case !known || level == "":
+		return "", false
+	case level == "off":
+		return ModeOff, true
+	case !changing(o):
+		return ModeAllow, true
+	case level == "read":
+		return ModeOff, true
+	case level == "ask" || o.Ask && !(paid && effect == "pay"):
+		return ModeAsk, true
 	}
-	modes := map[string]Mode{}
-	for e, o := range Vocabulary {
-		switch {
-		case e == "session":
-		case level == "off":
-			modes[e] = ModeOff
-		case !changing(o):
-			modes[e] = ModeAllow
-		case level == "read":
-			modes[e] = ModeOff
-		case level == "ask" || o.Ask:
-			modes[e] = ModeAsk
-		default:
-			modes[e] = ModeAllow
-		}
-	}
-	return modes
-}
-
-func (c *Config) rolesOf(identity string, groups []string) []string {
-	var roles []string
-	add := func(role string) {
-		if !slices.Contains(roles, role) {
-			roles = append(roles, role)
-		}
-	}
-	for _, role := range c.Identities[identity].Roles {
-		add(role)
-	}
-	for _, role := range slices.Sorted(maps.Keys(c.Roles)) {
-		if slices.ContainsFunc(c.Roles[role].Groups, func(g string) bool { return slices.Contains(groups, g) }) {
-			add(role)
-		}
-	}
-	return roles
+	return ModeAllow, true
 }
 
 func (c *Config) accessPath(identity, connection string) string {
@@ -96,114 +69,59 @@ func (c *Config) accessPath(identity, connection string) string {
 	return tomlPath("default_access", connection)
 }
 
-type layer struct {
+type block struct {
 	path   string
 	access Access
 }
 
-func (c *Config) layers(identity string, roles []string, connection string) []layer {
-	var layers []layer
-	add := func(path string, blocks map[string]Access) {
-		if a, ok := blocks[connection]; ok {
-			layers = append(layers, layer{tomlPath(path, connection), a})
-		}
-	}
-	add("default_access", c.DefaultAccess)
-	for _, role := range roles {
-		add(tomlPath("roles", role, "connections"), c.Roles[role].Connections)
-	}
-	if id, declared := c.Identities[identity]; declared {
-		add(tomlPath("identities", identity, "connections"), id.Connections)
-	}
-	return layers
-}
-
-type source struct {
-	mode Mode
-	from string
-	// expanded marks a mode a level set, which paid inference may raise; base marks the base layer's.
-	expanded, base bool
-}
-
-type grants struct{ effects, actions map[string]source }
-
-func (c *Config) grants(identity string, roles []string, connection string, paid bool) grants {
-	g := grants{effects: map[string]source{}, actions: map[string]source{}}
-	for e := range Vocabulary {
-		g.effects[e] = source{mode: ModeOff, from: c.accessPath(identity, connection), base: true}
-	}
-	for _, l := range c.layers(identity, roles, connection) {
-		for e, m := range expand(l.access.Level) {
-			g.effects[e] = source{mode: m, from: tomlPath(l.path, "level"), expanded: true}
-		}
-		for e, m := range l.access.Effects {
-			g.effects[e] = source{mode: Mode(m), from: tomlPath(l.path, "effects", e)}
-		}
-		for a, m := range l.access.Actions {
-			g.actions[a] = source{mode: Mode(m), from: tomlPath(l.path, "actions", a)}
-		}
-	}
-	// Paid inference raises only what a level set; an explicit pay setting, or an action entry, wins.
-	if paid && c.AllowPaidInference && g.effects["pay"].expanded {
-		g.effects["pay"] = source{mode: ModeAllow, from: pathPaid}
-	}
-	return g
-}
-
-func first(entries map[string]source, lineage []string) (source, bool) {
+func (b block) cover(lineage []string, effect string, paid bool) (Setting, bool) {
 	for _, a := range lineage {
-		if s, ok := entries[a]; ok {
-			return s, true
+		if m, ok := b.access.Actions[a]; ok {
+			return Setting{Mode(m), tomlPath(b.path, "actions", a)}, true
 		}
 	}
-	return source{}, false
+	if m, ok := b.access.Effects[effect]; ok {
+		return Setting{Mode(m), tomlPath(b.path, "effects", effect)}, true
+	}
+	m, ok := expand(b.access.Level, effect, paid)
+	// Only an operation has a lineage; a level never opens a session, which follows reach.
+	return Setting{m, tomlPath(b.path, "level")}, ok && (len(lineage) != 0 || effect != "session")
 }
 
-type scope struct {
-	path   string
-	limits Limits
+type tiers struct {
+	blocks        [][]block
+	actions       map[string]Setting
+	unset         string
+	paid, reaches bool
 }
 
-func (c *Config) scopes(identity string, roles []string, connection string) []scope {
-	scopes := []scope{{"limits", c.Limits}}
-	if conn, ok := c.Connections[connection]; ok {
-		scopes = append(scopes, scope{tomlPath("connections", connection, "limits"), conn.Limits})
+func (t tiers) modes(lineage, effects []string) map[string]Setting {
+	paid := t.paid && slices.Contains(effects, "generate") && slices.Contains(effects, "pay")
+	// An action with no known effects is decided as an unrecognized request is.
+	if len(effects) == 0 {
+		effects = []string{EffectUnknown}
 	}
-	for _, role := range roles {
-		scopes = append(scopes, scope{tomlPath("roles", role, "limits"), c.Roles[role].Limits})
-	}
-	if id, declared := c.Identities[identity]; declared {
-		scopes = append(scopes, scope{tomlPath("identities", identity, "limits"), id.Limits})
-	}
-	return scopes
-}
-
-func (s scope) limit(lineage []string, effect string) (source, bool) {
-	for _, a := range lineage {
-		if m, ok := s.limits.Actions[a]; ok {
-			return source{mode: Mode(m), from: tomlPath(s.path, "actions", a)}, true
+	modes := map[string]Setting{}
+	for _, e := range effects {
+		s, covered := Setting{ModeOff, t.unset}, false
+		// Only the bare session effect follows reach; an operation no tier covers is off.
+		if e == "session" && len(lineage) == 0 && t.reaches {
+			s.Mode = ModeAllow
 		}
-	}
-	m, ok := s.limits.Effects[effect]
-	return source{mode: Mode(m), from: tomlPath(s.path, "effects", effect)}, ok
-}
-
-func (g grants) setting(scopes []scope, lineage []string, effect string) Setting {
-	grant, ok := first(g.actions, lineage)
-	if !ok {
-		grant = g.effects[effect]
-	}
-	s := Setting{Mode: grant.mode, From: grant.from, Grant: grant.mode, Limit: ModeAllow}
-	var capped string
-	for _, sc := range scopes {
-		if limit, ok := sc.limit(lineage, effect); ok && below(limit.mode, s.Limit) {
-			s.Limit, capped = limit.mode, limit.from
+		for _, tier := range t.blocks {
+			// Within a tier the most permissive block decides; ties go to the first group by name.
+			for _, b := range tier {
+				if m, ok := b.cover(lineage, e, paid); ok && (!covered || below(s.Mode, m.Mode)) {
+					s, covered = m, true
+				}
+			}
+			if covered {
+				break
+			}
 		}
+		modes[e] = s
 	}
-	if below(s.Limit, s.Grant) {
-		s.Mode, s.CappedBy = s.Limit, capped
-	}
-	return s
+	return modes
 }
 
 // Ties go to the first effect in name order, so a report names the same cause every time.
@@ -235,50 +153,60 @@ func (c *Config) Operation(connection, action string) *catalog.Operation {
 }
 
 // Reachability looks at every effect but session, so session can follow it.
-func (c *Config) access(identity string, groups []string, connection string, paid bool) (g grants, scopes []scope, reaches bool) {
-	roles := c.rolesOf(identity, groups)
-	g, scopes = c.grants(identity, roles, connection, paid), c.scopes(identity, roles, connection)
+func (c *Config) access(identity string, groups []string, connection string) tiers {
+	t := tiers{unset: c.accessPath(identity, connection), paid: c.AllowPaidInference}
+	if a, ok := c.Identities[identity].Connections[connection]; ok {
+		t.blocks = append(t.blocks, []block{{tomlPath("identities", identity, "connections", connection), a}})
+	}
+	var bundles []block
+	for _, g := range slices.Sorted(slices.Values(groups)) {
+		// A device is one by its declared groups, never by a certificate principal.
+		if a, ok := c.Groups[g].Connections[connection]; ok && (g != DeviceGroup || slices.Contains(c.Identities[identity].Groups, g)) {
+			bundles = append(bundles, block{tomlPath("groups", g, "connections", connection), a})
+		}
+	}
+	t.blocks = append(t.blocks, bundles)
+	if a, ok := c.DefaultAccess[connection]; ok {
+		t.blocks = append(t.blocks, []block{{tomlPath("default_access", connection), a}})
+	}
+	if connection != PerimeterConnection {
+		t.blocks = append(t.blocks, []block{{accountAccess, c.Access}})
+	}
 	for e := range Vocabulary {
-		reaches = reaches || e != "session" && g.setting(scopes, nil, e).Mode != ModeOff
+		t.reaches = t.reaches || e != "session" && t.modes(nil, []string{e})[e].Mode != ModeOff
 	}
-	for _, s := range c.actionSettings(g, scopes, connection) {
-		reaches = reaches || s.Mode != ModeOff
+	t.actions = c.actionSettings(t, connection)
+	for _, s := range t.actions {
+		t.reaches = t.reaches || s.Mode != ModeOff
 	}
-	if g.effects["session"].base && reaches {
-		g.effects["session"] = source{mode: ModeAllow, from: c.accessPath(identity, connection)}
-	}
-	return g, scopes, reaches
+	return t
 }
 
-func (c *Config) actionSettings(g grants, scopes []scope, connection string) map[string]Setting {
+func (c *Config) actionSettings(t tiers, connection string) map[string]Setting {
 	actions := map[string]Setting{}
-	named := slices.Collect(maps.Keys(g.actions))
-	for _, sc := range scopes {
-		named = slices.AppendSeq(named, maps.Keys(sc.limits.Actions))
-	}
-	for _, a := range named {
-		if op := c.Operation(connection, a); op != nil {
-			settings := map[string]Setting{}
-			for _, e := range op.Effects {
-				settings[e] = g.setting(scopes, op.Lineage, e)
+	for _, tier := range t.blocks {
+		for _, b := range tier {
+			for a := range b.access.Actions {
+				switch op := c.Operation(connection, a); {
+				case op != nil:
+					actions[a] = strictest(t.modes(op.Lineage, op.Effects))
+				// The account block names actions of every connection, so only those that resolve here are this one's.
+				case b.path != accountAccess:
+					actions[a] = strictest(t.modes(catalog.Lineage(a), nil))
+				}
 			}
-			actions[a] = strictest(settings)
-		} else if _, granted := g.actions[a]; granted {
-			actions[a] = g.setting(scopes, catalog.Lineage(a), "")
 		}
 	}
 	return actions
 }
 
 func (c *Config) Resolve(identity string, groups []string, connection string) Resolved {
-	g, scopes, reaches := c.access(identity, groups, connection, false)
-	r := Resolved{Reaches: reaches, Effects: map[string]Setting{}, Actions: c.actionSettings(g, scopes, connection)}
+	t := c.access(identity, groups, connection)
+	r := Resolved{Reaches: t.reaches, Effects: map[string]Setting{}, Actions: t.actions, Tree: c.tree(connection, t)}
 	for e := range Vocabulary {
-		r.Effects[e] = g.setting(scopes, nil, e)
+		maps.Copy(r.Effects, t.modes(nil, []string{e}))
 	}
 	r.Level = r.level()
-	unset := Setting{Mode: ModeOff, From: c.accessPath(identity, connection), Grant: ModeOff, Limit: ModeAllow}
-	r.Tree = c.tree(connection, g, scopes, unset)
 	return r
 }
 
@@ -288,8 +216,9 @@ func (r Resolved) level() string {
 	}
 	for _, level := range accessLevels[1:] {
 		matches := true
-		for e, m := range expand(level) {
-			matches = matches && r.Effects[e].Mode == m
+		for e := range Vocabulary {
+			m, _ := expand(level, e, false)
+			matches = matches && (e == "session" || r.Effects[e].Mode == m)
 		}
 		if matches {
 			return level
@@ -299,31 +228,23 @@ func (r Resolved) level() string {
 }
 
 func (c *Config) Reaches(identity string, groups []string, connection string) bool {
-	_, _, reaches := c.access(identity, groups, connection, false)
-	return reaches
+	return c.access(identity, groups, connection).reaches
 }
 
 func (c *Config) Modes(identity string, groups []string, connection string, op *catalog.Operation, kind string) map[string]Setting {
+	t := c.access(identity, groups, connection)
 	if kind == KindAdmission {
-		// An admission resolves session like any effect, but never opens a connection the identity does not reach.
-		g, scopes, reaches := c.access(identity, groups, connection, false)
-		s := g.setting(scopes, nil, "session")
-		if !reaches {
-			s.Mode, s.Grant, s.From, s.CappedBy = ModeOff, ModeOff, c.accessPath(identity, connection), ""
+		// Only an explicit session entry or reach decides an admission, which never opens a connection the identity does not reach.
+		if !t.reaches {
+			return map[string]Setting{"session": {ModeOff, t.unset}}
 		}
-		return map[string]Setting{"session": s}
+		return t.modes(nil, []string{"session"})
 	}
 	effects, lineage := []string{EffectUnknown}, []string(nil)
 	if op != nil && len(op.Effects) != 0 {
 		effects, lineage = op.Effects, op.Lineage
 	}
-	paid := slices.Contains(effects, "generate") && slices.Contains(effects, "pay")
-	g, scopes, _ := c.access(identity, groups, connection, paid)
-	modes := map[string]Setting{}
-	for _, e := range effects {
-		modes[e] = g.setting(scopes, lineage, e)
-	}
-	return modes
+	return t.modes(lineage, effects)
 }
 
 func (c *Config) ruleOperation(r Rule) *catalog.Operation {

@@ -9,7 +9,6 @@ import (
 	"net/netip"
 	"reflect"
 	"slices"
-	"strings"
 	"time"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
@@ -40,14 +39,7 @@ type Access struct {
 	Effects map[string]string `json:"effects,omitempty"`
 }
 
-type Limits struct {
-	Effects map[string]string `json:"effects,omitempty"`
-	Actions map[string]string `json:"actions,omitempty"`
-}
-
-type Role struct {
-	Groups      []string          `json:"groups,omitempty"`
-	Limits      Limits            `json:"limits,omitzero"`
+type Group struct {
 	Connections map[string]Access `json:"connections,omitempty"`
 }
 
@@ -77,8 +69,6 @@ type Identity struct {
 	Key         string                     `json:"key,omitempty"`
 	Certificate *CertificateBinding        `json:"certificate,omitempty"`
 	Groups      []string                   `json:"groups,omitempty"`
-	Roles       []string                   `json:"roles,omitempty"`
-	Limits      Limits                     `json:"limits,omitzero"`
 	Connections map[string]Access          `json:"connections"`
 	Rules       map[string]Rule            `json:"rules,omitempty"`
 	Attributes  map[string]json.RawMessage `json:",embed"`
@@ -93,7 +83,6 @@ type PolicyOptions struct {
 type Connection struct {
 	Preset        string                     `json:"preset"`
 	MatchOnly     bool                       `json:"match_only,omitempty"`
-	Limits        Limits                     `json:"limits,omitzero"`
 	PolicyOptions PolicyOptions              `json:"policy_options"`
 	Contents      string                     `json:"contents"`
 	Strangers     bool                       `json:"strangers"`
@@ -108,9 +97,9 @@ type Lattices struct {
 
 type Config struct {
 	AllowPaidInference bool                  `json:"allow_paid_inference,omitempty"`
-	Limits             Limits                `json:"limits,omitzero"`
+	Access             Access                `json:"access,omitzero"`
 	DefaultAccess      map[string]Access     `json:"default_access,omitempty"`
-	Roles              map[string]Role       `json:"roles,omitempty"`
+	Groups             map[string]Group      `json:"groups,omitempty"`
 	Lattices           Lattices              `json:"lattices"`
 	AllowNetworks      []netip.Prefix        `json:"allow_networks"`
 	Connections        map[string]Connection `json:"connections"`
@@ -138,14 +127,14 @@ func validateModes(where string, modes map[string]string, effects bool) error {
 	return nil
 }
 
-func validateLimits(where string, l Limits, actions bool) error {
-	if l.Actions != nil && !actions {
-		return fmt.Errorf("%s takes only effects; limit actions in [connections.<name>.limits]", where)
+func validateBlock(at string, a Access) error {
+	if a.Level != "" && !slices.Contains(accessLevels, a.Level) {
+		return fmt.Errorf("%s.level must be one of %v", at, accessLevels)
 	}
-	if err := validateModes(where+".effects", l.Effects, true); err != nil {
+	if err := validateModes(at+".effects", a.Effects, true); err != nil {
 		return err
 	}
-	return validateModes(where+".actions", l.Actions, false)
+	return validateModes(at+".actions", a.Actions, false)
 }
 
 func (c *Config) validateAccess(where string, connections map[string]Access) error {
@@ -158,35 +147,9 @@ func (c *Config) validateAccess(where string, connections map[string]Access) err
 		if connection == PerimeterConnection && (a.Level != "" || a.Effects != nil) {
 			return fmt.Errorf("%s: the %s connection is granted by actions only", at, PerimeterConnection)
 		}
-		if a.Level != "" && !slices.Contains(accessLevels, a.Level) {
-			return fmt.Errorf("%s.level must be one of %v", at, accessLevels)
-		}
-		if err := validateLimits(at, Limits{Effects: a.Effects, Actions: a.Actions}, true); err != nil {
+		if err := validateBlock(at, a); err != nil {
 			return err
 		}
-	}
-	return nil
-}
-
-func legacyShape(decoded map[string]any) error {
-	var moved []string
-	if _, ok := decoded["effects"]; ok {
-		moved = append(moved, "the top-level [effects] table is now [limits] effects, a ceiling on every grant")
-	}
-	for _, kind := range []string{"connections", "identities"} {
-		tables := tomledit.Table(decoded, kind)
-		for _, name := range slices.Sorted(maps.Keys(tables)) {
-			table, at := tomledit.Table(tables, name), tomlPath(kind, name)
-			if table["effects"] != nil {
-				moved = append(moved, fmt.Sprintf("%s.effects is now %s.limits.effects, a ceiling on every grant", at, at))
-			}
-			if kind == "identities" && table["routes"] != nil {
-				moved = append(moved, fmt.Sprintf("%s.routes is now the access block %s", at, tomlPath(at, "connections", PerimeterConnection)))
-			}
-		}
-	}
-	if moved != nil {
-		return errors.New(strings.Join(moved, "; "))
 	}
 	return nil
 }
@@ -196,9 +159,6 @@ func Load(text string, presets Library) (*Config, error) {
 		return nil, errors.New("policy source is too large")
 	}
 	decoded, err := tomledit.Read(text)
-	if err == nil {
-		err = legacyShape(decoded)
-	}
 	if err == nil {
 		err = perimeterTable(decoded)
 	}
@@ -226,7 +186,7 @@ func Load(text string, presets Library) (*Config, error) {
 }
 
 func (c *Config) validate() error {
-	if err := validateLimits("limits", c.Limits, false); err != nil {
+	if err := validateBlock(accountAccess, c.Access); err != nil {
 		return err
 	}
 	for name, conn := range c.Connections {
@@ -242,9 +202,6 @@ func (c *Config) validate() error {
 		if !slices.Contains(Audiences, conn.Contents) || !slices.Contains(Audiences, conn.Sends) {
 			return fmt.Errorf("connection %s: contents and sends must be one of %v", name, Audiences)
 		}
-		if err := validateLimits(tomlPath("connections", name, "limits"), conn.Limits, true); err != nil {
-			return err
-		}
 		if _, err := c.Spec(name); name != PerimeterConnection && err != nil {
 			return err
 		}
@@ -252,11 +209,8 @@ func (c *Config) validate() error {
 	if err := c.validateAccess("default_access", c.DefaultAccess); err != nil {
 		return err
 	}
-	for name, role := range c.Roles {
-		if err := validateLimits(tomlPath("roles", name, "limits"), role.Limits, true); err != nil {
-			return err
-		}
-		if err := c.validateAccess(tomlPath("roles", name, "connections"), role.Connections); err != nil {
+	for name, group := range c.Groups {
+		if err := c.validateAccess(tomlPath("groups", name, "connections"), group.Connections); err != nil {
 			return err
 		}
 	}
@@ -268,14 +222,6 @@ func (c *Config) validate() error {
 		}
 		if (id.Key == "") == (id.Certificate == nil) {
 			return fmt.Errorf("identity %s needs exactly one of key or certificate", name)
-		}
-		for _, role := range id.Roles {
-			if _, ok := c.Roles[role]; !ok {
-				return fmt.Errorf("identity %s: role %s does not exist", name, role)
-			}
-		}
-		if err := validateLimits(tomlPath("identities", name, "limits"), id.Limits, true); err != nil {
-			return err
 		}
 		if err := c.validateAccess(tomlPath("identities", name, "connections"), id.Connections); err != nil {
 			return err
@@ -453,18 +399,13 @@ func (c *Config) View() (map[string]any, error) {
 		v.Connections[name] = connection
 	}
 	resolved := map[string]map[string]Resolved{}
-	// The source's own roles table holds the role definitions, so each identity's roles go under another key.
-	identityRoles := map[string][]string{}
 	for name, id := range c.Identities {
 		resolved[name] = map[string]Resolved{}
 		for connection := range c.Connections {
 			resolved[name][connection] = c.Resolve(name, id.Groups, connection)
 		}
-		if roles := c.rolesOf(name, id.Groups); len(roles) != 0 {
-			identityRoles[name] = roles
-		}
 	}
-	view := map[string]any{"resolved": resolved, "identity_roles": identityRoles}
+	view := map[string]any{"resolved": resolved}
 	if stale := c.staleRules(); len(stale) != 0 {
 		view["stale"] = stale
 	}
@@ -507,9 +448,6 @@ func (c *Config) AgentView(p facts.Principal) (map[string]any, error) {
 		}
 	}
 	identity := map[string]any{"connections": own, "resolved": resolved}
-	if roles := c.rolesOf(p.Name, p.Groups); len(roles) != 0 {
-		identity["roles"] = roles
-	}
 	if rules := c.Identities[p.Name].Rules; len(rules) != 0 {
 		identity["rules"] = rules
 	}
@@ -529,32 +467,9 @@ func proposalTarget(path []string) (string, bool) {
 	return "", false
 }
 
-// Limits are ceilings the owner sets, and roles carry them; no proposal reaches either.
-func ownerOnly(path []string, value any) bool {
-	if len(path) >= 1 && (path[0] == "roles" || path[0] == "limits") ||
-		len(path) >= 3 && (path[0] == "connections" || path[0] == "identities") && path[2] == "limits" {
-		return true
-	}
-	table, _ := value.(map[string]any)
-	for key, nested := range table {
-		if ownerOnly(append(slices.Clone(path), key), nested) {
-			return true
-		}
-	}
-	return false
-}
-
-func ProposalChanges(p facts.Principal, source string, changes []tomledit.Change, others bool) (map[string][]tomledit.Change, error) {
-	current, err := tomledit.Read(source)
-	if err != nil {
-		return nil, err
-	}
+func ProposalChanges(p facts.Principal, changes []tomledit.Change, others bool) (map[string][]tomledit.Change, error) {
 	groups := map[string][]tomledit.Change{}
 	for _, change := range changes {
-		// Replacing or deleting a table replaces the limits inside it too.
-		if ownerOnly(change.Path, change.Value) || ownerOnly(change.Path, tomledit.Table(current, change.Path...)) {
-			return nil, errors.New("proposals cannot change roles or limits")
-		}
 		target, ok := proposalTarget(change.Path)
 		if !ok || change.From != nil {
 			return nil, errors.New("proposals may change only connection setup and access")
@@ -610,18 +525,7 @@ func (c *Config) PerimeterOff(p facts.Principal, action string) bool {
 	return strictest(c.Modes(p.Name, p.Groups, PerimeterConnection, op, KindOperation)).Mode == ModeOff
 }
 
-func missingDeviceActions(name string, id Identity) []tomledit.Change {
-	var changes []tomledit.Change
-	device, actions := DeviceActions(), id.Connections[PerimeterConnection].Actions
-	for _, action := range slices.Sorted(maps.Keys(device)) {
-		if _, set := actions[action]; !set {
-			changes = append(changes, tomledit.Change{Path: []string{"identities", name, "connections", PerimeterConnection, "actions", action}, Value: device[action]})
-		}
-	}
-	return changes
-}
-
-func (c *Config) Enroll(input map[string]Enrollment, enrolled map[string]bool) ([]tomledit.Change, error) {
+func (c *Config) Enroll(input map[string]Enrollment, enrolled map[string]bool, fields map[string]func(json.RawMessage) error) ([]tomledit.Change, error) {
 	var changes []tomledit.Change
 	for name, id := range input {
 		fingerprint, err := KeyFingerprint(id.Key)
@@ -630,6 +534,9 @@ func (c *Config) Enroll(input map[string]Enrollment, enrolled map[string]bool) (
 		}
 		attributes := map[string]any{}
 		for key, raw := range id.Attributes {
+			if fields[key] == nil {
+				return nil, fmt.Errorf("an enrollment has no field %s", key)
+			}
 			if attributes[key], err = facts.JSON[any](raw); err != nil {
 				return nil, err
 			}
@@ -637,12 +544,14 @@ func (c *Config) Enroll(input map[string]Enrollment, enrolled map[string]bool) (
 		maps.DeleteFunc(attributes, func(_ string, value any) bool { return value == nil })
 		if principal, ok := c.Principal(fingerprint); ok {
 			existing := c.Identities[principal.Name]
-			// A label or the owner policy may stop a device for now; only its grants and limits say it was revoked.
+			// A label or the owner policy may stop a device for now; only its access says it was revoked.
 			if id.Routes && c.PerimeterOff(principal, RoutesPublish) {
 				if !id.Restore {
 					return nil, errors.New("device route access was revoked")
 				}
-				changes = append(changes, missingDeviceActions(principal.Name, existing)...)
+				if !slices.Contains(existing.Groups, DeviceGroup) {
+					changes = append(changes, tomledit.Change{Path: []string{"identities", principal.Name, "groups"}, Value: append(slices.Clone(existing.Groups), DeviceGroup)})
+				}
 			}
 			for key, value := range attributes {
 				if before, _ := facts.JSON[any](existing.Attributes[key]); !reflect.DeepEqual(value, before) {
@@ -659,7 +568,7 @@ func (c *Config) Enroll(input map[string]Enrollment, enrolled map[string]bool) (
 		}
 		value := map[string]any{"key": id.Key}
 		if id.Routes {
-			value["connections"] = map[string]any{PerimeterConnection: Access{Actions: DeviceActions()}}
+			value["groups"] = []string{DeviceGroup}
 		}
 		maps.Copy(value, attributes)
 		changes = append(changes, tomledit.Change{Path: []string{"identities", name}, Value: value})

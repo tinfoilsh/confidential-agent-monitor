@@ -480,7 +480,7 @@ func (s *state) restoreDevice(ctx context.Context, public string) error {
 
 func (s *state) enroll(ctx context.Context, identities map[string]config.Enrollment) (changed bool, err error) {
 	err = s.writeSettings(ctx, settingsWrite{derive: func(h held) ([]tomledit.Change, error) {
-		changes, err := h.settings.Load().Enroll(identities, h.doc.Enrolled)
+		changes, err := h.settings.Load().Enroll(identities, h.doc.Enrolled, identityAttributes)
 		changed = len(changes) != 0
 		return changes, err
 	}})

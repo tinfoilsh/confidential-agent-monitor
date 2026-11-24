@@ -41,10 +41,6 @@ denied_mode := {"mode": "off", "from": "the Perimeter"}
 
 mode_of(effect) := object.get(auth.modes, effect, denied_mode)
 
-set_by(setting) := setting.capped_by if {
-	object.get(setting, "capped_by", "") != ""
-} else := setting.from
-
 # A preset's public scope lists the parameters that together name one resource, such as owner and repo.
 names := [v | some key in conn.public_scope; v := facts.parameters[key]; is_string(v); v != ""]
 
@@ -147,7 +143,12 @@ off contains effect if {
 	not mode_of(effect).mode in {"allow", "ask"}
 }
 
-reasons contains sprintf("The %s effect is set to Deny by %s.", [effect, set_by(mode_of(effect))]) if some effect in off
+denied_by[from] contains effect if {
+	some effect in off
+	from := mode_of(effect).from
+}
+
+reasons contains sprintf("Set to Deny by %s: %s.", [from, concat(", ", sort(effects))]) if some from, effects in denied_by
 
 reasons contains sprintf("The %s policy does not allow this request.", [source]) if {
 	some source in needed

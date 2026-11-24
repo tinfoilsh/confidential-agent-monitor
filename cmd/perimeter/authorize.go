@@ -146,7 +146,7 @@ func (st *settings) observe(connection string, event facts.Event) (requestFacts,
 
 func (st *settings) describe(connection string, o facts.Observation, observe connections.Observe) (requestFacts, *refusal) {
 	f := requestFacts{Parameters: o.Parameters, Scope: o.Scope, Title: o.Title, Details: o.Details, Context: requestContext{Flow: observe(o)}}
-	// An operation with no effects would skip every grant and limit.
+	// An operation with no effects would skip every access setting.
 	if o.Operation != nil && o.Operation.Effects != nil && !config.ValidEffects(o.Operation.Effects) {
 		return f, refuse(causeInvalid, "an operation's effects must be one or more effects of the vocabulary")
 	}

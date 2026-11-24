@@ -478,7 +478,7 @@ func (s *state) proposal(st *settings, source string, p facts.Principal, target,
 	if current, ok := s.identities.Lookup(p.Key); !ok || !current.Same(p) {
 		return "", nil, errNoAgent
 	}
-	if _, err := config.ProposalChanges(p, source, changes, others); err != nil {
+	if _, err := config.ProposalChanges(p, changes, others); err != nil {
 		return "", nil, err
 	}
 	candidate, _, _, err := st.Edit(source, changes, s.library(s.life, s.sealer))
@@ -517,7 +517,7 @@ func (s *state) proposePolicy(ctx context.Context, fingerprint string, input con
 		}
 		var others bool
 		s.locked(func(h held) { others = h.mayProposeOthers(before, p) })
-		groups, err := config.ProposalChanges(p, base.Policy, changes, others)
+		groups, err := config.ProposalChanges(p, changes, others)
 		if err != nil {
 			return nil, err
 		}

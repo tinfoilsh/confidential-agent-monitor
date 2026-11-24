@@ -68,7 +68,7 @@ func segmentTitle(segment string) string {
 	return strings.ToUpper(segment[:min(1, len(segment))]) + strings.NewReplacer("_", " ", "-", " ").Replace(segment[min(1, len(segment)):])
 }
 
-func (c *Config) tree(connection string, g grants, scopes []scope, unset Setting) []ResolvedNode {
+func (c *Config) tree(connection string, t tiers) []ResolvedNode {
 	preset := c.Presets[c.Connections[connection].Preset]
 	if preset == nil {
 		return nil
@@ -112,17 +112,8 @@ func (c *Config) tree(connection string, g grants, scopes []scope, unset Setting
 			if !named {
 				title = segmentTitle(key[strings.LastIndexByte(key, '.')+1:])
 			}
-			n := ResolvedNode{Key: key, Title: cmp.Or(title, key), Effects: slices.Sorted(maps.Keys(effects[key])), Setting: unset, Children: build(key)}
-			settings := map[string]Setting{}
-			for _, e := range n.Effects {
-				settings[e] = g.setting(scopes, catalog.Lineage(key), e)
-			}
-			if _, granted := first(g.actions, catalog.Lineage(key)); len(settings) == 0 && granted {
-				settings[""] = g.setting(scopes, catalog.Lineage(key), "")
-			}
-			if len(settings) != 0 {
-				n.Setting = strictest(settings)
-			}
+			n := ResolvedNode{Key: key, Title: cmp.Or(title, key), Effects: slices.Sorted(maps.Keys(effects[key])), Children: build(key)}
+			n.Setting = strictest(t.modes(catalog.Lineage(key), n.Effects))
 			nodes = append(nodes, n)
 		}
 		return nodes

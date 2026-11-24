@@ -9,7 +9,10 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
 )
 
-const PerimeterConnection = "perimeter"
+const (
+	PerimeterConnection = "perimeter"
+	DeviceGroup         = "device"
+)
 
 const (
 	RoutesPublish   = "routes.publish"
@@ -20,9 +23,7 @@ const (
 )
 
 // Enrolling a device grants these on the perimeter connection.
-func DeviceActions() map[string]string {
-	return map[string]string{RoutesPublish: "allow", PolicyRead: "allow", ProposalsOthers: "allow"}
-}
+var deviceActions = map[string]string{RoutesPublish: "allow", PolicyRead: "allow", ProposalsOthers: "allow"}
 
 //go:embed perimeter.json
 var perimeterJSON []byte
@@ -37,10 +38,8 @@ var perimeterPreset = func() *catalog.Preset {
 }()
 
 func perimeterTable(decoded map[string]any) error {
-	for key := range tomledit.Table(decoded, "connections", PerimeterConnection) {
-		if key != "limits" {
-			return fmt.Errorf("%s: the built-in %s connection accepts only limits", tomlPath("connections", PerimeterConnection, key), PerimeterConnection)
-		}
+	if len(tomledit.Table(decoded, "connections", PerimeterConnection)) != 0 {
+		return fmt.Errorf("%s: the built-in %s connection takes no settings", tomlPath("connections", PerimeterConnection), PerimeterConnection)
 	}
 	return nil
 }
@@ -49,13 +48,19 @@ func (c *Config) builtIn() error {
 	if p, listed := c.Presets[PerimeterConnection]; listed && p != perimeterPreset {
 		return fmt.Errorf("preset %s is the Perimeter's own; a catalog cannot list one of that name", PerimeterConnection)
 	}
+	if _, defined := c.Groups[DeviceGroup]; defined {
+		return fmt.Errorf("%s: the %s group is built in", tomlPath("groups", DeviceGroup), DeviceGroup)
+	}
 	presets := map[string]*catalog.Preset{PerimeterConnection: perimeterPreset}
 	maps.Copy(presets, c.Presets)
 	c.Presets = presets
 	if c.Connections == nil {
 		c.Connections = map[string]Connection{}
 	}
-	c.Connections[PerimeterConnection] = Connection{Preset: PerimeterConnection, Limits: c.Connections[PerimeterConnection].Limits,
-		Contents: AudienceMe, Sends: AudienceMe}
+	c.Connections[PerimeterConnection] = Connection{Preset: PerimeterConnection, Contents: AudienceMe, Sends: AudienceMe}
+	if c.Groups == nil {
+		c.Groups = map[string]Group{}
+	}
+	c.Groups[DeviceGroup] = Group{Connections: map[string]Access{PerimeterConnection: {Actions: deviceActions}}}
 	return nil
 }

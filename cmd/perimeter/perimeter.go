@@ -121,7 +121,7 @@ func enrollment(s *state, _ *http.Request, input any) ([]facts.Observation, erro
 	return []facts.Observation{{Operation: &facts.Operation{Action: "enroll"}, Parameters: map[string]any{"identities": names, "keys": keys}, Details: input}}, nil
 }
 
-// Grants and limits do not depend on the scope, so an action they turn off is refused before any record is read.
+// Access does not depend on the scope, so an action it turns off is refused before any record is read.
 func (s *state) offFor(c caller, action string) bool {
 	if c.Owner {
 		return false
