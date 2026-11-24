@@ -23,7 +23,7 @@ const view: owner.View = {
   status: {},
   config: {
     data: { onboarding: { completed: true } },
-    limits: { effects: { pay: "ask" } },
+    access: { effects: { pay: "ask" } },
     connections: {
       "tinfoil-websearch": {
         preset: "tinfoil_websearch",

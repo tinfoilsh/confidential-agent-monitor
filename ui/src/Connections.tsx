@@ -21,7 +21,6 @@ import {
   SectionHeading,
   Field,
   Icon,
-  LimitsLine,
   Modal,
   RenameItem,
   ResourceDisclosure,
@@ -342,12 +341,15 @@ function MyConnections(props: { expanded?: string }) {
     </>
   );
 }
+const PAY_DEFAULTS: Record<owner.Mode, string> = {
+  ask: "a payment asks you first.",
+  allow: "payments go through without asking.",
+  off: "payments are refused.",
+};
 // Account-wide rules that apply to every bunker and connection.
 function GlobalPermissions() {
   const m = useMonitor();
-  const pay = () => m.view()!.config.limits?.effects?.pay;
-  // A limit of allow caps nothing.
-  const payLimited = () => !!pay() && pay() !== "allow";
+  const pay = () => m.view()!.config.access?.effects?.pay;
   return (
     <div class="settings">
       <section class="settings-section resource-list">
@@ -356,26 +358,20 @@ function GlobalPermissions() {
         </div>
         <label class="settings-card setting-toggle">
           <span>
-            <span class="setting-title">
-              {pay() === "off"
-                ? "Refuse every payment"
-                : "Ask before any payment"}
-            </span>
+            <span class="setting-title">Payments ask by default</span>
             <small>
-              {pay() === "off"
-                ? "Every payment is refused, paid AI inference included."
-                : payLimited()
-                  ? "Every payment asks, paid AI inference included, even where a connection's access grants it."
-                  : "Payments ask unless a connection's access grants pay = allow."}
+              {pay()
+                ? `Where no connection, group or bunker sets its own access, ${PAY_DEFAULTS[pay()!]}`
+                : "Payments follow the rest of your access settings."}
             </small>
           </span>
           <input
             type="checkbox"
             role="switch"
-            checked={payLimited()}
+            checked={pay() === "ask"}
             onChange={(e) =>
               void m.edit(
-                owner.edits.setEffectLimit(
+                owner.edits.setEffect(
                   "pay",
                   e.currentTarget.checked ? "ask" : undefined,
                 ),
@@ -387,11 +383,8 @@ function GlobalPermissions() {
           <span>
             <span class="setting-title">Allow AI inference without asking</span>
             <small>
-              {pay() === "off"
-                ? "Paid model calls are refused too, like every other payment."
-                : payLimited()
-                  ? "Paid model calls ask too, like every other payment."
-                  : "Paid model calls (Tinfoil, OpenAI, …) go through without approval. Other payments still ask."}
+              Paid model calls (Tinfoil, OpenAI, …) go through without approval
+              wherever a level grants them. Other payments still ask.
             </small>
           </span>
           <input
@@ -1531,10 +1524,6 @@ function Connection(props: { name: string }) {
               )}
             </For>
           </div>
-          <LimitsLine
-            limits={connection()?.limits}
-            description="Ceilings for every bunker on this connection. Edit them in the policy source."
-          />
         </section>
         <MatchOnlySetting name={props.name} />
         <ConnectionForm

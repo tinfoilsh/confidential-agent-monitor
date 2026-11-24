@@ -164,7 +164,7 @@ describe("a connection's action list", () => {
     return v;
   };
   const node = (key: string, title: string, mode: owner.Mode, children?: owner.ResolvedNode[]): owner.ResolvedNode =>
-    ({ key, title, mode, from: "", grant: mode, limit: "allow", effects: [], children });
+    ({ key, title, mode, from: "", effects: [], children });
   const rows = (v: owner.View, connection: string) =>
     owner
       .agentAccess(v, "sandbox", connection)[0]

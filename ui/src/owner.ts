@@ -32,22 +32,7 @@ export type Access = {
   actions?: Record<string, Mode>;
   effects?: Record<string, Mode>;
 };
-export type Limits = {
-  effects?: Record<string, Mode>;
-  actions?: Record<string, Mode>;
-};
-export type Role = {
-  groups?: string[];
-  limits?: Limits;
-  connections?: Record<string, Access>;
-};
-export type Setting = {
-  mode: Mode;
-  from: string;
-  grant: Mode;
-  limit: Mode;
-  capped_by?: string;
-};
+export type Setting = { mode: Mode; from: string };
 export type ResolvedNode = Setting & {
   key: string;
   title: string;
@@ -86,8 +71,6 @@ export type Identity = {
   certificate?: { key_id?: string; group?: string };
   sandbox?: { source: string; instance_id: string };
   groups?: string[];
-  roles?: string[];
-  limits?: Limits;
   connections?: Record<string, Access>;
   rules?: Record<string, Rule>;
 };
@@ -95,7 +78,6 @@ export type Identity = {
 const SETTINGS = [
   "preset",
   "match_only",
-  "limits",
   "policy_options",
   "contents",
   "strangers",
@@ -104,7 +86,6 @@ const SETTINGS = [
 export type Connection = {
   preset: string;
   match_only?: boolean;
-  limits?: Limits;
   contents: Audience;
   sends: Audience;
   strangers?: boolean;
@@ -169,9 +150,9 @@ export type View = {
   ca: string;
   config: {
     allow_paid_inference?: boolean;
-    limits?: Limits;
+    access?: Access;
     default_access?: Record<string, Access>;
-    roles?: Record<string, Role>;
+    groups?: Record<string, { connections?: Record<string, Access> }>;
     data?: { [key: string]: Json };
     identities?: Record<string, Identity> | null;
     connections?: Record<string, Connection> | null;
@@ -180,7 +161,6 @@ export type View = {
     allow_networks?: string[] | null;
     catalogs?: Record<string, string> | null;
     resolved: Record<string, Record<string, Resolved>>;
-    identity_roles?: Record<string, string[]>;
     stale?: Record<string, Record<string, string>>;
   };
   labels: Record<string, Label>;
@@ -611,7 +591,7 @@ export function ownerApi(
       body,
       signal,
     )) as View & { pending?: true };
-    // A Perimeter from before grants and limits sends no resolved access, which every page reads.
+    // An older Perimeter sends no resolved access, which every page reads.
     if (view?.config && !("resolved" in view.config))
       throw new OwnerError(
         "This Perimeter is older than this console. Update the Perimeter to manage it here.",
@@ -834,15 +814,8 @@ export const isBuiltin = (name: string) => name === PERIMETER;
 export const serviceNames = (view: View) =>
   Object.keys(connections(view)).filter((name) => !isBuiltin(name));
 const ROUTES_PUBLISH = "routes.publish";
-// The grant enrolling a device writes; see config.DeviceActions.
-const deviceAccess = (mode: Mode) => ({
-  actions: Object.fromEntries(
-    [ROUTES_PUBLISH, "policy.read", "proposals.others"].map((action) => [
-      action,
-      mode,
-    ]),
-  ),
-});
+// The built-in group granting config.deviceActions on the Perimeter.
+const DEVICE = "device";
 const flatten = (nodes: ResolvedNode[] = []): ResolvedNode[] =>
   nodes.flatMap((node) => [node, ...flatten(node.children)]);
 export const publishesRoutes = (view: View, name: string) =>
@@ -1084,11 +1057,9 @@ export function ruleTitle(view: View, r: Rule) {
 }
 
 const inherited = (s: Setting) =>
-  s.from.startsWith("default_access.") || s.from.startsWith("roles.");
+  /^(access|default_access|groups)\./.test(s.from);
 export const provenance = (s: Setting) =>
-  s.capped_by
-    ? `${s.mode}, set by ${s.capped_by} (${s.from} grants ${s.grant})`
-    : `${s.mode}, ${inherited(s) ? "inherited from" : "set by"} ${s.from}`;
+  `${s.mode}, ${inherited(s) ? "inherited from" : "set by"} ${s.from}`;
 
 export const levelsOf = (c?: Connection) =>
   (Object.entries(LEVELS) as [GrantLevel, string][]).filter(
@@ -1902,7 +1873,8 @@ export const edits = {
       identities: {
         [name]: {
           key: key.trim(),
-          connections: device ? { [PERIMETER]: deviceAccess("allow") } : {},
+          ...(device && { groups: [DEVICE] }),
+          connections: {},
         },
       },
     }),
@@ -1941,8 +1913,17 @@ export const edits = {
       ),
     ];
   },
-  setRoutes: (name: string, routes: boolean): Change[] =>
-    edits.setAccess(name, PERIMETER, deviceAccess(routes ? "allow" : "off")),
+  setRoutes: (view: View, name: string, routes: boolean): Change[] => [
+    {
+      path: ["identities", name, "groups"],
+      value: [
+        ...(identities(view)[name]?.groups ?? []).filter(
+          (group) => group !== DEVICE,
+        ),
+        ...(routes ? [DEVICE] : []),
+      ],
+    },
+  ],
   // The bunkers connection is added by the first access set to it.
   setLevel: (
     view: View,
@@ -1977,9 +1958,9 @@ export const edits = {
       ? { path: ["connections", name, "match_only"], value: true }
       : { path: ["connections", name, "match_only"], delete: true },
   ],
-  setEffectLimit: (effect: string, mode?: Mode): Change[] => [
+  setEffect: (effect: string, mode?: Mode): Change[] => [
     {
-      path: ["limits", "effects", effect],
+      path: ["access", "effects", effect],
       ...(mode ? { value: mode } : { delete: true }),
     },
   ],
@@ -1994,6 +1975,9 @@ export const edits = {
       rules: Object.entries(identity.rules ?? {}).filter(
         ([, rule]) => (rule.connection === PERIMETER) === perimeter,
       ),
+      groups: (identity.groups ?? []).filter(
+        (group) => (group === DEVICE) === perimeter,
+      ),
     });
     const copied = access(source, false),
       kept = access(target, true);
@@ -2003,8 +1987,7 @@ export const edits = {
         ...kept.connections,
       ]),
       rules: Object.fromEntries([...copied.rules, ...kept.rules]),
-      limits: source.limits ?? {},
-      roles: source.roles ?? [],
+      groups: [...copied.groups, ...kept.groups],
     }).map(([key, value]) => ({
       path: ["identities", name, key],
       value: clone(value),

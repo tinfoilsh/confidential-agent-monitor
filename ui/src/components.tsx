@@ -831,34 +831,6 @@ export function RuleText(props: {
     </span>
   );
 }
-export function LimitsLine(props: {
-  limits?: owner.Limits;
-  description: string;
-}) {
-  const entries = () => [
-    ...Object.entries(props.limits?.effects ?? {}),
-    ...Object.entries(props.limits?.actions ?? {}),
-  ];
-  return (
-    <Show when={entries().length}>
-      <div class="setting-row">
-        <span>
-          Limits
-          <small>{props.description}</small>
-        </span>
-        <small class="rule-scope">
-          <For each={entries()}>
-            {([key, mode]) => (
-              <code title={`${key} = "${mode}"`}>
-                {key}: {owner.MODES[mode] ?? mode}
-              </code>
-            )}
-          </For>
-        </small>
-      </div>
-    </Show>
-  );
-}
 // Row actions stay outside the disclosure so they are available when it is closed.
 const MENU_GAP = 4;
 export function RowMenu(props: { name: string; children: JSX.Element }) {

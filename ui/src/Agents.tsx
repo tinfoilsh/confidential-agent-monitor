@@ -8,7 +8,6 @@ import {
   DisclosureHeading,
   Icon,
   LazyDetails,
-  LimitsLine,
   PiSpinner,
   RemoveRule,
   RenameItem,
@@ -450,16 +449,6 @@ function Actions(props: {
                   *
                 </span>
               </Show>
-              <Show when={node().capped_by}>
-                {(limit) => (
-                  <>
-                    {" "}
-                    <small class="muted" title={`Limited by ${limit()}`}>
-                      limited
-                    </small>
-                  </>
-                )}
-              </Show>
               <Show when={builtin() && node().effects.includes("admin")}>
                 <small class="access-warning">
                   Grants control of the Perimeter
@@ -750,7 +739,11 @@ function SandboxAccess(props: { name: string }) {
         checked={owner.publishesRoutes(m.view()!, props.name)}
         onChange={(e) =>
           void m.edit(
-            owner.edits.setRoutes(props.name, e.currentTarget.checked),
+            owner.edits.setRoutes(
+              m.view()!,
+              props.name,
+              e.currentTarget.checked,
+            ),
           )
         }
       />
@@ -765,7 +758,10 @@ function IdentityPolicy(props: { name: string }) {
   const identity = () => m.view()!.config.identities?.[props.name];
   const binding = () =>
     identity()?.key ? undefined : owner.bindingText(identity());
-  const roles = () => m.view()!.config.identity_roles?.[props.name] ?? [];
+  const groups = () =>
+    (identity()?.groups ?? []).filter((group) =>
+      Object.hasOwn(m.view()!.config.groups ?? {}, group),
+    );
   return (
     <>
       <Show when={binding()}>
@@ -781,21 +777,17 @@ function IdentityPolicy(props: { name: string }) {
           </div>
         )}
       </Show>
-      <Show when={roles().length}>
+      <Show when={groups().length}>
         <div class="setting-row">
           <span>
-            Roles
-            <small>Access and limits it shares with other identities.</small>
+            Groups
+            <small>Access it shares with other identities.</small>
           </span>
           <small class="rule-scope">
-            <For each={roles()}>{(role) => <code>{role}</code>}</For>
+            <For each={groups()}>{(group) => <code>{group}</code>}</For>
           </small>
         </div>
       </Show>
-      <LimitsLine
-        limits={identity()?.limits}
-        description="Ceilings on everything it does. Edit them in the policy source."
-      />
     </>
   );
 }
@@ -873,8 +865,7 @@ function AgentSettings(props: { name: string }) {
                   <span>
                     Copy bunker profile
                     <small>
-                      Takes its connection access, actions, rules, limits and
-                      roles.
+                      Takes its connection access, actions, rules and groups.
                     </small>
                   </span>
                   <span class="agent-advanced-actions">
