@@ -32,6 +32,7 @@ func Record(line []byte) ([]byte, error) {
 		Sends        string               `json:"sends"`
 		Next         format.Label         `json:"next"`
 		Invalid      bool                 `json:"invalid"`
+		Expires      string               `json:"expires"`
 		Facts        struct {
 			Service    string `json:"service"`
 			Connection string `json:"connection"`
@@ -50,6 +51,8 @@ func Record(line []byte) ([]byte, error) {
 	}
 	set := func(key string, value any) { r[key], _ = json.Marshal(value) }
 	set("scope", old.Grant)
+	// A refused request the policy allowed, or asked about and waited on, failed a precondition that settleRecord kept in deny.
+	failed := old.State == stateRefused && (*old.Allow || len(old.Requirements) != 0 && old.Expires != "")
 	switch {
 	case old.Facts.Service == legacyOwnerService && old.Facts.Connection == "":
 		r["facts"] = ownerFacts(r["facts"])
@@ -58,7 +61,7 @@ func Record(line []byte) ([]byte, error) {
 		}
 	case old.Invalid:
 		set("refusal", refusal{causeInvalid, old.Deny})
-	case len(old.Deny) != 0:
+	case len(old.Deny) != 0 && !failed:
 		set("decision", config.Decision{Outcome: config.OutcomeDeny, Sends: old.Sends, Reasons: old.Deny})
 		if old.State == stateRefused {
 			set("refusal", refusal{Cause: causeDenied})
@@ -67,6 +70,9 @@ func Record(line []byte) ([]byte, error) {
 		set("decision", config.Decision{Outcome: config.OutcomeAsk, Sends: old.Sends, Gaps: old.Requirements})
 	case *old.Allow:
 		set("decision", config.Decision{Outcome: config.OutcomeAllow, Sends: old.Sends, Next: &old.Next})
+	}
+	if failed {
+		set("refusal", refusal{causePrecondition, old.Deny})
 	}
 	if old.State == legacyApproved {
 		set("state", "allowed")
