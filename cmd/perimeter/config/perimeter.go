@@ -13,16 +13,30 @@ const (
 	DeviceGroup         = "device"
 )
 
+// Actions on the perimeter connection, as perimeter.json defines them.
 const (
-	RoutesPublish   = "routes.publish"
-	PolicyRead      = "policy.read"
-	ProposalsOthers = "proposals.others"
-	RequestsRead    = "requests.read"
-	AuditRead       = "audit.read"
+	OverviewRead       = "overview.read"
+	PolicyRead         = "policy.read"
+	PolicyPreview      = "policy.preview"
+	PolicyWrite        = "policy.write"
+	CredentialsWrite   = "credentials.write"
+	ConnectionsControl = "connections.control"
+	EnrollIdentities   = "enroll"
+	LabelsWrite        = "labels.write"
+	RequestsRead       = "requests.read"
+	RequestsAnswer     = "requests.answer"
+	RequestsSave       = "requests.save"
+	ProposalsAnswer    = "proposals.answer"
+	ProposalsOthers    = "proposals.others"
+	AuditRead          = "audit.read"
+	CatalogsRead       = "catalogs.read"
+	ExplainIdentity    = "explain"
+	BunkersRelay       = "bunkers.relay"
+	RoutesPublish      = "routes.publish"
 )
 
 // Enrolling a device grants these on the perimeter connection.
-var deviceActions = map[string]string{RoutesPublish: "allow", PolicyRead: "allow", ProposalsOthers: "allow"}
+var deviceActions = map[string]Mode{RoutesPublish: ModeAllow, PolicyRead: ModeAllow, ProposalsOthers: ModeAllow}
 
 //go:embed perimeter.json
 var perimeterJSON []byte

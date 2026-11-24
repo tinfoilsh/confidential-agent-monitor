@@ -25,14 +25,6 @@ import (
 )
 
 const (
-	statePending  = "pending"
-	stateExpired  = "expired"
-	stateOutdated = "outdated"
-	stateAllowed  = "allowed"
-	stateRefused  = "refused"
-	stateDenied   = "denied"
-	stateRevoked  = "revoked"
-
 	answerOnce = "once"
 	answerSave = "save"
 	answerDeny = "deny"
@@ -117,7 +109,7 @@ func summarize(r *record) recordSummary {
 }
 
 func (s held) addRecord(r *record) *record {
-	r.ID, r.Time, r.State = rand.Text(), time.Now(), statePending
+	r.ID, r.Time, r.State = rand.Text(), time.Now(), format.RecordPending
 	s.records.Add(r)
 	return r
 }
@@ -132,12 +124,12 @@ func (s held) announce(r *record) {
 }
 
 func (s held) settleRecord(r *record, refused *refusal) {
-	r.State = stateAllowed
+	r.State = format.RecordAllowed
 	if refused != nil {
 		r.State = refused.state()
 	}
 	switch {
-	case r.State != stateRefused:
+	case r.State != format.RecordRefused:
 	case r.Decision != nil && r.Decision.Outcome == config.OutcomeDeny:
 		r.Refusal = refuse(refused.Cause)
 	default:
@@ -148,12 +140,12 @@ func (s held) settleRecord(r *record, refused *refusal) {
 
 func (s held) revokeRecord(r *record, refused *refusal) {
 	s.addRecord(r)
-	r.State, r.Refusal = stateRevoked, refused
+	r.State, r.Refusal = format.RecordRevoked, refused
 	s.auditRecord(r)
 }
 
 func (s held) outdateRecord(r *record) {
-	r.State = stateOutdated
+	r.State = format.RecordOutdated
 	s.auditRecord(r)
 }
 
@@ -196,7 +188,7 @@ func (s held) findAnswerable(id string, input Answer, revision uint64) (*record,
 	if r == nil {
 		return nil, fmt.Errorf("no request %s", id)
 	}
-	if r.State != statePending && !(r.State == stateExpired && input.Choice == answerSave) {
+	if r.State != format.RecordPending && !(r.State == format.RecordExpired && input.Choice == answerSave) {
 		return nil, fmt.Errorf("request %s is %s", id, r.State)
 	}
 	// An approval waives exactly the gaps its answerer saw, never ones a re-decision added since.
@@ -216,7 +208,7 @@ func (s held) appendReview(r *record, review Review) {
 // A proposal leaves pending at once, before the settings it applied could outdate it.
 func (s held) appendSavedReview(r *record, review Review) {
 	if r.Changes != nil {
-		r.State = stateAllowed
+		r.State = format.RecordAllowed
 	}
 	s.appendReview(r, review)
 }
@@ -518,7 +510,7 @@ func (s *state) proposePolicy(ctx context.Context, fingerprint string, input con
 			var replaced []*record
 			pending := len(proposals)
 			for r := range h.records.All() {
-				if r.State != statePending || r.Changes == nil {
+				if r.State != format.RecordPending || r.Changes == nil {
 					continue
 				}
 				f := r.subject()

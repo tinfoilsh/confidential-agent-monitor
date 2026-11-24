@@ -23,6 +23,19 @@ func (m Mode) valid() bool { _, ok := modeRank[m]; return ok }
 
 func stricter(a, b Mode) bool { return modeRank[a] < modeRank[b] }
 
+type Level string
+
+const (
+	LevelOff   Level = "off"
+	LevelRead  Level = "read"
+	LevelAsk   Level = "ask"
+	LevelAllow Level = "allow"
+	// A resolution whose effects match no level is reported as custom.
+	LevelCustom Level = "custom"
+)
+
+var accessLevels = []Level{LevelOff, LevelRead, LevelAsk, LevelAllow}
+
 type Setting struct {
 	Mode Mode   `json:"mode"`
 	From string `json:"from"`
@@ -30,7 +43,7 @@ type Setting struct {
 
 type Resolved struct {
 	Reaches bool               `json:"reaches"`
-	Level   string             `json:"level"`
+	Level   Level              `json:"level"`
 	Effects map[string]Setting `json:"effects"`
 	Actions map[string]Setting `json:"actions,omitempty"`
 	Tree    []ResolvedNode     `json:"tree,omitempty"`
@@ -43,18 +56,18 @@ func tomlPath(path string, keys ...string) string { return path + "." + tomledit
 
 // Every effect, so a more specific level replaces a less specific one entirely.
 // Read and up allow what needs no trust; read refuses the rest.
-func levelMode(level, effect string) (Mode, bool) {
+func levelMode(level Level, effect string) (Mode, bool) {
 	t, known := Vocabulary[effect]
 	switch {
 	case !known || level == "":
 		return "", false
-	case level == "off":
+	case level == LevelOff:
 		return ModeOff, true
 	case !t.Integrity:
 		return ModeAllow, true
-	case level == "read":
+	case level == LevelRead:
 		return ModeOff, true
-	case level == "ask":
+	case level == LevelAsk:
 		return ModeAsk, true
 	}
 	return ModeAllow, true
@@ -75,11 +88,11 @@ type block struct {
 func (b block) cover(lineage []string, effect string) (Setting, bool) {
 	for _, a := range lineage {
 		if m, ok := b.access.Actions[a]; ok {
-			return Setting{Mode(m), tomlPath(b.path, "actions", a)}, true
+			return Setting{m, tomlPath(b.path, "actions", a)}, true
 		}
 	}
 	if m, ok := b.access.Effects[effect]; ok {
-		return Setting{Mode(m), tomlPath(b.path, "effects", effect)}, true
+		return Setting{m, tomlPath(b.path, "effects", effect)}, true
 	}
 	m, ok := levelMode(b.access.Level, effect)
 	// Only an operation has a lineage; a level never opens a session, which follows reach.
@@ -207,9 +220,9 @@ func (c *Config) Resolve(identity string, groups []string, connection string) Re
 	return r
 }
 
-func (r Resolved) level() string {
+func (r Resolved) level() Level {
 	if !r.Reaches {
-		return "off"
+		return LevelOff
 	}
 	for _, level := range accessLevels[1:] {
 		matches := true
@@ -221,7 +234,7 @@ func (r Resolved) level() string {
 			return level
 		}
 	}
-	return "custom"
+	return LevelCustom
 }
 
 func (c *Config) Reaches(identity string, groups []string, connection string) bool {

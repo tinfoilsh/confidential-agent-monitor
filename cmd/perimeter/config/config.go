@@ -25,8 +25,6 @@ const (
 	maxProposalChanges = 256
 )
 
-var accessLevels = []string{"off", "read", "ask", "allow"}
-
 type ConnectionSpec struct {
 	Name, Protocol              string
 	Config, Definition, Options json.RawMessage
@@ -34,9 +32,9 @@ type ConnectionSpec struct {
 }
 
 type Access struct {
-	Level   string            `json:"level,omitempty"`
-	Actions map[string]string `json:"actions,omitempty"`
-	Effects map[string]string `json:"effects,omitempty"`
+	Level   Level           `json:"level,omitempty"`
+	Actions map[string]Mode `json:"actions,omitempty"`
+	Effects map[string]Mode `json:"effects,omitempty"`
 }
 
 type Group struct {
@@ -117,12 +115,12 @@ type Config struct {
 
 type PresetLoader func(*Config) (map[string]*catalog.Preset, error)
 
-func validateModes(where string, modes map[string]string, effects bool) error {
+func validateModes(where string, modes map[string]Mode, effects bool) error {
 	for key, mode := range modes {
 		if _, ok := Vocabulary[key]; effects && !ok {
 			return fmt.Errorf("%s: unknown effect %q", where, key)
 		}
-		if !Mode(mode).valid() {
+		if !mode.valid() {
 			return fmt.Errorf("%s.%s must be off, ask or allow", where, tomledit.Key(key))
 		}
 	}

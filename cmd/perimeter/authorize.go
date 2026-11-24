@@ -22,22 +22,11 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 )
 
-type cause string
+type refusal struct{ format.Refusal }
 
-const (
-	causeInvalid      cause = "invalid"
-	causePrecondition cause = "precondition"
-	causeDenied       cause = "denied"
-	causeRejected     cause = "rejected"
-	causeExpired      cause = "expired"
-)
-
-type refusal struct {
-	Cause   cause    `json:"cause"`
-	Reasons []string `json:"reasons,omitempty"`
+func refuse(c format.Cause, reasons ...string) *refusal {
+	return &refusal{format.Refusal{Cause: c, Reasons: reasons}}
 }
-
-func refuse(c cause, reasons ...string) *refusal { return &refusal{Cause: c, Reasons: reasons} }
 
 func (r *refusal) Error() string { return strings.Join(r.Reasons, "; ") }
 
@@ -46,9 +35,9 @@ func (r *refusal) HTTPStatus() int {
 	switch {
 	case r == errChanged || r == errRemoved:
 		return http.StatusConflict
-	case r.Cause == causePrecondition:
+	case r.Cause == format.CausePrecondition:
 		return http.StatusServiceUnavailable
-	case r.Cause == causeInvalid:
+	case r.Cause == format.CauseInvalid:
 		return http.StatusBadRequest
 	}
 	return http.StatusForbidden
@@ -58,26 +47,26 @@ func precondition(err error) *refusal {
 	if err == nil {
 		return nil
 	}
-	return refuse(causePrecondition, err.Error())
+	return refuse(format.CausePrecondition, err.Error())
 }
 
 func (r *refusal) state() string {
 	switch r.Cause {
-	case causeRejected:
-		return stateDenied
-	case causeExpired:
-		return stateExpired
+	case format.CauseRejected:
+		return format.RecordDenied
+	case format.CauseExpired:
+		return format.RecordExpired
 	}
-	return stateRefused
+	return format.RecordRefused
 }
 
 var (
-	errRemoved      = refuse(causePrecondition, "this agent's identity was removed")
-	errChanged      = refuse(causePrecondition, "configuration changed; retry the request")
-	errAuditBacklog = refuse(causePrecondition, "the Perimeter cannot write its audit log; requests are refused until storage recovers")
-	errRestarted    = refuse(causePrecondition, "the Perimeter restarted before this request was answered; retry it")
-	errRejected     = refuse(causeRejected, "this request was denied")
-	errExpired      = refuse(causeExpired, "waiting for approval in the Perimeter timed out")
+	errRemoved      = refuse(format.CausePrecondition, "this agent's identity was removed")
+	errChanged      = refuse(format.CausePrecondition, "configuration changed; retry the request")
+	errAuditBacklog = refuse(format.CausePrecondition, "the Perimeter cannot write its audit log; requests are refused until storage recovers")
+	errRestarted    = refuse(format.CausePrecondition, "the Perimeter restarted before this request was answered; retry it")
+	errRejected     = refuse(format.CauseRejected, "this request was denied")
+	errExpired      = refuse(format.CauseExpired, "waiting for approval in the Perimeter timed out")
 )
 
 var errNoAccess = errors.New("key has no agent access")
@@ -137,14 +126,14 @@ func (st *settings) eventFacts(connection string, event facts.Event) (requestFac
 	if c == nil {
 		return f, errChanged
 	}
-	return f, refuse(causeInvalid, err.Error())
+	return f, refuse(format.CauseInvalid, err.Error())
 }
 
 func (st *settings) observationFacts(connection string, o facts.Observation, flow func(facts.Observation) connections.Flow) (requestFacts, *refusal) {
 	f := requestFacts{Parameters: o.Parameters, Scope: o.Scope, Title: o.Title, Details: o.Details, Flow: flow(o)}
 	// An operation with no effects would skip every access setting.
 	if o.Operation != nil && o.Operation.Effects != nil && !config.ValidEffects(o.Operation.Effects) {
-		return f, refuse(causeInvalid, "an operation's effects must be one or more effects of the vocabulary")
+		return f, refuse(format.CauseInvalid, "an operation's effects must be one or more effects of the vocabulary")
 	}
 	actions := st.Preset(connection).Catalog
 	if o.Operation != nil {
@@ -174,7 +163,7 @@ func (st *settings) decide(ctx context.Context, p facts.Principal, connection st
 	}
 	encoded, err := json.Marshal(f)
 	if err != nil {
-		return nil, refuse(causeInvalid, err.Error())
+		return nil, refuse(format.CauseInvalid, err.Error())
 	}
 	r := &record{Facts: encoded, Scope: f.Scope}
 	if refused != nil {
@@ -190,7 +179,7 @@ func (st *settings) decide(ctx context.Context, p facts.Principal, connection st
 	}
 	d, err := st.policy.Decide(ctx, input)
 	if err != nil {
-		return r, cmp.Or(precondition(ctx.Err()), refuse(causeDenied, err.Error()))
+		return r, cmp.Or(precondition(ctx.Err()), refuse(format.CauseDenied, err.Error()))
 	}
 	r.Decision = &d
 	return r, nil
@@ -284,7 +273,7 @@ func (s held) decideUntilAnswered(ctx context.Context, a *stream, req *request) 
 		case config.OutcomeAllow:
 			return r, nil
 		case config.OutcomeDeny:
-			return r, refuse(causeDenied, r.Decision.Reasons...)
+			return r, refuse(format.CauseDenied, r.Decision.Reasons...)
 		}
 		gaps := gapIDs(r.Decision.Gaps)
 		fresh := !slices.Equal(gaps, asked)
@@ -424,7 +413,7 @@ func (s held) recheck(a *stream) bool {
 		switch {
 		case refused == nil && r.Decision.Outcome == config.OutcomeAllow:
 			continue
-		case r != nil && (refused == nil || refused.Cause != causePrecondition):
+		case r != nil && (refused == nil || refused.Cause != format.CausePrecondition):
 			s.revokeRecord(r, refused)
 		}
 		return false

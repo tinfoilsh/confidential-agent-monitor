@@ -291,7 +291,7 @@ func (s held) commitSettings(ctx context.Context, plan *settingsPlan, saved *sav
 		s.identities.Register(fingerprint, p, true)
 	}
 	for r := range s.records.All() {
-		if r.State != statePending || r.Changes == nil {
+		if r.State != format.RecordPending || r.Changes == nil {
 			continue
 		}
 		f := r.subject()
@@ -465,7 +465,7 @@ func (s *state) restoreDevice(ctx context.Context, public string) error {
 	changed, err := s.enroll(ctx, device)
 	if changed {
 		s.locked(func(h held) {
-			h.auditOwnerCall(facts.Observation{Operation: &facts.Operation{Action: "enroll"}, Details: device}, err)
+			h.auditOwnerCall(facts.Observation{Operation: &facts.Operation{Action: config.EnrollIdentities}, Details: device}, err)
 		})
 	}
 	return err

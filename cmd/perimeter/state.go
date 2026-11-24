@@ -75,7 +75,7 @@ func newState(life context.Context, bucket *blob.Bucket) *state {
 	s := &state{bucket: bucket, life: life, signIns: credential.NewSignIns(signInLimits, signInClient)}
 	s.relays = s.routes.Transport()
 	s.admissions.L = &s.mu
-	s.records = approval.NewRecords(&s.mu, maxRecords, func(r *record) bool { return r.State == statePending })
+	s.records = approval.NewRecords(&s.mu, maxRecords, func(r *record) bool { return r.State == format.RecordPending })
 	s.table = core.New(s.reaches, s.admit, selectTarget, connectorOpenTimeout)
 	return s
 }

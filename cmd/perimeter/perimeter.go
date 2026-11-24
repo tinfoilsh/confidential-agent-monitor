@@ -79,7 +79,7 @@ func policyCall(m adminMount, revision *uint64, credentials format.Secrets, edit
 	if !m.owner && revision == nil {
 		return nil, errUnreviewed
 	}
-	c := perimeterCall("policy.write", nil)
+	c := perimeterCall(config.PolicyWrite, nil)
 	m.locked(func(h held) {
 		c.Details = map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(h.doc.Policy, edit(h.doc.Policy))}, "credentials": slices.Sorted(maps.Keys(credentials))}
 	})
@@ -103,7 +103,7 @@ func policyEditActions(m adminMount, _ *http.Request, input any) (calls []facts.
 		})
 	}
 	for _, connection := range slices.Sorted(maps.Keys(in.Credentials)) {
-		calls = append(calls, perimeterCall("credentials.write", map[string]any{"connection": connection}))
+		calls = append(calls, perimeterCall(config.CredentialsWrite, map[string]any{"connection": connection}))
 	}
 	return calls, err
 }
@@ -124,7 +124,7 @@ func enrollActions(m adminMount, _ *http.Request, input any) ([]facts.Observatio
 	}
 	slices.Sort(names)
 	slices.Sort(keys)
-	return []facts.Observation{{Operation: &facts.Operation{Action: "enroll"}, Parameters: map[string]any{"identities": names, "keys": keys}, Details: input}}, nil
+	return []facts.Observation{{Operation: &facts.Operation{Action: config.EnrollIdentities}, Parameters: map[string]any{"identities": names, "keys": keys}, Details: input}}, nil
 }
 
 // Access does not depend on the scope, so an action it turns off is refused before any record is read.
@@ -148,12 +148,11 @@ func answerActions(m adminMount, r *http.Request, input any) ([]facts.Observatio
 	if !slices.Contains(answerChoices, a.Choice) {
 		return nil, fmt.Errorf("decision must be one of %s", strings.Join(answerChoices, ", "))
 	}
-	const proposal = "proposals.answer"
-	c := facts.Observation{Operation: &facts.Operation{Action: "requests.answer"}, Details: a}
+	c := facts.Observation{Operation: &facts.Operation{Action: config.RequestsAnswer}, Details: a}
 	if a.Choice == answerSave {
-		c.Operation.Action = "requests.save"
+		c.Operation.Action = config.RequestsSave
 	}
-	if m.accessOff(r, c.Operation.Action) && m.accessOff(r, proposal) {
+	if m.accessOff(r, c.Operation.Action) && m.accessOff(r, config.ProposalsAnswer) {
 		return []facts.Observation{c}, nil
 	}
 	found := false
@@ -165,7 +164,7 @@ func answerActions(m adminMount, r *http.Request, input any) ([]facts.Observatio
 		f := record.subject()
 		c.Parameters = map[string]any{"subject": f.Principal.Name, "request": id, "choice": a.Choice, "connection": f.Connection}
 		if record.Changes != nil || f.Connection == config.PerimeterConnection {
-			c.Operation.Action = proposal
+			c.Operation.Action = config.ProposalsAnswer
 		}
 	})
 	if !found {

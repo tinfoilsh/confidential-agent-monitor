@@ -10,16 +10,7 @@ import (
 const (
 	legacyApproved     = "approved"
 	legacyOwnerService = "admin"
-	stateRefused       = "refused"
-	causeInvalid       = "invalid"
-	causePrecondition  = "precondition"
-	causeDenied        = "denied"
 )
-
-type refusal struct {
-	Cause   string   `json:"cause"`
-	Reasons []string `json:"reasons,omitempty"`
-}
 
 // Record rewrites an audit or pending record stored before version 5 in the current shape; any other record is returned as it is.
 func Record(line []byte) ([]byte, error) {
@@ -52,19 +43,19 @@ func Record(line []byte) ([]byte, error) {
 	set := func(key string, value any) { r[key], _ = json.Marshal(value) }
 	set("scope", old.Grant)
 	// A refused request the policy allowed, or asked about and waited on, failed a precondition that settleRecord kept in deny.
-	failed := old.State == stateRefused && (*old.Allow || len(old.Requirements) != 0 && old.Expires != "")
+	failed := old.State == format.RecordRefused && (*old.Allow || len(old.Requirements) != 0 && old.Expires != "")
 	switch {
 	case old.Facts.Service == legacyOwnerService && old.Facts.Connection == "":
 		r["facts"] = ownerFacts(r["facts"])
-		if old.State == stateRefused {
-			set("refusal", refusal{causePrecondition, old.Deny})
+		if old.State == format.RecordRefused {
+			set("refusal", format.Refusal{Cause: format.CausePrecondition, Reasons: old.Deny})
 		}
 	case old.Invalid:
-		set("refusal", refusal{causeInvalid, old.Deny})
+		set("refusal", format.Refusal{Cause: format.CauseInvalid, Reasons: old.Deny})
 	case len(old.Deny) != 0 && !failed:
 		set("decision", config.Decision{Outcome: config.OutcomeDeny, SendsTo: old.Sends, Reasons: old.Deny})
-		if old.State == stateRefused {
-			set("refusal", refusal{Cause: causeDenied})
+		if old.State == format.RecordRefused {
+			set("refusal", format.Refusal{Cause: format.CauseDenied})
 		}
 	case len(old.Requirements) != 0:
 		set("decision", config.Decision{Outcome: config.OutcomeAsk, SendsTo: old.Sends, Gaps: old.Requirements})
@@ -72,10 +63,10 @@ func Record(line []byte) ([]byte, error) {
 		set("decision", config.Decision{Outcome: config.OutcomeAllow, SendsTo: old.Sends, Next: &old.Next})
 	}
 	if failed {
-		set("refusal", refusal{causePrecondition, old.Deny})
+		set("refusal", format.Refusal{Cause: format.CausePrecondition, Reasons: old.Deny})
 	}
 	if old.State == legacyApproved {
-		set("state", "allowed")
+		set("state", format.RecordAllowed)
 	}
 	return json.Marshal(r)
 }

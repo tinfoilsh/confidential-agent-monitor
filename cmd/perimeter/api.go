@@ -178,7 +178,7 @@ func (s *state) adminAPI(owner bool) http.Handler {
 	}))
 	// The overview includes the whole policy, so reading it needs policy.read as well.
 	overview := func(adminMount, *http.Request, any) ([]facts.Observation, error) {
-		return []facts.Observation{perimeterCall("overview.read", map[string]any{}), perimeterCall(config.PolicyRead, map[string]any{})}, nil
+		return []facts.Observation{perimeterCall(config.OverviewRead, map[string]any{}), perimeterCall(config.PolicyRead, map[string]any{})}, nil
 	}
 	mux.Handle("GET /{$}", authorizedLockedHandler(m, overview, func(h held, r *http.Request, _ struct{}) (any, error) { return h.view(r) }))
 
@@ -191,8 +191,8 @@ func (s *state) adminAPI(owner bool) http.Handler {
 		}
 		return result, err
 	}))
-	mux.Handle("GET /explain", authorizedLockedHandler(m, pathAction("explain", "identity"), held.explainIdentity))
-	mux.Handle("POST /policy/preview", authorizedHandler(m, maxDocumentBytes, pathAction("policy.preview"), func(r *http.Request, input sourceInput) (any, error) {
+	mux.Handle("GET /explain", authorizedLockedHandler(m, pathAction(config.ExplainIdentity, "identity"), held.explainIdentity))
+	mux.Handle("POST /policy/preview", authorizedHandler(m, maxDocumentBytes, pathAction(config.PolicyPreview), func(r *http.Request, input sourceInput) (any, error) {
 		return withWriteLock(s, func(base format.Document, before *settings) (*policyDiff, error) {
 			if !owner {
 				if err := fetchesUnchanged(base.Policy, input.Source); err != nil {
@@ -221,21 +221,21 @@ func (s *state) adminAPI(owner bool) http.Handler {
 		_, err := s.enroll(r.Context(), input)
 		return s.viewAfter(r, err)
 	}))
-	mux.Handle("POST /labels/{identity}", authorizedLockedHandler(m, bodyAction("labels.write", "identity"), held.setLabel))
+	mux.Handle("POST /labels/{identity}", authorizedLockedHandler(m, bodyAction(config.LabelsWrite, "identity"), held.setLabel))
 
-	mux.Handle("POST /connections/{connection}/sign-in", authorizedHandler(m, maxDocumentBytes, pathAction("credentials.write", "connection"), s.startSignIn))
-	mux.Handle("POST /sign-in/{state}", authorizedHandler(m, maxDocumentBytes, pathAction("credentials.write"), s.finishSignIn))
+	mux.Handle("POST /connections/{connection}/sign-in", authorizedHandler(m, maxDocumentBytes, pathAction(config.CredentialsWrite, "connection"), s.startSignIn))
+	mux.Handle("POST /sign-in/{state}", authorizedHandler(m, maxDocumentBytes, pathAction(config.CredentialsWrite), s.finishSignIn))
 	mux.Handle("/connections/{connection}/{control...}", s.requireUnlocked(func(w http.ResponseWriter, r *http.Request) {
 		// The owner's use of a connection's controls is not audited.
 		if owner {
 			s.connectionControl(w, r)
 			return
 		}
-		if err := m.perform(r, pathAction("connections.control", "connection"), nil, func() error { s.connectionControl(w, r); return nil }); err != nil {
+		if err := m.perform(r, pathAction(config.ConnectionsControl, "connection"), nil, func() error { s.connectionControl(w, r); return nil }); err != nil {
 			fail(w, err)
 		}
 	}))
-	mux.Handle(sandbox.RelayRoute, authorizedHandler(m, sandbox.MaxRelayBytes, bodyAction("bunkers.relay"), func(r *http.Request, in sandbox.RelayInput) (any, error) {
+	mux.Handle(sandbox.RelayRoute, authorizedHandler(m, sandbox.MaxRelayBytes, bodyAction(config.BunkersRelay), func(r *http.Request, in sandbox.RelayInput) (any, error) {
 		return sandbox.Relay(r.Context(), s.relays, in)
 	}))
 
@@ -260,7 +260,7 @@ func (s *state) adminAPI(owner bool) http.Handler {
 		return s.viewAfter(r, s.answerRequest(r.Context(), r.PathValue("id"), input.Answer, input.Revision))
 	}))
 
-	mux.Handle("GET /catalogs/updates", authorizedHandler(m, 0, pathAction("catalogs.read"), func(r *http.Request, _ struct{}) (any, error) {
+	mux.Handle("GET /catalogs/updates", authorizedHandler(m, 0, pathAction(config.CatalogsRead), func(r *http.Request, _ struct{}) (any, error) {
 		return s.catalogUpdates(r.Context())
 	}))
 	mux.Handle("GET /audit", authorizedList(m, config.AuditRead, func(r *http.Request, shows func(string) bool) (any, error) {
