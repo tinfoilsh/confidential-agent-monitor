@@ -35,7 +35,7 @@ func ruleScope(parameters map[string]any) map[string]any {
 func (st *settings) callFacts(c facts.Observation) *requestFacts {
 	c.Scope = ruleScope(c.Parameters)
 	if c.Operation != nil {
-		c.Title = st.Presets[config.PerimeterConnection].Catalog.Actions[c.Operation.Action].Title
+		c.Title = st.Preset(config.PerimeterConnection).Catalog.Actions[c.Operation.Action].Title
 	}
 	f, _ := st.observationFacts(config.PerimeterConnection, c, connections.Perimeter)
 	return &f

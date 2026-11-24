@@ -17,7 +17,7 @@ type explanation struct {
 
 func (s held) explain(ctx context.Context, p facts.Principal, connection, action string) (explanation, error) {
 	st := s.settings.Load()
-	if _, ok := st.Connections[connection]; !ok {
+	if _, ok := st.Connection(connection); !ok {
 		return explanation{}, httpError{fmt.Errorf("no connection %s", connection), http.StatusNotFound}
 	}
 	e := explanation{Resolved: st.Resolve(p.Name, p.Groups, connection)}

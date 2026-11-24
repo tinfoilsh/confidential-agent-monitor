@@ -137,7 +137,7 @@ func strictest(settings map[string]Setting) Setting {
 // A request for an action carries its compiled operations' effects where it has any, else the catalog's.
 func (c *Config) ResolveAction(connection, action string) *catalog.Operation {
 	presetName := c.Connections[connection].Preset
-	preset := c.Presets[presetName]
+	preset := c.Preset(connection)
 	if preset == nil {
 		return nil
 	}
@@ -159,7 +159,7 @@ func (c *Config) tiersFor(identity string, groups []string, connection string) t
 	var bundles []block
 	for _, g := range slices.Sorted(slices.Values(groups)) {
 		// A device is one by its declared groups, never by a certificate principal.
-		if a, ok := c.Groups[g].Connections[connection]; ok && (g != DeviceGroup || slices.Contains(c.Identities[identity].Groups, g)) {
+		if a, ok := c.group(g).Connections[connection]; ok && (g != DeviceGroup || slices.Contains(c.Identities[identity].Groups, g)) {
 			bundles = append(bundles, block{tomlPath("groups", g, "connections", connection), a})
 		}
 	}
@@ -246,8 +246,8 @@ func (c *Config) EffectModes(identity string, groups []string, connection string
 }
 
 func (c *Config) ruleOperation(r Rule) *catalog.Operation {
-	conn, ok := c.Connections[r.Connection]
-	preset := c.Presets[conn.Preset]
+	conn, ok := c.Connection(r.Connection)
+	preset := c.Preset(r.Connection)
 	if !ok || preset == nil {
 		return nil
 	}
@@ -265,7 +265,7 @@ func (c *Config) ruleOperation(r Rule) *catalog.Operation {
 }
 
 func (c *Config) staleness(r Rule, now time.Time) string {
-	conn, exists := c.Connections[r.Connection]
+	conn, exists := c.Connection(r.Connection)
 	expires, err := time.Parse(time.RFC3339, r.Expires)
 	switch {
 	case r.Version != FactsVersion:

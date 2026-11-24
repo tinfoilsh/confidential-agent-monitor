@@ -139,7 +139,7 @@ func validateBlock(at string, a Access) error {
 func (c *Config) validateAccess(where string, connections map[string]Access) error {
 	for connection, a := range connections {
 		at := tomlPath(where, connection)
-		if _, ok := c.Connections[connection]; !ok {
+		if _, ok := c.Connection(connection); !ok {
 			return fmt.Errorf("%s: connection %s does not exist", at, connection)
 		}
 		// A level there would grant every action of the Perimeter's API, root included.
@@ -158,9 +158,6 @@ func Load(text string, presets PresetLoader) (*Config, error) {
 		return nil, errors.New("policy source is too large")
 	}
 	decoded, err := tomledit.Read(text)
-	if err == nil {
-		err = rejectPerimeterSettings(decoded)
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -171,9 +168,6 @@ func Load(text string, presets PresetLoader) (*Config, error) {
 	}
 	if err == nil {
 		cfg.Presets, err = presets(cfg)
-	}
-	if err == nil {
-		err = cfg.addBuiltIns()
 	}
 	if err == nil {
 		err = cfg.validate()
@@ -188,20 +182,20 @@ func (c *Config) validate() error {
 	if err := validateBlock(accountAccess, c.Access); err != nil {
 		return err
 	}
+	if _, listed := c.Presets[PerimeterConnection]; listed {
+		return fmt.Errorf("preset %s is the Perimeter's own; a catalog cannot list one of that name", PerimeterConnection)
+	}
 	for name, conn := range c.Connections {
-		if name == AgentConnection {
+		if name == AgentConnection || name == PerimeterConnection {
 			return fmt.Errorf("connection name %s is reserved", name)
 		}
 		if conn.Preset == "" {
 			return fmt.Errorf("connection %s needs a preset", name)
 		}
-		if conn.Preset == PerimeterConnection && name != PerimeterConnection {
-			return fmt.Errorf("connection %s: preset %s is the Perimeter's own", name, conn.Preset)
-		}
 		if !slices.Contains(Audiences, conn.Contents) || !slices.Contains(Audiences, conn.Sends) {
 			return fmt.Errorf("connection %s: contents and sends must be one of %v", name, Audiences)
 		}
-		if _, err := c.Spec(name); name != PerimeterConnection && err != nil {
+		if _, err := c.Spec(name); err != nil {
 			return err
 		}
 	}
@@ -209,6 +203,9 @@ func (c *Config) validate() error {
 		return err
 	}
 	for name, group := range c.Groups {
+		if name == DeviceGroup {
+			return fmt.Errorf("%s: the %s group is built in", tomlPath("groups", name), name)
+		}
 		if err := c.validateAccess(tomlPath("groups", name, "connections"), group.Connections); err != nil {
 			return err
 		}
@@ -385,11 +382,8 @@ func (c *Config) Edit(source string, changes []tomledit.Change, presets PresetLo
 
 func (c *Config) OwnerView() (map[string]any, error) {
 	v := *c
-	v.Connections = maps.Clone(c.Connections)
-	for name, connection := range v.Connections {
-		if name == PerimeterConnection {
-			continue
-		}
+	v.Connections = map[string]Connection{PerimeterConnection: perimeterConnection}
+	for name, connection := range c.Connections {
 		spec, err := c.Spec(name)
 		if err != nil {
 			return nil, err
@@ -397,10 +391,12 @@ func (c *Config) OwnerView() (map[string]any, error) {
 		connection.Setup = map[string]json.RawMessage{spec.Protocol: spec.Config}
 		v.Connections[name] = connection
 	}
+	v.Groups = map[string]Group{DeviceGroup: deviceGroup}
+	maps.Copy(v.Groups, c.Groups)
 	resolved := map[string]map[string]Resolved{}
 	for name, id := range c.Identities {
 		resolved[name] = map[string]Resolved{}
-		for connection := range c.Connections {
+		for _, connection := range c.connectionNames() {
 			resolved[name][connection] = c.Resolve(name, id.Groups, connection)
 		}
 	}
@@ -435,11 +431,12 @@ func (c *Config) Effective() (string, error) {
 func (c *Config) AgentView(p facts.Principal) (map[string]any, error) {
 	own, resolved := map[string]Access{}, map[string]Resolved{}
 	connections := map[string]any{}
-	for name, connection := range c.Connections {
+	for _, name := range c.connectionNames() {
 		r := c.Resolve(p.Name, p.Groups, name)
 		if !r.Reaches {
 			continue
 		}
+		connection, _ := c.Connection(name)
 		resolved[name] = r
 		connections[name] = map[string]any{"contents": connection.Contents, "strangers": connection.Strangers, "sends": connection.Sends, "policy_options": connection.PolicyOptions}
 		if a, ok := c.Identities[p.Name].Connections[name]; ok {

@@ -47,7 +47,7 @@ func (t pinnedTool) action() string {
 }
 
 func (c *Config) titled(connection string) map[string]string {
-	preset := c.Presets[c.Connections[connection].Preset]
+	preset := c.Preset(connection)
 	titles := map[string]string{}
 	if preset == nil {
 		return titles
@@ -69,7 +69,7 @@ func segmentTitle(segment string) string {
 }
 
 func (c *Config) tree(connection string, t tiers) []ResolvedNode {
-	preset := c.Presets[c.Connections[connection].Preset]
+	preset := c.Preset(connection)
 	if preset == nil {
 		return nil
 	}

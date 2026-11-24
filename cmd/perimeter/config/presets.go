@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"maps"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 )
@@ -56,12 +57,14 @@ type CatalogEntry struct {
 }
 
 func CatalogEntries(cfg *Config) (map[string]CatalogEntry, string, error) {
-	used := map[string]bool{}
+	used := map[string]bool{PerimeterConnection: true}
 	for _, connection := range cfg.Connections {
 		used[connection.Preset] = true
 	}
+	presets := map[string]*catalog.Preset{PerimeterConnection: perimeterPreset}
+	maps.Copy(presets, cfg.Presets)
 	entries := map[string]CatalogEntry{}
-	for name, p := range cfg.Presets {
+	for name, p := range presets {
 		metadata := *p.Catalog
 		entry := CatalogEntry{Catalog: &metadata, Title: p.Title}
 		if !used[name] {

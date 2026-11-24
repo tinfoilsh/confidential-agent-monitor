@@ -158,9 +158,6 @@ func (s *state) prepareSettings(ctx context.Context, lib config.PresetLoader, so
 	}
 	status := s.table.Connections()
 	for _, name := range slices.Sorted(maps.Keys(next.Connections)) {
-		if name == config.PerimeterConnection {
-			continue
-		}
 		spec, err := next.Spec(name)
 		if err != nil {
 			return nil, err
@@ -204,10 +201,10 @@ func (s *state) prepareSettings(ctx context.Context, lib config.PresetLoader, so
 	}
 	for name := range credentials {
 		switch _, present := next.Connections[name]; {
-		case !present:
-			return nil, fmt.Errorf("connection %s does not exist", name)
 		case name == config.PerimeterConnection:
 			return nil, fmt.Errorf("connection %s holds no credentials", name)
+		case !present:
+			return nil, fmt.Errorf("connection %s does not exist", name)
 		}
 	}
 	for name := range current {

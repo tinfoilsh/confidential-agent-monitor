@@ -150,7 +150,7 @@ func (st *settings) observationFacts(connection string, o facts.Observation, obs
 	if o.Operation != nil && o.Operation.Effects != nil && !config.ValidEffects(o.Operation.Effects) {
 		return f, refuse(causeInvalid, "an operation's effects must be one or more effects of the vocabulary")
 	}
-	actions := st.Presets[st.Connections[connection].Preset].Catalog
+	actions := st.Preset(connection).Catalog
 	if o.Operation != nil {
 		f.Operation = actions.Resolve(o.Operation.ID, o.Operation.Action, o.Operation.Effects)
 	}
@@ -184,7 +184,7 @@ func (st *settings) decide(ctx context.Context, p facts.Principal, connection st
 	if refused != nil {
 		return r, refused
 	}
-	conn := st.Connections[connection]
+	conn, _ := st.Connection(connection)
 	input := config.DecisionInput{
 		Facts: encoded,
 		Authorization: config.AuthorizationInput{Modes: st.EffectModes(p.Name, p.Groups, connection, f.Operation, req.kind), Rules: st.LiveRules(p.Name, time.Now()),
@@ -202,7 +202,8 @@ func (st *settings) decide(ctx context.Context, p facts.Principal, connection st
 
 func (st *settings) completeFacts(f *requestFacts, p facts.Principal, connection, kind string, label format.Label) {
 	f.Version, f.Kind = config.FactsVersion, kind
-	f.Service, f.Connection = st.Connections[connection].Preset, connection
+	conn, _ := st.Connection(connection)
+	f.Service, f.Connection = conn.Preset, connection
 	f.Principal, f.Context.Label = p, label
 	if f.Parameters == nil {
 		f.Parameters = map[string]any{}
