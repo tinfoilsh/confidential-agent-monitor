@@ -257,6 +257,10 @@ func (c *Config) ruleOperation(r Rule) *catalog.Operation {
 	if conn.MatchOnly && r.Action == CustomAction && r.Operation == CustomAction {
 		return preset.Catalog.Resolve("", CustomAction, CustomEffects)
 	}
+	// A preset with compiled operations recognizes no other operation.
+	if c.Operations[conn.Preset] != nil {
+		return nil
+	}
 	return preset.Catalog.Resolve(r.Operation, r.Action, nil)
 }
 
