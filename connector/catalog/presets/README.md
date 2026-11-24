@@ -186,8 +186,7 @@ built-in checks and never stand in for `allow`.
 `gaps` contains the remaining `{id, message}` objects, including
 explanations for built-in requirements. Saved rules carry them as `requirements`;
 only each requirement's ID grants authority. Messages are for display.
-Saved approvals waive IDs for the same facts version, connection, operation, and scope,
-until the rule's optional `expires` time.
+Saved approvals waive IDs for the same facts version, connection, operation, and scope.
 Use a stable ID for each requirement. A new requirement that appears while a
 request waits cannot be covered by an approval of the earlier requirements.
 Saved approvals survive policy and data edits: a requirement they do not name

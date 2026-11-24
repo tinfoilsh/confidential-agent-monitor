@@ -64,7 +64,6 @@ export type Rule = {
   operation?: string;
   scope?: Record<string, Json>;
   requirements?: Requirement[];
-  expires?: string;
 };
 export type Identity = {
   key?: string;

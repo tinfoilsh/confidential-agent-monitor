@@ -187,7 +187,7 @@ func (st *settings) decide(ctx context.Context, p facts.Principal, connection st
 	conn, _ := st.Connection(connection)
 	input := config.DecisionInput{
 		Facts: encoded,
-		Authorization: config.AuthorizationInput{Modes: st.EffectModes(p.Name, p.Groups, connection, f.Operation, req.kind), Rules: st.LiveRules(p.Name, time.Now()),
+		Authorization: config.AuthorizationInput{Modes: st.EffectModes(p.Name, p.Groups, connection, f.Operation, req.kind), Rules: st.LiveRules(p.Name),
 			Approved: req.approved, Scope: f.Scope},
 		Connection: config.ConnectionInput{Contents: conn.Contents, Strangers: conn.Strangers, Sends: conn.Sends, Address: conn.PolicyOptions.Address,
 			Private: append([]string{}, conn.PolicyOptions.Private...), PublicScope: append([]string{}, st.publicScope[connection]...)},

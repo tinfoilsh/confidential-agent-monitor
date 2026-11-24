@@ -9,7 +9,6 @@ import (
 	"net/netip"
 	"reflect"
 	"slices"
-	"time"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
@@ -57,7 +56,6 @@ type Rule struct {
 	Definition   string         `json:"definition,omitempty"`
 	Scope        map[string]any `json:"scope"`
 	Requirements []Requirement  `json:"requirements"`
-	Expires      string         `json:"expires,omitempty"`
 }
 
 type Identity struct {
@@ -215,11 +213,6 @@ func (c *Config) validate() error {
 		}
 		if err := c.validateAccess(tomlPath("identities", name, "connections"), id.Connections); err != nil {
 			return err
-		}
-		for rule, r := range id.Rules {
-			if _, err := time.Parse(time.RFC3339, r.Expires); r.Expires != "" && err != nil {
-				return fmt.Errorf("identity %s rule %s: expires must be an RFC 3339 timestamp", name, rule)
-			}
 		}
 		if id.Certificate {
 			continue

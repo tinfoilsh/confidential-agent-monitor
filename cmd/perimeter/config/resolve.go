@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"maps"
 	"slices"
-	"time"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
@@ -264,9 +263,8 @@ func (c *Config) ruleOperation(r Rule) *catalog.Operation {
 	return preset.Catalog.Resolve(r.Operation, r.Action, nil)
 }
 
-func (c *Config) staleness(r Rule, now time.Time) string {
+func (c *Config) staleness(r Rule) string {
 	conn, exists := c.Connection(r.Connection)
-	expires, err := time.Parse(time.RFC3339, r.Expires)
 	switch {
 	case r.Version != FactsVersion:
 		return fmt.Sprintf("saved at facts version %d; this Perimeter is at %d", r.Version, FactsVersion)
@@ -274,17 +272,15 @@ func (c *Config) staleness(r Rule, now time.Time) string {
 		return fmt.Sprintf("connection %s no longer exists", r.Connection)
 	case c.ruleOperation(r) == nil:
 		return fmt.Sprintf("operation %s no longer resolves in preset %s", r.Operation, conn.Preset)
-	case r.Expires != "" && err == nil && !now.Before(expires):
-		return "expired at " + r.Expires
 	}
 	return ""
 }
 
 // Judged as staleRules judges them, so a rule the views report as stale never waives.
-func (c *Config) LiveRules(identity string, now time.Time) []Rule {
+func (c *Config) LiveRules(identity string) []Rule {
 	var live []Rule
 	for _, r := range c.Identities[identity].Rules {
-		if c.staleness(r, now) == "" {
+		if c.staleness(r) == "" {
 			live = append(live, r)
 		}
 	}
@@ -292,11 +288,10 @@ func (c *Config) LiveRules(identity string, now time.Time) []Rule {
 }
 
 func (c *Config) staleRules() map[string]map[string]string {
-	now := time.Now()
 	stale := map[string]map[string]string{}
 	for name, id := range c.Identities {
 		for rule, r := range id.Rules {
-			if reason := c.staleness(r, now); reason != "" {
+			if reason := c.staleness(r); reason != "" {
 				if stale[name] == nil {
 					stale[name] = map[string]string{}
 				}

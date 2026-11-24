@@ -817,13 +817,6 @@ export function RuleText(props: {
           );
         })()}
       </small>
-      <Show when={props.rule.expires}>
-        {(expires) => (
-          <small class="muted">
-            Expires {new Date(expires()).toLocaleString()}
-          </small>
-        )}
-      </Show>
       <Show when={stale()}>
         {(reason) => <small class="muted">{reason()}</small>}
       </Show>
