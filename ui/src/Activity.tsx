@@ -473,7 +473,8 @@ export function RequestDetail(props: {
                   r().refusal?.cause !== "precondition" &&
                   m.view()!.config.connections?.[r().facts.connection] &&
                   (invalid() ||
-                    m.view()!.config.identities?.[r().facts.principal.name])
+                    ((builtin() || !owner.isDevice(r().facts.principal.name)) &&
+                      m.view()!.config.identities?.[r().facts.principal.name]))
                 }
               >
                 <div class="request-access">
