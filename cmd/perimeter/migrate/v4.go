@@ -1,6 +1,7 @@
 package migrate
 
 import (
+	"cmp"
 	"encoding/json"
 	"fmt"
 	"maps"
@@ -8,7 +9,9 @@ import (
 	"strings"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/connections"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
 )
 
@@ -58,14 +61,27 @@ func upgradeV4(plain []byte) ([]byte, *Migration, error) {
 	}
 	migration, policy := Migration{Policy: v4.Policy}, v4.Policy
 	changes := ruleChanges(source)
+	presets, err := catalog.Load(catalog.Shipped)
+	if err == nil {
+		err = catalog.Compose(presets)
+	}
+	if err != nil {
+		return nil, nil, err
+	}
 	var inference map[string]map[string][]string
 	paid, _ := source[paidInference].(bool)
 	if paid {
-		if inference, err = inferenceActions(); err != nil {
+		if inference, err = inferenceActions(presets); err != nil {
 			return nil, nil, err
 		}
 	}
 	defaults, identities, connections := tomledit.Table(source, "default_access"), tomledit.Table(source, "identities"), tomledit.Table(source, "connections")
+	operations := map[string]map[string][][]string{}
+	for c := range connections {
+		if ops, err := connectionOperations(presets, c, tomledit.Table(connections, c)); err == nil {
+			operations[c] = ops
+		}
+	}
 	reaches := func(level string, actions map[string]any) bool {
 		return level != "" && level != "off" || slices.ContainsFunc(slices.Collect(maps.Values(actions)), func(mode any) bool { return mode != string(config.ModeOff) })
 	}
@@ -129,25 +145,27 @@ func upgradeV4(plain []byte) ([]byte, *Migration, error) {
 		} else if block["effects"] != nil {
 			changes = append(changes, tomledit.Change{Path: slices.Concat(at, []string{"effects"}), Delete: true})
 		}
-		var unasked []string
-		for _, action := range slices.Sorted(maps.Keys(actions)) {
-			allowed, _ := actions[action].(string)
-			var lost []string
-			for _, e := range slices.Sorted(maps.Keys(config.Vocabulary)) {
-				switch mode, set := legacyEffect(source, identity, connection, e); {
-				case e == config.EffectUnknown || string(mode) <= allowed:
-				case set:
-					lost = append(lost, fmt.Sprintf("%s (%s)", e, mode))
-				case !slices.Contains(unasked, e):
-					unasked = append(unasked, e)
-				}
+		ops, known := operations[connection]
+		if !known && len(actions) != 0 {
+			ops = map[string][][]string{}
+			for action := range actions {
+				ops[action] = [][]string{slices.DeleteFunc(slices.Collect(maps.Keys(config.Vocabulary)), func(e string) bool { return e == config.EffectUnknown })}
 			}
-			if lost != nil {
-				migration.Notices = append(migration.Notices, Notice{Path: tomledit.Path(slices.Concat(at, []string{"actions", action})...), Hint: "this action is no longer restricted by effects " + strings.Join(lost, ", ")})
-			}
+			migration.Notices = append(migration.Notices, Notice{Path: tomledit.Path(slices.Concat(at, []string{"actions"})...), Hint: "each action keeps the strictest mode any effect had, since this connection's operations could not be listed"})
 		}
-		if unasked != nil {
-			migration.Notices = append(migration.Notices, Notice{Path: tomledit.Path(slices.Concat(at, []string{"actions"})...), Hint: "an action set to allow no longer asks for " + strings.Join(unasked, ", ")})
+		restrict := func(effects []string, mode config.Mode) config.Mode {
+			for _, e := range effects {
+				m, set := legacyEffect(source, identity, connection, e)
+				if e == "pay" && paid && !set && slices.Contains(effects, "generate") {
+					m = config.ModeAllow
+				}
+				mode = max(mode, m)
+			}
+			return mode
+		}
+		kept := keepRestrictions(actions, ops, restrict)
+		for _, action := range slices.Sorted(maps.Keys(kept)) {
+			changes = append(changes, tomledit.Change{Path: slices.Concat(at, []string{"actions", action}), Value: string(kept[action])})
 		}
 		// Paid inference waived the pay ask that level allow made, unless an effects table set pay.
 		if _, set := legacyEffect(source, identity, connection, "pay"); !paid || inherits || level != "allow" || set {
@@ -271,14 +289,7 @@ func legacyEffect(source, identity map[string]any, connection, effect string) (c
 
 // Paid model calls carry both generate and pay. An action counts only if every operation at or under it does,
 // since its access entry also covers them. Each maps to the effects those operations carry.
-func inferenceActions() (map[string]map[string][]string, error) {
-	presets, err := catalog.Load(catalog.Shipped)
-	if err == nil {
-		err = catalog.Compose(presets)
-	}
-	if err != nil {
-		return nil, err
-	}
+func inferenceActions(presets map[string]*catalog.Preset) (map[string]map[string][]string, error) {
 	inference := map[string]map[string][]string{}
 	for name, p := range presets {
 		var definition struct {
@@ -320,4 +331,69 @@ func inferenceActions() (map[string]map[string][]string, error) {
 		}
 	}
 	return inference, nil
+}
+
+// The effects of each operation a connection can carry, by action: those its connector lists, or else one per catalog action.
+func connectionOperations(presets map[string]*catalog.Preset, name string, table map[string]any) (map[string][][]string, error) {
+	table = maps.Clone(table)
+	delete(table, "effects")
+	conn, err := facts.JSON[config.Connection](table)
+	if err != nil {
+		return nil, err
+	}
+	spec, err := (&config.Config{Connections: map[string]config.Connection{name: conn}, Presets: presets}).Spec(name)
+	if err != nil {
+		return nil, err
+	}
+	listed, err := connections.Operations(spec)
+	if err != nil {
+		return nil, err
+	}
+	actions := presets[conn.Preset].Catalog
+	ops := map[string][][]string{}
+	for _, o := range listed {
+		ops[o.Operation.Action] = append(ops[o.Operation.Action], actions.Resolve("", o.Operation.Action, o.Operation.Effects).Effects)
+	}
+	if listed == nil {
+		for action := range actions.Actions {
+			ops[action] = append(ops[action], actions.Resolve("", action, nil).Effects)
+		}
+	}
+	return ops, nil
+}
+
+// An action entry used to leave each effect's own setting in force, but now decides every effect beneath it.
+// So each action whose operations an effect held back gets the mode it had, and no operation is decided more loosely than before.
+func keepRestrictions(entries map[string]any, operations map[string][][]string, restrict func([]string, config.Mode) config.Mode) map[string]config.Mode {
+	modes := map[string]config.Mode{}
+	for action, mode := range entries {
+		s, _ := mode.(string)
+		modes[action] = config.Mode(s)
+	}
+	decider := func(action string) (string, bool) {
+		lineage := catalog.Lineage(action)
+		i := slices.IndexFunc(lineage, func(a string) bool { _, ok := modes[a]; return ok })
+		if i < 0 {
+			return "", false
+		}
+		return lineage[i], true
+	}
+	held := map[string]config.Mode{}
+	for action, carried := range operations {
+		if entry, ok := decider(action); ok {
+			for _, effects := range carried {
+				held[action] = max(held[action], restrict(effects, modes[entry]))
+			}
+		}
+	}
+	kept := map[string]config.Mode{}
+	// Shallower actions go first, so a deeper one compares with whichever entry decides it after they are written.
+	for _, action := range slices.SortedFunc(maps.Keys(held), func(a, b string) int {
+		return cmp.Or(cmp.Compare(len(catalog.Lineage(a)), len(catalog.Lineage(b))), strings.Compare(a, b))
+	}) {
+		if entry, _ := decider(action); modes[entry] != held[action] {
+			modes[action], kept[action] = held[action], held[action]
+		}
+	}
+	return kept
 }
