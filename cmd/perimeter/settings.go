@@ -143,7 +143,7 @@ func (s *state) prepareSettings(ctx context.Context, lib config.PresetLoader, so
 			}
 		}
 	}
-	program, err := config.PreparePolicy(ctx, cfg, basePolicy)
+	program, err := config.PreparePolicy[requestFacts](ctx, cfg, basePolicy)
 	if err != nil {
 		return nil, err
 	}

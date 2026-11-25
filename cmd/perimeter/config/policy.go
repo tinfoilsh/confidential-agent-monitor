@@ -112,7 +112,8 @@ var (
 //go:embed lib.rego
 var standardPolicy string
 
-func PreparePolicy(ctx context.Context, cfg *Config, base string) (*Program, error) {
+// F is the type of the facts a decision's input carries.
+func PreparePolicy[F any](ctx context.Context, cfg *Config, base string) (*Program, error) {
 	for _, name := range protectedData {
 		if _, ok := cfg.Data[name]; ok {
 			return nil, fmt.Errorf("data.%s is reserved for the Perimeter", name)
@@ -143,7 +144,11 @@ func PreparePolicy(ctx context.Context, cfg *Config, base string) (*Program, err
 		}
 		modules[filename] = cfg.Policies[name]
 	}
-	return prepareRego(ctx, modules, data)
+	input, err := inputSchema[F]()
+	if err != nil {
+		return nil, err
+	}
+	return prepareRego(ctx, modules, data, input)
 }
 
 func checkBase(base string) error {

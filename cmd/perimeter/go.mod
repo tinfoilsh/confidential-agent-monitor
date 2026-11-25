@@ -7,6 +7,7 @@ require (
 	github.com/coder/websocket v1.8.15
 	github.com/evanphx/json-patch/v5 v5.9.11
 	github.com/flynn/noise v1.1.0
+	github.com/google/jsonschema-go v0.4.3
 	github.com/klauspost/compress v1.20.0
 	github.com/open-policy-agent/opa v1.20.2
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2
@@ -95,7 +96,6 @@ require (
 	github.com/google/certificate-transparency-go v1.3.3 // indirect
 	github.com/google/go-containerregistry v0.21.7 // indirect
 	github.com/google/go-tdx-guest v0.3.1 // indirect
-	github.com/google/jsonschema-go v0.4.3 // indirect
 	github.com/google/logger v1.1.2 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/google/wire v0.7.0 // indirect

@@ -143,7 +143,7 @@ func main() {
 
 	development = !*production && strings.HasPrefix(*bucketURL, "file://")
 	if basePolicy != "" {
-		if _, err := config.PreparePolicy(context.Background(), new(config.Config), basePolicy); err != nil {
+		if _, err := config.PreparePolicy[requestFacts](context.Background(), new(config.Config), basePolicy); err != nil {
 			log.Fatal(err)
 		}
 	}

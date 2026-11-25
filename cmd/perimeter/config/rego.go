@@ -6,8 +6,10 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"reflect"
 	"slices"
 
+	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/open-policy-agent/opa/v1/storage/inmem"
@@ -18,11 +20,11 @@ type Program struct {
 	query rego.PreparedEvalQuery
 }
 
-func prepareRego(ctx context.Context, modules map[string]string, data map[string]any) (*Program, error) {
+func prepareRego(ctx context.Context, modules map[string]string, data map[string]any, input *ast.SchemaSet) (*Program, error) {
 	if data == nil {
 		data = map[string]any{}
 	}
-	opts := []func(*rego.Rego){rego.Store(inmem.NewFromObjectWithOpts(data, inmem.OptReturnASTValuesOnRead(true))), rego.StrictBuiltinErrors(true)}
+	opts := []func(*rego.Rego){rego.Store(inmem.NewFromObjectWithOpts(data, inmem.OptReturnASTValuesOnRead(true))), rego.StrictBuiltinErrors(true), rego.Schemas(input)}
 	for _, name := range slices.Sorted(maps.Keys(modules)) {
 		module, err := ast.ParseModule(name, modules[name])
 		if err != nil {
@@ -35,6 +37,25 @@ func prepareRego(ctx context.Context, modules map[string]string, data map[string
 		return nil, err
 	}
 	return &Program{query: query}, nil
+}
+
+// A rule that reads a field the input lacks never applies, which fails open for an approval, so reading one is a type error.
+func inputSchema[F any]() (*ast.SchemaSet, error) {
+	opts := &jsonschema.ForOptions{TypeSchemas: map[reflect.Type]*jsonschema.Schema{reflect.TypeFor[json.RawMessage](): {}}}
+	input, err := jsonschema.For[DecisionInput](opts)
+	if err == nil {
+		input.Properties["facts"], err = jsonschema.For[F](opts)
+	}
+	var schema any
+	if err == nil {
+		schema, err = facts.JSON[any](input)
+	}
+	if err != nil {
+		return nil, err
+	}
+	set := ast.NewSchemaSet()
+	set.Put(ast.SchemaRootRef, schema)
+	return set, nil
 }
 
 func regoModule(filename, source string) (*ast.Module, []string, error) {
