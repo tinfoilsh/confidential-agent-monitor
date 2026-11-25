@@ -1,8 +1,11 @@
 package web
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/url"
+
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
 type HTTPFacts struct {
@@ -33,4 +36,13 @@ type GraphQLFieldFacts struct {
 type Details struct {
 	HTTP    *HTTPFacts    `json:"http,omitempty"`
 	GraphQL *GraphQLFacts `json:"graphql,omitempty"`
+}
+
+func WebSocket(o facts.Observation) (websocket bool, method string) {
+	var details struct {
+		HTTP HTTPFacts `json:"http"`
+	}
+	raw, _ := json.Marshal(o.Details)
+	json.Unmarshal(raw, &details)
+	return details.HTTP.WebSocket, details.HTTP.Method
 }

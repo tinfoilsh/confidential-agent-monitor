@@ -254,7 +254,7 @@ func httpSetup(p *Setup, setup *web.Setup, set slots.Set) error {
 		}
 	}
 	p.Flow = func(o facts.Observation) Flow {
-		websocket, method := WebSocket(o)
+		websocket, method := web.WebSocket(o)
 		switch {
 		// A message the upstream sends on a WebSocket reaches only the agent.
 		case websocket && method == "":
@@ -267,18 +267,6 @@ func httpSetup(p *Setup, setup *web.Setup, set slots.Set) error {
 		return Flow{SendsTo: sends[o.Operation.ID]}
 	}
 	return nil
-}
-
-func WebSocket(o facts.Observation) (websocket bool, method string) {
-	var details struct {
-		HTTP struct {
-			WebSocket bool   `json:"websocket"`
-			Method    string `json:"method"`
-		} `json:"http"`
-	}
-	raw, _ := json.Marshal(o.Details)
-	json.Unmarshal(raw, &details)
-	return details.HTTP.WebSocket, details.HTTP.Method
 }
 
 func parseTinfoil(spec config.ConnectionSpec, p *Setup) error {
