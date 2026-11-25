@@ -39,7 +39,6 @@ type settings struct {
 	catalogID   string
 	authority   *certificates.Authority
 	hostKey     ssh.Signer
-	resources   map[string][]string
 	connections map[string]*installed
 }
 
@@ -149,7 +148,7 @@ func (s *state) prepareSettings(ctx context.Context, lib config.PresetLoader, so
 		return nil, err
 	}
 
-	next := &settings{Config: cfg, policy: program, authority: authority, hostKey: hostKey, resources: map[string][]string{}, connections: map[string]*installed{}}
+	next := &settings{Config: cfg, policy: program, authority: authority, hostKey: hostKey, connections: map[string]*installed{}}
 	plan := &settingsPlan{next: next, source: source, credentials: credentials}
 	var current map[string]*installed
 	if st := s.settings.Load(); st != nil {
@@ -161,7 +160,6 @@ func (s *state) prepareSettings(ctx context.Context, lib config.PresetLoader, so
 		if err != nil {
 			return nil, err
 		}
-		next.resources[name] = spec.Resource
 		if !connections.Registered(spec.Protocol, development) {
 			return nil, fmt.Errorf("connection %s has unknown kind %s", name, spec.Protocol)
 		}

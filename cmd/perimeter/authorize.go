@@ -167,7 +167,7 @@ func (st *settings) decide(ctx context.Context, p facts.Principal, connection st
 		Authorization: config.AuthorizationInput{Modes: st.EffectModes(p.Name, p.Groups, connection, f.Operation, req.kind), Rules: st.LiveRules(p.Name),
 			Approved: req.approved, Scope: f.Scope},
 		Connection: config.ConnectionInput{Returns: conn.Returns(), SendsTo: conn.Sends, Address: conn.PolicyOptions.Address,
-			Private: append([]string{}, conn.PolicyOptions.Private...), Resource: append([]string{}, st.resources[connection]...)},
+			Private: append([]string{}, conn.PolicyOptions.Private...), Resource: append([]string{}, st.Preset(connection).PublicScope...)},
 	}
 	d, err := st.policy.Decide(ctx, input)
 	if err != nil {

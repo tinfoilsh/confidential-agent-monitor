@@ -28,7 +28,6 @@ const (
 type ConnectionSpec struct {
 	Name, Protocol              string
 	Config, Definition, Options json.RawMessage
-	Resource                    []string
 	MatchOnly                   bool
 }
 
@@ -285,7 +284,7 @@ func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	if preset == nil {
 		return ConnectionSpec{}, fmt.Errorf("connection %s: unknown preset %s", name, connection.Preset)
 	}
-	spec := ConnectionSpec{Name: name, Resource: preset.PublicScope, MatchOnly: connection.MatchOnly}
+	spec := ConnectionSpec{Name: name, MatchOnly: connection.MatchOnly}
 
 	var definition map[string]json.RawMessage
 	if err := json.Unmarshal(preset.Source, &definition); err != nil {
