@@ -15,7 +15,6 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/connections"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
-	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
@@ -100,18 +99,18 @@ type request struct {
 }
 
 type requestFacts struct {
-	Scope      map[string]any     `json:"-"`
-	Version    int                `json:"version"`
-	Kind       string             `json:"kind"`
-	Principal  facts.Principal    `json:"principal"`
-	Service    string             `json:"service"`
-	Connection string             `json:"connection"`
-	Operation  *catalog.Operation `json:"operation"`
-	Parameters map[string]any     `json:"parameters"`
-	Label      format.Label       `json:"label"`
-	Flow       connections.Flow   `json:"flow"`
-	Title      string             `json:"title"`
-	Details    any                `json:"details"`
+	Scope      map[string]any   `json:"-"`
+	Version    int              `json:"version"`
+	Kind       string           `json:"kind"`
+	Principal  facts.Principal  `json:"principal"`
+	Service    string           `json:"service"`
+	Connection string           `json:"connection"`
+	Operation  *facts.Operation `json:"operation"`
+	Parameters map[string]any   `json:"parameters"`
+	Label      format.Label     `json:"label"`
+	Flow       connections.Flow `json:"flow"`
+	Title      string           `json:"title"`
+	Details    any              `json:"details"`
 }
 
 func (st *settings) latticesOn() bool { return st.Lattices.Confidentiality || st.Lattices.Integrity }

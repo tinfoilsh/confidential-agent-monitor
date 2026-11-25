@@ -80,8 +80,8 @@ operations. HTTP metadata selectors use the shared JSON field conversion.
 The shared `facts` package defines the snapshot, owns label
 observation, and supplies label ordering and the effect vocabulary. The same
 effect vocabulary drives preset validation and the app's permission display.
-Go computes `operation.lineage`, and lists each effect's integrity and
-confidentiality traits in `data.levels.effects`, for Rego to read.
+Go lists each effect's integrity and confidentiality traits in
+`data.levels.effects`, for Rego to read.
 `facts.Details` has typed fields for each protocol, such as
 `f.Details.HTTP.Method` and `f.Details.MCP.Arguments`. Protocol data types live in
 `facts`; parsing and description methods stay in their connectors. A new protocol

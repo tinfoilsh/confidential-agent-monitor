@@ -19,7 +19,6 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/connections"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/migrate"
-	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
 	"gocloud.dev/gcerrors"
@@ -84,12 +83,12 @@ type recordSummary struct {
 }
 
 type subject struct {
-	Kind       string             `json:"kind"`
-	Principal  facts.Principal    `json:"principal"`
-	Connection string             `json:"connection"`
-	Service    string             `json:"service"`
-	Operation  *catalog.Operation `json:"operation"`
-	Title      string             `json:"title"`
+	Kind       string           `json:"kind"`
+	Principal  facts.Principal  `json:"principal"`
+	Connection string           `json:"connection"`
+	Service    string           `json:"service"`
+	Operation  *facts.Operation `json:"operation"`
+	Title      string           `json:"title"`
 }
 
 func (r *record) subject() (f subject) {

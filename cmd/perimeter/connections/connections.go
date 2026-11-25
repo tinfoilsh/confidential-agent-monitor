@@ -18,7 +18,6 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
-	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/email"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/mcp"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/mqtt"
@@ -114,10 +113,10 @@ type Setup struct {
 	Open              func(ctx context.Context, h worker.Host) (connector.Instance, error)
 }
 
-func Operations(spec config.ConnectionSpec) (map[string]catalog.OperationSummary, error) {
+func Operations(spec config.ConnectionSpec) (map[string]facts.Observation, error) {
 	switch spec.Protocol {
 	case "http", "tinfoil":
-		return web.Operations(spec.Definition)
+		return web.Operations(spec.Definition, spec.MatchOnly)
 	case "mcp", "tinfoil-mcp":
 		return mcp.Operations(spec.Config, spec.Definition)
 	}

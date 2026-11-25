@@ -6,6 +6,7 @@ import (
 	"slices"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
 )
 
@@ -147,15 +148,15 @@ func strictest(settings map[string]Setting) Setting {
 
 // The effect only lets the catalog resolve the action, so every lineage is the catalog's own.
 // A request for an action carries its listed operations' effects where it has any, else the catalog's.
-func (c *Config) ResolveAction(connection, action string) *catalog.Operation {
+func (c *Config) ResolveAction(connection, action string) *facts.Operation {
 	preset := c.Preset(connection)
 	if preset == nil {
 		return nil
 	}
 	var effects []string
-	for _, op := range c.operations[connection] {
-		if op.Action == action {
-			effects = append(effects, op.Effects...)
+	for _, o := range c.operations[connection] {
+		if o.Operation.Action == action {
+			effects = append(effects, o.Operation.Effects...)
 		}
 	}
 	return preset.Catalog.Resolve("", action, effects)
@@ -198,7 +199,7 @@ func (c *Config) actionSettings(t tiers, connection string) map[string]Setting {
 			for a := range b.access.Actions {
 				switch op := c.ResolveAction(connection, a); {
 				case op != nil:
-					actions[a] = strictest(t.modes(op.Lineage, op.Effects))
+					actions[a] = strictest(t.modes(catalog.Lineage(a), op.Effects))
 				// The account block names actions of every connection, so only those that resolve here are this one's.
 				case b.path != accountAccess:
 					actions[a] = strictest(t.modes(catalog.Lineage(a), nil))
@@ -240,7 +241,7 @@ func (c *Config) Reaches(identity string, groups []string, connection string) bo
 	return c.tiersFor(identity, groups, connection).reaches
 }
 
-func (c *Config) EffectModes(identity string, groups []string, connection string, op *catalog.Operation, kind string) map[string]Setting {
+func (c *Config) EffectModes(identity string, groups []string, connection string, op *facts.Operation, kind string) map[string]Setting {
 	t := c.tiersFor(identity, groups, connection)
 	if kind == KindAdmission {
 		// Only an explicit session entry or reach decides an admission, which never opens a connection the identity does not reach.
@@ -251,19 +252,19 @@ func (c *Config) EffectModes(identity string, groups []string, connection string
 	}
 	effects, lineage := []string{EffectUnknown}, []string(nil)
 	if op != nil && len(op.Effects) != 0 {
-		effects, lineage = op.Effects, op.Lineage
+		effects, lineage = op.Effects, catalog.Lineage(op.Action)
 	}
 	return t.modes(lineage, effects)
 }
 
-func (c *Config) ruleOperation(r Rule) *catalog.Operation {
+func (c *Config) ruleOperation(r Rule) *facts.Operation {
 	_, ok := c.Connection(r.Connection)
 	preset := c.Preset(r.Connection)
 	if !ok || preset == nil {
 		return nil
 	}
-	if summary, listed := c.operations[r.Connection][r.Operation]; listed && summary.Action == r.Action {
-		return preset.Catalog.Resolve(r.Operation, r.Action, summary.Effects)
+	if o, listed := c.operations[r.Connection][r.Operation]; listed && o.Operation.Action == r.Action {
+		return preset.Catalog.Resolve(r.Operation, r.Action, o.Operation.Effects)
 	}
 	// A connection with listed operations recognizes no other operation.
 	if c.operations[r.Connection] != nil {

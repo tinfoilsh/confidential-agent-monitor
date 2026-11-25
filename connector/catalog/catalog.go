@@ -12,6 +12,8 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
 //go:embed presets/*.json
@@ -37,12 +39,6 @@ type Catalog struct {
 	Connection map[string]json.RawMessage `json:"connection,omitempty"`
 	Defaults   json.RawMessage            `json:"defaults,omitempty"`
 	Fields     []json.RawMessage          `json:"fields,omitempty"`
-}
-
-type OperationSummary struct {
-	Action  string   `json:"action"`
-	Title   string   `json:"title,omitempty"`
-	Effects []string `json:"effects,omitempty"`
 }
 
 type Action struct {
@@ -203,13 +199,6 @@ func merge[V any](into, from map[string]V) error {
 	return nil
 }
 
-type Operation struct {
-	ID      string   `json:"id"`
-	Action  string   `json:"action"`
-	Effects []string `json:"effects"`
-	Lineage []string `json:"lineage"`
-}
-
 // Lineage is an action and each of its dotted prefixes, longest first.
 func Lineage(action string) []string {
 	var lineage []string
@@ -224,10 +213,11 @@ func Lineage(action string) []string {
 	return lineage
 }
 
-func (c *Catalog) Resolve(id, action string, effects []string) *Operation {
-	op := Operation{ID: id, Action: action, Lineage: Lineage(action)}
-	for i := 0; effects == nil && i < len(op.Lineage); i++ {
-		effects = c.Actions[op.Lineage[i]].Effects
+func (c *Catalog) Resolve(id, action string, effects []string) *facts.Operation {
+	op := facts.Operation{ID: id, Action: action}
+	lineage := Lineage(action)
+	for i := 0; effects == nil && i < len(lineage); i++ {
+		effects = c.Actions[lineage[i]].Effects
 	}
 	if op.Action == "" || effects == nil {
 		return nil

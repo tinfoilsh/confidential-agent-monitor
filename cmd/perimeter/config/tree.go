@@ -26,8 +26,8 @@ func (c *Config) titled(connection string) map[string]string {
 	for key, action := range preset.Catalog.Actions {
 		titles[key] = action.Title
 	}
-	for _, op := range c.operations[connection] {
-		titles[op.Action] = cmp.Or(op.Title, titles[op.Action], op.Action)
+	for _, o := range c.operations[connection] {
+		titles[o.Operation.Action] = cmp.Or(o.Title, titles[o.Operation.Action], o.Operation.Action)
 	}
 	return titles
 }
@@ -56,8 +56,8 @@ func (c *Config) tree(connection string, t tiers) []ResolvedNode {
 	for key := range titles {
 		add(key, nil)
 	}
-	for _, op := range c.operations[connection] {
-		add(op.Action, op.Effects)
+	for _, o := range c.operations[connection] {
+		add(o.Operation.Action, o.Operation.Effects)
 	}
 	for _, key := range slices.Collect(maps.Keys(effects)) {
 		if op := preset.Catalog.Resolve("", key, nil); op != nil {

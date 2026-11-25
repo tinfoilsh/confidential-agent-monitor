@@ -236,6 +236,7 @@ waived contains requirement.id if {
 	some r in auth.rules
 	not r.enabled == false
 	r.connection == facts.connection
+	r.action == op.action
 	r.operation == op.id
 	r.scope == auth.scope
 	some requirement in r.requirements

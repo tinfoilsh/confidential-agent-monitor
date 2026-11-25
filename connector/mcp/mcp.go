@@ -15,7 +15,6 @@ import (
 	"time"
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
@@ -258,23 +257,24 @@ func toolOperation(tool string, readOnly, destructive bool, actions map[string]c
 	return op
 }
 
-func Operations(config, definition json.RawMessage) (map[string]catalog.OperationSummary, error) {
+// A pinned server lists its tools; an unpinned one may offer any tool.
+func Operations(config, definition json.RawMessage) (map[string]facts.Observation, error) {
 	var setup struct {
-		Pin Snapshot `json:"pin"`
+		Pin *Snapshot `json:"pin"`
 	}
 	var preset struct {
 		Catalog struct {
 			Actions map[string]catalogAction `json:"actions"`
 		} `json:"catalog"`
 	}
-	if err := errors.Join(json.Unmarshal(config, &setup), json.Unmarshal(definition, &preset)); err != nil {
+	if err := errors.Join(json.Unmarshal(config, &setup), json.Unmarshal(definition, &preset)); err != nil || setup.Pin == nil {
 		return nil, err
 	}
-	ops := map[string]catalog.OperationSummary{}
+	ops := map[string]facts.Observation{}
 	for _, t := range setup.Pin.Tools {
 		readOnly, destructive := toolHints(t)
 		op := toolOperation(t.Name, readOnly, destructive, preset.Catalog.Actions)
-		ops[op.Action] = catalog.OperationSummary{Action: op.Action, Title: cmp.Or(t.Title, t.Name), Effects: op.Effects}
+		ops[op.Action] = facts.Observation{Operation: op, Title: cmp.Or(t.Title, t.Name)}
 	}
 	return ops, nil
 }

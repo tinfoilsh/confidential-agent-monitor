@@ -111,13 +111,13 @@ type Config struct {
 	Principals    map[string]string     `json:"-"`
 
 	Presets    map[string]*catalog.Preset `json:"-"`
-	operations map[string]map[string]catalog.OperationSummary
+	operations map[string]map[string]facts.Observation
 }
 
 type PresetLoader func(*Config) (map[string]*catalog.Preset, error)
 
 // An OperationLister lists the operations a connection's requests can carry, where its connector knows them ahead of time.
-type OperationLister func(ConnectionSpec) (map[string]catalog.OperationSummary, error)
+type OperationLister func(ConnectionSpec) (map[string]facts.Observation, error)
 
 func validateModes(where string, modes map[string]Mode, effects bool) error {
 	for key, mode := range modes {
@@ -190,7 +190,7 @@ func (c *Config) validate(operations OperationLister) error {
 	if _, listed := c.Presets[PerimeterConnection]; listed {
 		return fmt.Errorf("preset %s is the Perimeter's own; a catalog cannot list one of that name", PerimeterConnection)
 	}
-	c.operations = map[string]map[string]catalog.OperationSummary{}
+	c.operations = map[string]map[string]facts.Observation{}
 	for name, conn := range c.Connections {
 		if name == AgentConnection || name == PerimeterConnection {
 			return fmt.Errorf("connection name %s is reserved", name)
@@ -209,7 +209,7 @@ func (c *Config) validate(operations OperationLister) error {
 			return fmt.Errorf("connection %s: %w", name, err)
 		}
 		for id, o := range c.operations[name] {
-			if o.Effects != nil && !ValidEffects(o.Effects) {
+			if o.Operation.Effects != nil && !ValidEffects(o.Operation.Effects) {
 				return fmt.Errorf("connection %s: invalid effects for operation %s", name, id)
 			}
 		}
