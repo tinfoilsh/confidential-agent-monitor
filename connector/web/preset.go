@@ -706,6 +706,9 @@ func (p *Preset) Match(r *Request, config *Setup, f facts.Observation) (facts.Ob
 		if strings.Contains(h.Path, "//") {
 			return f, errNoncanonicalPath
 		}
+		if config.MatchOnly && !h.WebSocket {
+			f.Operation = &facts.Operation{Action: CustomAction, Effects: customEffects}
+		}
 		return f, nil
 	}
 	o := matched.operation

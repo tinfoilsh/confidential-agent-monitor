@@ -243,6 +243,7 @@ func httpSetup(p *Setup, setup *web.Setup, set slots.Set) error {
 	p.Claim, p.Hosts = setup.Claim, setup.Hosts
 	p.Slots, p.SecretNames = set, set.Names()
 	p.PerMessage, p.ListsPlaceholders = true, true
+	setup.MatchOnly = p.MatchOnly
 	sends := map[string]string{}
 	if setup.Preset != nil {
 		for id, op := range setup.Preset.Operations {
@@ -263,6 +264,8 @@ func httpSetup(p *Setup, setup *web.Setup, set slots.Set) error {
 			return Flow{}
 		case o.Operation.Action == web.SignInAction:
 			return Flow{SendsTo: config.AudienceMe, Returns: config.InitialLabel}
+		case o.Operation.Action == web.CustomAction && o.Operation.ID == "":
+			return Flow{SendsTo: config.SendsToConnection}
 		}
 		return Flow{SendsTo: sends[o.Operation.ID]}
 	}

@@ -16,7 +16,6 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/connections"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
-	"github.com/tinfoilsh/confidential-agent-monitor/connector/web"
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
@@ -139,13 +138,6 @@ func (st *settings) observationFacts(connection string, o facts.Observation, flo
 	actions := st.Preset(connection).Catalog
 	if o.Operation != nil {
 		f.Operation = actions.Resolve(o.Operation.ID, o.Operation.Action, o.Operation.Effects)
-	}
-	// A match-only connection does not fail closed: a valid request it does not recognize is a Custom API request.
-	if f.Operation == nil && st.Connections[connection].MatchOnly {
-		if websocket, _ := web.WebSocket(o); !websocket {
-			f.Operation = actions.Resolve("", config.CustomAction, config.CustomEffects)
-			f.Flow.SendsTo = config.SendsToConnection
-		}
 	}
 	return f, nil
 }

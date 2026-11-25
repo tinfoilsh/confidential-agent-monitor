@@ -18,11 +18,8 @@ const (
 	KindOperation     = "operation"
 	KindAdmission     = "admission"
 	SendsToConnection = "connection"
-	CustomAction      = "request"
 	EffectUnknown     = "unknown"
 )
-
-var CustomEffects = []string{"execute", "send"}
 
 // Traits place an effect in the integrity and confidentiality lattices.
 type Traits struct {

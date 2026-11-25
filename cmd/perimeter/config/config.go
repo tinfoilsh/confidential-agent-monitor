@@ -29,6 +29,7 @@ type ConnectionSpec struct {
 	Name, Protocol              string
 	Config, Definition, Options json.RawMessage
 	Resource                    []string
+	MatchOnly                   bool
 }
 
 type Access struct {
@@ -284,7 +285,7 @@ func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	if preset == nil {
 		return ConnectionSpec{}, fmt.Errorf("connection %s: unknown preset %s", name, connection.Preset)
 	}
-	spec := ConnectionSpec{Name: name, Resource: preset.PublicScope}
+	spec := ConnectionSpec{Name: name, Resource: preset.PublicScope, MatchOnly: connection.MatchOnly}
 
 	var definition map[string]json.RawMessage
 	if err := json.Unmarshal(preset.Source, &definition); err != nil {
@@ -351,17 +352,21 @@ func (c *Config) Edit(source string, changes []tomledit.Change, presets PresetLo
 			renamed[change.Path[1]] = change.From[1]
 		}
 	}
-	setup := func(connection string) bool {
+	setup := func(connection string, matchOnly bool) bool {
 		before, _ := c.Spec(cmp.Or(renamed[connection], connection))
 		after, _ := next.Spec(connection)
 		before.Name = after.Name
+		// Match-only adds a fallback for unlisted requests without changing what a listed operation means.
+		if !matchOnly {
+			before.MatchOnly = after.MatchOnly
+		}
 		return !reflect.DeepEqual(before, after)
 	}
 	var stale []tomledit.Change
 	for _, name := range slices.Sorted(maps.Keys(next.Identities)) {
 		rules := next.Identities[name].Rules
 		for _, id := range slices.Sorted(maps.Keys(rules)) {
-			if setup(rules[id].Connection) {
+			if setup(rules[id].Connection, false) {
 				stale = append(stale, tomledit.Change{Path: []string{"identities", name, "rules", id}, Delete: true})
 			}
 		}
@@ -369,7 +374,7 @@ func (c *Config) Edit(source string, changes []tomledit.Change, presets PresetLo
 	if stale != nil {
 		edited, err = tomledit.Edit(edited, stale)
 	}
-	return edited, func(connection string) bool { return networks || setup(connection) }, renamed, err
+	return edited, func(connection string) bool { return networks || setup(connection, true) }, renamed, err
 }
 
 func (c *Config) OwnerView() (map[string]any, error) {

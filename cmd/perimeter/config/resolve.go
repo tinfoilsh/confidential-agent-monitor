@@ -257,16 +257,13 @@ func (c *Config) EffectModes(identity string, groups []string, connection string
 }
 
 func (c *Config) ruleOperation(r Rule) *catalog.Operation {
-	conn, ok := c.Connection(r.Connection)
+	_, ok := c.Connection(r.Connection)
 	preset := c.Preset(r.Connection)
 	if !ok || preset == nil {
 		return nil
 	}
 	if summary, listed := c.operations[r.Connection][r.Operation]; listed && summary.Action == r.Action {
 		return preset.Catalog.Resolve(r.Operation, r.Action, summary.Effects)
-	}
-	if conn.MatchOnly && r.Action == CustomAction && r.Operation == CustomAction {
-		return preset.Catalog.Resolve("", CustomAction, CustomEffects)
 	}
 	// A connection with listed operations recognizes no other operation.
 	if c.operations[r.Connection] != nil {
