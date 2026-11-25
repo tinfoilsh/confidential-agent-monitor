@@ -99,7 +99,7 @@ func (p *Preset) UnmarshalJSON(raw []byte) error {
 func Operations(definition json.RawMessage) (map[string]catalog.OperationSummary, error) {
 	var preset struct {
 		HTTP *struct {
-			Operations map[string]catalog.OperationSummary `json:"operations"`
+			Operations map[string]Operation `json:"operations"`
 		} `json:"http"`
 	}
 	if err := json.Unmarshal(definition, &preset); err != nil || preset.HTTP == nil {
