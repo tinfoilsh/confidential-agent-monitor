@@ -87,6 +87,17 @@ func (r *Registry) Unregister(id string) {
 	}
 }
 
+func (r *Registry) UnregisterShared() {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	maps.DeleteFunc(r.keys, func(_ string, g *registration) bool {
+		if !g.exclusive {
+			g.end()
+		}
+		return !g.exclusive
+	})
+}
+
 func (r *Registry) Lookup(id string) (facts.Principal, bool) {
 	r.mu.Lock()
 	defer r.mu.Unlock()

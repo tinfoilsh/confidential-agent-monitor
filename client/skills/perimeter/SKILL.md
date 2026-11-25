@@ -75,6 +75,9 @@ endpoint or propose a connection that covers it, such as `custom_api`.
 1. `perimeter catalog` lists connection types; `--json` adds setup fields and
    `warning` text. Prefer a named type over a generic one.
 2. `perimeter policy show` shows your identity name and current access.
+   `perimeter policy explain CONNECTION [ACTION]` shows each effect's mode and
+   the policy path that set it; with an action it adds whether a request would
+   be allowed, refused or need approval, and why.
 3. Propose the change and say why:
 
    ```sh
@@ -85,15 +88,26 @@ endpoint or propose a connection that covers it, such as `custom_api`.
    [{"path": ["identities", "my-bunker", "connections", "github", "level"], "value": "ask"}]
    ```
 
-   Levels are `off`, `read`, `ask` and `allow`. Setup for a new connection
+   Levels are `off`, `read`, `ask` and `allow`. A level reported as `custom`
+   means your effects or actions are set individually; propose `effects` or
+   `actions` entries rather than a level to change one of them. Access resolves
+   from the account's `access` through `default_access` and your groups to your
+   own block, the most specific setting winning; the `perimeter` connection skips
+   the account block. The account block, groups and group membership belong to the owner. Setup for a new connection
    goes under `["connections", NAME]` with the fields its catalog entry lists.
    A deletion uses `"delete": true` instead of `value`.
-4. `perimeter policy status ID` reports `pending`, `approved`, `denied` or
+4. `perimeter policy status ID` reports `pending`, `allowed`, `denied` or
    `outdated`. Propose again if the ID is gone after a Perimeter restart.
 
 A bunker may change only its own access and shared connection setup; a trusted
-device may also change `default_access`. Credentials, MCP tool approvals, keys
-and global policy belong to the owner.
+device may also change `default_access`. Credentials, MCP tool approvals, keys,
+global policy and access to the Perimeter's own API belong to the owner.
+
+The owner may grant you parts of the Perimeter's own API, as actions on the
+`perimeter` connection that `perimeter policy show` lists. Call them over HTTP
+under `http://agent.perimeter/admin/`, such as `GET /admin/audit`. Every call is
+decided like a request on any connection: it may wait for the owner, it is
+recorded, and you can never answer your own requests or set your own label.
 
 ## Trust model
 

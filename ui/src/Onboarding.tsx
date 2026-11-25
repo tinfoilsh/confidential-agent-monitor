@@ -16,7 +16,7 @@ import { useMonitor } from "./monitor";
 type Connection = {
   preset: string;
   title: string;
-  level: owner.Level;
+  level: owner.GrantLevel;
   // Signed in to after setup, so this step takes no key.
   signIn?: boolean;
   keyUrl?: string;

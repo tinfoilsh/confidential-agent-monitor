@@ -95,6 +95,28 @@ func (p *Preset) UnmarshalJSON(raw []byte) error {
 	return p.compile()
 }
 
+func Operations(definition json.RawMessage, matchOnly bool) (map[string]facts.Observation, error) {
+	var preset struct {
+		HTTP *struct {
+			Operations map[string]Operation `json:"operations"`
+		} `json:"http"`
+	}
+	if err := json.Unmarshal(definition, &preset); err != nil || preset.HTTP == nil {
+		return nil, err
+	}
+	ops := map[string]facts.Observation{}
+	for id, o := range preset.HTTP.Operations {
+		if len(o.Effects) == 0 {
+			return nil, fmt.Errorf("invalid operation %q", id)
+		}
+		ops[id] = facts.Observation{Operation: &facts.Operation{ID: id, Action: o.Action, Effects: o.Effects}}
+	}
+	if matchOnly {
+		ops[CustomAction] = facts.Observation{Operation: &facts.Operation{ID: CustomAction, Action: CustomAction, Effects: customEffects}}
+	}
+	return ops, nil
+}
+
 func (p *Preset) validate() error {
 	for i, key := range p.SensitiveQuery {
 		if key == "" || slices.Contains(p.SensitiveQuery[:i], key) {
@@ -685,6 +707,9 @@ func (p *Preset) Match(r *Request, config *Setup, f facts.Observation) (facts.Ob
 	if matched == nil {
 		if strings.Contains(h.Path, "//") {
 			return f, errNoncanonicalPath
+		}
+		if config.MatchOnly && !h.WebSocket {
+			f.Operation = &facts.Operation{Action: CustomAction, Effects: customEffects}
 		}
 		return f, nil
 	}

@@ -129,7 +129,7 @@ type WebSocketReceive struct {
 
 func (r *WebSocketReceive) Describe() facts.Observation {
 	return facts.Observation{
-		Operation:  &facts.Operation{ID: "websocket.receive", Action: "receive"},
+		Operation:  &facts.Operation{ID: "websocket.receive", Action: "receive", Effects: []string{"read"}},
 		Title:      "Receive WebSocket message from " + r.Host + r.Path,
 		Parameters: map[string]any{"origin": r.Origin, "path": r.Path},
 		Details:    Details{HTTP: &HTTPFacts{WebSocket: true, Origin: r.Origin, Host: r.Host, Path: r.Path, BodyKind: bodyOpaque}},

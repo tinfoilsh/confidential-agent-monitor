@@ -17,12 +17,14 @@ import (
 	"time"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/migrate"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/admission"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/approval"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/certificates"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/identity"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/sealedlog"
 	"gocloud.dev/blob"
@@ -62,7 +64,7 @@ type state struct {
 	routes     sandbox.Forwarder
 	relays     *http.Transport
 	identities identity.Registry
-	admissions admission.Set[*admitted]
+	admissions admission.Set[*stream]
 	records    *approval.Records[*record]
 	signIns    *credential.SignIns
 }
@@ -73,7 +75,7 @@ func newState(life context.Context, bucket *blob.Bucket) *state {
 	s := &state{bucket: bucket, life: life, signIns: credential.NewSignIns(signInLimits, signInClient)}
 	s.relays = s.routes.Transport()
 	s.admissions.L = &s.mu
-	s.records = approval.NewRecords(&s.mu, maxRecords, func(r *record) bool { return r.State == statePending })
+	s.records = approval.NewRecords(&s.mu, maxRecords, func(r *record) bool { return r.State == format.RecordPending })
 	s.table = core.New(s.reaches, s.admit, selectTarget, connectorOpenTimeout)
 	return s
 }
@@ -96,7 +98,7 @@ func (s *state) locked(fn func(held)) {
 	fn(held{s})
 }
 
-func stable[T any](s *state, fn func(format.Document, *settings) (T, error)) (T, error) {
+func withWriteLock[T any](s *state, fn func(format.Document, *settings) (T, error)) (T, error) {
 	s.writes.Lock()
 	defer s.writes.Unlock()
 	return fn(s.snapshot())
@@ -136,7 +138,11 @@ func (s *state) unlock(ctx context.Context, key []byte, minimum uint64) (bool, e
 		return false, err
 	}
 
-	doc, sealer, initialized, err := format.Load(ctx, s.bucket, key, minimum)
+	var migration *migrate.Migration
+	doc, sealer, initialized, err := format.Load(ctx, s.bucket, key, minimum, func(plain []byte) (upgraded []byte, err error) {
+		upgraded, migration, err = migrate.Document(plain)
+		return upgraded, err
+	})
 	if errors.Is(err, sealedlog.ErrKey) {
 		err = errOwner
 	}
@@ -165,7 +171,7 @@ func (s *state) unlock(ctx context.Context, key []byte, minimum uint64) (bool, e
 		}
 		source = string(file)
 	}
-	plan, err := s.prepareSettings(ctx, s.library(ctx, sealer), source, everyConnection, nil, authority, signer)
+	plan, err := s.prepareSettings(ctx, s.presetLibrary(ctx, sealer), source, rebuildAll, nil, authority, signer)
 	if err != nil {
 		return false, err
 	}
@@ -177,13 +183,17 @@ func (s *state) unlock(ctx context.Context, key []byte, minimum uint64) (bool, e
 	s.storageKey, s.sealer = bytes.Clone(key), sealer
 	s.audit = sealedlog.New(format.Storage(s.bucket), auditPrefix, auditLimits, sealer.Seal, sealer.Open,
 		func(err error) { log.Printf("audit: %v", err) })
-	err = h.commitSettings(ctx, plan, nil)
+	err = h.commitSettings(context.WithoutCancel(ctx), plan, nil)
 	if err != nil {
 		s.doc, s.hostID = format.Document{}, ""
 		s.storageKey, s.sealer, s.audit = nil, sealedlog.Sealer{}, nil
 	} else {
 		s.flushing.Go(func() { s.audit.Run(s.life) })
-		h.recordAdmin(ctx, "Unlock", nil, nil)
+		h.auditOwnerCall(facts.Observation{Title: "Unlock"}, nil)
+		if migration != nil {
+			h.auditOwnerCall(facts.Observation{Title: "Migrated policy", Details: map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(migration.Policy, plan.source)},
+				"notices": migration.Notices}}, nil)
+		}
 		for _, raw := range interrupted {
 			r, err := decodeRecord(raw)
 			if err != nil {

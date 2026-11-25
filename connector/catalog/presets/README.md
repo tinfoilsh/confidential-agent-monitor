@@ -80,7 +80,8 @@ operations. HTTP metadata selectors use the shared JSON field conversion.
 The shared `facts` package defines the snapshot, owns label
 observation, and supplies label ordering and the effect vocabulary. The same
 effect vocabulary drives preset validation and the app's permission display.
-Go computes `operation.obligations` and `operation.lineage` for Rego to read.
+Go lists each effect's integrity and confidentiality traits in
+`data.levels.effects`, for Rego to read.
 `facts.Details` has typed fields for each protocol, such as
 `f.Details.HTTP.Method` and `f.Details.MCP.Arguments`. Protocol data types live in
 `facts`; parsing and description methods stay in their connectors. A new protocol
@@ -107,7 +108,8 @@ browse/submit actions when its catalog defines their effects.
 Policy and audit receive independent views of the same JSON snapshot.
 `Facts.Snapshot` uses standard JSON encoding and preserves exact numbers
 in bodies and service-specific parameters. Common fields live at
-`input.facts.operation`, `input.facts.parameters`, and `input.facts.context`.
+`input.facts.operation` and `input.facts.parameters`; `input.facts.label` is the
+agent's current label and `input.facts.flow` the connector's hint about the request.
 `input.facts.principal.key` and `.name` identify the requesting agent and come from
 the Perimeter's current identity settings. `input.facts.kind` is `operation`,
 `admission`; omitted kinds from connector descriptions default to
@@ -128,13 +130,18 @@ Owner policies remain in `config.policies`. They allow requests and can require
 approval using both common and protocol-specific facts. They do not supply
 operation descriptions.
 Unknown requests have a null operation and require approval; malformed or
-ambiguous matches are refused. Approval grants stay
-outside the facts snapshot. Decisions contain `facts`, `allow`, `deny`, `requirements`, `next`,
-and `grant`; the app reads operation, title, parameters, principal,
+ambiguous matches are refused. Admissions have a null operation too and are told
+apart by `input.facts.kind`. Approval grants stay
+outside the facts snapshot. Records contain `facts`, `decision`, `scope`, and, when
+refused, `refusal`; the app reads operation, title, parameters, principal,
 connection, and the current label from `facts`. Audit records add lifecycle fields
 without duplicating those facts.
 
-The Rego rules in `../config/policy.go` compute access restrictions, label-flow checks, and
+Go resolves the policy's access into `input.authorization.modes`, one
+`{mode, from}` entry per effect of the request. `off` denies the request;
+`ask` adds the requirement `effect.<effect>`.
+
+The Rego rules in `cmd/perimeter/config/lib.rego` apply those modes, the label-flow checks, and
 saved approval waivers. Every request evaluates the same prepared query,
 `data.perimeter.decision`. Owner policies receive `input.facts` and
 `input.authorization`; they can also read `data.perimeter.gaps` to inspect remaining
@@ -143,8 +150,9 @@ label levels in `data.levels`. Description errors are appended to denials in Go.
 Owner policies cannot define
 rules or data under `perimeter`, `lattices`, or `levels`, which the Perimeter reserves.
 
-A request passes only when the decision's `allow` is true; `deny` and
-`requirements` only say what is missing. `allow` needs every built-in check to
+The decision has one `outcome`, `allow`, `ask` or `deny`, with `sends` and the
+outcome's own field: `next` for allow, `gaps` for ask, or `reasons` for deny;
+any deny reason wins over any gap. `allow` needs every built-in check to
 pass and `data.sentinel.allow` to be `true`, so a Perimeter with no policy in
 package `sentinel` refuses every request, as does an evaluation error. Onboarding
 writes that policy. `allow` rules add up across owner policies, so a second
@@ -176,8 +184,8 @@ identical entries are accepted; conflicting messages for one ID, malformed
 entries, and evaluation errors refuse the request. Owner requirements add to
 built-in checks and never stand in for `allow`.
 
-`requirements` contains the remaining `{id, message}` objects, including
-explanations for built-in requirements. Saved rules carry the same collection;
+`gaps` contains the remaining `{id, message}` objects, including
+explanations for built-in requirements. Saved rules carry them as `requirements`;
 only each requirement's ID grants authority. Messages are for display.
 Saved approvals waive IDs for the same facts version, connection, operation, and scope.
 Use a stable ID for each requirement. A new requirement that appears while a
@@ -213,7 +221,7 @@ Observations use the same commit path. Failed persistence keeps restrictive
 labels in memory and marks the request refused. A later observation retries any
 outstanding label write.
 
-Go computes `next` by joining the current label with the observation.
+Rego computes `next` by joining the current label with the observation.
 Admission leaves the current label unchanged. Observations continue to
 record both label axes when their enforcement switches are off.
 

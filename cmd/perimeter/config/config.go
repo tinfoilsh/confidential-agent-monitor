@@ -11,6 +11,7 @@ import (
 	"slices"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
@@ -19,25 +20,25 @@ import (
 
 const (
 	AgentConnection    = "agent"
+	OwnerName          = "owner"
 	maxPolicyBytes     = 2 << 20
 	maxProposalChanges = 256
-)
-
-var (
-	accessLevels = []string{"off", "read", "ask", "allow"}
-	effectModes  = []string{"off", "ask", "allow"}
 )
 
 type ConnectionSpec struct {
 	Name, Protocol              string
 	Config, Definition, Options json.RawMessage
-	PublicScope                 []string
+	MatchOnly                   bool
 }
 
 type Access struct {
-	Level   string            `json:"level"`
-	Actions map[string]string `json:"actions,omitempty"`
-	Effects map[string]string `json:"effects,omitempty"`
+	Level   Level           `json:"level,omitempty"`
+	Actions map[string]Mode `json:"actions,omitempty"`
+	Effects map[string]Mode `json:"effects,omitempty"`
+}
+
+type Group struct {
+	Connections map[string]Access `json:"connections,omitempty"`
 }
 
 type Requirement struct {
@@ -57,10 +58,9 @@ type Rule struct {
 }
 
 type Identity struct {
-	Routes      bool                       `json:"routes,omitempty"`
-	Key         string                     `json:"key"`
+	Key         string                     `json:"key,omitempty"`
+	Certificate bool                       `json:"certificate,omitempty"`
 	Groups      []string                   `json:"groups,omitempty"`
-	Effects     map[string]string          `json:"effects,omitempty"`
 	Connections map[string]Access          `json:"connections"`
 	Rules       map[string]Rule            `json:"rules,omitempty"`
 	Attributes  map[string]json.RawMessage `json:",embed"`
@@ -75,12 +75,20 @@ type PolicyOptions struct {
 type Connection struct {
 	Preset        string                     `json:"preset"`
 	MatchOnly     bool                       `json:"match_only,omitempty"`
-	Effects       map[string]string          `json:"effects,omitempty"`
 	PolicyOptions PolicyOptions              `json:"policy_options"`
 	Contents      string                     `json:"contents"`
 	Strangers     bool                       `json:"strangers"`
 	Sends         string                     `json:"sends"`
 	Setup         map[string]json.RawMessage `json:",embed"`
+}
+
+// What reading from a connection returns to an agent, unless its connector says otherwise.
+func (c Connection) Returns() format.Label {
+	trust := TrustTrusted
+	if c.Strangers {
+		trust = TrustUntrusted
+	}
+	return format.Label{Audience: c.Contents, Trust: trust}
 }
 
 type Lattices struct {
@@ -89,43 +97,67 @@ type Lattices struct {
 }
 
 type Config struct {
-	AllowPaidInference bool                  `json:"allow_paid_inference,omitempty"`
-	Effects            map[string]string     `json:"effects,omitempty"`
-	DefaultAccess      map[string]Access     `json:"default_access,omitempty"`
-	Lattices           Lattices              `json:"lattices"`
-	AllowNetworks      []netip.Prefix        `json:"allow_networks"`
-	Connections        map[string]Connection `json:"connections"`
-	Identities         map[string]Identity   `json:"identities"`
-	Policies           map[string]string     `json:"policies"`
-	Data               map[string]any        `json:"data"`
-	Catalogs           map[string]string     `json:"catalogs,omitempty"`
-	Principals         map[string]string     `json:"-"`
+	Access        Access                `json:"access,omitzero"`
+	DefaultAccess map[string]Access     `json:"default_access,omitempty"`
+	Groups        map[string]Group      `json:"groups,omitempty"`
+	Lattices      Lattices              `json:"lattices"`
+	AllowNetworks []netip.Prefix        `json:"allow_networks"`
+	Connections   map[string]Connection `json:"connections"`
+	Identities    map[string]Identity   `json:"identities"`
+	Policies      map[string]string     `json:"policies"`
+	Data          map[string]any        `json:"data"`
+	Catalogs      map[string]string     `json:"catalogs,omitempty"`
+	Principals    map[string]string     `json:"-"`
 
-	Presets map[string]*catalog.Preset `json:"-"`
+	Presets    map[string]*catalog.Preset `json:"-"`
+	operations map[string]map[string]facts.Observation
 }
 
-type Library func(*Config) (map[string]*catalog.Preset, error)
+type PresetLoader func(*Config) (map[string]*catalog.Preset, error)
 
-func validateEffects(name string, effects map[string]string) error {
-	for effect, mode := range effects {
-		if _, ok := Vocabulary[effect]; !ok {
-			return fmt.Errorf("%s: unknown effect %q", name, effect)
+// An OperationLister lists the operations a connection's requests can carry, where its connector knows them ahead of time.
+type OperationLister func(ConnectionSpec) (map[string]facts.Observation, error)
+
+func validateModes(where string, modes map[string]Mode, effects bool) error {
+	for key, mode := range modes {
+		if _, ok := Vocabulary[key]; effects && !ok {
+			return fmt.Errorf("%s: unknown effect %q", where, key)
 		}
-		if !slices.Contains(effectModes, mode) {
-			return fmt.Errorf("%s: effect %s must be off, ask or allow", name, effect)
+		if !mode.valid() {
+			return fmt.Errorf("%s.%s must be off, ask or allow", where, tomledit.Key(key))
 		}
 	}
 	return nil
 }
 
-func inheritModes(defaults, overrides map[string]string) map[string]string {
-	merged := make(map[string]string, len(defaults)+len(overrides))
-	maps.Copy(merged, defaults)
-	maps.Copy(merged, overrides)
-	return merged
+func validateBlock(at string, a Access) error {
+	if a.Level != "" && !slices.Contains(accessLevels, a.Level) {
+		return fmt.Errorf("%s.level must be one of %v", at, accessLevels)
+	}
+	if err := validateModes(at+".effects", a.Effects, true); err != nil {
+		return err
+	}
+	return validateModes(at+".actions", a.Actions, false)
 }
 
-func Load(text string, presets Library) (*Config, error) {
+func (c *Config) validateAccess(where string, connections map[string]Access) error {
+	for connection, a := range connections {
+		at := tomlPath(where, connection)
+		if _, ok := c.Connection(connection); !ok {
+			return fmt.Errorf("%s: connection %s does not exist", at, connection)
+		}
+		// A level there would grant every action of the Perimeter's API, root included.
+		if connection == PerimeterConnection && (a.Level != "" || a.Effects != nil) {
+			return fmt.Errorf("%s: the %s connection is granted by actions only", at, PerimeterConnection)
+		}
+		if err := validateBlock(at, a); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func Load(text string, presets PresetLoader, operations OperationLister) (*Config, error) {
 	if len(text) > maxPolicyBytes {
 		return nil, errors.New("policy source is too large")
 	}
@@ -141,63 +173,96 @@ func Load(text string, presets Library) (*Config, error) {
 	if err == nil {
 		cfg.Presets, err = presets(cfg)
 	}
+	if err == nil {
+		err = cfg.validate(operations)
+	}
 	if err != nil {
 		return nil, err
 	}
-	if err := validateEffects("global settings", cfg.Effects); err != nil {
-		return nil, err
+	return cfg, nil
+}
+
+func (c *Config) validate(operations OperationLister) error {
+	if err := validateBlock(accountAccess, c.Access); err != nil {
+		return err
 	}
-	for name, c := range cfg.Connections {
-		if err := validateEffects("connection "+name, c.Effects); err != nil {
-			return nil, err
-		}
-		if !slices.Contains(Audiences, c.Contents) || !slices.Contains(Audiences, c.Sends) {
-			return nil, fmt.Errorf("connection %s: contents and sends must be one of %v", name, Audiences)
-		}
-		if name == AgentConnection {
-			return nil, fmt.Errorf("connection name %s is reserved", name)
-		}
-		if _, err := cfg.Spec(name); err != nil {
-			return nil, err
-		}
+	if _, listed := c.Presets[PerimeterConnection]; listed {
+		return fmt.Errorf("preset %s is the Perimeter's own; a catalog cannot list one of that name", PerimeterConnection)
 	}
-	validateAccess := func(name string, connections map[string]Access) error {
-		for connection, a := range connections {
-			if _, ok := cfg.Connections[connection]; !ok || !slices.Contains(accessLevels, a.Level) {
-				return fmt.Errorf("%s: connection %s must exist and have a level in %v", name, connection, accessLevels)
+	c.operations = map[string]map[string]facts.Observation{}
+	for name, conn := range c.Connections {
+		if name == AgentConnection || name == PerimeterConnection {
+			return fmt.Errorf("connection name %s is reserved", name)
+		}
+		if conn.Preset == "" {
+			return fmt.Errorf("connection %s needs a preset", name)
+		}
+		if !slices.Contains(Audiences, conn.Contents) || !slices.Contains(Audiences, conn.Sends) {
+			return fmt.Errorf("connection %s: contents and sends must be one of %v", name, Audiences)
+		}
+		spec, err := c.Spec(name)
+		if err != nil {
+			return err
+		}
+		if c.operations[name], err = operations(spec); err != nil {
+			return fmt.Errorf("connection %s: %w", name, err)
+		}
+		for id, o := range c.operations[name] {
+			if o.Operation.Effects != nil && !ValidEffects(o.Operation.Effects) {
+				return fmt.Errorf("connection %s: invalid effects for operation %s", name, id)
 			}
-			if err := validateEffects(name+" on "+connection, a.Effects); err != nil {
-				return err
-			}
-			for action, level := range a.Actions {
-				if !slices.Contains(effectModes, level) {
-					return fmt.Errorf("%s: action %s must be off, ask or allow", name, action)
-				}
-			}
 		}
-		return nil
 	}
-	if err := validateAccess("default access", cfg.DefaultAccess); err != nil {
-		return nil, err
+	if err := c.validateAccess("default_access", c.DefaultAccess); err != nil {
+		return err
 	}
-	cfg.Principals = map[string]string{}
-	for name, id := range cfg.Identities {
-		if err := validateEffects("agent "+name, id.Effects); err != nil {
-			return nil, err
+	for name, group := range c.Groups {
+		if name == DeviceGroup {
+			return fmt.Errorf("%s: the %s group is built in", tomlPath("groups", name), name)
 		}
-		if err := validateAccess("identity "+name, cfg.Accesses(name)); err != nil {
-			return nil, err
+		if err := c.validateAccess(tomlPath("groups", name, "connections"), group.Connections); err != nil {
+			return err
+		}
+	}
+	c.Principals = map[string]string{}
+	for name, id := range c.Identities {
+		if name == OwnerName {
+			return fmt.Errorf("identity name %s is reserved for the owner", name)
+		}
+		if (id.Key != "") == id.Certificate {
+			return fmt.Errorf("identity %s needs exactly one of key or certificate", name)
+		}
+		if err := c.validateAccess(tomlPath("identities", name, "connections"), id.Connections); err != nil {
+			return err
+		}
+		if id.Certificate {
+			continue
 		}
 		fingerprint, err := KeyFingerprint(id.Key)
 		if err != nil {
-			return nil, fmt.Errorf("identity %s: %w", name, err)
+			return fmt.Errorf("identity %s: %w", name, err)
 		}
-		if _, exists := cfg.Principals[fingerprint]; exists {
-			return nil, fmt.Errorf("identity %s shares another identity's public key", name)
+		if _, exists := c.Principals[fingerprint]; exists {
+			return fmt.Errorf("identity %s shares another identity's public key", name)
 		}
-		cfg.Principals[fingerprint] = name
+		c.Principals[fingerprint] = name
 	}
-	return cfg, nil
+	return nil
+}
+
+// A certificate acts as the identity its key ID names, unless that identity signs in with a key.
+func (c *Config) BindCertificate(keyID string, principals []string) (groups []string, ok bool) {
+	id, declared := c.Identities[keyID]
+	if declared && !id.Certificate {
+		return nil, false
+	}
+	groups = slices.Clone(principals)
+	for _, g := range id.Groups {
+		if !slices.Contains(groups, g) {
+			groups = append(groups, g)
+		}
+	}
+	return groups, true
 }
 
 func KeyFingerprint(authorizedKey string) (string, error) {
@@ -213,47 +278,13 @@ func (c *Config) Principal(fingerprint string) (facts.Principal, bool) {
 	return facts.Principal{Key: fingerprint, Name: name, Groups: c.Identities[name].Groups, Attributes: c.Identities[name].Attributes}, ok
 }
 
-func (c *Config) Access(identity, connection string) Access {
-	a := c.Identities[identity].Connections[connection]
-	if a.Level == "" {
-		base := c.DefaultAccess[connection]
-		a.Level = cmp.Or(base.Level, "off")
-		a.Actions = inheritModes(base.Actions, a.Actions)
-		a.Effects = inheritModes(base.Effects, a.Effects)
-	}
-	return a
-}
-
-func (c *Config) Accesses(identity string) map[string]Access {
-	connections := map[string]Access{}
-	maps.Copy(connections, c.DefaultAccess)
-	maps.Copy(connections, c.Identities[identity].Connections)
-	for connection := range connections {
-		connections[connection] = c.Access(identity, connection)
-	}
-	return connections
-}
-
-func (c *Config) Reaches(identity, connection string) bool {
-	a := c.Access(identity, connection)
-	if a.Level != "" && a.Level != "off" {
-		return true
-	}
-	for _, mode := range a.Actions {
-		if mode != "off" {
-			return true
-		}
-	}
-	return false
-}
-
 func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	connection := c.Connections[name]
 	preset := c.Presets[connection.Preset]
 	if preset == nil {
 		return ConnectionSpec{}, fmt.Errorf("connection %s: unknown preset %s", name, connection.Preset)
 	}
-	spec := ConnectionSpec{Name: name, PublicScope: preset.PublicScope}
+	spec := ConnectionSpec{Name: name, MatchOnly: connection.MatchOnly}
 
 	var definition map[string]json.RawMessage
 	if err := json.Unmarshal(preset.Source, &definition); err != nil {
@@ -297,12 +328,12 @@ func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	return spec, nil
 }
 
-func (c *Config) Edit(source string, changes []tomledit.Change, presets Library) (edited string, rebuild func(connection string) bool, renamed map[string]string, err error) {
+func (c *Config) Edit(source string, changes []tomledit.Change, presets PresetLoader, operations OperationLister) (edited string, rebuild func(connection string) bool, renamed map[string]string, err error) {
 	edited, err = tomledit.Edit(source, changes)
 	if err != nil {
 		return "", nil, nil, err
 	}
-	next, err := Load(edited, presets)
+	next, err := Load(edited, presets, operations)
 	if err != nil {
 		return "", nil, nil, err
 	}
@@ -320,17 +351,21 @@ func (c *Config) Edit(source string, changes []tomledit.Change, presets Library)
 			renamed[change.Path[1]] = change.From[1]
 		}
 	}
-	setup := func(connection string) bool {
+	setup := func(connection string, matchOnly bool) bool {
 		before, _ := c.Spec(cmp.Or(renamed[connection], connection))
 		after, _ := next.Spec(connection)
 		before.Name = after.Name
+		// Match-only adds a fallback for unlisted requests without changing what a listed operation means.
+		if !matchOnly {
+			before.MatchOnly = after.MatchOnly
+		}
 		return !reflect.DeepEqual(before, after)
 	}
 	var stale []tomledit.Change
 	for _, name := range slices.Sorted(maps.Keys(next.Identities)) {
 		rules := next.Identities[name].Rules
 		for _, id := range slices.Sorted(maps.Keys(rules)) {
-			if setup(rules[id].Connection) {
+			if setup(rules[id].Connection, false) {
 				stale = append(stale, tomledit.Change{Path: []string{"identities", name, "rules", id}, Delete: true})
 			}
 		}
@@ -338,17 +373,13 @@ func (c *Config) Edit(source string, changes []tomledit.Change, presets Library)
 	if stale != nil {
 		edited, err = tomledit.Edit(edited, stale)
 	}
-	return edited, func(connection string) bool { return networks || setup(connection) }, renamed, err
+	return edited, func(connection string) bool { return networks || setup(connection, true) }, renamed, err
 }
 
-func (c *Config) View() (map[string]any, error) {
+func (c *Config) OwnerView() (map[string]any, error) {
 	v := *c
-	v.Identities, v.Connections = maps.Clone(c.Identities), maps.Clone(c.Connections)
-	for name, id := range v.Identities {
-		id.Connections = c.Accesses(name)
-		v.Identities[name] = id
-	}
-	for name, connection := range v.Connections {
+	v.Connections = map[string]Connection{PerimeterConnection: perimeterConnection}
+	for name, connection := range c.Connections {
 		spec, err := c.Spec(name)
 		if err != nil {
 			return nil, err
@@ -356,11 +387,30 @@ func (c *Config) View() (map[string]any, error) {
 		connection.Setup = map[string]json.RawMessage{spec.Protocol: spec.Config}
 		v.Connections[name] = connection
 	}
-	return facts.JSON[map[string]any](v)
+	v.Groups = map[string]Group{DeviceGroup: deviceGroup}
+	maps.Copy(v.Groups, c.Groups)
+	resolved := map[string]map[string]Resolved{}
+	for name, id := range c.Identities {
+		resolved[name] = map[string]Resolved{}
+		for _, connection := range c.connectionNames() {
+			resolved[name][connection] = c.Resolve(name, id.Groups, connection)
+		}
+	}
+	view := map[string]any{"resolved": resolved}
+	if stale := c.staleRules(); len(stale) != 0 {
+		view["stale"] = stale
+	}
+	out, err := facts.JSON[map[string]any](v)
+	if err != nil {
+		return nil, err
+	}
+	extra, err := facts.JSON[map[string]any](view)
+	maps.Copy(out, extra)
+	return out, err
 }
 
 func (c *Config) Effective() (string, error) {
-	v, err := c.View()
+	v, err := c.OwnerView()
 	if err != nil {
 		return "", err
 	}
@@ -375,15 +425,26 @@ func (c *Config) Effective() (string, error) {
 }
 
 func (c *Config) AgentView(p facts.Principal) (map[string]any, error) {
-	identity := map[string]any{"connections": c.Accesses(p.Name)}
+	own, resolved := map[string]Access{}, map[string]Resolved{}
+	connections := map[string]any{}
+	for _, name := range c.connectionNames() {
+		r := c.Resolve(p.Name, p.Groups, name)
+		if !r.Reaches {
+			continue
+		}
+		connection, _ := c.Connection(name)
+		resolved[name] = r
+		connections[name] = map[string]any{"contents": connection.Contents, "strangers": connection.Strangers, "sends": connection.Sends, "policy_options": connection.PolicyOptions}
+		if a, ok := c.Identities[p.Name].Connections[name]; ok {
+			own[name] = a
+		}
+	}
+	identity := map[string]any{"connections": own, "resolved": resolved}
 	if rules := c.Identities[p.Name].Rules; len(rules) != 0 {
 		identity["rules"] = rules
 	}
-	connections := map[string]any{}
-	for name, connection := range c.Connections {
-		if c.Reaches(p.Name, name) {
-			connections[name] = map[string]any{"contents": connection.Contents, "strangers": connection.Strangers, "sends": connection.Sends, "policy_options": connection.PolicyOptions}
-		}
+	if stale := c.staleRules()[p.Name]; len(stale) != 0 {
+		identity["stale"] = stale
 	}
 	return facts.JSON[map[string]any](map[string]any{"lattices": c.Lattices, "identities": map[string]any{p.Name: identity}, "connections": connections})
 }
@@ -404,6 +465,10 @@ func ProposalChanges(p facts.Principal, changes []tomledit.Change, others bool) 
 		target, ok := proposalTarget(change.Path)
 		if !ok || change.From != nil {
 			return nil, errors.New("proposals may change only connection setup and access")
+		}
+		// Access to the Perimeter's own API is the owner's to grant, never a proposal's.
+		if target == PerimeterConnection {
+			return nil, fmt.Errorf("proposals cannot change the %s connection", PerimeterConnection)
 		}
 		if !others && (change.Path[0] == "default_access" || change.Path[0] == "identities" && change.Path[1] != p.Name) {
 			return nil, errors.New("this identity may propose only connection setup and its own access")
@@ -447,6 +512,11 @@ type Enrollment struct {
 	Attributes map[string]json.RawMessage `json:",embed"`
 }
 
+func (c *Config) ActionOff(p facts.Principal, action string) bool {
+	op := c.ResolveAction(PerimeterConnection, action)
+	return strictest(c.EffectModes(p.Name, p.Groups, PerimeterConnection, op, KindOperation)).Mode == ModeOff
+}
+
 func (c *Config) Enroll(input map[string]Enrollment, enrolled map[string]bool, fields map[string]func(json.RawMessage) error) ([]tomledit.Change, error) {
 	var changes []tomledit.Change
 	for name, id := range input {
@@ -466,11 +536,14 @@ func (c *Config) Enroll(input map[string]Enrollment, enrolled map[string]bool, f
 		maps.DeleteFunc(attributes, func(_ string, value any) bool { return value == nil })
 		if principal, ok := c.Principal(fingerprint); ok {
 			existing := c.Identities[principal.Name]
-			if id.Routes && !existing.Routes {
+			// A label or the owner policy may stop a device for now; only its access says it was revoked.
+			if id.Routes && c.ActionOff(principal, RoutesPublish) {
 				if !id.Restore {
 					return nil, errors.New("device route access was revoked")
 				}
-				changes = append(changes, tomledit.Change{Path: []string{"identities", principal.Name, "routes"}, Value: true})
+				if !slices.Contains(existing.Groups, DeviceGroup) {
+					changes = append(changes, tomledit.Change{Path: []string{"identities", principal.Name, "groups"}, Value: append(slices.Clone(existing.Groups), DeviceGroup)})
+				}
 			}
 			for key, value := range attributes {
 				if before, _ := facts.JSON[any](existing.Attributes[key]); !reflect.DeepEqual(value, before) {
@@ -485,7 +558,10 @@ func (c *Config) Enroll(input map[string]Enrollment, enrolled map[string]bool, f
 		if _, exists := c.Identities[name]; exists {
 			return nil, errors.New("identity name belongs to another key")
 		}
-		value := map[string]any{"key": id.Key, "routes": id.Routes}
+		value := map[string]any{"key": id.Key}
+		if id.Routes {
+			value["groups"] = []string{DeviceGroup}
+		}
 		maps.Copy(value, attributes)
 		changes = append(changes, tomledit.Change{Path: []string{"identities", name}, Value: value})
 	}

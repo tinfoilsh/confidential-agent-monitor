@@ -13,7 +13,7 @@ import (
 	"gocloud.dev/gcerrors"
 )
 
-const StateVersion = 4
+const StateVersion = 5
 
 const documentObject = "monitor.enc"
 
@@ -41,11 +41,8 @@ type Document struct {
 	Pending     map[string]json.RawMessage `json:"pending,omitempty"`
 }
 
-func DecodeDocument(plain []byte) (Document, error) {
-	plain, err := upgradeV2(plain)
-	if err == nil {
-		plain, err = upgradeV3(plain)
-	}
+func DecodeDocument(plain []byte, upgrade func([]byte) ([]byte, error)) (Document, error) {
+	plain, err := upgrade(plain)
 	if err != nil {
 		return Document{}, fmt.Errorf("stored state: %w", err)
 	}
@@ -59,7 +56,7 @@ func DecodeDocument(plain []byte) (Document, error) {
 	return d, nil
 }
 
-func Load(ctx context.Context, bucket *blob.Bucket, key []byte, minimum uint64) (Document, sealedlog.Sealer, bool, error) {
+func Load(ctx context.Context, bucket *blob.Bucket, key []byte, minimum uint64, upgrade func([]byte) ([]byte, error)) (Document, sealedlog.Sealer, bool, error) {
 	var doc Document
 	if len(key) < sealedlog.MinKeyBytes || len(key) > sealedlog.MaxKeyBytes {
 		return doc, sealedlog.Sealer{}, false, sealedlog.ErrKey
@@ -81,7 +78,7 @@ func Load(ctx context.Context, bucket *blob.Bucket, key []byte, minimum uint64) 
 	} else {
 		var plain []byte
 		if sealer, plain, err = sealedlog.OpenState(key, raw); err == nil {
-			doc, err = DecodeDocument(plain)
+			doc, err = DecodeDocument(plain, upgrade)
 		}
 	}
 	if err == nil && doc.Generation < minimum {

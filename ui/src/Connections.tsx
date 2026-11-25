@@ -187,7 +187,8 @@ function MyConnections(props: { expanded?: string }) {
     [query, setQuery] = m.search("connections");
   if (props.expanded) setQuery("");
   const searchable = createMemo(() =>
-    Object.keys(m.view()!.config.connections ?? {})
+    owner
+      .serviceNames(m.view()!)
       .sort()
       .map((name) => ({
         name,
@@ -340,9 +341,15 @@ function MyConnections(props: { expanded?: string }) {
     </>
   );
 }
+const PAY_DEFAULTS: Record<owner.Mode, string> = {
+  ask: "a payment asks you first.",
+  allow: "payments go through without asking.",
+  off: "payments are refused.",
+};
 // Account-wide rules that apply to every bunker and connection.
 function GlobalPermissions() {
   const m = useMonitor();
+  const pay = () => m.view()!.config.access?.effects?.pay;
   return (
     <div class="settings">
       <section class="settings-section resource-list">
@@ -351,39 +358,24 @@ function GlobalPermissions() {
         </div>
         <label class="settings-card setting-toggle">
           <span>
-            <span class="setting-title">Ask before any payment</span>
+            <span class="setting-title">Payments ask by default</span>
             <small>
-              A bunker must get your approval for anything that spends money.
+              {pay()
+                ? `Where no connection, group or bunker sets its own access, ${PAY_DEFAULTS[pay()!]}`
+                : "Payments follow the rest of your access settings."}
             </small>
           </span>
           <input
             type="checkbox"
             role="switch"
-            checked={owner.effectMode(m.view()!, "pay") !== "allow"}
+            checked={pay() === "ask"}
             onChange={(e) =>
               void m.edit(
                 owner.edits.setEffect(
                   "pay",
-                  e.currentTarget.checked ? undefined : "allow",
+                  e.currentTarget.checked ? "ask" : undefined,
                 ),
               )
-            }
-          />
-        </label>
-        <label class="settings-card setting-toggle">
-          <span>
-            <span class="setting-title">Allow AI inference without asking</span>
-            <small>
-              Paid model calls (Tinfoil, OpenAI, …) go through without
-              approval. Other payments still ask.
-            </small>
-          </span>
-          <input
-            type="checkbox"
-            role="switch"
-            checked={m.view()!.config.allow_paid_inference}
-            onChange={(e) =>
-              void m.edit(owner.edits.setPaidInference(e.currentTarget.checked))
             }
           />
         </label>
@@ -930,7 +922,7 @@ export function AddConnection(props: { preset: string }) {
   const [agent, setAgent] = createSignal(
       names().length === 1 ? names()[0] : "",
     ),
-    [level, setLevel] = createSignal<owner.Level>("ask");
+    [level, setLevel] = createSignal<owner.GrantLevel>("ask");
   const add = async (signInKey?: string) => {
     try {
       const connection = name().trim();
@@ -1084,7 +1076,7 @@ export function AddConnection(props: { preset: string }) {
             Access
             <select
               value={level()}
-              onChange={(e) => setLevel(e.currentTarget.value as owner.Level)}
+              onChange={(e) => setLevel(e.currentTarget.value as owner.GrantLevel)}
             >
               <option value="ask">Ask before each request</option>
               <option value="allow">Allow all API requests</option>

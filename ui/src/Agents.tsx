@@ -37,9 +37,12 @@ export function Agents(props: { expanded?: string }) {
         .map((name) => {
           const connections = owner
             .agentAccess(view, name)
-            .filter((access) => access.level !== "off").length;
+            .filter(
+              (access) =>
+                access.reaches && !owner.isBuiltin(access.connection),
+            ).length;
           const description = owner.isDevice(name)
-            ? view.config.identities![name].routes
+            ? owner.publishesRoutes(view, name)
               ? "Can reach bunkers"
               : "Bunker access off"
             : `${connections} ${connections === 1 ? "connection" : "connections"}`;
@@ -358,6 +361,7 @@ function AccessSelect<T extends string>(props: {
   options: { [K in T]?: string };
   kind: "level" | "mode";
   disabled?: T[];
+  title?: string;
   onChange: (value: T) => void;
 }) {
   return (
@@ -365,6 +369,7 @@ function AccessSelect<T extends string>(props: {
       class={`access-select ${props.kind}`}
       data-value={props.value ?? "mixed"}
       aria-label={props.label}
+      title={props.title}
       value={props.value ?? ""}
       onClick={(event) => event.stopPropagation()}
       onChange={(event) => props.onChange(event.currentTarget.value as T)}
@@ -385,19 +390,19 @@ function AccessSelect<T extends string>(props: {
     </select>
   );
 }
-// Rows show action settings only; effects such as Payments apply separately.
 function Actions(props: {
   name: string;
   connection: string;
   nodes: owner.AccessNode[];
 }) {
   const m = useMonitor();
-  const leaves = (node: owner.AccessNode): owner.Mode[] =>
-    node.children.length ? node.children.flatMap(leaves) : [node.mode];
-  const display = (node: owner.AccessNode): owner.Mode | null => {
-    const values = new Set(leaves(node));
-    return values.size === 1 ? [...values][0] : null;
-  };
+  const modes = (node: owner.AccessNode): owner.Mode[] => [
+    node.mode,
+    ...node.children.flatMap(modes),
+  ];
+  const display = (node: owner.AccessNode): owner.Mode | null =>
+    new Set(modes(node)).size === 1 ? node.mode : null;
+  const builtin = () => owner.isBuiltin(props.connection);
   const descendants = (node: owner.AccessNode): string[] => [
     node.key,
     ...node.children.flatMap(descendants),
@@ -444,12 +449,18 @@ function Actions(props: {
                   *
                 </span>
               </Show>
+              <Show when={builtin() && node().effects.includes("admin")}>
+                <small class="access-warning">
+                  Grants control of the Perimeter
+                </small>
+              </Show>
             </span>
             <span class="access-action-leader" aria-hidden="true" />
             <AccessSelect
               kind="mode"
               label={`${node().title} permission`}
               value={value()}
+              title={owner.provenance(node())}
               options={owner.MODES}
               onChange={(mode) => {
                 if (value() !== mode) set(node(), mode);
@@ -499,8 +510,7 @@ export function AgentConnectionAccess(props: {
     () => owner.agentAccess(m.view()!, props.name, props.connection)[0],
   );
   const [expanded, setExpanded] = createSignal(
-    !!props.defaultOpen &&
-      (entry().level !== "off" || entry().overrides > 0),
+    !!props.defaultOpen && (entry().reaches || entry().overrides > 0),
   );
   const singleAction = () => {
     const nodes = entry().actions;
@@ -532,7 +542,7 @@ export function AgentConnectionAccess(props: {
   const title = () => (
     <>
       <Show
-        when={props.title}
+        when={props.connection === owner.BUNKERS}
         fallback={<ConnectorIcon preset={entry().preset} />}
       >
         <Icon name="agents" />
@@ -565,7 +575,7 @@ export function AgentConnectionAccess(props: {
       <div class="row">
         <button
           class="access-toggle"
-          classList={{ off: entry().level === "off" }}
+          classList={{ off: !entry().reaches }}
           type="button"
           aria-label={`Actions for ${props.title ?? props.connection}`}
           aria-expanded={open()}
@@ -575,28 +585,39 @@ export function AgentConnectionAccess(props: {
         >
           {title()}
         </button>
-        <AccessSelect
-          kind="level"
-          label={`Access for ${props.title ?? props.connection}`}
-          value={entry().level}
-          options={Object.fromEntries(entry().levels)}
-          disabled={entry().preset === owner.BUNKERS ? ["allow"] : []}
-          onChange={(value) => {
-            const own =
-              m.view()!.config.identities?.[props.name]?.connections?.[
-                props.connection
-              ]?.level;
-            if (own !== value)
-              void m.edit(
-                owner.edits.setLevel(
-                  m.view()!,
-                  props.name,
-                  props.connection,
-                  value,
-                ),
-              );
-          }}
-        />
+        <Show when={!owner.isBuiltin(props.connection)}>
+          <AccessSelect<owner.Level>
+            kind="level"
+            label={`Access for ${props.title ?? props.connection}`}
+            value={entry().level}
+            options={{
+              // The server derives custom; it is never written.
+              ...(entry().level === "custom" && { custom: "Custom" }),
+              ...Object.fromEntries(entry().levels),
+            }}
+            disabled={
+              entry().preset === owner.BUNKERS
+                ? ["custom", "allow"]
+                : ["custom"]
+            }
+            onChange={(value) => {
+              if (value === "custom") return;
+              const own =
+                m.view()!.config.identities?.[props.name]?.connections?.[
+                  props.connection
+                ]?.level;
+              if (own !== value)
+                void m.edit(
+                  owner.edits.setLevel(
+                    m.view()!,
+                    props.name,
+                    props.connection,
+                    value,
+                  ),
+                );
+            }}
+          />
+        </Show>
       </div>
       <div
         id={id}
@@ -637,7 +658,7 @@ export function AgentConnectionAccess(props: {
                 <For each={rules()}>
                   {([id, rule]) => (
                     <a class="access-rule" href="#connections/rules">
-                      <RuleText rule={rule} />
+                      <RuleText rule={rule} agent={props.name} id={id} />
                       <RemoveRule agent={props.name} id={id} />
                       <Icon name="arrow" />
                     </a>
@@ -675,16 +696,31 @@ function AgentAccess(props: { name: string }) {
           each={Object.keys(m.view()!.config.connections ?? {}).filter(
             (connection) => connection !== owner.BUNKERS,
           )}
-          fallback={
-            <p>
-              No connections yet. <a href="#connections/catalog">Add a connection</a>
-            </p>
-          }
         >
           {(connection) => (
-            <AgentConnectionAccess name={props.name} connection={connection} />
+            <AgentConnectionAccess
+              name={props.name}
+              connection={connection}
+              title={
+                owner.isBuiltin(connection)
+                  ? owner.presetOf(m.view()!, connection).title
+                  : undefined
+              }
+            />
           )}
         </For>
+        <Show
+          when={
+            !owner
+              .serviceNames(m.view()!)
+              .some((connection) => connection !== owner.BUNKERS)
+          }
+        >
+          <p>
+            No connections yet.{" "}
+            <a href="#connections/catalog">Add a connection</a>
+          </p>
+        </Show>
       </div>
     </section>
   );
@@ -700,10 +736,14 @@ function SandboxAccess(props: { name: string }) {
         type="checkbox"
         role="switch"
         aria-describedby={`${id}-description`}
-        checked={m.view()!.config.identities?.[props.name]?.routes}
+        checked={owner.publishesRoutes(m.view()!, props.name)}
         onChange={(e) =>
           void m.edit(
-            owner.edits.setRoutes(props.name, e.currentTarget.checked),
+            owner.edits.setRoutes(
+              m.view()!,
+              props.name,
+              e.currentTarget.checked,
+            ),
           )
         }
       />
@@ -713,12 +753,51 @@ function SandboxAccess(props: { name: string }) {
     </div>
   );
 }
+function IdentityPolicy(props: { name: string }) {
+  const m = useMonitor();
+  const identity = () => m.view()!.config.identities?.[props.name];
+  const binding = () =>
+    identity()?.certificate ? `certificate key ID ${props.name}` : undefined;
+  const groups = () =>
+    (identity()?.groups ?? []).filter((group) =>
+      Object.hasOwn(m.view()!.config.groups ?? {}, group),
+    );
+  return (
+    <>
+      <Show when={binding()}>
+        {(text) => (
+          <div class="setting-row">
+            <span>
+              Signs in with
+              <small>Certificates from the identity CA with this key ID sign in as it.</small>
+            </span>
+            <span class="key-pill">
+              <code>{text()}</code>
+            </span>
+          </div>
+        )}
+      </Show>
+      <Show when={groups().length}>
+        <div class="setting-row">
+          <span>
+            Groups
+            <small>Access it shares with other identities.</small>
+          </span>
+          <small class="rule-scope">
+            <For each={groups()}>{(group) => <code>{group}</code>}</For>
+          </small>
+        </div>
+      </Show>
+    </>
+  );
+}
 function AgentSettings(props: { name: string }) {
   if (owner.isDevice(props.name))
     return (
       <div class="agent-settings">
         <section>
           <SandboxAccess name={props.name} />
+          <IdentityPolicy name={props.name} />
         </section>
       </div>
     );
@@ -741,6 +820,7 @@ function AgentSettings(props: { name: string }) {
             <Copy icon text={address()} label="Copy address" />
           </span>
         </div>
+        <IdentityPolicy name={props.name} />
       </section>
       <Show when={identity()}>
         <ResourceDisclosure
@@ -784,7 +864,9 @@ function AgentSettings(props: { name: string }) {
                 <div class="setting-row">
                   <span>
                     Copy bunker profile
-                    <small>Takes its connection access, actions and rules.</small>
+                    <small>
+                      Takes its connection access, actions, rules and groups.
+                    </small>
                   </span>
                   <span class="agent-advanced-actions">
                     <select

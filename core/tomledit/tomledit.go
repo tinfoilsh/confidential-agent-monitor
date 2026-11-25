@@ -5,7 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"regexp"
 	"slices"
+	"strconv"
+	"strings"
 	"time"
 
 	toml "github.com/pelletier/go-toml/v2"
@@ -30,6 +33,30 @@ func Read(source string) (map[string]any, error) {
 		return nil, errors.New("policy source must be an object")
 	}
 	return v, nil
+}
+
+var bareKey = regexp.MustCompile(`^[A-Za-z0-9_-]+$`)
+
+func Key(key string) string {
+	if bareKey.MatchString(key) {
+		return key
+	}
+	return strconv.Quote(key)
+}
+
+func Path(keys ...string) string {
+	quoted := make([]string, len(keys))
+	for i, key := range keys {
+		quoted[i] = Key(key)
+	}
+	return strings.Join(quoted, ".")
+}
+
+func Table(v map[string]any, path ...string) map[string]any {
+	for _, key := range path {
+		v, _ = v[key].(map[string]any)
+	}
+	return v
 }
 
 type Change struct {
@@ -120,6 +147,7 @@ func Edit(source string, changes []Change) (string, error) {
 		return "", err
 	}
 	for _, change := range changes {
+		var notes []note
 		switch {
 		case len(change.Path) == 0 || change.Delete && change.Value != nil || change.From != nil && (change.Delete || change.Value != nil):
 			return "", errors.New("an edit requires a path and only one of a value, a deletion or a move")
@@ -131,6 +159,7 @@ func Edit(source string, changes []Change) (string, error) {
 			if !ok {
 				continue
 			}
+			notes = notesUnder(doc, change.From, moved)
 			doc.Delete(change.From)
 			change.Value = moved
 		default:
@@ -155,8 +184,44 @@ func Edit(source string, changes []Change) (string, error) {
 				}
 			}
 		}
+		for _, n := range notes {
+			n.restore(doc, change.Path)
+		}
 	}
 	return doc.String(), nil
+}
+
+type note struct {
+	at              []string
+	above, trailing string
+}
+
+func notesUnder(doc *edit.Document, path []string, value any) []note {
+	var notes []note
+	above, _ := doc.Comment(path)
+	trailing, _ := doc.TrailingComment(path)
+	if above != "" || trailing != "" {
+		notes = append(notes, note{above: above, trailing: trailing})
+	}
+	table, _ := value.(map[string]any)
+	for _, key := range slices.Sorted(maps.Keys(table)) {
+		for _, n := range notesUnder(doc, append(slices.Clone(path), key), table[key]) {
+			n.at = append([]string{key}, n.at...)
+			notes = append(notes, n)
+		}
+	}
+	return notes
+}
+
+// A comment is restored where the moved expression has a line of its own; elsewhere it has nowhere to go.
+func (n note) restore(doc *edit.Document, to []string) {
+	at := slices.Concat(to, n.at)
+	if n.above != "" {
+		_ = doc.SetComment(at, n.above)
+	}
+	if n.trailing != "" {
+		_ = doc.SetTrailingComment(at, n.trailing)
+	}
 }
 
 func Fragment(source string) ([]Change, error) {

@@ -40,6 +40,7 @@ const (
 	HostChars = "abcdefghijklmnopqrstuvwxyz0123456789.-:"
 
 	SignInAction = "session.sign-in"
+	CustomAction = "request"
 )
 
 var (
@@ -48,11 +49,14 @@ var (
 	jsonMediaTypes  = []string{"application/json", "text/json", "application/x-amz-json-1.0", "application/x-amz-json-1.1"}
 
 	errNoncanonicalPath = errors.New("the path is not canonical")
+
+	customEffects = []string{"execute", "send"}
 )
 
 type Setup struct {
 	Hosts         []string
 	Preset        *Preset
+	MatchOnly     bool
 	title, origin string
 	base          string
 	slots         Slots

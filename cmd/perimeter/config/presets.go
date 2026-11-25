@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"maps"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 )
@@ -15,7 +16,7 @@ type connectionDefaults struct {
 }
 
 // A preset that states no defaults takes those of its protocol.
-func Compose(presets map[string]*catalog.Preset) error {
+func ComposePresets(presets map[string]*catalog.Preset) error {
 	if err := catalog.Compose(presets); err != nil {
 		return err
 	}
@@ -44,30 +45,24 @@ func Compose(presets map[string]*catalog.Preset) error {
 	return nil
 }
 
-type OperationSummary struct {
-	Action  string   `json:"action"`
-	Effects []string `json:"effects,omitempty"`
-}
-
 type CatalogEntry struct {
 	*catalog.Catalog
-	Title      string                       `json:"title"`
-	Operations *map[string]OperationSummary `json:"operations,omitempty"`
+	Title string `json:"title"`
 }
 
-func CatalogEntries(cfg *Config, operations map[string]map[string]OperationSummary) (map[string]CatalogEntry, string, error) {
-	used := map[string]bool{}
+func CatalogEntries(cfg *Config) (map[string]CatalogEntry, string, error) {
+	used := map[string]bool{PerimeterConnection: true}
 	for _, connection := range cfg.Connections {
 		used[connection.Preset] = true
 	}
+	presets := map[string]*catalog.Preset{PerimeterConnection: perimeterPreset}
+	maps.Copy(presets, cfg.Presets)
 	entries := map[string]CatalogEntry{}
-	for name, p := range cfg.Presets {
+	for name, p := range presets {
 		metadata := *p.Catalog
 		entry := CatalogEntry{Catalog: &metadata, Title: p.Title}
 		if !used[name] {
 			metadata.Actions = nil
-		} else if ops := operations[name]; ops != nil {
-			entry.Operations = &ops
 		}
 		entries[name] = entry
 	}

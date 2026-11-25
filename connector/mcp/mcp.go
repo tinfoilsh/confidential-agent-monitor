@@ -161,8 +161,8 @@ func (m *Session) Serve(ctx context.Context, conn net.Conn, _ string, target con
 		server := sdk.NewServer(m.client.info(), &sdk.ServerOptions{Instructions: m.instructions})
 		for _, t := range m.tools {
 			server.AddTool(t, func(ctx context.Context, req *sdk.CallToolRequest) (*sdk.CallToolResult, error) {
-				hints := cmp.Or(t.Annotations, &sdk.ToolAnnotations{})
-				if err := gate(ctx, facts.Capture((&Request{Tool: t.Name, Arguments: req.Params.Arguments, ReadOnly: hints.ReadOnlyHint, Destructive: hints.DestructiveHint != nil && *hints.DestructiveHint}).Describe(m.setup))); err != nil {
+				readOnly, destructive := toolHints(t)
+				if err := gate(ctx, facts.Capture((&Request{Tool: t.Name, Arguments: req.Params.Arguments, ReadOnly: readOnly, Destructive: destructive}).Describe(m.setup))); err != nil {
 					log.Printf("%s: blocked %s: %v", m.setup.URL, t.Name, err)
 					return &sdk.CallToolResult{IsError: true, Content: []sdk.Content{&sdk.TextContent{Text: "blocked by policy: " + err.Error()}}}, nil
 				}
@@ -224,20 +224,13 @@ type Request struct {
 
 func (r *Request) Describe(s *Setup) (facts.Observation, error) {
 	f := facts.Observation{Details: Details{MCP: &MCPFacts{Tool: r.Tool, Arguments: r.Arguments, ReadOnly: r.ReadOnly}}, Title: "Use " + r.Tool}
-	action := "use." + r.Tool
-	if r.ReadOnly {
-		action = "read." + r.Tool
-	}
 	var args any
 	if err := facts.DecodeNumbers(r.Arguments, &args); err != nil {
 		return f, err
 	}
 	f.Parameters = map[string]any{"arguments": args}
 	f.Details.(Details).MCP.Arguments = args
-	f.Operation = &facts.Operation{Action: action}
-	if r.Destructive && !r.ReadOnly && s.actions[action].Effects == nil {
-		f.Operation.Effects = destructiveEffects
-	}
+	f.Operation = toolOperation(r.Tool, r.ReadOnly, r.Destructive, s.actions)
 	if p := s.Preset; p != nil {
 		scope, err := facts.Select(p.scope, args)
 		maps.Copy(f.Parameters, scope)
@@ -245,6 +238,45 @@ func (r *Request) Describe(s *Setup) (facts.Observation, error) {
 		return f, err
 	}
 	return f, nil
+}
+
+func toolHints(t *sdk.Tool) (readOnly, destructive bool) {
+	hints := cmp.Or(t.Annotations, &sdk.ToolAnnotations{})
+	return hints.ReadOnlyHint, hints.DestructiveHint != nil && *hints.DestructiveHint
+}
+
+// A tool sits under read or use by its read-only hint; a destructive one deletes unless the catalog states its action's effects.
+func toolOperation(tool string, readOnly, destructive bool, actions map[string]catalogAction) *facts.Operation {
+	op := &facts.Operation{Action: "use." + tool}
+	if readOnly {
+		op.Action = "read." + tool
+	}
+	if destructive && !readOnly && actions[op.Action].Effects == nil {
+		op.Effects = destructiveEffects
+	}
+	return op
+}
+
+// A pinned server lists its tools; an unpinned one may offer any tool.
+func Operations(config, definition json.RawMessage) (map[string]facts.Observation, error) {
+	var setup struct {
+		Pin *Snapshot `json:"pin"`
+	}
+	var preset struct {
+		Catalog struct {
+			Actions map[string]catalogAction `json:"actions"`
+		} `json:"catalog"`
+	}
+	if err := errors.Join(json.Unmarshal(config, &setup), json.Unmarshal(definition, &preset)); err != nil || setup.Pin == nil {
+		return nil, err
+	}
+	ops := map[string]facts.Observation{}
+	for _, t := range setup.Pin.Tools {
+		readOnly, destructive := toolHints(t)
+		op := toolOperation(t.Name, readOnly, destructive, preset.Catalog.Actions)
+		ops[op.Action] = facts.Observation{Operation: op, Title: cmp.Or(t.Title, t.Name)}
+	}
+	return ops, nil
 }
 
 type Preset struct {

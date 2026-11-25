@@ -28,7 +28,6 @@ import (
 )
 
 const (
-	ownerName        = "owner"
 	maxDocumentBytes = 16 << 20
 	maxCallBytes     = 2 * maxDocumentBytes
 	maxAgentBytes    = 96 << 10
@@ -43,8 +42,7 @@ var errOAuthLoopback = errors.New("this service only accepts sign-ins from a loo
 
 type caller struct {
 	Name          string
-	Owner         bool
-	Claims        map[string]any
+	Key           string
 	MinGeneration uint64
 	Acknowledge   func() error
 	Session       string
@@ -52,8 +50,6 @@ type caller struct {
 }
 
 type callerKey struct{}
-
-type routeKey struct{}
 
 func withCaller(ctx context.Context, c caller) context.Context {
 	return context.WithValue(ctx, callerKey{}, c)
@@ -139,13 +135,19 @@ type editsInput struct {
 	Credentials format.Secrets    `json:"credentials,omitempty"`
 }
 
-func (s *state) adminAPI() http.Handler {
+type answerInput struct {
+	Answer
+	Revision uint64 `json:"revision"`
+}
+
+func (s *state) adminAPI(owner bool) http.Handler {
+	m := adminMount{s, owner}
 	mux := http.NewServeMux()
 	mux.Handle("GET /healthz", jsonHandler(0, func(r *http.Request, _ struct{}) (any, error) {
 		var health struct {
 			State string `json:"state,omitempty"`
 		}
-		if c, _ := callerFrom(r.Context()); c.Owner {
+		if _, authenticated := callerFrom(r.Context()); owner && authenticated {
 			present, err := format.Exists(r.Context(), s.bucket)
 			if err != nil {
 				return nil, httpError{err, http.StatusServiceUnavailable}
@@ -174,9 +176,13 @@ func (s *state) adminAPI() http.Handler {
 		view.Initialized = initialized
 		return view, err
 	}))
-	mux.Handle("GET /{$}", ownerLocked(s, func(h held, r *http.Request, _ struct{}) (any, error) { return h.view(r) }))
+	// The overview includes the whole policy, so reading it needs policy.read as well.
+	overview := func(adminMount, *http.Request, any) ([]facts.Observation, error) {
+		return []facts.Observation{perimeterCall(config.OverviewRead, map[string]any{}), perimeterCall(config.PolicyRead, map[string]any{})}, nil
+	}
+	mux.Handle("GET /{$}", authorizedLockedHandler(m, overview, func(h held, r *http.Request, _ struct{}) (any, error) { return h.view(r) }))
 
-	mux.Handle("GET /policy", ownerLocked(s, func(h held, r *http.Request, _ struct{}) (any, error) {
+	mux.Handle("GET /policy", authorizedLockedHandler(m, pathAction(config.PolicyRead), func(h held, r *http.Request, _ struct{}) (any, error) {
 		doc := h.doc
 		result := map[string]any{"source": doc.Policy, "revision": doc.Revision}
 		var err error
@@ -185,15 +191,21 @@ func (s *state) adminAPI() http.Handler {
 		}
 		return result, err
 	}))
-	mux.Handle("POST /policy/preview", s.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, input sourceInput) (any, error) {
-		return stable(s, func(base format.Document, before *settings) (*policyDiff, error) {
+	mux.Handle("GET /explain", authorizedLockedHandler(m, pathAction(config.ExplainIdentity, "identity"), held.explainIdentity))
+	mux.Handle("POST /policy/preview", authorizedHandler(m, maxDocumentBytes, pathAction(config.PolicyPreview), func(r *http.Request, input sourceInput) (any, error) {
+		return withWriteLock(s, func(base format.Document, before *settings) (*policyDiff, error) {
+			if !owner {
+				if err := fetchesUnchanged(base.Policy, input.Source); err != nil {
+					return nil, err
+				}
+			}
 			return s.previewPolicy(r.Context(), base, before, input.Source)
 		})
-	})))
-	mux.Handle("POST /policy", s.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, input sourceInput) (any, error) {
+	}))
+	mux.Handle("POST /policy", authorizedHandler(m, maxDocumentBytes, policyWriteActions, func(r *http.Request, input sourceInput) (any, error) {
 		return s.viewAfter(r, s.writeSettings(r.Context(), settingsWrite{source: &input.Source, check: reviewed(input.Revision)}))
-	})))
-	mux.Handle("POST /policy/edits", s.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, input editsInput) (any, error) {
+	}))
+	mux.Handle("POST /policy/edits", authorizedHandler(m, maxDocumentBytes, policyEditActions, func(r *http.Request, input editsInput) (any, error) {
 		for _, values := range input.Credentials {
 			for name, raw := range values {
 				if bytes.Equal(raw, []byte("null")) {
@@ -203,54 +215,65 @@ func (s *state) adminAPI() http.Handler {
 		}
 		err := s.writeSettings(r.Context(), settingsWrite{changes: input.Changes, credentials: input.Credentials, check: reviewed(input.Revision)})
 		return s.viewAfter(r, err)
-	})))
+	}))
 
-	mux.Handle("POST /enroll", s.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, input map[string]config.Enrollment) (any, error) {
-		return s.viewAfter(r, s.enroll(r.Context(), input))
-	})))
-	mux.Handle("POST /labels/{identity}", ownerLocked(s, held.setLabel))
+	mux.Handle("POST /enroll", authorizedHandler(m, maxDocumentBytes, enrollActions, func(r *http.Request, input map[string]config.Enrollment) (any, error) {
+		_, err := s.enroll(r.Context(), input)
+		return s.viewAfter(r, err)
+	}))
+	mux.Handle("POST /labels/{identity}", authorizedLockedHandler(m, bodyAction(config.LabelsWrite, "identity"), held.setLabel))
 
-	mux.Handle("POST /connections/{name}/sign-in", s.ownerOnly(jsonHandler(maxDocumentBytes, s.startSignIn)))
-	mux.Handle("POST /sign-in/{state}", s.ownerOnly(jsonHandler(maxDocumentBytes, s.finishSignIn)))
-	mux.Handle("/connections/{name}/{control...}", s.ownerOnly(s.connectionControl))
-	mux.Handle(sandbox.RelayRoute, s.ownerOnly(jsonHandler(sandbox.MaxRelayBytes, func(r *http.Request, in sandbox.RelayInput) (any, error) {
-		return sandbox.Relay(r.Context(), s.relays, in)
-	})))
-
-	mux.Handle("GET /requests", ownerLocked(s, func(h held, _ *http.Request, _ struct{}) (any, error) {
-		newest := []recordSummary{}
-		for _, r := range slices.Backward(slices.Collect(h.records.All())) {
-			newest = append(newest, summarize(r))
+	mux.Handle("POST /connections/{connection}/sign-in", authorizedHandler(m, maxDocumentBytes, pathAction(config.CredentialsWrite, "connection"), s.startSignIn))
+	mux.Handle("POST /sign-in/{state}", authorizedHandler(m, maxDocumentBytes, pathAction(config.CredentialsWrite), s.finishSignIn))
+	mux.Handle("/connections/{connection}/{control...}", s.requireUnlocked(func(w http.ResponseWriter, r *http.Request) {
+		// The owner's use of a connection's controls is not audited.
+		if owner {
+			s.connectionControl(w, r)
+			return
 		}
+		if err := m.perform(r, pathAction(config.ConnectionsControl, "connection"), nil, func() error { s.connectionControl(w, r); return nil }); err != nil {
+			fail(w, err)
+		}
+	}))
+	mux.Handle(sandbox.RelayRoute, authorizedHandler(m, sandbox.MaxRelayBytes, bodyAction(config.BunkersRelay), func(r *http.Request, in sandbox.RelayInput) (any, error) {
+		return sandbox.Relay(r.Context(), s.relays, in)
+	}))
+
+	mux.Handle("GET /requests", authorizedList(m, config.RequestsRead, func(_ *http.Request, shows func(string) bool) (any, error) {
+		newest := []recordSummary{}
+		s.locked(func(h held) {
+			for _, record := range slices.Backward(slices.Collect(h.records.All())) {
+				if shows(record.subject().Principal.Name) {
+					newest = append(newest, summarize(record))
+				}
+			}
+		})
 		return newest, nil
 	}))
-	mux.Handle("GET /requests/{id}", ownerLocked(s, func(h held, r *http.Request, _ struct{}) (any, error) {
+	mux.Handle("GET /requests/{id}", authorizedLockedHandler(m, subjectReadActions(config.RequestsRead, pendingRecordSubject), func(h held, r *http.Request, _ struct{}) (any, error) {
 		if record := h.findRecord(r.PathValue("id")); record != nil {
 			return *record, nil
 		}
 		return nil, errRecordGone
 	}))
-	mux.Handle("POST /requests/{id}", s.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, req struct {
-		Answer
-		Revision uint64 `json:"revision"`
-	}) (any, error) {
-		return s.viewAfter(r, s.answerRequest(r.Context(), r.PathValue("id"), req.Answer, req.Revision))
-	})))
+	mux.Handle("POST /requests/{id}", authorizedHandler(m, maxDocumentBytes, answerActions, func(r *http.Request, input answerInput) (any, error) {
+		return s.viewAfter(r, s.answerRequest(r.Context(), r.PathValue("id"), input.Answer, input.Revision))
+	}))
 
-	mux.Handle("GET /catalogs/updates", s.ownerOnly(jsonHandler(0, func(r *http.Request, _ struct{}) (any, error) {
+	mux.Handle("GET /catalogs/updates", authorizedHandler(m, 0, pathAction(config.CatalogsRead), func(r *http.Request, _ struct{}) (any, error) {
 		return s.catalogUpdates(r.Context())
-	})))
-	mux.Handle("GET /audit", s.ownerOnly(jsonHandler(0, func(r *http.Request, _ struct{}) (any, error) {
-		return s.readAuditPage(r.Context(), r.URL.Query().Get("before"))
-	})))
-	mux.Handle("GET /audit/{segment}/{id}", s.ownerOnly(jsonHandler(0, func(r *http.Request, _ struct{}) (any, error) {
+	}))
+	mux.Handle("GET /audit", authorizedList(m, config.AuditRead, func(r *http.Request, shows func(string) bool) (any, error) {
+		return s.readAuditPage(r.Context(), r.URL.Query().Get("before"), shows)
+	}))
+	mux.Handle("GET /audit/{segment}/{id}", authorizedHandler(m, 0, subjectReadActions(config.AuditRead, auditRecordSubject), func(r *http.Request, _ struct{}) (any, error) {
 		return s.readAuditRecord(r.Context(), r.PathValue("segment"), r.PathValue("id"))
-	})))
+	}))
 	return mux
 }
 
 func (s *state) connectionControl(w http.ResponseWriter, r *http.Request) {
-	name := r.PathValue("name")
+	name := r.PathValue("connection")
 	handler, setupCtx, release, ok := s.table.Control(name)
 	if !ok {
 		if _, installed := s.table.Connections()[name]; !installed {
@@ -283,9 +306,7 @@ func (s held) setLabel(r *http.Request, l format.Label) (any, error) {
 	if l.Audience != config.InitialLabel.Audience {
 		l.Because["audience"] = cmp.Or(old.Because["audience"], "the owner")
 	}
-	err := s.relabel(r.Context(), identity, l, nil)
-	s.recordAdmin(r.Context(), "Set the label of "+identity, l, err)
-	if err != nil {
+	if err := s.relabel(r.Context(), identity, l, nil); err != nil {
 		return nil, err
 	}
 	return s.view(r)
@@ -299,44 +320,6 @@ func (s *state) viewAfter(r *http.Request, err error) (v ownerView, _ error) {
 	return v, err
 }
 
-func ownerLocked[T any](s *state, fn func(held, *http.Request, T) (any, error)) http.HandlerFunc {
-	return s.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, input T) (value any, err error) {
-		s.locked(func(h held) { value, err = fn(h, r, input) })
-		return value, err
-	}))
-}
-
-func (s *state) ownerOnly(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		st := s.settings.Load()
-		c, err := requestCaller(r)
-		if err == nil && st == nil {
-			err = errLocked
-		}
-		ctx := withCaller(context.WithValue(r.Context(), routeKey{}, r.Pattern), c)
-		if err == nil {
-			err = s.checkAdminCall(ctx, st, config.AdminCall{})
-		}
-		if err != nil {
-			fail(w, err)
-			return
-		}
-		next(w, r.WithContext(ctx))
-	}
-}
-
-func (s *state) checkAdminCall(ctx context.Context, st *settings, call config.AdminCall) error {
-	c, _ := callerFrom(ctx)
-	call.Caller = config.PolicyCaller{Name: c.Name, Owner: c.Owner, Claims: c.Claims}
-	call.Route, _ = ctx.Value(routeKey{}).(string)
-	var allow bool
-	err := st.policy.Eval(ctx, config.QueryAdmin, call, &allow)
-	if err == nil && !allow {
-		err = httpError{errors.New("policy does not allow this caller to make this call"), http.StatusForbidden}
-	}
-	return err
-}
-
 func requestCaller(r *http.Request) (caller, error) {
 	if c, ok := callerFrom(r.Context()); ok {
 		return c, nil
@@ -347,22 +330,23 @@ func requestCaller(r *http.Request) (caller, error) {
 type agentCatalogView struct {
 	CatalogID  string                         `json:"catalog_id"`
 	Presets    map[string]config.CatalogEntry `json:"presets"`
-	Vocabulary map[string]config.Obligations  `json:"vocabulary"`
+	Vocabulary map[string]config.Traits       `json:"vocabulary"`
 }
 
 func (s *state) agentAPI(fingerprint string) http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /connections", agentLocked(s, fingerprint, func(h held, _ *http.Request, _ struct{}, p facts.Principal) (any, error) {
+	mux.HandleFunc("GET /connections", agentHandler(s, fingerprint, func(h held, _ *http.Request, _ struct{}, p facts.Principal) (any, error) {
 		return h.listing(p), nil
 	}))
-	mux.HandleFunc("GET /policy", agentLocked(s, fingerprint, func(_ held, _ *http.Request, _ struct{}, p facts.Principal) (any, error) {
-		return s.agentPolicy(p)
+	mux.HandleFunc("GET /policy", agentHandler(s, fingerprint, func(h held, _ *http.Request, _ struct{}, p facts.Principal) (any, error) {
+		return h.agentPolicy(p)
 	}))
-	mux.HandleFunc("GET /catalog", agentLocked(s, fingerprint, func(held, *http.Request, struct{}, facts.Principal) (any, error) {
+	mux.HandleFunc("GET /explain", agentHandler(s, fingerprint, held.explainSelf))
+	mux.HandleFunc("GET /catalog", agentHandler(s, fingerprint, func(held, *http.Request, struct{}, facts.Principal) (any, error) {
 		st := s.settings.Load()
 		return agentCatalogView{CatalogID: st.catalogID, Presets: st.catalog, Vocabulary: config.Vocabulary}, nil
 	}))
-	mux.HandleFunc("GET /policy/proposals/{id}", agentLocked(s, fingerprint, func(h held, r *http.Request, _ struct{}, p facts.Principal) (any, error) {
+	mux.HandleFunc("GET /policy/proposals/{id}", agentHandler(s, fingerprint, func(h held, r *http.Request, _ struct{}, p facts.Principal) (any, error) {
 		record := h.findRecord(r.PathValue("id"))
 		if record == nil || record.Changes == nil || !record.subject().Principal.Same(p) {
 			return nil, errRecordGone
@@ -372,25 +356,22 @@ func (s *state) agentAPI(fingerprint string) http.Handler {
 	mux.HandleFunc("POST /policy/proposals", jsonHandler(maxAgentBytes, func(r *http.Request, input config.Proposal) (any, error) {
 		return s.proposePolicy(r.Context(), fingerprint, input)
 	}))
-	api := s.adminAPI()
+	api := s.adminAPI(false)
 	mux.Handle(adminPrefix+"/", http.StripPrefix(adminPrefix, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		p, ok := s.identities.Lookup(fingerprint)
 		switch {
 		case !ok:
 			fail(w, errNoAgent)
-		case p.Name == ownerName:
-			http.Error(w, "an identity named owner cannot make admin calls", http.StatusForbidden)
 		case r.Host != agentHost || r.URL.Path == "/unlock":
 			http.NotFound(w, r)
 		default:
-			c := caller{Name: p.Name, Session: fingerprint, Claims: map[string]any{"key": fingerprint, "groups": append([]string{}, p.Groups...)}}
-			api.ServeHTTP(w, r.WithContext(withCaller(r.Context(), c)))
+			api.ServeHTTP(w, r.WithContext(withCaller(r.Context(), caller{Name: p.Name, Key: fingerprint, Session: fingerprint})))
 		}
 	})))
 	return mux
 }
 
-func agentLocked[T any](s *state, fingerprint string, fn func(held, *http.Request, T, facts.Principal) (any, error)) http.HandlerFunc {
+func agentHandler[T any](s *state, fingerprint string, fn func(held, *http.Request, T, facts.Principal) (any, error)) http.HandlerFunc {
 	return jsonHandler(maxAgentBytes, func(r *http.Request, input T) (value any, err error) {
 		s.locked(func(h held) {
 			if p, ok := s.identities.Lookup(fingerprint); ok {
@@ -422,7 +403,6 @@ type ownerView struct {
 	Labels      map[string]format.Label        `json:"labels"`
 	CatalogID   string                         `json:"catalog_id"`
 	Presets     map[string]config.CatalogEntry `json:"presets,omitempty"`
-	Vocabulary  map[string]config.Obligations  `json:"vocabulary"`
 	Initialized bool                           `json:"initialized"`
 }
 
@@ -430,12 +410,12 @@ func (s held) view(r *http.Request) (ownerView, error) {
 	st, doc := s.settings.Load(), s.doc
 	v := ownerView{Generation: doc.Generation, Revision: doc.Revision, HostKey: string(ssh.MarshalAuthorizedKey(st.hostKey.PublicKey())), HostID: s.hostID, CA: doc.Keys.CACert,
 		Fields: map[string][]fieldMetadata{}, Status: map[string]core.Status{}, Labels: map[string]format.Label{},
-		CatalogID: st.catalogID, Presets: st.catalog, Vocabulary: config.Vocabulary}
+		CatalogID: st.catalogID, Presets: st.catalog}
 	if r.URL.Query().Get("catalog") == st.catalogID {
 		v.Presets = nil
 	}
 	var err error
-	if v.Config, err = st.Config.View(); err != nil {
+	if v.Config, err = st.Config.OwnerView(); err != nil {
 		return ownerView{}, err
 	}
 	for name, status := range s.table.Connections() {
@@ -448,7 +428,7 @@ func (s held) view(r *http.Request) (ownerView, error) {
 	for _, fields := range v.Fields {
 		slices.SortFunc(fields, func(a, b fieldMetadata) int { return strings.Compare(a.Name, b.Name) })
 	}
-	for _, name := range st.Principals {
+	for name := range st.Identities {
 		v.Labels[name] = s.label(name)
 	}
 	return v, nil
@@ -459,7 +439,7 @@ type connectionListing struct {
 	Protocol     string            `json:"kind"`
 	Host         string            `json:"host"`
 	State        string            `json:"state"`
-	Access       config.Access     `json:"access"`
+	Resolved     config.Resolved   `json:"resolved"`
 	Hosts        []string          `json:"hosts"`
 	Slots        any               `json:"slots"`
 	Placeholders map[string]string `json:"placeholders"`
@@ -475,12 +455,12 @@ func (s held) listing(p facts.Principal) any {
 	}{p.Name, doc.Keys.CACert, []connectionListing{}}
 	status := s.table.Connections()
 	for _, name := range slices.Sorted(maps.Keys(status)) {
-		c := st.connections[name]
-		if !st.Reaches(p.Name, name) {
+		c, resolved := st.connections[name], st.Resolve(p.Name, p.Groups, name)
+		if !resolved.Reaches {
 			continue
 		}
 		l := connectionListing{Name: name, Protocol: c.Protocol, Host: name + connections.Domain,
-			State: status[name].State, Access: st.Access(p.Name, name), Hosts: c.Discovery, Slots: c.Slots}
+			State: status[name].State, Resolved: resolved, Hosts: c.Discovery, Slots: c.Slots}
 		if c.ListsPlaceholders {
 			l.Placeholders = maps.Clone(c.placeholders)
 		}
@@ -495,12 +475,12 @@ func (s held) listing(p facts.Principal) any {
 	return result
 }
 
-func (s *state) agentPolicy(p facts.Principal) (any, error) {
+func (s held) agentPolicy(p facts.Principal) (any, error) {
 	st := s.settings.Load()
 	var visible map[string]any
 	var err error
-	if st.capable(p, capabilityConfig) {
-		visible, err = st.Config.View()
+	if st.wouldAllow(p, s.label(p.Name), perimeterCall(config.PolicyRead, nil)) != nil {
+		visible, err = st.Config.OwnerView()
 	} else {
 		visible, err = st.Config.AgentView(p)
 	}
@@ -518,7 +498,7 @@ type signInInput struct {
 }
 
 func (s *state) startSignIn(r *http.Request, req signInInput) (any, error) {
-	raw, save, err := s.signInCredential(r.PathValue("name"), req.Name)
+	raw, save, err := s.signInCredential(r.PathValue("connection"), req.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -526,7 +506,7 @@ func (s *state) startSignIn(r *http.Request, req signInInput) (any, error) {
 		raw = req.Credential
 	}
 	from, _ := callerFrom(r.Context())
-	sign, err := s.signIns.Start(r.Context(), s.settings.Load().client(), raw, req.Redirect, from.Session, save)
+	sign, err := s.signIns.Start(r.Context(), s.settings.Load().guardedClient(), raw, req.Redirect, from.Session, save)
 	if errors.Is(err, credential.ErrLoopback) {
 		err = errOAuthLoopback
 	}

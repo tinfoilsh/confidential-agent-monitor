@@ -4,6 +4,13 @@ import * as owner from "../../src/owner";
 import "../../src/dashboard.css";
 import "../../src/shell.css";
 
+const node = (key: string, title: string, children?: owner.ResolvedNode[]) =>
+  ({ key, title, mode: "ask", from: "", children }) as owner.ResolvedNode;
+const tools = [
+  node("use.fetch", "Fetch web pages"),
+  node("use.search", "Search the web"),
+];
+const use = node("use", "Use", tools);
 const view: owner.View = {
   generation: 1,
   revision: 1,
@@ -13,10 +20,10 @@ const view: owner.View = {
   ca: "test-ca",
   fields: {},
   labels: {},
-  vocabulary: { read: {}, write: { change: true }, pay: { ask: true } },
   status: {},
   config: {
     data: { onboarding: { completed: true } },
+    access: { effects: { pay: "ask" } },
     connections: {
       "tinfoil-websearch": {
         preset: "tinfoil_websearch",
@@ -34,6 +41,16 @@ const view: owner.View = {
             actions: { "use.fetch": "ask", "use.search": "ask" },
           },
           network: { level: "allow" },
+        },
+      },
+    },
+    resolved: {
+      "new-bunker": {
+        "tinfoil-websearch": {
+          reaches: true,
+          level: "allow",
+          effects: {},
+          tree: [use],
         },
       },
     },
@@ -71,6 +88,7 @@ const requests: owner.RequestRecord[] = Array.from(
     state: index < 2 ? "expired" : "allowed",
     time: new Date(Date.now() - index * 60_000).toISOString(),
     facts: {
+      kind: "operation",
       title:
         index % 4 < 2 ? "Connect to registry.npmjs.org:443" : "Search the web",
       principal: { name: "new-bunker" },
@@ -80,20 +98,27 @@ const requests: owner.RequestRecord[] = Array.from(
     },
   }),
 );
-if (new URLSearchParams(location.search).has("single-tool"))
+if (new URLSearchParams(location.search).has("single-tool")) {
   delete view.presets.tinfoil_websearch.actions!["use.fetch"];
-if (new URLSearchParams(location.search).has("root-override"))
+  tools.shift();
+}
+if (new URLSearchParams(location.search).has("root-override")) {
   view.config.identities!["new-bunker"].connections![
     "tinfoil-websearch"
   ].actions = { use: "ask", "use.search": "off" };
+  view.config.resolved["new-bunker"]["tinfoil-websearch"].actions = { use };
+  tools[1].mode = "off";
+}
 if (new URLSearchParams(location.search).has("proposals")) {
-  for (const state of ["pending", "approved"] as const)
+  for (const state of ["pending", "allowed"] as const)
     requests.push({
       id: `proposal-${state}`,
       state,
-      time: new Date().toISOString(),
+      time: requests[0].time,
       expires: new Date(Date.now() + 60_000).toISOString(),
       facts: {
+        kind: "",
+        operation: null,
         title: "Update network access",
         principal: { name: "new-bunker", key: "test-bunker" },
         connection: "network",
@@ -135,6 +160,8 @@ if (new URLSearchParams(location.search).has("review")) {
     time: new Date().toISOString(),
     expires: new Date(Date.now() + 60_000).toISOString(),
     facts: {
+      kind: "operation",
+      operation: null,
       title: "Connect to example.com",
       principal: { name: "new-bunker" },
       connection: "network",
@@ -162,6 +189,11 @@ const client: owner.OwnerApi = {
   archive: async () => ({ records: [] }),
   edit: async (changes: owner.Change[]) => {
     owner.applyChanges(view.config, changes);
+    // Stands in for the server: an action grant sets every mode beneath it.
+    for (const { path, value } of changes)
+      for (const n of [use, ...tools])
+        if (value && `${n.key}.`.startsWith(`${path[5]}.`))
+          n.mode = value as owner.Mode;
     const setup = view.config.connections!["tinfoil-websearch"]["tinfoil-mcp"];
     if (setup && typeof setup === "object" && "pin" in setup) {
       if (

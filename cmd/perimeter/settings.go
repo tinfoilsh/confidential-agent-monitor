@@ -12,6 +12,7 @@ import (
 	"net"
 	"net/http"
 	"net/netip"
+	"reflect"
 	"slices"
 	"strings"
 	"time"
@@ -25,6 +26,7 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/certificates"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 	"golang.org/x/crypto/ssh"
@@ -37,7 +39,6 @@ type settings struct {
 	catalogID   string
 	authority   *certificates.Authority
 	hostKey     ssh.Signer
-	publicScope map[string][]string
 	connections map[string]*installed
 }
 
@@ -65,13 +66,6 @@ type settingsWrite struct {
 	saved       *savedAnswer
 }
 
-func (w settingsWrite) checked(h held) error {
-	if w.check == nil {
-		return nil
-	}
-	return w.check(h)
-}
-
 var (
 	errPolicyConflict = httpError{errors.New("policy changed; reload it and review a new diff before applying"), http.StatusConflict}
 	errPolicyFile     = httpError{errors.New("the policy is loaded from a file; change it there"), http.StatusForbidden}
@@ -81,12 +75,15 @@ var errCredentialChanged = errors.New("credential changed; start again")
 
 const credentialTimeout = 30 * time.Second
 
-func everyConnection(string) bool { return true }
+func rebuildAll(string) bool { return true }
 
 func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	s.writes.Lock()
 	defer s.writes.Unlock()
 	h := held{s}
+	if w.check == nil {
+		w.check = func(held) error { return nil }
+	}
 
 	s.mu.Lock()
 	source, current := s.doc.Policy, s.settings.Load()
@@ -98,19 +95,18 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 		err = errPolicyFile
 	}
 	if err == nil {
-		err = w.checked(h)
+		err = w.check(h)
 	}
 	s.mu.Unlock()
 	if err != nil {
 		return err
 	}
 
-	before := source
 	if w.source != nil {
 		source = *w.source
 	}
-	lib := s.library(ctx, s.sealer)
-	source, rebuild, renamed, err := current.Edit(source, w.changes, lib)
+	lib := s.presetLibrary(ctx, s.sealer)
+	source, rebuild, renamed, err := current.Edit(source, w.changes, lib, connections.Operations)
 	if err != nil {
 		return err
 	}
@@ -121,11 +117,8 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	plan.renamed = renamed
 
 	s.mu.Lock()
-	if err = w.checked(h); err == nil {
+	if err = w.check(h); err == nil {
 		err = h.commitSettings(ctx, plan, w.saved)
-	}
-	if source != before || len(w.credentials) != 0 {
-		h.recordAdmin(ctx, "Change settings", map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(before, source)}, "credentials": slices.Sorted(maps.Keys(w.credentials))}, err)
 	}
 	s.mu.Unlock()
 	if err == nil {
@@ -134,8 +127,8 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	return err
 }
 
-func (s *state) prepareSettings(ctx context.Context, lib config.Library, source string, rebuild func(connection string) bool, credentials format.Secrets, authority *certificates.Authority, hostKey ssh.Signer) (*settingsPlan, error) {
-	cfg, err := config.Load(source, lib)
+func (s *state) prepareSettings(ctx context.Context, lib config.PresetLoader, source string, rebuild func(connection string) bool, credentials format.Secrets, authority *certificates.Authority, hostKey ssh.Signer) (*settingsPlan, error) {
+	cfg, err := config.Load(source, lib, connections.Operations)
 	if err != nil {
 		return nil, err
 	}
@@ -150,13 +143,12 @@ func (s *state) prepareSettings(ctx context.Context, lib config.Library, source 
 			}
 		}
 	}
-	program, err := config.PreparePolicy(ctx, cfg, basePolicy)
+	program, err := config.PreparePolicy[requestFacts](ctx, cfg, basePolicy)
 	if err != nil {
 		return nil, err
 	}
 
-	next := &settings{Config: cfg, policy: program, authority: authority, hostKey: hostKey, publicScope: map[string][]string{}, connections: map[string]*installed{}}
-	operations := map[string]map[string]config.OperationSummary{}
+	next := &settings{Config: cfg, policy: program, authority: authority, hostKey: hostKey, connections: map[string]*installed{}}
 	plan := &settingsPlan{next: next, source: source, credentials: credentials}
 	var current map[string]*installed
 	if st := s.settings.Load(); st != nil {
@@ -168,7 +160,6 @@ func (s *state) prepareSettings(ctx context.Context, lib config.Library, source 
 		if err != nil {
 			return nil, err
 		}
-		next.publicScope[name] = spec.PublicScope
 		if !connections.Registered(spec.Protocol, development) {
 			return nil, fmt.Errorf("connection %s has unknown kind %s", name, spec.Protocol)
 		}
@@ -178,7 +169,6 @@ func (s *state) prepareSettings(ctx context.Context, lib config.Library, source 
 		}
 		if exists && c.Protocol == spec.Protocol && !rebuild(name) && len(credentials[name]) == 0 {
 			next.connections[name] = c
-			operations[next.Connections[name].Preset] = c.Operations
 			if status[name].State != core.Ready {
 				plan.updates = append(plan.updates, name)
 			}
@@ -188,7 +178,6 @@ func (s *state) prepareSettings(ctx context.Context, lib config.Library, source 
 		if err != nil {
 			return nil, fmt.Errorf("connection %s: %w", name, err)
 		}
-		operations[next.Connections[name].Preset] = p.Operations
 		handles := map[string]*credential.Value{}
 		for _, secret := range p.SecretNames {
 			handles[secret] = nil
@@ -202,11 +191,14 @@ func (s *state) prepareSettings(ctx context.Context, lib config.Library, source 
 		plan.updates = append(plan.updates, name)
 	}
 
-	if next.catalog, next.catalogID, err = config.CatalogEntries(cfg, operations); err != nil {
+	if next.catalog, next.catalogID, err = config.CatalogEntries(cfg); err != nil {
 		return nil, err
 	}
 	for name := range credentials {
-		if _, present := next.Connections[name]; !present {
+		switch _, present := next.Connections[name]; {
+		case name == config.PerimeterConnection:
+			return nil, fmt.Errorf("connection %s holds no credentials", name)
+		case !present:
 			return nil, fmt.Errorf("connection %s does not exist", name)
 		}
 	}
@@ -237,7 +229,7 @@ func (s held) commitSettings(ctx context.Context, plan *settingsPlan, saved *sav
 		_, ok := plan.next.Connections[connection]
 		return !ok
 	})
-	client := plan.next.client()
+	client := plan.next.guardedClient()
 	for _, connection := range plan.updates {
 		c := plan.next.connections[connection]
 		for name, value := range c.secrets {
@@ -268,14 +260,14 @@ func (s held) commitSettings(ctx context.Context, plan *settingsPlan, saved *sav
 
 	// An answered proposal must leave pending before the loop below would outdate it.
 	if saved != nil {
-		s.saved(saved.record, saved.answer)
+		s.appendSavedReview(saved.record, saved.answer)
 	}
 	for _, name := range plan.remove {
 		s.table.Remove(name)
 	}
 	for _, name := range plan.updates {
 		c := plan.next.connections[name]
-		s.table.Stage(name, c.Network, c.Claim, s.opener(plan.next, c))
+		s.table.Stage(name, c.Network, c.Claim, s.connectorOpener(plan.next, c))
 	}
 	previous := s.settings.Swap(plan.next)
 	if previous != nil {
@@ -284,17 +276,21 @@ func (s held) commitSettings(ctx context.Context, plan *settingsPlan, saved *sav
 				s.identities.Unregister(fingerprint)
 			}
 		}
+		// A certificate binds when it registers, so after any change to what it could bind to, every one registers again.
+		if !reflect.DeepEqual(certificateBindings(previous.Config), certificateBindings(plan.next.Config)) {
+			s.identities.UnregisterShared()
+		}
 	}
 	for fingerprint := range plan.next.Principals {
 		p, _ := plan.next.Config.Principal(fingerprint)
 		s.identities.Register(fingerprint, p, true)
 	}
 	for r := range s.records.All() {
-		if r.State != statePending || r.Changes == nil {
+		if r.State != format.RecordPending || r.Changes == nil {
 			continue
 		}
 		f := r.subject()
-		if _, raw, err := s.proposal(plan.next, plan.source, f.Principal, f.Connection, r.Requirements[0].Message, r.Changes); err == nil {
+		if _, raw, err := s.draftProposal(plan.next, plan.source, f.Principal, f.Connection, f.Title, r.Changes, s.mayProposeOthers(plan.next, f.Principal)); err == nil {
 			r.Facts = raw
 		} else {
 			s.outdateRecord(r)
@@ -302,6 +298,18 @@ func (s held) commitSettings(ctx context.Context, plan *settingsPlan, saved *sav
 	}
 	s.recheckAll()
 	return nil
+}
+
+// Every declared name counts, since a certificate may not take a key identity's name.
+func certificateBindings(cfg *config.Config) map[string]config.Identity {
+	bindings := map[string]config.Identity{}
+	for name, id := range cfg.Identities {
+		bindings[name] = config.Identity{}
+		if id.Certificate {
+			bindings[name] = config.Identity{Certificate: id.Certificate, Groups: id.Groups, Attributes: id.Attributes}
+		}
+	}
+	return bindings
 }
 
 func reviewed(revision *uint64) func(held) error {
@@ -323,13 +331,33 @@ func sourceDiff(a, b string) string {
 	return text
 }
 
+var errPreviewFetches = httpError{errors.New("only the owner previews a policy that changes catalogs or allow_networks"), http.StatusForbidden}
+
+// Loading a policy fetches its catalogs through its allowed networks, so an identity's preview may change neither.
+func fetchesUnchanged(before, after string) error {
+	old, err := tomledit.Read(before)
+	if err != nil {
+		return err
+	}
+	next, err := tomledit.Read(after)
+	if err != nil {
+		return err
+	}
+	for _, key := range []string{"catalogs", "allow_networks"} {
+		if !reflect.DeepEqual(old[key], next[key]) {
+			return errPreviewFetches
+		}
+	}
+	return nil
+}
+
 func (s *state) previewPolicy(ctx context.Context, base format.Document, before *settings, source string) (*policyDiff, error) {
-	lib := s.library(ctx, s.sealer)
-	source, _, _, err := before.Edit(source, nil, lib)
+	lib := s.presetLibrary(ctx, s.sealer)
+	source, _, _, err := before.Edit(source, nil, lib, connections.Operations)
 	if err != nil {
 		return nil, err
 	}
-	plan, err := s.prepareSettings(ctx, lib, source, everyConnection, nil, before.authority, before.hostKey)
+	plan, err := s.prepareSettings(ctx, lib, source, rebuildAll, nil, before.authority, before.hostKey)
 	if err != nil {
 		return nil, err
 	}
@@ -348,11 +376,11 @@ func guardedDialer(allowed []netip.Prefix, network string) *net.Dialer {
 	return &net.Dialer{Timeout: connections.DialTimeout, Control: netx.Guard(allowed, network)}
 }
 
-func (st *settings) client() *http.Client {
+func (st *settings) guardedClient() *http.Client {
 	return &http.Client{Transport: connections.Identified{RoundTripper: netx.Transport(guardedDialer(st.AllowNetworks, "tcp").DialContext)}, CheckRedirect: netx.RefuseRedirects}
 }
 
-func (s *state) opener(st *settings, c *installed) core.Open {
+func (s *state) connectorOpener(st *settings, c *installed) core.Open {
 	grants := worker.Grants{Dial: s.routes.RouteDial(c.Hosts, s.identities.Keys, guardedDialer(st.AllowNetworks, c.Network).DialContext), Secrets: map[string]worker.Secret{},
 		Certificate: func(name string) (*tls.Certificate, error) {
 			return st.authority.Issue(name, leafLifetime, leafBackdate)
@@ -379,7 +407,7 @@ func (s *state) opener(st *settings, c *installed) core.Open {
 	}
 }
 
-func (s held) unchanged(id format.SecretID, value *credential.Value, before json.RawMessage) bool {
+func (s held) secretUnchanged(id format.SecretID, value *credential.Value, before json.RawMessage) bool {
 	c := s.settings.Load().connections[id.Connection]
 	return c != nil && c.secrets[id.Name] == value && bytes.Equal(s.doc.Credentials.Get(id), before)
 }
@@ -387,7 +415,7 @@ func (s held) unchanged(id format.SecretID, value *credential.Value, before json
 func (s *state) replaceValue(ctx context.Context, id format.SecretID, value *credential.Value, before, after json.RawMessage) error {
 	err := errCredentialChanged
 	s.locked(func(h held) {
-		if h.unchanged(id, value, before) {
+		if h.secretUnchanged(id, value, before) {
 			next := h.doc
 			next.Credentials = next.Credentials.Clone()
 			next.Credentials.Set(id, bytes.Clone(after))
@@ -412,7 +440,7 @@ func (s *state) signInCredential(connection, name string) (json.RawMessage, func
 	}
 	return before, func(ctx context.Context, raw json.RawMessage) error {
 		return s.writeSettings(ctx, settingsWrite{credentials: format.Secrets{connection: {name: raw}}, check: func(h held) error {
-			if !h.unchanged(id, value, before) {
+			if !h.secretUnchanged(id, value, before) {
 				return errCredentialChanged
 			}
 			return nil
@@ -420,6 +448,7 @@ func (s *state) signInCredential(connection, name string) (json.RawMessage, func
 	}, nil
 }
 
+// An unlock is not a call, so a restore that changes the policy is recorded as the owner's enroll.
 func (s *state) restoreDevice(ctx context.Context, public string) error {
 	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(public))
 	if err != nil {
@@ -427,11 +456,21 @@ func (s *state) restoreDevice(ctx context.Context, public string) error {
 	}
 	public = strings.TrimSpace(string(ssh.MarshalAuthorizedKey(key)))
 	digest := sha256.Sum256([]byte(public))
-	return s.enroll(ctx, map[string]config.Enrollment{fmt.Sprintf("device-%x", digest[:8]): {Key: public, Routes: true, Restore: true}})
+	device := map[string]config.Enrollment{fmt.Sprintf("device-%x", digest[:8]): {Key: public, Routes: true, Restore: true}}
+	changed, err := s.enroll(ctx, device)
+	if changed {
+		s.locked(func(h held) {
+			h.auditOwnerCall(facts.Observation{Operation: &facts.Operation{Action: config.EnrollIdentities}, Details: device}, err)
+		})
+	}
+	return err
 }
 
-func (s *state) enroll(ctx context.Context, identities map[string]config.Enrollment) error {
-	return s.writeSettings(ctx, settingsWrite{derive: func(h held) ([]tomledit.Change, error) {
-		return h.settings.Load().Enroll(identities, h.doc.Enrolled, identityAttributes)
+func (s *state) enroll(ctx context.Context, identities map[string]config.Enrollment) (changed bool, err error) {
+	err = s.writeSettings(ctx, settingsWrite{derive: func(h held) ([]tomledit.Change, error) {
+		changes, err := h.settings.Load().Enroll(identities, h.doc.Enrolled, identityAttributes)
+		changed = len(changes) != 0
+		return changes, err
 	}})
+	return changed, err
 }

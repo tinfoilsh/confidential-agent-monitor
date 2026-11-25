@@ -3,8 +3,8 @@ package perimeter
 import input.authorization as auth
 import input.connection as conn
 import input.facts
-import input.facts.context as hint
-import input.facts.context.label
+import input.facts.flow
+import input.facts.label
 import input.facts.operation as op
 
 # Each axis orders its levels from most to least restrictive.
@@ -13,63 +13,46 @@ rank := {
 	"trust": {name: i | some i, name in data.levels.trusts},
 }
 
-obligations contains name if {
-	some effect in op.effects
-	some name, true in data.levels.effects[effect]
-}
-
-unknown if op == null
 admission if facts.kind == "admission"
-changes if "change" in obligations
-discloses if "discloses" in obligations
 
-default request := "read"
-
-request := "unknown" if {
-	unknown
-} else := "change" if {
-	changes
+# An admission has no operation either, but is not an unrecognized request; an operation without effects is.
+unknown if {
+	not admission
+	not has_effects
 }
 
-grants := {
-	"read": {"unknown": "off", "read": "allow", "change": "off"},
-	"ask": {"unknown": "ask", "read": "allow", "change": "ask"},
-	"allow": {"unknown": "ask", "read": "allow", "change": "allow"},
-}
+has_effects if count(op.effects) != 0
 
-# Lineage runs from the operation's own action up through its ancestors.
-overrides := [m | some action in op.lineage; m := auth.access.actions[action]]
-
-default mode := "off"
-
-mode := overrides[0] if {
-	overrides != []
-} else := "allow" if {
-	# A session opens to any connection the bunker reaches.
+effects_of := ["session"] if {
 	admission
-	auth.reaches
-} else := grants[auth.access.level][request] if {
-	grants[auth.access.level]
+} else := ["unknown"] if {
+	unknown
+} else := op.effects
+
+# Each effect's place in the two lattices, as Vocabulary in policy.go lists it.
+traits := [data.levels.effects[effect] | some effect in effects_of]
+
+# Delivered data is also stored where it lands, such as a post in a public channel.
+stores if {
+	some t in traits
+	t.confidentiality in {"stored", "delivered"}
 }
 
-effect_defaults := {effect: {true: "ask", false: "allow"}[o.ask] | some effect, o in data.levels.effects}
+delivers if {
+	some t in traits
+	t.confidentiality == "delivered"
+}
 
-# Paid model operations carry both generate and pay; an explicit pay setting at any scope still wins.
-paid := {"pay": "allow"} if {
-	auth.allow_paid_inference
-	"generate" in op.effects
-	"pay" in op.effects
-} else := {}
+denied_mode := {"mode": "off", "from": "the Perimeter"}
 
-# Scopes run from global settings to this bunker's access on this connection; the most specific wins.
-effects := object.union_n(array.concat([effect_defaults, paid], auth.effects))
+mode_of(effect) := object.get(auth.modes, effect, denied_mode)
 
-# A preset's public scope lists the parameters that together name one resource, such as owner and repo.
-names := [v | some key in conn.public_scope; v := facts.parameters[key]; is_string(v); v != ""]
+# A preset's resource lists the parameters that together name one resource, such as owner and repo.
+names := [v | some key in conn.resource; v := facts.parameters[key]; is_string(v); v != ""]
 
 resource := concat("/", names) if {
 	names != []
-	count(names) == count(conn.public_scope)
+	count(names) == count(conn.resource)
 }
 
 # The owner marks resources private with globs such as tinfoilsh/*; any other named resource is public.
@@ -83,41 +66,45 @@ public if {
 	not private
 }
 
-target := resource if changes
+target := resource if stores
 
-# A change to a public resource reaches anyone, whatever the connector hints; so does an unplaced disclosure.
-sends := "anyone" if {
-	changes
+# Data stored in a public resource reaches anyone, whatever the connector hints; so does a delivery to unnamed recipients.
+sends_to := "anyone" if {
+	stores
 	public
 } else := "anyone" if {
-	hint.sends == ""
-	discloses
+	flow.sends_to == ""
+	delivers
 	not target
-} else := conn.sends if {
-	hint.sends in {"", "connection"}
-} else := hint.sends
+} else := conn.sends_to if {
+	flow.sends_to in {"", "connection"}
+} else := flow.sends_to
 
-expected := object.union(
-	{"audience": conn.contents, "trust": {true: "untrusted", false: "trusted"}[conn.strangers]},
-	{axis: level | some axis, _ in rank; level := hint.observes[axis]; level != ""},
+# What the connection returns, overridden axis by axis by what the connector says this request returns.
+stated := object.union(
+	{axis: conn.returns[axis] | some axis, _ in rank},
+	{axis: level | some axis, _ in rank; level := flow.returns[axis]; level != ""},
 )
 
 # An unrecognized request may return anything; a public resource holds nothing private.
-observes := {"audience": "me", "trust": "untrusted"} if {
+returns := {"audience": "me", "trust": "untrusted"} if {
 	unknown
-} else := object.union(expected, {"audience": "anyone"}) if {
+} else := object.union(stated, {"audience": "anyone"}) if {
 	public
-} else := expected
+} else := stated
 
 # The label keeps each axis's provenance unless this request makes it more restrictive.
 lowered[axis] := level if {
-	some axis, level in observes
+	some axis, level in returns
 	rank[axis][level] < rank[axis][label[axis]]
 }
 
 because := object.get(label, "because", {})
 
-next := {
+# An admission exposes nothing, so it keeps the label as it is.
+next := label if {
+	admission
+} else := {
 	"audience": object.get(lowered, "audience", label.audience),
 	"trust": object.get(lowered, "trust", label.trust),
 	"because": object.union(because, {axis: facts.connection | some axis, _ in lowered}),
@@ -151,12 +138,18 @@ valid_approvals contains source if {
 	count({r.id | some r in a}) == count({r | some r in a})
 }
 
-reasons contains "This bunker does not have permission for this action." if mode == "off"
-
-reasons contains sprintf("The %s effect is set to Deny.", [effect]) if {
-	some effect in op.effects
-	effects[effect] == "off"
+# Anything but allow or ask is off, so a malformed mode refuses.
+off contains effect if {
+	some effect in effects_of
+	not mode_of(effect).mode in {"allow", "ask"}
 }
+
+denied_by[from] contains effect if {
+	some effect in off
+	from := mode_of(effect).from
+}
+
+reasons contains sprintf("Set to Deny by %s: %s.", [from, concat(", ", sort(effects))]) if some from, effects in denied_by
 
 reasons contains sprintf("The %s policy does not allow this request.", [source]) if {
 	some source in needed
@@ -164,15 +157,17 @@ reasons contains sprintf("The %s policy does not allow this request.", [source])
 }
 
 # A refused request that matched no operation says so, since that is usually why it was refused.
-reasons contains ask_message if {
-	unknown
-	mode == "off"
-}
+reasons contains unknown_message if "unknown" in off
 
-reasons contains ask_message if {
+reasons contains unknown_message if {
 	unknown
 	some source in needed
 	not source in allows
+}
+
+reasons contains "WebSocket requests require a reviewed operation." if {
+	unknown
+	facts.details.http.websocket == true
 }
 
 reasons contains sprintf("%s policy approvals must be a set or array of {id, message} objects with unique %s.* IDs and nonempty messages", [source, source]) if {
@@ -180,17 +175,37 @@ reasons contains sprintf("%s policy approvals must be a set or array of {id, mes
 	not source in valid_approvals
 }
 
-# A waiver of this gap covers only the audience it was approved for.
-disclosure := concat(".", ["audience", sends])
+perimeter_action := op.action if facts.connection == "perimeter"
 
-needs_trust if unknown
-needs_trust if "trust" in obligations
+reasons contains "An identity cannot answer, save, or approve its own request." if {
+	perimeter_action in {"requests.answer", "requests.save", "proposals.answer"}
+	facts.parameters.subject == facts.principal.name
+}
+
+reasons contains "An identity cannot write its own label." if {
+	perimeter_action == "labels.write"
+	facts.parameters.identity == facts.principal.name
+}
+
+reasons contains "An identity cannot enroll itself." if {
+	perimeter_action == "enroll"
+	some parameter, own in {"identities": facts.principal.name, "keys": facts.principal.key}
+	own in facts.parameters[parameter]
+}
+
+# A waiver of this gap covers only the audience it was approved for.
+disclosure := concat(".", ["audience", sends_to])
+
+needs_trust if {
+	some t in traits
+	t.integrity
+}
 
 # Confidentiality: what the agent has seen goes to no wider an audience than its label.
 confidentiality := "allow" if {
 	data.lattices.confidentiality == false
 } else := "allow" if {
-	rank.audience[sends] <= rank.audience[label.audience]
+	rank.audience[sends_to] <= rank.audience[label.audience]
 } else := "ask"
 
 # Integrity: an agent that has read untrusted content does nothing that requires trust.
@@ -202,46 +217,42 @@ integrity := "allow" if {
 	not needs_trust
 } else := "ask"
 
-standing := {"ask": mode, disclosure: confidentiality, "trust": integrity}
-
-# Opening a session asks for nothing; its operations ask for themselves.
-checks := object.union(standing, {id: "allow" | admission; some id, "ask" in standing})
+standing := {disclosure: confidentiality, "trust": integrity}
 
 waived contains id if some id in auth.approved
 
+# Go passes only rules that are not stale.
 waived contains requirement.id if {
 	some r in auth.rules
 	not r.enabled == false
-	r.version == facts.version
 	r.connection == facts.connection
+	r.action == op.action
 	r.operation == op.id
-	r.scope == auth.grant
+	r.scope == auth.scope
 	some requirement in r.requirements
 }
 
-# A check set to allow passes; one set to ask passes with the owner's approval of its ID, once or as a saved rule.
-passes(_, "allow") := true
+# Opening a session asks nothing of the lattices; its operations ask for themselves.
+base_gaps := {id | not admission; some id, "ask" in standing; not id in waived}
 
-passes(id, "ask") if id in waived
-
-base_gaps := {id | some id, "ask" in checks; not id in waived}
-
-ask_message := sprintf("This request has no recognized operation on %s.", [facts.connection]) if unknown
-ask_message := sprintf("This request needs your approval on %s.", [facts.connection]) if not unknown
+unknown_message := sprintf("This request has no recognized operation on %s.", [facts.connection])
 
 recipients := {"me": "you", "team": "your team", "anyone": "anyone"}
 
 messages := {
-	"ask": ask_message,
-	disclosure: sprintf("This agent has seen private data from %s; this request can disclose it to %s.", [object.get(because, "audience", "an earlier request"), object.get(recipients, sends, "an unknown audience")]),
+	disclosure: sprintf("This agent has seen private data from %s; this request can disclose it to %s.", [object.get(because, "audience", "an earlier request"), object.get(recipients, sends_to, "an unknown audience")]),
 	"trust": sprintf("This agent has read untrusted content from %s; this operation requires trust.", [object.get(because, "trust", "an earlier request")]),
 }
 
 requirements contains {"id": id, "message": message} if some id, message in object.filter(messages, base_gaps)
 
-requirements contains {"id": id, "message": sprintf("The %s effect requires approval (Ask).", [effect])} if {
-	some effect in op.effects
-	effects[effect] == "ask"
+effect_message("unknown") := unknown_message
+
+effect_message(effect) := sprintf("The %s effect requires approval (Ask).", [effect]) if effect != "unknown"
+
+requirements contains {"id": id, "message": effect_message(effect)} if {
+	some effect in effects_of
+	mode_of(effect).mode == "ask"
 	id := concat("", ["effect.", effect])
 	not id in waived
 }
@@ -254,38 +265,8 @@ requirements contains r if {
 
 gaps contains r.id if some r in requirements
 
-default allow := false
-
-# Nothing else lets a request through. The reasons and requirements only say what is missing.
-allow if {
-	every id, setting in checks { passes(id, setting) }
-
-	# An unrecognized request has no operation, and so no effects.
-	every effect in [e | some e in op.effects] { passes(concat("", ["effect.", effect]), effects[effect]) }
-	allows == needed
-	every source, asked in approvals {
-		source in valid_approvals
-		every r in asked { r.id in waived }
-	}
-}
-
-decision := {"allow": allow, "deny": reasons, "requirements": requirements, "sends": sends, "next": next}
-
-# input is an admin call: its caller and route, plus the answer and record of an answer.
-# An identity calling under the agent API's /admin/ is a non-owner caller whose claims are its key and groups.
-default admin_allow := false
-
-admin_allow if input.caller.owner
-
-# An identity cannot answer its own request.
-admin_allow if {
-	data.perimeter.base.admin_allow == true
-	not input.record.facts.principal.name == input.caller.name
-}
-
-# input is an identity's capability: its principal, its stored routes flag and the capability's name.
-default capable := false
-
-capable if input.routes
-
-capable if data.perimeter.base.capable == true
+decision := {"outcome": "deny", "sends_to": sends_to, "reasons": reasons} if {
+	count(reasons) != 0
+} else := {"outcome": "ask", "sends_to": sends_to, "gaps": requirements} if {
+	count(requirements) != 0
+} else := {"outcome": "allow", "sends_to": sends_to, "next": next}

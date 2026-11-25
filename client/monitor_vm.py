@@ -1261,8 +1261,8 @@ def guest_agent(cli, client, args):
 def owner_policy(args):
     if not args.owner_url or not args.owner_key_file:
         raise Error("provide both --owner-url and --owner-key-file")
-    if args.policy_action in ("propose", "status"):
-        raise Error("proposal commands use the agent's SSH identity; omit owner options")
+    if args.policy_action in ("propose", "status", "explain"):
+        raise Error("explain and proposal commands use the agent's SSH identity; omit owner options")
     owner = OwnerClient(args.owner_url, private_read(Path(args.owner_key_file).expanduser()))
     if args.policy_action == "show":
         result = owner.request(path="/policy?effective" if args.effective else "/policy")

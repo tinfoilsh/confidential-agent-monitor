@@ -53,11 +53,11 @@ const AUDIENCES: { [A in owner.Audience]: string } = {
   team: "My team",
   anyone: "Anyone",
 };
-const LEVEL_NOTES: { [L in owner.Level]: string } = {
+const LEVEL_NOTES: { [L in owner.GrantLevel]: string } = {
   off: "Nothing is allowed.",
-  read: "Reads go through; changes are denied.",
-  ask: "Reads go through; changes ask you first.",
-  allow: "Recognized requests go through.",
+  read: "Reads go through; everything else is denied.",
+  ask: "Reads go through; everything else asks you first.",
+  allow: "Every request goes through.",
 };
 // How a connection handles data, as its settings name it.
 const ANSWERS: Record<string, Pick<Item, "label" | "kind">> = {
@@ -110,7 +110,7 @@ function changeGroups(view: owner.View, record: owner.RequestRecord) {
 }
 const itemText = (view: owner.View, item: Item, value: owner.Json) =>
   item.kind === "level"
-    ? (owner.LEVELS[value as owner.Level] ?? String(value))
+    ? (owner.LEVELS[value as owner.GrantLevel] ?? String(value))
     : item.kind === "mode"
       ? (owner.MODES[value as owner.Mode] ?? String(value))
       : item.kind === "audience"
@@ -335,7 +335,7 @@ export function ProposalChanges(props: { record: owner.RequestRecord }) {
                 <Facts items={items} />
                 <For each={items.filter((item) => item.kind === "level")}>
                   {(item) => (
-                    <small>{LEVEL_NOTES[item.leaf.value as owner.Level]}</small>
+                    <small>{LEVEL_NOTES[item.leaf.value as owner.GrantLevel]}</small>
                   )}
                 </For>
               </div>
@@ -424,7 +424,7 @@ export function ConnectionProposals(props: { id?: string }) {
 
 function ConnectionProposalDetail(props: { proposal: owner.RequestRecord }) {
   const m = useMonitor();
-  const [full] = createRecord(() => ({
+  const [full, { refetch }] = createRecord(() => ({
     api: m.api()!,
     id: props.proposal.id,
     segment: props.proposal.segment,
@@ -432,7 +432,9 @@ function ConnectionProposalDetail(props: { proposal: owner.RequestRecord }) {
   const loaded = () => (full.error ? undefined : full());
   const decide = async (decision: "once" | "deny") => {
     if (m.busy() || !loaded()) return;
-    if (await m.decide(props.proposal, decision)) location.hash = "#activity";
+    if (await m.decide(props.proposal, decision, loaded()))
+      location.hash = "#activity";
+    else void refetch();
   };
   return (
     <div class="proposal-card proposal-card-inline">
