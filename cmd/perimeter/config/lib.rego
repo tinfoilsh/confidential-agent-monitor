@@ -195,12 +195,8 @@ reasons contains "An identity cannot write its own label." if {
 
 reasons contains "An identity cannot enroll itself." if {
 	perimeter_action == "enroll"
-	facts.principal.name in facts.parameters.identities
-}
-
-reasons contains "An identity cannot enroll itself." if {
-	perimeter_action == "enroll"
-	facts.principal.key in facts.parameters.keys
+	some parameter, own in {"identities": facts.principal.name, "keys": facts.principal.key}
+	own in facts.parameters[parameter]
 }
 
 # A waiver of this gap covers only the audience it was approved for.
