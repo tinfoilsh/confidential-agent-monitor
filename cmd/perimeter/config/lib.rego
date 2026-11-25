@@ -76,15 +76,9 @@ sends_to := "anyone" if {
 	flow.sends_to == ""
 	delivers
 	not target
-} else := "anyone" if {
-	some to in facts.details.smtp.to
-	not same_address(to, conn.address)
 } else := conn.sends_to if {
 	flow.sends_to in {"", "connection"}
 } else := flow.sends_to
-
-# (?i) folds case as Go's strings.EqualFold does; lower() does not for every rune.
-same_address(a, b) if regex.match(concat("", [`(?i)\A\Q`, replace(b, `\E`, `\E\\E\Q`), `\E\z`]), a)
 
 # What the connection returns, overridden axis by axis by what the connector says this request returns.
 stated := object.union(

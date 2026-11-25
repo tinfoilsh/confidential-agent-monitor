@@ -179,7 +179,6 @@ type AuthorizationInput struct {
 type ConnectionInput struct {
 	Returns  format.Label `json:"returns"`
 	SendsTo  string       `json:"sends_to"`
-	Address  string       `json:"address"`
 	Private  []string     `json:"private"`
 	Resource []string     `json:"resource"`
 }

@@ -461,13 +461,21 @@ func parseEndpoint(spec config.ConnectionSpec, p *Setup) error {
 		}
 	case "smtp":
 		var c *email.SMTP
+		var options config.PolicyOptions
 		if c, err = email.ParseSMTP(spec.Config); err == nil {
 			hosts = c.Hosts()
 			handler = func(h worker.Host) connector.Serve {
 				return c.Handler(h.Dial, password(h), func(string, string, string) error { return nil }, protocolIdentity, maxMailBytes, h.TLS)
 			}
+			err = json.Unmarshal(spec.Options, &options)
 		}
-		p.Flow = sendsToConnection
+		p.Flow = func(o facts.Observation) Flow {
+			to, err := facts.JSON[[]string](o.Parameters["to"])
+			if err != nil || slices.ContainsFunc(to, func(a string) bool { return !strings.EqualFold(a, options.Address) }) {
+				return Flow{SendsTo: config.AudienceAnyone}
+			}
+			return Flow{SendsTo: config.SendsToConnection}
+		}
 	case "redis":
 		var c *redis.Redis
 		if c, err = redis.Parse(spec.Config); err == nil {
