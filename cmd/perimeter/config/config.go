@@ -109,10 +109,14 @@ type Config struct {
 	Catalogs      map[string]string     `json:"catalogs,omitempty"`
 	Principals    map[string]string     `json:"-"`
 
-	Presets map[string]*catalog.Preset `json:"-"`
+	Presets    map[string]*catalog.Preset `json:"-"`
+	operations map[string]map[string]catalog.OperationSummary
 }
 
 type PresetLoader func(*Config) (map[string]*catalog.Preset, error)
+
+// An OperationLister lists the operations a connection's requests can carry, where its connector knows them ahead of time.
+type OperationLister func(ConnectionSpec) (map[string]catalog.OperationSummary, error)
 
 func validateModes(where string, modes map[string]Mode, effects bool) error {
 	for key, mode := range modes {
@@ -153,7 +157,7 @@ func (c *Config) validateAccess(where string, connections map[string]Access) err
 	return nil
 }
 
-func Load(text string, presets PresetLoader) (*Config, error) {
+func Load(text string, presets PresetLoader, operations OperationLister) (*Config, error) {
 	if len(text) > maxPolicyBytes {
 		return nil, errors.New("policy source is too large")
 	}
@@ -170,7 +174,7 @@ func Load(text string, presets PresetLoader) (*Config, error) {
 		cfg.Presets, err = presets(cfg)
 	}
 	if err == nil {
-		err = cfg.validate()
+		err = cfg.validate(operations)
 	}
 	if err != nil {
 		return nil, err
@@ -178,13 +182,14 @@ func Load(text string, presets PresetLoader) (*Config, error) {
 	return cfg, nil
 }
 
-func (c *Config) validate() error {
+func (c *Config) validate(operations OperationLister) error {
 	if err := validateBlock(accountAccess, c.Access); err != nil {
 		return err
 	}
 	if _, listed := c.Presets[PerimeterConnection]; listed {
 		return fmt.Errorf("preset %s is the Perimeter's own; a catalog cannot list one of that name", PerimeterConnection)
 	}
+	c.operations = map[string]map[string]catalog.OperationSummary{}
 	for name, conn := range c.Connections {
 		if name == AgentConnection || name == PerimeterConnection {
 			return fmt.Errorf("connection name %s is reserved", name)
@@ -195,8 +200,17 @@ func (c *Config) validate() error {
 		if !slices.Contains(Audiences, conn.Contents) || !slices.Contains(Audiences, conn.Sends) {
 			return fmt.Errorf("connection %s: contents and sends must be one of %v", name, Audiences)
 		}
-		if _, err := c.Spec(name); err != nil {
+		spec, err := c.Spec(name)
+		if err != nil {
 			return err
+		}
+		if c.operations[name], err = operations(spec); err != nil {
+			return fmt.Errorf("connection %s: %w", name, err)
+		}
+		for id, o := range c.operations[name] {
+			if o.Effects != nil && !ValidEffects(o.Effects) {
+				return fmt.Errorf("connection %s: invalid effects for operation %s", name, id)
+			}
 		}
 	}
 	if err := c.validateAccess("default_access", c.DefaultAccess); err != nil {
@@ -314,12 +328,12 @@ func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	return spec, nil
 }
 
-func (c *Config) Edit(source string, changes []tomledit.Change, presets PresetLoader) (edited string, rebuild func(connection string) bool, renamed map[string]string, err error) {
+func (c *Config) Edit(source string, changes []tomledit.Change, presets PresetLoader, operations OperationLister) (edited string, rebuild func(connection string) bool, renamed map[string]string, err error) {
 	edited, err = tomledit.Edit(source, changes)
 	if err != nil {
 		return "", nil, nil, err
 	}
-	next, err := Load(edited, presets)
+	next, err := Load(edited, presets, operations)
 	if err != nil {
 		return "", nil, nil, err
 	}

@@ -26,10 +26,7 @@ type Preset struct {
 	Catalog     *Catalog          `json:"catalog"`
 	PublicScope []string          `json:"public_scope,omitempty"`
 	Fragments   map[string]string `json:"fragments,omitempty"`
-	HTTP        struct {
-		Operations map[string]OperationSummary `json:"operations"`
-	} `json:"http"`
-	Source json.RawMessage `json:"-"`
+	Source      json.RawMessage   `json:"-"`
 }
 
 type Catalog struct {
@@ -44,6 +41,7 @@ type Catalog struct {
 
 type OperationSummary struct {
 	Action  string   `json:"action"`
+	Title   string   `json:"title,omitempty"`
 	Effects []string `json:"effects,omitempty"`
 }
 

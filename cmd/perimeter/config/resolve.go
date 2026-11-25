@@ -146,14 +146,14 @@ func strictest(settings map[string]Setting) Setting {
 }
 
 // The effect only lets the catalog resolve the action, so every lineage is the catalog's own.
-// A request for an action carries its compiled operations' effects where it has any, else the catalog's.
+// A request for an action carries its listed operations' effects where it has any, else the catalog's.
 func (c *Config) ResolveAction(connection, action string) *catalog.Operation {
 	preset := c.Preset(connection)
 	if preset == nil {
 		return nil
 	}
 	var effects []string
-	for _, op := range preset.HTTP.Operations {
+	for _, op := range c.operations[connection] {
 		if op.Action == action {
 			effects = append(effects, op.Effects...)
 		}
@@ -262,14 +262,14 @@ func (c *Config) ruleOperation(r Rule) *catalog.Operation {
 	if !ok || preset == nil {
 		return nil
 	}
-	if summary, compiled := preset.HTTP.Operations[r.Operation]; compiled && summary.Action == r.Action {
+	if summary, listed := c.operations[r.Connection][r.Operation]; listed && summary.Action == r.Action {
 		return preset.Catalog.Resolve(r.Operation, r.Action, summary.Effects)
 	}
 	if conn.MatchOnly && r.Action == CustomAction && r.Operation == CustomAction {
 		return preset.Catalog.Resolve("", CustomAction, CustomEffects)
 	}
-	// A preset with compiled operations recognizes no other operation.
-	if preset.HTTP.Operations != nil {
+	// A connection with listed operations recognizes no other operation.
+	if c.operations[r.Connection] != nil {
 		return nil
 	}
 	return preset.Catalog.Resolve(r.Operation, r.Action, nil)

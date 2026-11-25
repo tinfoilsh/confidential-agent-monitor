@@ -2,7 +2,6 @@ package config
 
 import (
 	"cmp"
-	"encoding/json"
 	"maps"
 	"slices"
 	"strings"
@@ -18,48 +17,17 @@ type ResolvedNode struct {
 	Children []ResolvedNode `json:"children,omitempty"`
 }
 
-type pinnedTool struct {
-	Name        string `json:"name"`
-	Title       string `json:"title"`
-	Annotations struct {
-		ReadOnlyHint bool `json:"readOnlyHint"`
-	} `json:"annotations"`
-}
-
-func (c *Config) pinned(connection string) []pinnedTool {
-	var pinned struct {
-		Pin struct {
-			Tools []pinnedTool `json:"tools"`
-		} `json:"pin"`
-	}
-	if spec, err := c.Spec(connection); err == nil {
-		_ = json.Unmarshal(spec.Config, &pinned)
-	}
-	return pinned.Pin.Tools
-}
-
-// A pinned MCP tool sits under read or use by the hint the owner approved with the pin.
-func (t pinnedTool) action() string {
-	if t.Annotations.ReadOnlyHint {
-		return "read." + t.Name
-	}
-	return "use." + t.Name
-}
-
 func (c *Config) titled(connection string) map[string]string {
 	preset := c.Preset(connection)
 	titles := map[string]string{}
 	if preset == nil {
 		return titles
 	}
-	for _, op := range preset.HTTP.Operations {
-		titles[op.Action] = op.Action
-	}
 	for key, action := range preset.Catalog.Actions {
 		titles[key] = action.Title
 	}
-	for _, tool := range c.pinned(connection) {
-		titles[tool.action()] = cmp.Or(tool.Title, tool.Name)
+	for _, op := range c.operations[connection] {
+		titles[op.Action] = cmp.Or(op.Title, titles[op.Action], op.Action)
 	}
 	return titles
 }
@@ -88,7 +56,7 @@ func (c *Config) tree(connection string, t tiers) []ResolvedNode {
 	for key := range titles {
 		add(key, nil)
 	}
-	for _, op := range preset.HTTP.Operations {
+	for _, op := range c.operations[connection] {
 		add(op.Action, op.Effects)
 	}
 	for _, key := range slices.Collect(maps.Keys(effects)) {

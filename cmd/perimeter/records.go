@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/connections"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/migrate"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
@@ -452,7 +453,7 @@ func (s *state) draftProposal(st *settings, source string, p facts.Principal, ta
 	if _, err := config.ProposalChanges(p, changes, others); err != nil {
 		return "", nil, err
 	}
-	candidate, _, _, err := st.Edit(source, changes, s.presetLibrary(s.life, s.sealer))
+	candidate, _, _, err := st.Edit(source, changes, s.presetLibrary(s.life, s.sealer), connections.Operations)
 	if err == nil && candidate == source {
 		err = errors.New("proposal does not change policy")
 	}

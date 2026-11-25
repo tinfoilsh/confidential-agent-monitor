@@ -12,6 +12,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
@@ -93,6 +94,25 @@ func (p *Preset) UnmarshalJSON(raw []byte) error {
 		return err
 	}
 	return p.compile()
+}
+
+func Operations(definition json.RawMessage) (map[string]catalog.OperationSummary, error) {
+	var preset struct {
+		HTTP *struct {
+			Operations map[string]catalog.OperationSummary `json:"operations"`
+		} `json:"http"`
+	}
+	if err := json.Unmarshal(definition, &preset); err != nil || preset.HTTP == nil {
+		return nil, err
+	}
+	ops := map[string]catalog.OperationSummary{}
+	for id, o := range preset.HTTP.Operations {
+		if len(o.Effects) == 0 {
+			return nil, fmt.Errorf("invalid operation %q", id)
+		}
+		ops[id] = catalog.OperationSummary{Action: o.Action, Effects: o.Effects}
+	}
+	return ops, nil
 }
 
 func (p *Preset) validate() error {

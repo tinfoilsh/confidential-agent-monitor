@@ -120,7 +120,6 @@ export type Preset = {
   fields?: PresetField[];
   connection?: { [kind: string]: Json };
   actions?: Record<string, PresetAction>;
-  operations?: Record<string, { action: string; effects?: string[] }>;
 };
 export type Label = {
   audience: Audience;

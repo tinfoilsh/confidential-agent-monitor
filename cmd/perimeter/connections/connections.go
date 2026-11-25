@@ -18,6 +18,7 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/email"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/mcp"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/mqtt"
@@ -111,6 +112,16 @@ type Setup struct {
 	HostKey           bool
 	Flow              func(facts.Observation) Flow
 	Open              func(ctx context.Context, h worker.Host) (connector.Instance, error)
+}
+
+func Operations(spec config.ConnectionSpec) (map[string]catalog.OperationSummary, error) {
+	switch spec.Protocol {
+	case "http", "tinfoil":
+		return web.Operations(spec.Definition)
+	case "mcp", "tinfoil-mcp":
+		return mcp.Operations(spec.Config, spec.Definition)
+	}
+	return nil, nil
 }
 
 func Parse(spec config.ConnectionSpec) (*Setup, error) {
@@ -235,12 +246,9 @@ func httpSetup(p *Setup, setup *web.Setup, set slots.Set) error {
 	sends := map[string]string{}
 	if setup.Preset != nil {
 		for id, op := range setup.Preset.Operations {
-			if len(op.Effects) == 0 {
-				return fmt.Errorf("invalid operation %q", id)
-			}
 			var audience string
-			if op.Sends != nil && json.Unmarshal(op.Sends, &audience) != nil || !config.ValidEffects(op.Effects) || !validSendsTo(audience) {
-				return fmt.Errorf("invalid effects or audience for operation %s", id)
+			if op.Sends != nil && json.Unmarshal(op.Sends, &audience) != nil || !validSendsTo(audience) {
+				return fmt.Errorf("invalid audience for operation %s", id)
 			}
 			sends[id] = audience
 		}

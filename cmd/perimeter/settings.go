@@ -107,7 +107,7 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 		source = *w.source
 	}
 	lib := s.presetLibrary(ctx, s.sealer)
-	source, rebuild, renamed, err := current.Edit(source, w.changes, lib)
+	source, rebuild, renamed, err := current.Edit(source, w.changes, lib, connections.Operations)
 	if err != nil {
 		return err
 	}
@@ -129,7 +129,7 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 }
 
 func (s *state) prepareSettings(ctx context.Context, lib config.PresetLoader, source string, rebuild func(connection string) bool, credentials format.Secrets, authority *certificates.Authority, hostKey ssh.Signer) (*settingsPlan, error) {
-	cfg, err := config.Load(source, lib)
+	cfg, err := config.Load(source, lib, connections.Operations)
 	if err != nil {
 		return nil, err
 	}
@@ -355,7 +355,7 @@ func fetchesUnchanged(before, after string) error {
 
 func (s *state) previewPolicy(ctx context.Context, base format.Document, before *settings, source string) (*policyDiff, error) {
 	lib := s.presetLibrary(ctx, s.sealer)
-	source, _, _, err := before.Edit(source, nil, lib)
+	source, _, _, err := before.Edit(source, nil, lib, connections.Operations)
 	if err != nil {
 		return nil, err
 	}
