@@ -52,7 +52,7 @@ func (c *Config) titled(connection string) map[string]string {
 	if preset == nil {
 		return titles
 	}
-	for _, op := range c.Operations[c.Connections[connection].Preset] {
+	for _, op := range preset.HTTP.Operations {
 		titles[op.Action] = op.Action
 	}
 	for key, action := range preset.Catalog.Actions {
@@ -88,7 +88,7 @@ func (c *Config) tree(connection string, t tiers) []ResolvedNode {
 	for key := range titles {
 		add(key, nil)
 	}
-	for _, op := range c.Operations[c.Connections[connection].Preset] {
+	for _, op := range preset.HTTP.Operations {
 		add(op.Action, op.Effects)
 	}
 	for _, key := range slices.Collect(maps.Keys(effects)) {

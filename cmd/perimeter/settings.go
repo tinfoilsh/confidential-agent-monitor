@@ -150,7 +150,6 @@ func (s *state) prepareSettings(ctx context.Context, lib config.PresetLoader, so
 	}
 
 	next := &settings{Config: cfg, policy: program, authority: authority, hostKey: hostKey, resources: map[string][]string{}, connections: map[string]*installed{}}
-	cfg.Operations = map[string]map[string]config.OperationSummary{}
 	plan := &settingsPlan{next: next, source: source, credentials: credentials}
 	var current map[string]*installed
 	if st := s.settings.Load(); st != nil {
@@ -172,7 +171,6 @@ func (s *state) prepareSettings(ctx context.Context, lib config.PresetLoader, so
 		}
 		if exists && c.Protocol == spec.Protocol && !rebuild(name) && len(credentials[name]) == 0 {
 			next.connections[name] = c
-			cfg.Operations[next.Connections[name].Preset] = c.Operations
 			if status[name].State != core.Ready {
 				plan.updates = append(plan.updates, name)
 			}
@@ -182,7 +180,6 @@ func (s *state) prepareSettings(ctx context.Context, lib config.PresetLoader, so
 		if err != nil {
 			return nil, fmt.Errorf("connection %s: %w", name, err)
 		}
-		cfg.Operations[next.Connections[name].Preset] = p.Operations
 		handles := map[string]*credential.Value{}
 		for _, secret := range p.SecretNames {
 			handles[secret] = nil

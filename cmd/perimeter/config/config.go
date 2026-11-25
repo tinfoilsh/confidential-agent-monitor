@@ -109,8 +109,7 @@ type Config struct {
 	Catalogs      map[string]string     `json:"catalogs,omitempty"`
 	Principals    map[string]string     `json:"-"`
 
-	Presets    map[string]*catalog.Preset             `json:"-"`
-	Operations map[string]map[string]OperationSummary `json:"-"`
+	Presets map[string]*catalog.Preset `json:"-"`
 }
 
 type PresetLoader func(*Config) (map[string]*catalog.Preset, error)
@@ -324,8 +323,6 @@ func (c *Config) Edit(source string, changes []tomledit.Change, presets PresetLo
 	if err != nil {
 		return "", nil, nil, err
 	}
-	// Operations are compiled when settings are prepared, so a freshly loaded policy has none to compare.
-	next.Operations = c.Operations
 	if reflect.DeepEqual(next, c) {
 		return source, func(string) bool { return false }, nil, nil
 	}

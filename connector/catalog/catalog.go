@@ -26,7 +26,10 @@ type Preset struct {
 	Catalog     *Catalog          `json:"catalog"`
 	PublicScope []string          `json:"public_scope,omitempty"`
 	Fragments   map[string]string `json:"fragments,omitempty"`
-	Source      json.RawMessage   `json:"-"`
+	HTTP        struct {
+		Operations map[string]OperationSummary `json:"operations"`
+	} `json:"http"`
+	Source json.RawMessage `json:"-"`
 }
 
 type Catalog struct {
@@ -37,6 +40,11 @@ type Catalog struct {
 	Connection map[string]json.RawMessage `json:"connection,omitempty"`
 	Defaults   json.RawMessage            `json:"defaults,omitempty"`
 	Fields     []json.RawMessage          `json:"fields,omitempty"`
+}
+
+type OperationSummary struct {
+	Action  string   `json:"action"`
+	Effects []string `json:"effects,omitempty"`
 }
 
 type Action struct {

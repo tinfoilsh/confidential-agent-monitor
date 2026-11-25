@@ -105,7 +105,6 @@ type Setup struct {
 	Hosts             []string
 	Discovery         []string
 	Slots             any
-	Operations        map[string]config.OperationSummary
 	SecretNames       []string
 	PerMessage        bool
 	ListsPlaceholders bool
@@ -235,7 +234,6 @@ func httpSetup(p *Setup, setup *web.Setup, set slots.Set) error {
 	p.PerMessage, p.ListsPlaceholders = true, true
 	sends := map[string]string{}
 	if setup.Preset != nil {
-		p.Operations = map[string]config.OperationSummary{}
 		for id, op := range setup.Preset.Operations {
 			if len(op.Effects) == 0 {
 				return fmt.Errorf("invalid operation %q", id)
@@ -244,7 +242,7 @@ func httpSetup(p *Setup, setup *web.Setup, set slots.Set) error {
 			if op.Sends != nil && json.Unmarshal(op.Sends, &audience) != nil || !config.ValidEffects(op.Effects) || !validSendsTo(audience) {
 				return fmt.Errorf("invalid effects or audience for operation %s", id)
 			}
-			p.Operations[id], sends[id] = config.OperationSummary{Action: op.Action, Effects: op.Effects}, audience
+			sends[id] = audience
 		}
 	}
 	p.Flow = func(o facts.Observation) Flow {

@@ -45,15 +45,10 @@ func ComposePresets(presets map[string]*catalog.Preset) error {
 	return nil
 }
 
-type OperationSummary struct {
-	Action  string   `json:"action"`
-	Effects []string `json:"effects,omitempty"`
-}
-
 type CatalogEntry struct {
 	*catalog.Catalog
-	Title      string                       `json:"title"`
-	Operations *map[string]OperationSummary `json:"operations,omitempty"`
+	Title      string                               `json:"title"`
+	Operations *map[string]catalog.OperationSummary `json:"operations,omitempty"`
 }
 
 func CatalogEntries(cfg *Config) (map[string]CatalogEntry, string, error) {
@@ -69,7 +64,7 @@ func CatalogEntries(cfg *Config) (map[string]CatalogEntry, string, error) {
 		entry := CatalogEntry{Catalog: &metadata, Title: p.Title}
 		if !used[name] {
 			metadata.Actions = nil
-		} else if ops := cfg.Operations[name]; ops != nil {
+		} else if ops := p.HTTP.Operations; ops != nil {
 			entry.Operations = &ops
 		}
 		entries[name] = entry
